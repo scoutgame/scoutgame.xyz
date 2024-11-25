@@ -28,5 +28,8 @@
     "puppeteer": "^23.8.0",
     "qrcode": "^1.5.4",
     "swiper": "^11.1.14"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5"
   }
 }
