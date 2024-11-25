@@ -52,6 +52,7 @@
     ]
   },
   "dependencies": {
+    "@beam-australia/react-env": "^3.1.1",
     "@charmverse/core": "^0.97.0",
     "@mui/icons-material": "^6.1.4",
     "@mui/lab": "^6.0.0-beta.11",
@@ -60,10 +61,23 @@
     "@mui/system": "^6.1.4",
     "@mui/x-date-pickers": "^7.20.0",
     "@mui/x-tree-view": "^7.20.0",
+    "@tanstack/react-query": "^5.61.3",
     "@vercel/og": "^0.6.3",
     "aws-cdk-lib": "^2.171.0",
     "dd-trace": "^5.22.0",
-    "react": "^18.3.1"
+    "iron-session": "^8.0.4",
+    "lodash": "^4.17.21",
+    "luxon": "^3.5.0",
+    "material-ui-popup-state": "^5.3.1",
+    "next": "^15.0.3",
+    "next-safe-action": "^7.9.9",
+    "react": "^18.3.1",
+    "react-hook-form": "^7.53.2",
+    "swr": "^2.2.5",
+    "uuid": "^11.0.3",
+    "viem": "^2.21.50",
+    "wagmi": "^2.13.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
