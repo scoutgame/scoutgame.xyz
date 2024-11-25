@@ -6,8 +6,6 @@ on:
     paths:
       - '.cdk/**'
       - 'docker-compose.yml'
-      - '.ebextensions/admin/**'
-      - '.ebstalk.apps.env/admin.env'
       - '.github/actions/**'
       - '.github/workflows/deploy_admin.yml'
       - 'package.json'
@@ -20,8 +18,6 @@ on:
     paths:
       - '.cdk/**'
       - 'docker-compose.yml'
-      - '.ebextensions/admin/**'
-      - '.ebstalk.apps.env/admin.env'
       - '.github/actions/**'
       - '.github/workflows/deploy_admin.yml'
       - 'package.json'
@@ -140,9 +136,10 @@ jobs:
         with:
           app_name: admin
 
-      - name: Update Dockerfile
+      - name: Move config files to top level
         run: |
-          rm Dockerfile && mv apps/admin/Dockerfile Dockerfile
+          mv apps/admin/Dockerfile Dockerfile
+          mv apps/admin/.env.ebstalk .env.ebstalk
 
       - name: Build and Push Docker image
         id: docker_build_push
