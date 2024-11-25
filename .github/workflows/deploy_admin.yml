@@ -149,7 +149,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         with:
-          ecr_registry: admin
+          ecr_registry: scoutgameadmin
 
   upload-static-assets:
     name: Upload assets in production
