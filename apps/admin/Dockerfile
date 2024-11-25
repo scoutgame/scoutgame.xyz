@@ -16,8 +16,8 @@ COPY --parents @connect-shared  \
   packages/*/package.json       \
   node_modules                  \
   package.json                  \
-  apps/scoutgameadmin/node_modules   \
-  apps/scoutgameadmin/package.json   \
+  apps/admin/node_modules   \
+  apps/admin/package.json   \
   .
 
 # Copy compiled code

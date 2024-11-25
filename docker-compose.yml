@@ -69,7 +69,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['sh', '-c', 'node_modules/.bin/next start apps/scoutgameadmin --keepAliveTimeout 70000']
+    command: ['sh', '-c', 'node_modules/.bin/next start apps/admin --keepAliveTimeout 70000']
     profiles:
       - prd-scoutgameadmin
 
@@ -78,7 +78,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['sh', '-c', 'node_modules/.bin/next start apps/scoutgameadmin --keepAliveTimeout 70000']
+    command: ['sh', '-c', 'node_modules/.bin/next start apps/admin --keepAliveTimeout 70000']
     environment:
       - REACT_APP_APP_ENV=staging
     profiles:
