@@ -136,10 +136,9 @@ jobs:
         with:
           app_name: admin
 
-      - name: Move config files to top level
+      - name: Move Dockerfile to top level
         run: |
           mv apps/admin/Dockerfile Dockerfile
-          mv apps/admin/.env.ebstalk .env.ebstalk
 
       - name: Build and Push Docker image
         id: docker_build_push
@@ -222,6 +221,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           app_name: admin
+          stack: stg-scoutgameadmin
 
   discord-alert:
     name: Notify Discord of failure
