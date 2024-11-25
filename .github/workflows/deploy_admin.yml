@@ -1,4 +1,4 @@
-name: Scoutgame Scout Game Admin CI
+name: Admin CI
 
 on:
   push:
@@ -35,7 +35,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build Scout Game Admin
+    name: Build Admin
     runs-on: ubuntu-latest
     outputs:
       head_commit_message: ${{ steps.setup_variables.outputs.commit_message }}
@@ -136,10 +136,9 @@ jobs:
         with:
           app_name: admin
 
-      - name: Move config files to top level
+      - name: Move Dockerfile to top level
         run: |
           mv apps/admin/Dockerfile Dockerfile
-          mv apps/admin/.env.ebstalk .env.ebstalk
 
       - name: Build and Push Docker image
         id: docker_build_push
@@ -149,7 +148,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         with:
-          ecr_registry: admin
+          ecr_registry: scoutgameadmin
 
   upload-static-assets:
     name: Upload assets in production
@@ -191,47 +190,18 @@ jobs:
     if: github.ref == 'refs/heads/main' && !(failure() || cancelled())
     needs: [test, upload-docker, upload-static-assets]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - stack: prd-scoutgameadmin
-            ebextensions: admin
+    # prevent staging deploys + cleanup running in parallel
+    concurrency: staging-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4.x
-        with:
-          short-length: 7
 
-      # we need to bring back node_modules which includes tsconfig-paths which is used by CDK files
-      - name: Install dependencies
-        uses: ./.github/actions/install
+      - uses: ./.github/actions/deploy_staging
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
           app_name: admin
-
-      - name: Set the docker compose env variables
-        uses: mikefarah/yq@master
-        with:
-          cmd: |
-            mv .ebextensions .ebextensions_tmp && mv .ebextensions_tmp/${{ matrix.ebextensions }} .ebextensions
-            yq -I 4 -i '
-              with(.option_settings."aws:elasticbeanstalk:application:environment";
-                    .IMGTAG = "${{ github.run_id }}-${{ env.GITHUB_SHA_SHORT }}")
-              ' .ebextensions/00_env_vars.config
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Package and deploy
-        run: |
-          cat files_to_zip.txt | zip --symlinks -r@ ${{ matrix.stack }}.zip
-          npx aws-cdk deploy --method=direct -c name=${{ matrix.stack }}
+          stack: prd-scoutgameadmin
 
   deploy-staging:
     name: Deploy to staging
@@ -251,6 +221,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           app_name: admin
+          stack: stg-scoutgameadmin
 
   discord-alert:
     name: Notify Discord of failure

@@ -76,6 +76,7 @@
     "react": "^18.3.1",
     "react-hook-form": "^7.53.2",
     "sass": "^1.81.0",
+    "sharp": "^0.33.5",
     "swr": "^2.2.5",
     "uuid": "^11.0.3",
     "viem": "^2.21.50",
@@ -87,7 +88,8 @@
     "@next/eslint-plugin-next": "^14.2.15",
     "@playwright/test": "^1.47.1",
     "@stylistic/eslint-plugin-ts": "^2.9.0",
-    "@swc/jest": "^0.2.36",
+    "@swc/core": "^1.9.3",
+    "@swc/jest": "^0.2.37",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -96,6 +98,8 @@
     "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^8.0.11",
     "@types/koa-router": "^7.4.8",
+    "@types/lodash": "^4.17.13",
+    "@types/luxon": "^3.4.2",
     "@typescript-eslint/parser": "^8.9.0",
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
@@ -119,6 +123,7 @@
     "node-mocks-http": "^1.14.1",
     "playwright": "^1.47.1",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   }
 }
