@@ -194,7 +194,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - stack: prd-admin
+          - stack: prd-scoutgameadmin
             ebextensions: admin
     steps:
       - uses: actions/checkout@v4
