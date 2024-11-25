@@ -1,6 +1,6 @@
 docker-compose.yml
 .ebextensions
 .platform
-.ebstalk.apps.env
+.env.ebstalk
 Dockerfile
 cron.yaml

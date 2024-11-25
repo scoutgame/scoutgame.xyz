@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { syncProposalPermissionsWithWorkflowPermissions } from '@root/lib/proposals/workflows/syncProposalPermissionsWithWorkflowPermissions';
-import { prettyPrint } from 'lib/utils/strings';
+import { prettyPrint } from '@packages/utils/strings';
 import { DateTime } from 'luxon';
 
 import { getCommitsByUser } from '@packages/github/getCommitsByUser';

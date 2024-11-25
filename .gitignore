@@ -5,12 +5,6 @@ jspm_packages
 
 /prisma
 
-# Serverless directories
-.serverless
-.build
-serverless/schema.prisma
-serverless/*.node
-
 # next.js
 .next/
 dist/
@@ -20,9 +14,6 @@ dist/
 /apps/scoutgame/public/swe-worker*
 /apps/scoutgame/public/builder-nfts
 /apps/scoutgametelegram/public/builder-nfts
-
-# Tests
-/__e2e-dist__/
 
 # production
 *.zip
@@ -35,15 +26,8 @@ playwright-report
 *.env*
 !.env.*.example
 # the following two lines are required to include .env files for deployment
-!.ebstalk.apps.env/
-!.ebstalk.apps.env/*.env
+!.env.ebstalk
 *.tsbuildinfo
-
-./pages/api/script/*
-
-__pycache__
-
-scripts/exportData/exports
 
 jsonoutputs
 exported-knowledge

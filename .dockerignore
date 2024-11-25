@@ -1,13 +1,9 @@
 .dockerignore
 .env*
-.ebstalk.app.env/*
 .github
 .gitignore
-.ebextensions/*
 .cdk
 .vscode
-__e2e__
-__integration-tests__
 cdk.json
 docker-compose.yml
 Dockerfile

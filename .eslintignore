@@ -1,5 +1,3 @@
 scripts/
 dist/
 .next/
-
-apps/ceramic/src/generated/

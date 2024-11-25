@@ -4,7 +4,7 @@ You will need to have ts-node and dotenv installed globally.
 
 ```
 $ npm i -g ts-node dotenv-cli
-$ dotenv -e .env.local -- ts-node scripts/<myscript>.ts
+$ dotenv -e .env.local -- tsx scripts/<myscript>.ts
 
 ```
 
