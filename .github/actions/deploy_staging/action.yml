@@ -41,15 +41,13 @@ runs:
       # Note: "2>/dev/null || :" is a bash idiom that means "if the previous command fails, do nothing"
       run: |
         cp apps/${{ inputs.app_name }}/.env.ebstalk .env.ebstalk
+        cp apps/${{ inputs.app_name }}/.ebextensions .ebextensions
         cp apps/${{ inputs.app_name }}/cron.yml cron.yaml 2>/dev/null || :
 
     - name: Replace env_var with staging settings
       shell: bash
       run: |
-        ebextension_files=$(ls apps/*/.ebextensions/00_env_vars.config)
-        ebstalk_apps_env_files=$(ls apps/*/.env.ebstalk)
-
-        for conf_file in $ebextension_files $ebstalk_apps_env_files; do
+        for conf_file in .ebextensions/00_env_vars.config .env.ebstalk; do
           sed -i 's/prd/stg/g' $conf_file
           sed -i 's/production/staging/g' $conf_file
         done
@@ -57,17 +55,15 @@ runs:
         # modifying cloudformation alarm to send alerts to test sns topic.
         #  leaving it in even if we're deleting the config before deploying
         #  Useful to avoid accidental triggering to system-status channel.
-        for conf_file in apps/*/.ebextensions/06_cloudwatch_alarm.config; do
-          sed -i 's/Production-Alerts/lambda-test-debug/g' $conf_file
-        done
+        # sed -i 's/Production-Alerts/lambda-test-debug/g' .ebextensions/06_cloudwatch_alarm.config
 
-        rm apps/*/.ebextensions/06_cloudwatch_alarm.config
+        rm .ebextensions/06_cloudwatch_alarm.config
 
     - name: Calculate Build ID
       shell: bash
       run: |
         build_id=${{ hashFiles(format('apps/{0}/*.ts', inputs.app_name), format('apps/{0}/*.tsx', inputs.app_name)) }}
-        echo $'\nREACT_APP_BUILD_ID='$build_id >> apps/${{ inputs.app_name }}/.ebstalk.env
+        echo $'\nREACT_APP_BUILD_ID='$build_id >> .env.ebstalk
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -80,7 +76,6 @@ runs:
       uses: mikefarah/yq@master
       with:
         cmd: |
-          mv apps/${{ inputs.app_name }}/.ebextensions .ebextensions
           yq -I 4 -i '
             with(.option_settings."aws:elasticbeanstalk:application:environment";
                   .COMPOSE_PROJECT_NAME = "pr${{ github.event.number }}" |
