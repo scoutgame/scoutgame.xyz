@@ -1,1 +1,0 @@
-export { WalletSelector } from './WalletSelectorModal';
