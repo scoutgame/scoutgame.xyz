@@ -1,7 +1,8 @@
 import type { ConnectWaitlistSlot, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { FarcasterUser } from '@root/lib/farcaster/getFarcasterUsers';
-import { getFarcasterUsers } from '@root/lib/farcaster/getFarcasterUsers';
+import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
+import { getFarcasterUserByUsername } from '@packages/farcaster/getFarcasterUserByUsername';
+import type { FarcasterUser } from '@packages/farcaster/interfaces';
 
 import { getNumberFromString } from './getUsers';
 
@@ -36,9 +37,9 @@ export async function searchForUser({ searchString }: { searchString: string }):
     if (waitlistUser) {
       return { waitlistUser };
     }
-    const farcasterUser = await getFarcasterUsers({ fids: [userFid] });
-    if (farcasterUser[0]) {
-      return { farcasterUser: farcasterUser[0] };
+    const farcasterUser = await getFarcasterUserById(userFid);
+    if (farcasterUser) {
+      return { farcasterUser };
     }
   }
   // check for scout by path
@@ -77,9 +78,9 @@ export async function searchForUser({ searchString }: { searchString: string }):
   if (waitlistUser) {
     return { waitlistUser };
   }
-  const farcasterUsers = await getFarcasterUsers({ username: searchString });
-  if (farcasterUsers[0]) {
-    return { farcasterUser: farcasterUsers[0] };
+  const farcasterUser = await getFarcasterUserByUsername(searchString);
+  if (farcasterUser) {
+    return { farcasterUser };
   }
 
   return null;
