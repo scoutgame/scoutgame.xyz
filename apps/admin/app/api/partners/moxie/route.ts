@@ -1,27 +1,29 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
 import { airstackRequest } from '@packages/scoutgame/moxie/airstackRequest';
-import { getMoxieFanToken } from '@packages/scoutgame/moxie/getMoxieFanToken';
 import { uniq } from 'lodash';
-
-import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
+import { v4 } from 'uuid';
 
 export const dynamic = 'force-dynamic';
-
-type MoxieBonusRow = {
-  'Builder FID': number;
-  'Builder path': string;
-  'Builder event': string;
-  'Scout FID': number;
-  'Scout email': string;
-  'Scout path': string;
-};
 
 export async function GET() {
   const lastWeek = getLastWeek();
   const builders = await prisma.scout.findMany({
     where: {
-      builderStatus: 'approved'
+      builderStatus: 'approved',
+      farcasterId: {
+        not: null
+      },
+      hasMoxieProfile: true,
+      userWeeklyStats: {
+        some: {
+          week: lastWeek,
+          gemsCollected: {
+            gt: 0
+          }
+        }
+      }
     },
     orderBy: {
       farcasterId: 'asc'
@@ -29,14 +31,6 @@ export async function GET() {
     select: {
       farcasterId: true,
       path: true,
-      events: {
-        where: {
-          type: {
-            in: ['merged_pull_request', 'daily_commit']
-          },
-          week: lastWeek
-        }
-      },
       builderNfts: {
         where: {
           season: currentSeason
@@ -47,7 +41,7 @@ export async function GET() {
               scout: {
                 select: {
                   farcasterId: true,
-                  path: true
+                  id: true
                 }
               }
             }
@@ -56,48 +50,65 @@ export async function GET() {
       }
     }
   });
-  const rows: MoxieBonusRow[] = [];
+  const scoutMoxieAmounts: Record<
+    number,
+    {
+      fid: number;
+      amount: number;
+    }
+  > = {};
 
   await Promise.all(
     builders.map(async (builder) => {
-      if (builder.farcasterId && builder.events.length > 0) {
-        // TODO: record moxie fan token data so we dont have to look it up again
-        const moxieNft = await getMoxieFanToken(builder.farcasterId);
-        if (moxieNft) {
-          const scoutFids = builder.builderNfts
-            .map((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId))
-            .flat()
-            .filter(Boolean);
-          for (const scoutFid of uniq(scoutFids)) {
-            const fanTokenAmount = await getMoxieFanTokenAmount({
-              builderFid: builder.farcasterId,
-              scoutFid: scoutFid!
-            });
-            const scout = await prisma.scout.findUnique({
-              where: {
-                farcasterId: scoutFid!
-              }
-            });
-            if (fanTokenAmount && scout) {
-              // console.log('found scout with fan token', builder.farcasterId, scoutFid, fanTokenAmount);
-              rows.push({
-                'Scout FID': scoutFid!,
-                'Scout email': scout.email || '',
-                'Scout path': scout.path!,
-                'Builder FID': builder.farcasterId,
-                'Builder path': builder.path!,
-                'Builder event':
-                  (builder.events[0]!.type === 'merged_pull_request' ? `PR on ` : `Commit on `) +
-                  builder.events[0]!.createdAt.toDateString()
-              });
-            }
+      const builderFid = builder.farcasterId as number;
+      const scoutsFids = builder.builderNfts
+        .map((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId))
+        .flat()
+        .filter((scout) => scout) as number[];
+
+      for (const scoutFid of uniq(scoutsFids)) {
+        const fanTokenAmount = await getMoxieFanTokenAmount({
+          builderFid,
+          scoutFid
+        });
+        if (fanTokenAmount) {
+          if (!scoutMoxieAmounts[scoutFid]) {
+            scoutMoxieAmounts[scoutFid] = {
+              fid: scoutFid,
+              amount: 0
+            };
           }
+          scoutMoxieAmounts[scoutFid].amount += 1;
         }
       }
     })
   );
 
-  return respondWithTSV(rows, `partners-export_moxie_${lastWeek}.tsv`);
+  if (Object.values(scoutMoxieAmounts).length === 0) {
+    return new Response('No moxie amounts found', { status: 204 });
+  }
+
+  try {
+    await fetch(`https://rewards.moxie.xyz/partners/${process.env.MOXIE_PARTNER_ID}/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.MOXIE_API_KEY}`
+      },
+      body: JSON.stringify({
+        id: v4(),
+        timestamp: new Date().toISOString(),
+        data: Object.values(scoutMoxieAmounts).map(({ fid, amount }) => ({
+          fid,
+          amount: amount * 2000
+        }))
+      })
+    });
+  } catch (e) {
+    log.error('Error posting to moxie', { error: e });
+  }
+
+  return new Response('Success', { status: 200 });
 }
 
 export async function getMoxieFanTokenAmount({
