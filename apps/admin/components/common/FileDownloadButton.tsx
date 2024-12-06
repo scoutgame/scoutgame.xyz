@@ -17,7 +17,7 @@ export function FileDownloadButton({
   filename: string;
   onComplete?: () => void;
 } & ButtonProps) {
-  const { trigger, isMutating, error } = useGETtrigger<undefined, string>(src);
+  const { trigger, isMutating } = useGETtrigger<undefined, string>(src);
   async function onClick() {
     const response = await trigger();
     const url = window.URL.createObjectURL(new Blob([response], { type: 'text/tsv' }));

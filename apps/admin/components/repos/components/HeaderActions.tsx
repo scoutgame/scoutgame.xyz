@@ -1,8 +1,10 @@
 'use client';
 
 import { ArrowDropDown as ArrowDropDownIcon, Add as AddIcon } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import { Box, Divider, Menu, MenuItem, Stack, Button } from '@mui/material';
 import { getLastWeek, getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/scoutgame/dates';
+import { useGETtrigger } from '@packages/scoutgame-ui/hooks/helpers';
 import React, { useState } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
@@ -15,6 +17,8 @@ export function HeaderActions() {
   function closeMenu() {
     setAnchorEl(null);
   }
+  const { trigger: sendMoxieTokens, isMutating } = useGETtrigger('/api/partners/moxie');
+
   const lastWeek = getWeekStartEndFormatted(getDateFromISOWeek(getLastWeek()).toJSDate());
   return (
     <Stack gap={2} direction='row'>
@@ -97,15 +101,15 @@ export function HeaderActions() {
           </FileDownloadButton>
         </MenuItem>
         <MenuItem>
-          <FileDownloadButton
+          <LoadingButton
+            loading={isMutating}
+            onClick={sendMoxieTokens}
             fullWidth
-            sx={{ justifyContent: 'flex-start' }}
             size='small'
-            filename={`Moxie Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/moxie'
+            sx={{ justifyContent: 'flex-start' }}
           >
-            Moxie
-          </FileDownloadButton>
+            Send Moxie Tokens
+          </LoadingButton>
         </MenuItem>
         <MenuItem>
           <FileDownloadButton
