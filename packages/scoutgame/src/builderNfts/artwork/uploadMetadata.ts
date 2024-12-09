@@ -1,15 +1,16 @@
+import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
+
+import { getBuilderStarterPackContractAddress } from '../constants';
+
+import { builderNftArtworkContractName } from './constants';
+import { getNftTokenUrlPath, imageDomain } from './utils';
+
 /**
  * OpenSea Metadata Specification Type
  * Represents the metadata schema used for OpenSea items.
  *
  * @docs https://docs.opensea.io/docs/metadata-standards
  */
-import type { PutObjectCommandInput, S3ClientConfig } from '@aws-sdk/client-s3';
-import { S3Client } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
-
-import { getNftTokenUrlPath, imageDomain } from './utils';
-
 type OpenSeaMetadata = {
   /**
    * URL to the image of the item.
@@ -80,22 +81,6 @@ type OpenSeaMetadata = {
   youtube_url?: string;
 };
 
-function getS3ClientConfig() {
-  const config: Pick<S3ClientConfig, 'region' | 'credentials'> = {
-    region: process.env.S3_UPLOAD_REGION
-  };
-
-  if (process.env.S3_UPLOAD_KEY && process.env.S3_UPLOAD_SECRET) {
-    config.credentials = {
-      accessKeyId: process.env.S3_UPLOAD_KEY as string,
-      secretAccessKey: process.env.S3_UPLOAD_SECRET as string
-    };
-  }
-  return config;
-}
-
-const client = new S3Client(getS3ClientConfig());
-
 /**
  * Uploads OpenSea metadata to S3.
  *
@@ -114,43 +99,46 @@ export async function uploadMetadata({
   path,
   season,
   tokenId,
-  attributes
+  attributes,
+  starterPack
 }: {
   path: string;
   season: string;
   tokenId: bigint | number;
   attributes?: { trait_type: string; value: string | number }[];
+  starterPack?: boolean;
 }): Promise<string> {
   // Define the S3 path for metadata
-  const metadataPath = getNftTokenUrlPath({ season, tokenId: Number(tokenId), filename: 'metadata.json' });
+  const metadataPath = getNftTokenUrlPath({
+    season,
+    tokenId: Number(tokenId),
+    filename: starterPack ? 'starter-pack-metadata.json' : 'metadata.json',
+    contractName: starterPack ? getBuilderStarterPackContractAddress() : builderNftArtworkContractName
+  });
 
   // Generate the metadata object
   const metadata: OpenSeaMetadata = {
     name: `ScoutGame Builders NFT #${tokenId}`,
     description: '',
     external_url: `${process.env.DOMAIN}/u/${path}`,
-    image: `${imageDomain}/${getNftTokenUrlPath({ season, tokenId: Number(tokenId), filename: 'artwork.png' })}`,
+    image: `${imageDomain}/${getNftTokenUrlPath({
+      season,
+      tokenId: Number(tokenId),
+      filename: starterPack ? 'starter-pack-artwork.png' : 'artwork.png',
+      contractName: starterPack ? getBuilderStarterPackContractAddress() : builderNftArtworkContractName
+    })}`,
     attributes: attributes || []
   };
 
   // Convert metadata to JSON buffer
   const metadataBuffer = Buffer.from(JSON.stringify(metadata));
 
-  // Set up the S3 upload parameters
-  const params: PutObjectCommandInput = {
-    ACL: 'public-read',
-    Bucket: process.env.SCOUTGAME_S3_BUCKET,
-    Key: `nft/${metadataPath}`,
-    Body: metadataBuffer,
-    ContentType: 'application/json'
-  };
-
-  const s3Upload = new Upload({
-    client,
-    params
+  await uploadFileToS3({
+    pathInS3: `nft/${metadataPath}`,
+    bucket: process.env.SCOUTGAME_S3_BUCKET,
+    content: metadataBuffer,
+    contentType: 'application/json'
   });
-
-  await s3Upload.done();
 
   return `${imageDomain}/${metadataPath}`;
 }
