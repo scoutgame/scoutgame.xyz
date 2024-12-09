@@ -29,6 +29,7 @@ export async function GET() {
       farcasterId: 'asc'
     },
     select: {
+      id: true,
       farcasterId: true,
       path: true,
       builderNfts: {
@@ -50,13 +51,38 @@ export async function GET() {
       }
     }
   });
+
+  if (builders.length === 0) {
+    log.info('No builders found', { lastWeek, currentSeason });
+    return new Response('No builders found', { status: 204 });
+  }
+
   const scoutMoxieAmounts: Record<
     number,
     {
       fid: number;
+      userId: string;
       amount: number;
     }
   > = {};
+
+  const moxiePartnerRewardEvents = await prisma.partnerRewardEvent.findMany({
+    where: {
+      week: lastWeek,
+      partner: 'moxie',
+      season: currentSeason
+    },
+    select: {
+      user: {
+        select: {
+          farcasterId: true,
+          id: true
+        }
+      }
+    }
+  });
+
+  const moxiePartnerRewardEventUserFids = moxiePartnerRewardEvents.map((e) => e.user.farcasterId);
 
   await Promise.all(
     builders.map(async (builder) => {
@@ -64,7 +90,7 @@ export async function GET() {
       const scoutsFids = builder.builderNfts
         .map((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId))
         .flat()
-        .filter((scout) => scout) as number[];
+        .filter((scoutFid) => scoutFid && !moxiePartnerRewardEventUserFids.includes(scoutFid)) as number[];
 
       for (const scoutFid of uniq(scoutsFids)) {
         const fanTokenAmount = await getMoxieFanTokenAmount({
@@ -75,7 +101,8 @@ export async function GET() {
           if (!scoutMoxieAmounts[scoutFid]) {
             scoutMoxieAmounts[scoutFid] = {
               fid: scoutFid,
-              amount: 0
+              amount: 0,
+              userId: builder.id
             };
           }
           scoutMoxieAmounts[scoutFid].amount += 1;
@@ -85,6 +112,7 @@ export async function GET() {
   );
 
   if (Object.values(scoutMoxieAmounts).length === 0) {
+    log.info('No moxie amounts found', { lastWeek, currentSeason });
     return new Response('No moxie amounts found', { status: 204 });
   }
 
@@ -104,6 +132,21 @@ export async function GET() {
         }))
       })
     });
+    await Promise.all(
+      Object.values(scoutMoxieAmounts).map(async ({ userId, amount }) => {
+        await prisma.partnerRewardEvent.create({
+          data: {
+            reward: {
+              amount: amount * 2000
+            },
+            week: lastWeek,
+            partner: 'moxie',
+            season: currentSeason,
+            userId
+          }
+        });
+      })
+    );
   } catch (e) {
     log.error('Error posting to moxie', { error: e });
   }
