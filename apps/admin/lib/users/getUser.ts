@@ -10,8 +10,8 @@ export async function getUser(userId: string): Promise<UserResult | null> {
       id: userId
     },
     include: {
-      githubUser: true
+      githubUsers: true
     }
   });
-  return user ? { ...user, githubLogin: user?.githubUser[0]?.login } : null;
+  return user ? { ...user, githubLogin: user?.githubUsers[0]?.login } : null;
 }

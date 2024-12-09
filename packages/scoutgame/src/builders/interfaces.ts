@@ -1,4 +1,4 @@
-import type { BuilderStatus } from '@charmverse/core/prisma';
+import type { BuilderNftType, BuilderStatus } from '@charmverse/core/prisma';
 
 import type { BasicUserInfo } from '../users/interfaces';
 
@@ -22,7 +22,12 @@ export type BuilderMetrics = {
 
 export type BuilderInfo = BasicUserInfo &
   BuilderMetrics & {
-    builderStatus: BuilderStatus;
+    nftType: BuilderNftType;
+    builderStatus: BuilderStatus | null;
+    farcasterId?: number | null;
     nftImageUrl?: string | null;
+    congratsImageUrl: string | null;
     nftsSoldToScout?: number;
   };
+
+export type Last7DaysGems = { date: string; gemsCount: number }[];

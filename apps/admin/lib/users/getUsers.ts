@@ -81,7 +81,7 @@ export async function getUsers({
                   }
                 },
                 {
-                  githubUser: {
+                  githubUsers: {
                     some: {
                       login: {
                         search: `*${searchString}:*`,
@@ -100,16 +100,16 @@ export async function getUsers({
             }
           : { builderStatus },
     include: {
-      githubUser: true,
+      githubUsers: true,
       userSeasonStats: true,
-      scoutWallet: true
+      wallets: true
     }
   });
-  return users.map(({ githubUser, userSeasonStats, scoutWallet, ...user }) => ({
+  return users.map(({ githubUsers, userSeasonStats, wallets, ...user }) => ({
     ...user,
-    githubLogin: githubUser[0]?.login || null,
+    githubLogin: githubUsers[0]?.login || null,
     nftsPurchased: userSeasonStats.find(({ season }) => season === '2024-W41')?.nftsPurchased || 0,
-    wallets: scoutWallet.map((wallet) => wallet.address)
+    wallets: wallets.map((wallet) => wallet.address)
   }));
 }
 
