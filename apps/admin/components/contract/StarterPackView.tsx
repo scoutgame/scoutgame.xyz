@@ -100,6 +100,17 @@ export function StarterPackView(data: StarterPackNFTContractData) {
           {Number(data.nftSalesData.nftsPaidWithCrypto).toLocaleString('en-US')}
         </Typography>
       </Grid2>
+      <GridDivider />
+      <Grid2 size={12}>
+        <SectionTitle title='Roles & Permissions' />
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
+        <ContractLink
+          address={data.currentMinter}
+          title='Minter'
+          subtitle='Minter wallet can register new builder nfts and mint tokens to any address.'
+        />
+      </Grid2>
     </Grid2>
   );
 }
