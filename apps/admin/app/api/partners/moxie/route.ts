@@ -57,20 +57,14 @@ export async function GET() {
     return new Response('No builders found', { status: 204 });
   }
 
-  const scoutMoxieAmounts: Record<
-    number,
-    {
-      fid: number;
-      userId: string;
-      amount: number;
-    }
-  > = {};
-
   const moxiePartnerRewardEvents = await prisma.partnerRewardEvent.findMany({
     where: {
       week: lastWeek,
       partner: 'moxie',
       season: currentSeason
+    },
+    orderBy: {
+      userId: 'asc'
     },
     select: {
       user: {
@@ -83,6 +77,14 @@ export async function GET() {
   });
 
   const moxiePartnerRewardEventUserFids = moxiePartnerRewardEvents.map((e) => e.user.farcasterId);
+  const scoutMoxieAmounts: Record<
+    number,
+    {
+      fid: number;
+      userId: string;
+      amount: number;
+    }
+  > = {};
 
   await Promise.all(
     builders.map(async (builder) => {
@@ -132,21 +134,18 @@ export async function GET() {
         }))
       })
     });
-    await Promise.all(
-      Object.values(scoutMoxieAmounts).map(async ({ userId, amount }) => {
-        await prisma.partnerRewardEvent.create({
-          data: {
-            reward: {
-              amount: amount * 2000
-            },
-            week: lastWeek,
-            partner: 'moxie',
-            season: currentSeason,
-            userId
-          }
-        });
-      })
-    );
+
+    await prisma.partnerRewardEvent.createMany({
+      data: Object.values(scoutMoxieAmounts).map(({ userId, amount }) => ({
+        reward: {
+          amount: amount * 2000
+        },
+        week: lastWeek,
+        partner: 'moxie',
+        season: currentSeason,
+        userId
+      }))
+    });
   } catch (e) {
     log.error('Error posting to moxie', { error: e });
   }
