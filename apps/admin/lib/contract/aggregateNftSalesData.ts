@@ -8,11 +8,18 @@ export type NftSalesData = {
   mintEvents: number;
 };
 
-export async function aggregateNftSalesData(): Promise<NftSalesData> {
+export async function aggregateNftSalesData({
+  nftType
+}: {
+  nftType: 'default' | 'starter_pack';
+}): Promise<NftSalesData> {
   const nftsPaidWithPoints = await prisma.nFTPurchaseEvent
     .aggregate({
       where: {
-        paidInPoints: true
+        paidInPoints: true,
+        builderNft: {
+          nftType
+        }
       },
       _sum: {
         tokensPurchased: true
@@ -25,6 +32,9 @@ export async function aggregateNftSalesData(): Promise<NftSalesData> {
       where: {
         paidInPoints: {
           not: true
+        },
+        builderNft: {
+          nftType
         }
       },
       _sum: {
@@ -35,6 +45,11 @@ export async function aggregateNftSalesData(): Promise<NftSalesData> {
 
   const uniqueScoutIds = await prisma.nFTPurchaseEvent
     .findMany({
+      where: {
+        builderNft: {
+          nftType
+        }
+      },
       distinct: ['scoutId'],
       select: {
         scoutId: true
