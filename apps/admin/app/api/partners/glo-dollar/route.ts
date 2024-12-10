@@ -54,6 +54,7 @@ export async function GET() {
         wallet: scout.wallets[0].address
       };
     })
+    .filter((scout) => scout.purchaseCount >= 5)
     .sort((a, b) => b.purchaseCount - a.purchaseCount);
 
   const rows = sortedScouts.map(({ displayName, path, wallet, purchaseCount }) => ({
