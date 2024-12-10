@@ -100,7 +100,7 @@ export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
       </LoadingButton>
       {hasErrored && (
         <Typography variant='body2' sx={{ mt: 2 }} color='error'>
-          {result?.serverError?.message}
+          {result?.serverError}
         </Typography>
       )}
       <FarcasterLoginModal open={popupState.isOpen} onClose={() => popupState.close()} url={url} />

@@ -48,11 +48,11 @@ export async function searchForUser({ searchString }: { searchString: string }):
       path: searchString
     },
     include: {
-      githubUser: true
+      githubUsers: true
     }
   });
   if (user) {
-    return { scout: { ...user, githubLogin: user.githubUser[0]?.login } };
+    return { scout: { ...user, githubLogin: user.githubUsers[0]?.login } };
   }
   // check for scout by name
   const userByName = await prisma.scout.findFirst({
@@ -63,11 +63,11 @@ export async function searchForUser({ searchString }: { searchString: string }):
       }
     },
     include: {
-      githubUser: true
+      githubUsers: true
     }
   });
   if (userByName) {
-    return { scout: { ...userByName, githubLogin: userByName.githubUser[0]?.login } };
+    return { scout: { ...userByName, githubLogin: userByName.githubUsers[0]?.login } };
   }
   // check for waitlist by github login or farcaster username
   const waitlistUser = await prisma.connectWaitlistSlot.findFirst({

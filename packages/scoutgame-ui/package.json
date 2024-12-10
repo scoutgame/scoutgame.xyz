@@ -27,6 +27,7 @@
     "@rainbow-me/rainbowkit": "^2.2.0",
     "puppeteer": "^23.8.0",
     "qrcode": "^1.5.4",
+    "react-dom": "^19.0.0",
     "swiper": "^11.1.14"
   },
   "devDependencies": {

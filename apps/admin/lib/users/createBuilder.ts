@@ -13,10 +13,10 @@ export async function createBuilder(params: CreateBuilderParams) {
       id: params.userId
     },
     include: {
-      githubUser: true
+      githubUsers: true
     }
   });
-  if (!scout.githubUser && !params.githubLogin) {
+  if (!scout.githubUsers[0] && !params.githubLogin) {
     throw new Error('Github login is required');
   }
   if (params.githubLogin) {

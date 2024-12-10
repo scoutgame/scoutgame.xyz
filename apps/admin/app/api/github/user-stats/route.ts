@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     const builderStrikes = await prisma.builderStrike.findMany({
       where: {
         builder: {
-          githubUser: {
+          githubUsers: {
             some: {
               login
             }
