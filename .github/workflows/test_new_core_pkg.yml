@@ -56,7 +56,7 @@ jobs:
       matrix:
         include:
           - test_name: 'Typecheck scoutgame admin'
-            test_command: 'npm run typecheck -w apps/scoutgameadmin'
+            test_command: 'npm run typecheck -w apps/admin'
 
     steps:
       - uses: actions/checkout@v4
