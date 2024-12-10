@@ -49,7 +49,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['npm', 'run', 'scoutgamecron:prod']
+    command: ['npm', 'run', 'cron:prod']
     profiles:
       - prd-scoutgamecron
 
@@ -58,7 +58,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['npm', 'run', 'scoutgamecron:staging']
+    command: ['npm', 'run', 'cron:staging']
     environment:
       - REACT_APP_APP_ENV=staging
     profiles:
@@ -93,7 +93,7 @@ services:
       [
         'sh',
         '-c',
-        'npx react-env --path .env --dest ./apps/scoutgametelegram/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/scoutgametelegram --keepAliveTimeout 70000'
+        'npx react-env --path .env --dest ./apps/telegram/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/telegram --keepAliveTimeout 70000'
       ]
     profiles:
       - prd-scoutgametelegram
@@ -107,7 +107,7 @@ services:
       [
         'sh',
         '-c',
-        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/scoutgametelegram/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start  apps/scoutgametelegram --keepAliveTimeout 70000'
+        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/telegram/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start  apps/scoutgametelegram --keepAliveTimeout 70000'
       ]
     environment:
       - REACT_APP_APP_ENV=staging

@@ -11,14 +11,13 @@ RUN apt install openssl -y
 WORKDIR /app
 
 # Copy dependencies
-COPY --parents @connect-shared   \
-  apps/*/package.json            \
+COPY --parents apps/*/package.json \
   packages/*/package.json        \
   node_modules                   \
   package.json                   \
-  apps/scoutgametelegram/node_modules    \
-  apps/scoutgametelegram/package.json    \
-  apps/scoutgametelegram/next.config.mjs \
+  apps/telegram/node_modules    \
+  apps/telegram/package.json    \
+  apps/telegram/next.config.mjs \
   .
 
 # Install Google Chrome Stable and fonts

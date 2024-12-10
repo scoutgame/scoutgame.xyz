@@ -11,14 +11,13 @@ RUN apt install openssl -y
 WORKDIR /app
 
 # Copy dependencies
-COPY --parents @connect-shared/package.json \
-  apps/*/package.json                       \
+COPY --parents apps/*/package.json          \
   packages/*/package.json                   \
   node_modules                              \
   package.json                              \
-  apps/scoutgamcron/node_modules            \
-  apps/scoutgamcron/package.json            \
-  apps/scoutgamcron/cron.yml                \
+  apps/cron/node_modules            \
+  apps/cron/package.json            \
+  apps/cron/cron.yml                \
   .
 
 # Copy compiled code
