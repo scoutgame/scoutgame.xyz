@@ -11,7 +11,12 @@ import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import type { MintNFTParams } from './mintNFT';
 
 export async function recordNftMint(
-  params: MintNFTParams & { createdAt?: Date; mintTxHash: string; skipMixpanel?: boolean; skipPriceRefresh?: boolean }
+  params: Omit<MintNFTParams, 'nftType'> & {
+    createdAt?: Date;
+    mintTxHash: string;
+    skipMixpanel?: boolean;
+    skipPriceRefresh?: boolean;
+  }
 ) {
   const {
     amount,
@@ -46,6 +51,7 @@ export async function recordNftMint(
       id: builderNftId
     },
     select: {
+      nftType: true,
       season: true,
       tokenId: true,
       builderId: true,
@@ -198,7 +204,8 @@ export async function recordNftMint(
       amount,
       paidWithPoints,
       builderPath: builderNft.builder.path!,
-      season: builderNft.season
+      season: builderNft.season,
+      nftType: builderNft.nftType
     });
   }
 

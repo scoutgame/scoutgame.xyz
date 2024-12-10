@@ -1,11 +1,10 @@
-import { prisma } from '@charmverse/core/prisma-client';
+import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 
 import { currentSeason, getCurrentWeek, getLastWeek } from '../dates';
 import { BasicUserInfoSelect } from '../users/queries';
 
 import type { BuilderInfo } from './interfaces';
-
-export type Last7DaysGems = { date: string; gemsCount: number }[];
+import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
 
 const userSelect = {
   ...BasicUserInfoSelect,
@@ -34,11 +33,13 @@ const userSelect = {
   },
   builderNfts: {
     where: {
-      season: currentSeason
+      season: currentSeason,
+      nftType: BuilderNftType.default
     },
     select: {
       currentPrice: true,
-      imageUrl: true
+      imageUrl: true,
+      congratsImageUrl: true
     }
   }
 };
@@ -48,6 +49,12 @@ export async function getTodaysHotBuilders(): Promise<BuilderInfo[]> {
     where: {
       user: {
         builderStatus: 'approved',
+        builderNfts: {
+          some: {
+            season: currentSeason,
+            nftType: BuilderNftType.default
+          }
+        },
         userWeeklyStats: {
           some: {
             week: getCurrentWeek(),
@@ -106,12 +113,12 @@ export async function getTodaysHotBuilders(): Promise<BuilderInfo[]> {
       builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
       price: builder.builderNfts[0]?.currentPrice ?? 0,
       nftImageUrl: builder.builderNfts[0]?.imageUrl,
+      congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl,
       nftsSold: builder.userSeasonStats[0]?.nftsSold || 0,
       builderStatus: builder.builderStatus!,
       rank: builder.userWeeklyStats[0]?.rank || -1,
-      last7DaysGems: ((builder.builderCardActivities[0]?.last7Days as unknown as Last7DaysGems) || [])
-        .map((gem) => gem.gemsCount)
-        .slice(-7)
+      last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+      nftType: BuilderNftType.default
     };
   });
 }

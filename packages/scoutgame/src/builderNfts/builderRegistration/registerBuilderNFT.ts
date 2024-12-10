@@ -1,12 +1,13 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
-import { prisma } from '@charmverse/core/prisma-client';
+import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 
-import { getBuilderContractMinterClient } from './clients/builderContractMinterWriteClient';
-import { builderNftChain } from './constants';
+import { getBuilderContractMinterClient } from '../clients/builderContractMinterWriteClient';
+import { builderNftChain } from '../constants';
+import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
+
 import { createBuilderNft } from './createBuilderNft';
-import { refreshBuilderNftPrice } from './refreshBuilderNftPrice';
 
 export async function registerBuilderNFT({
   builderId,
@@ -27,7 +28,8 @@ export async function registerBuilderNFT({
     where: {
       builderId,
       chainId: builderNftChain.id,
-      season
+      season,
+      nftType: BuilderNftType.default
     }
   });
 
@@ -42,7 +44,7 @@ export async function registerBuilderNFT({
       id: builderId
     },
     select: {
-      githubUser: true,
+      githubUsers: true,
       avatar: true,
       path: true,
       displayName: true,
@@ -50,7 +52,7 @@ export async function registerBuilderNFT({
     }
   });
 
-  if (!builder.githubUser) {
+  if (!builder.githubUsers[0]) {
     throw new InvalidInputError('Scout profile does not have a github user');
   }
 

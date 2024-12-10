@@ -40,7 +40,7 @@ export async function GET() {
             address: true
           }
         },
-        scoutWallet: {
+        wallets: {
           select: {
             address: true
           }
@@ -48,7 +48,7 @@ export async function GET() {
       }
     });
 
-    const { scoutWallet, farcasterId } = fullBuilder;
+    const { wallets, farcasterId } = fullBuilder;
 
     if (fullBuilder.talentProfile) {
       const talentProfile = fullBuilder.talentProfile;
@@ -61,10 +61,10 @@ export async function GET() {
         });
       }
     } else {
-      const wallets = scoutWallet.map((wallet) => wallet.address);
+      const addresses = wallets.map((wallet) => wallet.address);
       const talentProfile = await getTalentProfile({
         farcasterId,
-        wallets,
+        wallets: addresses,
         minimumTalentScore
       });
 

@@ -46,7 +46,7 @@ export async function createUser({ scout, waitlistUser, farcasterUser }: SearchU
         farcasterId: waitlistUser.fid,
         farcasterName: username,
         referralCode: randomString(),
-        githubUser: githubUserDB
+        githubUsers: githubUserDB
           ? { connect: { id: githubUserDB.id } }
           : githubUser
             ? {
