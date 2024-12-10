@@ -194,7 +194,7 @@ jobs:
                       -v "/home/runner/work/scoutgame.xyz/scoutgame.xyz":"/github/workspace" \
                       --network "host"  \
                       --ipc=host \
-                      mcr.microsoft.com/playwright:v1.47.1-jammy \
+                      mcr.microsoft.com/playwright:v1.49.0-jammy \
                       npm run scoutgame:e2e:ci -- -- --timeout=20000 --workers=2 || { echo $'\n👉 Here\'s the server output for debugging:\n' && cat server.log & exit 1; }
 
       # Upload reporst for Github Actions

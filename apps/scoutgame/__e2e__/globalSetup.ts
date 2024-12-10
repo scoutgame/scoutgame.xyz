@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { test as base, expect } from '@playwright/test';
 
 // Define a custom test fixture
