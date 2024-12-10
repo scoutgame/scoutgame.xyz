@@ -16,6 +16,7 @@ export type NftPurchaseEvent = BaseEvent & {
   builderPath: string;
   paidWithPoints: boolean;
   season: string;
+  nftType: string;
 };
 
 type FrontendEvent = BaseEvent & {
@@ -38,17 +39,29 @@ export type EventType =
   | 'click_share_on_warpcast'
   | 'click_share_on_twitter'
   | 'click_powered_by_charmverse'
-  | 'click_need_help';
+  | 'click_need_help'
+  | 'copy_referral_link'
+  | 'click_telegram_refer_friend_button';
 
 export type MixpanelEventMap = {
   sign_up: BaseEvent;
   sign_in: BaseEvent;
   nft_purchase: NftPurchaseEvent;
+  claim_points: BaseEvent;
+  daily_claim: BaseEvent;
+  daily_claim_streak: BaseEvent;
   connect_github_success: BaseEvent;
   click_scout_button: ClickScoutButton;
   click_moxie_promo: FrontendEvent;
   click_optimism_promo: FrontendEvent;
   page_view: FrontendEvent;
+  referral_link_used: BaseEvent & {
+    referralCode: string;
+    referrerPath: string;
+  };
+  complete_quest: BaseEvent & {
+    questType: string;
+  };
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

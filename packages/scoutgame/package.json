@@ -8,7 +8,7 @@
   },
   "exports": {
     "./*": "./src/*.ts",
-    "./builderNfts/artwork/generateNftImage": "./src/builderNfts/artwork/generateNftImage.tsx"
+    "./builderNfts/artwork/generateArtwork": "./src/builderNfts/artwork/generateArtwork.tsx"
   },
   "dependencies": {
     "@packages/aws": "^0.0.0",
@@ -16,7 +16,8 @@
     "@packages/farcaster": "^0.0.0",
     "@packages/github": "^0.0.0",
     "@packages/mixpanel": "^0.0.0",
-    "@packages/utils": "^1.0.0"
+    "@packages/utils": "^1.0.0",
+    "@twa-dev/sdk": "^8.0.1"
   },
   "optionalDependencies": {
     "sharp": "^0.33.5"

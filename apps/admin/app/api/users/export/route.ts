@@ -38,7 +38,7 @@ export async function GET() {
       farcasterId: true,
       farcasterName: true,
       currentBalance: true,
-      githubUser: true,
+      githubUsers: true,
       userSeasonStats: true,
       userWeeklyStats: true,
       builderNfts: {
@@ -59,7 +59,7 @@ export async function GET() {
     tokenId: user.builderNfts[0]?.tokenId || undefined,
     fid: user.farcasterId || undefined,
     farcasterName: user.farcasterName || undefined,
-    githubLogin: user.githubUser[0]?.login,
+    githubLogin: user.githubUsers[0]?.login,
     currentBalance: user.currentBalance,
     pointsEarnedAsScout: user.userSeasonStats[0]?.pointsEarnedAsScout || 0,
     pointsEarnedAsBuilder: user.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
