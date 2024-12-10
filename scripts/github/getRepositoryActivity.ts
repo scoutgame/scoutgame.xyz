@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { githubAccessToken } from '@root/config/constants';
+import { githubAccessToken } from '@packages/utils/constants';
 import { githubGrapghQLClient } from 'lib/github/githubGraphQLClient';
 import { uniq, uniqBy } from 'lodash';
 import { Octokit } from '@octokit/core';

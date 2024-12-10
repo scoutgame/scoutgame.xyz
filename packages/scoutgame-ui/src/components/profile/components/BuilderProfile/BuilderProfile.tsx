@@ -30,9 +30,10 @@ export async function BuilderProfile({
       ? await Promise.all([
           prisma.builderNft.findUnique({
             where: {
-              builderId_season: {
+              builderId_season_nftType: {
                 builderId: builder.id,
-                season: currentSeason
+                season: currentSeason,
+                nftType: 'default'
               }
             },
             select: {
@@ -51,7 +52,6 @@ export async function BuilderProfile({
       <Stack gap={2} alignItems='center'>
         <Typography>Connect your GitHub account to apply as a Builder.</Typography>
         <Suspense>
-          {/* TODO: Re-enable this once we have a way to connect GitHub accounts */}
           <JoinGithubButton />
         </Suspense>
       </Stack>

@@ -1,6 +1,6 @@
 'use client';
 
-import type { BuilderStatus } from '@charmverse/core/prisma';
+import type { BuilderNftType, BuilderStatus } from '@charmverse/core/prisma';
 import { Box, Paper, Stack, styled, Typography } from '@mui/material';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
@@ -19,9 +19,11 @@ import { PublicBuilderStats } from './PublicBuilderStats';
 
 export type BuilderProfileProps = {
   builder: BasicUserInfo & {
-    builderStatus: BuilderStatus;
+    builderStatus: BuilderStatus | null;
     price?: bigint;
     nftImageUrl?: string;
+    congratsImageUrl?: string;
+    nftType: BuilderNftType;
   };
   builderActivities: BuilderActivity[];
 } & BuilderStats &
@@ -55,7 +57,6 @@ export function PublicBuilderProfileContainer({
   rank
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
-
   return (
     <Box>
       <Stack
