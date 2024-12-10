@@ -1,4 +1,4 @@
-name: Scoutgame CI
+name: Scoutgame Webapp CI
 
 on:
   push:

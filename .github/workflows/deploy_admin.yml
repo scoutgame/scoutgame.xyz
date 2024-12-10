@@ -1,4 +1,4 @@
-name: Admin CI
+name: Scoutgame Admin CI
 
 on:
   push:
