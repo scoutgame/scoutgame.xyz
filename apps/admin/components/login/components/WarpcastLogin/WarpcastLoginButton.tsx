@@ -42,7 +42,7 @@ export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
       popupState.close();
     },
     onError(err) {
-      log.error('Error on login', { error: err.error.serverError?.message });
+      log.error('Error on login', { error: err.error.serverError?.message || err.error });
       popupState.close();
     }
   });
