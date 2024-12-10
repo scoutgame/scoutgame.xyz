@@ -3,17 +3,13 @@ import Link from 'next/link';
 
 import { WagmiProvider } from 'components/providers/wagmi/WagmiProvider';
 import type { BuilderNFTContractData } from 'lib/contract/getContractData';
+import type { StarterPackNFTContractData } from 'lib/contract/getStarterPackContractData';
 
 import { ProtocolContract } from './ProtocolContract';
-import { SeasonOneView } from './SeasonOneView';
+import { SeasonOne } from './SeasonOne';
+import { StarterPack } from './StarterPack';
 
-export function ContractDashboard({
-  seasonOne,
-  currentTab = 'seasonOne'
-}: {
-  seasonOne: BuilderNFTContractData;
-  currentTab?: string;
-}) {
+export function ContractDashboard({ currentTab = 'seasonOne' }: { currentTab?: string }) {
   return (
     <Container maxWidth='xl'>
       <Tabs value={currentTab}>
@@ -27,6 +23,14 @@ export function ContractDashboard({
         />
         <Tab
           component={Link}
+          value='starterPack'
+          label='Starter Pack'
+          href={{
+            query: { tab: 'starterPack' }
+          }}
+        />
+        <Tab
+          component={Link}
           value='protocol'
           label='Protocol (Testnet)'
           href={{
@@ -35,7 +39,8 @@ export function ContractDashboard({
         />
       </Tabs>
       <Box mt={2}>
-        {currentTab === 'seasonOne' && <SeasonOneView {...seasonOne} />}
+        {currentTab === 'seasonOne' && <SeasonOne />}
+        {currentTab === 'starterPack' && <StarterPack />}
         {currentTab === 'protocol' && (
           <WagmiProvider>
             <ProtocolContract />

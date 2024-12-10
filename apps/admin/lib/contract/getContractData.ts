@@ -30,7 +30,7 @@ export async function getContractData(): Promise<BuilderNFTContractData> {
       builderProxyContractReadonlyApiClient.implementation(),
       builderProxyContractReadonlyApiClient.getProceedsReceiver(),
       builderContractReadonlyApiClient.totalBuilderTokens(),
-      aggregateNftSalesData()
+      aggregateNftSalesData({ nftType: 'default' })
     ]);
 
   const balance = await new UsdcErc20ABIClient({
