@@ -13,6 +13,7 @@
     "seed": "tsx src/scripts/generateSeedData.ts"
   },
   "dependencies": {
+    "@koa/router": "^13.1.0",
     "@octokit/plugin-paginate-rest": "^11.3.5",
     "@octokit/plugin-throttling": "^9.3.1",
     "@packages/farcaster": "^0.0.0",
@@ -29,6 +30,7 @@
     "@react-email/render": "^1.0.3",
     "@react-email/section": "^0.0.16",
     "@react-email/text": "^0.0.11",
+    "koa": "^2.15.3",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
@@ -37,6 +39,8 @@
     "@packages/testing": "^1.0.0",
     "@swc/core": "^1.7.26",
     "@types/js-yaml": "^4.0.9",
+    "@types/koa": "^2.15.0",
+    "@types/koa__router": "^12.0.4",
     "@types/web-push": "^3.6.3",
     "js-yaml": "^4.1.0"
   }
