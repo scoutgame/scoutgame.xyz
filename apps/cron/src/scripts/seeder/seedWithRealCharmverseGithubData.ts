@@ -62,7 +62,7 @@ const devUsers: Record<string, DevUser> = {
 
 const repoOwner = 'charmverse';
 
-// Obtained from https://api.github.com/repos/charmverse/app.charmverse.io
+// Obtained from https://api.github.com/repos/scoutgame/scoutgame.xyz
 const repoId = 444649883;
 
 const repoName = 'app.charmverse.io';
@@ -110,7 +110,7 @@ export async function seedWithRealCharmverseGithubData() {
               path: builder + Math.random().toString().replace('.', '').slice(0, 6),
               builderStatus: 'approved',
               avatar,
-              farcasterId,
+              farcasterId
             }
           }
         }
@@ -128,7 +128,7 @@ export async function seedWithRealCharmverseGithubData() {
               path: builder,
               builderStatus: 'approved',
               avatar: avatar,
-              farcasterId: farcasterId,
+              farcasterId: farcasterId
             }
           }
         }
@@ -152,7 +152,7 @@ async function seedBuilderNFTs() {
     log.info(`-- Processing builder ${login}`);
     const nft = await registerBuilderNFT({ builderId: builderId as string, season: currentSeason });
 
-    if (devUsers[login].createStarterPack) {  
+    if (devUsers[login].createStarterPack) {
       await registerBuilderStarterPackNFT({ builderId: nft.builderId, season: currentSeason });
     }
 

@@ -191,7 +191,7 @@ jobs:
                       -v "/home/runner/work/_temp/_github_home":"/github/home" \
                       -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" \
                       -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" \
-                      -v "/home/runner/work/app.charmverse.io/app.charmverse.io":"/github/workspace" \
+                      -v "/home/runner/work/scoutgame.xyz/scoutgame.xyz":"/github/workspace" \
                       --network "host"  \
                       --ipc=host \
                       mcr.microsoft.com/playwright:v1.47.1-jammy \

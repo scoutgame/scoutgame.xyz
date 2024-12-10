@@ -1,5 +1,5 @@
 {
-  "name": "charmverse.io",
+  "name": "scout-game",
   "version": "0.0.0",
   "browserslist": [
     "defaults"
@@ -54,7 +54,6 @@
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
     "@charmverse/core": "^0.98.6-rc-deploy-admin.1",
-    "@datadog/browser-logs": "4.5",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",
