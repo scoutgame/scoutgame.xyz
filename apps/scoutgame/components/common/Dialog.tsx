@@ -1,5 +1,4 @@
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import type { SxProps } from '@mui/material';
 import { IconButton, Dialog as MuiDialog, DialogContent, DialogTitle } from '@mui/material';
 import type { DialogProps } from '@mui/material/Dialog';
 import type { ReactNode } from 'react';

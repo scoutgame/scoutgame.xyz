@@ -3,17 +3,20 @@
 import { log } from '@charmverse/core/log';
 import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
 import { useProfile } from '@farcaster/auth-kit';
-import { Stack, Button, Typography, Box } from '@mui/material';
+import { Stack, Button, Typography, Box, DialogContent, DialogTitle, Paper } from '@mui/material';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
 import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
+import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
+import { Dialog } from 'components/common/Dialog';
 import { FarcasterLoginModal } from 'components/common/WarpcastLogin/FarcasterModal';
 import { useFarcasterConnection } from 'hooks/useFarcasterConnection';
+import type { FarcasterConnectedUser } from 'lib/farcaster/connectFarcasterAccountAction';
 import { connectFarcasterAccountAction } from 'lib/farcaster/connectFarcasterAccountAction';
 
 export function FarcasterLoginButton({ user }: { user: SessionUser }) {
@@ -21,6 +24,7 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
   const { isAuthenticated } = useProfile();
   const { refreshUser } = useUser();
+  const [connectedUser, setConnectedUser] = useState<FarcasterConnectedUser | null>(null);
 
   const {
     executeAsync: connectFarcasterAccount,
@@ -32,8 +36,13 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
         return;
       }
 
-      await refreshUser();
-      await revalidatePath(null);
+      if (!data.connectedUser) {
+        await refreshUser();
+        await revalidatePath(null);
+      } else {
+        setConnectedUser(data.connectedUser);
+      }
+
       popupState.close();
     },
     onError(err) {
@@ -82,26 +91,50 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
         : null);
 
   return (
-    <Stack gap={1}>
-      <Typography variant='h5'>Warpcast</Typography>
-      {user.farcasterName ? (
-        <Typography variant='body1'>{user.farcasterName}</Typography>
-      ) : isAuthenticated && (isRevalidatingPath || isConnectingFarcasterAccount) ? (
-        <Box width='fit-content'>
-          <LoadingComponent size={30} label='Connecting Farcaster account...' />
-        </Box>
-      ) : (
-        <Button sx={{ width: 'fit-content' }} onClick={signIn}>
-          Connect
-        </Button>
-      )}
+    <>
+      <Stack gap={1}>
+        <Typography variant='h5'>Warpcast</Typography>
+        {user.farcasterName ? (
+          <Typography variant='body1'>{user.farcasterName}</Typography>
+        ) : isAuthenticated && (isRevalidatingPath || isConnectingFarcasterAccount) ? (
+          <Box width='fit-content'>
+            <LoadingComponent size={30} label='Connecting Farcaster account...' />
+          </Box>
+        ) : (
+          <Button sx={{ width: 'fit-content' }} onClick={signIn}>
+            Connect
+          </Button>
+        )}
 
-      {errorMessage && (
-        <Typography variant='body2' sx={{ mt: 2 }} color='error'>
-          {errorMessage}
-        </Typography>
+        {errorMessage && (
+          <Typography variant='body2' sx={{ mt: 2 }} color='error'>
+            {errorMessage}
+          </Typography>
+        )}
+        <FarcasterLoginModal {...bindPopover(popupState)} url={url} />
+      </Stack>
+      {connectedUser && (
+        <Dialog open={!!connectedUser} onClose={() => setConnectedUser(null)}>
+          <DialogTitle sx={{ pb: 0 }} align='center'>
+            This farcaster account is already connected to another account
+          </DialogTitle>
+          <DialogTitle sx={{ pt: 0.5 }} variant='body1' align='center'>
+            Your Points and Scouted Builders will be merged into your builder accounts
+          </DialogTitle>
+          <Stack alignItems='center' gap={2} justifyContent='center'>
+            <Typography variant='h6' textAlign='center'>
+              Warpcast
+            </Typography>
+            <Image src={connectedUser.nftImageUrl || connectedUser.avatar} alt='NFT' width={150} height={150} />
+            <Typography variant='body1'>{connectedUser.displayName}</Typography>
+            <Stack justifyContent='flex-start' gap={0.5}>
+              <Typography variant='subtitle1'>FID: {connectedUser.farcasterId}</Typography>
+              <Typography variant='subtitle1'>Points: {connectedUser.currentBalance} points</Typography>
+              <Typography variant='subtitle1'>Scouted: {connectedUser.nftsPurchased} Builders</Typography>
+            </Stack>
+          </Stack>
+        </Dialog>
       )}
-      <FarcasterLoginModal {...bindPopover(popupState)} url={url} />
-    </Stack>
+    </>
   );
 }
