@@ -9,7 +9,8 @@ export function ProfileCard({
   points,
   nftsPurchased,
   onClick,
-  isSelected
+  isSelected,
+  disabled
 }: {
   avatar: string;
   identity: 'current' | 'farcaster' | 'telegram';
@@ -18,6 +19,7 @@ export function ProfileCard({
   nftsPurchased: number;
   onClick: () => void;
   isSelected?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <Stack
@@ -31,12 +33,14 @@ export function ProfileCard({
         backgroundColor: 'background.dark',
         cursor: 'pointer',
         position: 'relative',
-        outline: isSelected ? '1.5px solid' : 'none',
-        outlineColor: isSelected ? 'primary.main' : 'transparent'
+        outline: isSelected ? '1.5px solid' : '',
+        outlineColor: disabled ? 'text.disabled' : isSelected ? 'primary.main' : 'transparent'
       }}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
-      {isSelected && <CheckCircleIcon color='primary' sx={{ position: 'absolute', top: 10, right: 10 }} />}
+      {isSelected && (
+        <CheckCircleIcon color={disabled ? 'disabled' : 'primary'} sx={{ position: 'absolute', top: 10, right: 10 }} />
+      )}
       <Typography variant='h5' textTransform='capitalize'>
         {identity}
       </Typography>

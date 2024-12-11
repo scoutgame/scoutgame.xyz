@@ -172,6 +172,7 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
                 points={user.currentBalance}
                 nftsPurchased={user.nftsPurchased}
                 isSelected={selectedProfile === 'current'}
+                disabled={isMergingUserAccount}
               />
 
               <ProfileCard
@@ -182,6 +183,7 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
                 points={connectedUser.currentBalance}
                 nftsPurchased={connectedUser.nftsPurchased}
                 isSelected={selectedProfile === 'farcaster'}
+                disabled={isMergingUserAccount}
               />
             </Stack>
           ) : (
@@ -192,6 +194,7 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
               displayName={connectedUser.displayName}
               points={connectedUser.currentBalance}
               nftsPurchased={connectedUser.nftsPurchased}
+              disabled={isMergingUserAccount}
             />
           )}
 
@@ -211,7 +214,7 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
             </LoadingButton>
           </Stack>
           {accountMergeError && (
-            <Typography variant='body2' sx={{ mt: 2 }} color='error'>
+            <Typography variant='body2' textAlign='center' sx={{ mt: 2 }} color='error'>
               {accountMergeError}
             </Typography>
           )}
