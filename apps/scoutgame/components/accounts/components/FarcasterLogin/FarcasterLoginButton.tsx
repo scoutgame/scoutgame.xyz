@@ -3,7 +3,8 @@
 import { log } from '@charmverse/core/log';
 import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
 import { useProfile } from '@farcaster/auth-kit';
-import { Stack, Button, Typography, Box, DialogContent, DialogTitle, Paper } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Box, Button, DialogTitle, Stack, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
 import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
@@ -18,6 +19,7 @@ import { FarcasterLoginModal } from 'components/common/WarpcastLogin/FarcasterMo
 import { useFarcasterConnection } from 'hooks/useFarcasterConnection';
 import type { FarcasterConnectedUser } from 'lib/farcaster/connectFarcasterAccountAction';
 import { connectFarcasterAccountAction } from 'lib/farcaster/connectFarcasterAccountAction';
+import { mergeUserAccountAction } from 'lib/users/mergeUserAccountAction';
 
 export function FarcasterLoginButton({ user }: { user: SessionUser }) {
   const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-login' });
@@ -25,6 +27,22 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
   const { isAuthenticated } = useProfile();
   const { refreshUser } = useUser();
   const [connectedUser, setConnectedUser] = useState<FarcasterConnectedUser | null>(null);
+  const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
+
+  const { executeAsync: mergeUserAccount, isExecuting: isMergingUserAccount } = useAction(mergeUserAccountAction, {
+    onSuccess: async ({ data }) => {
+      if (!data?.success) {
+        return;
+      }
+
+      await revalidatePath(null);
+      await refreshUser();
+    },
+    onError: (err) => {
+      log.error('Error merging user account', { error: err.error.serverError });
+      setAccountMergeError('Error merging warpcast account');
+    }
+  });
 
   const {
     executeAsync: connectFarcasterAccount,
@@ -132,6 +150,19 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
               <Typography variant='subtitle1'>Points: {connectedUser.currentBalance} points</Typography>
               <Typography variant='subtitle1'>Scouted: {connectedUser.nftsPurchased} Builders</Typography>
             </Stack>
+            <LoadingButton
+              variant='contained'
+              loading={isMergingUserAccount}
+              disabled={isMergingUserAccount}
+              onClick={() => mergeUserAccount({ farcasterId: connectedUser.farcasterId })}
+            >
+              {isMergingUserAccount ? 'Merging...' : 'Merge'}
+            </LoadingButton>
+            {accountMergeError && (
+              <Typography variant='body2' sx={{ mt: 2 }} color='error'>
+                {accountMergeError}
+              </Typography>
+            )}
           </Stack>
         </Dialog>
       )}
