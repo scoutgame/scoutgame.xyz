@@ -8,20 +8,24 @@ import { ScoutButton } from '../../ScoutButton/ScoutButton';
 import { BuilderCardNftDisplay } from './BuilderCardNftDisplay';
 import { BuilderCardStats } from './BuilderCardStats';
 
-type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path';
+type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path' | 'nftType';
 
 export function BuilderCard({
   builder,
   showPurchaseButton = false,
   hideDetails = false,
   showHotIcon = false,
-  size = 'medium'
+  size = 'medium',
+  disableProfileUrl = false,
+  markStarterCardPurchased = false
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
   hideDetails?: boolean;
   showPurchaseButton?: boolean;
   showHotIcon?: boolean;
+  disableProfileUrl?: boolean;
+  markStarterCardPurchased?: boolean;
 }) {
   return (
     <Card
@@ -39,6 +43,7 @@ export function BuilderCard({
         showHotIcon={showHotIcon}
         size={size}
         hideDetails={hideDetails}
+        disableProfileUrl={disableProfileUrl}
       >
         {builder.builderStatus === 'banned' ? (
           <Typography textAlign='center'>SUSPENDED</Typography>
@@ -48,7 +53,7 @@ export function BuilderCard({
       </BuilderCardNftDisplay>
       {typeof builder.price !== 'undefined' && showPurchaseButton && (
         <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
-          <ScoutButton builder={builder} />
+          <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} />
         </Stack>
       )}
     </Card>

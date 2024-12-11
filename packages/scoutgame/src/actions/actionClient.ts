@@ -18,8 +18,10 @@ export function defineMetadataSchema() {
 export const actionClientBase = createSafeActionClient({
   validationAdapter: yupAdapter(),
   defineMetadataSchema,
-  // handleReturnedServerError,
-  // handleServerErrorLog,
+  handleServerError: (err, utils) => {
+    handleServerErrorLog(err, utils);
+    return handleReturnedServerError(err, utils);
+  },
   defaultValidationErrorsShape: 'flattened'
 });
 

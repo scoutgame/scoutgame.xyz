@@ -1,27 +1,41 @@
 'use client';
 
+import type { BoxProps } from '@mui/material';
 import { Box } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Navigation, Autoplay } from 'swiper/modules';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import type { SwiperProps } from 'swiper/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { NavigationOptions } from 'swiper/types';
 
-import { useLgScreen, useMdScreen, useSmScreen } from '../../../hooks/useMediaScreens';
+import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { LoadingCards } from '../Loading/LoadingCards';
 
 import { NextArrow, PrevArrow } from './Arrows';
 
 import 'swiper/css';
 import 'swiper/css/autoplay';
+import 'swiper/css/pagination';
 
 export type CarouselProps = {
   children: React.ReactNode[];
-};
+  renderBullet?: (index: number, className: string) => string;
+  slidesPerView?: number;
+  boxProps?: Partial<BoxProps>;
+  mobileMinHeight?: string;
+  showMobileNavigationArrows?: boolean;
+} & Partial<SwiperProps>;
 
-export function Carousel({ children }: CarouselProps) {
-  const isSmall = useSmScreen();
+export function Carousel({
+  children,
+  renderBullet,
+  boxProps,
+  mobileMinHeight,
+  autoplay,
+  showMobileNavigationArrows,
+  ...swiperProps
+}: CarouselProps) {
   const isDesktop = useMdScreen();
-  const isLarge = useLgScreen();
-  const slidesPerView = isDesktop ? 5 : isLarge ? 6 : isSmall ? 4.2 : 2.2;
   // Use state and effect to skip pre-rendering
   const [isClientSide, setIsClientSide] = useState(false);
 
@@ -29,39 +43,77 @@ export function Carousel({ children }: CarouselProps) {
     setIsClientSide(true);
   }, []);
 
+  const prevButtonId =
+    ((swiperProps.navigation as NavigationOptions)?.prevEl as string | undefined) ?? '.swiper-button-prev';
+  const nextButtonId = (swiperProps.navigation as NavigationOptions)?.nextEl ?? '.swiper-button-next';
+
   if (!isClientSide) {
     return <LoadingCards />;
   }
 
   return (
-    <Box display='flex' alignItems='center' justifyContent='center' mb={2}>
-      <Box width='90svw' px={isDesktop ? 4 : 0} position='relative'>
-        <Swiper
-          autoplay={{
-            delay: 3000,
-            pauseOnMouseEnter: true
-          }}
-          loop
-          className='swiper'
-          slidesPerView={slidesPerView}
-          autoHeight={true}
-          modules={[Navigation, Autoplay]}
-          navigation={{
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev'
-          }}
-        >
-          {children.map((child, index) => (
-            <SwiperSlide key={`${index.toString()}`}>{child}</SwiperSlide>
-          ))}
-        </Swiper>
-        {isDesktop && children.length > slidesPerView && (
+    <Box
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+      mb={2}
+      mx='auto'
+      px={{ md: 4 }}
+      position='relative'
+      {...boxProps}
+    >
+      <Swiper
+        autoplay={
+          typeof autoplay === 'boolean'
+            ? {
+                delay: 3000,
+                pauseOnMouseEnter: true
+              }
+            : autoplay || undefined
+        }
+        loop
+        className='swiper'
+        autoHeight={true}
+        modules={[Navigation, Autoplay, ...(renderBullet ? [Pagination] : [])]}
+        navigation={{
+          nextEl: nextButtonId,
+          prevEl: prevButtonId
+        }}
+        pagination={
+          renderBullet
+            ? {
+                clickable: true,
+                renderBullet
+              }
+            : undefined
+        }
+        {...swiperProps}
+        style={{
+          width: '100%',
+          minHeight: isDesktop ? undefined : mobileMinHeight,
+          zIndex: 0,
+          ...swiperProps.style
+        }}
+      >
+        {children.map((child, index) => (
+          <SwiperSlide key={`${index.toString()}`}>{child}</SwiperSlide>
+        ))}
+      </Swiper>
+      {isDesktop && swiperProps.slidesPerView && children.length > swiperProps.slidesPerView && (
+        <>
+          <NextArrow className={(nextButtonId as string).replace('.', '')} />
+          <PrevArrow className={(prevButtonId as string).replace('.', '')} />
+        </>
+      )}
+      {!isDesktop &&
+        showMobileNavigationArrows &&
+        swiperProps.slidesPerView &&
+        children.length > swiperProps.slidesPerView && (
           <>
-            <NextArrow className='swiper-button-next' />
-            <PrevArrow className='swiper-button-prev' />
+            <NextArrow className={(nextButtonId as string).replace('.', '')} style={{ height: '100px' }} />
+            <PrevArrow className={(prevButtonId as string).replace('.', '')} style={{ height: '100px' }} />
           </>
         )}
-      </Box>
     </Box>
   );
 }

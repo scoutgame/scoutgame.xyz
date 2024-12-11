@@ -14,6 +14,14 @@ export function capitalize(input?: string): string {
   return `${trimmed[0].toUpperCase()}${trimmed.slice(1)}`;
 }
 
+export function fancyTrim(_text: string = '', maxLength: number = 40) {
+  const text = _text || '';
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return `${text.slice(0, maxLength - 3)}...`;
+}
+
 export function fancyTrimWords(_text: string = '', maxWords: number = 40) {
   const text = _text || '';
   const words = text.split(' ');
@@ -67,3 +75,22 @@ export function stringToHue(name: string) {
 export const randomString = init({
   length: 10
 });
+
+export function concatenateStringValues(obj: Record<string, any>): string[] {
+  const stringValues = Object.keys(obj).reduce((acc: string[], key) => {
+    const value = obj[key];
+
+    if (typeof value === 'string') {
+      acc.push(value);
+    } else if (Array.isArray(value)) {
+      const arrayOfStrings = value.filter((item) => typeof item === 'string');
+      if (arrayOfStrings.length > 0) {
+        acc.push(arrayOfStrings.join(', '));
+      }
+    }
+
+    return acc;
+  }, []);
+
+  return stringValues;
+}

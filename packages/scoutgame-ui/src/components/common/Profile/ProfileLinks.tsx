@@ -28,8 +28,8 @@ export function ProfileLinks({
         >
           <Image
             src='/images/profile/icons/warpcast-circle-icon.svg'
-            width={isDesktop ? '26' : '18'}
-            height={isDesktop ? '26' : '18'}
+            width={isDesktop ? '24' : '18'}
+            height={isDesktop ? '24' : '18'}
             alt='warpcast icon'
           />
         </IconButton>
@@ -53,7 +53,7 @@ export function ProfileLinks({
             href={`https://passport.talentprotocol.com/profile/${talentProfile.id}`}
             avatar={
               <Image
-                src='/images/talent.jpg'
+                src='/images/crypto/talent.jpg'
                 alt='talent icon'
                 width={14}
                 height={14}

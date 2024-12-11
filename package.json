@@ -1,5 +1,5 @@
 {
-  "name": "charmverse.io",
+  "name": "scout-game",
   "version": "0.0.0",
   "browserslist": [
     "defaults"
@@ -54,6 +54,7 @@
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
     "@charmverse/core": "^0.98.6-rc-deploy-admin.1",
+    "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",
     "@mui/lab": "^6.0.0-beta.11",
@@ -62,6 +63,7 @@
     "@mui/system": "^6.1.4",
     "@mui/x-date-pickers": "^7.20.0",
     "@mui/x-tree-view": "^7.20.0",
+    "@svgr/webpack": "^8.1.0",
     "@tanstack/react-query": "^5.61.3",
     "@vercel/og": "^0.6.3",
     "aws-cdk-lib": "^2.171.0",
@@ -75,6 +77,7 @@
     "pino-pretty": "^13.0.0",
     "react": "^18.3.1",
     "react-hook-form": "^7.53.2",
+    "react-icons": "^5.4.0",
     "sass": "^1.81.0",
     "sharp": "^0.33.5",
     "swr": "^2.2.5",
@@ -94,12 +97,12 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^29.5",
-    "@types/koa": "^2.15.0",
     "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^8.0.11",
     "@types/koa-router": "^7.4.8",
     "@types/lodash": "^4.17.13",
-    "@types/luxon": "^3.4.2",
+    "@types/luxon": "2.4",
+    "@types/supertest": "^6.0.2",
     "@typescript-eslint/parser": "^8.9.0",
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
@@ -123,6 +126,7 @@
     "node-mocks-http": "^1.14.1",
     "playwright": "^1.47.1",
     "prettier": "^3.3.3",
+    "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   }

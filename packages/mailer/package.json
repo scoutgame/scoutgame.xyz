@@ -8,5 +8,12 @@
   },
   "exports": {
     "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "html-to-text": "^9.0.5",
+    "mailgun.js": "^10.2.4"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "^9.0.4"
   }
 }
