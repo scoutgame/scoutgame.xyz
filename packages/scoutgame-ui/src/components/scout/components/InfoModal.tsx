@@ -5,7 +5,7 @@ import type { SxProps } from '@mui/material';
 import { IconButton, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 
-import { Dialog } from '../common/Dialog';
+import { Dialog } from '../../common/Dialog';
 
 function BuilderInfoContent() {
   return (

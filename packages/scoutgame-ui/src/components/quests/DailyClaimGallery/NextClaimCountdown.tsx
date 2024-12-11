@@ -25,7 +25,7 @@ export function NextClaimCountdown() {
   }
 
   return (
-    <Stack flexDirection='row' alignItems='center' gap={1} zIndex={1} bgcolor='#000'>
+    <Stack flexDirection='row' alignItems='center' gap={1}>
       <Typography color='secondary' fontWeight={600}>
         NEXT REWARD:
       </Typography>

@@ -1,11 +1,8 @@
+import { getPaginatedBuilders } from '@packages/scoutgame/builders/getPaginatedBuilders';
 import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
 import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
-import { getPaginatedBuilders } from 'lib/builders/getPaginatedBuilders';
-
 import { BuildersGalleryContainer } from './BuildersGalleryContainer';
-
-export const dynamic = 'force-dynamic';
 
 export async function ScoutPageBuildersGallery({ showHotIcon }: { showHotIcon: boolean }) {
   const [error, data] = await safeAwaitSSRData(

@@ -4,10 +4,9 @@ import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutg
 import { getUserStats } from '@packages/scoutgame/users/getUserStats';
 import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import type { ProfileTab } from '@packages/scoutgame-ui/components/profile/ProfilePage';
+import { ProfilePage } from '@packages/scoutgame-ui/components/profile/ProfilePage';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-
-import { ProfilePage } from 'components/profile/ProfilePage';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,8 +22,14 @@ export default async function Profile({
   };
 }) {
   const user = await getUserFromSession({ sameSite: 'none' });
+  const tab = searchParams.tab || (user?.builderStatus ? 'build' : 'scout');
+
   if (!user) {
     return null;
+  }
+
+  if ((tab as string) === 'win') {
+    redirect('/claim');
   }
 
   if (!user.onboardedAt) {
@@ -58,6 +63,7 @@ export default async function Profile({
         hasMoxieProfile: userExternalProfiles?.hasMoxieProfile ?? false,
         talentProfile: userExternalProfiles?.talentProfile ?? undefined
       }}
+      tab={tab}
     />
   );
 }

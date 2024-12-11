@@ -1,28 +1,27 @@
-import { ScoutPage } from 'components/scout/ScoutPage';
+import { ScoutPage } from '@packages/scoutgame-ui/components/scout/ScoutPage';
 
 export default async function Scout({
   searchParams
 }: {
-  searchParams: {
-    tab: string | undefined;
-    builderSort: string | undefined;
-    scoutSort: string | undefined;
-    scoutOrder: string | undefined;
-    builderOrder: string | undefined;
-  };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const tab = searchParams.tab || 'builders';
-  const builderSort = searchParams.builderSort || 'rank';
-  const scoutSort = searchParams.scoutSort || 'rank';
-  const scoutOrder = searchParams.scoutOrder || 'asc';
-  const builderOrder = searchParams.builderOrder || 'asc';
+  const scoutSort = (searchParams.scoutSort as string) || 'points';
+  const builderSort = (searchParams.builderSort as string) || 'rank';
+  const builderOrder = (searchParams.builderOrder as string) || 'asc';
+  const scoutOrder = (searchParams.scoutOrder as string) || 'desc';
+  const scoutTab = (searchParams.scoutTab as string) || 'scouts';
+  const buildersLayout = (searchParams.buildersLayout as string) || 'table';
+  const tab = (searchParams.tab as string) || 'scouts';
+
   return (
     <ScoutPage
-      tab={tab}
-      builderSort={builderSort}
       scoutSort={scoutSort}
+      builderSort={builderSort}
       scoutOrder={scoutOrder}
       builderOrder={builderOrder}
+      scoutTab={scoutTab}
+      buildersLayout={buildersLayout}
+      tab={tab}
     />
   );
 }

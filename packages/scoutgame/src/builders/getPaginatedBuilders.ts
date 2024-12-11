@@ -1,6 +1,7 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import { normalizeLast7DaysGems } from '@packages/scoutgame/builders/utils/normalizeLast7DaysGems';
+
+import type { BuilderInfo } from './interfaces';
+import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
 
 export type CompositeCursor = {
   userId: string;

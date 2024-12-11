@@ -3,13 +3,13 @@
 import SearchIcon from '@mui/icons-material/Search';
 import type { SxProps } from '@mui/material';
 import { Autocomplete, Box, CircularProgress, InputAdornment, TextField, Typography, styled } from '@mui/material';
-import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
+import type { BuilderSearchResult } from '@packages/scoutgame/builders/searchBuilders';
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { useSearchBuilders } from 'hooks/api/builders';
-import { useDebouncedValue } from 'hooks/useDebouncedValue';
-import type { BuilderSearchResult } from 'lib/builders/searchBuilders';
+import { useSearchBuilders } from '../../../hooks/api/builders';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
+import { Avatar } from '../../common/Avatar';
 
 const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult>)({
   '& .MuiAutocomplete-popper': {

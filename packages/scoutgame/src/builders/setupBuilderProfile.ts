@@ -1,9 +1,10 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 import { authSecret, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@packages/utils/constants';
 import { GET as httpGET, POST as httpPOST } from '@packages/utils/http';
 import { unsealData } from 'iron-session';
+
+import { approveBuilder } from './approveBuilder';
 
 export async function setupBuilderProfile({
   code,

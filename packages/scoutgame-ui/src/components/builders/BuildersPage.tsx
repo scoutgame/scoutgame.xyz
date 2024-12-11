@@ -1,15 +1,19 @@
 import 'server-only';
 
 import { Grid2 as Grid, Stack, Typography } from '@mui/material';
+import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
-import { HeaderMessage } from '../common/Header/HeaderMessage';
 import { LoadingTable } from '../common/Loading/LoadingTable';
 import { TabsMenu, type TabItem } from '../common/Tabs/TabsMenu';
 
 import { BuilderPageInviteCard } from './BuilderInviteCard/BuilderInviteCard';
 import { BuilderPageTable } from './BuilderPageTable/BuilderPageTable';
 import { PartnerRewardsCarousel } from './PartnerRewardsCarousel/PartnerRewardsCarousel';
+
+const HeaderMessage = dynamic(() => import('../common/Header/HeaderMessage').then((mode) => mode.HeaderMessage), {
+  ssr: false
+});
 
 export const mobileTabOptions: TabItem[] = [
   { label: 'Leaderboard', value: 'leaderboard' },
