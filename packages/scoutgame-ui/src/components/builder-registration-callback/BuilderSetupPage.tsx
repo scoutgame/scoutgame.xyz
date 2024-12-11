@@ -1,16 +1,13 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { Link, Typography } from '@mui/material';
-import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
+import { Link, Paper, Typography } from '@mui/material';
+import { setupBuilderProfileAction } from '@packages/scoutgame/builders/setupBuilderProfileAction';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useRef, useState } from 'react';
 
-import { SinglePageLayout } from 'components/common/Layout';
-import { SinglePageWrapper } from 'components/common/SinglePageWrapper';
-import { InfoBackgroundImage } from 'components/layout/InfoBackgroundImage';
-import { setupBuilderProfileAction } from 'lib/builders/setupBuilderProfileAction';
+import { LoadingComponent } from '../common/Loading/LoadingComponent';
 
 export function BuilderSetupPage({
   state,
@@ -51,28 +48,21 @@ export function BuilderSetupPage({
   const error = githubConnectError || githubRedirectError;
 
   return (
-    <SinglePageLayout>
-      <InfoBackgroundImage />
-      <SinglePageWrapper bgcolor='background.default'>
-        <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
-          Setting up your builder profile...
+    <Paper sx={{ p: 2 }}>
+      <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
+        Setting up your builder profile...
+      </Typography>
+      <Typography mb={2}>We are setting up your builder profile. This process usually takes a few seconds.</Typography>
+      {!error && <LoadingComponent isLoading={status === 'executing'} />}
+      {error && (
+        <Typography variant='body2' component='em' sx={{ mt: 2 }}>
+          Something went wrong. Please try again or talk to{' '}
+          <Link href='https://warpcast.com/ccarella' target='_blank'>
+            @ccarella
+          </Link>
+          .
         </Typography>
-        <Typography mb={2}>
-          We are setting up your builder profile. This process usually takes a few seconds.
-        </Typography>
-        {!error && <LoadingComponent isLoading={status === 'executing'} />}
-        {error && (
-          <Typography variant='body2' component='em' sx={{ mt: 2 }}>
-            Something went wrong. Please try again or talk to{' '}
-            <Link href='https://warpcast.com/ccarella' target='_blank'>
-              @ccarella
-            </Link>
-            .
-          </Typography>
-        )}
-      </SinglePageWrapper>
-    </SinglePageLayout>
+      )}
+    </Paper>
   );
 }
-
-// fd644bbda13770100a97

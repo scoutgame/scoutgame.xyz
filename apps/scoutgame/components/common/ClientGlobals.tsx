@@ -1,6 +1,6 @@
 'use client';
 
-import { useDatadogLogger } from 'hooks/useDatadogLogger';
+import { useDatadogLogger } from '@packages/scoutgame-ui/hooks/useDatadogLogger';
 
 import WelcomeModal from './WelcomeModal';
 

@@ -6,8 +6,8 @@ import { authSecret } from '@packages/utils/constants';
 import { unsealData } from 'iron-session';
 import { cookies } from 'next/headers';
 
-import { setupBuilderProfileSchema } from './config';
 import { setupBuilderProfile } from './setupBuilderProfile';
+import { setupBuilderProfileSchema } from './setupBuilderProfileSchema';
 
 export const setupBuilderProfileAction = authActionClient
   .metadata({ actionName: 'setup_builder_profile' })

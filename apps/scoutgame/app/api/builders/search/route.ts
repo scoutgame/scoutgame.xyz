@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
-
-import { searchBuilders } from 'lib/builders/searchBuilders';
+import { searchBuilders } from '@packages/scoutgame/builders/searchBuilders';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

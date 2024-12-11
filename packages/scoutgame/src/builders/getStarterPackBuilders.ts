@@ -1,4 +1,4 @@
-import type { BuilderNft, NFTPurchaseEvent } from '@charmverse/core/prisma-client';
+import type { BuilderNft } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import type { NftPurchaseEvent } from '@packages/mixpanel/interfaces';
 
