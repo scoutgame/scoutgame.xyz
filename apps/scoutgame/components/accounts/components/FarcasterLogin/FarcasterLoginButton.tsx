@@ -46,11 +46,11 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
           return;
         }
 
-        await revalidatePath(null);
-        await refreshUser();
         setFarcasterSigninArtifact(null);
         setConnectedUser(null);
         setAccountMergeError(null);
+        await revalidatePath(null);
+        await refreshUser();
       },
       onError: (err) => {
         log.error('Error merging user account', { error: err.error.serverError });
