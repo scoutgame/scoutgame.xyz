@@ -42,9 +42,11 @@ export function validateInitData(value: string, token: string, options?: { expir
   if (!data.auth_date) {
     throw new DataNotFoundError('Telegram auth_date is not found');
   }
+
   if (!data.hash) {
     throw new InvalidInputError('Telegram hash is not found');
   }
+
   if (hash !== data.hash) {
     throw new InvalidInputError('Telegram hash does not match');
   }
