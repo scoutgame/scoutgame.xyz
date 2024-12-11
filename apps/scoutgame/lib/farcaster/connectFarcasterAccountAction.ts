@@ -1,6 +1,7 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
+import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { authSchema } from '@packages/farcaster/config';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
@@ -10,13 +11,12 @@ import { currentSeason } from '@packages/scoutgame/dates';
 import { verifyFarcasterUser } from './verifyFarcasterUser';
 
 export type FarcasterConnectedUser = {
-  path: string;
   displayName: string;
   farcasterId: number;
   currentBalance: number;
   nftsPurchased: number;
-  nftImageUrl: string | null;
   avatar: string;
+  builderStatus: BuilderStatus | null;
 };
 
 export const connectFarcasterAccountAction = authActionClient
@@ -27,7 +27,6 @@ export const connectFarcasterAccountAction = authActionClient
     const existingFarcasterUser = await prisma.scout.findUnique({
       where: { farcasterId: fid },
       select: {
-        path: true,
         displayName: true,
         farcasterId: true,
         currentBalance: true,
@@ -39,6 +38,7 @@ export const connectFarcasterAccountAction = authActionClient
             nftsPurchased: true
           }
         },
+        builderStatus: true,
         builderNfts: {
           where: {
             season: currentSeason
@@ -55,13 +55,12 @@ export const connectFarcasterAccountAction = authActionClient
       return {
         success: true,
         connectedUser: {
-          path: existingFarcasterUser.path,
           displayName: existingFarcasterUser.displayName,
           farcasterId: fid,
           currentBalance: existingFarcasterUser.currentBalance,
           nftsPurchased: existingFarcasterUser.userSeasonStats[0]?.nftsPurchased ?? 0,
-          nftImageUrl: existingFarcasterUser.builderNfts[0]?.imageUrl ?? null,
-          avatar: existingFarcasterUser.avatar as string
+          avatar: existingFarcasterUser.avatar as string,
+          builderStatus: existingFarcasterUser.builderStatus
         }
       };
     }

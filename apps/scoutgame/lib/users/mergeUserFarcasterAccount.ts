@@ -1,51 +1,55 @@
+import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { currentSeason } from '@packages/scoutgame/dates';
 
-export const mergeUserAccount = async ({
+export const mergeUserFarcasterAccount = async ({
   userId,
   farcasterId,
-  telegramId
+  profileToKeep
 }: {
   userId: string;
-  farcasterId?: number;
-  telegramId?: number;
+  farcasterId: number;
+  profileToKeep: 'current' | 'farcaster';
 }) => {
-  if (!farcasterId && !telegramId) {
-    throw new Error('No farcaster or telegram id provided');
-  }
-
   const mergedUser = await prisma.scout.findFirstOrThrow({
     where: {
-      OR: [{ farcasterId }, { telegramId }]
+      farcasterId
     },
     select: {
       id: true,
       currentBalance: true,
       farcasterName: true,
       walletENS: true,
-      wallets: true
-    }
-  });
-
-  const existingUser = await prisma.scout.findUniqueOrThrow({
-    where: { id: userId },
-    select: {
-      walletENS: true
+      wallets: true,
+      avatar: true,
+      bio: true,
+      displayName: true,
+      path: true,
+      email: true
     }
   });
 
   await prisma.$transaction(async (tx) => {
+    const updatedScoutData: Prisma.ScoutUpdateInput = {
+      farcasterId,
+      farcasterName: farcasterId ? mergedUser.farcasterName : undefined,
+      currentBalance: {
+        increment: mergedUser.currentBalance
+      }
+    };
+
+    if (profileToKeep === 'farcaster') {
+      updatedScoutData.avatar = mergedUser.avatar;
+      updatedScoutData.displayName = mergedUser.displayName;
+      updatedScoutData.bio = mergedUser.bio;
+      updatedScoutData.path = mergedUser.path;
+      updatedScoutData.email = mergedUser.email;
+      updatedScoutData.walletENS = mergedUser.walletENS;
+    }
+
     await tx.scout.update({
       where: { id: userId },
-      data: {
-        farcasterId,
-        farcasterName: farcasterId ? mergedUser.farcasterName : undefined,
-        telegramId,
-        currentBalance: {
-          increment: mergedUser.currentBalance
-        },
-        walletENS: existingUser.walletENS ? existingUser.walletENS : mergedUser.walletENS
-      }
+      data: updatedScoutData
     });
 
     await prisma.scoutWallet.updateMany({
@@ -69,8 +73,7 @@ export const mergeUserAccount = async ({
         mergedFromId: mergedUser.id,
         mergedToId: userId,
         mergedRecords: {
-          farcasterId,
-          telegramId
+          farcasterId
         }
       }
     });

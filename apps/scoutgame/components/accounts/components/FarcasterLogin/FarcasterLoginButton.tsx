@@ -6,27 +6,30 @@ import { useProfile } from '@farcaster/auth-kit';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, DialogTitle, Stack, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
-import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 
+import type { UserWithAccountsDetails } from 'components/accounts/AccountsPage';
 import { Dialog } from 'components/common/Dialog';
 import { FarcasterLoginModal } from 'components/common/WarpcastLogin/FarcasterModal';
 import { useFarcasterConnection } from 'hooks/useFarcasterConnection';
 import type { FarcasterConnectedUser } from 'lib/farcaster/connectFarcasterAccountAction';
 import { connectFarcasterAccountAction } from 'lib/farcaster/connectFarcasterAccountAction';
-import { mergeUserAccountAction } from 'lib/users/mergeUserAccountAction';
+import { mergeUserFarcasterAccountAction } from 'lib/users/mergeUserFarcasterAccountAction';
 
-export function FarcasterLoginButton({ user }: { user: SessionUser }) {
+import { ProfileCard } from '../ProfileSelectCard/ProfileCard';
+
+export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }) {
   const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-login' });
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
   const { isAuthenticated } = useProfile();
   const { refreshUser } = useUser();
   const [connectedUser, setConnectedUser] = useState<FarcasterConnectedUser | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<'current' | 'farcaster' | null>(null);
+
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
   const [farcasterSigninArtifact, setFarcasterSigninArtifact] = useState<{
     message: string;
@@ -34,23 +37,26 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
     nonce: string;
   } | null>(null);
 
-  const { executeAsync: mergeUserAccount, isExecuting: isMergingUserAccount } = useAction(mergeUserAccountAction, {
-    onSuccess: async ({ data }) => {
-      if (!data?.success) {
-        return;
-      }
+  const { executeAsync: mergeUserFarcasterAccount, isExecuting: isMergingUserAccount } = useAction(
+    mergeUserFarcasterAccountAction,
+    {
+      onSuccess: async ({ data }) => {
+        if (!data?.success) {
+          return;
+        }
 
-      await revalidatePath(null);
-      await refreshUser();
-      setFarcasterSigninArtifact(null);
-      setConnectedUser(null);
-      setAccountMergeError(null);
-    },
-    onError: (err) => {
-      log.error('Error merging user account', { error: err.error.serverError });
-      setAccountMergeError('Error merging warpcast account');
+        await revalidatePath(null);
+        await refreshUser();
+        setFarcasterSigninArtifact(null);
+        setConnectedUser(null);
+        setAccountMergeError(null);
+      },
+      onError: (err) => {
+        log.error('Error merging user account', { error: err.error.serverError });
+        setAccountMergeError('Error merging farcaster account');
+      }
     }
-  });
+  );
 
   const {
     executeAsync: connectFarcasterAccount,
@@ -79,9 +85,9 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
 
   const onErrorCallback = useCallback((err?: AuthClientError) => {
     if (err?.errCode === 'unavailable') {
-      log.warn('Timed out waiting for Warpcast login', { error: err });
+      log.warn('Timed out waiting for farcaster login', { error: err });
     } else {
-      log.error('There was an error while logging in with Warpcast', { error: err });
+      log.error('There was an error while logging in with farcaster', { error: err });
     }
     popupState.close();
   }, []);
@@ -120,7 +126,7 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
   return (
     <>
       <Stack gap={1}>
-        <Typography variant='h5'>Warpcast</Typography>
+        <Typography variant='h5'>Farcaster</Typography>
         {user.farcasterName ? (
           <Typography variant='body1'>{user.farcasterName}</Typography>
         ) : isAuthenticated && (isRevalidatingPath || isConnectingFarcasterAccount) ? (
@@ -146,40 +152,69 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
             This farcaster account is already connected to another account
           </DialogTitle>
           <DialogTitle sx={{ pt: 0.5 }} variant='body1' align='center'>
-            Your Points and Scouted Builders will be merged into your builder accounts
+            {connectedUser.builderStatus === null ? (
+              <>
+                Merge Profile by selecting which one to keep.
+                <br />
+                Your Points and Scouted Builders will be merged into your current account
+              </>
+            ) : (
+              'Your Points and Scouted Builders will be merged into your current account'
+            )}
           </DialogTitle>
-          <Stack alignItems='center' gap={2} justifyContent='center'>
-            <Typography variant='h6' textAlign='center'>
-              Warpcast
-            </Typography>
-            <Image src={connectedUser.nftImageUrl || connectedUser.avatar} alt='NFT' width={150} height={150} />
-            <Typography variant='body1'>{connectedUser.displayName}</Typography>
-            <Stack justifyContent='flex-start' gap={0.5}>
-              <Typography variant='subtitle1'>FID: {connectedUser.farcasterId}</Typography>
-              <Typography variant='subtitle1'>Points: {connectedUser.currentBalance} points</Typography>
-              <Typography variant='subtitle1'>Scouted: {connectedUser.nftsPurchased} Builders</Typography>
+          {connectedUser.builderStatus === null ? (
+            <Stack direction='row' gap={2} justifyContent='space-between'>
+              <ProfileCard
+                onClick={() => setSelectedProfile('current')}
+                avatar={user.avatar}
+                identity='current'
+                displayName={user.displayName}
+                points={user.currentBalance}
+                nftsPurchased={user.nftsPurchased}
+                isSelected={selectedProfile === 'current'}
+              />
+
+              <ProfileCard
+                onClick={() => setSelectedProfile('farcaster')}
+                avatar={connectedUser.avatar}
+                identity='farcaster'
+                displayName={connectedUser.displayName}
+                points={connectedUser.currentBalance}
+                nftsPurchased={connectedUser.nftsPurchased}
+                isSelected={selectedProfile === 'farcaster'}
+              />
             </Stack>
+          ) : (
+            <ProfileCard
+              onClick={() => setSelectedProfile(null)}
+              avatar={connectedUser.avatar}
+              identity='farcaster'
+              displayName={connectedUser.displayName}
+              points={connectedUser.currentBalance}
+              nftsPurchased={connectedUser.nftsPurchased}
+            />
+          )}
+
+          <Stack alignItems='flex-end' mt={3}>
             <LoadingButton
               variant='contained'
               loading={isMergingUserAccount}
               disabled={isMergingUserAccount}
               onClick={() =>
-                mergeUserAccount({
-                  farcasterId: connectedUser.farcasterId,
-                  signature: farcasterSigninArtifact.signature,
-                  nonce: farcasterSigninArtifact.nonce,
-                  message: farcasterSigninArtifact.message
+                mergeUserFarcasterAccount({
+                  ...farcasterSigninArtifact,
+                  profileToKeep: selectedProfile
                 })
               }
             >
               {isMergingUserAccount ? 'Merging...' : 'Merge'}
             </LoadingButton>
-            {accountMergeError && (
-              <Typography variant='body2' sx={{ mt: 2 }} color='error'>
-                {accountMergeError}
-              </Typography>
-            )}
           </Stack>
+          {accountMergeError && (
+            <Typography variant='body2' sx={{ mt: 2 }} color='error'>
+              {accountMergeError}
+            </Typography>
+          )}
         </Dialog>
       )}
     </>
