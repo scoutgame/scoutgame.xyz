@@ -3,8 +3,9 @@
 import { log } from '@charmverse/core/log';
 import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
 import { useProfile } from '@farcaster/auth-kit';
+import CloseIcon from '@mui/icons-material/Close';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, DialogTitle, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, DialogTitle, Stack, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
@@ -73,6 +74,12 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
         await revalidatePath(null);
       } else {
         setConnectedUser(data.connectedUser);
+        // If one of the accounts is a builder, user can't select the profile to keep
+        if (user.builderStatus !== null || data.connectedUser.builderStatus !== null) {
+          setSelectedProfile(null);
+        } else {
+          setSelectedProfile('current');
+        }
       }
 
       popupState.close();
@@ -115,6 +122,8 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
     onClick
   });
 
+  const isMergeDisabled = connectedUser?.builderStatus !== null && user.builderStatus !== null;
+
   const errorMessage =
     connectionError &&
     (connectionError.errCode === 'unavailable'
@@ -146,13 +155,13 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
         )}
         <FarcasterLoginModal {...bindPopover(popupState)} url={url} />
       </Stack>
-      {connectedUser && farcasterSigninArtifact && (
+      {connectedUser && (
         <Dialog open={!!connectedUser} onClose={() => setConnectedUser(null)}>
           <DialogTitle sx={{ pb: 0 }} align='center'>
-            This farcaster account is already connected to another account
+            This farcaster account is connected to another account
           </DialogTitle>
           <DialogTitle sx={{ pt: 0.5 }} variant='body1' align='center'>
-            {connectedUser.builderStatus === null ? (
+            {connectedUser.builderStatus === null && user.builderStatus === null ? (
               <>
                 Merge Profile by selecting which one to keep.
                 <br />
@@ -162,7 +171,7 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
               'Your Points and Scouted Builders will be merged into your current account'
             )}
           </DialogTitle>
-          {connectedUser.builderStatus === null ? (
+          {connectedUser.builderStatus === null && user.builderStatus === null ? (
             <Stack direction='row' gap={2} justifyContent='space-between'>
               <ProfileCard
                 onClick={() => setSelectedProfile('current')}
@@ -186,23 +195,27 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
                 disabled={isMergingUserAccount}
               />
             </Stack>
+          ) : isMergeDisabled ? (
+            <Alert color='error' icon={<CloseIcon />}>
+              Can not merge two builder accounts. Please select a different account to merge.
+            </Alert>
           ) : (
-            <ProfileCard
-              onClick={() => setSelectedProfile(null)}
-              avatar={connectedUser.avatar}
-              identity='farcaster'
-              displayName={connectedUser.displayName}
-              points={connectedUser.currentBalance}
-              nftsPurchased={connectedUser.nftsPurchased}
-              disabled={isMergingUserAccount}
-            />
+            <Stack width='50%' margin='0 auto'>
+              <ProfileCard
+                avatar={connectedUser.avatar}
+                identity='farcaster'
+                displayName={connectedUser.displayName}
+                points={connectedUser.currentBalance}
+                nftsPurchased={connectedUser.nftsPurchased}
+              />
+            </Stack>
           )}
 
           <Stack alignItems='flex-end' mt={3}>
             <LoadingButton
               variant='contained'
               loading={isMergingUserAccount}
-              disabled={isMergingUserAccount}
+              disabled={isMergingUserAccount || isMergeDisabled}
               onClick={() =>
                 mergeUserFarcasterAccount({
                   ...farcasterSigninArtifact,

@@ -1,9 +1,8 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
 
 export const mergeUserFarcasterAccount = async ({
-  userId,
+  userId: _userId,
   farcasterId,
   profileToKeep
 }: {
@@ -11,34 +10,59 @@ export const mergeUserFarcasterAccount = async ({
   farcasterId: number;
   profileToKeep: 'current' | 'farcaster';
 }) => {
-  const mergedUser = await prisma.scout.findFirstOrThrow({
-    where: {
-      farcasterId
-    },
+  const [primaryUser, secondaryUser] = await Promise.all([
+    prisma.scout.findUniqueOrThrow({
+      where: {
+        id: _userId
+      },
+      select: {
+        builderStatus: true
+      }
+    }),
+    prisma.scout.findFirstOrThrow({
+      where: {
+        farcasterId
+      },
+      select: {
+        builderStatus: true,
+        id: true
+      }
+    })
+  ]);
+
+  if (primaryUser.builderStatus !== null && secondaryUser.builderStatus !== null) {
+    throw new Error('Can not merge two builder accounts');
+  }
+
+  // The user to merge is the one that is not a builder
+  const mergedUser = await prisma.scout.findUniqueOrThrow({
+    where:
+      secondaryUser.builderStatus === null
+        ? {
+            farcasterId
+          }
+        : {
+            id: _userId
+          },
     select: {
       id: true,
-      currentBalance: true,
       farcasterName: true,
       walletENS: true,
-      wallets: true,
       avatar: true,
       bio: true,
       displayName: true,
-      path: true,
-      email: true,
-      telegramId: true
+      email: true
     }
   });
+
+  // The id of the user to retain
+  const userId = secondaryUser.builderStatus !== null ? secondaryUser.id : _userId;
 
   await prisma.$transaction(
     async (tx) => {
       const updatedScoutData: Prisma.ScoutUpdateInput = {
         farcasterId,
-        farcasterName: farcasterId ? mergedUser.farcasterName : undefined,
-        currentBalance: {
-          increment: mergedUser.currentBalance
-        },
-        telegramId: mergedUser.telegramId
+        farcasterName: farcasterId ? mergedUser.farcasterName : undefined
       };
 
       if (profileToKeep === 'farcaster') {
@@ -56,8 +80,7 @@ export const mergeUserFarcasterAccount = async ({
         data: {
           email: null,
           farcasterId: null,
-          farcasterName: null,
-          telegramId: null
+          farcasterName: null
         }
       });
 
@@ -110,87 +133,12 @@ export const mergeUserFarcasterAccount = async ({
         }
       });
 
-      await tx.userWeeklyStats.deleteMany({
+      await tx.pointsReceipt.updateMany({
         where: {
-          userId: mergedUser.id
-        }
-      });
-
-      const mergedUserSeasonStats = await tx.userSeasonStats.findUnique({
-        where: {
-          userId_season: {
-            userId: mergedUser.id,
-            season: currentSeason
-          }
-        }
-      });
-
-      const pointsEarnedAsBuilder = mergedUserSeasonStats?.pointsEarnedAsBuilder ?? 0;
-      const pointsEarnedAsScout = mergedUserSeasonStats?.pointsEarnedAsScout ?? 0;
-      const nftOwners = mergedUserSeasonStats?.nftOwners ?? 0;
-      const nftsSold = mergedUserSeasonStats?.nftsSold ?? 0;
-      const nftsPurchased = mergedUserSeasonStats?.nftsPurchased ?? 0;
-
-      await tx.userSeasonStats.upsert({
-        where: {
-          userId_season: {
-            userId,
-            season: currentSeason
-          }
+          senderId: mergedUser.id
         },
-        create: {
-          userId,
-          season: currentSeason,
-          pointsEarnedAsBuilder,
-          pointsEarnedAsScout,
-          nftOwners,
-          nftsSold,
-          nftsPurchased
-        },
-        update: {
-          pointsEarnedAsBuilder: {
-            increment: pointsEarnedAsBuilder
-          },
-          pointsEarnedAsScout: {
-            increment: pointsEarnedAsScout
-          },
-          nftOwners: {
-            increment: nftOwners
-          },
-          nftsSold: {
-            increment: nftsSold
-          },
-          nftsPurchased: {
-            increment: nftsPurchased
-          }
-        }
-      });
-
-      const mergedUserAllTimeStats = await tx.userAllTimeStats.findUnique({
-        where: {
-          userId: mergedUser.id
-        }
-      });
-
-      const allTimePointsEarnedAsBuilder = mergedUserAllTimeStats?.pointsEarnedAsBuilder ?? 0;
-      const allTimePointsEarnedAsScout = mergedUserAllTimeStats?.pointsEarnedAsScout ?? 0;
-
-      await tx.userAllTimeStats.upsert({
-        where: {
-          userId
-        },
-        create: {
-          userId,
-          pointsEarnedAsBuilder: allTimePointsEarnedAsBuilder,
-          pointsEarnedAsScout: allTimePointsEarnedAsScout
-        },
-        update: {
-          pointsEarnedAsBuilder: {
-            increment: allTimePointsEarnedAsBuilder
-          },
-          pointsEarnedAsScout: {
-            increment: allTimePointsEarnedAsScout
-          }
+        data: {
+          senderId: userId
         }
       });
 
@@ -230,14 +178,7 @@ export const mergeUserFarcasterAccount = async ({
         }
       });
 
-      await tx.partnerRewardEvent.updateMany({
-        where: {
-          userId: mergedUser.id
-        },
-        data: {
-          userId
-        }
-      });
+      // Skipped partner reward events records
     },
     {
       timeout: 100000

@@ -17,7 +17,7 @@ export function ProfileCard({
   displayName: string;
   points: number;
   nftsPurchased: number;
-  onClick: () => void;
+  onClick?: () => void;
   isSelected?: boolean;
   disabled?: boolean;
 }) {
@@ -31,7 +31,7 @@ export function ProfileCard({
         px: 6,
         py: 4,
         backgroundColor: 'background.dark',
-        cursor: 'pointer',
+        cursor: onClick ? 'pointer' : 'default',
         position: 'relative',
         outline: isSelected ? '1.5px solid' : '',
         outlineColor: disabled ? 'text.disabled' : isSelected ? 'primary.main' : 'transparent'
