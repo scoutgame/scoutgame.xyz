@@ -5,12 +5,12 @@ import { authConfig } from '@packages/farcaster/config';
 
 import type { UserWithAccountsDetails } from 'components/accounts/AccountsPage';
 
-import { FarcasterLoginButton } from './FarcasterLoginButton';
+import { FarcasterConnectButton } from './FarcasterConnectButton';
 
-export function FarcasterLogin({ user }: { user: UserWithAccountsDetails }) {
+export function FarcasterConnect({ user }: { user: UserWithAccountsDetails }) {
   return (
     <AuthKitProvider config={authConfig}>
-      <FarcasterLoginButton user={user} />
+      <FarcasterConnectButton user={user} />
     </AuthKitProvider>
   );
 }

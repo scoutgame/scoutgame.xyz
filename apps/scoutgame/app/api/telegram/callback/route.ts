@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     return new Response('Authentication required', { status: 401 });
   }
 
+  // console.log(req.nextUrl.searchParams.toString());
   const telegramData = validateTelegramData(req.nextUrl.searchParams.toString());
-
   return new Response('OK');
 }

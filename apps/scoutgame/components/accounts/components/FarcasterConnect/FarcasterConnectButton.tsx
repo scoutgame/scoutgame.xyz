@@ -21,10 +21,10 @@ import type { FarcasterConnectedUser } from 'lib/farcaster/connectFarcasterAccou
 import { connectFarcasterAccountAction } from 'lib/farcaster/connectFarcasterAccountAction';
 import { mergeUserFarcasterAccountAction } from 'lib/users/mergeUserFarcasterAccountAction';
 
-import { ProfileCard } from '../ProfileSelectCard/ProfileCard';
+import { ProfileCard } from '../ProfileCard';
 
-export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }) {
-  const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-login' });
+export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails }) {
+  const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-connect' });
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
   const { isAuthenticated } = useProfile();
   const { refreshUser } = useUser();
@@ -92,7 +92,7 @@ export function FarcasterLoginButton({ user }: { user: UserWithAccountsDetails }
 
   const onErrorCallback = useCallback((err?: AuthClientError) => {
     if (err?.errCode === 'unavailable') {
-      log.warn('Timed out waiting for farcaster login', { error: err });
+      log.warn('Timed out waiting for farcaster connect', { error: err });
     } else {
       log.error('There was an error while logging in with farcaster', { error: err });
     }

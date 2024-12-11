@@ -1,10 +1,11 @@
 'use client';
 
 import { Stack, Typography } from '@mui/material';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { useEffect } from 'react';
 
-export function TelegramLogin({ user }: { user: SessionUser }) {
+import type { UserWithAccountsDetails } from '../AccountsPage';
+
+export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
   useEffect(() => {
     const script = document.createElement('script');
     script.async = true;
