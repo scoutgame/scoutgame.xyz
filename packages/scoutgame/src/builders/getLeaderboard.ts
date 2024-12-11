@@ -14,6 +14,7 @@ export type LeaderBoardRow = {
   gemsCollected: number;
   price: bigint;
   nftType: BuilderNftType;
+  nftsSold: number;
   congratsImageUrl?: string | null;
 };
 
@@ -68,6 +69,14 @@ export async function getLeaderboard({
               nftType: true,
               congratsImageUrl: true
             }
+          },
+          userSeasonStats: {
+            where: {
+              season
+            },
+            select: {
+              nftsSold: true
+            }
           }
         }
       }
@@ -91,7 +100,8 @@ export async function getLeaderboard({
         price,
         nftImageUrl: nft?.imageUrl,
         nftType: nft?.nftType ?? BuilderNftType.default,
-        congratsImageUrl: nft?.congratsImageUrl
+        congratsImageUrl: nft?.congratsImageUrl,
+        nftsSold: weeklyTopBuilder.user.userSeasonStats[0]?.nftsSold ?? 0
       };
     })
     .filter((builder) => builder.gemsCollected > 0);

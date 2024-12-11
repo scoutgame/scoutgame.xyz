@@ -39,8 +39,10 @@ export function PublicProfilePage({ user, tab }: { user: UserProfile; tab: strin
       {tab === 'builder' ? (
         <PublicBuilderProfile
           builder={{
-            ...user,
-            nftType: BuilderNftType.default
+            price: BigInt(0),
+            nftsSold: 0,
+            nftType: BuilderNftType.default,
+            ...user
           }}
         />
       ) : (

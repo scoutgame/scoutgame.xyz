@@ -8,7 +8,7 @@ import { ScoutButton } from '../../ScoutButton/ScoutButton';
 import { BuilderCardNftDisplay } from './BuilderCardNftDisplay';
 import { BuilderCardStats } from './BuilderCardStats';
 
-type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path' | 'nftType';
+type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path' | 'nftType' | 'price' | 'nftsSold';
 
 export function BuilderCard({
   builder,

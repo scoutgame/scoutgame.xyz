@@ -62,7 +62,8 @@ import { SuccessView } from './SuccessView';
 
 export type NFTPurchaseProps = {
   builder: MinimalUserInfo & {
-    price?: bigint;
+    price: bigint;
+    nftsSold: number;
     congratsImageUrl?: string | null;
     nftImageUrl?: string | null;
     nftType: BuilderNftType;
@@ -435,6 +436,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               </IconButton>
             </Stack>
           )}
+          {tokensToBuy} out of {builder.nftsSold + tokensToBuy} Cards. Reward:{' '}
+          {Math.floor(tokensToBuy / (builder.nftsSold + tokensToBuy))}% Cards
         </Stack>
       )}
       <Stack>

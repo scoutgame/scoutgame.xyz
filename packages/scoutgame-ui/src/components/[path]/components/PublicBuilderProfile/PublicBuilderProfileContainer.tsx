@@ -20,7 +20,8 @@ import { PublicBuilderStats } from './PublicBuilderStats';
 export type BuilderProfileProps = {
   builder: BasicUserInfo & {
     builderStatus: BuilderStatus | null;
-    price?: bigint;
+    price: bigint;
+    nftsSold: number;
     nftImageUrl?: string;
     congratsImageUrl?: string;
     nftType: BuilderNftType;
