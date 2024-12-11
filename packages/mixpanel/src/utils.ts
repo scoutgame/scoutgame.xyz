@@ -59,7 +59,9 @@ export function getPlatform(): ReferralPlatform {
   }
 
   if (platform || isProdEnv) {
-    log.warn(`Unknown value for REACT_APP_SCOUTGAME_PLATFORM: ${platform}`);
+    log.warn(`Unknown value for REACT_APP_SCOUTGAME_PLATFORM: ${platform}`, {
+      env: typeof window !== 'undefined' ? (window as any).__ENV : null
+    });
   }
 
   return 'unknown';
