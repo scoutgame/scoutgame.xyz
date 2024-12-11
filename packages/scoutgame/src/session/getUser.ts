@@ -25,7 +25,13 @@ export async function getUser(userId?: string): Promise<SessionUser | null> {
       farcasterId: true,
       farcasterName: true,
       bio: true,
-      referralCode: true
+      referralCode: true,
+      telegramId: true,
+      wallets: {
+        select: {
+          address: true
+        }
+      }
     }
   });
 

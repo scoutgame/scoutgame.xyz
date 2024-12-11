@@ -22,4 +22,9 @@ export type SessionUser = Pick<
   | 'agreedToTermsAt'
   | 'bio'
   | 'referralCode'
->;
+  | 'telegramId'
+> & {
+  wallets: {
+    address: string;
+  }[];
+};

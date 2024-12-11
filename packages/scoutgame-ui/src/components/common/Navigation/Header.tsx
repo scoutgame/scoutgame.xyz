@@ -142,6 +142,11 @@ export function Header() {
                         <Link href='/profile'>{user.displayName}</Link>
                       </MenuItem>
                       {platform === 'webapp' && (
+                        <MenuItem>
+                          <Link href='/accounts'>Accounts</Link>
+                        </MenuItem>
+                      )}
+                      {platform === 'webapp' && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out
                         </MenuItem>
