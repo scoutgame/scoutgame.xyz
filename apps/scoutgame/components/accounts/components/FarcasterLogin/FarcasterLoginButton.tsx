@@ -28,6 +28,11 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
   const { refreshUser } = useUser();
   const [connectedUser, setConnectedUser] = useState<FarcasterConnectedUser | null>(null);
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
+  const [farcasterSigninArtifact, setFarcasterSigninArtifact] = useState<{
+    message: string;
+    signature: string;
+    nonce: string;
+  } | null>(null);
 
   const { executeAsync: mergeUserAccount, isExecuting: isMergingUserAccount } = useAction(mergeUserAccountAction, {
     onSuccess: async ({ data }) => {
@@ -37,6 +42,9 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
 
       await revalidatePath(null);
       await refreshUser();
+      setFarcasterSigninArtifact(null);
+      setConnectedUser(null);
+      setAccountMergeError(null);
     },
     onError: (err) => {
       log.error('Error merging user account', { error: err.error.serverError });
@@ -80,6 +88,7 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
 
   const onSuccessCallback = useCallback(async (res: StatusAPIResponse) => {
     if (res.message && res.signature) {
+      setFarcasterSigninArtifact({ message: res.message, signature: res.signature, nonce: res.nonce });
       await connectFarcasterAccount({ message: res.message, signature: res.signature, nonce: res.nonce });
     } else {
       log.error('Did not receive message or signature from Farcaster', res);
@@ -131,7 +140,7 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
         )}
         <FarcasterLoginModal {...bindPopover(popupState)} url={url} />
       </Stack>
-      {connectedUser && (
+      {connectedUser && farcasterSigninArtifact && (
         <Dialog open={!!connectedUser} onClose={() => setConnectedUser(null)}>
           <DialogTitle sx={{ pb: 0 }} align='center'>
             This farcaster account is already connected to another account
@@ -154,7 +163,14 @@ export function FarcasterLoginButton({ user }: { user: SessionUser }) {
               variant='contained'
               loading={isMergingUserAccount}
               disabled={isMergingUserAccount}
-              onClick={() => mergeUserAccount({ farcasterId: connectedUser.farcasterId })}
+              onClick={() =>
+                mergeUserAccount({
+                  farcasterId: connectedUser.farcasterId,
+                  signature: farcasterSigninArtifact.signature,
+                  nonce: farcasterSigninArtifact.nonce,
+                  message: farcasterSigninArtifact.message
+                })
+              }
             >
               {isMergingUserAccount ? 'Merging...' : 'Merge'}
             </LoadingButton>
