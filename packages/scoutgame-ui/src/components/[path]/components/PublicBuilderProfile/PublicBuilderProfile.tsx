@@ -13,7 +13,7 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
 
   const [
     builderNft,
-    { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 } = {},
+    { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0, nftsSold = 0 } = {},
     builderActivities = [],
     { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {}
   ] = await Promise.all([
@@ -29,6 +29,7 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
       builder={{
         ...builder,
         nftImageUrl: builderNft?.imageUrl,
+        nftsSold: nftsSold ?? 0,
         price: builderNft?.currentPrice ?? BigInt(0)
       }}
       allTimePoints={allTimePoints}

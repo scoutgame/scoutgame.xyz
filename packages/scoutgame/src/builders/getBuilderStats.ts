@@ -7,6 +7,7 @@ export type BuilderStats = {
   allTimePoints?: number;
   rank: number | null;
   gemsCollected?: number;
+  nftsSold?: number | null;
 };
 
 export async function getBuilderStats(builderId: string): Promise<BuilderStats> {
@@ -25,7 +26,8 @@ export async function getBuilderStats(builderId: string): Promise<BuilderStats> 
           season: currentSeason
         },
         select: {
-          pointsEarnedAsBuilder: true
+          pointsEarnedAsBuilder: true,
+          nftsSold: true
         }
       },
       userWeeklyStats: {
@@ -44,6 +46,7 @@ export async function getBuilderStats(builderId: string): Promise<BuilderStats> 
     seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder,
     allTimePoints: builder.userAllTimeStats[0]?.pointsEarnedAsBuilder,
     rank: builder.userWeeklyStats[0]?.rank,
-    gemsCollected: builder.userWeeklyStats[0]?.gemsCollected
+    gemsCollected: builder.userWeeklyStats[0]?.gemsCollected,
+    nftsSold: builder.userSeasonStats[0]?.nftsSold
   };
 }
