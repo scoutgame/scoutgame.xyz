@@ -207,7 +207,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
             </Stack>
           )}
 
-          <Stack alignItems='flex-end' mt={3}>
+          <Stack alignItems='flex-end' m={3}>
             <LoadingButton
               variant='contained'
               loading={isMergingUserAccount}
