@@ -8,7 +8,6 @@ import { FarcasterConnect } from './components/FarcasterConnect/FarcasterConnect
 export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   telegramId: bigint | null;
   wallets: string[];
-  nftsPurchased: number;
   avatar: string;
   builderStatus: BuilderStatus | null;
 };

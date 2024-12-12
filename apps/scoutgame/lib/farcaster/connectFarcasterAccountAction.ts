@@ -3,7 +3,7 @@
 import { authSchema } from '@packages/farcaster/config';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 
-import type { UserAccountMetadata } from 'lib/users/getUserAccount';
+import type { UserAccountMetadata } from 'lib/users/getUserProfile';
 
 import { connectFarcasterAccount } from './connectFarcasterAccount';
 import { verifyFarcasterUser } from './verifyFarcasterUser';

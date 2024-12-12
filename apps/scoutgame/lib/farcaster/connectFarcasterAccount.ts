@@ -2,10 +2,10 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 
-import { getConnectedUserAccount } from 'lib/users/getUserAccount';
+import { getUserProfile } from 'lib/users/getUserProfile';
 
 export async function connectFarcasterAccount({ fid, userId }: { fid: number; userId: string }) {
-  const existingFarcasterUser = await getConnectedUserAccount({ farcasterId: fid });
+  const existingFarcasterUser = await getUserProfile({ farcasterId: fid });
 
   if (existingFarcasterUser) {
     return existingFarcasterUser;

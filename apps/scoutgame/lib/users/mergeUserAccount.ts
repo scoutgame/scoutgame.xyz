@@ -43,8 +43,6 @@ export const mergeUserAccount = async ({
   // The id of the user to retain
   const retainedUserId = secondaryUser.builderStatus !== null ? secondaryUser.id : userId;
 
-  const retainedUser = retainedUserId === userId ? primaryUser : secondaryUser;
-
   // The id of the user to merge into the retained user
   // The merged account must not be a builder
   const mergedUserId = secondaryUser.builderStatus === null ? secondaryUser.id : userId;

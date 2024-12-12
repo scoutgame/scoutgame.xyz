@@ -1,8 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Dialog, DialogTitle, Stack, Typography } from '@mui/material';
+import { Alert, Dialog, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 
-import type { UserAccountMetadata } from 'lib/users/getUserAccount';
+import type { UserProfile } from 'lib/users/getUserProfile';
 import type { ProfileToKeep } from 'lib/users/mergeUserAccount';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
@@ -23,7 +23,7 @@ export function AccountConnect({
 }: {
   user: UserWithAccountsDetails;
   identity: 'telegram' | 'farcaster';
-  connectedUser: UserAccountMetadata;
+  connectedUser: UserProfile;
   onClose: () => void;
   setSelectedProfile: (profile: ProfileToKeep) => void;
   selectedProfile: ProfileToKeep;
@@ -48,61 +48,47 @@ export function AccountConnect({
           'Your Points and Scouted Builders will be merged into your current account'
         )}
       </DialogTitle>
-      {connectedUser.builderStatus === null && user.builderStatus === null ? (
-        <Stack direction='row' gap={2} justifyContent='space-between'>
-          <ProfileCard
-            onClick={() => setSelectedProfile('current')}
-            avatar={user.avatar}
-            identity='current'
-            displayName={user.displayName}
-            points={user.currentBalance}
-            nftsPurchased={user.nftsPurchased}
-            isSelected={selectedProfile === 'current'}
-            disabled={isMergingUserAccount}
-          />
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {connectedUser.builderStatus === null && user.builderStatus === null ? (
+          <Stack gap={2}>
+            <ProfileCard
+              onClick={() => setSelectedProfile('current')}
+              user={user}
+              isSelected={selectedProfile === 'current'}
+              disabled={isMergingUserAccount}
+            />
 
-          <ProfileCard
-            onClick={() => setSelectedProfile('new')}
-            avatar={connectedUser.avatar}
-            identity={identity}
-            displayName={connectedUser.displayName}
-            points={connectedUser.currentBalance}
-            nftsPurchased={connectedUser.nftsPurchased}
-            isSelected={selectedProfile === 'new'}
-            disabled={isMergingUserAccount}
-          />
-        </Stack>
-      ) : isMergeDisabled ? (
-        <Alert color='error' icon={<CloseIcon />}>
-          Can not merge two builder accounts. Please select a different account to merge.
-        </Alert>
-      ) : (
-        <Stack width='50%' margin='0 auto'>
-          <ProfileCard
-            avatar={connectedUser.avatar}
-            identity={identity}
-            displayName={connectedUser.displayName}
-            points={connectedUser.currentBalance}
-            nftsPurchased={connectedUser.nftsPurchased}
-          />
-        </Stack>
-      )}
+            <ProfileCard
+              onClick={() => setSelectedProfile('new')}
+              user={connectedUser}
+              isSelected={selectedProfile === 'new'}
+              disabled={isMergingUserAccount}
+            />
+          </Stack>
+        ) : isMergeDisabled ? (
+          <Alert color='error' icon={<CloseIcon />} sx={{ m: 3 }}>
+            Can not merge two builder accounts. Please select a different account to merge.
+          </Alert>
+        ) : (
+          <ProfileCard user={connectedUser} />
+        )}
 
-      <Stack alignItems='flex-end' m={3}>
-        <LoadingButton
-          variant='contained'
-          loading={isMergingUserAccount}
-          disabled={isMergingUserAccount || isMergeDisabled}
-          onClick={mergeUserAccount}
-        >
-          {isMergingUserAccount ? 'Merging...' : 'Merge'}
-        </LoadingButton>
-      </Stack>
-      {accountMergeError && (
-        <Typography variant='body2' textAlign='center' sx={{ mt: 2 }} color='error'>
-          {accountMergeError}
-        </Typography>
-      )}
+        <Stack alignItems='flex-end'>
+          <LoadingButton
+            variant='contained'
+            loading={isMergingUserAccount}
+            disabled={isMergingUserAccount || isMergeDisabled}
+            onClick={mergeUserAccount}
+          >
+            {isMergingUserAccount ? 'Merging...' : 'Merge'}
+          </LoadingButton>
+        </Stack>
+        {accountMergeError && (
+          <Typography variant='body2' textAlign='center' sx={{ mt: 2 }} color='error'>
+            {accountMergeError}
+          </Typography>
+        )}
+      </DialogContent>
     </Dialog>
   );
 }

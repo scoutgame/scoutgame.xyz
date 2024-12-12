@@ -1,9 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { getConnectedUserAccount } from 'lib/users/getUserAccount';
+import { getUserProfile } from 'lib/users/getUserProfile';
 
 export async function connectTelegramAccount({ telegramId, userId }: { telegramId: number; userId: string }) {
-  const existingTelegramUser = await getConnectedUserAccount({ telegramId });
+  const existingTelegramUser = await getUserProfile({ telegramId });
 
   if (existingTelegramUser) {
     return existingTelegramUser;

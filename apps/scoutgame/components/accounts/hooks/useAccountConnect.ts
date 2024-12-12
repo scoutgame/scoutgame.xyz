@@ -5,7 +5,7 @@ import { usePopupState } from 'material-ui-popup-state/hooks';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 
-import type { UserAccountMetadata } from 'lib/users/getUserAccount';
+import type { UserProfile } from 'lib/users/getUserProfile';
 import type { ProfileToKeep } from 'lib/users/mergeUserAccount';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
@@ -15,7 +15,7 @@ export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDe
   const { refreshUser } = useUser();
 
   const [authData, setAuthData] = useState<AuthData | null>(null);
-  const [connectedUser, setConnectedUser] = useState<UserAccountMetadata | null>(null);
+  const [connectedUser, setConnectedUser] = useState<UserProfile | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep>('current');
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDe
     setAccountMergeError('Error merging telegram account');
   }, []);
 
-  const connectAccountOnSuccess = useCallback(async (_connectedUser: UserAccountMetadata | undefined) => {
+  const connectAccountOnSuccess = useCallback(async (_connectedUser: UserProfile | undefined) => {
     if (!_connectedUser) {
       await refreshUser();
       await revalidatePath(null);
