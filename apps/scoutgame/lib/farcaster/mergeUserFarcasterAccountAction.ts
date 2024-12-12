@@ -14,17 +14,17 @@ export const mergeUserFarcasterAccountAction = authActionClient
   .schema(mergeUserFarcasterAccountSchema)
   .action(async ({ ctx, parsedInput }) => {
     const scoutId = ctx.session.scoutId;
-    const { signature, nonce, message, profileToKeep } = parsedInput;
+    const { authData, selectedProfile } = parsedInput;
 
     const { fid } = await verifyFarcasterUser({
-      message,
-      signature: signature as `0x${string}`,
-      nonce
+      message: authData.message,
+      signature: authData.signature as `0x${string}`,
+      nonce: authData.nonce
     });
 
     await mergeUserAccount({
       userId: scoutId,
       farcasterId: fid,
-      profileToKeep
+      selectedProfile
     });
   });

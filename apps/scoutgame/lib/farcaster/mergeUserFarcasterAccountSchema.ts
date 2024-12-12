@@ -1,8 +1,7 @@
+import { authSchema } from '@packages/farcaster/config';
 import * as yup from 'yup';
 
 export const mergeUserFarcasterAccountSchema = yup.object({
-  signature: yup.string().required(),
-  nonce: yup.string().required(),
-  message: yup.string().required(),
-  profileToKeep: yup.string().oneOf(['current', 'new']).required()
+  authData: authSchema.required(),
+  selectedProfile: yup.string().oneOf(['current', 'new']).required()
 });

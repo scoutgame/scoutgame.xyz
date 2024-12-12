@@ -32,7 +32,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
   const [connectedUser, setConnectedUser] = useState<UserAccountMetadata | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep>('current');
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
-  const [farcasterSigninArtifact, setFarcasterSigninArtifact] = useState<{
+  const [authData, setAuthData] = useState<{
     message: string;
     signature: string;
     nonce: string;
@@ -42,7 +42,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
     mergeUserFarcasterAccountAction,
     {
       onSuccess: async () => {
-        setFarcasterSigninArtifact(null);
+        setAuthData(null);
         setConnectedUser(null);
         setAccountMergeError(null);
         await revalidatePath(null);
@@ -103,7 +103,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
 
   const onSuccessCallback = useCallback(async (res: StatusAPIResponse) => {
     if (res.message && res.signature) {
-      setFarcasterSigninArtifact({ message: res.message, signature: res.signature, nonce: res.nonce });
+      setAuthData({ message: res.message, signature: res.signature, nonce: res.nonce });
       await connectFarcasterAccount({ message: res.message, signature: res.signature, nonce: res.nonce });
     } else {
       log.error('Did not receive message or signature from Farcaster', res);
@@ -220,8 +220,8 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
               disabled={isMergingUserAccount || isMergeDisabled}
               onClick={() =>
                 mergeUserFarcasterAccount({
-                  ...farcasterSigninArtifact,
-                  profileToKeep: selectedProfile
+                  authData,
+                  selectedProfile
                 })
               }
             >

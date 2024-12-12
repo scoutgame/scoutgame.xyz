@@ -7,12 +7,12 @@ export const mergeUserAccount = async ({
   userId,
   farcasterId,
   telegramId,
-  profileToKeep
+  selectedProfile
 }: {
   userId: string;
   farcasterId?: number;
   telegramId?: number;
-  profileToKeep: ProfileToKeep;
+  selectedProfile: ProfileToKeep;
 }) => {
   if (!farcasterId && !telegramId) {
     throw new Error('No account identities to merge');
@@ -71,7 +71,7 @@ export const mergeUserAccount = async ({
         telegramId
       };
 
-      if (profileToKeep === 'new') {
+      if (selectedProfile === 'new') {
         updatedScoutData.avatar = mergedUser.avatar;
         updatedScoutData.displayName = mergedUser.displayName;
         updatedScoutData.bio = mergedUser.bio;
