@@ -436,8 +436,10 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               </IconButton>
             </Stack>
           )}
-          {tokensToBuy} out of {builder.nftsSold + tokensToBuy} Cards. Reward:{' '}
-          {Math.floor(tokensToBuy / (builder.nftsSold + tokensToBuy))}% Cards
+          <Typography align='right' variant='caption' color='secondary'>
+            {tokensToBuy} out of {builder.nftsSold + tokensToBuy} Cards. Reward:{' '}
+            {Math.floor((100 * tokensToBuy) / (builder.nftsSold + tokensToBuy))}%
+          </Typography>
         </Stack>
       )}
       <Stack>
