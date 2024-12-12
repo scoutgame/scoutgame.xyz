@@ -337,7 +337,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   }
 
   return (
-    <Stack gap={3} width='400px' maxWidth='100%' mx='auto'>
+    <Stack gap={2} width='400px' maxWidth='100%' mx='auto'>
       <Box
         bgcolor='black.dark'
         width='100%'
@@ -436,13 +436,17 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               </IconButton>
             </Stack>
           )}
-          {nftStats && (
+          {nftStats ? (
             <Typography align='right' variant='caption' color='secondary'>
               {tokensToBuy} out of {nftStats.nftSupply.total + tokensToBuy} Cards. Reward:{' '}
               {Math.floor(
                 100 * calculateRewardForScout({ purchased: { default: tokensToBuy }, supply: nftStats.nftSupply })
               )}
               %
+            </Typography>
+          ) : (
+            <Typography align='right' variant='caption'>
+              <CircularProgress color='inherit' size={14} />
             </Typography>
           )}
         </Stack>
