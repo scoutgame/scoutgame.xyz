@@ -25,13 +25,12 @@ import type { ProfileToKeep } from 'lib/users/mergeUserAccount';
 import { ProfileCard } from '../ProfileCard';
 
 export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails }) {
-  const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-connect' });
+  const popupState = usePopupState({ variant: 'popover', popupId: 'farcaster-connect' });
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
   const { isAuthenticated } = useProfile();
   const { refreshUser } = useUser();
   const [connectedUser, setConnectedUser] = useState<UserAccountMetadata | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep>('current');
-
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
   const [farcasterSigninArtifact, setFarcasterSigninArtifact] = useState<{
     message: string;

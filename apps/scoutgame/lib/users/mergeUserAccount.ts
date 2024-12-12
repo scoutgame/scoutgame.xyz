@@ -82,7 +82,7 @@ export const mergeUserAccount = async ({
       // Detach the identities from the merged user
       await tx.scout.update({
         where: {
-          id: mergedUser.id
+          id: mergedUserId
         },
         data: {
           email: null,
@@ -99,7 +99,7 @@ export const mergeUserAccount = async ({
 
       await prisma.scoutWallet.updateMany({
         where: {
-          scoutId: mergedUser.id
+          scoutId: mergedUserId
         },
         data: {
           scoutId: retainedUserId
@@ -107,7 +107,7 @@ export const mergeUserAccount = async ({
       });
 
       await tx.scout.update({
-        where: { id: mergedUser.id },
+        where: { id: mergedUserId },
         data: {
           deletedAt: new Date()
         }
@@ -115,7 +115,7 @@ export const mergeUserAccount = async ({
 
       await tx.scoutMergeEvent.create({
         data: {
-          mergedFromId: mergedUser.id,
+          mergedFromId: mergedUserId,
           mergedToId: retainedUserId,
           mergedRecords: {
             farcasterId,
@@ -126,7 +126,7 @@ export const mergeUserAccount = async ({
 
       await tx.nFTPurchaseEvent.updateMany({
         where: {
-          scoutId: mergedUser.id
+          scoutId: mergedUserId
         },
         data: {
           scoutId: retainedUserId
@@ -135,7 +135,7 @@ export const mergeUserAccount = async ({
 
       await tx.pointsReceipt.updateMany({
         where: {
-          recipientId: mergedUser.id
+          recipientId: mergedUserId
         },
         data: {
           recipientId: retainedUserId
@@ -144,7 +144,25 @@ export const mergeUserAccount = async ({
 
       await tx.pointsReceipt.updateMany({
         where: {
-          senderId: mergedUser.id
+          senderId: mergedUserId
+        },
+        data: {
+          senderId: retainedUserId
+        }
+      });
+
+      await tx.tokensReceipt.updateMany({
+        where: {
+          recipientId: mergedUserId
+        },
+        data: {
+          recipientId: retainedUserId
+        }
+      });
+
+      await tx.tokensReceipt.updateMany({
+        where: {
+          senderId: mergedUserId
         },
         data: {
           senderId: retainedUserId
@@ -153,25 +171,16 @@ export const mergeUserAccount = async ({
 
       await tx.pendingNftTransaction.updateMany({
         where: {
-          userId: mergedUser.id
+          userId: mergedUserId
         },
         data: {
           userId: retainedUserId
         }
       });
 
-      await tx.tokensReceipt.updateMany({
-        where: {
-          recipientId: mergedUser.id
-        },
-        data: {
-          recipientId: retainedUserId
-        }
-      });
-
       await tx.referralCodeEvent.updateMany({
         where: {
-          refereeId: mergedUser.id
+          refereeId: mergedUserId
         },
         data: {
           refereeId: retainedUserId
@@ -180,10 +189,19 @@ export const mergeUserAccount = async ({
 
       await tx.talentProfile.updateMany({
         where: {
-          builderId: mergedUser.id
+          builderId: mergedUserId
         },
         data: {
           builderId: retainedUserId
+        }
+      });
+
+      await tx.scoutGameActivity.updateMany({
+        where: {
+          userId: mergedUserId
+        },
+        data: {
+          userId: retainedUserId
         }
       });
 
