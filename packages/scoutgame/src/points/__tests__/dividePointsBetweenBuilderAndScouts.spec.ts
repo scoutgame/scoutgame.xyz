@@ -31,7 +31,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       builderId: builder.id,
       scoutId: scout1.id,
       season,
-      week,
+      week: 'week-0', // use a previous week to make sure it is included
       tokensPurchased: 10
     });
 
