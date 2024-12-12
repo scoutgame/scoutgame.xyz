@@ -4,18 +4,18 @@ import { log } from '@charmverse/core/log';
 import { useProfile } from '@farcaster/auth-kit';
 import type { StatusAPIResponse, AuthClientError } from '@farcaster/auth-kit';
 import { Box, Button, Stack, Typography } from '@mui/material';
+import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
+import { FarcasterLoginModal } from '@packages/scoutgame-ui/components/common/Warpcast/FarcasterModal';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { usePopupState, bindPopover } from 'material-ui-popup-state/hooks';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
-import { useFarcasterConnection } from 'hooks/useFarcasterConnection';
 import { loginWithFarcasterAction } from 'lib/session/loginWithFarcasterAction';
 
-import { FarcasterLoginModal } from './FarcasterModal';
 import { WarpcastIcon } from './WarpcastIcon';
 
 export function WarpcastLoginButton() {

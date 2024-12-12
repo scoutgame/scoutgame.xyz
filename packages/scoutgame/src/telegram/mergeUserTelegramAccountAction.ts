@@ -4,7 +4,7 @@ import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { TELEGRAM_BOT_TOKEN } from '@packages/scoutgame/constants';
 import { validateInitData } from '@packages/scoutgame/telegram/validate';
 
-import { mergeUserAccount } from 'lib/users/mergeUserAccount';
+import { mergeUserAccount } from '../users/mergeUserAccount';
 
 import { mergeUserTelegramAccountSchema } from './mergeUserTelegramAccountSchema';
 

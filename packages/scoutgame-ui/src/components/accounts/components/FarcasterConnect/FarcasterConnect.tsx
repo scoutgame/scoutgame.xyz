@@ -3,7 +3,7 @@
 import { AuthKitProvider } from '@farcaster/auth-kit';
 import { authConfig } from '@packages/farcaster/config';
 
-import type { UserWithAccountsDetails } from 'components/accounts/AccountsPage';
+import type { UserWithAccountsDetails } from '../../AccountsPage';
 
 import { FarcasterConnectButton } from './FarcasterConnectButton';
 

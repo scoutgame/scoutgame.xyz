@@ -1,11 +1,10 @@
 'use server';
 
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
-
-import { verifyFarcasterUser } from 'lib/farcaster/verifyFarcasterUser';
-import { mergeUserAccount } from 'lib/users/mergeUserAccount';
+import { mergeUserAccount } from '@packages/scoutgame/users/mergeUserAccount';
 
 import { mergeUserFarcasterAccountSchema } from './mergeUserFarcasterAccountSchema';
+import { verifyFarcasterUser } from './verifyFarcasterUser';
 
 export const mergeUserFarcasterAccountAction = authActionClient
   .metadata({

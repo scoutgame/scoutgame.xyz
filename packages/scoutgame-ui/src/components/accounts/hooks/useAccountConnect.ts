@@ -1,12 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
+import type { UserProfile } from '@packages/scoutgame/users/getUserProfile';
+import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { usePopupState } from 'material-ui-popup-state/hooks';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
-
-import type { UserProfile } from 'lib/users/getUserProfile';
-import type { ProfileToKeep } from 'lib/users/mergeUserAccount';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
 
@@ -24,7 +23,7 @@ export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDe
     setAuthData(null);
     setConnectedUser(null);
     setAccountMergeError(null);
-    await revalidatePath(null);
+    await revalidatePath();
     await refreshUser();
   }, [revalidatePath, refreshUser]);
 
@@ -36,7 +35,7 @@ export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDe
   const connectAccountOnSuccess = useCallback(async (_connectedUser: UserProfile | undefined) => {
     if (!_connectedUser) {
       await refreshUser();
-      await revalidatePath(null);
+      await revalidatePath();
     } else {
       setConnectedUser(_connectedUser);
       // If the current user is a builder, we want to keep the current profile

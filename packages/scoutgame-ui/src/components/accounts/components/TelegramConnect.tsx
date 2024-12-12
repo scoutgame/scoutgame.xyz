@@ -4,11 +4,10 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
+import { connectTelegramAccountAction } from '@packages/scoutgame/telegram/connectTelegramAccountAction';
+import { mergeUserTelegramAccountAction } from '@packages/scoutgame/telegram/mergeUserTelegramAccountAction';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useEffect } from 'react';
-
-import { connectTelegramAccountAction } from 'lib/telegram/connectTelegramAccountAction';
-import { mergeUserTelegramAccountAction } from 'lib/telegram/mergeUserTelegramAccountAction';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
 import { useAccountConnect } from '../hooks/useAccountConnect';
@@ -118,7 +117,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
           accountMergeError={accountMergeError}
           isMergeDisabled={isMergeDisabled}
           isMergingUserAccount={isMergingUserAccount}
-          mergeUserAccount={() => mergeUserTelegramAccount({ authData, selectedProfile })}
+          mergeUserAccount={() => authData && mergeUserTelegramAccount({ authData, selectedProfile })}
           onClose={() => setConnectedUser(null)}
           selectedProfile={selectedProfile}
           setSelectedProfile={setSelectedProfile}
