@@ -49,7 +49,7 @@ import { useUser } from '../../../../providers/UserProvider';
 import { IconButton } from '../../Button/IconButton';
 import { PointsIcon } from '../../Icons';
 import { useDecentTransaction } from '../hooks/useDecentTransaction';
-import { useGetBuilderStrikesCount } from '../hooks/useGetBuilderStrikesCount';
+import { useGetBuilderNftStats } from '../hooks/useGetBuilderNftStats';
 import { useGetERC20Allowance } from '../hooks/useGetERC20Allowance';
 import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 
@@ -98,7 +98,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { showMessage } = useSnackbar();
 
   const { switchChainAsync } = useSwitchChain();
-  const { data: builderStrikesCount } = useGetBuilderStrikesCount({ builderId });
+  const { data: nftStats } = useGetBuilderNftStats({ builderId });
 
   const builderContractReadonlyApiClient = new BuilderNFTSeasonOneImplementation01Client({
     chain: builderNftChain,
@@ -367,9 +367,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           </>
         </Typography>
       </Box>
-      {builderStrikesCount ? (
+      {nftStats?.builderStrikes ? (
         <Alert severity='warning'>
-          This builder has {builderStrikesCount} strike{builderStrikesCount > 1 ? 's' : ''}. Click{' '}
+          This builder has {nftStats.builderStrikes} strike{nftStats.builderStrikes > 1 ? 's' : ''}. Click{' '}
           <Link href='/info/spam-policy' target='_blank'>
             here
           </Link>{' '}
