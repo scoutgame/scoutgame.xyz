@@ -20,6 +20,7 @@ import { useFarcasterConnection } from 'hooks/useFarcasterConnection';
 import { connectFarcasterAccountAction } from 'lib/farcaster/connectFarcasterAccountAction';
 import { mergeUserFarcasterAccountAction } from 'lib/farcaster/mergeUserFarcasterAccountAction';
 import type { UserAccountMetadata } from 'lib/users/getUserAccount';
+import type { ProfileToKeep } from 'lib/users/mergeUserAccount';
 
 import { ProfileCard } from '../ProfileCard';
 
@@ -29,7 +30,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
   const { isAuthenticated } = useProfile();
   const { refreshUser } = useUser();
   const [connectedUser, setConnectedUser] = useState<UserAccountMetadata | null>(null);
-  const [selectedProfile, setSelectedProfile] = useState<'current' | 'farcaster' | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep>('current');
 
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
   const [farcasterSigninArtifact, setFarcasterSigninArtifact] = useState<{
@@ -41,11 +42,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
   const { executeAsync: mergeUserFarcasterAccount, isExecuting: isMergingUserAccount } = useAction(
     mergeUserFarcasterAccountAction,
     {
-      onSuccess: async ({ data }) => {
-        if (!data?.success) {
-          return;
-        }
-
+      onSuccess: async () => {
         setFarcasterSigninArtifact(null);
         setConnectedUser(null);
         setAccountMergeError(null);
@@ -74,10 +71,16 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
         await revalidatePath(null);
       } else {
         setConnectedUser(data.connectedUser);
-        // If one of the accounts is a builder, user can't select the profile to keep
-        if (user.builderStatus !== null || data.connectedUser.builderStatus !== null) {
-          setSelectedProfile(null);
-        } else {
+        // If the current user is a builder, we want to keep the current profile
+        if (user.builderStatus !== null) {
+          setSelectedProfile('current');
+        }
+        // else if the merged user is a builder, we want to keep the merged user profile
+        else if (data.connectedUser.builderStatus !== null) {
+          setSelectedProfile('new');
+        }
+        // Otherwise if none of the users are builders, we want to keep the one selected by the user
+        else {
           setSelectedProfile('current');
         }
       }
@@ -185,13 +188,13 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
               />
 
               <ProfileCard
-                onClick={() => setSelectedProfile('farcaster')}
+                onClick={() => setSelectedProfile('new')}
                 avatar={connectedUser.avatar}
                 identity='farcaster'
                 displayName={connectedUser.displayName}
                 points={connectedUser.currentBalance}
                 nftsPurchased={connectedUser.nftsPurchased}
-                isSelected={selectedProfile === 'farcaster'}
+                isSelected={selectedProfile === 'new'}
                 disabled={isMergingUserAccount}
               />
             </Stack>

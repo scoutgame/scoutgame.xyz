@@ -6,10 +6,7 @@ export async function connectTelegramAccount({ telegramId, userId }: { telegramI
   const existingTelegramUser = await getConnectedUserAccount({ telegramId });
 
   if (existingTelegramUser) {
-    return {
-      ...existingTelegramUser,
-      telegramId
-    };
+    return existingTelegramUser;
   }
 
   await prisma.scout.update({

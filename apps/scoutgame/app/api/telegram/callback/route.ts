@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   }
 
   const telegramData = validateTelegramData(req.nextUrl.searchParams.toString());
-  const telegramId = telegramData.user?.id ?? 0;
+  const telegramId = telegramData.user?.id;
   if (!telegramId) {
     return new Response('Invalid Telegram data', { status: 400 });
   }

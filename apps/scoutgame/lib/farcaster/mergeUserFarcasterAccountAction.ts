@@ -3,8 +3,8 @@
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 
 import { verifyFarcasterUser } from 'lib/farcaster/verifyFarcasterUser';
+import { mergeUserAccount } from 'lib/users/mergeUserAccount';
 
-import { mergeUserFarcasterAccount } from './mergeUserFarcasterAccount';
 import { mergeUserFarcasterAccountSchema } from './mergeUserFarcasterAccountSchema';
 
 export const mergeUserFarcasterAccountAction = authActionClient
@@ -22,13 +22,9 @@ export const mergeUserFarcasterAccountAction = authActionClient
       nonce
     });
 
-    await mergeUserFarcasterAccount({
+    await mergeUserAccount({
       userId: scoutId,
       farcasterId: fid,
-      profileToKeep: profileToKeep as 'current' | 'farcaster'
+      profileToKeep
     });
-
-    return {
-      success: true
-    };
   });

@@ -65,6 +65,9 @@ export async function getConnectedUserAccount({
     currentBalance: user.currentBalance,
     nftsPurchased: user.userSeasonStats[0]?.nftsPurchased ?? 0,
     avatar: user.avatar as string,
-    builderStatus: user.builderStatus
+    builderStatus: user.builderStatus,
+    farcasterId,
+    telegramId,
+    walletAddress
   };
 }

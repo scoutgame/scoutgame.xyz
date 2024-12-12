@@ -8,10 +8,7 @@ export async function connectFarcasterAccount({ fid, userId }: { fid: number; us
   const existingFarcasterUser = await getConnectedUserAccount({ farcasterId: fid });
 
   if (existingFarcasterUser) {
-    return {
-      ...existingFarcasterUser,
-      farcasterId: fid
-    };
+    return existingFarcasterUser;
   }
 
   const profile = await getFarcasterUserById(fid).catch((error) => {
