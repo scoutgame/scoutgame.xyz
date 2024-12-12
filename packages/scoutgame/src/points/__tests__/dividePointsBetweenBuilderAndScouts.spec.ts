@@ -61,11 +61,20 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
 
     expect(result).toMatchObject(
       expect.objectContaining({
-        // 10 * 10 (normal NFT) + 10 * 20 (normal NFT) +  1 * 10 (starter pack NFT) = 310
-        totalNftsPurchased: 310,
+        nftSupply: {
+          default: 30,
+          starterPack: 10,
+          total: 40
+        },
         nftsByScout: {
-          [scout1.id]: 110,
-          [scout2.id]: 200
+          [scout1.id]: {
+            default: 10,
+            starterPack: 10
+          },
+          [scout2.id]: {
+            default: 20,
+            starterPack: 0
+          }
         },
         earnableScoutPoints: 2400,
         pointsPerScout: expect.arrayContaining([

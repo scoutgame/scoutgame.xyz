@@ -33,6 +33,7 @@ import {
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
+import { calculateRewardForScout } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
 import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
 import Image from 'next/image';
@@ -437,8 +438,11 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           )}
           {nftStats && (
             <Typography align='right' variant='caption' color='secondary'>
-              {tokensToBuy} out of {nftStats.totalNftsSold + tokensToBuy} Cards. Reward:{' '}
-              {Math.floor((100 * tokensToBuy) / (nftStats.totalNftsSold + tokensToBuy))}%
+              {tokensToBuy} out of {nftStats.nftSupply.total + tokensToBuy} Cards. Reward:{' '}
+              {Math.floor(
+                100 * calculateRewardForScout({ purchased: { default: tokensToBuy }, supply: nftStats.nftSupply })
+              )}
+              %
             </Typography>
           )}
         </Stack>

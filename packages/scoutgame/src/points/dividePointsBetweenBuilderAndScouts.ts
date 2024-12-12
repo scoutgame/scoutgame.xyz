@@ -7,8 +7,8 @@ import { builderPointsShare, scoutPointsShare } from '../builderNfts/constants';
 import { calculateEarnableScoutPointsForRank } from '../points/calculatePoints';
 
 const nftTypeMultipliers: Record<BuilderNftType, number> = {
-  starter_pack: 1,
-  default: 10
+  starter_pack: 0.1,
+  default: 1
 };
 
 /**
@@ -18,7 +18,6 @@ const nftTypeMultipliers: Record<BuilderNftType, number> = {
  * @param rank - Rank of the builder
  * @param weeklyAllocatedPoints - Points allocated for the week
  * @param normalisationFactor - Normalisation factor for points to ensure we hit the full quota allocated
- * @returns {Promise<{ totalNftsPurchased: number, nftsByScout: Record<string, number>, earnableScoutPoints: number }>}
  */
 export async function dividePointsBetweenBuilderAndScouts({
   builderId,
@@ -59,19 +58,25 @@ export async function dividePointsBetweenBuilderAndScouts({
     }
   });
 
-  const { totalNftsPurchased, nftsByScout } = nftPurchaseEvents.reduce(
+  // Calculate the total number of NFTs purchased by each scout
+  const { nftSupply, nftsByScout } = nftPurchaseEvents.reduce(
     (acc, purchaseEvent) => {
-      // Normal NFTs are 10x more valuable than Starter Pack NFTs
-      const multiplier = nftTypeMultipliers[purchaseEvent.builderNft.nftType];
-      const totalPurchased = purchaseEvent.tokensPurchased * multiplier;
-
-      acc.totalNftsPurchased += totalPurchased;
-      acc.nftsByScout[purchaseEvent.scoutId] = (acc.nftsByScout[purchaseEvent.scoutId] || 0) + totalPurchased;
+      acc.nftsByScout[purchaseEvent.scoutId] = acc.nftsByScout[purchaseEvent.scoutId] || {
+        default: 0,
+        starterPack: 0
+      };
+      if (purchaseEvent.builderNft.nftType === 'default') {
+        acc.nftsByScout[purchaseEvent.scoutId].default += purchaseEvent.tokensPurchased;
+        acc.nftSupply.default += purchaseEvent.tokensPurchased;
+      } else {
+        acc.nftsByScout[purchaseEvent.scoutId].starterPack += purchaseEvent.tokensPurchased;
+        acc.nftSupply.starterPack += purchaseEvent.tokensPurchased;
+      }
       return acc;
     },
     {
-      totalNftsPurchased: 0,
-      nftsByScout: {} as Record<string, number>
+      nftSupply: { default: 0, starterPack: 0 },
+      nftsByScout: {} as Record<string, { default: number; starterPack: number }>
     }
   );
 
@@ -80,12 +85,38 @@ export async function dividePointsBetweenBuilderAndScouts({
   );
 
   const pointsPerScout = Object.entries(nftsByScout).map(([scoutId, tokensPurchased]) => {
-    const scoutPoints = Math.floor(scoutPointsShare * earnableScoutPoints * (tokensPurchased / totalNftsPurchased));
+    const scoutRewardShare = calculateRewardForScout({
+      purchased: tokensPurchased,
+      supply: nftSupply
+    });
+    const scoutPoints = Math.floor(scoutRewardShare * scoutPointsShare * earnableScoutPoints);
 
     return { scoutId, scoutPoints };
   });
 
   const pointsForBuilder = Math.floor(builderPointsShare * earnableScoutPoints);
 
-  return { totalNftsPurchased, nftsByScout, earnableScoutPoints, pointsPerScout, pointsForBuilder };
+  return {
+    nftSupply: {
+      default: nftSupply.default,
+      starterPack: nftSupply.starterPack,
+      total: nftSupply.default + nftSupply.starterPack
+    },
+    nftsByScout,
+    earnableScoutPoints,
+    pointsPerScout,
+    pointsForBuilder
+  };
+}
+
+// returs the percentage of the total points that the scout should receive
+export function calculateRewardForScout({
+  purchased,
+  supply
+}: {
+  purchased: { starterPack?: number; default: number };
+  supply: { starterPack: number; default: number };
+}) {
+  const rewardPerNft = 1 / (supply.starterPack * nftTypeMultipliers.starter_pack + supply.default);
+  return (purchased.default + (purchased.starterPack || 0) * nftTypeMultipliers.starter_pack) * rewardPerNft;
 }
