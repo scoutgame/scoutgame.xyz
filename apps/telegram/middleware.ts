@@ -3,9 +3,6 @@ import { NextResponse } from 'next/server';
 
 import { getSession } from 'lib/session/getSession';
 
-// Everything is private
-const privateLinks: string[] = [];
-
 // Home page handles the redirects after logging in.
 export async function middleware(request: NextRequest) {
   const session = await getSession();
