@@ -37,6 +37,14 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
 
     await mockNFTPurchaseEvent({
       builderId: builder.id,
+      scoutId: scout1.id,
+      season,
+      week: 'week-2', // use a future week to make sure it is not included
+      tokensPurchased: 10000
+    });
+
+    await mockNFTPurchaseEvent({
+      builderId: builder.id,
       scoutId: scout2.id,
       season,
       week,
