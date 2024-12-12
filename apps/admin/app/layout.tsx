@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 import type { ReactNode } from 'react';
 
 import { AppProviders } from 'components/common/AppProviders';
@@ -44,7 +43,8 @@ export default async function RootLayout({
     <html lang='en' dir='ltr'>
       <body>
         {/* load env vars for the frontend - note that the parent body tag is required for React to not complain */}
-        <Script src='/__ENV.js' />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src='/__ENV.js' />
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
