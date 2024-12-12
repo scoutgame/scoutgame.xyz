@@ -435,6 +435,12 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               </IconButton>
             </Stack>
           )}
+          {nftStats && (
+            <Typography align='right' variant='caption' color='secondary'>
+              {tokensToBuy} out of {nftStats.totalNftsSold + tokensToBuy} Cards. Reward:{' '}
+              {Math.floor((100 * tokensToBuy) / (nftStats.totalNftsSold + tokensToBuy))}%
+            </Typography>
+          )}
         </Stack>
       )}
       <Stack>
