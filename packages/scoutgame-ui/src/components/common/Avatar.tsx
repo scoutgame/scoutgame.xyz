@@ -2,7 +2,7 @@ import type { AvatarProps, SxProps, Theme } from '@mui/material';
 import MuiAvatar from '@mui/material/Avatar';
 import { stringToColor } from '@packages/utils/strings';
 import { replaceS3Domain } from '@packages/utils/url';
-import React from 'react';
+import Image from 'next/image';
 
 export type AvatarSize = 'xSmall' | 'small' | 'medium' | 'large' | 'xLarge' | '2xLarge' | '3xLarge';
 export type AvatarVariant = AvatarProps['variant'];
@@ -107,6 +107,7 @@ export function Avatar({ name, variant, src, size = 'medium', sx = {}, children,
         ...getAvatarCustomStyles(variant, size),
         ...sx
       }}
+      component={Image}
       variant={variant}
       slotProps={{ img: { referrerPolicy: 'no-referrer' } }}
       {...restProps}
