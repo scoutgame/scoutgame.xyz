@@ -83,6 +83,7 @@
           "./apps/admin/",
           "./apps/cron/",
           "./packages/github/",
+          "./packages/mixpanel/",
           "./packages/scoutgame/",
           "./packages/scoutgame-ui/",
           "./packages/testing/",

@@ -97,7 +97,7 @@ type InitialAvatarProps = Omit<AvatarProps, 'src'> & {
   size?: AvatarSize;
 };
 
-export function Avatar({ name, variant, src, size = 'medium', sx = {}, children, ...restProps }: InitialAvatarProps) {
+export function Avatar({ name, variant, src, size = 'medium', sx = {}, ...restProps }: InitialAvatarProps) {
   const nameStr = (name || '').replace('0x', ''); // ignore the universal prefix of addresses
 
   return (
@@ -107,13 +107,15 @@ export function Avatar({ name, variant, src, size = 'medium', sx = {}, children,
         ...getAvatarCustomStyles(variant, size),
         ...sx
       }}
-      component={Image}
       variant={variant}
       slotProps={{ img: { referrerPolicy: 'no-referrer' } }}
       {...restProps}
-      src={replaceS3Domain(src ?? undefined)}
     >
-      {children || nameStr.charAt(0).toUpperCase()}
+      {src ? (
+        <Image src={replaceS3Domain(src)} alt='' fill quality={100} sizes='100vw' style={{ objectFit: 'cover' }} />
+      ) : (
+        nameStr.charAt(0).toUpperCase()
+      )}
     </MuiAvatar>
   );
 }
