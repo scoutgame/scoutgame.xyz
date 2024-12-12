@@ -43,6 +43,8 @@ export const mergeUserAccount = async ({
   // The id of the user to retain
   const retainedUserId = secondaryUser.builderStatus !== null ? secondaryUser.id : userId;
 
+  const retainedUser = retainedUserId === userId ? primaryUser : secondaryUser;
+
   // The id of the user to merge into the retained user
   // The merged account must not be a builder
   const mergedUserId = secondaryUser.builderStatus === null ? secondaryUser.id : userId;
@@ -65,18 +67,19 @@ export const mergeUserAccount = async ({
 
   await prisma.$transaction(
     async (tx) => {
-      const updatedScoutData: Prisma.ScoutUpdateInput = {
+      const updatedUserData: Prisma.ScoutUpdateInput = {
         farcasterId,
         farcasterName: farcasterId ? mergedUser.farcasterName : undefined,
         telegramId
       };
 
-      if (selectedProfile === 'new') {
-        updatedScoutData.avatar = mergedUser.avatar;
-        updatedScoutData.displayName = mergedUser.displayName;
-        updatedScoutData.bio = mergedUser.bio;
-        updatedScoutData.email = mergedUser.email;
-        updatedScoutData.walletENS = mergedUser.walletENS;
+      // Only merge the new profile if none of the users are builders
+      if (selectedProfile === 'new' && mergedUser.builderStatus === null && primaryUser.builderStatus === null) {
+        updatedUserData.avatar = mergedUser.avatar;
+        updatedUserData.displayName = mergedUser.displayName;
+        updatedUserData.bio = mergedUser.bio;
+        updatedUserData.email = mergedUser.email;
+        updatedUserData.walletENS = mergedUser.walletENS;
       }
 
       // Detach the identities from the merged user
@@ -94,7 +97,7 @@ export const mergeUserAccount = async ({
 
       await tx.scout.update({
         where: { id: retainedUserId },
-        data: updatedScoutData
+        data: updatedUserData
       });
 
       await prisma.scoutWallet.updateMany({

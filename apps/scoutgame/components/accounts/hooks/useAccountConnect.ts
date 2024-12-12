@@ -42,8 +42,6 @@ export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDe
       // If the current user is a builder, we want to keep the current profile
       if (user.builderStatus !== null) {
         setSelectedProfile('current');
-      } else if (_connectedUser.builderStatus !== null) {
-        setSelectedProfile('new');
       } else {
         setSelectedProfile('new');
       }
