@@ -41,13 +41,14 @@ export async function processScoutPointsPayout({
   const { pointsForBuilder, pointsPerScout, nftSupply } = await dividePointsBetweenBuilderAndScouts({
     builderId,
     season,
+    week,
     rank,
     weeklyAllocatedPoints,
     normalisationFactor
   });
 
   if (nftSupply.total === 0) {
-    scoutgameMintsLogger.warn(`No NFTs purchased for builder in week ${week}`, { userId: builderId });
+    scoutgameMintsLogger.warn(`No NFTs purchased for builder in season ${season}`, { userId: builderId });
     return;
   }
 

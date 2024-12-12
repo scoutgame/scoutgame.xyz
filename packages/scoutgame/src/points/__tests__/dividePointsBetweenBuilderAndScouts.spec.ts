@@ -13,12 +13,13 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
   let scout2: Awaited<ReturnType<typeof mockScout>>;
 
   const season = 'season-1';
+  const week = 'week-1';
   const rank = 1;
   const weeklyAllocatedPoints = 100_000;
   const normalisationFactor = 0.8;
 
   beforeAll(async () => {
-    builder = await mockBuilder({ createNft: true });
+    builder = await mockBuilder();
 
     builderNft = await mockBuilderNft({ builderId: builder.id, season });
     starterPackNft = await mockBuilderNft({ builderId: builder.id, season, nftType: 'starter_pack' });
@@ -30,6 +31,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       builderId: builder.id,
       scoutId: scout1.id,
       season,
+      week,
       tokensPurchased: 10
     });
 
@@ -37,6 +39,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       builderId: builder.id,
       scoutId: scout2.id,
       season,
+      week,
       tokensPurchased: 20
     });
 
@@ -44,6 +47,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       builderId: builder.id,
       scoutId: scout1.id,
       season,
+      week,
       tokensPurchased: 10,
       nftType: 'starter_pack'
     });
@@ -54,6 +58,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
     const result = await dividePointsBetweenBuilderAndScouts({
       builderId: builder.id,
       season,
+      week,
       rank,
       weeklyAllocatedPoints,
       normalisationFactor
@@ -95,6 +100,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       dividePointsBetweenBuilderAndScouts({
         builderId: 'invalid-builder-id',
         season,
+        week,
         rank,
         weeklyAllocatedPoints,
         normalisationFactor
@@ -107,6 +113,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       dividePointsBetweenBuilderAndScouts({
         builderId: builder.id,
         season,
+        week,
         rank: -1,
         weeklyAllocatedPoints,
         normalisationFactor

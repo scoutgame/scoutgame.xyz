@@ -15,6 +15,7 @@ const nftTypeMultipliers: Record<BuilderNftType, number> = {
  * Function to calculate scout points
  * @param builderId - ID of the builder
  * @param season - Season identifier
+ * @param week - Week identifier
  * @param rank - Rank of the builder
  * @param weeklyAllocatedPoints - Points allocated for the week
  * @param normalisationFactor - Normalisation factor for points to ensure we hit the full quota allocated
@@ -22,12 +23,14 @@ const nftTypeMultipliers: Record<BuilderNftType, number> = {
 export async function dividePointsBetweenBuilderAndScouts({
   builderId,
   season,
+  week,
   rank,
   weeklyAllocatedPoints,
   normalisationFactor
 }: {
   builderId: string;
   season: string;
+  week: string;
   rank: number;
   weeklyAllocatedPoints: number;
   normalisationFactor: number;
@@ -42,9 +45,14 @@ export async function dividePointsBetweenBuilderAndScouts({
 
   const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
+      builderEvent: {
+        week: {
+          lte: week
+        }
+      },
       builderNft: {
-        season,
-        builderId
+        builderId,
+        season
       }
     },
     select: {
