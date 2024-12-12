@@ -1,10 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { currentSeason } from '@packages/scoutgame/dates';
 import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import { notFound } from 'next/navigation';
 
 import { AccountsPage } from 'components/accounts/AccountsPage';
-import { PageContainer } from 'components/layout/PageContainer';
 
 export const dynamic = 'force-dynamic';
 

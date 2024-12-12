@@ -2,12 +2,10 @@
 
 import { log } from '@charmverse/core/log';
 import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
-import { useProfile } from '@farcaster/auth-kit';
 import CloseIcon from '@mui/icons-material/Close';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Button, DialogTitle, Stack, Typography } from '@mui/material';
+import { Alert, DialogTitle, Stack, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
-import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import { useAction } from 'next-safe-action/hooks';
@@ -27,7 +25,7 @@ import { ProfileCard } from '../ProfileCard';
 export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails }) {
   const popupState = usePopupState({ variant: 'popover', popupId: 'farcaster-connect' });
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
-  const { isAuthenticated } = useProfile();
+  const [connectionError, setConnectionError] = useState<null | string>(null);
   const { refreshUser } = useUser();
   const [connectedUser, setConnectedUser] = useState<UserAccountMetadata | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep>('current');
@@ -88,14 +86,17 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
     },
     onError(err) {
       log.error('Error on connecting Farcaster account', { error: err.error.serverError });
+      setConnectionError('Error connecting Farcaster account');
       popupState.close();
     }
   });
 
   const onErrorCallback = useCallback((err?: AuthClientError) => {
     if (err?.errCode === 'unavailable') {
+      setConnectionError('Timed out waiting for farcaster connect');
       log.warn('Timed out waiting for farcaster connect', { error: err });
     } else {
+      setConnectionError('There was an error while logging in with farcaster');
       log.error('There was an error while logging in with farcaster', { error: err });
     }
     popupState.close();
@@ -106,6 +107,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
       setAuthData({ message: res.message, signature: res.signature, nonce: res.nonce });
       await connectFarcasterAccount({ message: res.message, signature: res.signature, nonce: res.nonce });
     } else {
+      setConnectionError('Did not receive message or signature from Farcaster');
       log.error('Did not receive message or signature from Farcaster', res);
     }
   }, []);
@@ -114,11 +116,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
     popupState.open();
   }, []);
 
-  const {
-    signIn,
-    url,
-    error: connectionError
-  } = useFarcasterConnection({
+  const { signIn, url } = useFarcasterConnection({
     onSuccess: onSuccessCallback,
     onError: onErrorCallback,
     onClick
@@ -126,13 +124,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
 
   const isMergeDisabled = connectedUser?.builderStatus !== null && user.builderStatus !== null;
 
-  const errorMessage =
-    connectionError &&
-    (connectionError.errCode === 'unavailable'
-      ? 'Could not connect to network. Please try again'
-      : connectionError.message || hasErrored
-        ? 'There was an error while logging in'
-        : null);
+  const isConnecting = isConnectingFarcasterAccount || isRevalidatingPath;
 
   return (
     <>
@@ -140,19 +132,21 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
         <Typography variant='h5'>Farcaster</Typography>
         {user.farcasterName ? (
           <Typography variant='body1'>{user.farcasterName}</Typography>
-        ) : isAuthenticated && (isRevalidatingPath || isConnectingFarcasterAccount) ? (
-          <Box width='fit-content'>
-            <LoadingComponent size={30} label='Connecting Farcaster account...' />
-          </Box>
         ) : (
-          <Button sx={{ width: 'fit-content' }} onClick={signIn}>
-            Connect
-          </Button>
+          <LoadingButton
+            disabled={isConnecting}
+            loading={isConnecting}
+            sx={{ width: 'fit-content' }}
+            onClick={signIn}
+            variant='contained'
+          >
+            {isConnecting ? 'Connecting...' : 'Connect'}
+          </LoadingButton>
         )}
 
-        {errorMessage && (
+        {connectionError && (
           <Typography variant='body2' sx={{ mt: 2 }} color='error'>
-            {errorMessage}
+            {connectionError}
           </Typography>
         )}
         <FarcasterLoginModal {...bindPopover(popupState)} url={url} />

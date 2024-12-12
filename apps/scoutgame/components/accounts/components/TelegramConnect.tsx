@@ -4,7 +4,7 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import CloseIcon from '@mui/icons-material/Close';
 import { Alert, LoadingButton } from '@mui/lab';
-import { Button, Dialog, DialogTitle, Stack, Typography } from '@mui/material';
+import { Dialog, DialogTitle, Stack, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { usePopupState } from 'material-ui-popup-state/hooks';
@@ -90,6 +90,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
       },
       onError: (err) => {
         log.error('Error on connecting Telegram account', { error: err.error.serverError });
+        setConnectionError('Error connecting Telegram account');
         popupState.close();
       }
     }
@@ -105,7 +106,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
   const handleConnectTelegramAccount = useCallback((telegramAccount: TelegramAccount) => {
     if (telegramAccount && 'id' in telegramAccount && 'hash' in telegramAccount) {
       setAuthData(telegramAccount);
-      connectTelegramAccount({ id: telegramAccount.id, hash: telegramAccount.hash });
+      connectTelegramAccount(telegramAccount);
     } else {
       log.error('Invalid Telegram account', { telegramAccount });
       setConnectionError('Invalid Telegram account');
@@ -113,6 +114,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
   }, []);
 
   const isMergeDisabled = connectedUser?.builderStatus !== null && user.builderStatus !== null;
+  const isConnecting = isConnectingTelegramAccount || isRevalidatingPath;
 
   return (
     <>
@@ -122,14 +124,15 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
           <Typography variant='body1'>{user.telegramId}</Typography>
         ) : (
           <>
-            <Button
+            <LoadingButton
+              disabled={isConnecting}
+              loading={isConnecting}
               sx={{ width: 'fit-content' }}
-              onClick={() => {
-                loginWithTelegram(handleConnectTelegramAccount);
-              }}
+              onClick={() => loginWithTelegram(handleConnectTelegramAccount)}
+              variant='contained'
             >
-              Connect
-            </Button>
+              {isConnecting ? 'Connecting...' : 'Connect'}
+            </LoadingButton>
             <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
           </>
         )}
