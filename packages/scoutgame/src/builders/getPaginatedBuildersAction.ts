@@ -1,12 +1,13 @@
 'use server';
 
-import { actionClient } from '@packages/scoutgame/actions/actionClient';
-import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
 import * as yup from 'yup';
 
-import type { CompositeCursor } from 'lib/builders/getPaginatedBuilders';
-import { getPaginatedBuilders } from 'lib/builders/getPaginatedBuilders';
+import { actionClient } from '../actions/actionClient';
+import { currentSeason, getCurrentWeek } from '../dates';
+
+import type { CompositeCursor } from './getPaginatedBuilders';
+import { getPaginatedBuilders } from './getPaginatedBuilders';
+import type { BuilderInfo } from './interfaces';
 
 export const getPaginatedBuildersAction = actionClient
   .metadata({ actionName: 'get_paginated_builders' })

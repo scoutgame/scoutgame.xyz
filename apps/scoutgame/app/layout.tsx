@@ -2,7 +2,6 @@ import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutg
 import { AppProviders } from '@packages/scoutgame-ui/providers/AppProviders';
 import type { Metadata, Viewport } from 'next';
 import dynamic from 'next/dynamic';
-import Script from 'next/script';
 import type { ReactNode } from 'react';
 
 import '@packages/scoutgame-ui/theme/styles.scss';
@@ -70,7 +69,8 @@ export default async function RootLayout({
     <html lang='en' dir='ltr' suppressHydrationWarning>
       <body>
         {/* load env vars for the frontend - note that the parent body tag is required for React to not complain */}
-        <Script strategy='beforeInteractive' src='/__ENV.js' />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src='/__ENV.js' />
         <AppProviders user={user}>
           <ClientGlobals userId={user?.id} />
           {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
