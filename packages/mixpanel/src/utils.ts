@@ -45,23 +45,25 @@ export function getUTMParamsFromSearch(searchString: string): UTMParams | undefi
   };
 }
 
-const platform = env('SCOUTGAME_PLATFORM') || process.env.REACT_APP_SCOUTGAME_PLATFORM;
-
 function isPlatform(_platform: string = ''): _platform is ReferralPlatform {
   const availablePlatforms = Object.values(ReferralPlatform);
 
   return availablePlatforms.includes(_platform as ReferralPlatform);
 }
 
+const initialPlatform = env('SCOUTGAME_PLATFORM') || process.env.REACT_APP_SCOUTGAME_PLATFORM;
+if (!initialPlatform) {
+  log.warn('SCOUTGAME_PLATFORM is not set', { env: typeof window !== 'undefined' ? (window as any).__ENV : null });
+}
+
 export function getPlatform(): ReferralPlatform {
+  const platform = env('SCOUTGAME_PLATFORM') || process.env.REACT_APP_SCOUTGAME_PLATFORM;
   if (isPlatform(platform)) {
     return platform;
   }
 
   if (platform || isProdEnv) {
-    log.warn(`Unknown value for REACT_APP_SCOUTGAME_PLATFORM: ${platform}`, {
-      env: typeof window !== 'undefined' ? (window as any).__ENV : null
-    });
+    log.warn(`Unknown value for REACT_APP_SCOUTGAME_PLATFORM: ${platform}`);
   }
 
   return 'unknown';
