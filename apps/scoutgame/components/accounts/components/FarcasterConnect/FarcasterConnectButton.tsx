@@ -17,9 +17,9 @@ import type { UserWithAccountsDetails } from 'components/accounts/AccountsPage';
 import { Dialog } from 'components/common/Dialog';
 import { FarcasterLoginModal } from 'components/common/WarpcastLogin/FarcasterModal';
 import { useFarcasterConnection } from 'hooks/useFarcasterConnection';
-import type { FarcasterConnectedUser } from 'lib/farcaster/connectFarcasterAccountAction';
 import { connectFarcasterAccountAction } from 'lib/farcaster/connectFarcasterAccountAction';
-import { mergeUserFarcasterAccountAction } from 'lib/users/mergeUserFarcasterAccountAction';
+import { mergeUserFarcasterAccountAction } from 'lib/farcaster/mergeUserFarcasterAccountAction';
+import type { UserAccountMetadata } from 'lib/users/getUserAccount';
 
 import { ProfileCard } from '../ProfileCard';
 
@@ -28,7 +28,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
   const { isAuthenticated } = useProfile();
   const { refreshUser } = useUser();
-  const [connectedUser, setConnectedUser] = useState<FarcasterConnectedUser | null>(null);
+  const [connectedUser, setConnectedUser] = useState<UserAccountMetadata | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<'current' | 'farcaster' | null>(null);
 
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);

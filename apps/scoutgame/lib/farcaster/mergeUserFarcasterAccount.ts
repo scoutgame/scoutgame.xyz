@@ -178,6 +178,15 @@ export const mergeUserFarcasterAccount = async ({
         }
       });
 
+      await tx.builderStrike.updateMany({
+        where: {
+          builderId: mergedUser.id
+        },
+        data: {
+          builderId: userId
+        }
+      });
+
       // Skipped partner reward events records
     },
     {
