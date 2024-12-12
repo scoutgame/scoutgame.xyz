@@ -50,6 +50,7 @@ export async function calculateWeeklyClaims({ week }: { week: string }): Promise
         normalisationFactor,
         weeklyAllocatedPoints,
         rank: builder.rank,
+        week,
         season: currentSeason
       });
 
