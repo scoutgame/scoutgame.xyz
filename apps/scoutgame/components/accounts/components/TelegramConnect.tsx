@@ -4,18 +4,14 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
-import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
-import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { usePopupState } from 'material-ui-popup-state/hooks';
 import { useAction } from 'next-safe-action/hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { connectTelegramAccountAction } from 'lib/telegram/connectTelegramAccountAction';
 import { mergeUserTelegramAccountAction } from 'lib/telegram/mergeUserTelegramAccountAction';
-import type { UserAccountMetadata } from 'lib/users/getUserAccount';
-import type { ProfileToKeep } from 'lib/users/mergeUserAccount';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
+import { useAccountConnect } from '../hooks/useAccountConnect';
 
 import { AccountConnect } from './AccountConnect';
 
@@ -36,61 +32,37 @@ export function loginWithTelegram(callback: (user: TelegramAccount) => void) {
 }
 
 export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
-  const popupState = usePopupState({ variant: 'popover', popupId: 'telegram-connect' });
-  const { refreshUser } = useUser();
-  const [authData, setAuthData] = useState<TelegramAccount | null>(null);
-  const [connectedUser, setConnectedUser] = useState<UserAccountMetadata | null>(null);
-  const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep>('current');
-  const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
-  const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
+  const {
+    isRevalidatingPath,
+    connectAccountOnSuccess,
+    connectAccountOnError,
+    mergeAccountOnSuccess,
+    mergeAccountOnError,
+    selectedProfile,
+    accountMergeError,
+    connectionError,
+    setConnectionError,
+    setAuthData,
+    connectedUser,
+    setConnectedUser,
+    setSelectedProfile,
+    isMergeDisabled,
+    authData
+  } = useAccountConnect<TelegramAccount>({ user });
+
   const { executeAsync: mergeUserTelegramAccount, isExecuting: isMergingUserAccount } = useAction(
     mergeUserTelegramAccountAction,
     {
-      onSuccess: async () => {
-        setAuthData(null);
-        setConnectedUser(null);
-        setAccountMergeError(null);
-        await revalidatePath(null);
-        await refreshUser();
-      },
-      onError: (err) => {
-        log.error('Error merging user account', { error: err.error.serverError });
-        setAccountMergeError('Error merging telegram account');
-      }
+      onSuccess: mergeAccountOnSuccess,
+      onError: mergeAccountOnError
     }
   );
 
   const { executeAsync: connectTelegramAccount, isExecuting: isConnectingTelegramAccount } = useAction(
     connectTelegramAccountAction,
     {
-      onSuccess: async ({ data }) => {
-        if (!data?.success) {
-          return;
-        }
-
-        if (!data.connectedUser) {
-          await refreshUser();
-          await revalidatePath(null);
-        } else {
-          setConnectedUser(data.connectedUser);
-          // If the current user is a builder, we want to keep the current profile
-          if (user.builderStatus !== null) {
-            setSelectedProfile('current');
-          } else if (data.connectedUser.builderStatus !== null) {
-            setSelectedProfile('new');
-          } else {
-            setSelectedProfile('new');
-          }
-        }
-
-        popupState.close();
-      },
-      onError: (err) => {
-        log.error('Error on connecting Telegram account', { error: err.error.serverError });
-        setConnectionError('Error connecting Telegram account');
-        popupState.close();
-      }
+      onSuccess: ({ data }) => connectAccountOnSuccess(data?.connectedUser),
+      onError: connectAccountOnError
     }
   );
 
@@ -111,7 +83,6 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
     }
   }, []);
 
-  const isMergeDisabled = connectedUser?.builderStatus !== null && user.builderStatus !== null;
   const isConnecting = isConnectingTelegramAccount || isRevalidatingPath;
 
   return (
