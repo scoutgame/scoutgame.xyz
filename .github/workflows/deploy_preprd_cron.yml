@@ -10,7 +10,7 @@ on:
       - '.github/workflows/deploy_preprd_cron.yml'
       - 'package.json'
       - 'package-lock.json'
-      - 'apps/preprd-cron/**'
+      - 'apps/onchain-cron/**'
       - 'packages/**'
   pull_request:
     types: [labeled, opened, synchronize]
@@ -22,11 +22,11 @@ on:
       - '.github/workflows/deploy_preprd_cron.yml'
       - 'package.json'
       - 'package-lock.json'
-      - 'apps/preprd-cron/**'
+      - 'apps/onchain-cron/**'
       - 'packages/**'
 
 concurrency:
-  group: ci-preprd-cron-${{ github.event_name }}-${{ github.ref }}
+  group: ci-onchain-cron-${{ github.event_name }}-${{ github.ref }}
 
 jobs:
   build:
@@ -53,13 +53,13 @@ jobs:
         # source https://github.com/orgs/community/discussions/28474
         run: |
           echo "commit_message=$(git show -s --format=%s)" >> "$GITHUB_OUTPUT"
-          echo "deploy_staging=${{(github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy-cron') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy-cron'))}}" >> $GITHUB_OUTPUT
+          echo "deploy_staging=${{(github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy-onchain-cron') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy-onchain-cron'))}}" >> $GITHUB_OUTPUT
           echo "skip_tests=${{ contains(env.commit_message, 'skip-tests') }}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: preprd-cron
+          app_name: onchain-cron
 
       - name: Build app
         uses: ./.github/actions/build_app
@@ -96,7 +96,7 @@ jobs:
       - name: Restore dependencies from cache
         uses: ./.github/actions/install
         with:
-          app_name: preprd-cron
+          app_name: onchain-cron
 
       - name: Setup test database
         run: npx dotenv -e .env.test.local -- npm run prisma:reset
@@ -104,10 +104,10 @@ jobs:
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: preprd-cron
+          app_name: onchain-cron
 
-      - name: Typecheck preprd-cron app
-        run: npm run typecheck -w apps/preprd-cron
+      - name: Typecheck onchain-cron app
+        run: npm run typecheck -w apps/onchain-cron
 
       - name: Run eslint on changed files
         uses: tj-actions/eslint-changed-files@v25
@@ -119,7 +119,7 @@ jobs:
 
       - name: Run tests
         # jest only works once the cache has been created for some reason
-        run: npm run preprd-cron:test
+        run: npm run onchain-cron:test
 
   upload-docker:
     name: Upload Docker image
@@ -136,16 +136,16 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: preprd-cron
+          app_name: onchain-cron
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: preprd-cron
+          app_name: onchain-cron
 
       - name: Update Dockerfile
         run: |
-          rm Dockerfile && mv apps/preprd-cron/Dockerfile Dockerfile
+          rm Dockerfile && mv apps/onchain-cron/Dockerfile Dockerfile
 
       - name: Build and Push Docker image
         id: docker_build_push
@@ -155,7 +155,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         with:
-          ecr_registry: preprd-scoutgamecron
+          ecr_registry: onchain-scoutgamecron
 
   upload-static-assets:
     name: Upload assets in production
@@ -171,26 +171,26 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: preprd-cron
+          app_name: onchain-cron
 
       - name: Calculate Build ID
         id: get_build_id
         run: |
-          build_id=${{ hashFiles('package-lock.json', 'apps/preprd-cron/*.[jt]s') }}
+          build_id=${{ hashFiles('package-lock.json', 'apps/onchain-cron/*.[jt]s') }}
           echo "build_id=$build_id" >> $GITHUB_OUTPUT
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: preprd-cron
+          app_name: onchain-cron
 
       - name: Upload JS source maps to Datadog
         env:
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         run: |
           npm install -g @datadog/datadog-ci
-          datadog-ci sourcemaps upload apps/preprd-cron/dist       \
-            --service=preprd-cron                              \
+          datadog-ci sourcemaps upload apps/onchain-cron/dist       \
+            --service=onchain-cron                              \
             --release-version=${{ steps.get_build_id.outputs.build_id }}  \
             --minified-path-prefix=https://cdn.charmverse.io/_next/static
 
@@ -208,8 +208,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          app_name: preprd-cron
-          stack: prd-preprd-cron
+          app_name: onchain-cron
+          stack: prd-onchain-cron
 
   deploy-staging:
     name: Deploy to staging
@@ -227,8 +227,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          app_name: preprd-cron
-          stack: stg-preprd-scoutgamecron
+          app_name: onchain-cron
+          stack: stg-onchain-scoutgamecron
 
   discord-alert:
     name: Notify Discord of failure
