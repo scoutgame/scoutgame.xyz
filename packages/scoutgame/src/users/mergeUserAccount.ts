@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
@@ -24,20 +25,41 @@ export const mergeUserAccount = async ({
         id: userId
       },
       select: {
-        builderStatus: true
+        builderStatus: true,
+        deletedAt: true
       }
     }),
     prisma.scout.findFirstOrThrow({
       where: farcasterId ? { farcasterId } : { telegramId },
       select: {
         builderStatus: true,
-        id: true
+        id: true,
+        deletedAt: true
       }
     })
   ]);
 
   if (primaryUser.builderStatus !== null && secondaryUser.builderStatus !== null) {
+    log.error('Can not merge two builder accounts', {
+      primaryUserId: userId,
+      secondaryUserId: secondaryUser.id
+    });
     throw new Error('Can not merge two builder accounts');
+  }
+
+  if (secondaryUser.id === userId) {
+    log.error('Can not merge the same account', {
+      userId
+    });
+    throw new Error('Can not merge the same account');
+  }
+
+  if (secondaryUser.deletedAt === null || primaryUser.deletedAt === null) {
+    log.error('Can not merge deleted accounts', {
+      primaryUserId: userId,
+      secondaryUserId: secondaryUser.id
+    });
+    throw new Error('Can not merge deleted accounts');
   }
 
   // The id of the user to retain
@@ -47,37 +69,65 @@ export const mergeUserAccount = async ({
   // The merged account must not be a builder
   const mergedUserId = secondaryUser.builderStatus === null ? secondaryUser.id : userId;
 
-  const mergedUser = await prisma.scout.findUniqueOrThrow({
-    where: {
-      id: mergedUserId
-    },
-    select: {
-      id: true,
-      farcasterName: true,
-      builderStatus: true,
-      walletENS: true,
-      avatar: true,
-      bio: true,
-      displayName: true,
-      email: true
-    }
-  });
+  const [retainedUser, mergedUser] = await Promise.all([
+    prisma.scout.findUniqueOrThrow({
+      where: {
+        id: retainedUserId
+      },
+      select: {
+        email: true,
+        walletENS: true,
+        farcasterId: true,
+        farcasterName: true,
+        telegramId: true
+      }
+    }),
+    prisma.scout.findUniqueOrThrow({
+      where: {
+        id: mergedUserId
+      },
+      select: {
+        id: true,
+        farcasterName: true,
+        builderStatus: true,
+        walletENS: true,
+        avatar: true,
+        bio: true,
+        displayName: true,
+        email: true,
+        path: true,
+        farcasterId: true,
+        telegramId: true,
+        wallets: {
+          select: {
+            address: true
+          }
+        }
+      }
+    })
+  ]);
+
+  // If selected profile is set but one of the account is a builder throw an error
+  if (selectedProfile !== null && (mergedUser.builderStatus !== null || primaryUser.builderStatus !== null)) {
+    throw new Error('Can not merge builder account profiles');
+  }
 
   await prisma.$transaction(
     async (tx) => {
       const updatedUserData: Prisma.ScoutUpdateInput = {
-        farcasterId,
-        farcasterName: farcasterId ? mergedUser.farcasterName : undefined,
-        telegramId
+        farcasterId: retainedUser.farcasterId || mergedUser.farcasterId,
+        farcasterName: retainedUser.farcasterName || mergedUser.farcasterName,
+        telegramId: retainedUser.telegramId || mergedUser.telegramId
       };
 
-      // Only merge the new profile if none of the users are builders
-      if (selectedProfile === 'new' && mergedUser.builderStatus === null && primaryUser.builderStatus === null) {
+      // If selected profile is set to new, merge the new profile
+      if (selectedProfile === 'new') {
         updatedUserData.avatar = mergedUser.avatar;
         updatedUserData.displayName = mergedUser.displayName;
         updatedUserData.bio = mergedUser.bio;
-        updatedUserData.email = mergedUser.email;
-        updatedUserData.walletENS = mergedUser.walletENS;
+        updatedUserData.email = retainedUser.email || mergedUser.email;
+        updatedUserData.walletENS = retainedUser.walletENS || mergedUser.walletENS;
+        updatedUserData.path = mergedUser.path;
       }
 
       // Detach the identities from the merged user
@@ -87,9 +137,10 @@ export const mergeUserAccount = async ({
         },
         data: {
           email: null,
-          farcasterId: farcasterId ? null : undefined,
-          farcasterName: farcasterId ? null : undefined,
-          telegramId: telegramId ? null : undefined
+          farcasterId: null,
+          farcasterName: null,
+          telegramId: null,
+          deletedAt: new Date()
         }
       });
 
@@ -98,19 +149,12 @@ export const mergeUserAccount = async ({
         data: updatedUserData
       });
 
-      await prisma.scoutWallet.updateMany({
+      await tx.scoutWallet.updateMany({
         where: {
           scoutId: mergedUserId
         },
         data: {
           scoutId: retainedUserId
-        }
-      });
-
-      await tx.scout.update({
-        where: { id: mergedUserId },
-        data: {
-          deletedAt: new Date()
         }
       });
 
@@ -120,7 +164,9 @@ export const mergeUserAccount = async ({
           mergedToId: retainedUserId,
           mergedRecords: {
             farcasterId,
-            telegramId
+            telegramId,
+            email: mergedUser.email,
+            wallets: mergedUser.wallets.map((wallet) => wallet.address)
           }
         }
       });
@@ -194,15 +240,6 @@ export const mergeUserAccount = async ({
         },
         data: {
           builderId: retainedUserId
-        }
-      });
-
-      await tx.scoutGameActivity.updateMany({
-        where: {
-          userId: mergedUserId
-        },
-        data: {
-          userId: retainedUserId
         }
       });
 
