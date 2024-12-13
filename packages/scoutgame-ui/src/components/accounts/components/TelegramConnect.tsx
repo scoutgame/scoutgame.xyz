@@ -3,9 +3,10 @@
 import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
-import { Stack, Typography } from '@mui/material';
+import { Paper, Stack, Typography } from '@mui/material';
 import { connectTelegramAccountAction } from '@packages/scoutgame/telegram/connectTelegramAccountAction';
 import { mergeUserTelegramAccountAction } from '@packages/scoutgame/telegram/mergeUserTelegramAccountAction';
+import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useEffect } from 'react';
 
@@ -85,24 +86,25 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
   const isConnecting = isConnectingTelegramAccount || isRevalidatingPath;
 
   return (
-    <>
-      <Stack gap={1}>
-        <Typography variant='h5'>Telegram</Typography>
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <Stack gap={2}>
+        <Stack direction='row' gap={1} alignItems='center'>
+          <Image src='/images/logos/telegram.png' alt='Telegram' width={24} height={24} />
+          <Typography variant='h6'>Telegram</Typography>
+        </Stack>
         {user.telegramId ? (
           <Typography variant='body1'>{user.telegramId}</Typography>
         ) : (
-          <>
-            <LoadingButton
-              disabled={isConnecting}
-              loading={isConnecting}
-              sx={{ width: 'fit-content' }}
-              onClick={() => loginWithTelegram(handleConnectTelegramAccount)}
-              variant='contained'
-            >
-              {isConnecting ? 'Connecting...' : 'Connect'}
-            </LoadingButton>
+          <LoadingButton
+            disabled={isConnecting}
+            loading={isConnecting}
+            sx={{ width: 'fit-content' }}
+            onClick={() => loginWithTelegram(handleConnectTelegramAccount)}
+            variant='contained'
+          >
+            {isConnecting ? 'Connecting...' : 'Connect'}
             <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
-          </>
+          </LoadingButton>
         )}
 
         {connectionError && (
@@ -125,6 +127,6 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
           connectedUser={connectedUser}
         />
       )}
-    </>
+    </Paper>
   );
 }

@@ -3,12 +3,13 @@
 import { log } from '@charmverse/core/log';
 import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
 import { LoadingButton } from '@mui/lab';
-import { Stack, Typography } from '@mui/material';
+import { Paper, Stack, Typography } from '@mui/material';
 import type { AuthSchema } from '@packages/farcaster/config';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { connectFarcasterAccountAction } from '@packages/scoutgame/farcaster/connectFarcasterAccountAction';
 import { mergeUserFarcasterAccountAction } from '@packages/scoutgame/farcaster/mergeUserFarcasterAccountAction';
 import { bindPopover } from 'material-ui-popup-state/hooks';
+import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
@@ -87,9 +88,13 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
   const isConnecting = isConnectingFarcasterAccount || isRevalidatingPath;
 
   return (
-    <>
-      <Stack gap={1}>
-        <Typography variant='h5'>Farcaster</Typography>
+    <Paper elevation={2} sx={{ p: 2 }}>
+      <Stack gap={2}>
+        <Stack direction='row' gap={1} alignItems='center'>
+          <Image src='/images/logos/farcaster.png' alt='Farcaster' width={24} height={24} />
+          <Typography variant='h6'>Farcaster</Typography>
+        </Stack>
+
         {user.farcasterName ? (
           <Typography variant='body1'>{user.farcasterName}</Typography>
         ) : (
@@ -125,6 +130,6 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
           user={user}
         />
       )}
-    </>
+    </Paper>
   );
 }

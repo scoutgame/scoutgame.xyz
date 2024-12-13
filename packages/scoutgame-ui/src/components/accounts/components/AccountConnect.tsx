@@ -1,8 +1,10 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Dialog, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
+import { Alert, Stack, Typography } from '@mui/material';
 import type { UserProfile } from '@packages/scoutgame/users/getUserProfile';
 import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
+
+import { Dialog } from 'components/common/Dialog';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
 
@@ -32,22 +34,19 @@ export function AccountConnect({
   mergeUserAccount: () => void;
 }) {
   return (
-    <Dialog open={!!connectedUser} onClose={onClose}>
-      <DialogTitle sx={{ pb: 0 }} align='center'>
-        This {identity} account is connected to another account
-      </DialogTitle>
-      <DialogTitle sx={{ pt: 0.5 }} variant='body1' align='center'>
+    <Dialog open={!!connectedUser} onClose={onClose} title={`This ${identity} account is connected to another account`}>
+      <Typography sx={{ py: 1, pb: 2 }} variant='body1' align='center'>
         {connectedUser.builderStatus === null && user.builderStatus === null ? (
           <>
             Merge Profile by selecting which one to keep.
             <br />
-            Your Points and Scouted Builders will be merged into your current account
+            Your Points and Scouted Builders will be combined into your current account
           </>
         ) : (
-          'Your Points and Scouted Builders will be merged into your current account'
+          'Your Points and Scouted Builders will be combined into your current account'
         )}
-      </DialogTitle>
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      </Typography>
+      <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {connectedUser.builderStatus === null && user.builderStatus === null ? (
           <Stack gap={2}>
             <ProfileCard
@@ -87,7 +86,7 @@ export function AccountConnect({
             {accountMergeError}
           </Typography>
         )}
-      </DialogContent>
+      </Stack>
     </Dialog>
   );
 }
