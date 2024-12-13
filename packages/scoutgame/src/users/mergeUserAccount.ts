@@ -118,7 +118,6 @@ export const mergeUserAccount = async ({
         updatedUserData.avatar = mergedUser.avatar;
         updatedUserData.displayName = mergedUser.displayName;
         updatedUserData.bio = mergedUser.bio;
-        updatedUserData.email = retainedUser.email || mergedUser.email;
         updatedUserData.walletENS = retainedUser.walletENS || mergedUser.walletENS;
       }
 
@@ -128,7 +127,6 @@ export const mergeUserAccount = async ({
           id: mergedUserId
         },
         data: {
-          email: null,
           farcasterId: null,
           farcasterName: null,
           telegramId: null,
@@ -157,7 +155,6 @@ export const mergeUserAccount = async ({
           mergedRecords: {
             farcasterId,
             telegramId,
-            email: mergedUser.email,
             wallets: mergedUser.wallets.map((wallet) => wallet.address)
           }
         }
@@ -249,53 +246,65 @@ export const mergeUserAccount = async ({
     }
   );
 
-  await prisma.$transaction(
-    async (tx) => {
-      await refreshPointStatsFromHistory({ userIdOrPath: retainedUserId, tx });
+  await refreshPointStatsFromHistory({ userIdOrPath: retainedUserId }).catch((error) => {
+    log.error('Could not refresh point stats', {
+      error,
+      userId: retainedUserId
+    });
+  });
 
-      const nftPurchaseEvents = await tx.nFTPurchaseEvent.findMany({
-        where: {
-          scoutId: retainedUserId,
-          builderNft: {
-            season: currentSeason
+  await prisma
+    .$transaction(
+      async (tx) => {
+        const nftPurchaseEvents = await tx.nFTPurchaseEvent.findMany({
+          where: {
+            scoutId: retainedUserId,
+            builderNft: {
+              season: currentSeason
+            }
+          },
+          select: {
+            tokensPurchased: true
           }
-        },
-        select: {
-          tokensPurchased: true
-        }
-      });
+        });
 
-      const nftSoldEvents = await tx.nFTPurchaseEvent.findMany({
-        where: {
-          builderNft: {
-            season: currentSeason,
-            builderId: retainedUserId
+        const nftSoldEvents = await tx.nFTPurchaseEvent.findMany({
+          where: {
+            builderNft: {
+              season: currentSeason,
+              builderId: retainedUserId
+            }
+          },
+          select: {
+            tokensPurchased: true,
+            scoutId: true
           }
-        },
-        select: {
-          tokensPurchased: true,
-          scoutId: true
-        }
-      });
+        });
 
-      await tx.userSeasonStats.update({
-        where: {
-          userId_season: {
-            userId: retainedUserId,
-            season: currentSeason
+        await tx.userSeasonStats.update({
+          where: {
+            userId_season: {
+              userId: retainedUserId,
+              season: currentSeason
+            }
+          },
+          data: {
+            nftsSold: nftSoldEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
+            nftsPurchased: nftPurchaseEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
+            nftOwners: arrayUtils.uniqueValues(nftSoldEvents.map((event) => event.scoutId)).length
           }
-        },
-        data: {
-          nftsSold: nftSoldEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
-          nftsPurchased: nftPurchaseEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
-          nftOwners: arrayUtils.uniqueValues(nftSoldEvents.map((event) => event.scoutId)).length
-        }
+        });
+      },
+      {
+        timeout: 100000
+      }
+    )
+    .catch((error) => {
+      log.error('Could not refresh point stats', {
+        error,
+        userId: retainedUserId
       });
-    },
-    {
-      timeout: 100000
-    }
-  );
+    });
 
   return { retainedUserId, mergedUserId };
 };

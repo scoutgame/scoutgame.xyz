@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 
 import { InvalidInputError } from '@charmverse/core/errors';
+import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { validate as isUuid } from 'uuid';
@@ -97,8 +98,9 @@ export async function getPointStatsFromHistory({
       where: {
         recipientId: userId,
         event: {
-          builderId: userId,
-          type: 'misc_event'
+          type: {
+            in: ['misc_event', 'daily_claim', 'social_quest', 'daily_claim_streak', 'referral']
+          }
         }
       }
     }),
@@ -131,11 +133,16 @@ export async function getPointStatsFromHistory({
 
   const balance = claimedPoints - pointsSpent;
 
-  assert.equal(
-    allPointsReceived,
-    allPointsReceivedSum,
-    `All points received sum does not match for scout id: ${userId}`
-  );
+  if (allPointsReceived !== allPointsReceivedSum) {
+    log.warn(`All points received sum does not match breakdown`, {
+      userId,
+      allPointsReceived,
+      allPointsReceivedSum,
+      pointsReceivedAsBuilder,
+      pointsReceivedAsScout,
+      bonusPointsReceived
+    });
+  }
 
   return {
     balance,
