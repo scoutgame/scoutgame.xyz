@@ -1,20 +1,13 @@
-import { prisma } from '@charmverse/core/prisma-client';
-import { stringify } from 'csv-stringify/sync';
-import { NextResponse } from 'next/server';
-
-const columns = ['id', 'owner', 'name', 'url'];
+import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
+import { getRepos } from 'lib/repos/getRepos';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const rows = await prisma.githubRepo.findMany();
-  const exportString = stringify(rows, { header: true, columns });
-  return NextResponse.json(exportString);
-  // return new Response(exportString, {
-  //   status: 200,
-  //   headers: {
-  //     'Content-Type': 'text/tsv',
-  //     'Content-Disposition': 'attachment; filename=github_repos.tsv'
-  //   }
-  // });
+  const rows = await getRepos();
+  const exportedRows = rows.map((row) => ({
+    ...row,
+    url: `https://github.com/${row.owner}/${row.name}`
+  }));
+  return respondWithTSV(exportedRows, 'github_repos.tsv');
 }
