@@ -7,6 +7,7 @@ import * as middleware from './middleware';
 import { issueGemsOnchain } from './tasks/issueGemsOnchain';
 import { processAllBuilderActivity } from './tasks/processBuilderActivity';
 import { processOnchainGemsPayout } from './tasks/processOnchainGemsPayout/processOnchainGemsPayout';
+import { updateAllBuilderCardActivities } from './tasks/updateBuilderCardActivity';
 
 const app = new Koa();
 const router = new Router();
@@ -43,6 +44,8 @@ addTask('/hello-world', (ctx) => {
 });
 
 addTask('/process-builder-activity', processAllBuilderActivity);
+
+addTask('/update-builder-card-activity', updateAllBuilderCardActivities);
 
 // Onchain tasks -------
 
