@@ -1,5 +1,6 @@
 'use server';
 
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { TELEGRAM_BOT_TOKEN } from '@packages/scoutgame/constants';
 import { validateInitData } from '@packages/scoutgame/telegram/validate';
@@ -35,9 +36,16 @@ export const mergeUserTelegramAccountAction = authActionClient
       throw new Error('Invalid Telegram data');
     }
 
-    await mergeUserAccount({
+    const { retainedUserId, mergedUserId } = await mergeUserAccount({
       userId: scoutId,
       telegramId,
       selectedProfile
+    });
+
+    trackUserAction('merge_account', {
+      userId: scoutId,
+      mergedUserId,
+      retainedUserId,
+      mergedIdentity: 'telegram'
     });
   });

@@ -1,5 +1,6 @@
 'use server';
 
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { mergeUserAccount } from '@packages/scoutgame/users/mergeUserAccount';
 
@@ -21,9 +22,16 @@ export const mergeUserFarcasterAccountAction = authActionClient
       nonce: authData.nonce
     });
 
-    await mergeUserAccount({
+    const { retainedUserId, mergedUserId } = await mergeUserAccount({
       userId: scoutId,
       farcasterId: fid,
       selectedProfile
+    });
+
+    trackUserAction('merge_account', {
+      userId: scoutId,
+      mergedUserId,
+      retainedUserId,
+      mergedIdentity: 'farcaster'
     });
   });

@@ -62,6 +62,11 @@ export type MixpanelEventMap = {
   complete_quest: BaseEvent & {
     questType: string;
   };
+  merge_account: BaseEvent & {
+    mergedUserId: string;
+    retainedUserId: string;
+    mergedIdentity: 'telegram' | 'farcaster' | 'wallet';
+  };
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

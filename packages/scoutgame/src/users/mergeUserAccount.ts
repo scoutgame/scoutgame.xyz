@@ -296,4 +296,6 @@ export const mergeUserAccount = async ({
       timeout: 100000
     }
   );
+
+  return { retainedUserId, mergedUserId };
 };
