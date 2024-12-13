@@ -1,4 +1,3 @@
-import { updateMoxieProfile } from '../tasks/updateTalentMoxieProfiles/updateTalentMoxieProfile';
 import { sendGemsPayoutEmails } from '../emails/sendGemsPayoutEmails/sendGemsPayoutEmails';
 import { prisma } from '@charmverse/core/prisma-client';
 
@@ -15,11 +14,5 @@ export async function query() {
       id: true
     }
   });
-  if (scout.farcasterId) {
-    await updateMoxieProfile({
-      farcasterId: scout.farcasterId,
-      builderId: scout.id
-    });
-  }
 }
 query();
