@@ -41,10 +41,10 @@ export function usePUT<T, U = unknown>(path: string, options?: { revalidate?: bo
 }
 
 // To be used when you need to trigger a get request on demand
-export function useGETtrigger<T, U = unknown>(path: MaybeString) {
+export function useGETtrigger<T, U = unknown>(path: MaybeString, options: { timeout?: number } = {}) {
   return useSWRMutation<U, Error, string, T>(path || '', (url: string, { arg }: { arg: any }) => {
     const requestUrl = url + getQueryString(arg);
-    return http.GET<U>(requestUrl);
+    return http.GET<U>(requestUrl, options);
   });
 }
 

@@ -116,7 +116,7 @@ export function HeaderActions() {
             fullWidth
             sx={{ justifyContent: 'flex-start' }}
             size='small'
-            filename='github_repos.tsv'
+            filename={`Moxie Weekly Report (${lastWeek}).tsv`}
             src='/api/partners/moxie/export'
             onComplete={closeMenu}
           >
