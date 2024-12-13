@@ -26,7 +26,7 @@ export const apps: { [key: string]: { stg?: Options; prd?: Options } } = {
       sslCert: scoutgameCert
     }
   },
-  "preprd-cron": {
+  'onchain-cron': {
     prd: {
       environmentTier: 'Worker'
     },

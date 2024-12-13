@@ -1,4 +1,4 @@
-name: Scoutgame Webapp CI
+name: Onchain Scoutgame Webapp CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - '.cdk/**'
       - 'docker-compose.yml'
       - '.github/actions/**'
-      - '.github/workflows/deploy_preprd_scoutgame.yml'
+      - '.github/workflows/deploy_onchain_scoutgame.yml'
       - 'package.json'
       - 'package-lock.json'
       - 'apps/onchain-scoutgame/**'
@@ -19,7 +19,7 @@ on:
       - '.cdk/**'
       - 'docker-compose.yml'
       - '.github/actions/**'
-      - '.github/workflows/deploy_preprd_scoutgame.yml'
+      - '.github/workflows/deploy_onchain_scoutgame.yml'
       - 'package.json'
       - 'package-lock.json'
       - 'apps/onchain-scoutgame/**'
@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build Preprd Scoutgame
+    name: Build onchain Scoutgame
     runs-on: ubuntu-latest
     outputs:
       head_commit_message: ${{ steps.setup_variables.outputs.commit_message }}
@@ -315,7 +315,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
           app_name: onchain-scoutgame
-          stack: prd-scoutgame
+          stack: prd-onchain-scoutgame
 
   deploy-staging:
     name: Deploy to staging
