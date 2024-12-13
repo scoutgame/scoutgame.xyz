@@ -13,7 +13,7 @@ export const mergeUserAccount = async ({
   userId: string;
   farcasterId?: number;
   telegramId?: number;
-  selectedProfile: ProfileToKeep;
+  selectedProfile?: ProfileToKeep | null;
 }) => {
   if (!farcasterId && !telegramId) {
     throw new Error('No account identities to merge');
@@ -108,7 +108,7 @@ export const mergeUserAccount = async ({
   ]);
 
   // If selected profile is set but one of the account is a builder throw an error
-  if (selectedProfile !== null && (mergedUser.builderStatus !== null || primaryUser.builderStatus !== null)) {
+  if (selectedProfile && (mergedUser.builderStatus !== null || primaryUser.builderStatus !== null)) {
     throw new Error('Can not merge builder account profiles');
   }
 

@@ -3,5 +3,5 @@ import * as yup from 'yup';
 
 export const mergeUserFarcasterAccountSchema = yup.object({
   authData: authSchema.required(),
-  selectedProfile: yup.string().oneOf(['current', 'new']).required()
+  selectedProfile: yup.string().oneOf(['current', 'new']).nullable()
 });

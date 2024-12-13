@@ -4,8 +4,7 @@ import { Alert, Stack, Typography } from '@mui/material';
 import type { UserProfile } from '@packages/scoutgame/users/getUserProfile';
 import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
 
-import { Dialog } from 'components/common/Dialog';
-
+import { Dialog } from '../../common/Dialog';
 import type { UserWithAccountsDetails } from '../AccountsPage';
 
 import { ProfileCard } from './ProfileCard';
@@ -26,8 +25,8 @@ export function AccountConnect({
   identity: 'telegram' | 'farcaster';
   connectedUser: UserProfile;
   onClose: () => void;
-  setSelectedProfile: (profile: ProfileToKeep) => void;
-  selectedProfile: ProfileToKeep;
+  setSelectedProfile: (profile: ProfileToKeep | null) => void;
+  selectedProfile: ProfileToKeep | null;
   isMergingUserAccount: boolean;
   isMergeDisabled: boolean;
   accountMergeError: string | null;

@@ -12,10 +12,9 @@ import type { UserWithAccountsDetails } from '../AccountsPage';
 export function useAccountConnect<AuthData>({ user, identity }: { user: UserWithAccountsDetails; identity: string }) {
   const popupState = usePopupState({ variant: 'popover', popupId: `${identity}-connect` });
   const { refreshUser } = useUser();
-
   const [authData, setAuthData] = useState<AuthData | null>(null);
   const [connectedUser, setConnectedUser] = useState<UserProfile | null>(null);
-  const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep>('current');
+  const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep | null>(null);
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
@@ -38,11 +37,11 @@ export function useAccountConnect<AuthData>({ user, identity }: { user: UserWith
       await revalidatePath();
     } else {
       setConnectedUser(_connectedUser);
-      // If the current user is a builder, we want to keep the current profile
-      if (user.builderStatus !== null) {
+      // If none of the accounts are builders, we want to preselect the current profile
+      if (user.builderStatus === null && _connectedUser.builderStatus === null) {
         setSelectedProfile('current');
       } else {
-        setSelectedProfile('new');
+        setSelectedProfile(null);
       }
     }
 
