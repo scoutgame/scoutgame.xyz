@@ -13,12 +13,13 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
   let scout2: Awaited<ReturnType<typeof mockScout>>;
 
   const season = 'season-1';
+  const week = 'week-1';
   const rank = 1;
   const weeklyAllocatedPoints = 100_000;
   const normalisationFactor = 0.8;
 
   beforeAll(async () => {
-    builder = await mockBuilder({ createNft: true });
+    builder = await mockBuilder();
 
     builderNft = await mockBuilderNft({ builderId: builder.id, season });
     starterPackNft = await mockBuilderNft({ builderId: builder.id, season, nftType: 'starter_pack' });
@@ -30,13 +31,23 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       builderId: builder.id,
       scoutId: scout1.id,
       season,
+      week: 'week-0', // use a previous week to make sure it is included
       tokensPurchased: 10
+    });
+
+    await mockNFTPurchaseEvent({
+      builderId: builder.id,
+      scoutId: scout1.id,
+      season,
+      week: 'week-2', // use a future week to make sure it is not included
+      tokensPurchased: 10000
     });
 
     await mockNFTPurchaseEvent({
       builderId: builder.id,
       scoutId: scout2.id,
       season,
+      week,
       tokensPurchased: 20
     });
 
@@ -44,6 +55,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       builderId: builder.id,
       scoutId: scout1.id,
       season,
+      week,
       tokensPurchased: 10,
       nftType: 'starter_pack'
     });
@@ -54,6 +66,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
     const result = await dividePointsBetweenBuilderAndScouts({
       builderId: builder.id,
       season,
+      week,
       rank,
       weeklyAllocatedPoints,
       normalisationFactor
@@ -61,11 +74,20 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
 
     expect(result).toMatchObject(
       expect.objectContaining({
-        // 10 * 10 (normal NFT) + 10 * 20 (normal NFT) +  1 * 10 (starter pack NFT) = 310
-        totalNftsPurchased: 310,
+        nftSupply: {
+          default: 30,
+          starterPack: 10,
+          total: 40
+        },
         nftsByScout: {
-          [scout1.id]: 110,
-          [scout2.id]: 200
+          [scout1.id]: {
+            default: 10,
+            starterPack: 10
+          },
+          [scout2.id]: {
+            default: 20,
+            starterPack: 0
+          }
         },
         earnableScoutPoints: 2400,
         pointsPerScout: expect.arrayContaining([
@@ -86,6 +108,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       dividePointsBetweenBuilderAndScouts({
         builderId: 'invalid-builder-id',
         season,
+        week,
         rank,
         weeklyAllocatedPoints,
         normalisationFactor
@@ -98,6 +121,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
       dividePointsBetweenBuilderAndScouts({
         builderId: builder.id,
         season,
+        week,
         rank: -1,
         weeklyAllocatedPoints,
         normalisationFactor
