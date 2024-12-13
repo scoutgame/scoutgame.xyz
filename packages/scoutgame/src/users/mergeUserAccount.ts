@@ -2,6 +2,8 @@ import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
+import { refreshPointStatsFromHistory } from '../points/refreshPointStatsFromHistory';
+
 export type ProfileToKeep = 'current' | 'new';
 
 export const mergeUserAccount = async ({
@@ -244,6 +246,15 @@ export const mergeUserAccount = async ({
       });
 
       // Skipped partner reward events and builder strike records
+    },
+    {
+      timeout: 100000
+    }
+  );
+
+  await prisma.$transaction(
+    async (tx) => {
+      await refreshPointStatsFromHistory({ userIdOrPath: retainedUserId, tx });
     },
     {
       timeout: 100000

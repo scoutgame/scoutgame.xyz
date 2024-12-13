@@ -131,15 +131,6 @@ export async function getPointStatsFromHistory({
 
   const balance = claimedPoints - pointsSpent;
 
-  const missingPointRecords = allPointsReceivedRecords.filter(
-    (record) =>
-      !pointsReceivedAsBuilderRecords.some((r) => r.id === record.id) &&
-      !pointsReceivedAsScoutRecords.some((r) => r.id === record.id) &&
-      !bonusPointsReceivedRecords.some((r) => r.id === record.id)
-  );
-
-  // console.log(missingPointRecords);
-
   assert.equal(
     allPointsReceived,
     allPointsReceivedSum,

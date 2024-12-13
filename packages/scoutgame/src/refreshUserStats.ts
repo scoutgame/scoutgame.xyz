@@ -1,17 +1,19 @@
-import type { UserSeasonStats, UserWeeklyStats } from '@charmverse/core/prisma-client';
+import type { Prisma, UserSeasonStats, UserWeeklyStats } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
 
 import { currentSeason, getCurrentWeek } from './dates';
 
 export async function refreshUserStats({
-  userId
+  userId,
+  tx = prisma
 }: {
   userId: string;
+  tx?: Prisma.TransactionClient;
 }): Promise<{ weekly: UserWeeklyStats; season: UserSeasonStats }> {
   const week = getCurrentWeek();
 
-  const gemsReceipts = await prisma.gemsReceipt.findMany({
+  const gemsReceipts = await tx.gemsReceipt.findMany({
     where: {
       event: {
         builderId: userId,
@@ -23,7 +25,7 @@ export async function refreshUserStats({
     return acc + e.value;
   }, 0);
 
-  const weekly = await prisma.userWeeklyStats.upsert({
+  const weekly = await tx.userWeeklyStats.upsert({
     where: {
       userId_week: {
         userId,
@@ -41,7 +43,7 @@ export async function refreshUserStats({
     }
   });
 
-  const allTimeBuilderNftPoints = await prisma.pointsReceipt.findMany({
+  const allTimeBuilderNftPoints = await tx.pointsReceipt.findMany({
     where: {
       recipientId: userId,
       event: {
@@ -57,7 +59,7 @@ export async function refreshUserStats({
     }
   });
 
-  const builderNft = await prisma.builderNft.findFirst({
+  const builderNft = await tx.builderNft.findFirst({
     where: {
       season: currentSeason,
       builderId: userId
@@ -72,7 +74,7 @@ export async function refreshUserStats({
     }
   });
 
-  const nftsBought = await prisma.nFTPurchaseEvent.count({
+  const nftsBought = await tx.nFTPurchaseEvent.count({
     where: {
       scoutId: userId,
       builderNft: {
@@ -90,7 +92,7 @@ export async function refreshUserStats({
     nftOwners: builderNft ? arrayUtils.uniqueValues(builderNft.nftSoldEvents.map((ev) => ev.scoutId)).length : undefined
   };
 
-  const season = await prisma.userSeasonStats.upsert({
+  const season = await tx.userSeasonStats.upsert({
     where: {
       userId_season: {
         season: currentSeason,
