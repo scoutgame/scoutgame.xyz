@@ -23,7 +23,7 @@ describe('processGemsPayout', () => {
 
     // Create a mock builder and NFT
     const builder = await mockBuilder({ createNft: true, nftSeason: season });
-    const scout = await mockScout({ builderId: builder.id, season });
+    const scout = await mockScout({ builderId: builder.id, season, nftWeek: lastWeek });
     await mockUserWeeklyStats({ season, week: lastWeek, userId: builder.id });
 
     await processGemsPayout(createContext(), { now: mockNow, season });
