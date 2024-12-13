@@ -66,7 +66,7 @@ jobs:
         with:
           app_name: preprd-scoutgame
 
-  test-scoutgame:
+  test-preprd-scoutgame:
     name: Test
     runs-on: ubuntu-latest
     needs: build
@@ -120,12 +120,12 @@ jobs:
           escape_paths: 'false'
 
       - name: Run app tests
-        run: npm run scoutgame:test
+        run: npm run preprd-scoutgame:test
 
       - name: Run package tests
         run: npx dotenv -e .env.test.local -- npm run test -w packages/scoutgame
 
-  test-scoutgame-e2e:
+  test-preprd-scoutgame-e2e:
     name: Test e2e
     runs-on: ubuntu-latest
     needs: build
@@ -169,17 +169,17 @@ jobs:
       - name: Install unbuffer
         run: sudo apt-get update && sudo apt-get install -y expect-dev
 
-      - name: Start scoutgame app
+      - name: Start preprd-scoutgame app
         run: |
-          unbuffer npm run scoutgame:start:test:ci 2>&1 | tee server.log &
+          unbuffer npm run preprd-scoutgame:start:test:ci 2>&1 | tee server.log &
           sleep_loop_ct=0
           until curl localhost:3337/api/health || [[ $sleep_loop_ct > 30 ]]; do
-            echo "scoutgame not up in loop $sleep_loop_ct ... sleeping"
+            echo "preprd-scoutgame not up in loop $sleep_loop_ct ... sleeping"
             sleep_loop_ct=$((sleep_loop_ct + 1))
             sleep 1
           done
 
-      - name: Run Scoutgame E2E tests
+      - name: Run preprd-scoutgame E2E tests
         env:
           REACT_APP_APP_ENV: 'test'
         # we have to run docker command ourselves to set network=host so that playwright can access the server
@@ -236,7 +236,7 @@ jobs:
 
       - name: Update Dockerfile
         run: |
-          rm Dockerfile && mv apps/scoutgame/Dockerfile Dockerfile
+          rm Dockerfile && mv apps/preprd-scoutgame/Dockerfile Dockerfile
 
       - name: Build and Push Docker image
         id: docker_build_push
@@ -246,7 +246,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         with:
-          ecr_registry: scoutgame
+          ecr_registry: preprd-scoutgame
 
   upload-static-assets:
     name: Upload static assets
@@ -269,7 +269,7 @@ jobs:
       - name: Calculate Build ID
         id: get_build_id
         run: |
-          build_id=${{ hashFiles(format('apps/{0}/*.ts', 'scoutgame'), format('apps/{0}/*.tsx', 'scoutgame')) }}
+          build_id=${{ hashFiles(format('apps/{0}/*.ts', 'preprd-scoutgame'), format('apps/{0}/*.tsx', 'preprd-scoutgame')) }}
           echo "build_id=$build_id" >> $GITHUB_OUTPUT
 
       - name: Restore app from cache
@@ -286,24 +286,24 @@ jobs:
 
       - name: Upload static assets to S3
         run: |
-          aws s3 sync apps/scoutgame/.next/static/ s3://charm.cdn/webapp-assets/_next/static/
+          aws s3 sync apps/preprd-scoutgame/.next/static/ s3://charm.cdn/webapp-assets/_next/static/
 
       - name: Upload JS source maps to Datadog
         env:
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         run: |
           npm install -g @datadog/datadog-ci
-          datadog-ci sourcemaps upload apps/scoutgame/.next/static       \
-            --service=scoutgame                              \
+          datadog-ci sourcemaps upload apps/preprd-scoutgame/.next/static       \
+            --service=preprd-scoutgame                              \
             --release-version=${{ steps.get_build_id.outputs.build_id }}  \
-            --project-path=apps/scoutgame/ \
+            --project-path=apps/preprd-scoutgame/ \
             --minified-path-prefix=https://cdn.charmverse.io/_next/static
 
   deploy-production:
     name: Deploy to production
     # run whether previous jobs were successful or skipped
     if: github.ref == 'refs/heads/main' && !(failure() || cancelled())
-    needs: [test-scoutgame, test-scoutgame-e2e, upload-docker, upload-static-assets]
+    needs: [test-preprd-scoutgame, test-preprd-scoutgame-e2e, upload-docker, upload-static-assets]
 
     runs-on: ubuntu-latest
     steps:
@@ -342,7 +342,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && failure()
     # pass in all steps so we can check if any failed
-    needs: [test-scoutgame, test-scoutgame-e2e, upload-docker, upload-static-assets, upload-docker, deploy-production]
+    needs: [test-preprd-scoutgame, test-preprd-scoutgame-e2e, upload-docker, upload-static-assets, upload-docker, deploy-production]
     steps:
       - uses: actions/checkout@v4
       - name: Notify Discord
