@@ -7,7 +7,7 @@ import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuilders
 import { DateTime } from 'luxon';
 import { findOrCreateFarcasterUser } from '@packages/scoutgame/users/findOrCreateFarcasterUser';
 
-import { processScoutPointsPayout } from '../../tasks/processGemsPayout/processScoutPointsPayout';
+import { processScoutPointsPayout } from '../../tasks/processOnchainGemsPayout/processScoutPointsPayout';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
 
 import { generateBuilder } from './generateBuilder';
