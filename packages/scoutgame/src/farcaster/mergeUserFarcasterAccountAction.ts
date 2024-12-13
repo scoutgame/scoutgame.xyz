@@ -1,5 +1,6 @@
 'use server';
 
+import { log } from '@charmverse/core/log';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { mergeUserAccount } from '@packages/scoutgame/users/mergeUserAccount';
@@ -33,5 +34,11 @@ export const mergeUserFarcasterAccountAction = authActionClient
       mergedUserId,
       retainedUserId,
       mergedIdentity: 'farcaster'
+    });
+
+    log.info('Merged user accounts', {
+      userId: scoutId,
+      retainedUserId,
+      mergedUserId
     });
   });
