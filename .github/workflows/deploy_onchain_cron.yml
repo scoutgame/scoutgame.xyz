@@ -1,4 +1,4 @@
-name: Onchain Scoutgame onchain Cron CI
+name: Onchain Scoutgame Cron CI
 
 on:
   push:
