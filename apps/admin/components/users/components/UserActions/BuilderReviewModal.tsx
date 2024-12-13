@@ -58,7 +58,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
   } = useGetGithubUserStats(githubLoginDisplayed);
 
   const isSuspended = user.builderStatus === 'banned';
-  const isSuspendedInvalid =
+  const cannotUnsuspend =
     isSuspended && githubUserStats && githubUserStats.builderStrikes.filter((strike) => !strike.deletedAt).length >= 3;
 
   async function unsuspendBuilder() {
@@ -114,7 +114,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
             )}
             <Stack direction='row'>
               <Typography sx={{ width: '120px' }}>Github:</Typography>
-              <Stack flexGrow={1}>
+              <Stack flexGrow={1} gap={1}>
                 {requireGithubLogin && (
                   <TextField
                     autoFocus
@@ -136,10 +136,10 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                   <>&nbsp;</>
                 )}
                 {githubLoginDisplayed && (
-                  <Stack>
+                  <Stack gap={1}>
                     {githubUserStats ? (
                       <>
-                        <Typography variant='caption'>
+                        <Typography component='span' variant='caption'>
                           Last commit:{' '}
                           {githubUserStats.lastCommit ? (
                             <ul style={{ paddingLeft: 16 }}>
@@ -159,8 +159,10 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                           )}
                         </Typography>
                         {githubUserStats.builderStrikes.length > 0 && (
-                          <>
-                            <Typography variant='caption'>Closed pull requests:</Typography>
+                          <span>
+                            <Typography variant='caption' color='warning'>
+                              Closed pull requests:
+                            </Typography>
                             <ul style={{ paddingLeft: 16 }}>
                               {githubUserStats.builderStrikes.map((strike) => (
                                 <li key={strike.githubEvent.url}>
@@ -176,7 +178,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                                     }}
                                   >
                                     <Link href={strike.githubEvent.url} target='_blank'>
-                                      {fancyTrimWords(strike.githubEvent.title, 8)}
+                                      {fancyTrimWords(strike.githubEvent.title, 10)}
                                       <br />
                                       <Typography color='secondary' variant='caption' component='span'>
                                         {new Date(strike.createdAt).toLocaleDateString()} -{' '}
@@ -197,7 +199,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                                 </li>
                               ))}
                             </ul>
-                          </>
+                          </span>
                         )}
                       </>
                     ) : (
@@ -216,41 +218,43 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                 </Typography>
               </Box>
             )}
-            <Stack direction='row' spacing={2} justifyContent='flex-end'>
-              <Button variant='outlined' color='secondary' onClick={onClose}>
-                Cancel
-              </Button>
-              {user.builderStatus === 'applied' && (
-                <LoadingButton
-                  disabled={!githubLoginDisplayed}
-                  loading={isExecutingUpdate}
-                  color='error'
-                  variant='outlined'
-                  onClick={rejectBuilder}
-                >
-                  Reject
-                </LoadingButton>
-              )}
-              <Tooltip
-                title={
-                  isSuspendedInvalid
-                    ? 'Builder has been suspended for 3 strikes'
-                    : 'Provide a Github login to set up a builder profile'
-                }
-              >
-                <span>
+            {user.builderStatus !== 'approved' && (
+              <Stack direction='row' spacing={2} justifyContent='flex-end'>
+                <Button variant='outlined' color='secondary' onClick={onClose}>
+                  Cancel
+                </Button>
+                {user.builderStatus === 'applied' && (
                   <LoadingButton
-                    disabled={!githubLoginDisplayed || isSuspendedInvalid}
-                    loading={isCreating}
-                    type='submit'
-                    color='primary'
-                    variant='contained'
+                    disabled={!githubLoginDisplayed}
+                    loading={isExecutingUpdate}
+                    color='error'
+                    variant='outlined'
+                    onClick={rejectBuilder}
                   >
-                    {user.builderStatus === 'banned' ? 'Unsuspend' : 'Approve'}
+                    Reject
                   </LoadingButton>
-                </span>
-              </Tooltip>
-            </Stack>
+                )}
+                <Tooltip
+                  title={
+                    cannotUnsuspend
+                      ? 'Builder has been suspended for 3 strikes'
+                      : 'Provide a Github login to set up a builder profile'
+                  }
+                >
+                  <span>
+                    <LoadingButton
+                      disabled={!githubLoginDisplayed || cannotUnsuspend}
+                      loading={isCreating}
+                      type='submit'
+                      color='primary'
+                      variant='contained'
+                    >
+                      {user.builderStatus === 'banned' ? 'Unsuspend' : 'Approve'}
+                    </LoadingButton>
+                  </span>
+                </Tooltip>
+              </Stack>
+            )}
           </Stack>
         </DialogContent>
       </form>
