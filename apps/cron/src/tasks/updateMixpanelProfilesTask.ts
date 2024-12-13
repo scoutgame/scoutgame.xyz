@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { batchUpdateMixpanelUserProfiles } from '@packages/mixpanel/updateUserProfile';
 import type { MixPanelUserProfile } from '@packages/mixpanel/updateUserProfile';
@@ -36,16 +37,27 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
   }));
 }
 
-async function updateMixpanelUserProfiles({ offset = 0 }: { offset?: number } = {}): Promise<void> {
+async function updateMixpanelUserProfiles({
+  offset = 0,
+  total = 0
+}: {
+  offset?: number;
+  total?: number;
+} = {}): Promise<number> {
   const users = await getUsers({ offset });
+
+  total += users.length;
 
   await batchUpdateMixpanelUserProfiles(users);
 
   if (users.length > 0) {
-    return updateMixpanelUserProfiles({ offset: offset + perBatch });
+    log.debug(`Processed ${users.length} users in Mixpanel. Total processed: ${total}`);
+    return updateMixpanelUserProfiles({ offset: offset + perBatch, total });
   }
+  return total;
 }
 
 export async function updateMixpanelUserProfilesTask(): Promise<void> {
-  await updateMixpanelUserProfiles();
+  const totalProcessed = await updateMixpanelUserProfiles();
+  log.info(`Updated ${totalProcessed} users in Mixpanel`);
 }
