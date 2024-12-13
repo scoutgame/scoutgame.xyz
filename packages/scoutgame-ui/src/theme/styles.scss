@@ -40,3 +40,36 @@ body {
   font-style: normal;
   font-display: swap;
 }
+
+// Transition from right to left on page load
+@keyframes move-out {
+  from {
+    transform: translateX(0px);
+  }
+
+  to {
+    transform: translateX(-400px);
+  }
+}
+
+@keyframes move-in {
+  from {
+    transform: translateX(400px);
+  }
+
+  to {
+    transform: translateX(0px);
+  }
+}
+
+body main {
+  view-transition-name: container-move;
+}
+
+::view-transition-old(container-move) {
+  animation: 0.2s ease both move-out;
+}
+
+::view-transition-new(container-move) {
+  animation: 0.2s ease both move-in;
+}

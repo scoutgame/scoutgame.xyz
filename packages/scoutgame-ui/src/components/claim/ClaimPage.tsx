@@ -1,34 +1,18 @@
 import { Stack } from '@mui/material';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { Suspense } from 'react';
 
+import { LoadingComponent } from '../common/Loading/LoadingComponent';
 import { LoadingTable } from '../common/Loading/LoadingTable';
 
 import { BuilderRewardsScreen } from './components/BuilderRewardsScreen/BuilderRewardsScreen';
-import { PointsClaimScreen } from './components/PointsClaimScreen/PointsClaimScreen';
+import { PointsClaimContainer } from './components/PointsClaimContainer';
 import { ClaimedPointsTable } from './components/PointsTable/ClaimedPointsTable';
-import { UnclaimedPointsTable } from './components/PointsTable/UnclaimedPointsTable';
 
 export type ClaimPageProps = {
-  totalUnclaimedPoints: number;
-  bonusPartners: BonusPartner[];
-  displayName: string;
   period: string;
-  builders: {
-    avatar: string | null;
-    displayName: string;
-  }[];
-  repos: string[];
 };
 
-export function ClaimPage({
-  displayName,
-  totalUnclaimedPoints,
-  bonusPartners,
-  period,
-  builders,
-  repos
-}: ClaimPageProps) {
+export function ClaimPage({ period }: ClaimPageProps) {
   return (
     <Stack
       gap={8}
@@ -39,18 +23,9 @@ export function ClaimPage({
       }}
     >
       <Stack flex={1} gap={4}>
-        <PointsClaimScreen
-          totalUnclaimedPoints={totalUnclaimedPoints}
-          displayName={displayName}
-          bonusPartners={bonusPartners}
-          builders={builders}
-          repos={repos}
-        />
-        {totalUnclaimedPoints === 0 ? null : (
-          <Suspense fallback={<LoadingTable />}>
-            <UnclaimedPointsTable />
-          </Suspense>
-        )}
+        <Suspense fallback={<LoadingComponent />}>
+          <PointsClaimContainer />
+        </Suspense>
         <Stack
           sx={{
             display: {

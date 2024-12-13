@@ -2,8 +2,8 @@ import 'server-only';
 
 import { Typography } from '@mui/material';
 import { MAX_STARTER_PACK_PURCHASES } from '@packages/scoutgame/builderNfts/constants';
-import { aggregateTokensPurchased } from '@packages/scoutgame/builders/aggregateTokensPurchased';
-import { getStarterPackBuilders, type StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
+import { getStarterPackBuilders } from '@packages/scoutgame/builders/getStarterPackBuilders';
+import { aggregateTokensPurchased } from '@packages/scoutgame/scouts/aggregateTokensPurchased';
 import { getSession } from '@packages/scoutgame/session/getSession';
 import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 

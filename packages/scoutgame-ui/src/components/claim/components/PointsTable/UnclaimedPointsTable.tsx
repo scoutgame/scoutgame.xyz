@@ -1,19 +1,23 @@
 import { getPointsReceiptsRewards } from '@packages/scoutgame/points/getPointsReceiptsRewards';
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getSession } from '@packages/scoutgame/session/getSession';
+import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { PointsTable } from './PointsTable';
 
 export async function UnclaimedPointsTable() {
-  const user = await getUserFromSession();
+  const session = await getSession();
+  const scoutId = session.scoutId;
 
-  if (!user) {
+  if (!scoutId) {
     return null;
   }
 
-  const pointsReceiptRewards = await getPointsReceiptsRewards({
-    userId: user.id,
-    isClaimed: false
-  });
+  const [, pointsReceiptRewards = []] = await safeAwaitSSRData(
+    getPointsReceiptsRewards({
+      userId: scoutId,
+      isClaimed: false
+    })
+  );
 
   return (
     <PointsTable

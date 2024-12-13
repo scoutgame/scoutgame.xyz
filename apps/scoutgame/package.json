@@ -31,7 +31,6 @@
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@serwist/next": "^9.0.5",
     "@typeschema/yup": "^0.13.3",
-    "framer-motion": "^11.3.17",
     "frames.js": "^0.20.0",
     "next-safe-action": "~7.4.2",
     "server-only": "^0.0.1",

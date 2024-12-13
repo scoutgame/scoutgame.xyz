@@ -3,7 +3,6 @@
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
-import { getLastWeek } from '@packages/scoutgame/dates';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
@@ -18,13 +17,11 @@ import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShar
 
 export function PointsClaimScreen({
   totalUnclaimedPoints,
-  displayName,
   bonusPartners,
   builders,
   repos
 }: {
   totalUnclaimedPoints: number;
-  displayName: string;
   bonusPartners: BonusPartner[];
   builders: {
     farcasterHandle?: string;
@@ -89,7 +86,7 @@ export function PointsClaimScreen({
           >
             <Stack flexDirection='column' alignItems='center' gap={0.5}>
               <Typography variant='h6'>
-                <b>{displayName}</b> <span style={{ fontSize: '0.8em' }}>will receive</span>
+                <b>{user?.displayName}</b> <span style={{ fontSize: '0.8em' }}>will receive</span>
               </Typography>
               <Stack flexDirection='row' alignItems='center' gap={1}>
                 <Typography variant='h4' fontWeight={500}>
@@ -114,7 +111,7 @@ export function PointsClaimScreen({
       ) : (
         <>
           <Typography textAlign='center' color='secondary' variant='h5'>
-            Hey {displayName},
+            Hey {user?.displayName},
           </Typography>
           <Typography textAlign='center' variant='h6'>
             You have no rewards to claim.

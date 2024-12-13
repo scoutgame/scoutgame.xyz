@@ -4,10 +4,10 @@ import AppsIcon from '@mui/icons-material/Apps';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Box, Grid2 as Grid, Stack, Typography } from '@mui/material';
 import { isTruthy } from '@packages/utils/types';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
+import { HeaderMessage } from '../common/Header/HeaderMessage';
 import { LoadingCards } from '../common/Loading/LoadingCards';
 import { LoadingTable } from '../common/Loading/LoadingTable';
 import { TabsMenu, type TabItem } from '../common/Tabs/TabsMenu';
@@ -17,10 +17,6 @@ import { ScoutPageBuildersGallery } from './components/ScoutPageBuildersGallery'
 import { ScoutPageCarousel } from './components/ScoutPageCarousel';
 import { SearchBuildersInput } from './components/SearchBuildersInput';
 import { ScoutPageTable } from './ScoutPageTable/ScoutPageTable';
-
-const HeaderMessage = dynamic(() => import('../common/Header/HeaderMessage').then((mode) => mode.HeaderMessage), {
-  ssr: false
-});
 
 export const scoutTabOptions: TabItem[] = [
   { label: 'All Scouts', value: 'scouts' },
