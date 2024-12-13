@@ -62,14 +62,16 @@ body {
   }
 }
 
-body main {
-  view-transition-name: container-move;
-}
+@media screen and (max-width: 600px) {
+  body main {
+    view-transition-name: container-move;
+  }
 
-::view-transition-old(container-move) {
-  animation: 0.2s ease both move-out;
-}
+  ::view-transition-old(container-move) {
+    animation: 0.2s ease both move-out;
+  }
 
-::view-transition-new(container-move) {
-  animation: 0.2s ease both move-in;
+  ::view-transition-new(container-move) {
+    animation: 0.2s ease both move-in;
+  }
 }
