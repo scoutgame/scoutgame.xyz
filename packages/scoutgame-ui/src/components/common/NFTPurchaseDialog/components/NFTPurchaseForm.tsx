@@ -440,7 +440,14 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             <Typography align='right' variant='caption' color='secondary'>
               {tokensToBuy} out of {nftStats.nftSupply.total + tokensToBuy} Cards. Reward:{' '}
               {Math.floor(
-                100 * calculateRewardForScout({ purchased: { default: tokensToBuy }, supply: nftStats.nftSupply })
+                100 *
+                  calculateRewardForScout({
+                    purchased: { default: tokensToBuy },
+                    supply: {
+                      ...nftStats.nftSupply,
+                      default: nftStats.nftSupply.default + tokensToBuy
+                    }
+                  })
               )}
               %
             </Typography>
