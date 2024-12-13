@@ -11,9 +11,9 @@ import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { SiteNavigation } from '@packages/scoutgame-ui/components/common/Navigation/SiteNavigation';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
+import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
