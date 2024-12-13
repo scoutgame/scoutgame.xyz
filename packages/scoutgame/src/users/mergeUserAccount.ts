@@ -1,7 +1,9 @@
 import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { arrayUtils } from '@charmverse/core/utilities';
 
+import { currentSeason } from '../dates';
 import { refreshPointStatsFromHistory } from '../points/refreshPointStatsFromHistory';
 
 export type ProfileToKeep = 'current' | 'new';
@@ -13,56 +15,21 @@ export const mergeUserAccount = async ({
   selectedProfile
 }: {
   userId: string;
-  farcasterId?: number;
-  telegramId?: number;
+  farcasterId?: number | null;
+  telegramId?: number | null;
   selectedProfile?: ProfileToKeep | null;
 }) => {
   if (!farcasterId && !telegramId) {
     throw new Error('No account identities to merge');
   }
 
-  const [primaryUser, secondaryUser] = await Promise.all([
-    prisma.scout.findUniqueOrThrow({
-      where: {
-        id: userId
-      },
-      select: {
-        builderStatus: true,
-        deletedAt: true
-      }
-    }),
-    prisma.scout.findFirstOrThrow({
-      where: farcasterId ? { farcasterId } : { telegramId },
-      select: {
-        builderStatus: true,
-        id: true,
-        deletedAt: true
-      }
-    })
-  ]);
-
-  if (primaryUser.builderStatus !== null && secondaryUser.builderStatus !== null) {
-    log.error('Can not merge two builder accounts', {
-      primaryUserId: userId,
-      secondaryUserId: secondaryUser.id
-    });
-    throw new Error('Can not merge two builder accounts');
-  }
-
-  if (secondaryUser.id === userId) {
-    log.error('Can not merge the same account', {
-      userId
-    });
-    throw new Error('Can not merge the same account');
-  }
-
-  if (secondaryUser.deletedAt === null || primaryUser.deletedAt === null) {
-    log.error('Can not merge deleted accounts', {
-      primaryUserId: userId,
-      secondaryUserId: secondaryUser.id
-    });
-    throw new Error('Can not merge deleted accounts');
-  }
+  const secondaryUser = await prisma.scout.findFirstOrThrow({
+    where: farcasterId ? { farcasterId } : { telegramId },
+    select: {
+      builderStatus: true,
+      id: true
+    }
+  });
 
   // The id of the user to retain
   const retainedUserId = secondaryUser.builderStatus !== null ? secondaryUser.id : userId;
@@ -81,7 +48,9 @@ export const mergeUserAccount = async ({
         walletENS: true,
         farcasterId: true,
         farcasterName: true,
-        telegramId: true
+        telegramId: true,
+        deletedAt: true,
+        builderStatus: true
       }
     }),
     prisma.scout.findUniqueOrThrow({
@@ -89,7 +58,6 @@ export const mergeUserAccount = async ({
         id: mergedUserId
       },
       select: {
-        id: true,
         farcasterName: true,
         builderStatus: true,
         walletENS: true,
@@ -97,9 +65,9 @@ export const mergeUserAccount = async ({
         bio: true,
         displayName: true,
         email: true,
-        path: true,
         farcasterId: true,
         telegramId: true,
+        deletedAt: true,
         wallets: {
           select: {
             address: true
@@ -109,8 +77,31 @@ export const mergeUserAccount = async ({
     })
   ]);
 
+  if (retainedUser.builderStatus !== null && mergedUser.builderStatus !== null) {
+    log.error('Can not merge two builder accounts', {
+      retainedUserId,
+      mergedUserId
+    });
+    throw new Error('Can not merge two builder accounts');
+  }
+
+  if (retainedUserId === mergedUserId) {
+    log.error('Can not merge the same account', {
+      userId
+    });
+    throw new Error('Can not merge the same account');
+  }
+
+  if (retainedUser.deletedAt || mergedUser.deletedAt) {
+    log.error('Can not merge deleted accounts', {
+      retainedUserId,
+      mergedUserId
+    });
+    throw new Error('Can not merge deleted accounts');
+  }
+
   // If selected profile is set but one of the account is a builder throw an error
-  if (selectedProfile && (mergedUser.builderStatus !== null || primaryUser.builderStatus !== null)) {
+  if (selectedProfile && (mergedUser.builderStatus !== null || retainedUser.builderStatus !== null)) {
     throw new Error('Can not merge builder account profiles');
   }
 
@@ -129,7 +120,6 @@ export const mergeUserAccount = async ({
         updatedUserData.bio = mergedUser.bio;
         updatedUserData.email = retainedUser.email || mergedUser.email;
         updatedUserData.walletENS = retainedUser.walletENS || mergedUser.walletENS;
-        updatedUserData.path = mergedUser.path;
       }
 
       // Detach the identities from the merged user
@@ -245,7 +235,14 @@ export const mergeUserAccount = async ({
         }
       });
 
-      // Skipped partner reward events and builder strike records
+      await tx.builderEvent.updateMany({
+        where: {
+          builderId: mergedUserId
+        },
+        data: {
+          builderId: retainedUserId
+        }
+      });
     },
     {
       timeout: 100000
@@ -255,6 +252,45 @@ export const mergeUserAccount = async ({
   await prisma.$transaction(
     async (tx) => {
       await refreshPointStatsFromHistory({ userIdOrPath: retainedUserId, tx });
+
+      const nftPurchaseEvents = await tx.nFTPurchaseEvent.findMany({
+        where: {
+          scoutId: retainedUserId,
+          builderNft: {
+            season: currentSeason
+          }
+        },
+        select: {
+          tokensPurchased: true
+        }
+      });
+
+      const nftSoldEvents = await tx.nFTPurchaseEvent.findMany({
+        where: {
+          builderNft: {
+            season: currentSeason,
+            builderId: retainedUserId
+          }
+        },
+        select: {
+          tokensPurchased: true,
+          scoutId: true
+        }
+      });
+
+      await tx.userSeasonStats.update({
+        where: {
+          userId_season: {
+            userId: retainedUserId,
+            season: currentSeason
+          }
+        },
+        data: {
+          nftsSold: nftSoldEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
+          nftsPurchased: nftPurchaseEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
+          nftOwners: arrayUtils.uniqueValues(nftSoldEvents.map((event) => event.scoutId)).length
+        }
+      });
     },
     {
       timeout: 100000
