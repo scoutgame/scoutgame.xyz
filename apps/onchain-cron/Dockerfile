@@ -15,9 +15,9 @@ COPY --parents apps/*/package.json          \
   packages/*/package.json                   \
   node_modules                              \
   package.json                              \
-  apps/cron/node_modules            \
-  apps/cron/package.json            \
-  apps/cron/cron.yml                \
+  apps/onchain-cron/node_modules            \
+  apps/onchain-cron/package.json            \
+  apps/onchain-cron/cron.yml                \
   .
 
 # Copy compiled code
