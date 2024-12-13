@@ -48,7 +48,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
     setSelectedProfile,
     isMergeDisabled,
     authData
-  } = useAccountConnect<TelegramAccount>({ user });
+  } = useAccountConnect<TelegramAccount>({ user, identity: 'telegram' });
 
   const { executeAsync: mergeUserTelegramAccount, isExecuting: isMergingUserAccount } = useAction(
     mergeUserTelegramAccountAction,

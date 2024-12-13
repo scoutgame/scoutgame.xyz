@@ -9,8 +9,8 @@ import { useCallback, useState } from 'react';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
 
-export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDetails }) {
-  const popupState = usePopupState({ variant: 'popover', popupId: 'telegram-connect' });
+export function useAccountConnect<AuthData>({ user, identity }: { user: UserWithAccountsDetails; identity: string }) {
+  const popupState = usePopupState({ variant: 'popover', popupId: `${identity}-connect` });
   const { refreshUser } = useUser();
 
   const [authData, setAuthData] = useState<AuthData | null>(null);
@@ -28,8 +28,8 @@ export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDe
   }, [revalidatePath, refreshUser]);
 
   const mergeAccountOnError = useCallback((err: any) => {
-    log.error('Error merging user account', { error: err.error.serverError });
-    setAccountMergeError('Error merging telegram account');
+    log.error('Error merging user account', { error: err.error.serverError, identity, userId: user.id });
+    setAccountMergeError(`Error merging ${identity} account`);
   }, []);
 
   const connectAccountOnSuccess = useCallback(async (_connectedUser: UserProfile | undefined) => {
@@ -50,7 +50,7 @@ export function useAccountConnect<AuthData>({ user }: { user: UserWithAccountsDe
   }, []);
 
   const connectAccountOnError = useCallback((err: any) => {
-    log.error('Error connecting account', { error: err.error.serverError });
+    log.error('Error connecting account', { error: err.error.serverError, identity });
     setConnectionError('Error connecting account');
     popupState.close();
   }, []);

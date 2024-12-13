@@ -36,7 +36,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
     connectedUser,
     selectedProfile,
     accountMergeError
-  } = useAccountConnect<AuthSchema>({ user });
+  } = useAccountConnect<AuthSchema>({ user, identity: 'farcaster' });
 
   const { executeAsync: mergeUserFarcasterAccount, isExecuting: isMergingUserAccount } = useAction(
     mergeUserFarcasterAccountAction,

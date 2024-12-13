@@ -43,7 +43,7 @@ export function AccountConnect({
             Your Points and Scouted Builders will be combined into your current account
           </>
         ) : (
-          'Your Points and Scouted Builders will be combined into your current account'
+          'Your Points and Scouted Builders will be combined into your builder account'
         )}
       </Typography>
       <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -78,7 +78,7 @@ export function AccountConnect({
             disabled={isMergingUserAccount || isMergeDisabled}
             onClick={mergeUserAccount}
           >
-            {isMergingUserAccount ? 'Merging...' : 'Merge'}
+            {isMergingUserAccount ? 'Merging...' : connectedUser.builderStatus !== null ? 'Merge and Logout' : 'Merge'}
           </LoadingButton>
         </Stack>
         {accountMergeError && (
