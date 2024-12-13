@@ -201,8 +201,8 @@ describe('processScoutPointsPayout', () => {
 
     await mockBuilderNft({ builderId: builder.id, season: mockSeason });
 
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0 });
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0 });
+    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week });
+    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week });
 
     const weeklyAllocatedPoints = 1e5;
 

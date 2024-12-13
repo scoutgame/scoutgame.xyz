@@ -64,6 +64,7 @@ export async function mockScout({
   createdAt,
   path = `user-${uuid()}`,
   displayName = 'Test Scout',
+  nftWeek,
   agreedToTermsAt = new Date(),
   onboardedAt = new Date(),
   builderId,
@@ -78,6 +79,7 @@ export async function mockScout({
   avatar?: string;
   path?: string;
   agreedToTermsAt?: Date | null;
+  nftWeek?: string;
   onboardedAt?: Date | null;
   displayName?: string;
   builderId?: string; // automatically "scout" a builder
@@ -102,7 +104,7 @@ export async function mockScout({
     }
   });
   if (builderId) {
-    await mockNFTPurchaseEvent({ builderId, scoutId: scout.id, season });
+    await mockNFTPurchaseEvent({ builderId, scoutId: scout.id, season, week: nftWeek });
   }
   return scout;
 }

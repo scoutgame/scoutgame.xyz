@@ -33,6 +33,7 @@ import {
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
+import { calculateRewardForScout } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
 import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
 import Image from 'next/image';
@@ -49,7 +50,7 @@ import { useUser } from '../../../../providers/UserProvider';
 import { IconButton } from '../../Button/IconButton';
 import { PointsIcon } from '../../Icons';
 import { useDecentTransaction } from '../hooks/useDecentTransaction';
-import { useGetBuilderStrikesCount } from '../hooks/useGetBuilderStrikesCount';
+import { useGetBuilderNftStats } from '../hooks/useGetBuilderNftStats';
 import { useGetERC20Allowance } from '../hooks/useGetERC20Allowance';
 import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 
@@ -98,7 +99,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { showMessage } = useSnackbar();
 
   const { switchChainAsync } = useSwitchChain();
-  const { data: builderStrikesCount } = useGetBuilderStrikesCount({ builderId });
+  const { data: nftStats } = useGetBuilderNftStats({ builderId });
 
   const builderContractReadonlyApiClient = new BuilderNFTSeasonOneImplementation01Client({
     chain: builderNftChain,
@@ -336,7 +337,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   }
 
   return (
-    <Stack gap={3} width='400px' maxWidth='100%' mx='auto'>
+    <Stack gap={2} width='400px' maxWidth='100%' mx='auto'>
       <Box
         bgcolor='black.dark'
         width='100%'
@@ -367,9 +368,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           </>
         </Typography>
       </Box>
-      {builderStrikesCount ? (
+      {nftStats?.builderStrikes ? (
         <Alert severity='warning'>
-          This builder has {builderStrikesCount} strike{builderStrikesCount > 1 ? 's' : ''}. Click{' '}
+          This builder has {nftStats.builderStrikes} strike{nftStats.builderStrikes > 1 ? 's' : ''}. Click{' '}
           <Link href='/info/spam-policy' target='_blank'>
             here
           </Link>{' '}
@@ -434,6 +435,26 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
                 +
               </IconButton>
             </Stack>
+          )}
+          {nftStats ? (
+            <Typography align='right' variant='caption' color='secondary'>
+              {tokensToBuy} out of {nftStats.nftSupply.total + tokensToBuy} Cards. Reward:{' '}
+              {Math.floor(
+                100 *
+                  calculateRewardForScout({
+                    purchased: { default: tokensToBuy },
+                    supply: {
+                      ...nftStats.nftSupply,
+                      default: nftStats.nftSupply.default + tokensToBuy
+                    }
+                  })
+              )}
+              %
+            </Typography>
+          ) : (
+            <Typography align='right' variant='caption'>
+              <CircularProgress color='inherit' size={14} />
+            </Typography>
           )}
         </Stack>
       )}
