@@ -12,7 +12,7 @@ type FollowersResponse = {
   };
 };
 
-// ref: https://docs.neynar.com/reference/followers-v2
+// ref: https://docs.neynar.com/reference/fetch-user-followers
 // note: this may take a while to run if there are many followers
 export async function getFollowers(fid: number) {
   let allUsers: FarcasterUser[] = [];
@@ -22,18 +22,18 @@ export async function getFollowers(fid: number) {
     do {
       const { next, users } = await http.GET<FollowersResponse>(
         `${userApiUrl}?fid=${fid}&limit=100${cursor ? `&cursor=${cursor}` : ''}`,
-        {},
         {
           credentials: 'omit',
           headers: {
-            'X-Api-Key': process.env.NEYNAR_API_KEY as string
+            accept: 'application/json',
+            'x-api-key': process.env.NEYNAR_API_KEY as string
           }
         }
       );
 
       allUsers = [...allUsers, ...users.map((user) => user.user)];
       cursor = next?.cursor;
-    } while (cursor);
+    } while (cursor && allUsers.length < 5000);
     return allUsers;
   } catch (error) {
     log.error('Error fetching followers', { usersSoFar: allUsers.length, fid, cursor, error });
