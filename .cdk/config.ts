@@ -26,12 +26,17 @@ export const apps: { [key: string]: { stg?: Options; prd?: Options } } = {
       sslCert: scoutgameCert
     }
   },
-  'onchain-cron': {
+  'onchain-scoutgamecron': {
     prd: {
       environmentTier: 'Worker'
     },
     stg: {
       environmentTier: 'Worker'
+    }
+  },
+  'onchain-scoutgame': {
+    prd: {
+      sslCert: scoutgameCert
     }
   }
 };
