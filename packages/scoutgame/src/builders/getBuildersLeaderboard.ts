@@ -21,7 +21,8 @@ export async function getBuildersLeaderboard({
     where: {
       week,
       user: {
-        builderStatus: 'approved'
+        builderStatus: 'approved',
+        deletedAt: null
       },
       gemsCollected: {
         gt: 0

@@ -22,4 +22,5 @@ export type SessionUser = Pick<
   | 'agreedToTermsAt'
   | 'bio'
   | 'referralCode'
+  | 'deletedAt'
 >;

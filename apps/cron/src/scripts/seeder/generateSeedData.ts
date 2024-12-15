@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { prisma, type GithubRepo, type GithubUser } from '@charmverse/core/prisma-client';
+import { type GithubRepo, type GithubUser } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
 import { claimPoints } from '@packages/scoutgame/points/claimPoints';
 import { getWeekFromDate, currentSeason } from '@packages/scoutgame/dates';
@@ -31,7 +31,7 @@ function assignReposToBuilder(githubRepos: GithubRepo[]): GithubRepo[] {
 }
 
 function assignBuildersToScout(builders: BuilderInfo[]) {
-  const builderCount = faker.number.int({ min: 0, max: 5 });
+  const builderCount = faker.number.int({ min: 0, max: 10 });
   return faker.helpers.arrayElements(
     builders.filter((builder) => builder.builderNftId),
     builderCount
@@ -65,6 +65,8 @@ export async function generateSeedData(
 
   const totalUsers = totalBuilders + totalScouts;
 
+  const percentageOfBuilderScouts = faker.number.int({ min: 10, max: 20 });
+
   const [githubRepos, repoPRCounters] = await generateGithubRepos(totalGithubRepos);
 
   const builders: BuilderInfo[] = [];
@@ -76,7 +78,7 @@ export async function generateSeedData(
   const builderPromises = Array.from({ length: totalBuilders }, async (_, i) => {
     const { githubUser, builder, builderNft } = await generateBuilder({ index: i });
     const assignedRepos = assignReposToBuilder(githubRepos);
-    const isScout = i >= totalBuilders;
+    const isScout = percentageOfBuilderScouts > faker.number.int({ min: 0, max: 100 });
 
     const builderInfo: BuilderInfo = {
       id: builder.id,

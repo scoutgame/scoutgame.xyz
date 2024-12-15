@@ -1,4 +1,3 @@
-import type { PointsReceipt } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 import type { BonusPartner } from '../bonus';

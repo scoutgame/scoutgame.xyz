@@ -63,11 +63,11 @@ export async function findOrCreateUser({
     : undefined;
 
   const scout = await prisma.scout.findFirst({
-    where: farcasterId
-      ? { farcasterId }
-      : telegramId
-        ? { telegramId }
-        : { wallets: { some: { address: { in: lowercaseAddresses } } } },
+    where: lowercaseAddresses
+      ? { wallets: { some: { address: { in: lowercaseAddresses } } } }
+      : farcasterId
+        ? { farcasterId }
+        : { telegramId },
     select: {
       id: true,
       onboardedAt: true,

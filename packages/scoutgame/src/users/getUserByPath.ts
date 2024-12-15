@@ -24,7 +24,8 @@ export async function getUserByPath(path: string): Promise<
 > {
   const user = await prisma.scout.findFirst({
     where: {
-      path
+      path,
+      deletedAt: null
     },
     select: {
       ...BasicUserInfoSelect,

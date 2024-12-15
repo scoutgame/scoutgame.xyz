@@ -30,7 +30,10 @@ export async function getScouts({
       pointsEarnedAsScout: {
         gt: 0
       },
-      season: currentSeason
+      season: currentSeason,
+      user: {
+        deletedAt: null
+      }
     },
     orderBy: {
       pointsEarnedAsScout: 'desc'
@@ -53,7 +56,10 @@ export async function getScouts({
         pointsEarnedAsScout: {
           gt: 0
         },
-        season: currentSeason
+        season: currentSeason,
+        user: {
+          deletedAt: null
+        }
       },
       take: limit,
       select: {
@@ -95,6 +101,9 @@ export async function getScouts({
         season: currentSeason,
         pointsEarnedAsScout: {
           gt: 0
+        },
+        user: {
+          deletedAt: null
         }
       },
       orderBy: {

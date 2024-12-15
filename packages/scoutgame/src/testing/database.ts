@@ -70,11 +70,18 @@ export async function mockScout({
   builderId,
   season,
   email,
+  bio,
+  walletENS,
   farcasterName,
   referralCode = randomString(),
   currentBalance,
-  avatar
+  avatar,
+  farcasterId,
+  deletedAt,
+  telegramId,
+  wallets = []
 }: {
+  wallets?: string[];
   createdAt?: Date;
   avatar?: string;
   path?: string;
@@ -85,9 +92,14 @@ export async function mockScout({
   builderId?: string; // automatically "scout" a builder
   season?: string;
   email?: string;
+  bio?: string;
+  walletENS?: string;
   referralCode?: string;
   currentBalance?: number;
   farcasterName?: string;
+  farcasterId?: number;
+  deletedAt?: Date;
+  telegramId?: number;
 } = {}) {
   const scout = await prisma.scout.create({
     data: {
@@ -98,15 +110,75 @@ export async function mockScout({
       displayName,
       email,
       referralCode,
+      bio,
+      walletENS,
       currentBalance,
       avatar,
-      farcasterName
+      farcasterName,
+      farcasterId,
+      deletedAt,
+      telegramId,
+      wallets: {
+        createMany: {
+          data: wallets.map((wallet) => ({
+            address: wallet
+          }))
+        }
+      }
     }
   });
   if (builderId) {
     await mockNFTPurchaseEvent({ builderId, scoutId: scout.id, season, week: nftWeek });
   }
   return scout;
+}
+
+export async function mockGemPayoutEvents({
+  builderId,
+  recipients,
+  gems = 10,
+  week = getCurrentWeek(),
+  season = mockSeason
+}: {
+  builderId: string;
+  recipients: { id: string; points: number }[];
+  week?: string;
+  gems?: number;
+  season?: string;
+}) {
+  return prisma.gemsPayoutEvent.create({
+    data: {
+      gems,
+      points: 0,
+      week,
+      season,
+      builder: {
+        connect: {
+          id: builderId
+        }
+      },
+      builderEvent: {
+        create: {
+          season,
+          type: 'gems_payout',
+          week: getCurrentWeek(),
+          builder: {
+            connect: {
+              id: builderId
+            }
+          },
+          pointsReceipts: {
+            createMany: {
+              data: recipients.map(({ id, points }) => ({
+                value: points,
+                recipientId: id
+              }))
+            }
+          }
+        }
+      }
+    }
+  });
 }
 
 export async function mockGemPayoutEvent({
@@ -146,7 +218,6 @@ export async function mockGemPayoutEvent({
           pointsReceipts: {
             create: {
               value: amount,
-              senderId: builderId,
               recipientId
             }
           }
