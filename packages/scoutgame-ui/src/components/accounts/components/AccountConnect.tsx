@@ -63,7 +63,7 @@ export function AccountConnect({
             />
           </Stack>
         ) : isMergeDisabled ? (
-          <Alert color='error' icon={<CloseIcon />} sx={{ m: 3 }}>
+          <Alert color='error' icon={<CloseIcon />}>
             Can not merge two builder accounts. Please select a different account to merge.
           </Alert>
         ) : (

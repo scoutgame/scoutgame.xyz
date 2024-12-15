@@ -39,7 +39,8 @@ export async function getBuilderActivities({
     where: {
       builder: {
         id: builderId,
-        builderStatus: 'approved'
+        builderStatus: 'approved',
+        deletedAt: null
       },
       type: {
         in: ['nft_purchase', 'merged_pull_request', 'daily_commit']

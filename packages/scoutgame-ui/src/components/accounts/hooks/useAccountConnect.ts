@@ -4,6 +4,7 @@ import type { UserProfile } from '@packages/scoutgame/users/getUserProfile';
 import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { usePopupState } from 'material-ui-popup-state/hooks';
+import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 
@@ -17,14 +18,16 @@ export function useAccountConnect<AuthData>({ user, identity }: { user: UserWith
   const [selectedProfile, setSelectedProfile] = useState<ProfileToKeep | null>(null);
   const [accountMergeError, setAccountMergeError] = useState<string | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const router = useRouter();
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
   const mergeAccountOnSuccess = useCallback(async () => {
+    await revalidatePath();
+    await refreshUser();
     setAuthData(null);
     setConnectedUser(null);
     setAccountMergeError(null);
-    await revalidatePath();
-    await refreshUser();
-  }, [revalidatePath, refreshUser]);
+    router.push('/accounts');
+  }, [revalidatePath, refreshUser, router]);
 
   const mergeAccountOnError = useCallback((err: any) => {
     log.error('Error merging user account', { error: err.error.serverError, identity, userId: user.id });

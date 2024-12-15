@@ -2,6 +2,7 @@ import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
+import { v4 } from 'uuid';
 
 import { currentSeason } from '../dates';
 import { refreshPointStatsFromHistory } from '../points/refreshPointStatsFromHistory';
@@ -68,6 +69,7 @@ export const mergeUserAccount = async ({
         farcasterId: true,
         telegramId: true,
         deletedAt: true,
+        path: true,
         wallets: {
           select: {
             address: true
@@ -130,7 +132,10 @@ export const mergeUserAccount = async ({
           farcasterId: null,
           farcasterName: null,
           telegramId: null,
-          deletedAt: new Date()
+          deletedAt: new Date(),
+          // Update the path so that the user is harder to find
+          path: `${mergedUser.path}-${v4()}`,
+          currentBalance: 0
         }
       });
 
@@ -300,7 +305,7 @@ export const mergeUserAccount = async ({
       }
     )
     .catch((error) => {
-      log.error('Could not refresh point stats', {
+      log.error('Could not refresh nft stats', {
         error,
         userId: retainedUserId
       });

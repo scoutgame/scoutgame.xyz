@@ -29,7 +29,8 @@ export async function getBuilders({
       where: {
         week: getCurrentWeek(),
         user: {
-          builderStatus: 'approved'
+          builderStatus: 'approved',
+          deletedAt: null
         }
       },
       orderBy: {
@@ -79,7 +80,8 @@ export async function getBuilders({
     const builders = await prisma.userSeasonStats.findMany({
       where: {
         user: {
-          builderStatus: 'approved'
+          builderStatus: 'approved',
+          deletedAt: null
         },
         season: currentSeason
       },
@@ -132,7 +134,8 @@ export async function getBuilders({
         season: currentSeason,
         nftType: BuilderNftType.default,
         builder: {
-          builderStatus: 'approved'
+          builderStatus: 'approved',
+          deletedAt: null
         }
       },
       orderBy: {
@@ -190,7 +193,8 @@ export async function getBuilders({
     const builders = await prisma.userSeasonStats.findMany({
       where: {
         user: {
-          builderStatus: 'approved'
+          builderStatus: 'approved',
+          deletedAt: null
         },
         season: currentSeason
       },

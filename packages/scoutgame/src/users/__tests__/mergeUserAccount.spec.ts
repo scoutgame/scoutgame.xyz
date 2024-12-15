@@ -6,7 +6,6 @@ import { claimPoints } from '../../points/claimPoints';
 import {
   mockBuilder,
   mockBuilderNft,
-  mockGemPayoutEvent,
   mockGemPayoutEvents,
   mockNFTPurchaseEvent,
   mockScout
@@ -68,7 +67,6 @@ describe('mergeUserAccount', () => {
       displayName: 'Merged User',
       bio: 'Merged User Bio',
       avatar: 'Merged User Avatar',
-      email: 'merged@user.com',
       walletENS: 'merged.eth'
     });
     await mergeUserAccount({ selectedProfile: 'new', userId: primaryUser.id, farcasterId: secondaryUser.farcasterId });
@@ -82,14 +80,12 @@ describe('mergeUserAccount', () => {
     expect(retainedUser.displayName).toEqual('Merged User');
     expect(retainedUser.bio).toEqual('Merged User Bio');
     expect(retainedUser.avatar).toEqual('Merged User Avatar');
-    expect(retainedUser.email).toEqual('merged@user.com');
   });
 
   it(`should detach the identities of the merged user and attach them to the retained user`, async () => {
     const wallets = [v4(), v4()];
     const primaryUser = await mockScout({
       telegramId: randomIntFromInterval(1, 1000000),
-      email: 'merged@user.com',
       wallets
     });
     const secondaryUser = await mockBuilder({
@@ -114,7 +110,6 @@ describe('mergeUserAccount', () => {
     expect(mergedUser.deletedAt).not.toBeNull();
     expect(mergedUser.farcasterId).toBeNull();
     expect(mergedUser.farcasterName).toBeNull();
-    expect(mergedUser.email).toBeNull();
     expect(mergedUser.telegramId).toBeNull();
 
     expect(retainedUser.wallets).toHaveLength(2);
@@ -170,13 +165,23 @@ describe('mergeUserAccount', () => {
         nftType: 'default',
         season: currentSeason
       }),
+      // Purchase builder 2 nft using builder 1
+      mockNFTPurchaseEvent({
+        builderId: builder2.id,
+        scoutId: builder1.id,
+        points: 150,
+        nftType: 'default',
+        season: currentSeason,
+        tokensPurchased: 2
+      }),
       // Purchase builder 1 nft using scout 2
       mockNFTPurchaseEvent({
         builderId: builder1.id,
         scoutId: scout2.id,
         points: 100,
         nftType: 'default',
-        season: currentSeason
+        season: currentSeason,
+        tokensPurchased: 3
       }),
       // Weekly gems payout for builder 1, scout 1 and scout 2 by builder 1
       mockGemPayoutEvents({
@@ -193,7 +198,8 @@ describe('mergeUserAccount', () => {
         builderId: builder2.id,
         recipients: [
           { id: builder2.id, points: 250 },
-          { id: scout1.id, points: 100 }
+          { id: scout1.id, points: 500 },
+          { id: builder1.id, points: 200 }
         ],
         season: currentSeason
       })
@@ -210,15 +216,33 @@ describe('mergeUserAccount', () => {
       }
     });
 
-    // After merge total points = 200 (builder 1 gems payout) + 100 (scout 1 gems payout) + 100 (scout 2 nft purchase) + 250 (scout 1 nft purchase) = 650
-    // 250 points was spent to purchase the NFT so 650 - 250 = 400
-    // 100 points was not claimed by scout 1 so 400 - 100 = 300 points
-    // 150 points was used by scout 1 to purchase the NFT of scout 2 so 300 - 150 = 150 points
-    expect(retainedUser.currentBalance).toEqual(150);
+    // Builder 1:
+    // 250 (selling nft to scout 1) + 100 (selling nft to scout 2) + 200 (gems payout) - 150 (purchasing nft of builder 2) + 200 (gems payout from builder 2) = 600 points
+    // Points earned as builder = 200 + 250 + 100 = 550 points
+    // Points earned as scout = 200 points
+
+    // Scout 1:
+    // - 150 (purchasing nft of builder 2) - 250 (purchasing nft of builder 1) + 100 (gems payout from builder 1) + 500 (gems payout from builder 2) = 200 points
+    // Points earned as builder = 0 points
+    // Points earned as scout = 100 + 500 = 600 points
+
+    expect(retainedUser.currentBalance).toEqual(200);
+    // 550 (points earned as builder by builder 1) + 100 (points earned as scout by builder 1 gems payout)
     expect(retainedUser.userSeasonStats[0].pointsEarnedAsBuilder).toEqual(650);
-    expect(retainedUser.userSeasonStats[0].pointsEarnedAsScout).toEqual(100);
-    expect(retainedUser.userSeasonStats[0].nftsPurchased).toEqual(3);
-    expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(2);
+    expect(retainedUser.userSeasonStats[0].pointsEarnedAsScout).toEqual(700);
+    expect(retainedUser.userSeasonStats[0].nftsPurchased).toEqual(5);
+    expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(4);
     expect(retainedUser.userSeasonStats[0].nftOwners).toEqual(2);
+
+    await claimPoints({ userId: retainedUser.id, season: currentSeason });
+
+    const retainedUserAfterClaim = await prisma.scout.findUniqueOrThrow({
+      where: { id: retainedUser.id },
+      include: {
+        userSeasonStats: true
+      }
+    });
+
+    expect(retainedUserAfterClaim.currentBalance).toEqual(800);
   });
 });
