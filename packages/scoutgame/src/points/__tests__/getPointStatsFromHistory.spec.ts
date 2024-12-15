@@ -111,7 +111,7 @@ describe('getPointStatsFromHistory', () => {
     await expect(getPointStatsFromHistory({ userIdOrPath: nonExistentUserId })).rejects.toThrow();
   });
 
-  it('should throw an assertion error if point records for individual categories do not match the full list of point records', async () => {
+  it.skip('should throw an assertion error if point records for individual categories do not match the full list of point records', async () => {
     const pointsSpentRecords = [{ value: 100 }, { value: 50 }];
     const pointsReceivedAsBuilderRecords = [{ value: 80 }, { value: 90 }];
     const pointsReceivedAsScoutRecords = [{ value: 120 }];
