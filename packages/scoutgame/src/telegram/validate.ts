@@ -33,8 +33,12 @@ function generateSecretKey(botToken: string) {
  * @throws {InvalidInputError} "auth_date" is empty or not found
  * @throws {InvalidInputError} Init data expired
  */
-export function validateInitData(value: string, token: string, options?: { expiresIn: number }): WebAppInitData {
-  const data = parseInitData(value);
+export function validateInitData(
+  value: string | { [key: string]: string },
+  token: string,
+  options?: { expiresIn: number }
+) {
+  const data = typeof value === 'string' ? parseInitData(value) : value;
   const dataCheckString = createDataCheckString(data);
   const secretKey = generateSecretKey(token);
   const hash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
@@ -42,9 +46,11 @@ export function validateInitData(value: string, token: string, options?: { expir
   if (!data.auth_date) {
     throw new DataNotFoundError('Telegram auth_date is not found');
   }
+
   if (!data.hash) {
     throw new InvalidInputError('Telegram hash is not found');
   }
+
   if (hash !== data.hash) {
     throw new InvalidInputError('Telegram hash does not match');
   }
@@ -57,9 +63,19 @@ export function validateInitData(value: string, token: string, options?: { expir
     throw new InvalidInputError('Invalid telegram data: auth_date is too old');
   }
 
+  return data;
+}
+
+export function validateTelegramData(initData: string, options?: { expiresIn: number }) {
+  if (!TELEGRAM_BOT_TOKEN) {
+    throw new Error('TELEGRAM_BOT_TOKEN was not found');
+  }
+
+  const data = validateInitData(initData, TELEGRAM_BOT_TOKEN, options);
+
   const response: WebAppInitData = {
     query_id: data.query_id,
-    auth_date: authDate * 1000,
+    auth_date: parseInt(data.auth_date, 10) * 1000,
     hash: data.hash,
     user: data.user
       ? {
@@ -84,12 +100,4 @@ export function validateInitData(value: string, token: string, options?: { expir
   };
 
   return response;
-}
-
-export function validateTelegramData(initData: string, options?: { expiresIn: number }) {
-  if (!TELEGRAM_BOT_TOKEN) {
-    throw new Error('TELEGRAM_BOT_TOKEN was not found');
-  }
-
-  return validateInitData(initData, TELEGRAM_BOT_TOKEN, options);
 }

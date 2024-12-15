@@ -195,7 +195,11 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
     MuiButton: {
       defaultProps: {
         variant: 'contained',
-        disableElevation: true
+        disableElevation: true,
+        sx: {
+          paddingLeft: 2,
+          paddingRight: 2
+        }
       },
       variants: [
         {

@@ -7,7 +7,8 @@ import Link from '@mui/material/Link';
 import type { ModalProps } from '@mui/material/Modal';
 import Dialog from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
-import { CanvasQRCode } from '@packages/scoutgame-ui/components/common/CanvasQrCode';
+
+import { CanvasQRCode } from '../CanvasQrCode';
 
 const sx = {
   position: 'absolute' as const,

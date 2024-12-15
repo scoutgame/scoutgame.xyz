@@ -1,7 +1,6 @@
 import type { UserWeeklyStats } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getCurrentWeek, getLastWeek } from '@packages/scoutgame/dates';
-import { prettyPrint } from '@packages/utils/strings';
+import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
 
 export type NewScout = {
   id: string;
@@ -106,6 +105,7 @@ export async function getRankedNewScoutsForPastWeek({
 export async function getNewScouts({ week, season }: { week: string; season: string }) {
   return prisma.scout.findMany({
     where: {
+      deletedAt: null,
       nftPurchaseEvents: {
         every: {
           // every nft purchase event must have been purchased this week or later

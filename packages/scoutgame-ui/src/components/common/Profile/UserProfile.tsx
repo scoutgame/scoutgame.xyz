@@ -12,7 +12,7 @@ import { ProfileLinks } from './ProfileLinks';
 import { ShareProfile } from './ShareProfile';
 
 // Use a unique type since sometimes this prop comes from the session user, but sometimes it comes from the builder queries
-type UserProfileData = Pick<Scout, 'id' | 'path'> & {
+export type UserProfileData = Pick<Scout, 'id' | 'path'> & {
   bio?: string | null;
   avatar?: string | null;
   displayName: string;
@@ -25,9 +25,10 @@ type UserProfileData = Pick<Scout, 'id' | 'path'> & {
 type UserProfileProps = {
   user: UserProfileData;
   avatarSize?: AvatarSize;
+  hideShare?: boolean;
 };
 
-export function UserProfile({ user, avatarSize = 'xLarge' }: UserProfileProps) {
+export function UserProfile({ user, avatarSize = 'xLarge', hideShare = false }: UserProfileProps) {
   const isDesktop = useMdScreen();
   const { displayName, bio, avatar, githubLogin, farcasterName } = user;
   const isMounted = useIsMounted();
@@ -77,9 +78,9 @@ export function UserProfile({ user, avatarSize = 'xLarge' }: UserProfileProps) {
               talentProfile={user.talentProfile}
               hasMoxieProfile={user.hasMoxieProfile}
             />
-            {!isDesktop ? <ShareProfile userPath={user.path} /> : null}
+            {!isDesktop && !hideShare ? <ShareProfile userPath={user.path} /> : null}
           </Stack>
-          {isDesktop ? <ShareProfile userPath={user.path} /> : null}
+          {isDesktop && !hideShare ? <ShareProfile userPath={user.path} /> : null}
         </Stack>
         <Typography
           variant={isDesktop ? 'body2' : 'caption'}

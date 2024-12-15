@@ -9,4 +9,5 @@ import { actionClient } from './actionClient';
  */
 export const revalidatePathAction = actionClient.metadata({ actionName: 'revalidatePath' }).action<void>(async () => {
   revalidatePath('/', 'layout');
+  revalidatePath('/accounts', 'layout');
 });

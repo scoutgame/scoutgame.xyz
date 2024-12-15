@@ -2,14 +2,12 @@
 
 import { log } from '@charmverse/core/log';
 import { actionClient } from '@packages/scoutgame/actions/actionClient';
+import { authSchema } from '@packages/scoutgame/farcaster/config';
+import { verifyFarcasterUser } from '@packages/scoutgame/farcaster/verifyFarcasterUser';
 import { findOrCreateFarcasterUser } from '@packages/scoutgame/users/findOrCreateFarcasterUser';
 import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 import { cookies } from 'next/headers';
-
-import { verifyFarcasterUser } from 'lib/farcaster/verifyFarcasterUser';
-
-import { authSchema } from '../farcaster/config';
 
 import { saveSession } from './saveSession';
 
