@@ -101,7 +101,7 @@ export function ExtraDetailsForm({ user }: { user: SessionUser }) {
                 ...user,
                 bio: null,
                 githubLogin: undefined,
-                farcasterName: undefined,
+                farcasterName: null,
                 hasMoxieProfile: undefined
               }}
               avatarSize={75}

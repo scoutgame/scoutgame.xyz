@@ -1,14 +1,13 @@
-import type { BuilderStatus } from '@charmverse/core/prisma';
 import { Box, Paper, Stack, Typography } from '@mui/material';
+import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import type { TalentProfile } from '@packages/scoutgame/users/getUserByPath';
-import type { UserStats } from '@packages/scoutgame/users/getUserStats';
 import type { BuilderUserInfo } from '@packages/scoutgame/users/interfaces';
 import { Suspense } from 'react';
 
 import { LoadingComponent } from '../common/Loading/LoadingComponent';
 
 import { BuilderProfile } from './components/BuilderProfile/BuilderProfile';
-import { ProfileStats } from './components/ProfileStats';
+import { ProfileStatsContainer as ProfileStats } from './components/ProfileStats/ProfileStatsContainer';
 import { ProfileTabsMenu } from './components/ProfileTabsMenu';
 import { ScoutProfile } from './components/ScoutProfile/ScoutProfile';
 import { ScoutProfileLoading } from './components/ScoutProfile/ScoutProfileLoading';
@@ -16,18 +15,14 @@ import { UserProfileForm } from './components/UserProfileForm';
 
 export type ProfileTab = 'build' | 'scout' | 'scout-build';
 
-export type UserProfileWithPoints = Omit<BuilderUserInfo, 'builderStatus'> &
-  UserStats & {
-    currentBalance: number;
-    displayName: string;
-    builderStatus: BuilderStatus | null;
-    bio: string | null;
-    talentProfile?: TalentProfile;
-    hasMoxieProfile: boolean;
-  };
+export type UserWithProfiles = SessionUser & {
+  githubLogin?: string;
+  talentProfile?: TalentProfile;
+  hasMoxieProfile: boolean;
+};
 
-export type ProfilePageProps = {
-  user: UserProfileWithPoints;
+type ProfilePageProps = {
+  user: UserWithProfiles;
   tab: ProfileTab;
   hideGithubButton?: boolean;
 };
@@ -73,15 +68,12 @@ export function ProfilePage({ user, tab, hideGithubButton }: ProfilePageProps) {
             <UserProfileForm user={user} />
           </Stack>
           <Box flex={1}>
-            <ProfileStats
-              seasonPoints={user.seasonPoints}
-              allTimePoints={user.allTimePoints}
-              points={user.currentBalance}
-            />
+            <Suspense fallback={<LoadingComponent isLoading />}>
+              <ProfileStats userId={user.id} />
+            </Suspense>
           </Box>
         </Paper>
       </Stack>
-
       <Suspense fallback={tab === 'scout' ? <ScoutProfileLoading /> : <LoadingComponent isLoading />}>
         {tab === 'scout' ? (
           <ScoutProfile userId={user.id} />

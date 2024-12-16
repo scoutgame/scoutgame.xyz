@@ -1,21 +1,13 @@
 'use client';
 
 import { Paper, Stack, Tab, Tabs, Typography, tabClasses, tabsClasses } from '@mui/material';
+import type { UserStats } from '@packages/scoutgame/users/getUserStats';
 import Image from 'next/image';
 import { useState } from 'react';
 
-import { useMdScreen } from '../../../hooks/useMediaScreens';
-import type { UserProfileWithPoints } from '../ProfilePage';
+import { useMdScreen } from '../../../../hooks/useMediaScreens';
 
-export function ProfileStats({
-  seasonPoints,
-  allTimePoints,
-  points
-}: {
-  seasonPoints: UserProfileWithPoints['seasonPoints'];
-  allTimePoints: UserProfileWithPoints['allTimePoints'];
-  points?: number;
-}) {
+export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: points }: UserStats) {
   const [selectedDuration, setSelectedDuration] = useState<'season' | 'allTime'>('season');
   const isDesktop = useMdScreen();
 

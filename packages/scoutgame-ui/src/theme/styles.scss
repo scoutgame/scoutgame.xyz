@@ -68,10 +68,10 @@ body {
   }
 
   ::view-transition-old(container-move) {
-    animation: 0.2s ease both move-out;
+    animation: 0.2s ease-out both move-out;
   }
 
   ::view-transition-new(container-move) {
-    animation: 0.2s ease both move-in;
+    animation: 0.2s ease-in both move-in;
   }
 }

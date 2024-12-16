@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
-import { getUserStats } from '@packages/scoutgame/users/getUserStats';
+import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import type { ProfileTab } from '@packages/scoutgame-ui/components/profile/ProfilePage';
 import { ProfilePage } from '@packages/scoutgame-ui/components/profile/ProfilePage';
@@ -26,6 +26,7 @@ export default async function Profile({
 }) {
   const user = await getUserFromSession();
   const tab = searchParams.tab || (user?.builderStatus ? 'build' : 'scout');
+
   if (!user) {
     return null;
   }
@@ -39,30 +40,36 @@ export default async function Profile({
     redirect('/welcome');
   }
 
-  const userStats = await getUserStats(user.id);
-  const userExternalProfiles = await prisma.scout.findUniqueOrThrow({
-    where: {
-      id: user.id
-    },
-    select: {
-      hasMoxieProfile: true,
-      talentProfile: {
-        select: {
-          id: true,
-          score: true
+  const [, userExternalProfiles] = await safeAwaitSSRData(
+    prisma.scout.findUniqueOrThrow({
+      where: {
+        id: user.id
+      },
+      select: {
+        githubUsers: {
+          select: {
+            login: true
+          }
+        },
+        hasMoxieProfile: true,
+        talentProfile: {
+          select: {
+            id: true,
+            score: true
+          }
         }
       }
-    }
-  });
+    })
+  );
 
   return (
     <PageContainer>
       <ProfilePage
         user={{
           ...user,
-          ...userStats,
-          hasMoxieProfile: userExternalProfiles.hasMoxieProfile,
-          talentProfile: userExternalProfiles.talentProfile ?? undefined
+          githubLogin: userExternalProfiles?.githubUsers?.[0]?.login,
+          hasMoxieProfile: userExternalProfiles?.hasMoxieProfile ?? false,
+          talentProfile: userExternalProfiles?.talentProfile ?? undefined
         }}
         tab={tab}
       />
