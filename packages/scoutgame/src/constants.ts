@@ -2,4 +2,5 @@ export const appealUrl = 'https://app.charmverse.io/scout-game-appeal/scout-game
 export const rewardPoints = 5;
 
 export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+export const TELEGRAM_OAUTH_BOT_TOKEN = process.env.TELEGRAM_OAUTH_BOT_TOKEN;
 export const telegramBotName = 'ScoutGameXYZBot';
