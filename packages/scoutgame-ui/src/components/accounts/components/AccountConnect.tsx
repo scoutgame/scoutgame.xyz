@@ -34,17 +34,22 @@ export function AccountConnect({
 }) {
   return (
     <Dialog open={!!connectedUser} onClose={onClose} title={`This ${identity} account is connected to another account`}>
-      <Typography sx={{ py: 1, pb: 2 }} variant='body1' align='center'>
+      <Typography sx={{ py: 1, pb: 2 }} variant='body1'>
         {connectedUser.builderStatus === null && user.builderStatus === null ? (
           <>
-            Merge Profile by selecting which one to keep.
-            <br />
-            Your Points and Scouted Builders will be combined into your current account
+            Merge Profile by selecting which one to keep. Your Points and Builders will be transferred to the selected
+            profile
           </>
         ) : (
-          'Your Points and Scouted Builders will be combined into your builder account'
+          'Your Points and Builders will be transferred into your builder account'
         )}
       </Typography>
+      {connectedUser.starterPackNftCount + user.starterPackNftCount > 3 ? (
+        <Alert color='warning' sx={{ mb: 2 }}>
+          Note: You have more than 3 starter cards across your accounts. Only the first 3 starter cards you purchased
+          will be retained in the merged profile. Any additional starter cards will not be included."
+        </Alert>
+      ) : null}
       <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {connectedUser.builderStatus === null && user.builderStatus === null ? (
           <Stack gap={2}>

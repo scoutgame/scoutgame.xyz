@@ -12,6 +12,7 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   wallets: string[];
   avatar: string;
   builderStatus: BuilderStatus | null;
+  starterPackNftCount: number;
 };
 
 const TelegramConnect = dynamic(() => import('./components/TelegramConnect').then((mod) => mod.TelegramConnect), {
