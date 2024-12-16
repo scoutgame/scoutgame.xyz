@@ -167,7 +167,10 @@ export const mergeUserAccount = async ({
 
       await tx.nFTPurchaseEvent.updateMany({
         where: {
-          scoutId: mergedUserId
+          scoutId: mergedUserId,
+          builderNft: {
+            nftType: 'default'
+          }
         },
         data: {
           scoutId: retainedUserId

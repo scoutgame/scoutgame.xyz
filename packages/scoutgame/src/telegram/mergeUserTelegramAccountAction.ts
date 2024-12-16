@@ -28,7 +28,7 @@ export const mergeUserTelegramAccountAction = authActionClient
         id: String(authData.id),
         auth_date: String(authData.auth_date)
       },
-      generateHashedSecretKey(TELEGRAM_OAUTH_BOT_TOKEN).toString()
+      generateHashedSecretKey(TELEGRAM_OAUTH_BOT_TOKEN)
     );
 
     const telegramId = Number(telegramData.id);

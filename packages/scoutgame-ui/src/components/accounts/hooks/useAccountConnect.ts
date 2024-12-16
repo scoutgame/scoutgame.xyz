@@ -26,7 +26,7 @@ export function useAccountConnect<AuthData>({ user, identity }: { user: UserWith
     setAuthData(null);
     setConnectedUser(null);
     setAccountMergeError(null);
-    router.push('/accounts');
+    router.refresh();
   }, [revalidatePath, refreshUser, router]);
 
   const mergeAccountOnError = useCallback((err: any) => {

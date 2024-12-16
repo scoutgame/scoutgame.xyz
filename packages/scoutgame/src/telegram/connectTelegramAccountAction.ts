@@ -20,7 +20,7 @@ export const connectTelegramAccountAction = authActionClient
         id: String(parsedInput.id),
         auth_date: String(parsedInput.auth_date)
       },
-      generateHashedSecretKey(TELEGRAM_OAUTH_BOT_TOKEN).toString()
+      generateHashedSecretKey(TELEGRAM_OAUTH_BOT_TOKEN)
     );
     const userId = ctx.session.scoutId;
 
