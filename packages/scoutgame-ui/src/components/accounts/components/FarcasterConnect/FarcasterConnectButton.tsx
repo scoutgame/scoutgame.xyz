@@ -85,7 +85,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
     onClick
   });
 
-  const isConnecting = isConnectingFarcasterAccount || isRevalidatingPath;
+  const isConnecting = isConnectingFarcasterAccount || isRevalidatingPath || isMergingUserAccount;
 
   return (
     <Paper elevation={2} sx={{ p: 2 }}>
@@ -110,7 +110,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
         )}
 
         {connectionError && (
-          <Typography variant='body2' sx={{ mt: 2 }} color='error'>
+          <Typography variant='body2' color='error'>
             {connectionError}
           </Typography>
         )}
