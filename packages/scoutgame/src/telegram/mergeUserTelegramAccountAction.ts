@@ -2,7 +2,7 @@
 
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
-import { TELEGRAM_BOT_TOKEN } from '@packages/scoutgame/constants';
+import { TELEGRAM_OAUTH_BOT_TOKEN } from '@packages/scoutgame/constants';
 import { validateInitData } from '@packages/scoutgame/telegram/validate';
 
 import { mergeUserAccount } from '../users/mergeUserAccount';
@@ -15,8 +15,8 @@ export const mergeUserTelegramAccountAction = authActionClient
   })
   .schema(mergeUserTelegramAccountSchema)
   .action(async ({ ctx, parsedInput }) => {
-    if (!TELEGRAM_BOT_TOKEN) {
-      throw new Error('Telegram bot token is not set');
+    if (!TELEGRAM_OAUTH_BOT_TOKEN) {
+      throw new Error('Telegram oauth bot token is not set');
     }
 
     const scoutId = ctx.session.scoutId;
@@ -28,7 +28,7 @@ export const mergeUserTelegramAccountAction = authActionClient
         id: String(authData.id),
         auth_date: String(authData.auth_date)
       },
-      TELEGRAM_BOT_TOKEN
+      TELEGRAM_OAUTH_BOT_TOKEN
     );
 
     const telegramId = Number(telegramData.id);
