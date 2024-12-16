@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
+import { registerLoopsContact } from '@packages/loops/registerLoopsContact';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { generateUserPath } from '@packages/scoutgame/users/generateUserPath';
 
@@ -14,6 +15,7 @@ export const saveOnboardingDetailsAction = authActionClient
     const existingUser = await prisma.scout.findUniqueOrThrow({
       where: { id: userId },
       select: {
+        createdAt: true,
         displayName: true
       }
     });
@@ -40,6 +42,14 @@ export const saveOnboardingDetailsAction = authActionClient
         bio: parsedInput.bio
       }
     });
+    if (parsedInput.email) {
+      await registerLoopsContact({
+        email: parsedInput.email,
+        displayName: parsedInput.displayName,
+        sendMarketing: !!parsedInput.sendMarketing,
+        createdAt: existingUser.createdAt
+      });
+    }
 
     return { success: true };
   });
