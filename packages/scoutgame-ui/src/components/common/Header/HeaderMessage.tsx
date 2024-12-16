@@ -4,8 +4,11 @@ import { Box, Typography } from '@mui/material';
 import { getCurrentSeasonWeekNumber, getWeekStartEnd } from '@packages/scoutgame/dates';
 import { useEffect, useState } from 'react';
 
+import { useIsMounted } from '../../../hooks/useIsMounted';
+
 export function HeaderMessage() {
   const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr());
+  const isMounted = useIsMounted();
 
   useEffect(() => {
     const timeout = setInterval(() => {
@@ -14,6 +17,10 @@ export function HeaderMessage() {
 
     return () => clearInterval(timeout);
   }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Box width='100%' bgcolor='rgba(160, 108, 213, 0.4)' p={1}>

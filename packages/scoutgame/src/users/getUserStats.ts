@@ -1,12 +1,12 @@
-import type { UserAllTimeStats, UserSeasonStats } from '@charmverse/core/prisma-client';
+import type { Scout, UserAllTimeStats, UserSeasonStats } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 import { currentSeason } from '../dates';
 
 export type UserStats = {
-  githubLogin?: string;
   seasonPoints?: Pick<UserSeasonStats, 'pointsEarnedAsBuilder' | 'pointsEarnedAsScout'>;
   allTimePoints?: Pick<UserAllTimeStats, 'pointsEarnedAsBuilder' | 'pointsEarnedAsScout'>;
+  currentBalance: Scout['currentBalance'];
 };
 
 export async function getUserStats(userId: string): Promise<UserStats> {
@@ -15,11 +15,6 @@ export async function getUserStats(userId: string): Promise<UserStats> {
       id: userId
     },
     select: {
-      githubUsers: {
-        select: {
-          login: true
-        }
-      },
       userSeasonStats: {
         where: {
           season: currentSeason
@@ -34,17 +29,18 @@ export async function getUserStats(userId: string): Promise<UserStats> {
           pointsEarnedAsBuilder: true,
           pointsEarnedAsScout: true
         }
-      }
+      },
+      currentBalance: true
     }
   });
 
-  const githubUser = currentUser?.githubUsers[0];
   const seasonPoints = currentUser?.userSeasonStats[0];
   const allTimePoints = currentUser?.userAllTimeStats[0];
+  const currentBalance = currentUser?.currentBalance ?? 0;
 
   return {
-    githubLogin: githubUser?.login,
     seasonPoints,
-    allTimePoints
+    allTimePoints,
+    currentBalance
   };
 }

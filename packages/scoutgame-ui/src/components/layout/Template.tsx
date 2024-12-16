@@ -2,7 +2,6 @@
 
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { usePageView } from '@packages/scoutgame-ui/hooks/usePageView';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
@@ -22,7 +21,6 @@ const desktopVariants = {
 export function Template({ children }: { children: ReactNode }) {
   const path = usePathname();
   const theme = useTheme();
-  usePageView();
   const matchesMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   if (path.startsWith('/info')) {

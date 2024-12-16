@@ -1,7 +1,7 @@
 'use client';
 
-import type { Scout } from '@charmverse/core/prisma';
 import { Stack } from '@mui/material';
+import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import type { TalentProfile } from '@packages/scoutgame/users/getUserByPath';
 import type { Control } from 'react-hook-form';
 
@@ -12,12 +12,8 @@ import { EditableAvatar } from './EditableAvatar';
 import { EditableBio } from './EditableBio';
 import { EditableName } from './EditableName';
 
-type UserProfileData = Pick<Scout, 'id' | 'path'> & {
-  avatar?: string | null;
-  displayName: string;
+type UserProfileData = SessionUser & {
   githubLogin?: string;
-  farcasterName?: string | null;
-  bio?: string | null;
   hasMoxieProfile?: boolean;
   talentProfile?: TalentProfile;
 };

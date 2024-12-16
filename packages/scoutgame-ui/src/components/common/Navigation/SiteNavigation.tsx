@@ -7,8 +7,8 @@ import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimI
 import { SignInModalMessage } from '@packages/scoutgame-ui/components/common/ScoutButton/SignInModalMessage';
 import { useGetClaimablePoints } from '@packages/scoutgame-ui/hooks/api/session';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { ImGift as QuestsIcon } from 'react-icons/im';
@@ -52,7 +52,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const { data: claimablePoints } = useGetClaimablePoints();
   const [authPopup, setAuthPopup] = useState({
     open: false,
-    path: '/scout'
+    path: 'scout'
   });
 
   const openAuthModal = isAuthenticated

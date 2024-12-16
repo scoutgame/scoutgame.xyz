@@ -11,9 +11,9 @@ import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { useUser } from '../../../providers/UserProvider';
 import { DEFAULT_BIO } from '../../common/Profile/EditableUserProfile/EditableBio';
 import { EditableUserProfile } from '../../common/Profile/EditableUserProfile/EditableUserProfile';
-import type { UserProfileWithPoints } from '../ProfilePage';
+import type { UserWithProfiles } from '../ProfilePage';
 
-export function UserProfileForm({ user }: { user: UserProfileWithPoints }) {
+export function UserProfileForm({ user }: { user: UserWithProfiles }) {
   const isDesktop = useMdScreen();
   const { control, getValues } = useForm<UpdateUserDetailsFormValues>({
     resolver: yupResolver(updateUserDetailsSchema),

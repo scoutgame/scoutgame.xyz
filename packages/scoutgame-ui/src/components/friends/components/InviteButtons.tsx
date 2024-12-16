@@ -76,6 +76,7 @@ export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: 
             fullWidth
             variant='outlined'
             sx={{ border: `1px solid`, borderColor: 'secondary.main', color: 'secondary.main' }}
+            onClick={() => trackEvent('click_telegram_refer_friend_button')}
           >
             Invite Friends
           </Button>

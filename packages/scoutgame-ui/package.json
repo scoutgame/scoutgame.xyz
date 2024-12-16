@@ -27,6 +27,7 @@
     "@packages/utils": "^1.0.0",
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@twa-dev/sdk": "^8.0.1",
+    "framer-motion": "^11.14.1",
     "is-ua-webview": "^1.1.2",
     "puppeteer": "^23.8.0",
     "qrcode": "^1.5.4",
