@@ -6,18 +6,17 @@ import { actionClient } from '@packages/scoutgame/actions/actionClient';
 import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
 import { type SessionUser } from '@packages/scoutgame/session/interfaces';
 import { findOrCreateWalletUser } from '@packages/scoutgame/users/findOrCreateWalletUser';
+import { connectWalletAccountSchema } from '@packages/scoutgame/wallets/connectWalletAccountSchema';
+import { verifyWalletSignature } from '@packages/scoutgame/wallets/verifyWalletSignature';
 import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 import { cookies } from 'next/headers';
-
-import { loginWithWalletSchema } from 'lib/blockchain/schema';
-import { verifyWalletSignature } from 'lib/blockchain/verifyWallet';
 
 import { saveSession } from './saveSession';
 
 export const loginWithWalletAction = actionClient
   .metadata({ actionName: 'login_with_wallet' })
-  .schema(loginWithWalletSchema)
+  .schema(connectWalletAccountSchema)
   .action(async ({ ctx, parsedInput }) => {
     const newUserId = ctx.session.anonymousUserId;
     const { walletAddress } = await verifyWalletSignature(parsedInput);

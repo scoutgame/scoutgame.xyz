@@ -13,19 +13,25 @@ export const mergeUserAccount = async ({
   userId,
   farcasterId,
   telegramId,
-  selectedProfile
+  selectedProfile,
+  walletAddress
 }: {
   userId: string;
   farcasterId?: number | null;
   telegramId?: number | null;
   selectedProfile?: ProfileToKeep | null;
+  walletAddress?: string;
 }) => {
-  if (!farcasterId && !telegramId) {
+  if (!farcasterId && !telegramId && !walletAddress) {
     throw new Error('No account identities to merge');
   }
 
   const secondaryUser = await prisma.scout.findFirstOrThrow({
-    where: farcasterId ? { farcasterId } : { telegramId },
+    where: farcasterId
+      ? { farcasterId }
+      : telegramId
+        ? { telegramId }
+        : { wallets: { some: { address: walletAddress } } },
     select: {
       builderStatus: true,
       id: true

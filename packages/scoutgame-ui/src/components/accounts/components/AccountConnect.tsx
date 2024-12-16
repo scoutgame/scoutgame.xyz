@@ -6,6 +6,7 @@ import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
 
 import { Dialog } from '../../common/Dialog';
 import type { UserWithAccountsDetails } from '../AccountsPage';
+import type { AccountIdentity } from '../hooks/useAccountConnect';
 
 import { ProfileCard } from './ProfileCard';
 
@@ -22,7 +23,7 @@ export function AccountConnect({
   mergeUserAccount
 }: {
   user: UserWithAccountsDetails;
-  identity: 'telegram' | 'farcaster';
+  identity: AccountIdentity;
   connectedUser: UserProfile;
   onClose: () => void;
   setSelectedProfile: (profile: ProfileToKeep | null) => void;
