@@ -16,43 +16,43 @@ export async function getBuilderNftStats({
   season?: string;
   week?: string;
 }): Promise<NftStats> {
-  const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
-    where: {
-      builderEvent: {
-        week: {
-          lte: week
+  const [nftPurchaseEvents, builderStrikes] = await Promise.all([
+    prisma.nFTPurchaseEvent.findMany({
+      where: {
+        builderEvent: {
+          week: {
+            lte: week
+          }
+        },
+        builderNft: {
+          builderId,
+          season
         }
       },
-      builderNft: {
-        builderId,
-        season
-      }
-    },
-    select: {
-      scoutId: true,
-      tokensPurchased: true,
-      builderNft: {
-        select: {
-          builderId: true,
-          nftType: true
+      select: {
+        scoutId: true,
+        tokensPurchased: true,
+        builderNft: {
+          select: {
+            builderId: true,
+            nftType: true
+          }
         }
       }
-    }
-  });
-  const [builderStrikes, { nftSupply }] = await Promise.all([
+    }),
     prisma.builderStrike.count({
       where: {
         builderId
       }
-    }),
-    dividePointsBetweenBuilderAndScouts({
-      builderId,
-      nftPurchaseEvents,
-      rank: 1, // rank doesnt actually matter here
-      weeklyAllocatedPoints: 100,
-      normalisationFactor: 1
     })
   ]);
+  const { nftSupply } = dividePointsBetweenBuilderAndScouts({
+    builderId,
+    nftPurchaseEvents,
+    rank: 1, // rank doesnt actually matter here
+    weeklyAllocatedPoints: 100,
+    normalisationFactor: 1
+  });
   return {
     builderStrikes,
     nftSupply

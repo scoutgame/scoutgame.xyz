@@ -63,10 +63,9 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
 
   // Success Cases
   it('should correctly distribute points among scouts and builder, counting normal NFTs as 10x compared to starter pack NFTs', async () => {
-    const result = await dividePointsBetweenBuilderAndScouts({
+    const result = dividePointsBetweenBuilderAndScouts({
       builderId: builder.id,
-      season,
-      week,
+      nftPurchaseEvents: [],
       rank,
       weeklyAllocatedPoints,
       normalisationFactor
@@ -107,8 +106,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
     await expect(
       dividePointsBetweenBuilderAndScouts({
         builderId: 'invalid-builder-id',
-        season,
-        week,
+        nftPurchaseEvents: [],
         rank,
         weeklyAllocatedPoints,
         normalisationFactor
@@ -120,8 +118,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
     await expect(
       dividePointsBetweenBuilderAndScouts({
         builderId: builder.id,
-        season,
-        week,
+        nftPurchaseEvents: [],
         rank: -1,
         weeklyAllocatedPoints,
         normalisationFactor

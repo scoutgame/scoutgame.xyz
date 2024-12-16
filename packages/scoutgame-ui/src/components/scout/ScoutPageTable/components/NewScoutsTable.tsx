@@ -2,7 +2,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import { Alert, Button, Stack, Table, TableBody, TableCell, TableHead, Tooltip } from '@mui/material';
 import type { NewScout } from '@packages/scoutgame/scouts/getNewScouts';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
-import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
+import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -51,11 +51,11 @@ export function NewScoutsTable({ scouts }: { scouts: NewScout[] }) {
             <TableCell align='center' sx={{ display: { xs: 'none', md: 'table-cell' } }}>
               CARDS HELD
             </TableCell>
-            <TableCell align='right' sx={{ width: '60%' }}>
+            <TableCell align='right' sx={{ width: '40%' }}>
               <Tooltip title="Gems earned by the scout's builders">
                 <Stack display='inline-flex' flexDirection='row' gap={0.5} alignItems='center'>
-                  BUILDER GEMS
-                  <GemsIcon />
+                  POINTS
+                  <PointsIcon />
                 </Stack>
               </Tooltip>
             </TableCell>
@@ -101,7 +101,7 @@ export function NewScoutsTable({ scouts }: { scouts: NewScout[] }) {
               <TableCell align='right'>
                 <Stack alignItems='center' flexDirection='row' gap={1} justifyContent='flex-end'>
                   <TableCellText>{scout.pointsPredicted || 0}</TableCellText>
-                  <GemsIcon />
+                  <PointsIcon />
                 </Stack>
               </TableCell>
             </CommonTableRow>

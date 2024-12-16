@@ -23,45 +23,58 @@ export async function getRankedNewScoutsForCurrentWeek({
   week?: string;
   season?: string;
 } = {}): Promise<NewScout[]> {
-  const [{ pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
+  const [{ pointsPerScout: _pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
     (async function calculatePointsPerScout() {
       const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints, nftPurchaseEvents } =
         await getWeeklyPointsPoolAndBuilders({
-          week
+          week,
+          season
         });
-      const context = await dividePointsBetweenBuilderAndScouts({
-        builderId: topWeeklyBuilders[0].builder.id,
-        rank: topWeeklyBuilders[0].rank,
-        weeklyAllocatedPoints,
-        normalisationFactor,
-        nftPurchaseEvents
+      // aggregate values for each scout per topWeeklyBuilder
+      const pointsPerScout: Record<string, number> = {};
+
+      topWeeklyBuilders.forEach((builder) => {
+        const { pointsPerScout: builderPointsPerScout } = dividePointsBetweenBuilderAndScouts({
+          builderId: builder.builder.id,
+          rank: builder.rank,
+          weeklyAllocatedPoints,
+          normalisationFactor,
+          nftPurchaseEvents
+        });
+        builderPointsPerScout.forEach(({ scoutId, scoutPoints }) => {
+          pointsPerScout[scoutId] = (pointsPerScout[scoutId] || 0) + scoutPoints;
+        });
       });
       return {
         nftPurchaseEvents,
-        pointsPerScout: context.pointsPerScout
+        pointsPerScout
       };
     })(),
     getNewScouts({ week, season })
   ]);
 
-  return newScouts
-    .map((scout): NewScout => {
-      const scoutTransactions = _nftPurchaseEvents.filter((event) => event.scoutId === scout.id);
-      const buildersScouted = Array.from(new Set(scoutTransactions.map((event) => event.builderNft.builderId)));
-      const nftsHeld = scoutTransactions.reduce((acc, event) => acc + event.tokensPurchased, 0);
-      return {
-        id: scout.id,
-        path: scout.path,
-        displayName: scout.displayName,
-        avatar: scout.avatar,
-        buildersScouted: buildersScouted.length,
-        pointsPredicted: pointsPerScout.find((points) => points.scoutId === scout.id)?.scoutPoints || -1,
-        nftsHeld
-      };
-    })
-    .sort((a, b) => {
-      return b.pointsPredicted - a.pointsPredicted;
-    });
+  return (
+    newScouts
+      .map((scout): NewScout => {
+        const scoutTransactions = _nftPurchaseEvents.filter((event) => event.scoutId === scout.id);
+        const buildersScouted = Array.from(new Set(scoutTransactions.map((event) => event.builderNft.builderId)));
+        const nftsHeld = scoutTransactions.reduce((acc, event) => acc + event.tokensPurchased, 0);
+        return {
+          id: scout.id,
+          path: scout.path,
+          displayName: scout.displayName,
+          avatar: scout.avatar,
+          buildersScouted: buildersScouted.length,
+          pointsPredicted: _pointsPerScout[scout.id] ?? 0,
+          nftsHeld
+        };
+      })
+      // scouts may own NFT of builders that have no points yet
+      // .filter((scout) => scout.pointsPredicted > 0)
+      .sort((a, b) => {
+        return b.pointsPredicted - a.pointsPredicted;
+      })
+  );
 }
 
 // TODO: cache the pointsEarned as part of userWeeklyStats like we do in userSeasonStats

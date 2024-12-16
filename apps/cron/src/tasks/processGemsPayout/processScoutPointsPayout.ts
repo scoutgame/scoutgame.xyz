@@ -41,9 +41,9 @@ export async function processScoutPointsPayout({
     return;
   }
 
-  const { pointsForBuilder, pointsPerScout, nftSupply } = await dividePointsBetweenBuilderAndScouts({
+  const { pointsForBuilder, pointsPerScout, nftSupply } = dividePointsBetweenBuilderAndScouts({
     builderId,
-    nftPurchaseEvents: nftPurchaseEvents.filter((event) => event.builderNft.builderId === builderId),
+    nftPurchaseEvents,
     rank,
     weeklyAllocatedPoints,
     normalisationFactor
