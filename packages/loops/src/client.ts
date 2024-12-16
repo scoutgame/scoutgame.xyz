@@ -29,7 +29,7 @@ export type LoopsUser = {
   firstName: string;
   email: string;
   createdAt: string;
-  source: 'Web App'; // TODO: what should this be?
+  source: string;
   subscribed?: boolean;
 } & Partial<SignupEventProperties>;
 

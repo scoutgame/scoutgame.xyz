@@ -1,6 +1,8 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
+import { registerLoopsContact } from '@packages/loops/registerLoopsContact';
+import { getPlatform } from '@packages/mixpanel/utils';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 
 import { saveOnboardingDetailsSchema } from './saveOnboardingDetailsSchema';
@@ -23,6 +25,17 @@ export const saveOnboardingDetailsAction = authActionClient
         onboardedAt: new Date()
       }
     });
+    if (parsedInput.email) {
+      await registerLoopsContact(
+        {
+          email: parsedInput.email,
+          displayName: parsedInput.displayName,
+          sendMarketing: !!parsedInput.sendMarketing,
+          createdAt: existingUser.createdAt
+        },
+        getPlatform()
+      );
+    }
 
     return { success: true };
   });

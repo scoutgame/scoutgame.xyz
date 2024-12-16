@@ -2,6 +2,7 @@
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { registerLoopsContact } from '@packages/loops/registerLoopsContact';
+import { getPlatform } from '@packages/mixpanel/utils';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { generateUserPath } from '@packages/scoutgame/users/generateUserPath';
 
@@ -43,12 +44,15 @@ export const saveOnboardingDetailsAction = authActionClient
       }
     });
     if (parsedInput.email) {
-      await registerLoopsContact({
-        email: parsedInput.email,
-        displayName: parsedInput.displayName,
-        sendMarketing: !!parsedInput.sendMarketing,
-        createdAt: existingUser.createdAt
-      });
+      await registerLoopsContact(
+        {
+          email: parsedInput.email,
+          displayName: parsedInput.displayName,
+          sendMarketing: !!parsedInput.sendMarketing,
+          createdAt: existingUser.createdAt
+        },
+        getPlatform()
+      );
     }
 
     return { success: true };
