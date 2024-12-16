@@ -26,9 +26,9 @@ export type TelegramAccount = {
 };
 
 export function loginWithTelegram(callback: (user: TelegramAccount) => void) {
-  const TELEGRAM_BOT_ID = env('TELEGRAM_BOT_ID');
+  const TELEGRAM_OAUTH_BOT_ID = env('TELEGRAM_OAUTH_BOT_ID');
   // @ts-ignore - defined by the script: https://telegram.org/js/telegram-widget.js
-  window.Telegram.Login.auth({ bot_id: TELEGRAM_BOT_ID, request_access: true }, callback);
+  window.Telegram.Login.auth({ bot_id: TELEGRAM_OAUTH_BOT_ID, request_access: true }, callback);
 }
 
 export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
