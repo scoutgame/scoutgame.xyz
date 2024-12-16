@@ -56,7 +56,7 @@ export async function processGemsPayout(
         season,
         normalisationFactor,
         weeklyAllocatedPoints,
-        nftPurchaseEvents: nftPurchaseEvents.filter((event) => event.builderNft.builderId === builder.id)
+        nftPurchaseEvents
       });
     } catch (error) {
       scoutgameMintsLogger.error(`Error processing scout points payout for builder ${builder.id}: ${error}`);
