@@ -1,13 +1,16 @@
 import type { UserWeeklyStats } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
+
+import { currentSeason, getCurrentWeek } from '../dates';
+import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
+import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
 
 export type NewScout = {
   id: string;
   path: string;
   displayName: string;
   avatar: string | null;
-  builderGemsCollected: number;
+  pointsPredicted: number;
   buildersScouted: number;
   nftsHeld: number;
 };
@@ -20,38 +23,44 @@ export async function getRankedNewScoutsForCurrentWeek({
   week?: string;
   season?: string;
 } = {}): Promise<NewScout[]> {
-  const [weeklyStats, newScouts] = await Promise.all([
-    prisma.userWeeklyStats.findMany({
-      where: {
-        week,
-        season
-      }
-    }),
+  const [{ pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
+    (async function calculatePointsPerScout() {
+      const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints, nftPurchaseEvents } =
+        await getWeeklyPointsPoolAndBuilders({
+          week
+        });
+      const context = await dividePointsBetweenBuilderAndScouts({
+        builderId: topWeeklyBuilders[0].builder.id,
+        rank: topWeeklyBuilders[0].rank,
+        weeklyAllocatedPoints,
+        normalisationFactor,
+        nftPurchaseEvents
+      });
+      return {
+        nftPurchaseEvents,
+        pointsPerScout: context.pointsPerScout
+      };
+    })(),
     getNewScouts({ week, season })
   ]);
-  const weeklyStatsByUserId = weeklyStats.reduce<Record<string, UserWeeklyStats>>((acc, stat) => {
-    acc[stat.userId] = stat;
-    return acc;
-  }, {});
+
   return newScouts
     .map((scout): NewScout => {
-      const buildersScouted = Array.from(new Set(scout.nftPurchaseEvents.map((event) => event.builderNft.builderId)));
-      const nftsHeld = scout.userSeasonStats[0]?.nftsPurchased || 0;
-      const builderGemsCollected = buildersScouted
-        .map((builderId) => weeklyStatsByUserId[builderId]?.gemsCollected || 0)
-        .reduce((acc, curr) => acc + curr, 0);
+      const scoutTransactions = _nftPurchaseEvents.filter((event) => event.scoutId === scout.id);
+      const buildersScouted = Array.from(new Set(scoutTransactions.map((event) => event.builderNft.builderId)));
+      const nftsHeld = scoutTransactions.reduce((acc, event) => acc + event.tokensPurchased, 0);
       return {
         id: scout.id,
         path: scout.path,
         displayName: scout.displayName,
         avatar: scout.avatar,
         buildersScouted: buildersScouted.length,
-        builderGemsCollected,
+        pointsPredicted: pointsPerScout.find((points) => points.scoutId === scout.id)?.scoutPoints || -1,
         nftsHeld
       };
     })
     .sort((a, b) => {
-      return b.builderGemsCollected - a.builderGemsCollected;
+      return b.pointsPredicted - a.pointsPredicted;
     });
 }
 
@@ -133,40 +142,6 @@ export async function getNewScouts({ week, season }: { week: string; season: str
       wallets: {
         select: {
           address: true
-        }
-      },
-      nftPurchaseEvents: {
-        where: {
-          builderEvent: {
-            week,
-            season
-          },
-          builderNft: {
-            builder: {
-              builderStatus: 'approved'
-            }
-          }
-        },
-        select: {
-          builderEvent: {
-            select: {
-              week: true,
-              season: true
-            }
-          },
-          builderNft: {
-            select: {
-              builderId: true
-            }
-          }
-        }
-      },
-      userSeasonStats: {
-        where: {
-          season
-        },
-        select: {
-          nftsPurchased: true
         }
       }
     }

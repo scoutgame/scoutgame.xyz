@@ -100,7 +100,7 @@ export function NewScoutsTable({ scouts }: { scouts: NewScout[] }) {
               </TableCell>
               <TableCell align='right'>
                 <Stack alignItems='center' flexDirection='row' gap={1} justifyContent='flex-end'>
-                  <TableCellText>{scout.builderGemsCollected || 0}</TableCellText>
+                  <TableCellText>{scout.pointsPredicted || 0}</TableCellText>
                   <GemsIcon />
                 </Stack>
               </TableCell>

@@ -2,11 +2,13 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import { dividePointsBetweenBuilderAndScouts } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
+import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { incrementPointsEarnedStats } from '@packages/scoutgame/points/updatePointsEarned';
 import { v4 } from 'uuid';
 
 export async function processScoutPointsPayout({
   builderId,
+  nftPurchaseEvents,
   rank,
   gemsCollected,
   week,
@@ -16,6 +18,7 @@ export async function processScoutPointsPayout({
   weeklyAllocatedPoints
 }: {
   builderId: string;
+  nftPurchaseEvents: PartialNftPurchaseEvent[];
   rank: number;
   gemsCollected: number;
   week: string;
@@ -40,8 +43,7 @@ export async function processScoutPointsPayout({
 
   const { pointsForBuilder, pointsPerScout, nftSupply } = await dividePointsBetweenBuilderAndScouts({
     builderId,
-    season,
-    week,
+    nftPurchaseEvents: nftPurchaseEvents.filter((event) => event.builderNft.builderId === builderId),
     rank,
     weeklyAllocatedPoints,
     normalisationFactor
