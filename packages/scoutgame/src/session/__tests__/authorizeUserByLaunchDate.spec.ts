@@ -1,5 +1,6 @@
 import { UnauthorisedActionError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
+import { jest } from '@jest/globals';
 import { tierDistributionMap } from '@packages/scoutgame/waitlist/scoring/constants';
 import { DateTime } from 'luxon';
 
