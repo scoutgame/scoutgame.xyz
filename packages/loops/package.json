@@ -1,0 +1,16 @@
+{
+  "name": "@packages/loops",
+  "version": "0.0.0",
+  "description": "Integration with loops.so",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async-sema": "^3.1.1"
+  }
+}

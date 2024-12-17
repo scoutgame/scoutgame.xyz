@@ -6,6 +6,9 @@ export async function connectTelegramAccount({ telegramId, userId }: { telegramI
   const existingTelegramUser = await getUserProfile({ telegramId });
 
   if (existingTelegramUser) {
+    if (existingTelegramUser.id === userId) {
+      throw new Error('Telegram account already connected to this user');
+    }
     return existingTelegramUser;
   }
 

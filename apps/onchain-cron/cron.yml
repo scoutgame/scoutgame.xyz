@@ -1,0 +1,21 @@
+version: 1
+cron:
+  - name: 'process-builder-activity'
+    url: '/process-builder-activity'
+    # every 20 minutes
+    schedule: '*/20 * * * *'
+
+  - name: 'issue-gems-onchain'
+    url: '/issue-gems-onchain'
+    # every 20 minutes
+    schedule: '*/20 * * * *'
+
+  - name: 'process-onchain-gems-payout'
+    url: '/process-onchain-gems-payout'
+    # Start of every hour
+    schedule: '0 * * * *'
+
+  - name: 'update-builder-card-activity'
+    url: '/update-builder-card-activity'
+    # Every hour
+    schedule: '0 * * * *'

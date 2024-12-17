@@ -1,8 +1,11 @@
 import { prisma, type BuilderStatus } from '@charmverse/core/prisma-client';
 import type { UserProfileData } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 
+import { currentSeason } from '../dates';
+
 export type UserProfile = UserProfileData & {
   builderStatus: BuilderStatus | null;
+  starterPackNftCount: number;
 };
 
 export async function getUserProfile({
@@ -38,7 +41,18 @@ export async function getUserProfile({
       talentProfile: true,
       hasMoxieProfile: true,
       id: true,
-      path: true
+      path: true,
+      nftPurchaseEvents: {
+        where: {
+          builderNft: {
+            season: currentSeason,
+            nftType: 'starter_pack'
+          }
+        },
+        select: {
+          id: true
+        }
+      }
     }
   });
 
@@ -56,6 +70,7 @@ export async function getUserProfile({
     hasMoxieProfile: user.hasMoxieProfile,
     id: user.id,
     path: user.path,
-    builderStatus: user.builderStatus
+    builderStatus: user.builderStatus,
+    starterPackNftCount: user.nftPurchaseEvents.length
   };
 }
