@@ -58,6 +58,38 @@ describe('mergeUserAccount', () => {
     ).rejects.toThrow('Can not merge builder account profiles');
   });
 
+  it('should throw an error if the merged user has more than 3 starter pack NFTs', async () => {
+    const builders = await Promise.all(Array.from({ length: 3 }).map(() => mockBuilder()));
+    await Promise.all(
+      builders.map((builder) =>
+        mockBuilderNft({ builderId: builder.id, nftType: 'starter_pack', season: currentSeason })
+      )
+    );
+    const primaryUser = await mockScout();
+    const secondaryUser = await mockScout({
+      farcasterId: randomIntFromInterval(1, 1000000)
+    });
+    await Promise.all([
+      Array.from({ length: 3 }).map((_, index) =>
+        mockNFTPurchaseEvent({
+          builderId: builders[index].id,
+          nftType: 'starter_pack',
+          scoutId: primaryUser.id,
+          season: currentSeason
+        })
+      ),
+      mockNFTPurchaseEvent({
+        builderId: builders[2].id,
+        nftType: 'starter_pack',
+        scoutId: secondaryUser.id,
+        season: currentSeason
+      })
+    ]);
+    await expect(mergeUserAccount({ userId: primaryUser.id, farcasterId: secondaryUser.farcasterId })).rejects.toThrow(
+      'Can not merge more than 3 starter pack NFTs'
+    );
+  });
+
   it('should merge the profiles but retain walletENS when the selected profile is set to new', async () => {
     const primaryUser = await mockScout({
       walletENS: 'primary.eth'

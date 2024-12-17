@@ -13,19 +13,25 @@ export const mergeUserAccount = async ({
   userId,
   farcasterId,
   telegramId,
-  selectedProfile
+  selectedProfile,
+  walletAddress
 }: {
   userId: string;
   farcasterId?: number | null;
   telegramId?: number | null;
   selectedProfile?: ProfileToKeep | null;
+  walletAddress?: string;
 }) => {
-  if (!farcasterId && !telegramId) {
+  if (!farcasterId && !telegramId && !walletAddress) {
     throw new Error('No account identities to merge');
   }
 
   const secondaryUser = await prisma.scout.findFirstOrThrow({
-    where: farcasterId ? { farcasterId } : { telegramId },
+    where: farcasterId
+      ? { farcasterId }
+      : telegramId
+        ? { telegramId }
+        : { wallets: { some: { address: walletAddress } } },
     select: {
       builderStatus: true,
       id: true
@@ -51,7 +57,18 @@ export const mergeUserAccount = async ({
         farcasterName: true,
         telegramId: true,
         deletedAt: true,
-        builderStatus: true
+        builderStatus: true,
+        nftPurchaseEvents: {
+          where: {
+            builderNft: {
+              season: currentSeason,
+              nftType: 'starter_pack'
+            }
+          },
+          select: {
+            id: true
+          }
+        }
       }
     }),
     prisma.scout.findUniqueOrThrow({
@@ -74,10 +91,28 @@ export const mergeUserAccount = async ({
           select: {
             address: true
           }
+        },
+        nftPurchaseEvents: {
+          where: {
+            builderNft: {
+              season: currentSeason,
+              nftType: 'starter_pack'
+            }
+          },
+          select: {
+            id: true
+          }
         }
       }
     })
   ]);
+
+  const retainedUserStarterPackNft = retainedUser.nftPurchaseEvents.length;
+  const mergedUserStarterPackNft = mergedUser.nftPurchaseEvents.length;
+
+  if (retainedUserStarterPackNft + mergedUserStarterPackNft > 3) {
+    throw new Error('Can not merge more than 3 starter pack NFTs');
+  }
 
   if (retainedUser.builderStatus !== null && mergedUser.builderStatus !== null) {
     log.error('Can not merge two builder accounts', {

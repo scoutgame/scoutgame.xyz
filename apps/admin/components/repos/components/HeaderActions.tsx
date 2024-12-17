@@ -116,6 +116,18 @@ export function HeaderActions() {
             fullWidth
             sx={{ justifyContent: 'flex-start' }}
             size='small'
+            filename={`Moxie Weekly Report (${lastWeek}).tsv`}
+            src='/api/partners/moxie/export'
+            onComplete={closeMenu}
+          >
+            Export Moxie Report
+          </FileDownloadButton>
+        </MenuItem>
+        <MenuItem>
+          <FileDownloadButton
+            fullWidth
+            sx={{ justifyContent: 'flex-start' }}
+            size='small'
             filename={`Talent Protocol Weekly Report (${lastWeek}).tsv`}
             src='/api/partners/talent'
           >

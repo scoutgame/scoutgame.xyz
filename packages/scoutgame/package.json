@@ -17,7 +17,8 @@
     "@packages/github": "^0.0.0",
     "@packages/loops": "^0.0.0",
     "@packages/utils": "^1.0.0",
-    "@twa-dev/sdk": "^8.0.1"
+    "@twa-dev/sdk": "^8.0.1",
+    "siwe": "^2.3.2"
   },
   "optionalDependencies": {
     "sharp": "^0.33.5"

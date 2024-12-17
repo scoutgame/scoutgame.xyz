@@ -83,7 +83,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
     }
   }, []);
 
-  const isConnecting = isConnectingTelegramAccount || isRevalidatingPath;
+  const isConnecting = isConnectingTelegramAccount || isRevalidatingPath || isMergingUserAccount;
 
   return (
     <Paper elevation={2} sx={{ p: 2 }}>
@@ -108,7 +108,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
         )}
 
         {connectionError && (
-          <Typography variant='body2' sx={{ mt: 2 }} color='error'>
+          <Typography variant='body2' color='error'>
             {connectionError}
           </Typography>
         )}
