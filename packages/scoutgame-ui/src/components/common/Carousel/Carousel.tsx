@@ -2,12 +2,13 @@
 
 import type { BoxProps } from '@mui/material';
 import { Box } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import type { SwiperProps } from 'swiper/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { NavigationOptions } from 'swiper/types';
 
+import { useIsMounted } from '../../../hooks/useIsMounted';
 import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { LoadingCards } from '../Loading/LoadingCards';
 
@@ -18,7 +19,7 @@ import 'swiper/css/autoplay';
 import 'swiper/css/pagination';
 
 export type CarouselProps = {
-  children: React.ReactNode[];
+  children: ReactNode[];
   renderBullet?: (index: number, className: string) => string;
   slidesPerView?: number;
   boxProps?: Partial<BoxProps>;
@@ -35,20 +36,17 @@ export function Carousel({
   showMobileNavigationArrows,
   ...swiperProps
 }: CarouselProps) {
-  const isDesktop = useMdScreen();
   // Use state and effect to skip pre-rendering
-  const [isClientSide, setIsClientSide] = useState(false);
+  const isMounted = useIsMounted();
 
-  useEffect(() => {
-    setIsClientSide(true);
-  }, []);
+  const isDesktop = useMdScreen();
 
   const prevButtonId =
     ((swiperProps.navigation as NavigationOptions)?.prevEl as string | undefined) ?? '.swiper-button-prev';
   const nextButtonId = (swiperProps.navigation as NavigationOptions)?.nextEl ?? '.swiper-button-next';
 
-  if (!isClientSide) {
-    return <LoadingCards />;
+  if (!isMounted) {
+    return <LoadingCards count={Math.floor(swiperProps.slidesPerView || 3)} />;
   }
 
   return (
@@ -64,7 +62,7 @@ export function Carousel({
     >
       <Swiper
         autoplay={
-          typeof autoplay === 'boolean'
+          typeof autoplay === 'boolean' && autoplay === true
             ? {
                 delay: 3000,
                 pauseOnMouseEnter: true

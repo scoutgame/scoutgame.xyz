@@ -25,10 +25,12 @@ const NFTPurchaseDialog = dynamic(
 
 export function ScoutButton({
   builder,
-  markStarterCardPurchased = false
+  markStarterCardPurchased = false,
+  type = 'builder'
 }: {
   builder: NFTPurchaseProps['builder'] & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
+  type?: 'builder' | 'starter_pack';
 }) {
   const theme = useTheme();
   const trackEvent = useTrackEvent();
@@ -58,6 +60,10 @@ export function ScoutButton({
     );
   }
 
+  const color = type === 'starter_pack' ? 'green.main' : undefined;
+  const image =
+    type === 'starter_pack' ? '/images/profile/scout-game-green-icon.svg' : '/images/profile/scout-game-blue-icon.svg';
+
   return (
     <div>
       <DynamicLoadingContext.Provider value={setDialogLoadingStatus}>
@@ -72,10 +78,11 @@ export function ScoutButton({
             onClick={handleClick}
             data-test={isLoading ? '' : 'scout-button'}
             variant='buy'
+            sx={{ color, borderColor: color }}
           >
             {purchaseCostInPoints}
             <Image
-              src='/images/profile/scout-game-blue-icon.svg'
+              src={image}
               alt='Scout game points'
               width={21}
               height={12}

@@ -3,14 +3,16 @@ import { Box, Typography } from '@mui/material';
 export function StarterPackInfo({ remainingStarterCards = 3 }: { remainingStarterCards?: number }) {
   return (
     <Box display='flex' flexDirection='column' gap={2}>
-      <Typography variant='h5' color='secondary' fontWeight={600} textAlign='center'>
-        Scout your Starter Pack
+      <Typography variant='h6' fontWeight={600} textAlign={{ xs: 'center', md: 'left' }} color='green.main'>
+        Earn Scout Points
       </Typography>
-      <Typography variant='h6' textAlign='center'>
-        Scout up to {remainingStarterCards} Builders in this Starter Set <br />
-        Starter Cards at 20 points (up to 95% off)
+      <Typography>
+        Start your collection by purchasing up to {remainingStarterCards} cards from this Starter Pack!
       </Typography>
-      <Typography textAlign='center'>* Starter Cards earn 1/10th the points of Season Cards.</Typography>
+      <Typography>Starter Cards cost only 20 Scout Points, up to 95% off from regular Builder Cards!</Typography>
+      <Typography variant='caption'>
+        <sup>*</sup>Starter Cards earn 1/10 Scout Points compared to regular Builder Cards.
+      </Typography>
     </Box>
   );
 }

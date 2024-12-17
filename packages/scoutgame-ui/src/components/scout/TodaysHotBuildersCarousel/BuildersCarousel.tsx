@@ -2,12 +2,10 @@
 
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
-import { useIsMounted } from '../../../hooks/useIsMounted';
 import { useLgScreen, useMdScreen } from '../../../hooks/useMediaScreens';
 import { useTrackEvent } from '../../../hooks/useTrackEvent';
 import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
 import { Carousel } from '../../common/Carousel/Carousel';
-import { LoadingCards } from '../../common/Loading/LoadingCards';
 
 import { PromoCard } from './PromoCard';
 
@@ -24,14 +22,8 @@ export function BuildersCarousel({
   const isLgScreen = useLgScreen();
   const trackEvent = useTrackEvent();
   const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'x-small';
-  const isMounted = useIsMounted();
 
-  if (!isMounted) {
-    // This is returned to prevent a layout shift when the carousel is mounted
-    return <LoadingCards />;
-  }
-
-  const slidesPerView = isDesktop ? 3 : 2;
+  const slidesPerView = isDesktop ? 3 : 2.2;
   const builderCardsList = builders.map((builder) => (
     <BuilderCard size={size} key={builder.id} builder={builder} showPurchaseButton showHotIcon />
   ));
@@ -75,12 +67,7 @@ export function BuildersCarousel({
     : builderCardsList;
 
   return (
-    <Carousel
-      slidesPerView={slidesPerView}
-      boxProps={{ width: { xs: '100%', md: '90%' }, margin: '0 auto' }}
-      showMobileNavigationArrows
-      autoplay
-    >
+    <Carousel slidesPerView={slidesPerView} boxProps={{ width: { xs: '100%', md: '90%' }, margin: '0 auto' }} autoplay>
       {builderCards}
     </Carousel>
   );
