@@ -37,6 +37,14 @@ export function useAccountConnect<AuthData>({
     router.refresh();
   }, [revalidatePath, refreshUser, router]);
 
+  const onCloseModal = useCallback(() => {
+    setAuthData(null);
+    setConnectionError(null);
+    setConnectedUser(null);
+    setAccountMergeError(null);
+    popupState.close();
+  }, [popupState]);
+
   const mergeAccountOnError = useCallback((err: any) => {
     log.error('Error merging user account', { error: err.error.serverError, identity, userId: user.id });
     setAccountMergeError(`Error merging ${identity} account`);
@@ -85,6 +93,7 @@ export function useAccountConnect<AuthData>({
     connectedUser,
     setConnectedUser,
     setSelectedProfile,
-    popupState
+    popupState,
+    onCloseModal
   };
 }

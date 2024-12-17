@@ -45,7 +45,8 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
     setConnectedUser,
     setSelectedProfile,
     isMergeDisabled,
-    authData
+    authData,
+    onCloseModal
   } = useAccountConnect<WalletAuthData>({ user, identity: 'wallet' });
   const { address, chainId, isConnected } = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
@@ -153,7 +154,7 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
           isMergeDisabled={isMergeDisabled}
           isMergingUserAccount={isMergingUserAccount}
           mergeUserAccount={() => authData && mergeUserWalletAccount({ authData, selectedProfile })}
-          onClose={() => setConnectedUser(null)}
+          onClose={onCloseModal}
           selectedProfile={selectedProfile}
           setSelectedProfile={setSelectedProfile}
           user={user}
