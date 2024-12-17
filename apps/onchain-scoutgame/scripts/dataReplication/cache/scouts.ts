@@ -1,0 +1,1 @@
+export const scouts = [] as any[];
