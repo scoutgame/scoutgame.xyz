@@ -44,7 +44,6 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
     setConnectionError,
     setAuthData,
     connectedUser,
-    setConnectedUser,
     setSelectedProfile,
     isMergeDisabled,
     authData,

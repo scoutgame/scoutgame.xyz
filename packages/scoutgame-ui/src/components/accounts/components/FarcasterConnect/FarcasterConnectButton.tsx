@@ -20,7 +20,6 @@ import { AccountConnect } from '../AccountConnect';
 
 export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails }) {
   const {
-    setConnectedUser,
     setSelectedProfile,
     isMergeDisabled,
     authData,

@@ -31,7 +31,7 @@ export const mergeUserAccount = async ({
       ? { farcasterId }
       : telegramId
         ? { telegramId }
-        : { wallets: { some: { address: walletAddress } } },
+        : { wallets: { some: { address: { equals: walletAddress?.toLowerCase() } } } },
     select: {
       builderStatus: true,
       id: true
