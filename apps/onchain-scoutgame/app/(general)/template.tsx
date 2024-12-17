@@ -1,5 +1,5 @@
 'use client';
 
-import { Template } from 'components/layout/Template';
+import { Template } from '@packages/scoutgame-ui/components/layout/Template';
 
 export default Template;

@@ -1,6 +1,5 @@
+import { LoginPage as LoginPageComponent } from '@packages/scoutgame-ui/components/login/LoginPage';
 import type { Metadata } from 'next';
-
-import { LoginPage as LoginPageComponent } from 'components/login/LoginPage';
 
 export const metadata: Metadata = {
   title: 'Login to Scout Game'

@@ -2,10 +2,9 @@ import { log } from '@charmverse/core/log';
 import { BuilderNftType } from '@charmverse/core/prisma-client';
 import { currentSeason } from '@packages/scoutgame/dates';
 import { getBuildersByFid } from '@packages/scoutgame/social/getBuildersByFid';
+import { ScoutInfoPage } from '@packages/scoutgame-ui/components/welcome/scout-info/ScoutInfoPage';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-
-import { ScoutInfoPage } from 'components/welcome/scout-info/ScoutInfoPage';
 
 export const dynamic = 'force-dynamic';
 

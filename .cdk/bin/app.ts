@@ -15,8 +15,9 @@ const app = new cdk.App();
 
 // Command example: cdk deploy --context name=stg-scoutgame
 const stackNameParam: string = app.node.getContext('name');
-const env = stackNameParam.split('-')[0];
-const appName = stackNameParam.split('-')[1];
+const nameParamParts = stackNameParam.split('-');
+const env = nameParamParts.pop();
+const appName = nameParamParts.join('-'); // join the remaining parts in case an app name includes hyphens
 
 const stackOptions = apps[appName]?.[env];
 

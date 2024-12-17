@@ -26,7 +26,6 @@
     "@packages/utils": "^1.0.0",
     "@twa-dev/sdk": "^8.0.1",
     "@typeschema/yup": "^0.13.3",
-    "next-safe-action": "~7.4.2",
     "server-only": "^0.0.1"
   }
 }
