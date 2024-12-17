@@ -1,13 +1,10 @@
 import { UnauthorisedActionError } from '@charmverse/core/errors';
-import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { tierDistributionMap } from '@packages/scoutgame/waitlist/scoring/constants';
 import { DateTime } from 'luxon';
 
-import { authorizeUserByLaunchDate, launchDates } from '../authorizeUserByLaunchDate';
-
 // Mock the prisma client
-jest.mock('@charmverse/core/prisma-client', () => ({
+jest.unstable_mockModule('@charmverse/core/prisma-client', () => ({
   prisma: {
     scout: {
       count: jest.fn()
@@ -17,6 +14,9 @@ jest.mock('@charmverse/core/prisma-client', () => ({
     }
   }
 }));
+const { prisma } = await import('@charmverse/core/prisma-client');
+
+const { authorizeUserByLaunchDate, launchDates } = await import('../authorizeUserByLaunchDate');
 
 describe('authorizeUserByLaunchDate', () => {
   const mockFid = 123;
