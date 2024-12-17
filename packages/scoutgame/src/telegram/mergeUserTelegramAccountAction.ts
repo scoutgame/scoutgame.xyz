@@ -3,7 +3,7 @@
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { TELEGRAM_OAUTH_BOT_TOKEN } from '@packages/scoutgame/constants';
-import { validateInitData } from '@packages/scoutgame/telegram/validate';
+import { generateHashedSecretKey, validateInitData } from '@packages/scoutgame/telegram/validate';
 
 import { mergeUserAccount } from '../users/mergeUserAccount';
 
@@ -28,7 +28,7 @@ export const mergeUserTelegramAccountAction = authActionClient
         id: String(authData.id),
         auth_date: String(authData.auth_date)
       },
-      TELEGRAM_OAUTH_BOT_TOKEN
+      generateHashedSecretKey(TELEGRAM_OAUTH_BOT_TOKEN)
     );
 
     const telegramId = Number(telegramData.id);

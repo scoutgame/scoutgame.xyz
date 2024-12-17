@@ -2,7 +2,7 @@
 
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 import { TELEGRAM_OAUTH_BOT_TOKEN } from '@packages/scoutgame/constants';
-import { validateInitData } from '@packages/scoutgame/telegram/validate';
+import { generateHashedSecretKey, validateInitData } from '@packages/scoutgame/telegram/validate';
 
 import { connectTelegramAccount } from './connectTelegramAccount';
 import { connectTelegramAccountSchema } from './connectTelegramAccountSchema';
@@ -20,7 +20,7 @@ export const connectTelegramAccountAction = authActionClient
         id: String(parsedInput.id),
         auth_date: String(parsedInput.auth_date)
       },
-      TELEGRAM_OAUTH_BOT_TOKEN
+      generateHashedSecretKey(TELEGRAM_OAUTH_BOT_TOKEN)
     );
     const userId = ctx.session.scoutId;
 

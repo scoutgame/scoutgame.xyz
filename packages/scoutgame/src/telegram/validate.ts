@@ -20,7 +20,11 @@ function createDataCheckString(data: { [key: string]: string }) {
   return keys.map((key) => `${key}=${data[key]}`).join('\n');
 }
 
-function generateSecretKey(botToken: string) {
+export function generateHashedSecretKey(botToken: string) {
+  return crypto.createHash('sha256').update(botToken).digest();
+}
+
+export function generateHmacSecretKey(botToken: string) {
   return crypto.createHmac('sha256', 'WebAppData').update(botToken).digest();
 }
 
@@ -35,13 +39,13 @@ function generateSecretKey(botToken: string) {
  */
 export function validateInitData(
   value: string | { [key: string]: string },
-  token: string,
+  // Don't convert to string, it needs to be a buffer
+  secretKeyBuffer: Buffer,
   options?: { expiresIn: number }
 ) {
   const data = typeof value === 'string' ? parseInitData(value) : value;
   const dataCheckString = createDataCheckString(data);
-  const secretKey = generateSecretKey(token);
-  const hash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+  const hash = crypto.createHmac('sha256', secretKeyBuffer).update(dataCheckString).digest('hex');
 
   if (!data.auth_date) {
     throw new DataNotFoundError('Telegram auth_date is not found');
@@ -71,7 +75,9 @@ export function validateTelegramData(initData: string, options?: { expiresIn: nu
     throw new Error('TELEGRAM_BOT_TOKEN was not found');
   }
 
-  const data = validateInitData(initData, TELEGRAM_BOT_TOKEN, options);
+  const secretKey = generateHmacSecretKey(TELEGRAM_BOT_TOKEN);
+
+  const data = validateInitData(initData, secretKey, options);
 
   const response: WebAppInitData = {
     query_id: data.query_id,

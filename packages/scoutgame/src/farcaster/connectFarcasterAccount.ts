@@ -8,6 +8,9 @@ export async function connectFarcasterAccount({ fid, userId }: { fid: number; us
   const existingFarcasterUser = await getUserProfile({ farcasterId: fid });
 
   if (existingFarcasterUser) {
+    if (existingFarcasterUser.id === userId) {
+      throw new Error('Farcaster account already connected to this user');
+    }
     return existingFarcasterUser;
   }
 
