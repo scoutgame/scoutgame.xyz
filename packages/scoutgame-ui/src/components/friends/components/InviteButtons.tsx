@@ -25,12 +25,13 @@ export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: 
   const url = `https://scoutgame.xyz/login?ref=${referral}`;
   const telegramUrl = `https://t.me/${telegramBotName}/start?startapp=ref_${referral}`;
   const encodedUrl = encodeURIComponent(url);
+  const encodedTelegramUrl = encodeURIComponent(telegramUrl);
   const encodedText = encodeURIComponent(
     "Join me in Scout Game. Collect builder cards to earn Scout Points, OP, Moxie and more! Use my link to sign up and we'll both earn 5 Scout Points to play.🫡"
   );
   const shareImageSize = 35;
 
-  const telegramShareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+  const telegramShareUrl = `https://t.me/share/url?url=${encodedTelegramUrl}&text=${encodedText}`;
 
   const onCopy = async () => {
     if (typeof window !== 'undefined') {
