@@ -2,12 +2,11 @@
 
 import { log } from '@charmverse/core/log';
 import { Dialog, DialogContent } from '@mui/material';
+import { HowItWorksContent } from '@packages/scoutgame-ui/components/welcome/how-it-works/HowItWorksContent';
 import { getCookie, setCookie } from '@packages/utils/browser';
 import { isTestEnv } from '@packages/utils/constants';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-
-import { HowItWorksContent } from 'components/welcome/how-it-works/HowItWorksContent';
 
 const pagesToShowOnboarding = ['/scout', '/u/'];
 

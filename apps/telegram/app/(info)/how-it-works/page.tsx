@@ -1,7 +1,6 @@
+import { HowItWorksPage } from '@packages/scoutgame-ui/components/welcome/how-it-works/HowItWorksPage';
 import type { Metadata } from 'next';
 import React from 'react';
-
-import { HowItWorksPage } from 'components/welcome/how-it-works/HowItWorksPage';
 
 export const dynamic = 'force-dynamic';
 
