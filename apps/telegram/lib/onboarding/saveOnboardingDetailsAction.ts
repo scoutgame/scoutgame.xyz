@@ -16,7 +16,7 @@ export const saveOnboardingDetailsAction = authActionClient
       throw new Error('You need to accept the terms and conditions.');
     }
 
-    await prisma.scout.update({
+    const scout = await prisma.scout.update({
       where: { id: userId },
       data: {
         email: parsedInput.email,
@@ -29,9 +29,9 @@ export const saveOnboardingDetailsAction = authActionClient
       await registerLoopsContact(
         {
           email: parsedInput.email,
-          displayName: parsedInput.displayName,
+          displayName: scout.displayName,
           sendMarketing: !!parsedInput.sendMarketing,
-          createdAt: existingUser.createdAt
+          createdAt: scout.createdAt
         },
         getPlatform()
       );
