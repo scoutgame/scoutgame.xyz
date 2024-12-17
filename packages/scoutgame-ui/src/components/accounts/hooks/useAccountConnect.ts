@@ -28,22 +28,26 @@ export function useAccountConnect<AuthData>({
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const router = useRouter();
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
+
+  const resetState = useCallback(() => {
+    setAuthData(null);
+    setConnectedUser(null);
+    setAccountMergeError(null);
+    setConnectionError(null);
+    setSelectedProfile(null);
+  }, []);
+
   const mergeAccountOnSuccess = useCallback(async () => {
     await revalidatePath();
     await refreshUser();
-    setAuthData(null);
-    setConnectedUser(null);
-    setAccountMergeError(null);
+    resetState();
     router.refresh();
-  }, [revalidatePath, refreshUser, router]);
+  }, [revalidatePath, refreshUser, router, resetState]);
 
   const onCloseModal = useCallback(() => {
-    setAuthData(null);
-    setConnectionError(null);
-    setConnectedUser(null);
-    setAccountMergeError(null);
+    resetState();
     popupState.close();
-  }, [popupState]);
+  }, [resetState, popupState]);
 
   const mergeAccountOnError = useCallback((err: any) => {
     log.error('Error merging user account', { error: err.error.serverError, identity, userId: user.id });
