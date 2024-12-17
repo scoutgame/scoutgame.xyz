@@ -1,4 +1,4 @@
-import type { MinimalUserInfo } from 'lib/users/interfaces';
+import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
 
 export function FarcasterMetadata({
   user
