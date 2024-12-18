@@ -384,7 +384,8 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
         root: ({ theme }) => ({
           color: theme.palette.primary.main,
           '&:hover': {
-            color: theme.palette.primary.dark
+            color: theme.palette.primary.main,
+            textDecoration: 'underline'
           },
           fontFamily: interFont.style.fontFamily
         })
