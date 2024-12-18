@@ -27,6 +27,9 @@ async function replicateScoutHoldings() {
     }
   });
 
+  /**
+   * Token mappings are a map of scoutId to the tokens they hold
+   */
   const tokenMappings = builderScoutedEvents.reduce((acc, val) => {
     const scoutId = val.args.scout;
 
@@ -85,7 +88,6 @@ async function replicateScoutHoldings() {
 
   const userTokens = Object.entries(tokenMappings);
 
-
   for (let i = 0; i < userTokens.length; i++) {
 
     const [scoutId, {tokens}] = userTokens[i];
@@ -109,10 +111,12 @@ async function replicateScoutHoldings() {
 
     const tokenHoldings = Object.entries(tokens);
 
+    const tokenHoldingsWithIds = tokenHoldings.map(_token => Number(_token[0]));
+
     const userBalances = await nftContract.balanceOfBatch({
       args: {
         accounts: Array.from({length: tokenHoldings.length}, () => scoutWallet.address),
-        tokenIds: tokenHoldings.map(_token => BigInt(_token[0]))
+        tokenIds: tokenHoldingsWithIds.map(tokenId => BigInt(tokenId))
       }
     });
 
@@ -188,7 +192,48 @@ async function replicateScoutHoldings() {
           }
         });
       }
-    }
+    };
+
+    const builderNfts = await prisma.builderNft.findMany({
+      where: {
+        contractAddress: scoutProtocolBuilderNftContractAddress(),
+        tokenId: {
+          in: Object.keys(tokens).map(tokenId => Number(tokenId))
+        }
+      }
+    });
+
+    await prisma.$transaction(async (tx) => {
+
+      await Promise.all(
+        tokenHoldingsWithIds.map(async (tokenId, index) => {
+
+          const matchingBuilderNft = builderNfts.find(nft => nft.tokenId === tokenId);
+
+          if (!matchingBuilderNft) {
+            log.info(`Builder NFT with tokenId ${tokenId} not found`);
+            return Promise.resolve(null);
+          }
+
+          await tx.scoutNFT.upsert({
+            where: {
+              builderNftId_scoutId: {
+                builderNftId: matchingBuilderNft.id,
+                scoutId
+              }
+            },
+            update: {
+              balance: tokenHoldings[index][1]
+            },
+            create: {
+              builderNftId: matchingBuilderNft.id,
+              scoutId,
+              balance: tokenHoldings[index][1]
+            }
+          });
+        })
+      );
+    });
   }
 }
 
