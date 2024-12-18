@@ -3,7 +3,6 @@ import type { Prisma, WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
-import { prettyPrint } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
 import type { Address } from 'viem';
 
@@ -269,7 +268,7 @@ export async function generateWeeklyClaims({
         streamId: BigInt(sablierStreamId)
       }
     })
-    .catch((error) => {
+    .catch((error: any) => {
       log.error(`Error claiming stream ${sablierStreamId}`, error);
     });
 

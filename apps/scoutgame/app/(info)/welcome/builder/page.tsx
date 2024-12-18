@@ -1,6 +1,5 @@
+import { BuilderPage } from '@packages/scoutgame-ui/components/welcome/builder/BuilderWelcomePage';
 import type { Metadata } from 'next';
-
-import { BuilderPage } from 'components/welcome/builder/BuilderWelcomePage';
 
 export const dynamic = 'force-dynamic';
 

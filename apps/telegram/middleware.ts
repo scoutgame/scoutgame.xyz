@@ -1,7 +1,6 @@
+import { getSession } from '@packages/scoutgame/session/getSession';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-
-import { getSession } from 'lib/session/getSession';
 
 // Home page handles the redirects after logging in.
 export async function middleware(request: NextRequest) {

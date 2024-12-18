@@ -1,10 +1,11 @@
 import { InvalidInputError } from '@charmverse/core/errors';
-import type { BuilderNftType } from '@charmverse/core/prisma-client';
-import { prisma } from '@charmverse/core/prisma-client';
+import type { BuilderNftType } from '@charmverse/core/prisma';
 import { stringUtils } from '@charmverse/core/utilities';
 
 import { builderPointsShare, scoutPointsShare } from '../builderNfts/constants';
 import { calculateEarnableScoutPointsForRank } from '../points/calculatePoints';
+
+import type { PartialNftPurchaseEvent } from './getWeeklyPointsPoolAndBuilders';
 
 const nftTypeMultipliers: Record<BuilderNftType, number> = {
   starter_pack: 0.1,
@@ -19,21 +20,20 @@ const nftTypeMultipliers: Record<BuilderNftType, number> = {
  * @param rank - Rank of the builder
  * @param weeklyAllocatedPoints - Points allocated for the week
  * @param normalisationFactor - Normalisation factor for points to ensure we hit the full quota allocated
+ * @param nftPurchaseEvents - NFT purchase events for the builder
  */
-export async function dividePointsBetweenBuilderAndScouts({
+export function dividePointsBetweenBuilderAndScouts({
   builderId,
-  season,
-  week,
   rank,
   weeklyAllocatedPoints,
-  normalisationFactor
+  normalisationFactor,
+  nftPurchaseEvents
 }: {
   builderId: string;
-  season: string;
-  week: string;
   rank: number;
   weeklyAllocatedPoints: number;
   normalisationFactor: number;
+  nftPurchaseEvents: PartialNftPurchaseEvent[];
 }) {
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError('Invalid builderId must be a valid UUID');
@@ -43,50 +43,29 @@ export async function dividePointsBetweenBuilderAndScouts({
     throw new InvalidInputError('Invalid rank provided. Must be a number greater than 0');
   }
 
-  const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
-    where: {
-      builderEvent: {
-        week: {
-          lte: week
-        }
-      },
-      builderNft: {
-        builderId,
-        season
-      }
-    },
-    select: {
-      scoutId: true,
-      tokensPurchased: true,
-      builderNft: {
-        select: {
-          nftType: true
-        }
-      }
-    }
-  });
-
   // Calculate the total number of NFTs purchased by each scout
-  const { nftSupply, nftsByScout } = nftPurchaseEvents.reduce(
-    (acc, purchaseEvent) => {
-      acc.nftsByScout[purchaseEvent.scoutId] = acc.nftsByScout[purchaseEvent.scoutId] || {
-        default: 0,
-        starterPack: 0
-      };
-      if (purchaseEvent.builderNft.nftType === 'default') {
-        acc.nftsByScout[purchaseEvent.scoutId].default += purchaseEvent.tokensPurchased;
-        acc.nftSupply.default += purchaseEvent.tokensPurchased;
-      } else {
-        acc.nftsByScout[purchaseEvent.scoutId].starterPack += purchaseEvent.tokensPurchased;
-        acc.nftSupply.starterPack += purchaseEvent.tokensPurchased;
+  const { nftSupply, nftsByScout } = nftPurchaseEvents
+    .filter((event) => event.builderNft.builderId === builderId)
+    .reduce(
+      (acc, purchaseEvent) => {
+        acc.nftsByScout[purchaseEvent.scoutId] = acc.nftsByScout[purchaseEvent.scoutId] || {
+          default: 0,
+          starterPack: 0
+        };
+        if (purchaseEvent.builderNft.nftType === 'default') {
+          acc.nftsByScout[purchaseEvent.scoutId].default += purchaseEvent.tokensPurchased;
+          acc.nftSupply.default += purchaseEvent.tokensPurchased;
+        } else {
+          acc.nftsByScout[purchaseEvent.scoutId].starterPack += purchaseEvent.tokensPurchased;
+          acc.nftSupply.starterPack += purchaseEvent.tokensPurchased;
+        }
+        return acc;
+      },
+      {
+        nftSupply: { default: 0, starterPack: 0 },
+        nftsByScout: {} as Record<string, { default: number; starterPack: number }>
       }
-      return acc;
-    },
-    {
-      nftSupply: { default: 0, starterPack: 0 },
-      nftsByScout: {} as Record<string, { default: number; starterPack: number }>
-    }
-  );
+    );
 
   const earnableScoutPoints = Math.floor(
     calculateEarnableScoutPointsForRank({ rank, weeklyAllocatedPoints }) * normalisationFactor

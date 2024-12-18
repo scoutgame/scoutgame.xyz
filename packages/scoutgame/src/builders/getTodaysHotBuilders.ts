@@ -1,6 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason, getCurrentWeek, getLastWeek } from '../dates';
+import { currentSeason, getCurrentWeek, getPreviousWeek, getLastWeek } from '../dates';
 import { BasicUserInfoSelect } from '../users/queries';
 
 import type { BuilderInfo } from './interfaces';
@@ -44,27 +44,30 @@ const userSelect = {
   }
 };
 
-export async function getTodaysHotBuilders(): Promise<BuilderInfo[]> {
+export async function getTodaysHotBuilders({
+  season = currentSeason,
+  week = getCurrentWeek()
+}: { season?: string; week?: string } = {}): Promise<BuilderInfo[]> {
   const currentWeekBuilders = await prisma.userWeeklyStats.findMany({
     where: {
       user: {
         builderStatus: 'approved',
         builderNfts: {
           some: {
-            season: currentSeason,
+            season,
             nftType: BuilderNftType.default
           }
         },
         userWeeklyStats: {
           some: {
-            week: getCurrentWeek(),
+            week,
             gemsCollected: {
               gt: 0
             }
           }
         }
       },
-      week: getCurrentWeek()
+      week
     },
     take: 3,
     orderBy: {
@@ -87,7 +90,7 @@ export async function getTodaysHotBuilders(): Promise<BuilderInfo[]> {
         },
         builderStatus: 'approved'
       },
-      week: getLastWeek()
+      week: getPreviousWeek(week)
     },
     orderBy: {
       rank: 'asc'

@@ -1,6 +1,8 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
+import { registerLoopsContact } from '@packages/loops/registerLoopsContact';
+import { getPlatform } from '@packages/mixpanel/utils';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 
 import { saveOnboardingDetailsSchema } from './saveOnboardingDetailsSchema';
@@ -14,7 +16,7 @@ export const saveOnboardingDetailsAction = authActionClient
       throw new Error('You need to accept the terms and conditions.');
     }
 
-    await prisma.scout.update({
+    const scout = await prisma.scout.update({
       where: { id: userId },
       data: {
         email: parsedInput.email,
@@ -23,6 +25,17 @@ export const saveOnboardingDetailsAction = authActionClient
         onboardedAt: new Date()
       }
     });
+    if (parsedInput.email) {
+      await registerLoopsContact(
+        {
+          email: parsedInput.email,
+          displayName: scout.displayName,
+          sendMarketing: !!parsedInput.sendMarketing,
+          createdAt: scout.createdAt
+        },
+        getPlatform()
+      );
+    }
 
     return { success: true };
   });

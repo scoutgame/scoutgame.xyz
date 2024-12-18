@@ -1,7 +1,8 @@
 import 'server-only';
 
+import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+
 import { aggregateProtocolData } from 'lib/contract/aggregateProtocolData';
-import { getUserFromSession } from 'lib/session/getUserFromSession';
 
 import { ProtocolContractView } from './ProtocolContractView';
 

@@ -1,9 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { WelcomePage } from '@packages/scoutgame-ui/components/welcome/WelcomePage';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-
-import { WelcomePage } from 'components/welcome/WelcomePage';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,5 +1,6 @@
+import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+
 import { FarcasterDashboard } from 'components/farcaster/FarcasterDashboard';
-import { getUserFromSession } from 'lib/session/getUserFromSession';
 
 export const dynamic = 'force-dynamic';
 
