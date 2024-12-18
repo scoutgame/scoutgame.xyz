@@ -10,31 +10,39 @@ import { githubEvents } from "./cache/githubEvents";
 import { builderEvents} from './cache/builderEvents';
 import { scouts } from "./cache/scouts";
 import { baseSepolia } from "viem/chains";
+import { prettyPrint } from "@packages/utils/strings";
 
 validateIsNotProductionDatabase();
 
+async function resetData() {
+
+  const deletedScouts = await prisma.scout.deleteMany({
+    where: {
+      id: {
+        in: builders.map(b => b.id)
+      }
+    }
+  });
+
+  const deletedGithubUsers = await prisma.githubUser.deleteMany({
+    where: {
+      id: {
+        in: builders.map(b => b.githubUsers).flat().map(u => u.id)
+      }
+    }
+  })
+
+  prettyPrint({
+    deletedScouts,
+    deletedGithubUsers
+  })
+}
+
 async function uploadBuildersScoutsAndRepos() {
-  // console.log('Deleted', deleted);
 
-  // await prisma.scout.deleteMany({
-  //   where: {
-  //     id: {
-  //       in: builders.map(b => b.id)
-  //     }
-  //   }
-  // });
 
-  // await prisma.githubUser.deleteMany({
-  //   where: {
-  //     id: {
-  //       in: builders.map(b => b.githubUsers).flat().map(u => u.id)
-  //     }
-  //   }
-  // })
 
-  // process.exit()
-
-  const startTokenId = 48;
+  const startTokenId = 1;
 
   let sortedBuilders = builders.slice().sort((a, b) => a.builderNfts[0]!.tokenId - b.builderNfts[0]!.tokenId);
 
@@ -108,15 +116,6 @@ async function uploadBuildersScoutsAndRepos() {
         farcasterId: builder.farcasterId as number
       }
     }) : null;
-
-    await prisma.githubUser.deleteMany({
-      where: {
-        id: {
-          in: githubUsers.map(({id}) => id)
-        }
-      }
-    })
-
 
     await prisma.scout.upsert({
       where: {
@@ -277,7 +276,22 @@ async function uploadBuildersScoutsAndRepos() {
   // @ts-ignore
   const validGithubEvents = [...existingGithubEvents, ...githubEventsToCreate] as {id: string}[];
 
-  const builderEventsToCreate = builderEvents.filter(event => !existingBuilderEvents.find(existing => existing.id === event.id) && (!event.githubEventId ? true : validGithubEvents.some(githubEvent => githubEvent.id === event.githubEventId)));
+  const allBuilders = await prisma.scout.findMany({
+    where: {
+      builderNfts: {
+        some: {
+          contractAddress: scoutProtocolBuilderNftContractAddress()
+        }
+      }
+    },
+    select: {
+      id: true
+    }
+  })
+
+  const builderEventsToCreate = builderEvents.filter(event => !existingBuilderEvents.find(existing => existing.id === event.id) &&
+  allBuilders.some(builder => builder.id === event.builderId) &&
+  (!event.githubEventId ? true : validGithubEvents.some(githubEvent => githubEvent.id === event.githubEventId)));
 
   log.info(`Processing builder events`);
   if (builderEventsToCreate.length > 0) {
