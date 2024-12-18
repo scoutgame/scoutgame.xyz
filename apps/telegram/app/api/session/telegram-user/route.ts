@@ -1,9 +1,8 @@
 import { DataNotFoundError } from '@charmverse/core/errors';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
+import { getSession } from '@packages/scoutgame/session/getSession';
 import { validateTelegramData } from '@packages/scoutgame/telegram/validate';
 import { findOrCreateTelegramUser } from '@packages/scoutgame/users/findOrCreateTelegramUser';
-
-import { getSession } from 'lib/session/getSession';
 
 export async function POST(request: Request) {
   const body = await request.json();

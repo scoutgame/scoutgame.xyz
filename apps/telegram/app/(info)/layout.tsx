@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
-
-import { InfoBackgroundImage } from 'components/layout/InfoBackgroundImage';
+import { InfoBackgroundImage } from '@packages/scoutgame-ui/components/layout/InfoBackgroundImage';
 
 export default function Layout({
   children

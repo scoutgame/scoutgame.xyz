@@ -1,7 +1,6 @@
 import { Box, Typography } from '@mui/material';
+import { InfoBackgroundImage } from '@packages/scoutgame-ui/components/layout/InfoBackgroundImage';
 import Image from 'next/image';
-
-import { InfoBackgroundImage } from 'components/layout/InfoBackgroundImage';
 
 export default async function Home() {
   return (

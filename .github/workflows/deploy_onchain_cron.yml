@@ -209,7 +209,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
           app_name: onchain-cron
-          stack: prd-onchain-cron
+          stack: prd-onchain-scoutgamecron
 
   deploy-staging:
     name: Deploy to staging

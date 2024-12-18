@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { actionClientBase } from '@packages/scoutgame/actions/actionClient';
 import { headers } from 'next/headers';
 
-import { getSession } from 'lib/session/getSession';
+import { getSession } from '../session/getSession';
 
 export const actionClient = actionClientBase.use(async ({ next }) => {
   const session = await getSession();
