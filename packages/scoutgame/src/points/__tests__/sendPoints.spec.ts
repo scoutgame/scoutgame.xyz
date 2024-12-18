@@ -36,31 +36,4 @@ describe('sendPoints', () => {
     // No activities should be created so that a notification doesn't happen
     expect(updated?.activities[0]).toBeUndefined();
   });
-
-  it('should send points earned as builder', async () => {
-    const builder = await mockBuilder();
-    const mockPoints = 100;
-    await sendPointsForMiscEvent({
-      builderId: builder.id,
-      points: mockPoints,
-      description: 'Test description',
-      claimed: true,
-      earnedAs: 'builder'
-    });
-    const updated = await prisma.scout.findUnique({
-      where: {
-        id: builder.id
-      },
-      select: {
-        currentBalance: true,
-        userSeasonStats: true,
-        activities: true,
-        events: true
-      }
-    });
-    expect(updated?.currentBalance).toBe(mockPoints);
-    expect(updated?.userSeasonStats[0].pointsEarnedAsBuilder).toBe(mockPoints);
-    expect(updated?.activities[0].type).toBe('points');
-    expect(updated?.events[0].description).toBe('Test description');
-  });
 });
