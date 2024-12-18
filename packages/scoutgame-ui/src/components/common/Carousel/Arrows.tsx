@@ -14,11 +14,11 @@ const defaultSx: IconButtonProps['sx'] = {
     xs: '100px',
     md: '200px'
   },
-  background: 'background.paper',
+  bgcolor: 'background.paper',
   transform: 'translate(0, -50%)',
   borderRadius: '5px',
   '&:hover': {
-    background: 'background.paper'
+    bgcolor: 'background.paper'
   }
 };
 
