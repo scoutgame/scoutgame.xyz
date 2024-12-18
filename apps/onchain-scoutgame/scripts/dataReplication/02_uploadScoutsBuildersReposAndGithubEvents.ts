@@ -8,6 +8,7 @@ import { builders } from "./cache/builders";
 import { repos } from "./cache/repos";
 import { githubEvents } from "./cache/githubEvents";
 import { builderEvents} from './cache/builderEvents';
+import { scouts } from "./cache/scouts";
 
 validateIsNotProductionDatabase();
 
@@ -132,6 +133,59 @@ async function uploadBuildersScoutsAndRepos() {
   //     }
   //   })
   // };
+
+  const existingScoutsByWallet = await prisma.scout.findMany({
+    where: {
+      wallets: {
+        some: {
+          address: {
+            in: scouts.map(({wallets}) => wallets[0].address)
+          }
+        }
+      }
+    },
+    include: {
+      wallets: true
+    }
+  });
+
+  const scoutsToCreate = scouts.filter(scout => !existingScoutsByWallet.find(existing => 
+    existing.wallets.some(wallet => wallet.address === scout.wallets[0].address)
+  ));
+
+  log.info(`Processing scouts`);
+
+  if (scoutsToCreate.length > 0) {
+    log.info(`Creating ${scoutsToCreate.length} scouts`);
+    for (const scout of scoutsToCreate) {
+      await prisma.scout.upsert({
+        where: {
+          id: scout.id
+        },
+        update: {
+          wallets: {
+            createMany: {
+              data: scout.wallets.map(wallet => ({
+                address: wallet.address
+              }))
+            }
+          }
+        },
+        create: {
+          ...scout,
+          path: `${scout.path}-${Math.random().toString(36).substring(2, 8)}`,
+          referralCode: uuid(),
+          wallets: {
+            create: scout.wallets.map(wallet => ({
+              address: wallet.address
+            }))
+          }
+        }
+      });
+    }
+  }
+
+
 
   const existingRepos = await prisma.githubRepo.findMany({
     where: {
