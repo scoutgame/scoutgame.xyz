@@ -1,7 +1,7 @@
 import { log } from "@charmverse/core/log";
 import { Prisma, prisma } from "@charmverse/core/prisma-client";
 import { generateWallet } from "@packages/blockchain/generateWallet";
-import { getScoutProtocolBuilderNFTContract, validateIsNotProductionDatabase } from "./utils";
+import { getScoutProtocolBuilderNFTContract, scoutProtocolBuilderNftContractAddress, validateIsNotProductionDatabase } from "./utils";
 import { v4 as uuid } from 'uuid';
 
 import { builders } from "./cache/builders";
@@ -9,13 +9,32 @@ import { repos } from "./cache/repos";
 import { githubEvents } from "./cache/githubEvents";
 import { builderEvents} from './cache/builderEvents';
 import { scouts } from "./cache/scouts";
+import { baseSepolia } from "viem/chains";
 
 validateIsNotProductionDatabase();
 
 async function uploadBuildersScoutsAndRepos() {
   // console.log('Deleted', deleted);
 
-  const startTokenId = 28;
+  // await prisma.scout.deleteMany({
+  //   where: {
+  //     id: {
+  //       in: builders.map(b => b.id)
+  //     }
+  //   }
+  // });
+
+  // await prisma.githubUser.deleteMany({
+  //   where: {
+  //     id: {
+  //       in: builders.map(b => b.githubUsers).flat().map(u => u.id)
+  //     }
+  //   }
+  // })
+
+  // process.exit()
+
+  const startTokenId = 48;
 
   let sortedBuilders = builders.slice().sort((a, b) => a.builderNfts[0]!.tokenId - b.builderNfts[0]!.tokenId);
 
@@ -27,112 +46,112 @@ async function uploadBuildersScoutsAndRepos() {
 
   sortedBuilders = sortedBuilders.slice(index);
 
-  console.log(sortedBuilders.map(b => b.builderNfts[0]!.tokenId));
-
-  // for (let i = 0; i < sortedBuilders.length; i++) {
-  //   const {builderNfts, githubUsers, ...builder} = sortedBuilders[i];
+  for (let i = 0; i < sortedBuilders.length; i++) {
+    const {builderNfts, githubUsers, ...builder} = sortedBuilders[i];
 
 
-  //   const currentTokenId = builderNfts[0]!.tokenId;
-  //   log.info('--------------------------------')
-  //   log.info(`Processing builder ${i + 1}/${sortedBuilders.length} with id ${builder.id} token id ${currentTokenId}`);
+    const currentTokenId = builderNfts[0]!.tokenId;
+    log.info('--------------------------------')
+    log.info(`Processing builder ${i + 1}/${sortedBuilders.length} with id ${builder.id} token id ${currentTokenId}`);
 
-  //   const builderNFTContract = getScoutProtocolBuilderNFTContract();
+    const builderNFTContract = getScoutProtocolBuilderNFTContract();
 
-  //   let contractMaxTokenId = await builderNFTContract.totalBuilderTokens();
+    let contractMaxTokenId = await builderNFTContract.totalBuilderTokens();
 
-  //   const builderTokenId = await builderNFTContract.getTokenIdForBuilder({args: {builderId: builder.id}})
-  //   .catch(async (e) => {
-  //     const isMissingBuilderError = !!String(e).match('Builder not registered');
+    const builderTokenId = await builderNFTContract.getTokenIdForBuilder({args: {builderId: builder.id}})
+    .catch(async (e) => {
+      const isMissingBuilderError = !!String(e).match('Builder not registered');
 
-  //     if (!isMissingBuilderError) {
-  //       throw e;
-  //     }
+      if (!isMissingBuilderError) {
+        throw e;
+      }
 
-  //     // We should expect max token id to be lower than current token id
-  //     if (contractMaxTokenId >= currentTokenId) {
-  //       log.error();
-  //       throw new Error(`Contract token id ${contractMaxTokenId} does not permit token id ${currentTokenId}`);
-  //     }
+      // We should expect max token id to be lower than current token id
+      if (contractMaxTokenId >= currentTokenId) {
+        log.error();
+        throw new Error(`Contract token id ${contractMaxTokenId} does not permit token id ${currentTokenId}`);
+      }
       
-  //     while (contractMaxTokenId < currentTokenId - 1) {
+      while (contractMaxTokenId < currentTokenId - 1) {
 
-  //       log.info('Adding intermediate empty tokens')
+        log.info('Adding intermediate empty tokens')
 
-  //       const builderId = uuid()
+        const builderId = uuid()
 
-  //       const wallet = generateWallet(builderId);
+        const wallet = generateWallet(builderId);
 
-  //       await builderNFTContract.registerBuilderToken({args: {builderId, account: wallet.account}});
-  //       contractMaxTokenId++;
-  //     }
+        await builderNFTContract.registerBuilderToken({args: {builderId, account: wallet.account}});
+        contractMaxTokenId++;
+      }
 
-  //     const wallet = await generateWallet(builder.id);
+      const wallet = await generateWallet(builder.id);
 
-  //     log.info(`Generated wallet for ${builder.id} - ${wallet.account}`);
+      log.info(`Generated wallet for ${builder.id} - ${wallet.account}`);
 
-  //     await builderNFTContract.registerBuilderToken({args: {builderId: builder.id, account: wallet.account}});
+      await builderNFTContract.registerBuilderToken({args: {builderId: builder.id, account: wallet.account}});
 
-  //     const newTokenId = await builderNFTContract.getTokenIdForBuilder({args: {builderId: builder.id}});
+      const newTokenId = await builderNFTContract.getTokenIdForBuilder({args: {builderId: builder.id}});
 
-  //     log.info(`New token id for ${builder.id} - ${newTokenId}`);
+      log.info(`New token id for ${builder.id} - ${newTokenId}`);
 
-  //     return newTokenId;
+      return newTokenId;
 
-  //   });
+    });
 
-  //   if (Number(builderTokenId) !== currentTokenId) {
-  //     log.error(`Token id ${builderTokenId} does not match current token id ${currentTokenId}`);
-  //     throw new Error('Token id does not match current token id');
-  //   }
+    if (Number(builderTokenId) !== currentTokenId) {
+      log.error(`Token id ${builderTokenId} does not match current token id ${currentTokenId}`);
+      throw new Error('Token id does not match current token id');
+    }
 
-  //   const existingFarcasterIdUser = builder.farcasterId ? await prisma.scout.findFirst({
-  //     where: {
-  //       farcasterId: builder.farcasterId as number
-  //     }
-  //   }) : null;
+    const existingFarcasterIdUser = builder.farcasterId ? await prisma.scout.findFirst({
+      where: {
+        farcasterId: builder.farcasterId as number
+      }
+    }) : null;
 
-  //   await prisma.githubUser.deleteMany({
-  //     where: {
-  //       id: {
-  //         in: githubUsers.map(({id}) => id)
-  //       }
-  //     }
-  //   })
+    await prisma.githubUser.deleteMany({
+      where: {
+        id: {
+          in: githubUsers.map(({id}) => id)
+        }
+      }
+    })
 
 
-  //   await prisma.scout.upsert({
-  //     where: {
-  //       id: builder.id
-  //     },
-  //     update: {
-  //     },
-  //     create: {
-  //       ...builder,
-  //       farcasterId: builder.farcasterId && !existingFarcasterIdUser ? Number(builder.farcasterId) : null,
-  //       farcasterName: builder.farcasterName && !existingFarcasterIdUser ? builder.farcasterName : null,
-  //       telegramId: builder.telegramId ? Number(builder.telegramId) : null,
-  //       path: `${builder.path}-${Math.random().toString(36).substring(2, 8)}`,
-  //       builderNfts: {
-  //         createMany: {
-  //           data: builderNfts.map(({builderId, ...builderNft}) => ({
-  //             ...builderNft,
-  //             tokenId: Number(builderTokenId),
-  //             // Using scout token, so we multiply by 10 vs USDC. We then remove the 6 decimals as USDC has 6 decimals, and trying to store the number with 18 decimals will cause overflows
-  //             currentPrice: (BigInt(builderNft.currentPrice) * BigInt(10) / BigInt(10e6))
-  //           }))
-  //         }
-  //       },
-  //       githubUsers: {
-  //         createMany: {
-  //           data: githubUsers.map(({builderId, ...githubUser}) => ({
-  //             ...githubUser
-  //           }))
-  //         }
-  //       }
-  //     }
-  //   })
-  // };
+    await prisma.scout.upsert({
+      where: {
+        id: builder.id
+      },
+      update: {
+      },
+      create: {
+        ...builder,
+        farcasterId: builder.farcasterId && !existingFarcasterIdUser ? Number(builder.farcasterId) : null,
+        farcasterName: builder.farcasterName && !existingFarcasterIdUser ? builder.farcasterName : null,
+        telegramId: builder.telegramId ? Number(builder.telegramId) : null,
+        path: `${builder.path}-${Math.random().toString(36).substring(2, 8)}`,
+        builderNfts: {
+          createMany: {
+            data: builderNfts.map(({builderId, ...builderNft}) => ({
+              ...builderNft,
+              chainId: baseSepolia.id,
+              contractAddress: scoutProtocolBuilderNftContractAddress(),
+              tokenId: Number(builderTokenId),
+              // Using scout token, so we multiply by 10 vs USDC. We then remove the 6 decimals as USDC has 6 decimals, and trying to store the number with 18 decimals will cause overflows
+              currentPrice: (BigInt(builderNft.currentPrice) * BigInt(10) / BigInt(10e6))
+            }))
+          }
+        },
+        githubUsers: {
+          createMany: {
+            data: githubUsers.map(({builderId, ...githubUser}) => ({
+              ...githubUser
+            }))
+          }
+        }
+      }
+    })
+  };
 
   const existingScoutsByWallet = await prisma.scout.findMany({
     where: {
