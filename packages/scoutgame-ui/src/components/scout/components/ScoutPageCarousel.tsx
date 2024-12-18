@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { StarterPackCarousel } from '../StarterPackCarousel/StarterPackCarousel';
 import { BuildersCarousel } from '../TodaysHotBuildersCarousel/BuildersCarousel';
 
-export async function ScoutPageCarousel({
+export function ScoutPageCarousel({
   builders,
   starterPackBuilders,
   remainingStarterCards,
@@ -29,6 +29,9 @@ export async function ScoutPageCarousel({
         <Box
           component={Link}
           href={{ query: { carousel: nextTab } }}
+          replace={true}
+          prefetch={false}
+          shallow={true}
           sx={{ position: { md: 'absolute' }, right: 0, top: 18 }}
         >
           <Typography component='span' sx={{ textDecoration: 'underline' }}>
