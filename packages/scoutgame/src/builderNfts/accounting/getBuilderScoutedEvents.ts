@@ -46,12 +46,13 @@ function ignoreEvent(ev: BuilderScoutedEvent) {
 export function getBuilderScoutedEvents({
   fromBlock,
   toBlock,
-  contractAddress
-}: BlockRange & { contractAddress?: Address }): Promise<BuilderScoutedEvent[]> {
-  return getPublicClient(builderNftChain.id)
+  contractAddress = getBuilderContractAddress(),
+  chainId = builderNftChain.id
+}: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<BuilderScoutedEvent[]> {
+  return getPublicClient(chainId)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
-      address: contractAddress ?? getBuilderContractAddress(),
+      address: contractAddress,
       event: builderScoutedAbi
     })
     .then((logs) =>

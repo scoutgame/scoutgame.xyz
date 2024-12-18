@@ -1,16 +1,19 @@
 import { log } from "@charmverse/core/log";
 import { Prisma, prisma } from "@charmverse/core/prisma-client";
 import { generateWallet } from "@packages/blockchain/generateWallet";
-import { getScoutProtocolBuilderNFTContract, scoutProtocolBuilderNftContractAddress, validateIsNotProductionDatabase } from "./utils";
 import { v4 as uuid } from 'uuid';
+import {  validateIsNotProductionDatabase } from "./utils";
 
-import { builders } from "./cache/builders";
-import { repos } from "./cache/repos";
-import { githubEvents } from "./cache/githubEvents";
-import { builderEvents} from './cache/builderEvents';
-import { scouts } from "./cache/scouts";
-import { baseSepolia } from "viem/chains";
+import { getScoutProtocolBuilderNFTContract, scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from "@packages/scoutgame/protocol/constants";
+import { refreshUserStats } from "@packages/scoutgame/refreshUserStats";
 import { prettyPrint } from "@packages/utils/strings";
+import { currentSeason } from "@packages/scoutgame/dates";
+import { builderEvents } from './cache/builderEvents';
+import { builders } from "./cache/builders";
+import { githubEvents } from "./cache/githubEvents";
+import { repos } from "./cache/repos";
+import { scouts } from "./cache/scouts";
+import { getAllISOWeeksFromSeasonStart } from "@packages/scoutgame/dates";
 
 validateIsNotProductionDatabase();
 
@@ -19,18 +22,12 @@ async function resetData() {
   const deletedScouts = await prisma.scout.deleteMany({
     where: {
       id: {
-        in: builders.map(b => b.id)
+        in: [...builders.map(b => b.id), ...scouts.map(s => s.id)]
       }
     }
   });
 
-  const deletedGithubUsers = await prisma.githubUser.deleteMany({
-    where: {
-      id: {
-        in: builders.map(b => b.githubUsers).flat().map(u => u.id)
-      }
-    }
-  })
+  const deletedGithubUsers = await prisma.githubUser.deleteMany()
 
   prettyPrint({
     deletedScouts,
@@ -38,9 +35,9 @@ async function resetData() {
   })
 }
 
-async function uploadBuildersScoutsAndRepos() {
+async function uploadScoutsBuildersReposAndGithubEvents() {
 
-
+  await resetData();
 
   const startTokenId = 1;
 
@@ -67,7 +64,7 @@ async function uploadBuildersScoutsAndRepos() {
     let contractMaxTokenId = await builderNFTContract.totalBuilderTokens();
 
     const builderTokenId = await builderNFTContract.getTokenIdForBuilder({args: {builderId: builder.id}})
-    .catch(async (e) => {
+    .catch(async (e: any) => {
       const isMissingBuilderError = !!String(e).match('Builder not registered');
 
       if (!isMissingBuilderError) {
@@ -117,7 +114,8 @@ async function uploadBuildersScoutsAndRepos() {
       }
     }) : null;
 
-    await prisma.scout.upsert({
+
+    const createdBuilder = await prisma.scout.upsert({
       where: {
         id: builder.id
       },
@@ -133,7 +131,7 @@ async function uploadBuildersScoutsAndRepos() {
           createMany: {
             data: builderNfts.map(({builderId, ...builderNft}) => ({
               ...builderNft,
-              chainId: baseSepolia.id,
+              chainId: scoutProtocolChainId,
               contractAddress: scoutProtocolBuilderNftContractAddress(),
               tokenId: Number(builderTokenId),
               // Using scout token, so we multiply by 10 vs USDC. We then remove the 6 decimals as USDC has 6 decimals, and trying to store the number with 18 decimals will cause overflows
@@ -148,8 +146,26 @@ async function uploadBuildersScoutsAndRepos() {
             }))
           }
         }
+      },
+      select: {
+        id: true,
+        wallets: true
       }
-    })
+    });
+
+    if (!createdBuilder.wallets.length) {
+      const deterministicWallet = generateWallet(createdBuilder.id);
+      await prisma.scoutWallet.create({
+        data: {
+          address: deterministicWallet.account.toLowerCase(),
+          scout: {
+            connect: {
+              id: createdBuilder.id
+            }
+          }
+        }
+      })
+    }
   };
 
   const existingScoutsByWallet = await prisma.scout.findMany({
@@ -176,7 +192,8 @@ async function uploadBuildersScoutsAndRepos() {
   if (scoutsToCreate.length > 0) {
     log.info(`Creating ${scoutsToCreate.length} scouts`);
     for (const scout of scoutsToCreate) {
-      await prisma.scout.upsert({
+
+      const newScout = await prisma.scout.upsert({
         where: {
           id: scout.id
         },
@@ -200,9 +217,9 @@ async function uploadBuildersScoutsAndRepos() {
           }
         }
       });
+  
     }
   }
-
 
 
   const existingRepos = await prisma.githubRepo.findMany({
@@ -308,6 +325,27 @@ async function uploadBuildersScoutsAndRepos() {
       }))
     });
   }
+
+
+  log.info('Refreshing user stats');
+
+  const weeks = getAllISOWeeksFromSeasonStart({season: currentSeason});
+
+
+  const allScouts = await prisma.scout.findMany({
+    select: {
+      id: true
+    }
+  });
+
+  for (let i = 0; i < allScouts.length; i++) {
+    log.info(`Refreshing user ${i+1}/${allScouts.length} id:${allScouts[i].id} stats for all weeks`);
+
+    await prisma.$transaction(async tx => {
+      await Promise.all(weeks.map(week => refreshUserStats({userId: allScouts[i].id, week, tx})));
+    });
+  }
 }
 
-uploadBuildersScoutsAndRepos().then(console.log);
+uploadScoutsBuildersReposAndGithubEvents().then(console.log);
+

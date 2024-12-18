@@ -65,7 +65,7 @@ function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSin
   }));
 }
 
-export async function getAllTransferEvents({
+export async function getTransferSingleWithBatchMerged({
   fromBlock,
   toBlock,
   contractAddress = getBuilderContractAddress(),

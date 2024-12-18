@@ -3,7 +3,8 @@ import { prisma } from "@charmverse/core/prisma-client";
 import { getBuilderScoutedEvents } from "@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents";
 import { Address } from "viem";
 import { scouts } from "./cache/scouts";
-import { getScoutAdminWalletClient, getScoutProtocolBuilderNFTContract, getScoutTokenERC20Contract, scoutProtocolBuilderNftContractAddress, validateIsNotProductionDatabase } from "./utils";
+import {  validateIsNotProductionDatabase } from "./utils";
+import { getScoutAdminWalletClient, getScoutProtocolBuilderNFTContract, getScoutTokenERC20Contract, scoutProtocolBuilderNftContractAddress } from "@packages/scoutgame/protocol/constants";
 
 validateIsNotProductionDatabase();
 

@@ -1,24 +1,27 @@
 import { log } from '@charmverse/core/log';
 import type { Prisma, WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
 import type { ProvableClaim } from '@charmverse/core/protocol';
+import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
 import { v4 as uuid } from 'uuid';
 import type { Address } from 'viem';
 
 import { currentSeason } from '../dates';
-import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
+import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
+import { findOrCreateWalletUser } from '../users/findOrCreateWalletUser';
 
 import { protocolImplementationWriteClient } from './clients/protocolWriteClients';
-
-type ProvableClaimWithUserId = ProvableClaim & {
-  userId: string;
-};
+import {
+  getSablierLockupContract,
+  sablierStreamId,
+  scoutProtocolBuilderNftContractAddress,
+  scoutProtocolChainId
+} from './constants';
+import type { TokenOwnership } from './resolveTokenOwnership';
 
 type ClaimsBody = {
   leaves: ProvableClaim[];
-  leavesWithUserId: ProvableClaimWithUserId[];
 };
 
 export type WeeklyClaimsTyped = Omit<WeeklyClaims, 'claims' | 'proofsMap'> & {
@@ -28,13 +31,24 @@ export type WeeklyClaimsTyped = Omit<WeeklyClaims, 'claims' | 'proofsMap'> & {
 
 type WeeklyClaimsCalculated = {
   claims: ProvableClaim[];
-  claimsWithUserId: ProvableClaimWithUserId[];
   builderEvents: Prisma.BuilderEventCreateManyInput[];
   tokenReceipts: Prisma.TokensReceiptCreateManyInput[];
   weeklyClaimId: string;
 };
 
-export async function calculateWeeklyClaims({ week }: { week: string }): Promise<WeeklyClaimsCalculated> {
+/**
+ * Calculate the claims for a given week
+ * @param week - The week to calculate claims for
+ * @param tokenBalances - Output of resolveTokenOwnership()
+ * @returns The calculated claims
+ */
+export async function calculateWeeklyClaims({
+  week,
+  tokenBalances
+}: {
+  week: string;
+  tokenBalances: TokenOwnership;
+}): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } = await getWeeklyPointsPoolAndBuilders({
     week
   });
@@ -43,15 +57,98 @@ export async function calculateWeeklyClaims({ week }: { week: string }): Promise
   const tokenReceipts: Prisma.TokensReceiptCreateManyInput[] = [];
   const weeklyClaimId = uuid();
 
+  // Get unique list of wallet addresses from token balances
+  const uniqueWallets = new Set<string>();
+  Object.values(tokenBalances).forEach((balanceMap) => {
+    Object.keys(balanceMap).forEach((wallet) => {
+      uniqueWallets.add(wallet.toLowerCase());
+    });
+  });
+
+  // Find existing scouts with these wallets
+  const existingScouts = await prisma.scout.findMany({
+    where: {
+      wallets: {
+        some: {
+          address: {
+            in: Array.from(uniqueWallets),
+            // Just in case we forgot to lowercase the wallet address somewhere
+            mode: 'insensitive'
+          }
+        }
+      }
+    },
+    include: {
+      wallets: true
+    }
+  });
+
+  const walletToScoutId = existingScouts.reduce<Record<Address, string>>((acc, scout) => {
+    scout.wallets.forEach((wallet) => {
+      acc[wallet.address.toLowerCase() as Address] = scout.id;
+    });
+    return acc;
+  }, {});
+
+  // Find wallets that don't have an associated scout account
+  const walletsWithoutScout = Array.from(uniqueWallets).filter(
+    (wallet) => !walletToScoutId[wallet.toLowerCase() as Address]
+  );
+
+  if (walletsWithoutScout.length > 0) {
+    log.warn(`Found ${walletsWithoutScout.length} wallets without an associated scout account`);
+
+    for (let i = 0; i < walletsWithoutScout.length; i++) {
+      const wallet = walletsWithoutScout[i];
+      const newScout = await findOrCreateWalletUser({
+        wallet: wallet.toLowerCase() as Address
+      });
+
+      walletToScoutId[wallet.toLowerCase() as Address] = newScout.id;
+    }
+  }
+
+  const builderNfts = await prisma.builderNft.findMany({
+    where: {
+      chainId: scoutProtocolChainId,
+      contractAddress: scoutProtocolBuilderNftContractAddress()
+    },
+    select: {
+      tokenId: true,
+      builderId: true,
+      builder: {
+        select: {
+          wallets: true
+        }
+      }
+    }
+  });
+
   const allClaims = await Promise.all(
     topWeeklyBuilders.map(async (builder) => {
-      const { pointsPerScout, pointsForBuilder } = await dividePointsBetweenBuilderAndScouts({
+      const builderNft = builderNfts.find((nft) => nft.builderId === builder.builder.id);
+
+      if (!builderNft) {
+        throw new Error(`Builder ${builder.builder.id} does not have an NFT`);
+      }
+
+      const builderWallet = builderNft.builder.wallets[0].address.toLowerCase();
+
+      if (!builderWallet) {
+        throw new Error(`Builder ${builder.builder.id} with token id ${builderNft.tokenId} does not have a wallet`);
+      }
+
+      const owners = tokenBalances[builderNft.tokenId.toString()];
+
+      const { tokensPerScout, tokensForBuilder } = await divideTokensBetweenBuilderAndHolders({
         builderId: builder.builder.id,
         normalisationFactor,
-        weeklyAllocatedPoints,
         rank: builder.rank,
-        week,
-        season: currentSeason
+        weeklyAllocatedTokens: weeklyAllocatedPoints,
+        owners: Object.entries(owners).map(([wallet, balance]) => ({
+          wallet: wallet as Address,
+          tokens: { default: Number(balance), starter_pack: 0 }
+        }))
       });
 
       const builderEventId = uuid();
@@ -61,7 +158,7 @@ export async function calculateWeeklyClaims({ week }: { week: string }): Promise
         builderId: builder.builder.id,
         week,
         season: currentSeason,
-        type: 'gems_payout',
+        type: 'onchain_gems_payout',
         weeklyClaimId
       };
 
@@ -69,94 +166,61 @@ export async function calculateWeeklyClaims({ week }: { week: string }): Promise
 
       const builderTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
         eventId: builderEventId,
-        value: pointsForBuilder,
+        value: tokensForBuilder,
+        walletAddress: builderWallet,
         recipientId: builder.builder.id
       };
 
-      const scoutTokenReceipts: Prisma.TokensReceiptCreateManyInput[] = pointsPerScout.map((scoutClaim) => ({
+      const scoutTokenReceipts: Prisma.TokensReceiptCreateManyInput[] = tokensPerScout.map((scoutClaim) => ({
         eventId: builderEventId,
-        value: scoutClaim.scoutPoints,
-        recipientId: scoutClaim.scoutId
+        value: scoutClaim.erc20Tokens,
+        walletAddress: scoutClaim.wallet,
+        recipientId: walletToScoutId[scoutClaim.wallet]
       }));
 
       tokenReceipts.push(builderTokenReceiptInput, ...scoutTokenReceipts);
 
-      return { pointsPerScout, pointsForBuilder, builderId: builder.builder.id };
+      return {
+        tokensPerScout,
+        tokensForBuilder: { wallet: builderWallet, amount: tokensForBuilder },
+        builderId: builder.builder.id
+      };
     })
   );
 
   // Create the token receipts here
+  await prisma.tokensReceipt.createMany({
+    data: tokenReceipts
+  });
 
-  const claimsMap: Record<string, number> = {};
+  const claims: ProvableClaim[] = [
+    ...allClaims.map((c) => ({
+      address: c.tokensForBuilder.wallet as Address,
+      amount: c.tokensForBuilder.amount
+    })),
+    ...allClaims.flatMap((c) =>
+      c.tokensPerScout.map((scoutClaim) => ({
+        address: scoutClaim.wallet as Address,
+        amount: scoutClaim.erc20Tokens
+      }))
+    )
+  ];
 
-  for (const claimSet of allClaims) {
-    if (!claimsMap[claimSet.builderId]) {
-      claimsMap[claimSet.builderId] = 0;
-    }
-    claimsMap[claimSet.builderId] += claimSet.pointsForBuilder;
-
-    for (const scoutClaim of claimSet.pointsPerScout) {
-      if (!claimsMap[scoutClaim.scoutId]) {
-        claimsMap[scoutClaim.scoutId] = 0;
-      }
-      claimsMap[scoutClaim.scoutId] += scoutClaim.scoutPoints;
-    }
-  }
-
-  const allScoutIds = Object.keys(claimsMap);
-
-  const scoutsWithWallet = await prisma.scout
-    .findMany({
-      where: {
-        id: {
-          in: allScoutIds
-        }
-      },
-      select: {
-        id: true,
-        wallets: true
-      }
-    })
-    .then((_scouts) =>
-      _scouts.reduce(
-        (acc, val) => {
-          const address = val.wallets[0]?.address as Address;
-
-          if (address) {
-            acc[val.id] = address;
-          }
-          return acc;
-        },
-        {} as Record<string, Address>
-      )
-    );
-
-  const claimsWithUserId: ProvableClaimWithUserId[] = [];
-  const claims: ProvableClaim[] = [];
-
-  for (const scoutId of allScoutIds) {
-    const walletAddress = scoutsWithWallet[scoutId];
-
-    if (!walletAddress) {
-      log.warn(`Scout ${scoutId} does not have a wallet address`);
-    } else {
-      const claim: ProvableClaim = {
-        address: walletAddress,
-        amount: claimsMap[scoutId]
-      };
-
-      claims.push(claim);
-      claimsWithUserId.push({ ...claim, userId: scoutId });
-    }
-  }
-
-  return { claims, claimsWithUserId, builderEvents, weeklyClaimId, tokenReceipts };
+  return { claims, builderEvents, weeklyClaimId, tokenReceipts };
 }
 
+/**
+ * Generate the claims for a given week
+ * @param week - The week to generate claims for
+ * @param weeklyClaimsCalculated - Output of calculateWeeklyClaims()
+ * @returns The generated claims
+ */
 export async function generateWeeklyClaims({
-  week
+  week,
+  weeklyClaimsCalculated
 }: {
   week: string;
+  weeklyClaimsCalculated: WeeklyClaimsCalculated;
 }): Promise<{ weeklyClaims: WeeklyClaimsTyped; totalBuilders: number; totalPoints: number }> {
   const existingClaim = await prisma.weeklyClaims.findUnique({
     where: {
@@ -168,25 +232,22 @@ export async function generateWeeklyClaims({
     throw new Error(`Claims for week ${week} already exist`);
   }
 
-  const { claims, claimsWithUserId, builderEvents, tokenReceipts, weeklyClaimId } = await calculateWeeklyClaims({
-    week
-  });
+  const { claims, builderEvents, tokenReceipts, weeklyClaimId } = weeklyClaimsCalculated;
 
   const { rootHash, tree } = generateMerkleTree(claims);
 
-  const proofsMap: Record<string, string[]> = {};
+  const proofsMap: Record<Address, string[]> = {};
 
-  for (const claim of claimsWithUserId) {
+  for (const claim of claims) {
     const proof = getMerkleProofs(tree, { address: claim.address, amount: claim.amount });
 
-    proofsMap[claim.userId] = proof;
+    proofsMap[claim.address] = proof;
   }
 
   const rootHashWithNullByte = `0x${rootHash}`;
 
   const claimsBody: ClaimsBody = {
-    leaves: claims,
-    leavesWithUserId: claimsWithUserId
+    leaves: claims
   };
 
   await protocolImplementationWriteClient().setMerkleRoot({
@@ -196,8 +257,25 @@ export async function generateWeeklyClaims({
     }
   });
 
-  const [weeklyClaim] = await prisma.$transaction([
-    prisma.weeklyClaims.create({
+  // Fund the protocol contract
+  await getSablierLockupContract()
+    .claim({
+      args: {
+        streamId: BigInt(sablierStreamId)
+      }
+    })
+    .catch((error) => {
+      log.error(`Error claiming stream ${sablierStreamId}`, error);
+    });
+
+  const weeklyClaim = await prisma.$transaction(async (tx) => {
+    await tx.builderEvent.createMany({
+      data: builderEvents
+    });
+    await tx.tokensReceipt.createMany({
+      data: tokenReceipts
+    });
+    const _weeklyClaim = await tx.weeklyClaims.create({
       data: {
         id: weeklyClaimId,
         week,
@@ -207,14 +285,10 @@ export async function generateWeeklyClaims({
         claims: claimsBody,
         proofsMap
       }
-    }),
-    prisma.builderEvent.createMany({
-      data: builderEvents
-    }),
-    prisma.tokensReceipt.createMany({
-      data: tokenReceipts
-    })
-  ]);
+    });
+
+    return _weeklyClaim;
+  });
 
   return {
     weeklyClaims: weeklyClaim as WeeklyClaimsTyped,

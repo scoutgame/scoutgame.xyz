@@ -1,3 +1,5 @@
+import { prettyPrint } from '@packages/utils/strings';
+
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import type { LeaderboardBuilder } from '../builders/getBuildersLeaderboard';
@@ -11,6 +13,8 @@ export async function getPointsCountForWeekWithNormalisation({ week }: { week: s
   normalisedBuilders: { builder: LeaderboardBuilder; normalisedPoints: number }[];
 }> {
   const leaderboard = await getBuildersLeaderboard({ week, quantity: weeklyRewardableBuilders });
+
+  prettyPrint({ leaderboard });
 
   const weeklyAllocatedPoints = await getCurrentWeekPointsAllocation({ week });
 
