@@ -14,8 +14,6 @@ export async function getPointsCountForWeekWithNormalisation({ week }: { week: s
 }> {
   const leaderboard = await getBuildersLeaderboard({ week, quantity: weeklyRewardableBuilders });
 
-  prettyPrint({ leaderboard });
-
   const weeklyAllocatedPoints = await getCurrentWeekPointsAllocation({ week });
 
   const pointsQuotas = leaderboard.map((builder, index) => ({

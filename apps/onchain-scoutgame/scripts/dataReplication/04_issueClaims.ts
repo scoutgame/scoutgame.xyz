@@ -16,6 +16,8 @@ async function issueClaims() {
   // The ownership will be empty for previous weeks, so we can use current ownership for past data simulations.
   const ownership = await resolveTokenOwnership({ week: getCurrentWeek(), chainId: scoutProtocolChainId, contractAddress: scoutProtocolBuilderNftContractAddress() });
 
+  // For testing purposes, we only want to issue claims for one week
+  // for (let i = 0; i < 1; i++) {
   for (let i = 0; i < seasonWeeks.length; i++) {
 
     try {

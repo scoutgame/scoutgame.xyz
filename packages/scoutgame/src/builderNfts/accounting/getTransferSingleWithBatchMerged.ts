@@ -1,13 +1,12 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { builderNftChain, getBuilderContractAddress, getBuilderStarterPackContractAddress } from '../constants';
+import { builderNftChain, getBuilderContractAddress } from '../constants';
 
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
-import { type TransferSingleEvent, getTransferSingleEvents, transferSingleAbi } from './getTransferSingleEvents';
+import { type TransferSingleEvent, getTransferSingleEvents } from './getTransferSingleEvents';
 
 type TransferBatchEvent = {
   eventName: 'TransferBatch';

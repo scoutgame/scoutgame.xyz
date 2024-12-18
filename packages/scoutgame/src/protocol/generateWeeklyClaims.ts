@@ -3,10 +3,11 @@ import type { Prisma, WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
+import { prettyPrint } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
 import type { Address } from 'viem';
 
-import { currentSeason } from '../dates';
+import { currentSeason, getEndOfSeason } from '../dates';
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
 import { findOrCreateWalletUser } from '../users/findOrCreateWalletUser';
@@ -138,7 +139,10 @@ export async function calculateWeeklyClaims({
         throw new Error(`Builder ${builder.builder.id} with token id ${builderNft.tokenId} does not have a wallet`);
       }
 
-      const owners = tokenBalances[builderNft.tokenId.toString()];
+      // Edge case if the builder has no nfts sold
+      const owners = tokenBalances[builderNft.tokenId.toString()] || {};
+
+      // prettyPrint({ owners });
 
       const { tokensPerScout, tokensForBuilder } = await divideTokensBetweenBuilderAndHolders({
         builderId: builder.builder.id,
@@ -187,11 +191,6 @@ export async function calculateWeeklyClaims({
       };
     })
   );
-
-  // Create the token receipts here
-  await prisma.tokensReceipt.createMany({
-    data: tokenReceipts
-  });
 
   const claims: ProvableClaim[] = [
     ...allClaims.map((c) => ({
@@ -250,10 +249,16 @@ export async function generateWeeklyClaims({
     leaves: claims
   };
 
-  await protocolImplementationWriteClient().setMerkleRoot({
+  await protocolImplementationWriteClient().setWeeklyMerkleRoot({
     args: {
-      merkleRoot: rootHashWithNullByte,
-      week
+      weeklyRoot: {
+        isoWeek: week,
+        // Tokens can be claimed until the end of the season and the next season
+        validUntil: Math.round(getEndOfSeason(currentSeason).plus({ weeks: 13 }).toSeconds()),
+        merkleRoot: rootHashWithNullByte,
+        // Stub definition until we add in IPFS
+        merkleTreeUri: `ipfs://scoutgame/merkle-tree/${week}`
+      }
     }
   });
 
@@ -269,12 +274,6 @@ export async function generateWeeklyClaims({
     });
 
   const weeklyClaim = await prisma.$transaction(async (tx) => {
-    await tx.builderEvent.createMany({
-      data: builderEvents
-    });
-    await tx.tokensReceipt.createMany({
-      data: tokenReceipts
-    });
     const _weeklyClaim = await tx.weeklyClaims.create({
       data: {
         id: weeklyClaimId,
@@ -285,6 +284,13 @@ export async function generateWeeklyClaims({
         claims: claimsBody,
         proofsMap
       }
+    });
+
+    await tx.builderEvent.createMany({
+      data: builderEvents
+    });
+    await tx.tokensReceipt.createMany({
+      data: tokenReceipts
     });
 
     return _weeklyClaim;

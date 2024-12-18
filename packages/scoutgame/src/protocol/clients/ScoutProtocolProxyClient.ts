@@ -28,7 +28,7 @@ type ReadWriteWalletClient<
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
 
-export class ProtocolImplementationClient {
+export class ScoutProtocolProxyClient {
   private contractAddress: Address;
 
   private publicClient: PublicClient;
@@ -52,24 +52,21 @@ export class ProtocolImplementationClient {
       type: 'function'
     },
     {
-      inputs: [
+      inputs: [],
+      name: 'implementation',
+      outputs: [
         {
-          internalType: 'string',
-          name: 'week',
-          type: 'string'
-        },
-        {
-          internalType: 'uint256',
-          name: 'amount',
-          type: 'uint256'
-        },
-        {
-          internalType: 'bytes32[]',
-          name: 'proofs',
-          type: 'bytes32[]'
+          internalType: 'address',
+          name: '',
+          type: 'address'
         }
       ],
-      name: 'claim',
+      stateMutability: 'view',
+      type: 'function'
+    },
+    {
+      inputs: [],
+      name: 'isPaused',
       outputs: [
         {
           internalType: 'bool',
@@ -77,12 +74,19 @@ export class ProtocolImplementationClient {
           type: 'bool'
         }
       ],
+      stateMutability: 'view',
+      type: 'function'
+    },
+    {
+      inputs: [],
+      name: 'pause',
+      outputs: [],
       stateMutability: 'nonpayable',
       type: 'function'
     },
     {
       inputs: [],
-      name: 'claimsManager',
+      name: 'pauser',
       outputs: [
         {
           internalType: 'address',
@@ -96,44 +100,27 @@ export class ProtocolImplementationClient {
     {
       inputs: [
         {
-          internalType: 'string',
-          name: 'week',
-          type: 'string'
+          internalType: 'address',
+          name: 'newImplementation',
+          type: 'address'
         }
       ],
-      name: 'getMerkleRoot',
-      outputs: [
-        {
-          internalType: 'bytes32',
-          name: '',
-          type: 'bytes32'
-        }
-      ],
-      stateMutability: 'view',
+      name: 'setImplementation',
+      outputs: [],
+      stateMutability: 'nonpayable',
       type: 'function'
     },
     {
       inputs: [
         {
-          internalType: 'string',
-          name: 'week',
-          type: 'string'
-        },
-        {
           internalType: 'address',
-          name: 'account',
+          name: '_newPauser',
           type: 'address'
         }
       ],
-      name: 'hasClaimed',
-      outputs: [
-        {
-          internalType: 'bool',
-          name: '',
-          type: 'bool'
-        }
-      ],
-      stateMutability: 'view',
+      name: 'setPauser',
+      outputs: [],
+      stateMutability: 'nonpayable',
       type: 'function'
     },
     {
@@ -144,41 +131,68 @@ export class ProtocolImplementationClient {
           type: 'address'
         }
       ],
-      name: 'setAdmin',
+      name: 'transferAdmin',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function'
     },
     {
+      inputs: [],
+      name: 'unPause',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
+      anonymous: false,
       inputs: [
         {
+          indexed: false,
           internalType: 'address',
-          name: 'account',
+          name: '_callerAddress',
           type: 'address'
         }
       ],
-      name: 'setClaimsManager',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
+      name: 'Paused',
+      type: 'event'
     },
     {
+      anonymous: false,
       inputs: [
         {
+          indexed: false,
           internalType: 'string',
-          name: 'week',
+          name: 'roleName',
           type: 'string'
         },
         {
-          internalType: 'bytes32',
-          name: 'merkleRoot',
-          type: 'bytes32'
+          indexed: true,
+          internalType: 'address',
+          name: 'previousHolder',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'newHolder',
+          type: 'address'
         }
       ],
-      name: 'setMerkleRoot',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
+      name: 'RoleTransferred',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'address',
+          name: '_callerAddress',
+          type: 'address'
+        }
+      ],
+      name: 'Unpaused',
+      type: 'event'
     }
   ];
 
@@ -216,7 +230,7 @@ export class ProtocolImplementationClient {
     }
   }
 
-  async admin(): Promise<string> {
+  async admin(): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'admin',
@@ -236,22 +250,64 @@ export class ProtocolImplementationClient {
     });
 
     // Parse the result based on the return type
-    return result as string;
+    return result as Address;
   }
 
-  async claim(params: {
-    args: { week: string; amount: bigint; proofs: any };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
+  async implementation(): Promise<Address> {
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'implementation',
+      args: []
+    });
+
+    const { data } = await this.publicClient.call({
+      to: this.contractAddress,
+      data: txData
+    });
+
+    // Decode the result based on the expected return type
+    const result = decodeFunctionResult({
+      abi: this.abi,
+      functionName: 'implementation',
+      data: data as `0x${string}`
+    });
+
+    // Parse the result based on the return type
+    return result as Address;
+  }
+
+  async isPaused(): Promise<boolean> {
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'isPaused',
+      args: []
+    });
+
+    const { data } = await this.publicClient.call({
+      to: this.contractAddress,
+      data: txData
+    });
+
+    // Decode the result based on the expected return type
+    const result = decodeFunctionResult({
+      abi: this.abi,
+      functionName: 'isPaused',
+      data: data as `0x${string}`
+    });
+
+    // Parse the result based on the return type
+    return result as boolean;
+  }
+
+  async pause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
     if (!this.walletClient) {
       throw new Error('Wallet client is required for write operations.');
     }
 
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'claim',
-      args: [params.args.week, params.args.amount, params.args.proofs]
+      functionName: 'pause',
+      args: []
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -268,10 +324,10 @@ export class ProtocolImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async claimsManager(): Promise<string> {
+  async pauser(): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'claimsManager',
+      functionName: 'pauser',
       args: []
     });
 
@@ -283,62 +339,16 @@ export class ProtocolImplementationClient {
     // Decode the result based on the expected return type
     const result = decodeFunctionResult({
       abi: this.abi,
-      functionName: 'claimsManager',
+      functionName: 'pauser',
       data: data as `0x${string}`
     });
 
     // Parse the result based on the return type
-    return result as string;
+    return result as Address;
   }
 
-  async getMerkleRoot(params: { args: { week: string } }): Promise<any> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'getMerkleRoot',
-      args: [params.args.week]
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'getMerkleRoot',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as any;
-  }
-
-  async hasClaimed(params: { args: { week: string; account: string } }): Promise<boolean> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'hasClaimed',
-      args: [params.args.week, params.args.account]
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'hasClaimed',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as boolean;
-  }
-
-  async setAdmin(params: {
-    args: { _newAdmin: string };
+  async setImplementation(params: {
+    args: { newImplementation: Address };
     value?: bigint;
     gasPrice?: bigint;
   }): Promise<TransactionReceipt> {
@@ -348,7 +358,65 @@ export class ProtocolImplementationClient {
 
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'setAdmin',
+      functionName: 'setImplementation',
+      args: [params.args.newImplementation]
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+  }
+
+  async setPauser(params: {
+    args: { _newPauser: Address };
+    value?: bigint;
+    gasPrice?: bigint;
+  }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'setPauser',
+      args: [params.args._newPauser]
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+  }
+
+  async transferAdmin(params: {
+    args: { _newAdmin: Address };
+    value?: bigint;
+    gasPrice?: bigint;
+  }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'transferAdmin',
       args: [params.args._newAdmin]
     });
 
@@ -366,48 +434,15 @@ export class ProtocolImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async setClaimsManager(params: {
-    args: { account: string };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
+  async unPause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
     if (!this.walletClient) {
       throw new Error('Wallet client is required for write operations.');
     }
 
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'setClaimsManager',
-      args: [params.args.account]
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async setMerkleRoot(params: {
-    args: { week: string; merkleRoot: any };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'setMerkleRoot',
-      args: [params.args.week, params.args.merkleRoot]
+      functionName: 'unPause',
+      args: []
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
