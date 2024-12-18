@@ -1,5 +1,5 @@
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
-import { Typography, Stack } from '@mui/material';
+import { Typography, Stack, Skeleton } from '@mui/material';
 import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import dynamic from 'next/dynamic';
@@ -16,7 +16,8 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
 };
 
 const TelegramConnect = dynamic(() => import('./components/TelegramConnect').then((mod) => mod.TelegramConnect), {
-  ssr: false
+  ssr: false,
+  loading: () => <Skeleton variant='rectangular' height={100} />
 });
 
 export function AccountsPage({ user }: { user: UserWithAccountsDetails }) {

@@ -26,9 +26,15 @@ type UserProfileProps = {
   user: UserProfileData;
   avatarSize?: AvatarSize;
   hideShare?: boolean;
+  flexDirection?: 'row' | 'column';
 };
 
-export function UserProfile({ user, avatarSize = 'xLarge', hideShare = false }: UserProfileProps) {
+export function UserProfile({
+  flexDirection = 'row',
+  user,
+  avatarSize = 'xLarge',
+  hideShare = false
+}: UserProfileProps) {
   const isDesktop = useMdScreen();
   const { displayName, bio, avatar, githubLogin, farcasterName } = user;
   const isMounted = useIsMounted();
@@ -43,7 +49,7 @@ export function UserProfile({ user, avatarSize = 'xLarge', hideShare = false }: 
       display='flex'
       gap={2}
       alignItems='center'
-      flexDirection='row'
+      flexDirection={flexDirection}
       p={{
         xs: 0,
         md: 2

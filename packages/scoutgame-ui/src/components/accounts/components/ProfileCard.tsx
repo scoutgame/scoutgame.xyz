@@ -3,6 +3,8 @@ import { Stack } from '@mui/material';
 import type { UserProfileData } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 import { UserProfile } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 
+import { Hidden } from '../../common/Hidden';
+
 export function ProfileCard({
   user,
   onClick,
@@ -31,7 +33,12 @@ export function ProfileCard({
       {isSelected && (
         <CheckCircleIcon color={disabled ? 'disabled' : 'primary'} sx={{ position: 'absolute', top: 10, right: 10 }} />
       )}
-      <UserProfile user={user} avatarSize='xLarge' hideShare />
+      <Hidden mdDown>
+        <UserProfile user={user} avatarSize='xLarge' hideShare />
+      </Hidden>
+      <Hidden mdUp>
+        <UserProfile user={user} avatarSize='large' hideShare flexDirection='column' />
+      </Hidden>
     </Stack>
   );
 }

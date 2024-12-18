@@ -20,7 +20,6 @@ import { AccountConnect } from '../AccountConnect';
 
 export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails }) {
   const {
-    setConnectedUser,
     setSelectedProfile,
     isMergeDisabled,
     authData,
@@ -35,7 +34,8 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
     connectionError,
     connectedUser,
     selectedProfile,
-    accountMergeError
+    accountMergeError,
+    onCloseModal
   } = useAccountConnect<AuthSchema>({ user, identity: 'farcaster' });
 
   const { executeAsync: mergeUserFarcasterAccount, isExecuting: isMergingUserAccount } = useAction(
@@ -120,7 +120,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
         <AccountConnect
           identity='farcaster'
           connectedUser={connectedUser}
-          onClose={() => setConnectedUser(null)}
+          onClose={onCloseModal}
           setSelectedProfile={setSelectedProfile}
           selectedProfile={selectedProfile}
           isMergingUserAccount={isMergingUserAccount}

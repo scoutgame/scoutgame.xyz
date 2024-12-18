@@ -42,10 +42,10 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
     setConnectionError,
     setAuthData,
     connectedUser,
-    setConnectedUser,
     setSelectedProfile,
     isMergeDisabled,
-    authData
+    authData,
+    onCloseModal
   } = useAccountConnect<WalletAuthData>({ user, identity: 'wallet' });
   const { address, chainId, isConnected } = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
@@ -126,7 +126,9 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
         </Stack>
         <Stack gap={1}>
           {user.wallets.map((wallet) => (
-            <Typography key={wallet}>{wallet}</Typography>
+            <Typography sx={{ overflowWrap: 'break-word' }} key={wallet}>
+              {wallet}
+            </Typography>
           ))}
         </Stack>
         <LoadingButton
@@ -153,7 +155,7 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
           isMergeDisabled={isMergeDisabled}
           isMergingUserAccount={isMergingUserAccount}
           mergeUserAccount={() => authData && mergeUserWalletAccount({ authData, selectedProfile })}
-          onClose={() => setConnectedUser(null)}
+          onClose={onCloseModal}
           selectedProfile={selectedProfile}
           setSelectedProfile={setSelectedProfile}
           user={user}
