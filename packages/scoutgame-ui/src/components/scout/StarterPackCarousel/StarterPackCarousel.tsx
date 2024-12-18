@@ -55,6 +55,12 @@ export function StarterPackCarousel({
             bgcolor='transparent'
             border='1px solid'
             borderColor='green.main'
+            sx={{
+              backgroundImage: `url(/images/backgrounds/star-bg.jpg)`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
           >
             <Box>
               <BuilderCard
