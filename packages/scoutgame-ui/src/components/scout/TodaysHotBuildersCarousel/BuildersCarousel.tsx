@@ -67,7 +67,11 @@ export function BuildersCarousel({
     : builderCardsList;
 
   return (
-    <Carousel slidesPerView={slidesPerView} boxProps={{ width: { xs: '100%', md: '90%' }, margin: '0 auto' }} autoplay>
+    <Carousel
+      slidesPerView={slidesPerView}
+      slotProps={{ boxProps: { width: { xs: '100%', md: '90%' }, margin: '0 auto' } }}
+      autoplay
+    >
       {builderCards}
     </Carousel>
   );

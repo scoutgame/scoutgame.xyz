@@ -27,14 +27,23 @@ export function StarterPackCarousel({
     <Stack gap={4} flexDirection={{ xs: 'column-reverse', md: 'row' }}>
       <Carousel
         slidesPerView={1}
-        autoplay={false}
-        boxProps={{ width: { xs: '100%', md: '70%' }, margin: '0 auto' }}
+        autoplay
         navigation={{
           nextEl: '.swiper-starter-pack-button-next',
           prevEl: '.swiper-starter-pack-button-prev'
         }}
-        mobileMinHeight='400px'
-        showMobileNavigationArrows
+        slotProps={{
+          arrowProps: {
+            sx: {
+              display: 'flex',
+              bgcolor: { xs: 'transparent', md: 'background.paper' },
+              '&:hover': {
+                bgcolor: { xs: 'transparent', md: 'background.paper' }
+              }
+            }
+          },
+          boxProps: { width: { xs: '100%', md: '70%' }, margin: '0 auto' }
+        }}
       >
         {builders.map((builder) => (
           <Stack
@@ -57,7 +66,7 @@ export function StarterPackCarousel({
               />
             </Box>
             <Box display='flex' alignItems='center' flexWrap='wrap' component={Paper} p={1}>
-              <Typography width='fit-container' fontSize={{ xs: '0.8rem', md: '1rem' }}>
+              <Typography width='fit-container' fontSize={{ xs: '0.7rem', md: '0.9rem' }}>
                 {getEditorialDescription({ fid: builder.farcasterId }) ?? builder.bio}
               </Typography>
             </Box>
