@@ -21,7 +21,7 @@ export function StarterPackCarousel({
 }) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
-  const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'x-small';
+  const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'small';
 
   return (
     <Stack gap={4} flexDirection={{ xs: 'column-reverse', md: 'row' }}>
@@ -48,7 +48,7 @@ export function StarterPackCarousel({
         {builders.map((builder) => (
           <Stack
             key={builder.id}
-            flexDirection='row'
+            flexDirection={{ xs: 'column', md: 'row' }}
             component={Paper}
             gap={2}
             p={{ xs: 2, md: 4 }}
@@ -72,7 +72,7 @@ export function StarterPackCarousel({
               />
             </Box>
             <Box display='flex' alignItems='center' flexWrap='wrap' component={Paper} p={1}>
-              <Typography width='fit-container' fontSize={{ xs: '0.7rem', md: '0.9rem' }}>
+              <Typography width='fit-container' variant='body2'>
                 {getEditorialDescription({ fid: builder.farcasterId }) ?? builder.bio}
               </Typography>
             </Box>
