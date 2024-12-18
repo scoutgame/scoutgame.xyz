@@ -1,4 +1,5 @@
 import {
+  Alert,
   Link,
   Paper,
   Table,
@@ -45,6 +46,21 @@ const tiers = [
   }
 ];
 
+const qualifiedProjects = [
+  'https://github.com/celo-org/faucet',
+  'https://github.com/celo-org/celo-composer',
+  // 'https://github.com/celo-org/composer-kit',
+  'https://github.com/mento-protocol/mento-web',
+  'https://github.com/mento-protocol/reserve-site',
+  'https://github.com/mento-protocol/mento-sdk',
+  'https://github.com/valora-inc/hooks',
+  'https://github.com/GoodDollar/GoodWeb3-Mono',
+  'https://github.com/GoodDollar/GoodCollective',
+  'https://github.com/Glo-Foundation/glo-wallet',
+  'https://github.com/Ubeswap/ubeswap-interface-v3',
+  'https://github.com/gitcoinco/grants-stack'
+];
+
 function Document() {
   return (
     <InfoCard>
@@ -87,91 +103,67 @@ function Document() {
         </Link>{' '}
         provided by Celo
       </Typography>
-      <Typography>Here some general steps to get started if you are new to open source contributions:</Typography>
+      <Alert severity='info'>
+        This is the chance for you to <strong>learn</strong> and <strong>grow</strong> and make connections. Make sure
+        to <strong>reply</strong> to repo-maintainers, implement their feedback and communicate!!! If anything is
+        unclear, ask! It is normal that a new repository can be overwhelming. So, communicate, communicate, communicate
+        and learn!
+      </Alert>
+      <Typography>
+        Here are some general <tsrong>steps to get started</tsrong> if you are new to open source contributions:
+      </Typography>
       <List listStyleType='decimal'>
         <ListItem>
           Understand the repositories architecture and functions (e.g., if a repo is about EIP make sure you understand
-          the structure of EIPs)
+          the structure of EIPs). <strong>Read some code</strong> (best way to learn)
         </ListItem>
         <ListItem>Check the reported issue and make sure you understand what is asked of you</ListItem>
         <ListItem>
-          Create a fork of the repository and clone your fork to your local machine. You need to for the repository, as
-          you won't have direct write access to the main repository
+          Create a <strong>fork</strong> of the repository and clone your fork to your local machine. You need to fork
+          the repository, as you won't have direct write access to the main repository
         </ListItem>
-        <ListItem>Run the code and reproduce the same behaviour</ListItem>
         <ListItem>
-          Clarify all open questions from the issue. Make sure you dive deep into the repo before asking questions but
-          also don’t waste time getting lost. Most of the time, when formulating a question, everything will become
-          clear.
+          <strong>Run the code</strong> and reproduce the same behaviour
+        </ListItem>
+        <ListItem>
+          <strong>Clarify</strong> all <strong>open questions</strong> from the issue. Make sure you dive deep into the
+          repo before asking questions but also don’t waste time getting lost. Most of the time, when formulating a
+          question, everything will become clear.
         </ListItem>
         <ListItem>If the coding language is unfamiliar to you, do a simple introduction course</ListItem>
+        <ListItem>
+          Optional: try test first approach, where you write the test first to make sure to check for the error that
+          occurs
+        </ListItem>
         <ListItem>
           Maybe try test first approach, where you write the test first to make sure to check for the error that occurs
         </ListItem>
         <ListItem>Implement your solution</ListItem>
-        <ListItem>Write tests if you haven't done it yet</ListItem>
-        <ListItem>Write documentation (based on how documentation is done in that repository)</ListItem>
-        <ListItem>Create a PR mentioning the Issue and explaining the solution</ListItem>
+        <ListItem>
+          Write <strong>tests</strong> if you haven't done it yet
+        </ListItem>
+        <ListItem>
+          Write <strong>documentation</strong> (based on how documentation is done in that repository)
+        </ListItem>
+        <ListItem>
+          Create a PR mentioning the Issue and explaining the solution, this will help the repo maintainer understand
+          what you did and merge your PR quickly
+        </ListItem>
+        <ListItem>
+          Implement any <strong>feedback</strong> the maintainer asks for
+        </ListItem>
       </List>
       <Typography variant='h6' color='secondary' mt={2}>
         Qualified Celo Projects:
       </Typography>
       <List>
-        <ListItem>
-          <Link href='https://github.com/celo-org/faucet' target='_blank' rel='noreferrer'>
-            https://github.com/celo-org/faucet
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/mento-protocol/celo-composer' target='_blank' rel='noreferrer'>
-            https://github.com/mento-protocol/celo-composer
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/mento-protocol/mento-web' target='_blank' rel='noreferrer'>
-            https://github.com/mento-protocol/mento-web
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/mento-protocol/reserve-site' target='_blank' rel='noreferrer'>
-            https://github.com/mento-protocol/reserve-site
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/mento-protocol/mento-sdk' target='_blank' rel='noreferrer'>
-            https://github.com/mento-protocol/mento-sdk
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/valora-inc/hooks' target='_blank' rel='noreferrer'>
-            https://github.com/valora-inc/hooks
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/GoodDollar/GoodWeb3-Mono' target='_blank' rel='noreferrer'>
-            https://github.com/GoodDollar/GoodWeb3-Mono
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/GoodDollar/GoodCollective' target='_blank' rel='noreferrer'>
-            https://github.com/GoodDollar/GoodCollective
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/Glo-Foundation/glo-wallet' target='_blank' rel='noreferrer'>
-            https://github.com/Glo-Foundation/glo-wallet/issues
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/Ubeswap/ubeswap-interface-v3' target='_blank' rel='noreferrer'>
-            https://github.com/Ubeswap/ubeswap-interface-v3
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link href='https://github.com/gitcoinco/grants-stack' target='_blank' rel='noreferrer'>
-            https://github.com/gitcoinco/grants-stack
-          </Link>
-        </ListItem>
+        {qualifiedProjects.map((project) => (
+          <ListItem key={project}>
+            <Link href={project} target='_blank' rel='noreferrer'>
+              {project}
+            </Link>
+          </ListItem>
+        ))}
       </List>
     </InfoCard>
   );
