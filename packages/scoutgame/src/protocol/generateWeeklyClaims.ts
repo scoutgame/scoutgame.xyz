@@ -35,9 +35,10 @@ type WeeklyClaimsCalculated = {
 };
 
 export async function calculateWeeklyClaims({ week }: { week: string }): Promise<WeeklyClaimsCalculated> {
-  const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } = await getWeeklyPointsPoolAndBuilders({
-    week
-  });
+  const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints, nftPurchaseEvents } =
+    await getWeeklyPointsPoolAndBuilders({
+      week
+    });
 
   const builderEvents: Prisma.BuilderEventCreateManyInput[] = [];
   const tokenReceipts: Prisma.TokensReceiptCreateManyInput[] = [];
@@ -50,8 +51,7 @@ export async function calculateWeeklyClaims({ week }: { week: string }): Promise
         normalisationFactor,
         weeklyAllocatedPoints,
         rank: builder.rank,
-        week,
-        season: currentSeason
+        nftPurchaseEvents
       });
 
       const builderEventId = uuid();

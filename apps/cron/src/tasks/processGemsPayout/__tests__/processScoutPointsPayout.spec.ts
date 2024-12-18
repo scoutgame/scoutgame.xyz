@@ -2,6 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { builderPointsShare, scoutPointsShare } from '@packages/scoutgame/builderNfts/constants';
 import { getCurrentWeek } from '@packages/scoutgame/dates';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
+import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/scoutgame/testing/database';
 import { mockSeason } from '@packages/scoutgame/testing/generators';
 
@@ -19,6 +20,7 @@ describe('processScoutPointsPayout', () => {
     await mockBuilderNft({ builderId: builder.id, season: mockSeason });
     await processScoutPointsPayout({
       builderId: builder.id,
+      nftPurchaseEvents: [],
       rank,
       gemsCollected,
       week,
@@ -87,17 +89,25 @@ describe('processScoutPointsPayout', () => {
     const gemsCollected = 10;
     const week = getCurrentWeek();
 
-    await mockBuilderNft({ builderId: builder.id, season: mockSeason });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season: mockSeason });
 
     const scout1 = await mockScout();
     const scout2 = await mockScout();
 
     // Scout 1 has 3 NFTs, scout 2 has 7 NFTs
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, tokensPurchased: 2 });
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0 });
-
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0 });
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, tokensPurchased: 6 });
+    const events = await Promise.all([
+      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, tokensPurchased: 2 }),
+      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0 }),
+      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0 }),
+      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, tokensPurchased: 6 })
+    ]);
+    const nftPurchaseEvents: PartialNftPurchaseEvent[] = events.map(
+      ({ nftPurchaseEvent }) =>
+        ({
+          ...nftPurchaseEvent,
+          builderNft
+        }) as PartialNftPurchaseEvent
+    );
 
     const totalPoints = calculateEarnableScoutPointsForRank({ weeklyAllocatedPoints: 1e5, rank });
 
@@ -110,6 +120,7 @@ describe('processScoutPointsPayout', () => {
     });
     await processScoutPointsPayout({
       builderId: builder.id,
+      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
@@ -199,15 +210,26 @@ describe('processScoutPointsPayout', () => {
     const scout1 = await mockScout();
     const scout2 = await mockScout();
 
-    await mockBuilderNft({ builderId: builder.id, season: mockSeason });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season: mockSeason });
 
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week });
-    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week });
+    // Scout 1 has 3 NFTs, scout 2 has 7 NFTs
+    const events = await Promise.all([
+      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week }),
+      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week })
+    ]);
+    const nftPurchaseEvents: PartialNftPurchaseEvent[] = events.map(
+      ({ nftPurchaseEvent }) =>
+        ({
+          ...nftPurchaseEvent,
+          builderNft
+        }) as PartialNftPurchaseEvent
+    );
 
     const weeklyAllocatedPoints = 1e5;
 
     await processScoutPointsPayout({
       builderId: builder.id,
+      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
@@ -216,6 +238,7 @@ describe('processScoutPointsPayout', () => {
     });
     await processScoutPointsPayout({
       builderId: builder.id,
+      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
@@ -224,6 +247,7 @@ describe('processScoutPointsPayout', () => {
     });
     await processScoutPointsPayout({
       builderId: builder.id,
+      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
