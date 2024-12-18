@@ -135,9 +135,6 @@ function Document() {
           Optional: try test first approach, where you write the test first to make sure to check for the error that
           occurs
         </ListItem>
-        <ListItem>
-          Maybe try test first approach, where you write the test first to make sure to check for the error that occurs
-        </ListItem>
         <ListItem>Implement your solution</ListItem>
         <ListItem>
           Write <strong>tests</strong> if you haven't done it yet
