@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
+import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
 import type { ReactNode } from 'react';
 
 import { Header } from 'components/common/Header';
 import { StickyFooter } from 'components/common/StickyFooter';
-import { getUserFromSession } from 'lib/session/getUserFromSession';
 
 export default async function Layout({
   children

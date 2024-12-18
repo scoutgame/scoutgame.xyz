@@ -62,6 +62,9 @@ export async function getScouts({
         }
       },
       take: limit,
+      orderBy: {
+        pointsEarnedAsScout: 'desc'
+      },
       select: {
         user: {
           select: {
