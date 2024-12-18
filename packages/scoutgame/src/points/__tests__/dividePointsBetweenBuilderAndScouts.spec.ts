@@ -3,6 +3,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { MockBuilder } from '../../testing/database';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '../../testing/database';
 import { dividePointsBetweenBuilderAndScouts } from '../dividePointsBetweenBuilderAndScouts';
+import type { PartialNftPurchaseEvent } from '../getWeeklyPointsPoolAndBuilders';
 
 describe('dividePointsBetweenBuilderAndScouts', () => {
   let builder: MockBuilder;
@@ -11,6 +12,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
 
   let scout1: Awaited<ReturnType<typeof mockScout>>;
   let scout2: Awaited<ReturnType<typeof mockScout>>;
+  const nftPurchaseEvents: PartialNftPurchaseEvent[] = [];
 
   const season = 'season-1';
   const week = 'week-1';
@@ -27,46 +29,52 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
     scout1 = await mockScout();
     scout2 = await mockScout();
 
-    await mockNFTPurchaseEvent({
-      builderId: builder.id,
-      scoutId: scout1.id,
-      season,
-      week: 'week-0', // use a previous week to make sure it is included
-      tokensPurchased: 10
+    nftPurchaseEvents.push({
+      ...(
+        await mockNFTPurchaseEvent({
+          builderId: builder.id,
+          scoutId: scout1.id,
+          season,
+          week: 'week-0', // use a previous week to make sure it is included
+          tokensPurchased: 10
+        })
+      ).nftPurchaseEvent,
+      builderNft
     });
 
-    await mockNFTPurchaseEvent({
-      builderId: builder.id,
-      scoutId: scout1.id,
-      season,
-      week: 'week-2', // use a future week to make sure it is not included
-      tokensPurchased: 10000
+    nftPurchaseEvents.push({
+      ...(
+        await mockNFTPurchaseEvent({
+          builderId: builder.id,
+          scoutId: scout2.id,
+          season,
+          week,
+          tokensPurchased: 20
+        })
+      ).nftPurchaseEvent,
+      builderNft
     });
 
-    await mockNFTPurchaseEvent({
-      builderId: builder.id,
-      scoutId: scout2.id,
-      season,
-      week,
-      tokensPurchased: 20
-    });
-
-    await mockNFTPurchaseEvent({
-      builderId: builder.id,
-      scoutId: scout1.id,
-      season,
-      week,
-      tokensPurchased: 10,
-      nftType: 'starter_pack'
+    nftPurchaseEvents.push({
+      ...(
+        await mockNFTPurchaseEvent({
+          builderId: builder.id,
+          scoutId: scout1.id,
+          season,
+          week,
+          tokensPurchased: 10,
+          nftType: 'starter_pack'
+        })
+      ).nftPurchaseEvent,
+      builderNft: starterPackNft
     });
   });
 
   // Success Cases
   it('should correctly distribute points among scouts and builder, counting normal NFTs as 10x compared to starter pack NFTs', async () => {
-    const result = await dividePointsBetweenBuilderAndScouts({
+    const result = dividePointsBetweenBuilderAndScouts({
       builderId: builder.id,
-      season,
-      week,
+      nftPurchaseEvents,
       rank,
       weeklyAllocatedPoints,
       normalisationFactor
@@ -104,28 +112,26 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
 
   // Error Cases
   it('should throw an error if builderId is invalid', async () => {
-    await expect(
+    expect(() => {
       dividePointsBetweenBuilderAndScouts({
         builderId: 'invalid-builder-id',
-        season,
-        week,
+        nftPurchaseEvents,
         rank,
         weeklyAllocatedPoints,
         normalisationFactor
-      })
-    ).rejects.toThrow(InvalidInputError);
+      });
+    }).toThrow(InvalidInputError);
   });
 
   it('should throw an error if rank is invalid', async () => {
-    await expect(
+    expect(() => {
       dividePointsBetweenBuilderAndScouts({
         builderId: builder.id,
-        season,
-        week,
+        nftPurchaseEvents,
         rank: -1,
         weeklyAllocatedPoints,
         normalisationFactor
-      })
-    ).rejects.toThrow('Invalid rank provided');
+      });
+    }).toThrow('Invalid rank provided');
   });
 });
