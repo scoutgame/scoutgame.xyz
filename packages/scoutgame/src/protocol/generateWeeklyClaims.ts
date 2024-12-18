@@ -182,6 +182,8 @@ export async function generateWeeklyClaims({
     proofsMap[claim.userId] = proof;
   }
 
+  const rootHashWithNullByte = `0x${rootHash}`;
+
   const claimsBody: ClaimsBody = {
     leaves: claims,
     leavesWithUserId: claimsWithUserId
@@ -189,7 +191,7 @@ export async function generateWeeklyClaims({
 
   await protocolImplementationWriteClient().setMerkleRoot({
     args: {
-      merkleRoot: `0x${rootHash}`,
+      merkleRoot: rootHashWithNullByte,
       week
     }
   });
@@ -199,7 +201,7 @@ export async function generateWeeklyClaims({
       data: {
         id: weeklyClaimId,
         week,
-        merkleTreeRoot: rootHash,
+        merkleTreeRoot: rootHashWithNullByte,
         season: currentSeason,
         totalClaimable: claims.reduce((acc, claim) => acc + claim.amount, 0),
         claims: claimsBody,

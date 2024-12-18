@@ -5,6 +5,8 @@ type WeekOfSeason = number; // the week in the season, e.g. 1
 
 // Season start MUST be on a Monday, when isoweek begins
 
+export const weeksPerSeason = 13;
+
 export const seasons = [
   // dev season
   {
@@ -111,17 +113,28 @@ export function getSeasonWeekFromISOWeek({ season, week }: { season: ISOWeek; we
   return weeksDiff + 1;
 }
 
-export function getAllISOWeeksFromSeasonStart(): string[] {
-  const seasonOneStart = '2024-W41';
-  const start = getStartOfWeek(seasonOneStart);
+export function getAllISOWeeksFromSeasonStart({
+  season,
+  allSeasonWeeks
+}: {
+  season: Season;
+  allSeasonWeeks?: boolean;
+}): string[] {
+  const start = getStartOfWeek(season);
   const end = DateTime.now();
 
   let current = start;
   const weeks: string[] = [];
-
-  while (current <= end) {
-    weeks.push(`${current.weekYear}-W${current.weekNumber}`);
-    current = current.plus({ weeks: 1 });
+  if (allSeasonWeeks) {
+    for (let i = 0; i < weeksPerSeason; i++) {
+      weeks.push(`${current.weekYear}-W${current.weekNumber}`);
+      current = current.plus({ weeks: 1 });
+    }
+  } else {
+    while (current <= end) {
+      weeks.push(`${current.weekYear}-W${current.weekNumber}`);
+      current = current.plus({ weeks: 1 });
+    }
   }
 
   return weeks;

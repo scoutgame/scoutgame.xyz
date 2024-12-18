@@ -1,5 +1,6 @@
 import { getWalletClient } from "@packages/blockchain/getWalletClient";
 import { Address } from "viem";
+import env from '@beam-australia/react-env';
 import { baseSepolia } from "viem/chains";
 import { ScoutProtocolBuilderNFTImplementationClient } from "@packages/scoutgame/builderNfts/clients/ScoutProtocolBuilderNFTImplementationClient";
 import { ScoutTokenERC20Client } from "@packages/scoutgame/builderNfts/clients/ScoutTokenERC20Client";
@@ -10,7 +11,7 @@ export function validateIsNotProductionDatabase() {
 }
 
 export function scoutProtocolBuilderNftContractAddress() {
-  return process.env.SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS as Address;
+  return env('SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS') as Address || process.env.REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS as Address;
 }
 
 export function getScoutAdminWalletClient() {
@@ -27,17 +28,10 @@ export function getScoutAdminWalletClient() {
 }
 
 export function getScoutProtocolBuilderNFTContract() {
-
-  const key = process.env.SCOUT_PROTOCOL_BUILDER_NFT_ADMIN_KEY as string;
-
-  if (!key) {
-    throw new Error('SCOUT_PROTOCOL_BUILDER_NFT_ADMIN_KEY is not set');
-  }
-
   const contractAddress = scoutProtocolBuilderNftContractAddress();
 
   if (!contractAddress) {
-    throw new Error('SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
+    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
   }
 
   const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
@@ -50,16 +44,11 @@ export function getScoutProtocolBuilderNFTContract() {
 }
 
 export function getScoutTokenERC20Contract() {
-  const key = process.env.SCOUT_PROTOCOL_BUILDER_NFT_ADMIN_KEY as string;
 
-  if (!key) {
-    throw new Error('SCOUT_PROTOCOL_BUILDER_NFT_ADMIN_KEY is not set');
-  }
-
-  const contractAddress = process.env.SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS as Address;
+  const contractAddress = process.env.REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS as Address;
 
   if (!contractAddress) {
-    throw new Error('SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS is not set');
+    throw new Error('REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS is not set');
   }
 
 
