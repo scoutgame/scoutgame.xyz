@@ -8,7 +8,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import type { NavigationOptions } from 'swiper/types';
 
 import { useIsMounted } from '../../../hooks/useIsMounted';
-import { LoadingCards } from '../Loading/LoadingCards';
 
 import { NextArrow, PrevArrow } from './Arrows';
 
@@ -37,7 +36,7 @@ export function Carousel({ children, slotProps, autoplay, ...swiperProps }: Caro
   const nextButtonId = (swiperProps.navigation as NavigationOptions)?.nextEl ?? '.swiper-button-next';
 
   if (!isMounted) {
-    return <LoadingCards count={Math.floor(swiperProps.slidesPerView || 3)} />;
+    return null;
   }
 
   return (
