@@ -51,8 +51,8 @@ const qualifiedProjects = [
   'https://github.com/celo-org/celo-composer',
   // 'https://github.com/celo-org/composer-kit',
   'https://github.com/mento-protocol/mento-web',
-  'https://github.com/mento-protocol/reserve-site',
-  'https://github.com/mento-protocol/mento-sdk',
+  // 'https://github.com/mento-protocol/reserve-site',
+  // 'https://github.com/mento-protocol/mento-sdk',
   'https://github.com/valora-inc/hooks',
   'https://github.com/GoodDollar/GoodWeb3-Mono',
   'https://github.com/GoodDollar/GoodCollective',
@@ -110,7 +110,7 @@ function Document() {
         and learn!
       </Alert>
       <Typography>
-        Here are some general <tsrong>steps to get started</tsrong> if you are new to open source contributions:
+        Here are some general <strong>steps to get started</strong> if you are new to open source contributions:
       </Typography>
       <List listStyleType='decimal'>
         <ListItem>
