@@ -1,4 +1,5 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
@@ -218,7 +219,11 @@ export async function recordNftMint(
     });
   }
 
-  await recordNftPurchaseQuests(scoutId);
+  try {
+    await recordNftPurchaseQuests(scoutId);
+  } catch (error) {
+    log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
+  }
 
   return {
     builderNft,

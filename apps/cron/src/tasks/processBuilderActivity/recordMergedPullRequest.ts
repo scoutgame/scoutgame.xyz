@@ -7,7 +7,8 @@ import type {
 } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/scoutgame/dates';
-import { getStartOfWeek, getWeekStartEnd, getWeekFromDate, isToday, streakWindow } from '@packages/scoutgame/dates';
+import { getStartOfWeek, getWeekFromDate, isToday, streakWindow } from '@packages/scoutgame/dates';
+import { completeQuest } from '@packages/scoutgame/quests/completeQuest';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
@@ -255,6 +256,20 @@ export async function recordMergedPullRequest({
               }
             }
           });
+
+          try {
+            if (activityType === 'gems_third_pr_in_streak') {
+              await completeQuest(githubUser.builderId, 'score-streak');
+            }
+            // First PR is the first contribution to a repo
+            else if (activityType === 'gems_first_pr') {
+              await completeQuest(githubUser.builderId, 'score-first-pr');
+              await completeQuest(githubUser.builderId, 'first-repo-contribution');
+            }
+          } catch (error) {
+            log.error('Error completing quest for merged PR', { error, builderId: githubUser.builderId, activityType });
+          }
+
           return { builderEvent, githubEvent: event };
         }
       } else {

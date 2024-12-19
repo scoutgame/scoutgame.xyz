@@ -4,6 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Commit } from '@packages/github/getCommitsByUser';
 import type { Season } from '@packages/scoutgame/dates';
 import { getWeekFromDate, getStartOfWeek, isToday } from '@packages/scoutgame/dates';
+import { completeQuest } from '@packages/scoutgame/quests/completeQuest';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
@@ -184,6 +185,16 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
                 }
               }
             }
+          });
+        }
+
+        try {
+          await completeQuest(githubUser.builderId, 'first-repo-contribution');
+          await completeQuest(githubUser.builderId, 'score-first-commit');
+        } catch (error) {
+          log.error('Error completing quest for commit', {
+            error,
+            builderId: githubUser.builderId
           });
         }
 
