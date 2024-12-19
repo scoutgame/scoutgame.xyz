@@ -1,39 +1,58 @@
-import 'server-only';
-
-import { Typography } from '@mui/material';
-import { MAX_STARTER_PACK_PURCHASES } from '@packages/scoutgame/builderNfts/constants';
-import { getStarterPackBuilders } from '@packages/scoutgame/builders/getStarterPackBuilders';
-import { aggregateTokensPurchased } from '@packages/scoutgame/scouts/aggregateTokensPurchased';
-import { getSession } from '@packages/scoutgame/session/getSession';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
+import { Box, Typography } from '@mui/material';
+import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
+import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
+import Link from 'next/link';
 
 import { StarterPackCarousel } from '../StarterPackCarousel/StarterPackCarousel';
-import { TodaysHotBuildersCarousel } from '../TodaysHotBuildersCarousel/TodaysHotBuildersCarousel';
+import { BuildersCarousel } from '../TodaysHotBuildersCarousel/BuildersCarousel';
 
-export async function ScoutPageCarousel() {
-  const session = await getSession();
-  const scoutId = session.scoutId;
-
-  if (scoutId) {
-    const [, purchases = 0] = await safeAwaitSSRData(aggregateTokensPurchased(scoutId));
-
-    const remainingStarterCards = MAX_STARTER_PACK_PURCHASES - purchases;
-
-    if (remainingStarterCards > 0) {
-      const [, starterPackBuilders = []] = await safeAwaitSSRData(getStarterPackBuilders({ userId: scoutId }));
-
-      if (starterPackBuilders.length > 0) {
-        return <StarterPackCarousel builders={starterPackBuilders} remainingStarterCards={remainingStarterCards} />;
-      }
-    }
-  }
+export function ScoutPageCarousel({
+  builders,
+  starterPackBuilders,
+  remainingStarterCards,
+  tab,
+  scoutId
+}: {
+  builders: BuilderInfo[];
+  starterPackBuilders: StarterPackBuilder[];
+  remainingStarterCards: number;
+  tab: string;
+  scoutId?: string;
+}) {
+  const isStarterPackEnabled = starterPackBuilders.length > 0 && scoutId;
+  const nextTab = tab === 'starter_pack' ? 'top_builders' : 'starter_pack';
+  const text = tab === 'starter_pack' && isStarterPackEnabled ? 'Top Builders' : 'Starter Pack';
+  const title =
+    tab === 'starter_pack' && isStarterPackEnabled ? 'Scout the Starter Pack!' : "Scout today's HOT Builders!";
+  const color = tab === 'starter_pack' && isStarterPackEnabled ? 'green.main' : 'secondary';
 
   return (
-    <>
-      <Typography variant='h5' color='secondary' textAlign='center' fontWeight='bold' mb={2} mt={2}>
-        Scout today's HOT Builders!
+    <Box position='relative'>
+      {isStarterPackEnabled && (
+        <Box width='100%' display='flex' justifyContent='flex-end'>
+          <Box
+            data-test='carousel-tab-switch'
+            component={Link}
+            href={{ query: { carousel: nextTab } }}
+            replace={true}
+            prefetch={false}
+            shallow={true}
+            sx={{ position: { md: 'absolute' }, right: 0, top: 18 }}
+          >
+            <Typography component='span' sx={{ textDecoration: 'underline' }}>
+              {text}
+            </Typography>
+          </Box>
+        </Box>
+      )}
+      <Typography variant='h5' color={color} textAlign='center' fontWeight='bold' mb={2} mt={2}>
+        {title}
       </Typography>
-      <TodaysHotBuildersCarousel showPromoCards />
-    </>
+      {tab === 'starter_pack' && isStarterPackEnabled ? (
+        <StarterPackCarousel builders={starterPackBuilders} remainingStarterCards={remainingStarterCards} />
+      ) : (
+        <BuildersCarousel builders={builders} showPromoCards />
+      )}
+    </Box>
   );
 }
