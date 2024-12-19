@@ -42,7 +42,8 @@ export async function getMoxieCandidates({ week, season }: { week: string; seaso
             gt: 0
           }
         }
-      }
+      },
+      deletedAt: null
     },
     orderBy: {
       farcasterId: 'asc'

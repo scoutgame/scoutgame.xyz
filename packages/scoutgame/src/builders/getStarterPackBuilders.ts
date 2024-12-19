@@ -29,7 +29,8 @@ export async function getStarterPackBuilders({
           season,
           nftType: BuilderNftType.starter_pack
         }
-      }
+      },
+      deletedAt: null
     },
     take: limit,
     select: {

@@ -8,7 +8,8 @@ export async function updateTalentMoxieProfiles() {
     where: {
       builderStatus: {
         in: ['approved', 'banned']
-      }
+      },
+      deletedAt: null
     },
     select: {
       talentProfile: {

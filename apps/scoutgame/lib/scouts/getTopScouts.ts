@@ -128,7 +128,8 @@ export async function getTopScoutsByWeek({ week, limit = 10 }: { week: string; l
     where: {
       id: {
         in: sortedUsers.map((user) => user[0])
-      }
+      },
+      deletedAt: null
     }
   });
 

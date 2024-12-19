@@ -7,7 +7,8 @@ export async function updateBuilderCardActivity(date: DateTime) {
     where: {
       builderStatus: {
         in: ['approved', 'banned']
-      }
+      },
+      deletedAt: null
     },
     select: {
       id: true,

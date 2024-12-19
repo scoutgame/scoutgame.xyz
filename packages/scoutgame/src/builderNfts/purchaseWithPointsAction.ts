@@ -23,18 +23,30 @@ export const purchaseWithPointsAction = authActionClient
         where: {
           builderId: parsedInput.builderId,
           season: currentSeason,
-          nftType: parsedInput.nftType
+          nftType: parsedInput.nftType,
+          builder: {
+            deletedAt: null
+          }
         }
       }),
       prisma.scout.findFirstOrThrow({
         where: {
-          id: ctx.session.scoutId
+          id: ctx.session.scoutId,
+          deletedAt: null
         },
         select: {
           currentBalance: true
         }
       })
     ]);
+
+    if (builderNft.builder.deletedAt) {
+      throw new Error('Builder has been deleted');
+    }
+
+    if (scout.deletedAt) {
+      throw new Error('Scout has been deleted');
+    }
 
     const currentPrice = await (parsedInput.nftType === 'starter_pack'
       ? builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({

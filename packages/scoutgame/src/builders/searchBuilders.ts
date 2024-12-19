@@ -34,7 +34,8 @@ export async function searchBuilders({
             mode: 'insensitive'
           }
         }
-      ]
+      ],
+      deletedAt: null
     },
     take: limit,
     orderBy: {
