@@ -45,17 +45,7 @@ describe('claimDailyReward', () => {
         id: userId
       },
       select: {
-        currentBalance: true,
-        userSeasonStats: {
-          select: {
-            pointsEarnedAsBuilder: true
-          }
-        },
-        userAllTimeStats: {
-          select: {
-            pointsEarnedAsBuilder: true
-          }
-        }
+        currentBalance: true
       }
     });
 
@@ -63,8 +53,6 @@ describe('claimDailyReward', () => {
     expect(pointsReceipt).toBeDefined();
     expect(pointsReceipt.value).toBe(1);
     expect(scout.currentBalance).toBe(1);
-    expect(scout.userSeasonStats[0].pointsEarnedAsBuilder).toBe(1);
-    expect(scout.userAllTimeStats[0].pointsEarnedAsBuilder).toBe(1);
   });
 });
 
@@ -103,17 +91,7 @@ describe('claimDailyReward streak', () => {
         id: userId
       },
       select: {
-        currentBalance: true,
-        userSeasonStats: {
-          select: {
-            pointsEarnedAsBuilder: true
-          }
-        },
-        userAllTimeStats: {
-          select: {
-            pointsEarnedAsBuilder: true
-          }
-        }
+        currentBalance: true
       }
     });
 
@@ -121,8 +99,6 @@ describe('claimDailyReward streak', () => {
     expect(pointsReceipt).toBeDefined();
     expect(pointsReceipt.value).toBe(3);
     expect(scout.currentBalance).toBe(10);
-    expect(scout.userSeasonStats[0].pointsEarnedAsBuilder).toBe(scout.currentBalance);
-    expect(scout.userAllTimeStats[0].pointsEarnedAsBuilder).toBe(scout.currentBalance);
   });
 
   it('should not allow claiming daily reward streak if not all days are claimed', async () => {

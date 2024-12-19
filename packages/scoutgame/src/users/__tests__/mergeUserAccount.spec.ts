@@ -219,9 +219,9 @@ describe('mergeUserAccount', () => {
       mockGemPayoutEvents({
         builderId: builder1.id,
         recipients: [
-          { id: builder1.id, points: 200 },
-          { id: scout1.id, points: 100 },
-          { id: scout2.id, points: 150 }
+          { id: builder1.id, points: 200, recipientType: 'builder' },
+          { id: scout1.id, points: 100, recipientType: 'scout' },
+          { id: scout2.id, points: 150, recipientType: 'scout' }
         ],
         season: currentSeason
       }),
@@ -229,9 +229,9 @@ describe('mergeUserAccount', () => {
       mockGemPayoutEvents({
         builderId: builder2.id,
         recipients: [
-          { id: builder2.id, points: 250 },
-          { id: scout1.id, points: 500 },
-          { id: builder1.id, points: 200 }
+          { id: builder2.id, points: 250, recipientType: 'builder' },
+          { id: scout1.id, points: 500, recipientType: 'scout' },
+          { id: builder1.id, points: 200, recipientType: 'scout' }
         ],
         season: currentSeason
       })
@@ -250,7 +250,7 @@ describe('mergeUserAccount', () => {
 
     // Builder 1:
     // 250 (selling nft to scout 1) + 100 (selling nft to scout 2) + 200 (gems payout) - 150 (purchasing nft of builder 2) + 200 (gems payout from builder 2) = 600 points
-    // Points earned as builder = 200 + 250 + 100 = 550 points
+    // Points earned as builder = 200 points
     // Points earned as scout = 200 points
 
     // Scout 1:
@@ -259,9 +259,8 @@ describe('mergeUserAccount', () => {
     // Points earned as scout = 100 + 500 = 600 points
 
     expect(retainedUser.currentBalance).toEqual(200);
-    // 550 (points earned as builder by builder 1) + 100 (points earned as scout by builder 1 gems payout)
-    expect(retainedUser.userSeasonStats[0].pointsEarnedAsBuilder).toEqual(650);
-    expect(retainedUser.userSeasonStats[0].pointsEarnedAsScout).toEqual(700);
+    expect(retainedUser.userSeasonStats[0].pointsEarnedAsBuilder).toEqual(200);
+    expect(retainedUser.userSeasonStats[0].pointsEarnedAsScout).toEqual(800);
     expect(retainedUser.userSeasonStats[0].nftsPurchased).toEqual(5);
     expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(4);
     expect(retainedUser.userSeasonStats[0].nftOwners).toEqual(2);

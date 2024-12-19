@@ -209,6 +209,15 @@ export const mergeUserAccount = async ({
         }
       });
 
+      await tx.scoutGameActivity.updateMany({
+        where: {
+          userId: mergedUserId
+        },
+        data: {
+          userId: retainedUserId
+        }
+      });
+
       await tx.pointsReceipt.updateMany({
         where: {
           recipientId: mergedUserId
