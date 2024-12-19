@@ -1,4 +1,7 @@
+import env from '@beam-australia/react-env';
+import { getPlatform } from '@packages/mixpanel/utils';
 import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
+import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getSession } from '@packages/scoutgame/session/getSession';
 import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { Suspense } from 'react';
@@ -16,7 +19,13 @@ export async function PointsClaimContainer() {
     return null;
   }
 
-  const [err, data] = await safeAwaitSSRData(getClaimablePointsWithSources(scoutId));
+  const platform = getPlatform();
+
+  const isOnchainApp = platform === 'onchainwebapp';
+
+  const [err, data] = await safeAwaitSSRData(
+    (isOnchainApp ? getClaimableTokensWithSources : getClaimablePointsWithSources)(scoutId)
+  );
 
   if (err) {
     return null;

@@ -113,19 +113,19 @@ export async function resolveTokenOwnership({
 
     // Subtract tokens from sender (if not minting)
     if (from !== '0x0000000000000000000000000000000000000000') {
-      const currentFromBalance = ownershipForToken[from] || 0;
+      const currentFromBalance = ownershipForToken[from.toLowerCase() as Address] || 0;
       const newFromBalance = currentFromBalance - Number(value);
       if (newFromBalance === 0) {
-        delete ownershipForToken[from];
+        delete ownershipForToken[from.toLowerCase() as Address];
       } else {
-        ownershipForToken[from] = newFromBalance;
+        ownershipForToken[from.toLowerCase() as Address] = newFromBalance;
       }
     }
 
     // Add tokens to receiver (if not burning)
     if (to !== '0x0000000000000000000000000000000000000000') {
-      const currentToBalance = ownershipForToken[to] || 0;
-      ownershipForToken[to] = currentToBalance + Number(value);
+      const currentToBalance = ownershipForToken[to.toLowerCase() as Address] || 0;
+      ownershipForToken[to.toLowerCase() as Address] = currentToBalance + Number(value);
     }
   }
 

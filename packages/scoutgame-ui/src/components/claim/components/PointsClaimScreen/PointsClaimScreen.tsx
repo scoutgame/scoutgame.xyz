@@ -2,6 +2,7 @@
 
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { getPlatform } from '@packages/mixpanel/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -50,6 +51,8 @@ export function PointsClaimScreen({
     await revalidateClaimPoints();
   };
 
+  const platform = getPlatform();
+
   return (
     <Paper
       sx={{
@@ -69,7 +72,7 @@ export function PointsClaimScreen({
             Congratulations!
           </Typography>
           <Typography variant='h5' textAlign='center'>
-            You have earned Scout Points!
+            You have earned Scout {platform === 'onchainwebapp' ? 'Tokens' : 'Points'}!
           </Typography>
 
           <Stack
@@ -90,7 +93,7 @@ export function PointsClaimScreen({
               </Typography>
               <Stack flexDirection='row' alignItems='center' gap={1}>
                 <Typography variant='h4' fontWeight={500}>
-                  {totalUnclaimedPoints}
+                  {totalUnclaimedPoints.toLocaleString()}
                 </Typography>
                 <Image
                   width={35}

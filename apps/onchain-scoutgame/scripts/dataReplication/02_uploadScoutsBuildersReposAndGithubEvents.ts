@@ -37,7 +37,7 @@ async function resetData() {
 
 async function uploadScoutsBuildersReposAndGithubEvents() {
 
-  await resetData();
+  // await resetData();
 
   const startTokenId = 1;
 
@@ -208,6 +208,7 @@ async function uploadScoutsBuildersReposAndGithubEvents() {
         },
         create: {
           ...scout,
+          onboardedAt: new Date(),
           path: `${scout.path}-${Math.random().toString(36).substring(2, 8)}`,
           referralCode: uuid(),
           wallets: {

@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { getScoutProtocolAddress } from '../../protocol/constants';
+import { getScoutProtocolAddress, scoutProtocolChainId } from '../../protocol/constants';
 import { builderNftChain } from '../constants';
 
 import { type BlockRange } from './convertBlockRange';
@@ -47,7 +47,7 @@ export type TokensClaimedEvent = {
 };
 
 export function getTokensClaimedEvents({ address }: BlockRange & { address: Address }): Promise<TokensClaimedEvent[]> {
-  return getPublicClient(builderNftChain.id)
+  return getPublicClient(scoutProtocolChainId)
     .getLogs({
       address: getScoutProtocolAddress(),
       event: tokensClaimedAbi,
