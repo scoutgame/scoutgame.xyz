@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
 import { useLgScreen, useMdScreen } from '../../../hooks/useMediaScreens';
@@ -18,12 +19,13 @@ export function BuildersCarousel({
   builders: BuilderInfo[];
   showPromoCards?: boolean;
 }) {
+  const theme = useTheme();
+  const breakpointsValues = theme.breakpoints.values;
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
   const trackEvent = useTrackEvent();
   const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'x-small';
 
-  const slidesPerView = isDesktop ? 3 : 2.2;
   const builderCardsList = builders.map((builder) => (
     <BuilderCard size={size} key={builder.id} builder={builder} showPurchaseButton showHotIcon />
   ));
@@ -68,9 +70,17 @@ export function BuildersCarousel({
 
   return (
     <Carousel
-      slidesPerView={slidesPerView}
+      slidesPerView={3}
       slotProps={{ boxProps: { width: { xs: '100%', md: '90%' }, margin: '0 auto' } }}
       autoplay
+      breakpoints={{
+        [breakpointsValues.xs]: {
+          slidesPerView: 2.2
+        },
+        [breakpointsValues.md]: {
+          slidesPerView: 3
+        }
+      }}
     >
       {builderCards}
     </Carousel>
