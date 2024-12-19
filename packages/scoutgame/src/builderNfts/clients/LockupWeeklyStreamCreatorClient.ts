@@ -28,7 +28,7 @@ type ReadWriteWalletClient<
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
 
-export class ProtocolImplementationClient {
+export class LockupWeeklyStreamCreatorClient {
   private contractAddress: Address;
 
   private publicClient: PublicClient;
@@ -40,52 +40,23 @@ export class ProtocolImplementationClient {
   public abi: Abi = [
     {
       inputs: [],
-      name: 'admin',
+      name: 'LOCKUP_TRANCHED',
       outputs: [
         {
-          internalType: 'address',
+          internalType: 'contract ISablierV2LockupTranched',
           name: '',
           type: 'address'
         }
       ],
       stateMutability: 'view',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'string',
-          name: 'week',
-          type: 'string'
-        },
-        {
-          internalType: 'uint256',
-          name: 'amount',
-          type: 'uint256'
-        },
-        {
-          internalType: 'bytes32[]',
-          name: 'proofs',
-          type: 'bytes32[]'
-        }
-      ],
-      name: 'claim',
-      outputs: [
-        {
-          internalType: 'bool',
-          name: '',
-          type: 'bool'
-        }
-      ],
-      stateMutability: 'nonpayable',
       type: 'function'
     },
     {
       inputs: [],
-      name: 'claimsManager',
+      name: 'SCOUT',
       outputs: [
         {
-          internalType: 'address',
+          internalType: 'contract IERC20',
           name: '',
           type: 'address'
         }
@@ -94,19 +65,13 @@ export class ProtocolImplementationClient {
       type: 'function'
     },
     {
-      inputs: [
-        {
-          internalType: 'string',
-          name: 'week',
-          type: 'string'
-        }
-      ],
-      name: 'getMerkleRoot',
+      inputs: [],
+      name: 'WEEKS_PER_STREAM',
       outputs: [
         {
-          internalType: 'bytes32',
+          internalType: 'uint8',
           name: '',
-          type: 'bytes32'
+          type: 'uint8'
         }
       ],
       stateMutability: 'view',
@@ -115,36 +80,12 @@ export class ProtocolImplementationClient {
     {
       inputs: [
         {
-          internalType: 'string',
-          name: 'week',
-          type: 'string'
-        },
-        {
-          internalType: 'address',
-          name: 'account',
-          type: 'address'
+          internalType: 'uint256',
+          name: 'streamId',
+          type: 'uint256'
         }
       ],
-      name: 'hasClaimed',
-      outputs: [
-        {
-          internalType: 'bool',
-          name: '',
-          type: 'bool'
-        }
-      ],
-      stateMutability: 'view',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: '_newAdmin',
-          type: 'address'
-        }
-      ],
-      name: 'setAdmin',
+      name: 'claim',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function'
@@ -153,30 +94,28 @@ export class ProtocolImplementationClient {
       inputs: [
         {
           internalType: 'address',
-          name: 'account',
+          name: 'recipient',
           type: 'address'
-        }
-      ],
-      name: 'setClaimsManager',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'string',
-          name: 'week',
-          type: 'string'
         },
         {
-          internalType: 'bytes32',
-          name: 'merkleRoot',
-          type: 'bytes32'
+          internalType: 'uint128',
+          name: 'totalAmount',
+          type: 'uint128'
+        },
+        {
+          internalType: 'uint128',
+          name: '_startDate',
+          type: 'uint128'
         }
       ],
-      name: 'setMerkleRoot',
-      outputs: [],
+      name: 'createStream',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: 'streamId',
+          type: 'uint256'
+        }
+      ],
       stateMutability: 'nonpayable',
       type: 'function'
     }
@@ -216,10 +155,10 @@ export class ProtocolImplementationClient {
     }
   }
 
-  async admin(): Promise<string> {
+  async LOCKUP_TRANCHED(): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'admin',
+      functionName: 'LOCKUP_TRANCHED',
       args: []
     });
 
@@ -231,19 +170,61 @@ export class ProtocolImplementationClient {
     // Decode the result based on the expected return type
     const result = decodeFunctionResult({
       abi: this.abi,
-      functionName: 'admin',
+      functionName: 'LOCKUP_TRANCHED',
       data: data as `0x${string}`
     });
 
     // Parse the result based on the return type
-    return result as string;
+    return result as Address;
   }
 
-  async claim(params: {
-    args: { week: string; amount: bigint; proofs: any };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
+  async SCOUT(): Promise<Address> {
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'SCOUT',
+      args: []
+    });
+
+    const { data } = await this.publicClient.call({
+      to: this.contractAddress,
+      data: txData
+    });
+
+    // Decode the result based on the expected return type
+    const result = decodeFunctionResult({
+      abi: this.abi,
+      functionName: 'SCOUT',
+      data: data as `0x${string}`
+    });
+
+    // Parse the result based on the return type
+    return result as Address;
+  }
+
+  async WEEKS_PER_STREAM(): Promise<bigint> {
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'WEEKS_PER_STREAM',
+      args: []
+    });
+
+    const { data } = await this.publicClient.call({
+      to: this.contractAddress,
+      data: txData
+    });
+
+    // Decode the result based on the expected return type
+    const result = decodeFunctionResult({
+      abi: this.abi,
+      functionName: 'WEEKS_PER_STREAM',
+      data: data as `0x${string}`
+    });
+
+    // Parse the result based on the return type
+    return result as bigint;
+  }
+
+  async claim(params: { args: { streamId: bigint }; value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
     if (!this.walletClient) {
       throw new Error('Wallet client is required for write operations.');
     }
@@ -251,7 +232,7 @@ export class ProtocolImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'claim',
-      args: [params.args.week, params.args.amount, params.args.proofs]
+      args: [params.args.streamId]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -268,77 +249,8 @@ export class ProtocolImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async claimsManager(): Promise<string> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'claimsManager',
-      args: []
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'claimsManager',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as string;
-  }
-
-  async getMerkleRoot(params: { args: { week: string } }): Promise<any> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'getMerkleRoot',
-      args: [params.args.week]
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'getMerkleRoot',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as any;
-  }
-
-  async hasClaimed(params: { args: { week: string; account: string } }): Promise<boolean> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'hasClaimed',
-      args: [params.args.week, params.args.account]
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'hasClaimed',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as boolean;
-  }
-
-  async setAdmin(params: {
-    args: { _newAdmin: string };
+  async createStream(params: {
+    args: { recipient: Address; totalAmount: bigint; _startDate: bigint };
     value?: bigint;
     gasPrice?: bigint;
   }): Promise<TransactionReceipt> {
@@ -348,66 +260,8 @@ export class ProtocolImplementationClient {
 
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'setAdmin',
-      args: [params.args._newAdmin]
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async setClaimsManager(params: {
-    args: { account: string };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'setClaimsManager',
-      args: [params.args.account]
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async setMerkleRoot(params: {
-    args: { week: string; merkleRoot: any };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'setMerkleRoot',
-      args: [params.args.week, params.args.merkleRoot]
+      functionName: 'createStream',
+      args: [params.args.recipient, params.args.totalAmount, params.args._startDate]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {

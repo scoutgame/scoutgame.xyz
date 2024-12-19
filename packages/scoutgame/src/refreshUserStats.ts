@@ -2,17 +2,18 @@ import type { Prisma, UserSeasonStats, UserWeeklyStats } from '@charmverse/core/
 import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
 
+import type { ISOWeek } from './dates';
 import { currentSeason, getCurrentWeek } from './dates';
 
 export async function refreshUserStats({
   userId,
+  week = getCurrentWeek(),
   tx = prisma
 }: {
   userId: string;
+  week?: ISOWeek;
   tx?: Prisma.TransactionClient;
 }): Promise<{ weekly: UserWeeklyStats; season: UserSeasonStats }> {
-  const week = getCurrentWeek();
-
   const gemsReceipts = await tx.gemsReceipt.findMany({
     where: {
       event: {

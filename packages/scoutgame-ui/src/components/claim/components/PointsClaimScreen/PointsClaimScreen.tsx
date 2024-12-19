@@ -2,14 +2,27 @@
 
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { getChainById } from '@packages/blockchain/chains';
+import { getPlatform } from '@packages/mixpanel/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
+import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
+import { ScoutProtocolImplementationClient } from '@packages/scoutgame/protocol/clients/ScoutProtocolImplementationClient';
+import {
+  getScoutProtocolAddress,
+  scoutProtocolChain,
+  scoutProtocolChainId
+} from '@packages/scoutgame/protocol/constants';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
+import { publicActions } from 'viem';
+import { useSwitchChain, useWalletClient } from 'wagmi';
 
 import { claimPointsAction } from '../../../../actions/claimPointsAction';
+import { handleOnchainClaimAction } from '../../../../actions/handleOnchainClaimAction';
 import { revalidateClaimPointsAction } from '../../../../actions/revalidateClaimPointsAction';
 import { useUser } from '../../../../providers/UserProvider';
+import { WalletLogin } from '../../../common/WalletLogin/WalletLogin';
 
 import { BonusPartnersDisplay } from './BonusPartnersDisplay';
 import { PointsClaimButton } from './PointsClaimButton';
@@ -19,7 +32,8 @@ export function PointsClaimScreen({
   totalUnclaimedPoints,
   bonusPartners,
   builders,
-  repos
+  repos,
+  claimData
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
@@ -28,11 +42,16 @@ export function PointsClaimScreen({
     displayName: string;
   }[];
   repos: string[];
+  claimData?: ClaimData;
 }) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
+  const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction);
   const { refreshUser, user } = useUser();
   const [showModal, setShowModal] = useState(false);
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
+
+  const { data: walletClient } = useWalletClient();
+  const { switchChainAsync } = useSwitchChain();
 
   const handleClaim = async () => {
     await claimPoints();
@@ -45,10 +64,65 @@ export function PointsClaimScreen({
     }
   };
 
+  async function handleWalletClaim() {
+    if (walletClient?.chain.id !== scoutProtocolChainId) {
+      await switchChainAsync({
+        chainId: scoutProtocolChainId,
+        addEthereumChainParameter: {
+          ...scoutProtocolChain,
+          rpcUrls: getChainById(scoutProtocolChainId)?.rpcUrls as string[]
+        }
+      });
+      return;
+    }
+
+    const extendedClient = walletClient.extend(publicActions);
+
+    const protocolClient = new ScoutProtocolImplementationClient({
+      chain: scoutProtocolChain,
+      walletClient: extendedClient,
+      contractAddress: getScoutProtocolAddress()
+    });
+
+    await protocolClient.multiClaim({
+      args: {
+        claims: claimData?.weeklyProofs?.map((claim) => ({
+          week: claim.week,
+          amount: BigInt(claim.amount),
+          proofs: claim.proofs
+        }))
+      }
+    });
+
+    // const contract = extendedClient.writeContract({
+    //   address: getScoutProtocolAddress(),
+    //   abi: protocolClient.abi,
+    //   functionName: 'claim',
+    //   args: {
+    //     // claimData: claimInputs?.map((claim) => ({
+    //     //   week: claim.week,
+    //     //   amount: BigInt(claim.amount),
+    //     //   proofs: claim.proofs
+    //     // }))
+    //   }
+    // });
+
+    await handleOnchainClaim({
+      wallet: walletClient.account.address.toLowerCase(),
+      claimsProofs: claimData!.weeklyProofs
+    });
+
+    refreshUser();
+  }
+
   const handleCloseModal = async () => {
     setShowModal(false);
     await revalidateClaimPoints();
   };
+
+  const connectedAddress = walletClient?.account.address.toLowerCase();
+
+  const platform = getPlatform();
 
   return (
     <Paper
@@ -69,7 +143,7 @@ export function PointsClaimScreen({
             Congratulations!
           </Typography>
           <Typography variant='h5' textAlign='center'>
-            You have earned Scout Points!
+            You have earned Scout {platform === 'onchainwebapp' ? 'Tokens' : 'Points'}!
           </Typography>
 
           <Stack
@@ -90,7 +164,7 @@ export function PointsClaimScreen({
               </Typography>
               <Stack flexDirection='row' alignItems='center' gap={1}>
                 <Typography variant='h4' fontWeight={500}>
-                  {totalUnclaimedPoints}
+                  {totalUnclaimedPoints.toLocaleString()}
                 </Typography>
                 <Image
                   width={35}
@@ -104,7 +178,12 @@ export function PointsClaimScreen({
               </Stack>
             </Stack>
             <Box width={{ xs: 'fit-content', md: '100%' }}>
-              <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />
+              {claimData && connectedAddress !== claimData.address.toLowerCase() ? (
+                <WalletLogin />
+              ) : (
+                <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+              )}
+              {!claimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
             </Box>
           </Stack>
         </>

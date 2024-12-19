@@ -7,6 +7,11 @@ import {
   getDecentApiKey,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
+import {
+  scoutProtocolBuilderNftContractAddress,
+  scoutProtocolChainId,
+  scoutTokenErc20ContractAddress
+} from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
@@ -20,8 +25,9 @@ type DecentTransactionProps = {
   paymentAmountOut: bigint;
   builderTokenId: bigint;
   tokensToPurchase: bigint;
-  scoutId: string;
+  scoutId?: string;
   contractAddress?: string;
+  usingProtocolTokens?: boolean;
 };
 
 async function prepareDecentTransaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
@@ -62,26 +68,32 @@ export function useDecentTransaction({
   builderTokenId,
   scoutId,
   tokensToPurchase,
-  contractAddress
+  contractAddress,
+  usingProtocolTokens
 }: DecentTransactionProps) {
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
-    dstToken: optimismUsdcContractAddress,
+    dstToken: usingProtocolTokens ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress,
     srcChainId: sourceChainId,
-    dstChainId: builderNftChain.id,
+    dstChainId: usingProtocolTokens ? scoutProtocolChainId : builderNftChain.id,
     slippage: 1,
     actionType: ActionType.NftMint,
     actionConfig: {
-      chainId: optimism.id,
-      contractAddress: contractAddress || getBuilderContractAddress(),
+      chainId: usingProtocolTokens ? scoutProtocolChainId : optimism.id,
+      contractAddress:
+        contractAddress || usingProtocolTokens ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress(),
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
-        tokenAddress: optimismUsdcContractAddress
+        tokenAddress: usingProtocolTokens ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: 'function mint(address account, uint256 tokenId, uint256 amount, string scout)',
-      args: [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
+      signature: usingProtocolTokens
+        ? 'function mint(address account, uint256 tokenId, uint256 amount)'
+        : 'function mint(address account, uint256 tokenId, uint256 amount, string scout)',
+      args: usingProtocolTokens
+        ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
+        : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
     }
   };
   const {

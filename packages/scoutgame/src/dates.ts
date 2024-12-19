@@ -5,6 +5,8 @@ type WeekOfSeason = number; // the week in the season, e.g. 1
 
 // Season start MUST be on a Monday, when isoweek begins
 
+export const weeksPerSeason = 13;
+
 export const seasons = [
   // dev season
   {
@@ -36,6 +38,16 @@ export const streakWindow = 7 * 24 * 60 * 60 * 1000;
 
 export const seasonAllocatedPoints = 18_141_850;
 // Currently, we are hardcoding the value of weekly allocated points to 100,000
+
+/**
+ * ISOWeeks should be padded with a 0 if the week number is less than 10
+ */
+function safeIsoWeekNumber(weekNumber: number): string {
+  if (weekNumber < 10) {
+    return `0${weekNumber}`;
+  }
+  return weekNumber.toString();
+}
 
 // Return the format of week
 export function getCurrentWeek(): ISOWeek {
@@ -70,6 +82,13 @@ export function getWeekFromDate(date: Date): ISOWeek {
 
 export function getDateFromISOWeek(week: ISOWeek): DateTime {
   return DateTime.fromISO(week, { zone: 'utc' });
+}
+
+export function getEndOfSeason(season: Season): DateTime {
+  const allWeeks = getAllISOWeeksFromSeasonStart({ season, allSeasonWeeks: true });
+
+  const lastWeek = allWeeks[allWeeks.length - 1];
+  return getDateFromISOWeek(lastWeek).endOf('week');
 }
 
 export function validateISOWeek(week: ISOWeek): boolean {
@@ -116,17 +135,28 @@ export function getSeasonWeekFromISOWeek({ season, week }: { season: ISOWeek; we
   return weeksDiff + 1;
 }
 
-export function getAllISOWeeksFromSeasonStart(): string[] {
-  const seasonOneStart = '2024-W41';
-  const start = getStartOfWeek(seasonOneStart);
+export function getAllISOWeeksFromSeasonStart({
+  season,
+  allSeasonWeeks
+}: {
+  season: Season;
+  allSeasonWeeks?: boolean;
+}): string[] {
+  const start = getStartOfWeek(season);
   const end = DateTime.now();
 
   let current = start;
   const weeks: string[] = [];
-
-  while (current <= end) {
-    weeks.push(`${current.weekYear}-W${current.weekNumber}`);
-    current = current.plus({ weeks: 1 });
+  if (allSeasonWeeks) {
+    for (let i = 0; i < weeksPerSeason; i++) {
+      weeks.push(`${current.weekYear}-W${safeIsoWeekNumber(current.weekNumber)}`);
+      current = current.plus({ weeks: 1 });
+    }
+  } else {
+    while (current <= end) {
+      weeks.push(`${current.weekYear}-W${safeIsoWeekNumber(current.weekNumber)}`);
+      current = current.plus({ weeks: 1 });
+    }
   }
 
   return weeks;
