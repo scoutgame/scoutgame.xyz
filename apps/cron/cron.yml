@@ -17,8 +17,8 @@ cron:
 
   - name: 'update-mixpanel-user-profiles'
     url: '/update-mixpanel-user-profiles'
-    # Run twice a day
-    schedule: '0 */12 * * *'
+    # Run once an hour
+    schedule: '0 * * * *'
 
   - name: 'alert-low-wallet-gas-balance'
     url: '/alert-low-wallet-gas-balance'
