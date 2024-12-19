@@ -16,7 +16,7 @@ export function ShareProfile({ userPath }: { userPath: string }) {
   const profileUrl = `${origin}/u/${userPath}`;
   const shareMessage = `Discover my profile on Scout Game: ${profileUrl}`;
   const [isCopied, setIsCopied] = useState(false);
-  const { refreshUser } = useUser();
+  const { refreshUser, user } = useUser();
   const [anchorElShare, setAnchorElShare] = useState<HTMLElement | null>(null);
   const { execute, isExecuting } = useAction(completeQuestAction, {
     onSuccess: () => {
@@ -27,7 +27,11 @@ export function ShareProfile({ userPath }: { userPath: string }) {
   const handleOpenShareMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElShare(event.currentTarget);
     if (!isExecuting) {
-      execute({ questType: 'share-scout-profile' });
+      if (user?.builderStatus === null) {
+        execute({ questType: 'share-scout-profile' });
+      } else {
+        execute({ questType: 'share-builder-profile' });
+      }
     }
   };
 
