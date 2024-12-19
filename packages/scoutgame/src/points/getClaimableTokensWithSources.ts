@@ -12,12 +12,14 @@ import type { WeeklyClaimsTyped } from '../protocol/generateWeeklyClaims';
 
 import type { UnclaimedPointsSource } from './getClaimablePointsWithSources';
 
+export type ClaimInput = {
+  week: ISOWeek;
+  amount: number;
+  proofs: string[];
+};
+
 export type UnclaimedTokensSource = UnclaimedPointsSource & {
-  claimProofs: {
-    week: ISOWeek;
-    amount: number;
-    proofs: string[];
-  }[];
+  claimProofs: ClaimInput[];
 };
 
 export async function getClaimableTokensWithSources(userId: string): Promise<UnclaimedTokensSource> {
@@ -128,10 +130,6 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const uniqueRepos = Array.from(new Set(repos.map((repo) => `${repo.repo.owner}/${repo.repo.name}`)));
 
-  const unclaimedTokens = tokenReceipts
-    .filter((receipt) => !claimedWeeks.includes(receipt.event.week))
-    .reduce((acc, receipt) => acc + receipt.value, 0);
-
   const weeklyClaims = (await prisma.weeklyClaims.findMany({
     where: {
       season: currentSeason
@@ -150,7 +148,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   return {
     builders: buildersWithFarcaster,
-    points: unclaimedTokens,
+    points: claimProofs.reduce((acc, proof) => acc + proof.amount, 0),
     bonusPartners: [],
     repos: uniqueRepos.slice(0, 3),
     claimProofs

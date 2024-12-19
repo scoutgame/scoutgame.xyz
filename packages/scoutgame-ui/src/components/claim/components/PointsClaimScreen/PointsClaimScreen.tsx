@@ -2,13 +2,25 @@
 
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { getChainById } from '@packages/blockchain/chains';
 import { getPlatform } from '@packages/mixpanel/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
+import type { ClaimInput } from '@packages/scoutgame/points/getClaimableTokensWithSources';
+import { ScoutProtocolImplementationClient } from '@packages/scoutgame/protocol/clients/ScoutProtocolImplementationClient';
+import {
+  getScoutProtocolAddress,
+  scoutProtocolChain,
+  scoutProtocolChainId
+} from '@packages/scoutgame/protocol/constants';
+import { prettyPrint } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
+import { publicActions } from 'viem';
+import { useSwitchChain, useWalletClient } from 'wagmi';
 
 import { claimPointsAction } from '../../../../actions/claimPointsAction';
+import { handleOnchainClaimAction } from '../../../../actions/handleOnchainClaimAction';
 import { revalidateClaimPointsAction } from '../../../../actions/revalidateClaimPointsAction';
 import { useUser } from '../../../../providers/UserProvider';
 
@@ -20,7 +32,8 @@ export function PointsClaimScreen({
   totalUnclaimedPoints,
   bonusPartners,
   builders,
-  repos
+  repos,
+  claimInputs
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
@@ -29,11 +42,16 @@ export function PointsClaimScreen({
     displayName: string;
   }[];
   repos: string[];
+  claimInputs?: ClaimInput[];
 }) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
+  const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction);
   const { refreshUser, user } = useUser();
   const [showModal, setShowModal] = useState(false);
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
+
+  const { data: walletClient } = useWalletClient();
+  const { switchChainAsync } = useSwitchChain();
 
   const handleClaim = async () => {
     await claimPoints();
@@ -45,6 +63,54 @@ export function PointsClaimScreen({
       await revalidateClaimPoints();
     }
   };
+
+  async function handleWalletClaim() {
+    if (walletClient?.chain.id !== scoutProtocolChainId) {
+      await switchChainAsync({
+        chainId: scoutProtocolChainId,
+        addEthereumChainParameter: {
+          ...scoutProtocolChain,
+          rpcUrls: getChainById(scoutProtocolChainId)?.rpcUrls as string[]
+        }
+      });
+      return;
+    }
+
+    const extendedClient = walletClient.extend(publicActions);
+
+    const protocolClient = new ScoutProtocolImplementationClient({
+      chain: scoutProtocolChain,
+      walletClient: extendedClient,
+      contractAddress: getScoutProtocolAddress()
+    });
+
+    await protocolClient.multiClaim({
+      args: {
+        claims: claimInputs?.map((claim) => ({
+          week: claim.week,
+          amount: BigInt(claim.amount),
+          proofs: claim.proofs.map((proof) => `${proof.toString()}`)
+        }))
+      }
+    });
+
+    // const contract = extendedClient.writeContract({
+    //   address: getScoutProtocolAddress(),
+    //   abi: protocolClient.abi,
+    //   functionName: 'claim',
+    //   args: {
+    //     // claimData: claimInputs?.map((claim) => ({
+    //     //   week: claim.week,
+    //     //   amount: BigInt(claim.amount),
+    //     //   proofs: claim.proofs
+    //     // }))
+    //   }
+    // });
+
+    await handleOnchainClaim({ wallet: walletClient.account.address.toLowerCase(), claimsProofs: claimInputs! });
+
+    refreshUser();
+  }
 
   const handleCloseModal = async () => {
     setShowModal(false);
@@ -107,7 +173,10 @@ export function PointsClaimScreen({
               </Stack>
             </Stack>
             <Box width={{ xs: 'fit-content', md: '100%' }}>
-              <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />
+              <PointsClaimButton
+                isExecuting={isExecuting}
+                handleClaim={claimInputs ? handleWalletClaim : handleClaim}
+              />
             </Box>
           </Stack>
         </>
