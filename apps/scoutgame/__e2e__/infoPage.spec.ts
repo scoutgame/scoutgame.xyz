@@ -57,6 +57,7 @@ test.describe('Info page partners', () => {
     await utils.loginAsUserId(newUser.id);
 
     await page.goto('/scout');
+    await expect(scoutPage.gloCard).toBeVisible();
     await scoutPage.gloCard.click();
 
     await expect(infoPage.gloContainer).toBeVisible();
