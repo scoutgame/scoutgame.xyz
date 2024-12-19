@@ -7,6 +7,7 @@ import type { Season } from '@packages/scoutgame/dates';
 import { getCurrentWeek } from '@packages/scoutgame/dates';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { completeQuest } from '../quests/completeQuest';
 
 import type { MintNFTParams } from './mintNFT';
 
@@ -58,7 +59,8 @@ export async function recordNftMint(
       builder: {
         select: {
           path: true,
-          displayName: true
+          displayName: true,
+          hasMoxieProfile: true
         }
       }
     }
@@ -214,6 +216,66 @@ export async function recordNftMint(
       builderId: builderNft.builderId,
       season: builderNft.season as Season
     });
+  }
+
+  const scoutNftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
+    where: {
+      scoutId
+    },
+    select: {
+      builderNftId: true,
+      builderNft: {
+        select: {
+          nftType: true
+        }
+      },
+      tokensPurchased: true
+    }
+  });
+
+  const starterPackCardPurchases = scoutNftPurchaseEvents.filter(
+    (event) => event.builderNft.nftType === 'starter_pack'
+  );
+  const fullSeasonCardPurchases = scoutNftPurchaseEvents.filter((event) => event.builderNft.nftType === 'default');
+
+  const uniqueBuilderNftIds = Array.from(new Set(scoutNftPurchaseEvents.map((event) => event.builderNftId)));
+
+  const totalStarterPackCardsPurchased = starterPackCardPurchases.reduce((acc, event) => {
+    return acc + event.tokensPurchased;
+  }, 0);
+  const totalFullSeasonCardsPurchased = fullSeasonCardPurchases.reduce((acc, event) => {
+    return acc + event.tokensPurchased;
+  }, 0);
+  const totalCardsPurchased = totalStarterPackCardsPurchased + totalFullSeasonCardsPurchased;
+
+  if (builderNft.nftType === 'starter_pack') {
+    // First starter pack card purchased
+    if (totalStarterPackCardsPurchased === 1) {
+      await completeQuest(scoutId, 'scout-starter-card');
+    }
+    // All 3 starter pack cards purchased
+    else if (totalStarterPackCardsPurchased === 3) {
+      await completeQuest(scoutId, 'scout-3-starter-cards');
+    }
+  } else if (builderNft.nftType === 'default') {
+    // First full season card purchased
+    if (totalFullSeasonCardsPurchased === 1) {
+      await completeQuest(scoutId, 'scout-full-season-card');
+    }
+    // 5 full season cards purchased
+    else if (totalFullSeasonCardsPurchased === 5) {
+      await completeQuest(scoutId, 'scout-5-builders');
+    }
+  }
+
+  // This is a new scout and thus they have entered the OP New Scout Competition
+  if (totalCardsPurchased === 1) {
+    await completeQuest(scoutId, 'enter-op-new-scout-competition');
+  }
+
+  // If the scout purchased a card of a moxie builder, mark the moxie quest as complete
+  if (builderNft.builder.hasMoxieProfile) {
+    await completeQuest(scoutId, 'scout-moxie-builder');
   }
 
   return {

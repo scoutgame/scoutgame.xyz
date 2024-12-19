@@ -68,7 +68,7 @@ export async function sendPointsForSocialQuest({
     await incrementPointsEarnedStats({
       season,
       userId: builderId,
-      builderPoints: points,
+      scoutPoints: points,
       tx: _tx
     });
   }
