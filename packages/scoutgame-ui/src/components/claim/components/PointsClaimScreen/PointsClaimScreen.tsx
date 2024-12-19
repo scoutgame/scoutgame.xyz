@@ -89,7 +89,7 @@ export function PointsClaimScreen({
         claims: claimInputs?.map((claim) => ({
           week: claim.week,
           amount: BigInt(claim.amount),
-          proofs: claim.proofs.map((proof) => `${proof.toString()}`)
+          proofs: claim.proofs
         }))
       }
     });
