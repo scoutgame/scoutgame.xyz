@@ -22,7 +22,7 @@ export async function sendPointsForMiscEvent({
   week?: ISOWeek;
   description: string;
   claimed: boolean;
-  earnedAs?: 'builder' | 'scout';
+  earnedAs?: 'scout';
   hideFromNotifications?: boolean;
   tx?: Prisma.TransactionClient;
 }) {
@@ -64,10 +64,13 @@ export async function sendPointsForMiscEvent({
     });
 
     if (earnedAs) {
+      if (earnedAs !== 'scout') {
+        throw new Error(`Invalid earnedAs: ${earnedAs}`);
+      }
       await incrementPointsEarnedStats({
         season,
         userId: builderId,
-        builderPoints: earnedAs === 'builder' ? points : 0,
+        // builderPoints: earnedAs === 'builder' ? points : 0,
         scoutPoints: earnedAs === 'scout' ? points : 0,
         tx: _tx
       });
