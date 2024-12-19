@@ -2,7 +2,7 @@
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Chip, Stack, Typography } from '@mui/material';
 import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 import Image from 'next/image';
@@ -62,7 +62,12 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
     >
       <Stack direction='row' gap={3} alignItems='center'>
         {icon}
-        <Stack gap={0.5}>
+        <Stack gap={1}>
+          <Stack direction='row' gap={0.5} alignItems='center'>
+            {quest.tags.map((tag) => (
+              <Chip size='small' key={tag} label={tag.charAt(0).toUpperCase() + tag.slice(1)} />
+            ))}
+          </Stack>
           <Stack>
             <Typography fontWeight={500} textAlign='left'>
               {quest.label}
