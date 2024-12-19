@@ -1,6 +1,5 @@
 'use server';
 
-import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { revalidatePath } from 'next/cache';
 
@@ -40,12 +39,12 @@ export const purchaseWithPointsAction = authActionClient
       })
     ]);
 
-    if (builderNft.builder.deletedAt) {
-      throw new Error('Builder has been deleted');
+    if (!builderNft) {
+      throw new Error('Builder NFT not found');
     }
 
-    if (scout.deletedAt) {
-      throw new Error('Scout has been deleted');
+    if (!scout) {
+      throw new Error('Scout not found');
     }
 
     const currentPrice = await (parsedInput.nftType === 'starter_pack'
