@@ -39,9 +39,6 @@ test.describe('Info page partners', () => {
     await utils.loginAsUserId(newUser.id);
 
     await page.goto('/scout');
-    await expect(scoutPage.carouselTabSwitch).toBeVisible();
-    await scoutPage.carouselTabSwitch.click();
-
     await expect(scoutPage.optimismPromoCard).toBeVisible();
     await scoutPage.optimismPromoCard.click();
 
@@ -52,9 +49,6 @@ test.describe('Info page partners', () => {
     await utils.loginAsUserId(newUser.id);
 
     await page.goto('/scout');
-    await expect(scoutPage.carouselTabSwitch).toBeVisible();
-    await scoutPage.carouselTabSwitch.click();
-
     await expect(scoutPage.moxiePromoCard).toBeVisible();
     await scoutPage.moxiePromoCard.click();
 
@@ -65,9 +59,6 @@ test.describe('Info page partners', () => {
     await utils.loginAsUserId(newUser.id);
 
     await page.goto('/scout');
-    await expect(scoutPage.carouselTabSwitch).toBeVisible();
-    await scoutPage.carouselTabSwitch.click();
-
     await expect(scoutPage.gloCard).toBeVisible();
     await scoutPage.gloCard.click();
 

@@ -20,10 +20,11 @@ export function ScoutPageCarousel({
   scoutId?: string;
 }) {
   const isStarterPackEnabled = starterPackBuilders.length > 0 && scoutId;
-  const nextTab = tab === 'top_builders' && isStarterPackEnabled ? 'starter_pack' : 'top_builders';
-  const text = tab === 'starter_pack' ? 'Top Builders' : 'Starter Pack';
-  const title = tab === 'starter_pack' ? 'Scout the Starter Pack!' : "Scout today's HOT Builders!";
-  const color = tab === 'starter_pack' ? 'green.main' : 'secondary';
+  const nextTab = tab === 'starter_pack' ? 'top_builders' : 'starter_pack';
+  const text = tab === 'starter_pack' && isStarterPackEnabled ? 'Top Builders' : 'Starter Pack';
+  const title =
+    tab === 'starter_pack' && isStarterPackEnabled ? 'Scout the Starter Pack!' : "Scout today's HOT Builders!";
+  const color = tab === 'starter_pack' && isStarterPackEnabled ? 'green.main' : 'secondary';
 
   return (
     <Box position='relative'>
