@@ -144,7 +144,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
           ?.amount ?? 0,
       proofs: claim.proofsMap[scoutWallets[0].address.toLowerCase()] ?? []
     }))
-    .filter((proof) => proof.amount > 0 && proof.proofs.length > 0);
+    .filter((proof) => proof.amount > 0 && proof.proofs.length > 0 && !claimedWeeks.includes(proof.week));
 
   return {
     builders: buildersWithFarcaster,
