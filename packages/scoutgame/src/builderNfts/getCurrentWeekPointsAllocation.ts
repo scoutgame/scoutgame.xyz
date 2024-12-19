@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 export const pointsPerActiveBuilder = 2_500;
 
 export async function getCurrentWeekPointsAllocation({ week }: { week: string }) {
-  if (typeof week !== 'string' || !week.match(/^\d{4}-W\d{2}$/)) {
+  if (typeof week !== 'string') {
     throw new InvalidInputError('Invalid week format');
   }
 
