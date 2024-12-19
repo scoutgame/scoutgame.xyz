@@ -33,8 +33,8 @@ export async function processGemsPayout(
     return;
   }
 
-  const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints } =
-    await getWeeklyPointsPoolAndBuilders({ week });
+  const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints, nftPurchaseEvents } =
+    await getWeeklyPointsPoolAndBuilders({ week, season });
 
   scoutgameMintsLogger.debug(`Allocation: ${weeklyAllocatedPoints} -- Total points for week ${week}: ${totalPoints}`, {
     topWeeklyBuilders: topWeeklyBuilders.length,
@@ -55,7 +55,8 @@ export async function processGemsPayout(
         week,
         season,
         normalisationFactor,
-        weeklyAllocatedPoints
+        weeklyAllocatedPoints,
+        nftPurchaseEvents
       });
     } catch (error) {
       scoutgameMintsLogger.error(`Error processing scout points payout for builder ${builder.id}: ${error}`);
