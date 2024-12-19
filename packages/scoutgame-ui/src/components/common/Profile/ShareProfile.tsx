@@ -3,19 +3,36 @@
 import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
 import ShareIcon from '@mui/icons-material/Share';
 import { IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
+import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
+
+import { useUser } from '../../../providers/UserProvider';
 
 export function ShareProfile({ userPath }: { userPath: string }) {
   const origin = window.location.origin;
   const profileUrl = `${origin}/u/${userPath}`;
   const shareMessage = `Discover my profile on Scout Game: ${profileUrl}`;
   const [isCopied, setIsCopied] = useState(false);
+  const { refreshUser, user } = useUser();
   const [anchorElShare, setAnchorElShare] = useState<HTMLElement | null>(null);
+  const { execute, isExecuting } = useAction(completeQuestAction, {
+    onSuccess: () => {
+      refreshUser();
+    }
+  });
 
   const handleOpenShareMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElShare(event.currentTarget);
+    if (!isExecuting) {
+      if (user?.builderStatus === null) {
+        execute({ questType: 'share-scout-profile' });
+      } else {
+        execute({ questType: 'share-builder-profile' });
+      }
+    }
   };
 
   const handleCloseShareMenu = () => {

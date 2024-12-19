@@ -1,7 +1,10 @@
 import { Typography, Stack, IconButton } from '@mui/material';
+import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
 import Image from 'next/image';
+import { useAction } from 'next-safe-action/hooks';
 
 import { useMdScreen } from '../../../../../hooks/useMediaScreens';
+import { useUser } from '../../../../../providers/UserProvider';
 
 type ShareMessageProps = {
   totalUnclaimedPoints: number;
@@ -14,10 +17,20 @@ type ShareMessageProps = {
 
 export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'>) {
   const isMd = useMdScreen();
+  const { refreshUser } = useUser();
+
+  const { execute, isExecuting } = useAction(completeQuestAction, {
+    onSuccess: () => {
+      refreshUser();
+    }
+  });
 
   const handleShare = (platform: 'x' | 'telegram' | 'warpcast') => {
     const shareUrl = getShareMessage({ ...props, platform });
     window.open(shareUrl, '_blank');
+    if (!isExecuting) {
+      execute({ questType: 'share-weekly-claim' });
+    }
   };
 
   const size = !isMd ? 30 : 42.5;
@@ -35,7 +48,7 @@ export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'
       }}
     >
       <Typography variant={isMd ? 'h6' : 'subtitle1'} color='#000' fontWeight='bold'>
-        Share your win!
+        Share your win and earn 10 points!
       </Typography>
       <Stack flexDirection='row' justifyContent='center'>
         <IconButton onClick={() => handleShare('x')}>
