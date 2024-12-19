@@ -36,6 +36,7 @@ export async function ScoutPageCarouselContainer({ tab }: { tab: string }) {
       builders={builders}
       starterPackBuilders={starterPackBuilders}
       remainingStarterCards={remainingStarterCards}
+      scoutId={scoutId}
     />
   );
 }

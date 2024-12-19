@@ -10,14 +10,16 @@ export function ScoutPageCarousel({
   builders,
   starterPackBuilders,
   remainingStarterCards,
-  tab
+  tab,
+  scoutId
 }: {
   builders: BuilderInfo[];
   starterPackBuilders: StarterPackBuilder[];
   remainingStarterCards: number;
   tab: string;
+  scoutId?: string;
 }) {
-  const isStarterPackEnabled = starterPackBuilders.length > 0;
+  const isStarterPackEnabled = starterPackBuilders.length > 0 && scoutId;
   const nextTab = tab === 'top_builders' && isStarterPackEnabled ? 'starter_pack' : 'top_builders';
   const text = tab === 'starter_pack' ? 'Top Builders' : 'Starter Pack';
   const title = tab === 'starter_pack' ? 'Scout the Starter Pack!' : "Scout today's HOT Builders!";
@@ -25,24 +27,27 @@ export function ScoutPageCarousel({
 
   return (
     <Box position='relative'>
-      <Box width='100%' display='flex' justifyContent='flex-end'>
-        <Box
-          component={Link}
-          href={{ query: { carousel: nextTab } }}
-          replace={true}
-          prefetch={false}
-          shallow={true}
-          sx={{ position: { md: 'absolute' }, right: 0, top: 18 }}
-        >
-          <Typography component='span' sx={{ textDecoration: 'underline' }}>
-            {text}
-          </Typography>
+      {isStarterPackEnabled && (
+        <Box width='100%' display='flex' justifyContent='flex-end'>
+          <Box
+            data-test='carousel-tab-switch'
+            component={Link}
+            href={{ query: { carousel: nextTab } }}
+            replace={true}
+            prefetch={false}
+            shallow={true}
+            sx={{ position: { md: 'absolute' }, right: 0, top: 18 }}
+          >
+            <Typography component='span' sx={{ textDecoration: 'underline' }}>
+              {text}
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
       <Typography variant='h5' color={color} textAlign='center' fontWeight='bold' mb={2} mt={2}>
         {title}
       </Typography>
-      {tab === 'starter_pack' ? (
+      {tab === 'starter_pack' && isStarterPackEnabled ? (
         <StarterPackCarousel builders={starterPackBuilders} remainingStarterCards={remainingStarterCards} />
       ) : (
         <BuildersCarousel builders={builders} showPromoCards />

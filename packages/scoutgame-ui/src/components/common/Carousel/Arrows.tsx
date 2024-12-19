@@ -25,7 +25,7 @@ const defaultSx: IconButtonProps['sx'] = {
 export function NextArrow({ sx, ...props }: IconButtonProps) {
   const combinedSx = { ...defaultSx, ...sx };
   return (
-    <IconButton {...props} sx={{ right: '-10px', ...combinedSx }}>
+    <IconButton data-test='carousel-next-arrow' {...props} sx={{ right: '-10px', ...combinedSx }}>
       <ChevronRightIcon color='secondary' />
     </IconButton>
   );
@@ -34,7 +34,7 @@ export function NextArrow({ sx, ...props }: IconButtonProps) {
 export function PrevArrow({ sx, ...props }: IconButtonProps) {
   const combinedSx = { ...defaultSx, ...sx };
   return (
-    <IconButton {...props} sx={{ left: '-10px', ...combinedSx }}>
+    <IconButton data-test='carousel-prev-arrow' {...props} sx={{ left: '-10px', ...combinedSx }}>
       <ChevronLeftIcon color='secondary' />
     </IconButton>
   );
