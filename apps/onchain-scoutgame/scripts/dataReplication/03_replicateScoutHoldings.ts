@@ -11,6 +11,43 @@ validateIsNotProductionDatabase();
 
 const realBuilderNftContract = '0x743ec903FE6D05E73b19a6DB807271bb66100e83';
 
+async function fundScouts() {
+  const tokenContract = getScoutTokenERC20Contract();
+
+  const minBalance = BigInt(10000) * BigInt(10**18); // 10,000 with 18 decimals
+
+  for (const scout of scouts) {
+    const scoutWallet = scout.wallets[0].address;
+
+    log.info(`Checking balance for scout ${scout.id} at ${scoutWallet}`);
+
+    const currentBalance = await tokenContract.balanceOf({
+      args: {
+        account: scoutWallet
+      }
+    });
+
+    log.info(`Current balance: ${currentBalance / BigInt(10**18)}`);
+
+    if (currentBalance < minBalance) {
+      const amountToSend = minBalance - currentBalance;
+      
+      log.info(`Transferring ${amountToSend} tokens to scout ${scout.id}`);
+
+      await tokenContract.transfer({
+        args: {
+          to: scoutWallet,
+          value: amountToSend
+        }
+      });
+
+      log.info(`Successfully transferred ${amountToSend / BigInt(10**18)} tokens to scout ${scout.id}`);
+    } else {
+      log.info(`Scout ${scout.id} already has sufficient balance: ${currentBalance}`);
+    }
+  }
+}
+
 async function replicateScoutHoldings() {
   const builderScoutedEvents = await getBuilderScoutedEvents({
     contractAddress: realBuilderNftContract,
@@ -237,4 +274,11 @@ async function replicateScoutHoldings() {
   }
 }
 
-replicateScoutHoldings();
+async function script() {
+  // await replicateScoutHoldings();
+  await fundScouts();
+}
+
+
+script();
+

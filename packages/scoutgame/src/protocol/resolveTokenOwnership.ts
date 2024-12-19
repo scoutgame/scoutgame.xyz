@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
+import { baseSepolia, optimism } from 'viem/chains';
 
 import { getTransferSingleWithBatchMerged } from '../builderNfts/accounting/getTransferSingleWithBatchMerged';
 import type { ISOWeek } from '../dates';
@@ -93,7 +94,8 @@ export async function resolveTokenOwnership({
   const lastBlock = await getLastBlockOfWeek({ week, chainId });
 
   const allEvents = await getTransferSingleWithBatchMerged({
-    fromBlock: 1,
+    // These from number correspond to the earliest activity ranges for our NFTs
+    fromBlock: chainId === baseSepolia.id ? 19_000_000 : chainId === optimism.id ? 126_000_000 : 1,
     toBlock: lastBlock,
     chainId,
     contractAddress
