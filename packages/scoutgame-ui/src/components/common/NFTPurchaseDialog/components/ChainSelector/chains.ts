@@ -1,4 +1,5 @@
 import { useTestnets } from '@packages/scoutgame/builderNfts/constants';
+import { scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import {
@@ -82,7 +83,7 @@ export const chainOptionsTestnet: ChainOption[] = [
   }
 ];
 
-type AvailableCurrency = 'ETH' | 'USDC';
+type AvailableCurrency = 'ETH' | 'USDC' | 'SCOUT';
 
 export type ChainWithCurrency = ChainOption & { currency: AvailableCurrency };
 
@@ -91,6 +92,10 @@ export type SelectedPaymentOption = { chainId: number; currency: AvailableCurren
 export function getCurrencyContract({ currency, chainId }: SelectedPaymentOption): Address {
   if (currency === 'ETH') {
     return ETH_NATIVE_ADDRESS;
+  }
+
+  if (currency === 'SCOUT') {
+    return scoutTokenErc20ContractAddress();
   }
 
   return (getChainOptions({ useTestnets }).find((chain) => chain.id === chainId)?.usdcAddress || '') as Address;

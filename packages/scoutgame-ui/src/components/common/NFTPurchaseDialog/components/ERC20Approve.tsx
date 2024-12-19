@@ -14,6 +14,7 @@ type ERC20ApproveButtonProps = {
   chainId: number;
   erc20Address: Address;
   decimals?: number;
+  currency?: string;
 };
 
 export function ERC20ApproveButton({
@@ -23,7 +24,8 @@ export function ERC20ApproveButton({
   erc20Address,
   spender,
   // Default to decimals for USDC
-  decimals = 6
+  decimals = 6,
+  currency = 'USDC'
 }: ERC20ApproveButtonProps) {
   const amountToApprove = amount ? amount + amount / BigInt(50) : undefined;
 
@@ -57,10 +59,10 @@ export function ERC20ApproveButton({
           disabled={isApprovingSpender}
           data-test='approve-spending-nft-purchase-button'
         >
-          {isApprovingSpender ? 'Approving...' : `Approve ${displayAmount} USDC`}
+          {isApprovingSpender ? 'Approving...' : `Approve ${displayAmount} ${currency}`}
         </LoadingButton>
         <Typography sx={{ mb: 1 }} variant='caption'>
-          You must approve the USDC spend before you can mint an NFT
+          You must approve the {currency} spend before you can mint an NFT
         </Typography>
       </Stack>
     </div>

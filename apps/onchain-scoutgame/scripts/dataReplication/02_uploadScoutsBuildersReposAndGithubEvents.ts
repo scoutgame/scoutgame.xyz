@@ -135,7 +135,7 @@ async function uploadScoutsBuildersReposAndGithubEvents() {
               contractAddress: scoutProtocolBuilderNftContractAddress(),
               tokenId: Number(builderTokenId),
               // Using scout token, so we multiply by 10 vs USDC. We then remove the 6 decimals as USDC has 6 decimals, and trying to store the number with 18 decimals will cause overflows
-              currentPrice: (BigInt(builderNft.currentPrice) * BigInt(10) / BigInt(10e6))
+              currentPrice: (BigInt(builderNft.currentPrice) * BigInt(10) / BigInt(1e6))
             }))
           }
         },

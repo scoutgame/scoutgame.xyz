@@ -43,8 +43,15 @@ export function getScoutProtocolBuilderNFTContract() {
   return builderNFTContract;
 }
 
+export function scoutTokenErc20ContractAddress() {
+  return (
+    (env('SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS') as Address) ||
+    (process.env.REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS as Address)
+  );
+}
+
 export function getScoutTokenERC20Contract() {
-  const contractAddress = process.env.REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS as Address;
+  const contractAddress = scoutTokenErc20ContractAddress();
 
   if (!contractAddress) {
     throw new Error('REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS is not set');
