@@ -9,9 +9,6 @@ import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
 import { Carousel } from '../../common/Carousel/Carousel';
 import { StarterPackInfo } from '../StarterPackCarousel/StarterPackInfo';
 
-import 'swiper/css';
-import 'swiper/css/autoplay';
-
 export function StarterPackCarousel({
   builders,
   remainingStarterCards
