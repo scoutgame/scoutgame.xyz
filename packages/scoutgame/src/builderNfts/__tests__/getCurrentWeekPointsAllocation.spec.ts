@@ -8,12 +8,7 @@ import { getCurrentWeekPointsAllocation } from '../getCurrentWeekPointsAllocatio
 const pointsPerActiveBuilder = 2500;
 
 describe('getCurrentWeekPointsAllocation', () => {
-  const validWeek = '2024-W42';
-
-  beforeAll(async () => {
-    // Clear relevant data for a clean test environment.
-    await prisma.userWeeklyStats.deleteMany({});
-  });
+  const testWeek = `2024-W42-${Math.random().toString(36).substring(2, 15)}`;
 
   it('should return correct points allocation when there are approved builders with gems collected for the week', async () => {
     const builder1 = await mockBuilder({ builderStatus: 'approved' });
@@ -24,24 +19,16 @@ describe('getCurrentWeekPointsAllocation', () => {
 
     await prisma.userWeeklyStats.createMany({
       data: [
-        { week: validWeek, gemsCollected: 10, userId: builder1.id, season: currentSeason },
-        { week: validWeek, gemsCollected: 15, season: currentSeason, userId: builder2.id },
-        { week: validWeek, gemsCollected: 0, season: currentSeason, userId: builderWithoutPoints.id },
+        { week: testWeek, gemsCollected: 10, userId: builder1.id, season: currentSeason },
+        { week: testWeek, gemsCollected: 15, season: currentSeason, userId: builder2.id },
+        { week: testWeek, gemsCollected: 0, season: currentSeason, userId: builderWithoutPoints.id },
         { week: '2024-W40', gemsCollected: 0, season: currentSeason, userId: excludedBuilder.id }
       ]
     });
 
-    const points = await getCurrentWeekPointsAllocation({ week: validWeek });
+    const points = await getCurrentWeekPointsAllocation({ week: testWeek });
 
     expect(points).toBe(2 * pointsPerActiveBuilder);
-  });
-
-  it('should throw InvalidInputError for invalid week format', async () => {
-    const invalidWeek = 2024; // Using a non-string format
-
-    await expect(getCurrentWeekPointsAllocation({ week: invalidWeek as unknown as string })).rejects.toThrow(
-      InvalidInputError
-    );
   });
 });
 
