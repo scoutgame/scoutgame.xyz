@@ -5,14 +5,13 @@ import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material
 import { getChainById } from '@packages/blockchain/chains';
 import { getPlatform } from '@packages/mixpanel/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
-import type { ClaimInput } from '@packages/scoutgame/points/getClaimableTokensWithSources';
+import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { ScoutProtocolImplementationClient } from '@packages/scoutgame/protocol/clients/ScoutProtocolImplementationClient';
 import {
   getScoutProtocolAddress,
   scoutProtocolChain,
   scoutProtocolChainId
 } from '@packages/scoutgame/protocol/constants';
-import { prettyPrint } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
@@ -23,6 +22,7 @@ import { claimPointsAction } from '../../../../actions/claimPointsAction';
 import { handleOnchainClaimAction } from '../../../../actions/handleOnchainClaimAction';
 import { revalidateClaimPointsAction } from '../../../../actions/revalidateClaimPointsAction';
 import { useUser } from '../../../../providers/UserProvider';
+import { WalletLogin } from '../../../common/WalletLogin/WalletLogin';
 
 import { BonusPartnersDisplay } from './BonusPartnersDisplay';
 import { PointsClaimButton } from './PointsClaimButton';
@@ -33,7 +33,7 @@ export function PointsClaimScreen({
   bonusPartners,
   builders,
   repos,
-  claimInputs
+  claimData
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
@@ -42,7 +42,7 @@ export function PointsClaimScreen({
     displayName: string;
   }[];
   repos: string[];
-  claimInputs?: ClaimInput[];
+  claimData?: ClaimData;
 }) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
   const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction);
@@ -86,7 +86,7 @@ export function PointsClaimScreen({
 
     await protocolClient.multiClaim({
       args: {
-        claims: claimInputs?.map((claim) => ({
+        claims: claimData?.weeklyProofs?.map((claim) => ({
           week: claim.week,
           amount: BigInt(claim.amount),
           proofs: claim.proofs
@@ -107,7 +107,10 @@ export function PointsClaimScreen({
     //   }
     // });
 
-    await handleOnchainClaim({ wallet: walletClient.account.address.toLowerCase(), claimsProofs: claimInputs! });
+    await handleOnchainClaim({
+      wallet: walletClient.account.address.toLowerCase(),
+      claimsProofs: claimData!.weeklyProofs
+    });
 
     refreshUser();
   }
@@ -116,6 +119,8 @@ export function PointsClaimScreen({
     setShowModal(false);
     await revalidateClaimPoints();
   };
+
+  const connectedAddress = walletClient?.account.address.toLowerCase();
 
   const platform = getPlatform();
 
@@ -173,10 +178,12 @@ export function PointsClaimScreen({
               </Stack>
             </Stack>
             <Box width={{ xs: 'fit-content', md: '100%' }}>
-              <PointsClaimButton
-                isExecuting={isExecuting}
-                handleClaim={claimInputs ? handleWalletClaim : handleClaim}
-              />
+              {claimData && connectedAddress !== claimData.address.toLowerCase() ? (
+                <WalletLogin />
+              ) : (
+                <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+              )}
+              {!claimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
             </Box>
           </Stack>
         </>

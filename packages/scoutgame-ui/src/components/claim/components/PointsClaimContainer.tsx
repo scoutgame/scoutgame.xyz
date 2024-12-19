@@ -1,4 +1,3 @@
-import env from '@beam-australia/react-env';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
 import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
@@ -34,7 +33,7 @@ export async function PointsClaimContainer() {
 
   const { bonusPartners, points, builders, repos } = data;
 
-  const claimInputs = isOnchainApp ? (data as UnclaimedTokensSource).claimProofs : undefined;
+  const claimData = isOnchainApp ? (data as UnclaimedTokensSource).claimData : undefined;
 
   return (
     <>
@@ -43,7 +42,7 @@ export async function PointsClaimContainer() {
         bonusPartners={bonusPartners}
         builders={builders}
         repos={repos}
-        claimInputs={claimInputs}
+        claimData={claimData}
       />
       {points === 0 ? null : (
         <Suspense fallback={<LoadingTable />}>

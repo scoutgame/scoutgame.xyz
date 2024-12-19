@@ -1,9 +1,9 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
 import { getScoutProtocolAddress, scoutProtocolChainId } from '../../protocol/constants';
-import { builderNftChain } from '../constants';
 
 import { type BlockRange } from './convertBlockRange';
 
@@ -50,8 +50,8 @@ export function getTokensClaimedEvents({ address }: BlockRange & { address: Addr
   return getPublicClient(scoutProtocolChainId)
     .getLogs({
       address: getScoutProtocolAddress(),
-      event: tokensClaimedAbi,
-      args: { user: address }
+      event: tokensClaimedAbi
+      // args: { user: getAddress(address) }
     })
     .then((logs) =>
       parseEventLogs({
@@ -61,3 +61,7 @@ export function getTokensClaimedEvents({ address }: BlockRange & { address: Addr
       })
     );
 }
+
+getTokensClaimedEvents({
+  address: '0x5058EF8Ec746d82D419e905cA82a29EB2E46FF14'
+}).then(prettyPrint);

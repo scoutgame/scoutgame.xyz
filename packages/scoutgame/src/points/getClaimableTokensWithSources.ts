@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
-import { prettyPrint } from '@packages/utils/strings';
 import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
 
@@ -18,8 +17,13 @@ export type ClaimInput = {
   proofs: string[];
 };
 
+export type ClaimData = {
+  address: Address;
+  weeklyProofs: ClaimInput[];
+};
+
 export type UnclaimedTokensSource = UnclaimedPointsSource & {
-  claimProofs: ClaimInput[];
+  claimData: ClaimData;
 };
 
 export async function getClaimableTokensWithSources(userId: string): Promise<UnclaimedTokensSource> {
@@ -151,6 +155,9 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     points: claimProofs.reduce((acc, proof) => acc + proof.amount, 0),
     bonusPartners: [],
     repos: uniqueRepos.slice(0, 3),
-    claimProofs
+    claimData: {
+      address: scoutWallets[0].address as Address,
+      weeklyProofs: claimProofs
+    }
   };
 }

@@ -34,7 +34,7 @@
     "onchain-scoutgame:e2e:ci": "npx dotenv -e .env.test.local -- npm run test:e2e -w=apps/onchain-scoutgame",
     "onchain-scoutgame:start:test": "npm run start:test -w=apps/onchain-scoutgame",
     "onchain-scoutgame:start:test:ci": "npm run start:test:ci -w=apps/onchain-scoutgame",
-    "onchain-scoutgame": "dotenv -e .env.local -- npm start -w apps/onchain-scoutgame",
+    "onchain-scoutgame": "npx react-env --path .env.local --dest ./apps/onchain-scoutgame/public -- npm run start --workspace=apps/onchain-scoutgame",
     "cron:test": "dotenv -e .env.test.local -- npm test -w apps/cron",
     "cron:staging": "npm run start:prod:node18 -w apps/cron",
     "cron:prod": "npm run start:prod:node18 -w apps/cron",

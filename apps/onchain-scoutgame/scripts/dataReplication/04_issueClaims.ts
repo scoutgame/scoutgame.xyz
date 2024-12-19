@@ -1,10 +1,11 @@
 import { log } from "@charmverse/core/log";
 import { currentSeason, getAllISOWeeksFromSeasonStart, getCurrentWeek } from "@packages/scoutgame/dates";
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from "@packages/scoutgame/protocol/constants";
-import { calculateWeeklyClaims, generateWeeklyClaims } from "@packages/scoutgame/protocol/generateWeeklyClaims";
+import { generateWeeklyClaims } from "@packages/scoutgame/protocol/generateWeeklyClaims";
 import { resolveTokenOwnership } from "@packages/scoutgame/protocol/resolveTokenOwnership";
 import { validateIsNotProductionDatabase } from "./utils";
 import { prettyPrint } from "@packages/utils/strings";
+import { calculateWeeklyClaims } from "@packages/scoutgame/protocol/calculateWeeklyClaims";
 
 validateIsNotProductionDatabase()
 
