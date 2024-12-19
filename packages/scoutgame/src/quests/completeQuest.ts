@@ -20,7 +20,6 @@ export async function completeQuest(userId: string, questType: QuestType) {
     log.info('Quest already completed', { questType, userId });
     return;
   }
-
   await sendPointsForSocialQuest({
     builderId: userId,
     points,

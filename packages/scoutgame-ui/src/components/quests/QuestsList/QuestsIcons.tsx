@@ -5,6 +5,17 @@ import Image from 'next/image';
 import type { ReactNode } from 'react';
 
 const ScoutBinocularsIcon = <Image src='/images/scout-binoculars.svg' alt='Scout binoculars' width={34} height={34} />;
+const BuilderDogIcon = (
+  <div style={{ position: 'relative', width: 34, height: 34 }}>
+    <Image
+      src='/images/profile/builder-dog.png'
+      alt='Builder dog'
+      width={60}
+      height={60}
+      style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+    />
+  </div>
+);
 
 export const QuestIcon: Record<QuestType, ReactNode> = {
   'follow-x-account': <XIcon fontSize='large' />,
@@ -33,5 +44,13 @@ export const QuestIcon: Record<QuestType, ReactNode> = {
       <Image src='/images/moxie.svg' alt='Scout moxie' width={20} height={20} />
     </div>
   ),
-  'enter-op-new-scout-competition': <Image src='/images/crypto/op.png' alt='OP' width={34} height={34} />
+  'enter-op-new-scout-competition': <Image src='/images/crypto/op.png' alt='OP' width={34} height={34} />,
+  'score-first-commit': BuilderDogIcon,
+  'score-first-pr': BuilderDogIcon,
+  'score-streak': BuilderDogIcon,
+  'first-repo-contribution': BuilderDogIcon,
+  'contribute-celo-repo': <Image src='/images/crypto/celo.png' alt='Celo' width={34} height={34} />,
+  'contribute-game7-repo': <Image src='/images/crypto/game7.png' alt='Game7' width={34} height={34} />,
+  'contribute-lit-repo': <Image src='/images/crypto/lit.png' alt='Lit' width={34} height={34} />,
+  'share-builder-profile': BuilderDogIcon
 };

@@ -21,7 +21,15 @@ export type QuestType =
   | 'scout-share-builder'
   | 'scout-moxie-builder'
   | 'share-weekly-claim'
-  | 'share-scout-profile';
+  | 'share-scout-profile'
+  | 'score-first-commit'
+  | 'score-first-pr'
+  | 'score-streak'
+  | 'first-repo-contribution'
+  | 'share-builder-profile'
+  | 'contribute-celo-repo'
+  | 'contribute-game7-repo'
+  | 'contribute-lit-repo';
 // | 'link-farcaster-telegram-account';
 
 export type QuestInfo = {
@@ -121,6 +129,68 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/profile?tab=scout-build',
     internal: true,
     tags: ['scout']
+  },
+  'score-first-commit': {
+    label: 'Score Your First Commit',
+    points: 10,
+    link: '/info/builders',
+    internal: true,
+    tags: ['builder']
+  },
+  'score-first-pr': {
+    label: 'Score Your First PR',
+    points: 15,
+    link: '/info/builders',
+    internal: true,
+    tags: ['builder']
+  },
+  'score-streak': {
+    label: 'Score a Streak',
+    points: 20,
+    link: '/info/builders',
+    internal: true,
+    tags: ['builder']
+  },
+  'first-repo-contribution': {
+    label: 'First Contribution to a Repo',
+    points: 25,
+    link: '/info/builders',
+    internal: true,
+    tags: ['builder']
+  },
+  'share-builder-profile': {
+    label: 'Share a Builder Profile',
+    points: 25,
+    link: '/profile?tab=scout-build',
+    internal: true,
+    tags: ['builder']
+  },
+  'contribute-celo-repo': {
+    label: 'Fix a Celo Issue',
+    points: 25,
+    rewards: '50-450 cUSD',
+    partner: 'Celo',
+    link: '/info/partner-rewards/celo',
+    internal: true,
+    tags: ['builder', 'partners']
+  },
+  'contribute-game7-repo': {
+    label: 'Contribute to a Game7 Repo',
+    points: 25,
+    rewards: '$250',
+    partner: 'Game7',
+    link: '/info/partner-rewards/game7',
+    internal: true,
+    tags: ['builder', 'partners']
+  },
+  'contribute-lit-repo': {
+    label: 'Merge a PR in the Lit Protocol Repo',
+    points: 25,
+    rewards: '$50–$250 USDC',
+    partner: 'Lit',
+    link: '/info/partner-rewards/lit',
+    internal: true,
+    tags: ['builder', 'partners']
   }
   // 'link-farcaster-telegram-account': {
   //   label: 'Link your account with Farcaster or Telegram',

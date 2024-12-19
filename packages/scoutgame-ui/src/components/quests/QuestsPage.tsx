@@ -1,4 +1,3 @@
-import type { ScoutSocialQuest } from '@charmverse/core/prisma-client';
 import { Box, Grid2 as Grid } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
@@ -20,8 +19,8 @@ export function QuestsPage({
   friends: SessionUser[];
 }) {
   return (
-    <Grid container spacing={1} data-test='quest-page' minHeight='100%'>
-      <Grid size={{ xs: 12, md: 8 }}>
+    <Grid container spacing={1} data-test='quest-page' overflow='hidden'>
+      <Grid size={{ xs: 12, md: 8 }} sx={{ height: 'calc(100vh - 60px)', overflowY: 'auto' }}>
         <Box maxWidth='500px' margin='0 auto'>
           <Box sx={{ px: 5 }}>
             <DailyClaimGallery dailyClaims={dailyClaims} />
@@ -31,8 +30,8 @@ export function QuestsPage({
           </Box>
         </Box>
       </Grid>
-      <Grid size={{ xs: 0, md: 4 }} data-test='quest-sidebar'>
-        <Hidden mdDown height='100%' bgcolor='black.main' px={1} borderLeft='4px solid' borderColor='background.light'>
+      <Grid size={{ xs: 0, md: 4 }} data-test='quest-sidebar' sx={{ height: 'calc(100vh - 60px)', overflowY: 'auto' }}>
+        <Hidden mdDown bgcolor='black.main' px={1}>
           <FriendlyQuest friends={friends} title='Friendly Quest' />
         </Hidden>
       </Grid>
