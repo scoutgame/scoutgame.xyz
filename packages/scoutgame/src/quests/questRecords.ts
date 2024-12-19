@@ -5,6 +5,7 @@ type QuestRecord = {
   partner?: string;
   rewards?: string;
   internal?: boolean;
+  totalSteps?: number;
 };
 
 export type QuestType =
@@ -25,6 +26,7 @@ export type QuestType =
 export type QuestInfo = {
   type: QuestType;
   completed: boolean;
+  completedSteps: number | null;
 } & QuestRecord;
 
 export const questsRecord: Record<QuestType, QuestRecord> = {
@@ -41,8 +43,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     )}`
   },
   'invite-friend': {
-    points: 20,
-    rewards: 'Referral rewards',
+    points: 5,
     link: '/quests',
     label: 'Refer a Friend'
   },
@@ -56,7 +57,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Scout All 3 Starter Cards',
     points: 15,
     link: '/builders',
-    internal: true
+    internal: true,
+    totalSteps: 3
   },
   'scout-full-season-card': {
     label: 'Scout a Full Season Card',
@@ -78,7 +80,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     partner: 'GLO',
     rewards: 'GLO (up to 5)',
     link: '/builders',
-    internal: true
+    internal: true,
+    totalSteps: 5
   },
   'scout-share-builder': {
     label: 'Scout & Share a Builder',

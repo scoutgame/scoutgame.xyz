@@ -238,8 +238,6 @@ export async function recordNftMint(
   );
   const fullSeasonCardPurchases = scoutNftPurchaseEvents.filter((event) => event.builderNft.nftType === 'default');
 
-  const uniqueBuilderNftIds = Array.from(new Set(scoutNftPurchaseEvents.map((event) => event.builderNftId)));
-
   const totalStarterPackCardsPurchased = starterPackCardPurchases.reduce((acc, event) => {
     return acc + event.tokensPurchased;
   }, 0);
@@ -247,6 +245,7 @@ export async function recordNftMint(
     return acc + event.tokensPurchased;
   }, 0);
   const totalCardsPurchased = totalStarterPackCardsPurchased + totalFullSeasonCardsPurchased;
+  const uniqueCardPurchases = new Set(scoutNftPurchaseEvents.map((event) => event.builderNftId)).size;
 
   if (builderNft.nftType === 'starter_pack') {
     // First starter pack card purchased
@@ -262,10 +261,11 @@ export async function recordNftMint(
     if (totalFullSeasonCardsPurchased === 1) {
       await completeQuest(scoutId, 'scout-full-season-card');
     }
-    // 5 full season cards purchased
-    else if (totalFullSeasonCardsPurchased === 5) {
-      await completeQuest(scoutId, 'scout-5-builders');
-    }
+  }
+
+  // 5 unique cards purchased
+  if (uniqueCardPurchases === 5) {
+    await completeQuest(scoutId, 'scout-5-builders');
   }
 
   // This is a new scout and thus they have entered the OP New Scout Competition

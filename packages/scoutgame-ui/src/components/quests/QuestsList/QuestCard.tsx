@@ -81,6 +81,28 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
               </>
             )}
           </Stack>
+          {quest.completedSteps !== null ? (
+            <Stack flexDirection='row' gap={0.5} alignItems='center'>
+              <Typography variant='body2' fontWeight={500} textAlign='left'>
+                {quest.completedSteps}
+              </Typography>
+              <Stack flexDirection='row' gap={0.5} alignItems='center' position='relative' width={150}>
+                <div
+                  style={{
+                    width: `${(quest.completedSteps / (quest.totalSteps || 1)) * 100}%`,
+                    height: 14,
+                    backgroundColor: 'white',
+                    position: 'absolute',
+                    left: 0
+                  }}
+                />
+                <div style={{ width: '100%', height: 14, border: '1px solid white', position: 'absolute', left: 0 }} />
+              </Stack>
+              <Typography variant='body2' fontWeight={500} textAlign='left'>
+                {quest.totalSteps || 1}
+              </Typography>
+            </Stack>
+          ) : null}
         </Stack>
       </Stack>
       {quest.completed ? <CheckCircleIcon color='secondary' /> : <KeyboardArrowRightIcon />}
