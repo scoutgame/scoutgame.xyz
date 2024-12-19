@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { getCurrentWeek } from '@packages/scoutgame/dates';
+import { getCurrentWeek, getPreviousWeek, currentSeason } from '@packages/scoutgame/dates';
 import { sendPointsForDailyClaim } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaim';
 import { sendPointsForDailyClaimStreak } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaimStreak';
 
@@ -8,13 +8,19 @@ export async function claimDailyReward({
   userId,
   isBonus,
   dayOfWeek,
-  week = getCurrentWeek()
+  week = getCurrentWeek(),
+  season = currentSeason
 }: {
   userId: string;
   isBonus?: boolean;
   dayOfWeek: number;
   week?: string;
+  season?: string;
 }) {
+  const validWeeks = [getCurrentWeek(), getPreviousWeek(getCurrentWeek())];
+  if (!validWeeks.includes(week)) {
+    throw new Error(`Invalid week: ${week}. Valid weeks are ${validWeeks.join(', ')}`);
+  }
   if (dayOfWeek !== 7 && isBonus) {
     throw new Error('Bonus reward can only be claimed on the last day of the week');
   }
@@ -44,7 +50,9 @@ export async function claimDailyReward({
 
     await sendPointsForDailyClaimStreak({
       builderId: userId,
-      points: 3
+      points: 3,
+      week,
+      season
     });
     trackUserAction('daily_claim_streak', {
       userId
@@ -65,7 +73,9 @@ export async function claimDailyReward({
     await sendPointsForDailyClaim({
       builderId: userId,
       points: 1,
-      dayOfWeek
+      dayOfWeek,
+      week,
+      season
     });
     trackUserAction('daily_claim', {
       userId

@@ -12,7 +12,8 @@ export const claimDailyRewardAction = authActionClient
     await claimDailyReward({
       userId: ctx.session.scoutId,
       isBonus: parsedInput.isBonus,
-      dayOfWeek: parsedInput.dayOfWeek
+      dayOfWeek: parsedInput.dayOfWeek,
+      week: parsedInput.week
     });
     revalidatePath('/quests');
   });
