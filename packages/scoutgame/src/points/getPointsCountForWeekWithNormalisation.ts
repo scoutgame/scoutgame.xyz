@@ -1,3 +1,5 @@
+import { prettyPrint } from '@packages/utils/strings';
+
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import type { LeaderboardBuilder } from '../builders/getBuildersLeaderboard';
