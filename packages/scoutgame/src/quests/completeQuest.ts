@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
@@ -16,7 +17,8 @@ export async function completeQuest(userId: string, questType: QuestType) {
   });
 
   if (quest) {
-    throw new Error('Quest already completed');
+    log.info('Quest already completed', { questType, userId });
+    return;
   }
 
   await sendPointsForSocialQuest({

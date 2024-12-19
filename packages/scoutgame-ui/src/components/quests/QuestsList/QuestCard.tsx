@@ -5,10 +5,11 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { Button, Stack, Typography } from '@mui/material';
 import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
-import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
+
+import { useUser } from '../../../providers/UserProvider';
 
 import { QuestIcon } from './QuestsIcons';
 
