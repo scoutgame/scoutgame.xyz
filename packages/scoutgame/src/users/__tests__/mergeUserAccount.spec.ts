@@ -70,7 +70,7 @@ describe('mergeUserAccount', () => {
       farcasterId: randomIntFromInterval(1, 1000000)
     });
     await Promise.all([
-      Array.from({ length: 3 }).map((_, index) =>
+      ...Array.from({ length: 3 }).map((_, index) =>
         mockNFTPurchaseEvent({
           builderId: builders[index].id,
           nftType: 'starter_pack',
@@ -90,7 +90,7 @@ describe('mergeUserAccount', () => {
     );
   });
 
-  it('should merge the profiles but retain walletENS when the selected profile is set to new', async () => {
+  it('should merge the profiles to secondary user when the selected profile is set to new', async () => {
     const primaryUser = await mockScout({
       walletENS: 'primary.eth'
     });
@@ -101,14 +101,18 @@ describe('mergeUserAccount', () => {
       avatar: 'Merged User Avatar',
       walletENS: 'merged.eth'
     });
-    await mergeUserAccount({ selectedProfile: 'new', userId: primaryUser.id, farcasterId: secondaryUser.farcasterId });
+    const { retainedUserId } = await mergeUserAccount({
+      selectedProfile: 'new',
+      userId: primaryUser.id,
+      farcasterId: secondaryUser.farcasterId
+    });
 
     const retainedUser = await prisma.scout.findUniqueOrThrow({
-      where: { id: primaryUser.id }
+      where: { id: retainedUserId }
     });
 
     // The walletENS should be retained as it was set on the primary user
-    expect(retainedUser.walletENS).toEqual('primary.eth');
+    expect(retainedUser.walletENS).toEqual('merged.eth');
     expect(retainedUser.displayName).toEqual('Merged User');
     expect(retainedUser.bio).toEqual('Merged User Bio');
     expect(retainedUser.avatar).toEqual('Merged User Avatar');
@@ -125,15 +129,18 @@ describe('mergeUserAccount', () => {
       farcasterName: 'Merged User'
     });
 
-    await mergeUserAccount({ userId: primaryUser.id, farcasterId: secondaryUser.farcasterId });
+    const { retainedUserId, mergedUserId } = await mergeUserAccount({
+      userId: primaryUser.id,
+      farcasterId: secondaryUser.farcasterId
+    });
 
     // Primary user is merged since its a scout account
     const mergedUser = await prisma.scout.findUniqueOrThrow({
-      where: { id: primaryUser.id }
+      where: { id: mergedUserId }
     });
 
     const retainedUser = await prisma.scout.findUniqueOrThrow({
-      where: { id: secondaryUser.id },
+      where: { id: retainedUserId },
       include: {
         wallets: true
       }
@@ -239,10 +246,10 @@ describe('mergeUserAccount', () => {
 
     await claimPoints({ userId: builder1.id, season: currentSeason });
 
-    await mergeUserAccount({ userId: scout1.id, farcasterId: builder1.farcasterId });
+    const { retainedUserId } = await mergeUserAccount({ userId: scout1.id, farcasterId: builder1.farcasterId });
 
     const retainedUser = await prisma.scout.findUniqueOrThrow({
-      where: { id: builder1.id },
+      where: { id: retainedUserId },
       include: {
         userSeasonStats: true
       }
@@ -265,10 +272,10 @@ describe('mergeUserAccount', () => {
     expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(4);
     expect(retainedUser.userSeasonStats[0].nftOwners).toEqual(2);
 
-    await claimPoints({ userId: retainedUser.id, season: currentSeason });
+    await claimPoints({ userId: retainedUserId, season: currentSeason });
 
     const retainedUserAfterClaim = await prisma.scout.findUniqueOrThrow({
-      where: { id: retainedUser.id },
+      where: { id: retainedUserId },
       include: {
         userSeasonStats: true
       }

@@ -1,6 +1,5 @@
 'use server';
 
-import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { revalidatePath } from 'next/cache';
 
@@ -23,18 +22,30 @@ export const purchaseWithPointsAction = authActionClient
         where: {
           builderId: parsedInput.builderId,
           season: currentSeason,
-          nftType: parsedInput.nftType
+          nftType: parsedInput.nftType,
+          builder: {
+            deletedAt: null
+          }
         }
       }),
       prisma.scout.findFirstOrThrow({
         where: {
-          id: ctx.session.scoutId
+          id: ctx.session.scoutId,
+          deletedAt: null
         },
         select: {
           currentBalance: true
         }
       })
     ]);
+
+    if (!builderNft) {
+      throw new Error('Builder NFT not found');
+    }
+
+    if (!scout) {
+      throw new Error('Scout not found');
+    }
 
     const currentPrice = await (parsedInput.nftType === 'starter_pack'
       ? builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({

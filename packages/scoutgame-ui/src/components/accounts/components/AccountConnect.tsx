@@ -84,7 +84,7 @@ export function AccountConnect({
             >
               {isMergingUserAccount
                 ? 'Merging...'
-                : connectedUser.builderStatus !== null
+                : connectedUser.builderStatus !== null || selectedProfile === 'new'
                   ? 'Merge and Logout'
                   : 'Merge'}
             </LoadingButton>

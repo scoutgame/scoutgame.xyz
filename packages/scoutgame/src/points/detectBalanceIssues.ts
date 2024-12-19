@@ -8,6 +8,9 @@ export async function detectBalanceIssues() {
     orderBy: {
       farcasterId: 'asc'
     },
+    where: {
+      deletedAt: null
+    },
     select: {
       id: true,
       farcasterId: true,
