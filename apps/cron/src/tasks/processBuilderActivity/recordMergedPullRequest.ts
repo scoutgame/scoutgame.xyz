@@ -266,6 +266,14 @@ export async function recordMergedPullRequest({
               await completeQuest(githubUser.builderId, 'score-first-pr');
               await completeQuest(githubUser.builderId, 'first-repo-contribution');
             }
+
+            if (repo.bonusPartner === 'game7') {
+              await completeQuest(githubUser.builderId, 'contribute-game7-repo');
+            } else if (repo.bonusPartner === 'lit_protocol') {
+              await completeQuest(githubUser.builderId, 'contribute-lit-repo');
+            } else if (repo.bonusPartner === 'celo') {
+              await completeQuest(githubUser.builderId, 'contribute-celo-repo');
+            }
           } catch (error) {
             log.error('Error completing quest for merged PR', { error, builderId: githubUser.builderId, activityType });
           }
