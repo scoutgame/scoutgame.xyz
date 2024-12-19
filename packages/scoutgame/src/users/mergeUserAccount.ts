@@ -38,12 +38,19 @@ export const mergeUserAccount = async ({
     }
   });
 
-  // The id of the user to retain
-  const retainedUserId = secondaryUser.builderStatus !== null ? secondaryUser.id : userId;
-
   // The id of the user to merge into the retained user
   // The merged account must not be a builder
-  const mergedUserId = secondaryUser.builderStatus === null ? secondaryUser.id : userId;
+  const mergedUserId =
+    selectedProfile === 'current'
+      ? secondaryUser.id
+      : selectedProfile === 'new'
+        ? userId
+        : secondaryUser.builderStatus === null
+          ? secondaryUser.id
+          : userId;
+
+  // The id of the user to retain
+  const retainedUserId = mergedUserId === secondaryUser.id ? userId : secondaryUser.id;
 
   const [retainedUser, mergedUser] = await Promise.all([
     prisma.scout.findUniqueOrThrow({
@@ -58,6 +65,7 @@ export const mergeUserAccount = async ({
         telegramId: true,
         deletedAt: true,
         builderStatus: true,
+        bio: true,
         nftPurchaseEvents: {
           where: {
             builderNft: {
@@ -138,6 +146,7 @@ export const mergeUserAccount = async ({
   }
 
   // If selected profile is set but one of the account is a builder throw an error
+  // When any of the accounts is a builder selectedProfile should be null
   if (selectedProfile && (mergedUser.builderStatus !== null || retainedUser.builderStatus !== null)) {
     throw new Error('Can not merge builder account profiles');
   }
@@ -147,16 +156,10 @@ export const mergeUserAccount = async ({
       const updatedUserData: Prisma.ScoutUpdateInput = {
         farcasterId: retainedUser.farcasterId || mergedUser.farcasterId,
         farcasterName: retainedUser.farcasterName || mergedUser.farcasterName,
-        telegramId: retainedUser.telegramId || mergedUser.telegramId
+        telegramId: retainedUser.telegramId || mergedUser.telegramId,
+        bio: retainedUser.bio || mergedUser.bio,
+        walletENS: retainedUser.walletENS || mergedUser.walletENS
       };
-
-      // If selected profile is set to new, merge the new profile
-      if (selectedProfile === 'new') {
-        updatedUserData.avatar = mergedUser.avatar;
-        updatedUserData.displayName = mergedUser.displayName;
-        updatedUserData.bio = mergedUser.bio;
-        updatedUserData.walletENS = retainedUser.walletENS || mergedUser.walletENS;
-      }
 
       // Detach the identities from the merged user
       await tx.scout.update({
