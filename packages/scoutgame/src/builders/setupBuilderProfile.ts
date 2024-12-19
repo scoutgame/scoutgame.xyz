@@ -130,7 +130,8 @@ export async function setupBuilderProfile({
   }
 
   if (inviteCode !== null) {
-    await approveBuilder({ builderId: unsealedUserId });
+    log.warn('Skipping builder approval for invite code', { inviteCode });
+    // await approveBuilder({ builderId: unsealedUserId });
   }
   return scout;
 }
