@@ -70,7 +70,7 @@ describe('mergeUserAccount', () => {
       farcasterId: randomIntFromInterval(1, 1000000)
     });
     await Promise.all([
-      Array.from({ length: 3 }).map((_, index) =>
+      ...Array.from({ length: 3 }).map((_, index) =>
         mockNFTPurchaseEvent({
           builderId: builders[index].id,
           nftType: 'starter_pack',
