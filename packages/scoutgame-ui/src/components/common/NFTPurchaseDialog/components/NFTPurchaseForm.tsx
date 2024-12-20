@@ -102,7 +102,11 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { user, refreshUser } = useUser();
   const builderId = builder.id;
   const initialQuantities = [1, 11, 111];
-  const pricePerNft = builder.price ? convertCostToPoints(builder.price).toLocaleString() : '';
+  const pricePerNft = builder.price
+    ? platform === 'onchain_webapp'
+      ? builder.price
+      : convertCostToPoints(builder.price).toLocaleString()
+    : '';
   const { address, chainId } = useAccount();
   const { error: addressError } = useUserWalletAddress(address);
   const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
@@ -320,7 +324,10 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           value: _value
         },
         txMetadata: {
-          contractAddress: getBuilderContractAddressForNftType(builder.nftType),
+          contractAddress:
+            platform === 'onchain_webapp'
+              ? scoutProtocolBuilderNftContractAddress()
+              : getBuilderContractAddressForNftType(builder.nftType),
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,
           builderTokenId: Number(builderTokenId),

@@ -8,6 +8,7 @@ import {  validateIsNotProductionDatabase } from "./utils";
 
 import { getScoutProtocolBuilderNFTContract, scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from "@packages/scoutgame/protocol/constants";
 import { refreshUserStats } from "@packages/scoutgame/refreshUserStats";
+import { refreshScoutProtocolBuilderNftPrice } from "@packages/scoutgame/builderNfts/refreshScoutProtocolBuilderNftPrice";
 import { prettyPrint } from "@packages/utils/strings";
 import { currentSeason } from "@packages/scoutgame/dates";
 import { builderEvents } from './cache/builderEvents';
@@ -46,7 +47,7 @@ async function resetData() {
 
 async function uploadScoutsBuildersReposAndGithubEvents() {
 
-  await resetData();
+  // await resetData();
 
   const startTokenId = 1;
 

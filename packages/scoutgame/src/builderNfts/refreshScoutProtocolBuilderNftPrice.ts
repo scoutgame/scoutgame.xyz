@@ -2,9 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { BuilderNft } from '@charmverse/core/prisma';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
-import { prettyPrint } from '@packages/utils/strings';
 
-import { currentSeason } from '../dates';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { getScoutProtocolBuilderNFTContract } from '../protocol/constants';
 
@@ -27,8 +25,6 @@ export async function refreshScoutProtocolBuilderNftPrice({
     const currentPrice = await protocolBuilderNftContractClient.getTokenPurchasePrice({
       args: { tokenId, amount: BigInt(1) }
     });
-
-    prettyPrint({ currentPrice });
 
     const existingNft = await prisma.builderNft.findFirstOrThrow({
       where: {
