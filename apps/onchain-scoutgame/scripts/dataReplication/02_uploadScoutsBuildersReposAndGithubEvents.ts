@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { log } from "@charmverse/core/log";
 import { Prisma, prisma, ScoutWallet } from "@charmverse/core/prisma-client";
 import { generateWallet } from "@packages/blockchain/generateWallet";

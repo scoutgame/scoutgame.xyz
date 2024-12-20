@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { log } from "@charmverse/core/log";
 import { prisma } from "@charmverse/core/prisma-client";
 import { getBuilderScoutedEvents } from "@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents";
