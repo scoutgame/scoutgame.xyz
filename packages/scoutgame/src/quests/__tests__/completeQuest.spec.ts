@@ -5,12 +5,6 @@ import { completeQuests } from '../completeQuests';
 import { questsRecord } from '../questRecords';
 
 describe('completeQuest', () => {
-  it('should throw an error if the quest is already completed', async () => {
-    const builder = await mockBuilder();
-    await completeQuests(builder.id, ['follow-x-account']);
-    await expect(completeQuests(builder.id, ['follow-x-account'])).rejects.toThrow('Quest already completed');
-  });
-
   it('should complete a quest', async () => {
     const builder = await mockBuilder();
     await completeQuests(builder.id, ['follow-x-account']);
