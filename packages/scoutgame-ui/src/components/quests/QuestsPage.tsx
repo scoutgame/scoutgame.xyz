@@ -17,7 +17,7 @@ export function QuestsPage({
   friends: SessionUser[];
 }) {
   return (
-    <Grid container spacing={1} data-test='quest-page' overflow='hidden'>
+    <Grid container data-test='quest-page' overflow='hidden'>
       <Grid
         size={{ xs: 12, md: 8 }}
         sx={{

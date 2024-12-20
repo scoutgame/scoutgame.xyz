@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
@@ -8,7 +7,6 @@ import type { QuestType } from './questRecords';
 import { questsRecord } from './questRecords';
 
 export async function completeQuests(userId: string, questTypes: QuestType[]) {
-  const points = questsRecord[questType].points;
   const completedQuests = await prisma.scoutSocialQuest.findMany({
     where: {
       type: {
@@ -23,6 +21,7 @@ export async function completeQuests(userId: string, questTypes: QuestType[]) {
   const unfinishedQuests = questTypes.filter((questType) => !completedQuestTypes.includes(questType));
 
   for (const questType of unfinishedQuests) {
+    const points = questsRecord[questType].points;
     await sendPointsForSocialQuest({
       builderId: userId,
       points,
