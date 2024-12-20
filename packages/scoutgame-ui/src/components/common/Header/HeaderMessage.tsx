@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { getCurrentSeasonWeekNumber, getWeekStartEnd } from '@packages/scoutgame/dates';
 import { useEffect, useState } from 'react';
 
@@ -18,15 +18,15 @@ export function HeaderMessage() {
     return () => clearInterval(timeout);
   }, []);
 
-  if (!isMounted) {
-    return null;
-  }
-
   return (
-    <Box width='100%' bgcolor='rgba(160, 108, 213, 0.4)' p={1}>
-      <Typography variant='body1' fontWeight='500' textAlign='center'>
-        Week {getCurrentSeasonWeekNumber()} ends in {timeLeftStr}
-      </Typography>
+    <Box width='100%' minHeight='40px' bgcolor='rgba(160, 108, 213, 0.4)' p={1} display='flex' justifyContent='center'>
+      {isMounted ? (
+        <Typography variant='body1' fontWeight='500' textAlign='center'>
+          Week {getCurrentSeasonWeekNumber()} ends in {timeLeftStr}
+        </Typography>
+      ) : (
+        <Skeleton width='50%' />
+      )}
     </Box>
   );
 }

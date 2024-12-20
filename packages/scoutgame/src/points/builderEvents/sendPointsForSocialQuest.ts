@@ -69,14 +69,6 @@ export async function sendPointsForSocialQuest({
         }
       }
     });
-
-    await incrementPointsEarnedStats({
-      season,
-      userId: builderId,
-      scoutPoints: isBuilderQuest ? undefined : points,
-      builderPoints: isBuilderQuest ? points : undefined,
-      tx: _tx
-    });
   }
 
   if (tx) {

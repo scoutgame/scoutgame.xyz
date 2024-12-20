@@ -30,7 +30,8 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
     where: {
       id: {
         in: uniqueBuilderIds
-      }
+      },
+      deletedAt: null
     },
     select: {
       ...BasicUserInfoSelect,

@@ -1,5 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
+import { logoutAction } from '@packages/scoutgame/session/logoutAction';
 import type { UserProfile } from '@packages/scoutgame/users/getUserProfile';
 import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
@@ -28,14 +29,30 @@ export function useAccountConnect<AuthData>({
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const router = useRouter();
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
-  const mergeAccountOnSuccess = useCallback(async () => {
-    await revalidatePath();
-    await refreshUser();
+  const { executeAsync: logout, isExecuting: isLoggingOut } = useAction(logoutAction);
+
+  const resetState = useCallback(() => {
     setAuthData(null);
     setConnectedUser(null);
     setAccountMergeError(null);
-    router.refresh();
-  }, [revalidatePath, refreshUser, router]);
+    setConnectionError(null);
+    setSelectedProfile(null);
+  }, []);
+
+  const mergeAccountOnSuccess = useCallback(async () => {
+    await revalidatePath();
+    await refreshUser();
+    resetState();
+    if ((connectedUser && connectedUser.builderStatus !== null) || selectedProfile === 'new') {
+      await logout();
+      router.push('/login');
+    }
+  }, [revalidatePath, refreshUser, resetState, logout, connectedUser, selectedProfile, router]);
+
+  const onCloseModal = useCallback(() => {
+    resetState();
+    popupState.close();
+  }, [resetState, popupState]);
 
   const mergeAccountOnError = useCallback((err: any) => {
     log.error('Error merging user account', { error: err.error.serverError, identity, userId: user.id });
@@ -67,7 +84,8 @@ export function useAccountConnect<AuthData>({
 
   const isMergeDisabled =
     (connectedUser?.builderStatus !== null && user.builderStatus !== null) ||
-    (connectedUser?.starterPackNftCount ?? 0 + user.starterPackNftCount) > 3;
+    (connectedUser?.starterPackNftCount ?? 0 + user.starterPackNftCount) > 3 ||
+    isLoggingOut;
 
   return {
     isMergeDisabled,
@@ -85,6 +103,7 @@ export function useAccountConnect<AuthData>({
     connectedUser,
     setConnectedUser,
     setSelectedProfile,
-    popupState
+    popupState,
+    onCloseModal
   };
 }

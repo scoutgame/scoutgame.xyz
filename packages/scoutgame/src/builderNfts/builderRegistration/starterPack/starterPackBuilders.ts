@@ -56,7 +56,7 @@ export const starterPackBuilders = [
   }
 ];
 
-export async function getEditorialDescription({ fid }: { fid: number }) {
+export function getEditorialDescription({ fid }: { fid?: number | null }) {
   const description = starterPackBuilders.find((f) => f.fid === fid)?.description;
   return description ?? '';
 }

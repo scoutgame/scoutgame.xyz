@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { getUTMParamsFromSearch } from '@packages/mixpanel/utils';
+import { getPlatform, getUTMParamsFromSearch } from '@packages/mixpanel/utils';
 import { v4 as uuid } from 'uuid';
 
 import { actionClient } from '../actions/actionClient';
@@ -38,7 +38,12 @@ export const trackEventAction = actionClient
 
     trackUserAction(eventName, event, ctx.session.utmParams);
 
-    log.debug(`Track user event: ${eventName}`, { userId: event.userId, path: event.currentUrlPath, utmParams });
+    log.debug(`Track user event: ${eventName}`, {
+      userId: event.userId,
+      path: event.currentUrlPath,
+      utmParams,
+      platform: getPlatform()
+    });
 
     return { success: true };
   });

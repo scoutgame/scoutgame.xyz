@@ -4,31 +4,37 @@ import type { IconButtonProps } from '@mui/material';
 import { IconButton } from '@mui/material';
 
 const defaultSx: IconButtonProps['sx'] = {
-  display: 'flex',
+  display: { xs: 'none', md: 'flex' },
   alignItems: 'center',
   justifyContent: 'center',
   position: 'absolute',
   top: '50%',
   width: '30px',
-  background: '#202020',
+  height: {
+    xs: '100px',
+    md: '200px'
+  },
+  bgcolor: 'background.paper',
   transform: 'translate(0, -50%)',
   borderRadius: '5px',
   '&:hover': {
-    background: '#202020'
+    bgcolor: 'background.paper'
   }
 };
 
-export function NextArrow(props: IconButtonProps) {
+export function NextArrow({ sx, ...props }: IconButtonProps) {
+  const combinedSx = { ...defaultSx, ...sx };
   return (
-    <IconButton {...props} sx={{ ...defaultSx, height: '200px', right: '-10px' }}>
+    <IconButton data-test='carousel-next-arrow' {...props} sx={{ right: '-10px', ...combinedSx }}>
       <ChevronRightIcon color='secondary' />
     </IconButton>
   );
 }
 
-export function PrevArrow(props: IconButtonProps) {
+export function PrevArrow({ sx, ...props }: IconButtonProps) {
+  const combinedSx = { ...defaultSx, ...sx };
   return (
-    <IconButton {...props} sx={{ ...defaultSx, height: '200px', left: '-10px' }}>
+    <IconButton data-test='carousel-prev-arrow' {...props} sx={{ left: '-10px', ...combinedSx }}>
       <ChevronLeftIcon color='secondary' />
     </IconButton>
   );

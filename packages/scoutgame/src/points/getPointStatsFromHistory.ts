@@ -59,20 +59,15 @@ export async function getPointStatsFromHistory({
     tx.pointsReceipt.findMany({
       where: {
         recipientId: userId,
-        OR: [
-          {
-            event: {
-              builderId: userId,
-              type: 'gems_payout'
-            }
-          },
-          {
-            event: {
-              type: 'nft_purchase',
-              builderId: userId
-            }
+        event: {
+          type: 'gems_payout'
+        },
+        // we need to filter out points received when you own your own NFT
+        activities: {
+          some: {
+            recipientType: 'builder'
           }
-        ]
+        }
       },
       include
     }),
@@ -80,16 +75,15 @@ export async function getPointStatsFromHistory({
     tx.pointsReceipt.findMany({
       where: {
         recipientId: userId,
-        OR: [
-          {
-            event: {
-              builderId: {
-                not: userId
-              },
-              type: 'gems_payout'
-            }
+        event: {
+          type: 'gems_payout'
+        },
+        // we need to include points received when you own your own NFT
+        activities: {
+          some: {
+            recipientType: 'scout'
           }
-        ]
+        }
       },
       include
     }),

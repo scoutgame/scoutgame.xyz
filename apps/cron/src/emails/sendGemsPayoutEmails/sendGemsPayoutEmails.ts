@@ -11,7 +11,8 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
     where: {
       email: {
         not: null
-      }
+      },
+      deletedAt: null
     },
     select: {
       id: true,

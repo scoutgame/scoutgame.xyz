@@ -2,7 +2,11 @@ import { prisma } from '@charmverse/core/prisma-client';
 
 import { currentSeason } from '../dates';
 
-export async function aggregateTokensPurchased(scoutId: string) {
+export async function aggregateTokensPurchased(scoutId?: string) {
+  if (!scoutId) {
+    return 0;
+  }
+
   const purchases = await prisma.nFTPurchaseEvent.aggregate({
     where: { builderNft: { nftType: 'starter_pack', season: currentSeason }, scoutId },
     _sum: { tokensPurchased: true }

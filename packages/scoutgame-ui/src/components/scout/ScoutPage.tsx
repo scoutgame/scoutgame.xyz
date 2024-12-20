@@ -14,7 +14,7 @@ import { TabsMenu, type TabItem } from '../common/Tabs/TabsMenu';
 
 import { InfoModal } from './components/InfoModal';
 import { ScoutPageBuildersGallery } from './components/ScoutPageBuildersGallery';
-import { ScoutPageCarousel } from './components/ScoutPageCarousel';
+import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/ScoutPageCarouselContainer';
 import { SearchBuildersInput } from './components/SearchBuildersInput';
 import { ScoutPageTable } from './ScoutPageTable/ScoutPageTable';
 
@@ -36,7 +36,8 @@ export async function ScoutPage({
   builderOrder,
   scoutTab,
   buildersLayout,
-  tab
+  tab,
+  carousel
 }: {
   scoutSort: string;
   builderSort: string;
@@ -45,8 +46,9 @@ export async function ScoutPage({
   scoutTab: string;
   buildersLayout: string;
   tab: string;
+  carousel: string;
 }) {
-  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder })
+  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder, carousel })
     .filter(([, value]) => isTruthy(value))
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
@@ -71,8 +73,8 @@ export async function ScoutPage({
             gap: 2
           }}
         >
-          <Suspense fallback={<LoadingCards count={3} />}>
-            <ScoutPageCarousel />
+          <Suspense fallback={<LoadingCards count={3} withTitle={true} />}>
+            <ScoutPageCarousel tab={carousel} />
           </Suspense>
           <Stack
             position='sticky'
