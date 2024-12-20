@@ -79,7 +79,7 @@ export function BuilderShareImage({
           backgroundPosition: 'center',
           backgroundSize: 'cover',
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'space-around',
           gap: 10
         }}
       >
@@ -87,19 +87,20 @@ export function BuilderShareImage({
         <img
           src={nftImageUrl ?? ''}
           alt='NFT Artwork'
-          width={185}
+          width={200}
           height={250}
           style={{
-            objectFit: 'cover'
+            objectFit: 'contain'
           }}
         />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <div style={{ width: 200, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <div
             style={{
               ...box,
               gap: 10,
               flexDirection: 'row',
               textAlign: 'center',
+              justifyContent: 'center',
               minHeight: 65
             }}
           >
