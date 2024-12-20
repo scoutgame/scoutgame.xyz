@@ -1,13 +1,12 @@
 'use client';
 
-import { Box, Paper, Stack, Typography } from '@mui/material';
-import { getEditorialDescription } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
+import { Stack } from '@mui/material';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 
-import { useLgScreen, useMdScreen } from '../../../hooks/useMediaScreens';
-import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
 import { Carousel } from '../../common/Carousel/Carousel';
 import { StarterPackInfo } from '../StarterPackCarousel/StarterPackInfo';
+
+import { StarterPackCard } from './StarterPackCard';
 
 export function StarterPackCarousel({
   builders,
@@ -16,15 +15,10 @@ export function StarterPackCarousel({
   builders: StarterPackBuilder[];
   remainingStarterCards: number;
 }) {
-  const isDesktop = useMdScreen();
-  const isLgScreen = useLgScreen();
-  const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'small';
-
   return (
-    <Stack gap={4} flexDirection={{ xs: 'column-reverse', md: 'row' }}>
+    <Stack gap={{ xs: 2, md: 4 }} flexDirection={{ xs: 'column-reverse', md: 'row' }} ml={{ md: 2 }}>
       <Carousel
         slidesPerView={1}
-        autoplay
         navigation={{
           nextEl: '.swiper-starter-pack-button-next',
           prevEl: '.swiper-starter-pack-button-prev'
@@ -43,37 +37,7 @@ export function StarterPackCarousel({
         }}
       >
         {builders.map((builder) => (
-          <Stack
-            key={builder.id}
-            flexDirection={{ xs: 'column', md: 'row' }}
-            component={Paper}
-            gap={2}
-            p={{ xs: 2, md: 4 }}
-            bgcolor='transparent'
-            border='1px solid'
-            borderColor='green.main'
-            sx={{
-              backgroundImage: `url(/images/backgrounds/star-bg.jpg)`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
-            }}
-          >
-            <Box>
-              <BuilderCard
-                builder={builder}
-                showPurchaseButton
-                markStarterCardPurchased={builder.purchased}
-                type='starter_pack'
-                size={size}
-              />
-            </Box>
-            <Box display='flex' alignItems='center' flexWrap='wrap' component={Paper} p={1}>
-              <Typography width='fit-container' variant='body2'>
-                {getEditorialDescription({ fid: builder.farcasterId }) ?? builder.bio}
-              </Typography>
-            </Box>
-          </Stack>
+          <StarterPackCard builder={builder} key={builder.id} />
         ))}
       </Carousel>
       <StarterPackInfo remainingStarterCards={remainingStarterCards} />
