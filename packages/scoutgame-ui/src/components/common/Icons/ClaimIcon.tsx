@@ -6,24 +6,7 @@ export function ClaimIcon({ animate = false }: { animate?: boolean }) {
       sx={{
         width: 25,
         height: 25,
-        '@keyframes wiggle': {
-          '0%': {
-            transform: 'rotate(0deg)',
-            scale: 1
-          },
-          '25%': {
-            transform: 'rotate(-15deg)',
-            scale: 1.2
-          },
-          '50%': {
-            transform: 'rotate(0deg)',
-            scale: 1
-          },
-          '75%': {
-            transform: 'rotate(15deg)',
-            scale: 1.2
-          }
-        },
+
         animation: animate ? 'wiggle 2s ease-in-out infinite' : 'none'
       }}
     >

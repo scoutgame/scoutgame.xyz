@@ -41,6 +41,29 @@ body {
   font-display: swap;
 }
 
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg) scale(0.95);
+    scale: 1;
+    rotate: 0.95;
+  }
+
+  25% {
+    transform: rotate(-15deg) scale(1);
+    scale: 1.2;
+  }
+
+  50% {
+    transform: rotate(0deg) scale(0.95);
+    scale: 1;
+  }
+
+  75% {
+    transform: rotate(15deg) scale(1);
+    scale: 1.2;
+  }
+}
+
 // Transition from right to left on page load
 @keyframes move-out {
   from {
