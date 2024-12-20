@@ -15,12 +15,12 @@ import { builders } from "./cache/builders";
 import { githubEvents } from "./cache/githubEvents";
 import { getAllISOWeeksFromSeasonStart } from "@packages/scoutgame/dates";
 // Commented this blob so CI passes. Re-enable when performing upload
-// import { repos } from "./cache/repos";
-// import { scouts } from "./cache/scouts";
+import { repos } from "./cache/repos";
+import { scouts } from "./cache/scouts";
 
 
-const repos = [] as any[];
-const scouts = [] as any[];
+// const repos = [] as any[];
+// const scouts = [] as any[];
 
 validateIsNotProductionDatabase();
 
@@ -36,15 +36,17 @@ async function resetData() {
 
   const deletedGithubUsers = await prisma.githubUser.deleteMany()
 
+
+
   prettyPrint({
     deletedScouts,
-    deletedGithubUsers
+    deletedGithubUsers,
   })
 }
 
 async function uploadScoutsBuildersReposAndGithubEvents() {
 
-  // await resetData();
+  await resetData();
 
   const startTokenId = 1;
 
@@ -353,6 +355,22 @@ async function uploadScoutsBuildersReposAndGithubEvents() {
       await Promise.all(weeks.map(week => refreshUserStats({userId: allScouts[i].id, week, tx})));
     });
   }
+
+  const builderNfts = await prisma.builderNft.findMany({
+    where: {
+      contractAddress: scoutProtocolBuilderNftContractAddress()
+    }
+  });
+
+  for (let i = 0; i < builderNfts.length; i++) {
+    log.info(`Refreshing builder nft ${i+1}/${builderNfts.length} - tokenId:${builderNfts[i].tokenId} price`);
+    await refreshScoutProtocolBuilderNftPrice({
+      builderId: builderNfts[i].builderId,
+      season: currentSeason
+    });
+  }
+
+  prettyPrint({builderNfts});
 }
 
 uploadScoutsBuildersReposAndGithubEvents().then(console.log);

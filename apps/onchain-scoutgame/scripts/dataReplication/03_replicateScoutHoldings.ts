@@ -8,9 +8,9 @@ import {  validateIsNotProductionDatabase } from "./utils";
 import { getScoutAdminWalletClient, getScoutProtocolBuilderNFTContract, getScoutTokenERC20Contract, scoutProtocolBuilderNftContractAddress } from "@packages/scoutgame/protocol/constants";
 
 // Commented this blob so CI passes. Re-enable when performing upload
-// import { scouts } from "./cache/scouts";
+import { scouts } from "./cache/scouts";
 // Stubs for typecheck to pass
-const scouts = [] as any[];
+// const scouts = [] as any[];
 
 validateIsNotProductionDatabase();
 
@@ -20,7 +20,7 @@ const realBuilderNftContract = '0x743ec903FE6D05E73b19a6DB807271bb66100e83';
 async function fundScouts() {
   const tokenContract = getScoutTokenERC20Contract();
 
-  const minBalance = BigInt(10000) * BigInt(10**18); // 10,000 with 18 decimals
+  const minBalance = BigInt(100000) * BigInt(10**18); // 10,000 with 18 decimals
 
   for (const scout of scouts) {
     const scoutWallet = scout.wallets[0].address;
@@ -281,7 +281,7 @@ async function replicateScoutHoldings() {
 }
 
 async function script() {
-  // await replicateScoutHoldings();
+  await replicateScoutHoldings();
   await fundScouts();
 }
 
