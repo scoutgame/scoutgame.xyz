@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 
 import type { ISOWeek } from '../../dates';
 import { currentSeason, getCurrentWeek } from '../../dates';
-import { incrementPointsEarnedStats } from '../updatePointsEarned';
+import type { QuestType } from '../../quests/questRecords';
 
 export async function sendPointsForSocialQuest({
   builderId,
@@ -13,7 +13,7 @@ export async function sendPointsForSocialQuest({
   type,
   tx
 }: {
-  type: string;
+  type: QuestType;
   builderId: string;
   points: number;
   season?: ISOWeek;

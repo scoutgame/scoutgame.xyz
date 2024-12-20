@@ -2,17 +2,20 @@
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Chip, Stack, Typography } from '@mui/material';
 import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
-import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
+
+import { useUser } from '../../../providers/UserProvider';
 
 import { QuestIcon } from './QuestsIcons';
 
 export function QuestCard({ quest }: { quest: QuestInfo }) {
   const { refreshUser } = useUser();
+  const router = useRouter();
   const { execute, isExecuting } = useAction(completeQuestAction, {
     onSuccess: () => {
       refreshUser();
@@ -20,11 +23,15 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
   });
 
   const handleClick = async () => {
-    if (!quest.completed && !isExecuting) {
+    if (!quest.internal && !quest.completed && !isExecuting) {
       execute({ questType: quest.type });
-      const link = quest.link;
-      if (link) {
-        window.open(link, link.startsWith('http') ? '_blank' : '_self');
+    }
+    const link = quest.link;
+    if (link) {
+      if (link.startsWith('http')) {
+        window.open(link, '_blank');
+      } else {
+        router.push(link);
       }
     }
   };
@@ -53,19 +60,56 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
         }
       }}
     >
-      <Stack direction='row' gap={3.5} alignItems='center'>
+      <Stack direction='row' gap={3} alignItems='center'>
         {icon}
         <Stack gap={1}>
-          <Typography fontWeight={500}>{quest.label}</Typography>
+          <Stack>
+            <Typography fontWeight={500} textAlign='left'>
+              {quest.label}
+            </Typography>
+          </Stack>
           <Stack direction='row' gap={0.5} alignItems='center'>
             <Typography variant='body2' fontWeight={500}>
               +{quest.points}
             </Typography>
             <Image src='/images/profile/scout-game-profile-icon.png' alt='Scoutgame icon' width={18.5} height={12} />
+            {quest.rewards && (
+              <>
+                <span>+</span>
+                <Typography variant='body2' textAlign='left'>
+                  {quest.rewards}
+                </Typography>
+              </>
+            )}
           </Stack>
+          {quest.completedSteps !== null ? (
+            <Stack flexDirection='row' gap={0.5} alignItems='center'>
+              <Typography variant='body2' fontWeight={500} textAlign='left'>
+                {quest.completedSteps}
+              </Typography>
+              <Stack flexDirection='row' gap={0.5} alignItems='center' position='relative' width={150}>
+                <div
+                  style={{
+                    width: `${(quest.completedSteps / (quest.totalSteps || 1)) * 100}%`,
+                    height: 14,
+                    backgroundColor: 'white',
+                    position: 'absolute',
+                    left: 0
+                  }}
+                />
+                <div style={{ width: '100%', height: 14, border: '1px solid white', position: 'absolute', left: 0 }} />
+              </Stack>
+              <Typography variant='body2' fontWeight={500} textAlign='left'>
+                {quest.totalSteps || 1}
+              </Typography>
+            </Stack>
+          ) : null}
         </Stack>
       </Stack>
-      {quest.completed ? <CheckCircleIcon color='secondary' /> : <KeyboardArrowRightIcon />}
+      <Stack direction='row' gap={0.5} alignItems='center'>
+        <Chip size='small' label={quest.tag.charAt(0).toUpperCase() + quest.tag.slice(1)} />
+        {quest.completed ? <CheckCircleIcon color='secondary' /> : <KeyboardArrowRightIcon />}
+      </Stack>
     </Button>
   );
 }

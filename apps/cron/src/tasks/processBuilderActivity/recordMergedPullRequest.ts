@@ -7,7 +7,9 @@ import type {
 } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/scoutgame/dates';
-import { getStartOfWeek, getWeekStartEnd, getWeekFromDate, isToday, streakWindow } from '@packages/scoutgame/dates';
+import { getStartOfWeek, getWeekFromDate, isToday, streakWindow } from '@packages/scoutgame/dates';
+import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
+import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
@@ -255,6 +257,31 @@ export async function recordMergedPullRequest({
               }
             }
           });
+
+          try {
+            const questTypes: QuestType[] = [];
+            if (activityType === 'gems_third_pr_in_streak') {
+              questTypes.push('score-streak');
+            }
+            // First PR is the first contribution to a repo
+            else if (activityType === 'gems_first_pr') {
+              questTypes.push('score-first-pr');
+              questTypes.push('first-repo-contribution');
+            }
+
+            if (repo.bonusPartner === 'game7') {
+              questTypes.push('contribute-game7-repo');
+            } else if (repo.bonusPartner === 'lit_protocol') {
+              questTypes.push('contribute-lit-repo');
+            } else if (repo.bonusPartner === 'celo') {
+              questTypes.push('contribute-celo-repo');
+            }
+
+            await completeQuests(githubUser.builderId, questTypes);
+          } catch (error) {
+            log.error('Error completing quest for merged PR', { error, userId: githubUser.builderId, activityType });
+          }
+
           return { builderEvent, githubEvent: event };
         }
       } else {

@@ -23,7 +23,8 @@ export async function processAllBuilderActivity(
         some: {
           season
         }
-      }
+      },
+      deletedAt: null
     },
     // sort by id so that we can start mid-way if we need to
     orderBy: {

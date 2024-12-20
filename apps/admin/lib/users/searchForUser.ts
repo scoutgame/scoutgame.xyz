@@ -23,7 +23,8 @@ export async function searchForUser({ searchString }: { searchString: string }):
   if (userFid) {
     const scout = await prisma.scout.findUnique({
       where: {
-        farcasterId: userFid
+        farcasterId: userFid,
+        deletedAt: null
       }
     });
     if (scout) {

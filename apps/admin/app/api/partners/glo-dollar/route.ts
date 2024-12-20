@@ -17,6 +17,7 @@ export async function GET() {
           }
         }
       },
+      deletedAt: null,
       wallets: {
         some: {}
       }
