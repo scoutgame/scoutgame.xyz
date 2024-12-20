@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { completeQuest } from '../quests/completeQuest';
+import { completeQuests } from '../quests/completeQuests';
+import type { QuestType } from '../quests/questRecords';
 
 export async function recordNftPurchaseQuests(scoutId: string) {
   const scoutNftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
@@ -38,34 +39,37 @@ export async function recordNftPurchaseQuests(scoutId: string) {
   }, 0);
   const totalCardsPurchased = totalStarterPackCardsPurchased + totalFullSeasonCardsPurchased;
   const uniqueCardPurchases = new Set(scoutNftPurchaseEvents.map((event) => event.builderNftId)).size;
+  const questTypes: QuestType[] = [];
 
   // First starter pack card purchased
   if (totalStarterPackCardsPurchased >= 1) {
-    await completeQuest(scoutId, 'scout-starter-card');
+    questTypes.push('scout-starter-card');
   }
 
   // All 3 starter pack cards purchased
   if (totalStarterPackCardsPurchased >= 3) {
-    await completeQuest(scoutId, 'scout-3-starter-cards');
+    questTypes.push('scout-3-starter-cards');
   }
 
   // First full season card purchased
   if (totalFullSeasonCardsPurchased >= 1) {
-    await completeQuest(scoutId, 'scout-full-season-card');
+    questTypes.push('scout-full-season-card');
   }
 
   // 5 unique cards purchased
   if (uniqueCardPurchases >= 5) {
-    await completeQuest(scoutId, 'scout-5-builders');
+    questTypes.push('scout-5-builders');
   }
 
   // This is a new scout and thus they have entered the OP New Scout Competition
   if (totalCardsPurchased >= 1) {
-    await completeQuest(scoutId, 'enter-op-new-scout-competition');
+    questTypes.push('enter-op-new-scout-competition');
   }
 
   // If the scout purchased a card of a moxie builder, mark the moxie quest as complete
   if (hasMoxieProfile) {
-    await completeQuest(scoutId, 'scout-moxie-builder');
+    questTypes.push('scout-moxie-builder');
   }
+
+  await completeQuests(scoutId, questTypes);
 }

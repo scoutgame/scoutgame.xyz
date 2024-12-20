@@ -2,7 +2,8 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { currentSeason } from '@packages/scoutgame/dates';
 import { recordNftPurchaseQuests } from '@packages/scoutgame/builderNfts/recordNftPurchaseQuests';
-import { completeQuest } from '@packages/scoutgame/quests/completeQuest';
+import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
+import { QuestType } from '@packages/scoutgame/quests/questRecords';
 
 async function backfillQuestsForScouts() {
   const scouts = await prisma.scout.findMany({
@@ -89,30 +90,34 @@ async function backfillQuestsForBuilders() {
         }
       })
 
+      const questTypes: QuestType[] = [];
+
       if (commitsCount >= 1) {
-        await completeQuest(builder.id, 'score-first-commit');
+        questTypes.push('score-first-commit');
       }
 
       if (prsCount >= 1) {
-        await completeQuest(builder.id, 'score-first-pr');
-        await completeQuest(builder.id, 'first-repo-contribution')
+        questTypes.push('score-first-pr');
+        questTypes.push('first-repo-contribution');
       }
 
       if (prStreaks.length >= 1) {
-        await completeQuest(builder.id, 'score-streak');
+        questTypes.push('score-streak');
       }
 
       if (contributedToCeloRepo) {
-        await completeQuest(builder.id, 'contribute-celo-repo');
+        questTypes.push('contribute-celo-repo');
       }
 
       if (contributedToGame7Repo) {
-        await completeQuest(builder.id, 'contribute-game7-repo');
+        questTypes.push('contribute-game7-repo');
       }
 
       if (contributedToLitProtocolRepo) {
-        await completeQuest(builder.id, 'contribute-lit-repo');
+        questTypes.push('contribute-lit-repo');
       }
+
+      await completeQuests(builder.id, questTypes);
     } catch (error) {
       log.error(`Error recording builder activity quests for builder ${builder.id}`, error);
     }

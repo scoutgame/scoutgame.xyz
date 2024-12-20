@@ -8,7 +8,8 @@ import type {
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/scoutgame/dates';
 import { getStartOfWeek, getWeekFromDate, isToday, streakWindow } from '@packages/scoutgame/dates';
-import { completeQuest } from '@packages/scoutgame/quests/completeQuest';
+import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
+import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
@@ -258,22 +259,25 @@ export async function recordMergedPullRequest({
           });
 
           try {
+            const questTypes: QuestType[] = [];
             if (activityType === 'gems_third_pr_in_streak') {
-              await completeQuest(githubUser.builderId, 'score-streak');
+              questTypes.push('score-streak');
             }
             // First PR is the first contribution to a repo
             else if (activityType === 'gems_first_pr') {
-              await completeQuest(githubUser.builderId, 'score-first-pr');
-              await completeQuest(githubUser.builderId, 'first-repo-contribution');
+              questTypes.push('score-first-pr');
+              questTypes.push('first-repo-contribution');
             }
 
             if (repo.bonusPartner === 'game7') {
-              await completeQuest(githubUser.builderId, 'contribute-game7-repo');
+              questTypes.push('contribute-game7-repo');
             } else if (repo.bonusPartner === 'lit_protocol') {
-              await completeQuest(githubUser.builderId, 'contribute-lit-repo');
+              questTypes.push('contribute-lit-repo');
             } else if (repo.bonusPartner === 'celo') {
-              await completeQuest(githubUser.builderId, 'contribute-celo-repo');
+              questTypes.push('contribute-celo-repo');
             }
+
+            await completeQuests(githubUser.builderId, questTypes);
           } catch (error) {
             log.error('Error completing quest for merged PR', { error, userId: githubUser.builderId, activityType });
           }

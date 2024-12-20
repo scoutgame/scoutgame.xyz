@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 
 import { PointsIcon } from '../../common/Icons';
 
-const ScoutBinocularsIcon = <PointsIcon size={34} color='default' />;
+const ScoutBinocularsIcon = <PointsIcon size={34} />;
 const BuilderDogIcon = (
   <div style={{ position: 'relative', width: 34, height: 34 }}>
     <Image
