@@ -3,7 +3,8 @@
 import { AuthKitProvider } from '@farcaster/auth-kit';
 import { Link, Typography } from '@mui/material';
 import { getAuthConfig } from '@packages/scoutgame/farcaster/config';
-import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
+
+import { useTrackEvent } from '../../../hooks/useTrackEvent';
 
 import { WarpcastLoginButton } from './WarpcastLoginButton';
 
