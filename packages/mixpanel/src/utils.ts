@@ -47,13 +47,13 @@ export function getUTMParamsFromSearch(searchString: string): UTMParams | undefi
 
 const platform = env('SCOUTGAME_PLATFORM') || process.env.REACT_APP_SCOUTGAME_PLATFORM;
 
-function isPlatform(_platform: string = ''): _platform is ReferralPlatform | 'onchainwebapp' {
-  const availablePlatforms = [...Object.values(ReferralPlatform), 'onchainwebapp'];
+function isPlatform(_platform: string = ''): _platform is ReferralPlatform {
+  const availablePlatforms = Object.values(ReferralPlatform);
 
-  return availablePlatforms.includes(_platform as ReferralPlatform | 'onchainwebapp');
+  return availablePlatforms.includes(_platform as ReferralPlatform);
 }
 
-export function getPlatform(): ReferralPlatform | 'onchainwebapp' {
+export function getPlatform(): ReferralPlatform {
   if (isPlatform(platform)) {
     return platform;
   }

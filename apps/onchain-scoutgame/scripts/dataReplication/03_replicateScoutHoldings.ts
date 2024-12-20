@@ -252,11 +252,11 @@ async function replicateScoutHoldings() {
             return Promise.resolve(null);
           }
 
-          await tx.scoutNFT.upsert({
+          await tx.scoutNft.upsert({
             where: {
-              builderNftId_scoutId: {
+              builderNftId_walletAddress: {
                 builderNftId: matchingBuilderNft.id,
-                scoutId
+                walletAddress: scoutWallet.address
               }
             },
             update: {
@@ -264,7 +264,7 @@ async function replicateScoutHoldings() {
             },
             create: {
               builderNftId: matchingBuilderNft.id,
-              scoutId,
+              walletAddress: scoutWallet.address,
               balance: tokenHoldings[index][1]
             }
           });

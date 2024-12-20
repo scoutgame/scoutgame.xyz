@@ -84,7 +84,7 @@ export function PointsClaimScreen({
       contractAddress: getScoutProtocolAddress()
     });
 
-    await protocolClient.multiClaim({
+    const tx = await protocolClient.multiClaim({
       args: {
         claims: claimData?.weeklyProofs?.map((claim) => ({
           week: claim.week,
@@ -94,22 +94,10 @@ export function PointsClaimScreen({
       }
     });
 
-    // const contract = extendedClient.writeContract({
-    //   address: getScoutProtocolAddress(),
-    //   abi: protocolClient.abi,
-    //   functionName: 'claim',
-    //   args: {
-    //     // claimData: claimInputs?.map((claim) => ({
-    //     //   week: claim.week,
-    //     //   amount: BigInt(claim.amount),
-    //     //   proofs: claim.proofs
-    //     // }))
-    //   }
-    // });
-
     await handleOnchainClaim({
       wallet: walletClient.account.address.toLowerCase(),
-      claimsProofs: claimData!.weeklyProofs
+      claimsProofs: claimData!.weeklyProofs,
+      claimTxHash: tx.transactionHash
     });
 
     refreshUser();
@@ -143,7 +131,7 @@ export function PointsClaimScreen({
             Congratulations!
           </Typography>
           <Typography variant='h5' textAlign='center'>
-            You have earned Scout {platform === 'onchainwebapp' ? 'Tokens' : 'Points'}!
+            You have earned Scout {platform === 'onchain_webapp' ? 'Tokens' : 'Points'}!
           </Typography>
 
           <Stack

@@ -120,7 +120,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   });
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(
-    platform === 'onchainwebapp'
+    platform === 'onchain_webapp'
       ? {
           chainId: scoutProtocolChainId,
           currency: 'SCOUT'
@@ -153,7 +153,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const [builderTokenId, setBuilderTokenId] = useState<bigint>(BigInt(0));
 
   const purchaseCostInPoints =
-    platform === 'onchainwebapp' ? purchaseCost / BigInt(1e18) : convertCostToPoints(purchaseCost);
+    platform === 'onchain_webapp' ? purchaseCost / BigInt(1e18) : convertCostToPoints(purchaseCost);
   const notEnoughPoints = user && user.currentBalance < purchaseCostInPoints;
 
   const {
@@ -173,7 +173,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
       const _price =
-        platform === 'onchainwebapp'
+        platform === 'onchain_webapp'
           ? await new ScoutProtocolBuilderNFTImplementationClient({
               chain: scoutProtocolChain,
               contractAddress: scoutProtocolBuilderNftContractAddress(),
@@ -201,7 +201,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     try {
       setIsFetchingPrice(true);
       _builderTokenId =
-        platform === 'onchainwebapp'
+        platform === 'onchain_webapp'
           ? await new ScoutProtocolBuilderNFTImplementationClient({
               chain: scoutProtocolChain,
               contractAddress: scoutProtocolBuilderNftContractAddress(),
@@ -259,12 +259,12 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     scoutId: user?.id as string,
     paymentAmountOut: purchaseCost,
     contractAddress:
-      platform === 'onchainwebapp'
+      platform === 'onchain_webapp'
         ? scoutProtocolBuilderNftContractAddress()
         : getBuilderContractAddressForNftType(builder.nftType),
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: getCurrencyContract(selectedPaymentOption),
-    usingProtocolTokens: platform === 'onchainwebapp',
+    usingProtocolTokens: platform === 'onchain_webapp',
     tokensToPurchase: BigInt(tokensToBuy)
   });
 
@@ -517,7 +517,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             Qty
           </Typography>
           <Typography variant='caption' color='secondary' align='left' flexGrow={1}>
-            {platform === 'onchainwebapp' ? '$SCOUT' : 'Points'}
+            {platform === 'onchain_webapp' ? '$SCOUT' : 'Points'}
           </Typography>
         </Stack>
         <Stack flexDirection='row' justifyContent='space-between'>
@@ -537,7 +537,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       </Stack>
       <Stack>
         <Typography color='secondary'>Select payment</Typography>
-        {platform !== 'onchainwebapp' && (
+        {platform !== 'onchain_webapp' && (
           <RadioGroup
             row
             aria-label='payment method'
@@ -592,12 +592,12 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             <BlockchainSelect
               value={selectedPaymentOption}
               balance={displayedBalance}
-              useTestnets={platform === 'onchainwebapp' ? true : useTestnets}
+              useTestnets={platform === 'onchain_webapp' ? true : useTestnets}
               address={address}
               onSelectChain={(_paymentOption) => {
                 setSelectedPaymentOption(_paymentOption);
               }}
-              useScoutToken={platform === 'onchainwebapp'}
+              useScoutToken={platform === 'onchain_webapp'}
             />
             {hasInsufficientBalance ? (
               <Typography sx={{ mt: 1 }} variant='caption' color='error' align='center'>

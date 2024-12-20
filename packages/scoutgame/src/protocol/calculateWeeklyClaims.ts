@@ -161,7 +161,7 @@ export async function calculateWeeklyClaims({
           builderId: builder.builder.id,
           week,
           season: currentSeason,
-          type: 'onchain_gems_payout',
+          type: 'gems_payout',
           weeklyClaimId
         };
 
@@ -170,15 +170,13 @@ export async function calculateWeeklyClaims({
         const builderTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
           eventId: builderEventId,
           value: tokensForBuilder,
-          walletAddress: builderWallet,
-          recipientId: builder.builder.id
+          recipientWalletAddress: builderWallet
         };
 
         const scoutTokenReceipts: Prisma.TokensReceiptCreateManyInput[] = tokensPerScout.map((scoutClaim) => ({
           eventId: builderEventId,
           value: scoutClaim.erc20Tokens,
-          walletAddress: scoutClaim.wallet,
-          recipientId: walletToScoutId[scoutClaim.wallet]
+          walletAddress: scoutClaim.wallet
         }));
 
         tokenReceipts.push(builderTokenReceiptInput, ...scoutTokenReceipts);

@@ -12,6 +12,7 @@ export const handleOnchainClaimAction = authActionClient
   .schema(
     yup.object({
       wallet: yup.string().required(),
+      claimTxHash: yup.string().required(),
       claimsProofs: yup
         .array(
           yup.object({
@@ -43,7 +44,8 @@ export const handleOnchainClaimAction = authActionClient
 
     await prisma.tokensReceipt.updateMany({
       where: {
-        walletAddress: parsedInput.wallet.toLowerCase(),
+        recipientWalletAddress: parsedInput.wallet.toLowerCase(),
+
         event: {
           week: {
             in: parsedInput.claimsProofs.map((claim) => claim.week)
@@ -51,16 +53,24 @@ export const handleOnchainClaimAction = authActionClient
         }
       },
       data: {
+        claimTxHash: parsedInput.claimTxHash,
         claimedAt: new Date()
       }
     });
+
+    // Getting an error "Exponentiation cannot be performed on 'bigint' values unless the 'target' option is set to 'es2016' or later." so using this instead of BigInt(10) ** BigInt(decimals)
+    const exponent = Array.from({ length: Number(decimals) }, () => BigInt(10)).reduce(
+      (acc, val) => acc * val,
+      BigInt(1)
+    );
+    const currentBalance = Number(balance / exponent);
 
     await prisma.scout.update({
       where: {
         id: scout.id
       },
       data: {
-        currentBalance: Number(balance / BigInt(10) ** decimals)
+        currentBalance
       }
     });
 

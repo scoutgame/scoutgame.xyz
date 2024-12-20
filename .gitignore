@@ -11,6 +11,7 @@ dist/
 
 # scoutgame app
 /apps/scoutgame/public/sw*
+/apps/onchain-scoutgame/public/sw*
 /apps/scoutgame/public/swe-worker*
 /apps/scoutgame/public/builder-nfts
 /apps/telegram/public/builder-nfts

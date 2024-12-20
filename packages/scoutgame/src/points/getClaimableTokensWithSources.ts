@@ -40,13 +40,13 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const tokenReceipts = await prisma.tokensReceipt.findMany({
     where: {
-      walletAddress: {
+      recipientWalletAddress: {
         in: scoutWallets.map((wallet) => wallet.address)
       }
     },
     select: {
       value: true,
-      recipientId: true,
+      recipientWalletAddress: true,
       event: {
         select: {
           week: true,
@@ -76,7 +76,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const builderIdScoutPointsRecord: Record<string, number> = {};
   for (const receipt of tokenReceipts) {
-    if (receipt.event.type === 'onchain_gems_payout' && receipt.event.builderId !== receipt.recipientId) {
+    if (receipt.event.type === 'gems_payout' && receipt.event.builderId !== userId) {
       if (!builderIdScoutPointsRecord[receipt.event.builderId]) {
         builderIdScoutPointsRecord[receipt.event.builderId] = receipt.value;
       } else {

@@ -21,7 +21,7 @@ export async function PointsClaimContainer() {
 
   const platform = getPlatform();
 
-  const isOnchainApp = platform === 'onchainwebapp';
+  const isOnchainApp = platform === 'onchain_webapp';
 
   const [err, data] = await safeAwaitSSRData(
     (isOnchainApp ? getClaimableTokensWithSources : getClaimablePointsWithSources)(scoutId)
