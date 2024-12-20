@@ -1,19 +1,19 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
 import { mockBuilder } from '../../testing/database';
-import { completeQuest } from '../completeQuest';
+import { completeQuests } from '../completeQuests';
 import { questsRecord } from '../questRecords';
 
 describe('completeQuest', () => {
   it('should throw an error if the quest is already completed', async () => {
     const builder = await mockBuilder();
-    await completeQuest(builder.id, 'follow-x-account');
-    await expect(completeQuest(builder.id, 'follow-x-account')).rejects.toThrow('Quest already completed');
+    await completeQuests(builder.id, ['follow-x-account']);
+    await expect(completeQuests(builder.id, ['follow-x-account'])).rejects.toThrow('Quest already completed');
   });
 
   it('should complete a quest', async () => {
     const builder = await mockBuilder();
-    await completeQuest(builder.id, 'follow-x-account');
+    await completeQuests(builder.id, ['follow-x-account']);
 
     const quest = await prisma.scoutSocialQuest.findFirstOrThrow({
       where: {
