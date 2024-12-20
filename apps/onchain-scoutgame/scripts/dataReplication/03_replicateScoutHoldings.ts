@@ -2,9 +2,13 @@ import { log } from "@charmverse/core/log";
 import { prisma } from "@charmverse/core/prisma-client";
 import { getBuilderScoutedEvents } from "@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents";
 import { Address } from "viem";
-import { scouts } from "./cache/scouts";
 import {  validateIsNotProductionDatabase } from "./utils";
 import { getScoutAdminWalletClient, getScoutProtocolBuilderNFTContract, getScoutTokenERC20Contract, scoutProtocolBuilderNftContractAddress } from "@packages/scoutgame/protocol/constants";
+
+// Commented this blob so CI passes. Re-enable when performing upload
+// import { scouts } from "./cache/scouts";
+// Stubs for typecheck to pass
+const scouts = [] as any[];
 
 validateIsNotProductionDatabase();
 

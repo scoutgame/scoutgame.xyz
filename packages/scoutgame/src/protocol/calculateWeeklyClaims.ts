@@ -173,11 +173,14 @@ export async function calculateWeeklyClaims({
           recipientWalletAddress: builderWallet
         };
 
-        const scoutTokenReceipts: Prisma.TokensReceiptCreateManyInput[] = tokensPerScout.map((scoutClaim) => ({
-          eventId: builderEventId,
-          value: scoutClaim.erc20Tokens,
-          walletAddress: scoutClaim.wallet
-        }));
+        const scoutTokenReceipts: Prisma.TokensReceiptCreateManyInput[] = tokensPerScout.map(
+          (scoutClaim) =>
+            ({
+              eventId: builderEventId,
+              value: scoutClaim.erc20Tokens,
+              recipientWalletAddress: scoutClaim.wallet
+            }) as Prisma.TokensReceiptCreateManyInput
+        );
 
         tokenReceipts.push(builderTokenReceiptInput, ...scoutTokenReceipts);
 

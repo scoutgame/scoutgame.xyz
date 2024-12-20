@@ -137,12 +137,12 @@ describe('calculateWeeklyClaims', () => {
     expect(stringUtils.isUUID(weeklyClaimId)).toBe(true);
 
     expect(weeklyClaimsData).toMatchObject<WeeklyClaimsCalculated>({
-      builderEvents: expect.arrayContaining([
+      builderEvents: expect.arrayContaining<WeeklyClaimsCalculated['builderEvents'][number]>([
         {
           builderId: builder1.id,
           id: expect.any(String),
           season: '2024-W41',
-          type: 'onchain_gems_payout',
+          type: 'gems_payout',
           week: mockWeek,
           weeklyClaimId
         },
@@ -150,7 +150,7 @@ describe('calculateWeeklyClaims', () => {
           builderId: builder2.id,
           id: expect.any(String),
           season: '2024-W41',
-          type: 'onchain_gems_payout',
+          type: 'gems_payout',
           week: mockWeek,
           weeklyClaimId
         },
@@ -158,7 +158,7 @@ describe('calculateWeeklyClaims', () => {
           builderId: builder3.id,
           id: expect.any(String),
           season: '2024-W41',
-          type: 'onchain_gems_payout',
+          type: 'gems_payout',
           week: mockWeek,
           weeklyClaimId
         }
@@ -202,114 +202,96 @@ describe('calculateWeeklyClaims', () => {
         tree: expect.anything(),
         rootHash: expect.any(String)
       },
-      tokenReceipts: expect.arrayContaining([
+      tokenReceipts: expect.arrayContaining<WeeklyClaimsCalculated['tokenReceipts'][number]>([
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 6,
-          walletAddress: builder1Wallet
+          recipientWalletAddress: builder1Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 10,
-          walletAddress: builder1Wallet
+          recipientWalletAddress: builder1Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 5,
-          walletAddress: scout1Wallet
+          recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 2,
-          walletAddress: scout2Wallet
+          recipientWalletAddress: scout2Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 3,
-          walletAddress: scout3Wallet
+          recipientWalletAddress: scout3Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 1,
-          walletAddress: scout4Wallet
+          recipientWalletAddress: scout4Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 5,
-          walletAddress: builder2Wallet
+          recipientWalletAddress: builder2Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 8,
-          walletAddress: builder2Wallet
+          recipientWalletAddress: builder2Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 4,
-          walletAddress: scout3Wallet
+          recipientWalletAddress: scout3Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 4,
-          walletAddress: scout4Wallet
+          recipientWalletAddress: scout4Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 2,
-          walletAddress: scout1Wallet
+          recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 3,
-          walletAddress: scout5Wallet
+          recipientWalletAddress: scout5Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 5,
-          walletAddress: builder3Wallet
+          recipientWalletAddress: builder3Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 7,
-          walletAddress: builder3Wallet
+          recipientWalletAddress: builder3Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 5,
-          walletAddress: scout5Wallet
+          recipientWalletAddress: scout5Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 3,
-          walletAddress: scout2Wallet
+          recipientWalletAddress: scout2Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 2,
-          walletAddress: scout1Wallet
+          recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          recipientId: expect.any(String),
           value: 3,
-          walletAddress: scout4Wallet
+          recipientWalletAddress: scout4Wallet
         }
       ])
     });
