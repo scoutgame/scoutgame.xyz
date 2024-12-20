@@ -2,10 +2,10 @@ import { log } from '@charmverse/core/log';
 import type { WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
-import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
-import { getAddress, type Address } from 'viem';
+import { getMerkleProofs } from '@charmverse/core/protocol';
+import { type Address } from 'viem';
 
-import { currentSeason, getEndOfSeason } from '../dates';
+import { currentSeason, getDateFromISOWeek, weeksPerSeason } from '../dates';
 
 import type { WeeklyClaimsCalculated } from './calculateWeeklyClaims';
 import { protocolImplementationWriteClient } from './clients/protocolWriteClients';
@@ -67,7 +67,7 @@ export async function generateWeeklyClaims({
       weeklyRoot: {
         isoWeek: week,
         // Tokens can be claimed until the end of the season and the next season
-        validUntil: Math.round(getEndOfSeason(currentSeason).plus({ weeks: 13 }).toSeconds()),
+        validUntil: getDateFromISOWeek(currentSeason).plus({ weeks: 2 * weeksPerSeason }),
         merkleRoot: rootHashWithNullByte,
         // Stub definition until we add in IPFS
         merkleTreeUri: `ipfs://scoutgame/merkle-tree/${week}`
