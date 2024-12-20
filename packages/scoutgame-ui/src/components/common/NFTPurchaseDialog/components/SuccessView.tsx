@@ -1,9 +1,12 @@
 'use client';
 
-import { Box, IconButton, Stack, Typography } from '@mui/material';
+import { IconButton, Stack, Typography } from '@mui/material';
+import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
 import Image from 'next/image';
+import { useAction } from 'next-safe-action/hooks';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
+import { useUser } from '../../../../providers/UserProvider';
 
 export function SuccessView({
   builder
@@ -12,9 +15,20 @@ export function SuccessView({
 }) {
   const isMd = useMdScreen();
 
+  const { refreshUser } = useUser();
+
+  const { execute, isExecuting } = useAction(completeQuestAction, {
+    onSuccess: () => {
+      refreshUser();
+    }
+  });
+
   const handleShare = (platform: 'x' | 'telegram' | 'warpcast') => {
     const shareUrl = getShareMessage({ builderName: builder.displayName, builderPath: builder.path, platform });
     window.open(shareUrl, '_blank');
+    if (!isExecuting) {
+      execute({ questType: 'scout-share-builder' });
+    }
   };
   const size = !isMd ? 30 : 42.5;
 

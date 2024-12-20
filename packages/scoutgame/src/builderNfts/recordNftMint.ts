@@ -1,4 +1,5 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
@@ -9,6 +10,7 @@ import { getCurrentWeek } from '@packages/scoutgame/dates';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
 import type { MintNFTParams } from './mintNFT';
+import { recordNftPurchaseQuests } from './recordNftPurchaseQuests';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
@@ -58,7 +60,8 @@ export async function recordNftMint(
       builder: {
         select: {
           path: true,
-          displayName: true
+          displayName: true,
+          hasMoxieProfile: true
         }
       }
     }
@@ -214,6 +217,12 @@ export async function recordNftMint(
       builderId: builderNft.builderId,
       season: builderNft.season as Season
     });
+  }
+
+  try {
+    await recordNftPurchaseQuests(scoutId, skipMixpanel);
+  } catch (error) {
+    log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
   }
 
   return {
