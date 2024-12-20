@@ -6,7 +6,7 @@ import { sendPointsForSocialQuest } from '../points/builderEvents/sendPointsForS
 import type { QuestType } from './questRecords';
 import { questsRecord } from './questRecords';
 
-export async function completeQuests(userId: string, questTypes: QuestType[]) {
+export async function completeQuests(userId: string, questTypes: QuestType[], skipMixpanel: boolean = false) {
   const completedQuests = await prisma.scoutSocialQuest.findMany({
     where: {
       type: {
@@ -27,6 +27,8 @@ export async function completeQuests(userId: string, questTypes: QuestType[]) {
       points,
       type: questType
     });
-    trackUserAction('complete_quest', { userId, questType });
+    if (!skipMixpanel) {
+      trackUserAction('complete_quest', { userId, questType });
+    }
   }
 }

@@ -220,7 +220,7 @@ export async function recordNftMint(
   }
 
   try {
-    await recordNftPurchaseQuests(scoutId);
+    await recordNftPurchaseQuests(scoutId, skipMixpanel);
   } catch (error) {
     log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
   }

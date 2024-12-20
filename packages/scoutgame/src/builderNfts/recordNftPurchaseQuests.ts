@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { completeQuests } from '../quests/completeQuests';
 import type { QuestType } from '../quests/questRecords';
 
-export async function recordNftPurchaseQuests(scoutId: string) {
+export async function recordNftPurchaseQuests(scoutId: string, skipMixpanel: boolean = false) {
   const scoutNftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
       scoutId
@@ -71,5 +71,5 @@ export async function recordNftPurchaseQuests(scoutId: string) {
     questTypes.push('scout-moxie-builder');
   }
 
-  await completeQuests(scoutId, questTypes);
+  await completeQuests(scoutId, questTypes, skipMixpanel);
 }
