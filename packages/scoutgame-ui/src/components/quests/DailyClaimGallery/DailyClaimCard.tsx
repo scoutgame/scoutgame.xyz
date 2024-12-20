@@ -4,6 +4,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Stack, Typography } from '@mui/material';
 import { claimDailyRewardAction } from '@packages/scoutgame/claims/claimDailyRewardAction';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
+import { getCurrentLocalWeek } from '@packages/scoutgame/dates';
 import { DailyClaimGift } from '@packages/scoutgame-ui/components/claim/components/common/DailyClaimGift';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { DateTime } from 'luxon';
@@ -54,7 +55,7 @@ export function DailyClaimCard({
       data-test={`daily-claim-${canClaim ? 'enabled' : 'disabled'}`}
       onClick={() => {
         if (canClaim) {
-          claimDailyReward({ isBonus: dailyClaim.isBonus, dayOfWeek: currentWeekDay });
+          claimDailyReward({ isBonus: dailyClaim.isBonus, dayOfWeek: currentWeekDay, week: getCurrentLocalWeek() });
         }
       }}
     >

@@ -58,10 +58,12 @@ export function PartnerRewardsCarousel() {
         height={isDesktop ? 300 : 145}
         slidesPerView={1}
         autoplay
-        renderBullet={(index, className) =>
-          `<img src="/images/crypto/${partnerInfos[index].logo}" class="${className}"/>`
-        }
-        boxProps={{ width: { xs: '100%', md: '95%' } }}
+        pagination={{
+          clickable: true,
+          renderBullet: (index, className) =>
+            `<img src="/images/crypto/${partnerInfos[index].logo}" class="${className}"/>`
+        }}
+        slotProps={{ boxProps: { width: { xs: '100%', md: '95%' } } }}
       >
         {partnerInfos.map((partner) => (
           <Link href={`/info/partner-rewards/${partner.infoPath}`} key={partner.name}>

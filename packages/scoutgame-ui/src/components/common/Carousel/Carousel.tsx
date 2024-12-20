@@ -1,15 +1,13 @@
 'use client';
 
-import type { BoxProps } from '@mui/material';
-import { Box } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import type { BoxProps, IconButtonProps } from '@mui/material';
+import { Box, styled } from '@mui/material';
+import type { ReactNode, ComponentProps } from 'react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-import type { SwiperProps } from 'swiper/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { NavigationOptions } from 'swiper/types';
 
-import { useMdScreen } from '../../../hooks/useMediaScreens';
-import { LoadingCards } from '../Loading/LoadingCards';
+import { useIsMounted } from '../../../hooks/useIsMounted';
 
 import { NextArrow, PrevArrow } from './Arrows';
 
@@ -17,38 +15,28 @@ import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/pagination';
 
+const StyledSwiper = styled(Swiper)();
+
 export type CarouselProps = {
-  children: React.ReactNode[];
-  renderBullet?: (index: number, className: string) => string;
+  children: ReactNode[];
   slidesPerView?: number;
-  boxProps?: Partial<BoxProps>;
-  mobileMinHeight?: string;
-  showMobileNavigationArrows?: boolean;
-} & Partial<SwiperProps>;
+  slotProps: {
+    boxProps?: Partial<BoxProps>;
+    arrowProps?: Partial<IconButtonProps>;
+  };
+} & ComponentProps<typeof StyledSwiper>;
 
-export function Carousel({
-  children,
-  renderBullet,
-  boxProps,
-  mobileMinHeight,
-  autoplay,
-  showMobileNavigationArrows,
-  ...swiperProps
-}: CarouselProps) {
-  const isDesktop = useMdScreen();
+export function Carousel({ children, slotProps, autoplay, ...swiperProps }: CarouselProps) {
+  const { boxProps, arrowProps } = slotProps;
   // Use state and effect to skip pre-rendering
-  const [isClientSide, setIsClientSide] = useState(false);
-
-  useEffect(() => {
-    setIsClientSide(true);
-  }, []);
+  const isMounted = useIsMounted();
 
   const prevButtonId =
     ((swiperProps.navigation as NavigationOptions)?.prevEl as string | undefined) ?? '.swiper-button-prev';
   const nextButtonId = (swiperProps.navigation as NavigationOptions)?.nextEl ?? '.swiper-button-next';
 
-  if (!isClientSide) {
-    return <LoadingCards />;
+  if (!isMounted) {
+    return null;
   }
 
   return (
@@ -62,9 +50,9 @@ export function Carousel({
       position='relative'
       {...boxProps}
     >
-      <Swiper
+      <StyledSwiper
         autoplay={
-          typeof autoplay === 'boolean'
+          typeof autoplay === 'boolean' && autoplay === true
             ? {
                 delay: 3000,
                 pauseOnMouseEnter: true
@@ -74,46 +62,28 @@ export function Carousel({
         loop
         className='swiper'
         autoHeight={true}
-        modules={[Navigation, Autoplay, ...(renderBullet ? [Pagination] : [])]}
+        modules={[Navigation, Autoplay, Pagination]}
         navigation={{
           nextEl: nextButtonId,
           prevEl: prevButtonId
         }}
-        pagination={
-          renderBullet
-            ? {
-                clickable: true,
-                renderBullet
-              }
-            : undefined
-        }
         {...swiperProps}
-        style={{
+        sx={{
           width: '100%',
-          minHeight: isDesktop ? undefined : mobileMinHeight,
           zIndex: 0,
-          ...swiperProps.style
+          ...swiperProps.sx
         }}
       >
         {children.map((child, index) => (
           <SwiperSlide key={`${index.toString()}`}>{child}</SwiperSlide>
         ))}
-      </Swiper>
-      {isDesktop && swiperProps.slidesPerView && children.length > swiperProps.slidesPerView && (
+      </StyledSwiper>
+      {swiperProps.slidesPerView && children.length > swiperProps.slidesPerView && (
         <>
-          <NextArrow className={(nextButtonId as string).replace('.', '')} />
-          <PrevArrow className={(prevButtonId as string).replace('.', '')} />
+          <NextArrow className={(nextButtonId as string).replace('.', '')} {...arrowProps} />
+          <PrevArrow className={(prevButtonId as string).replace('.', '')} {...arrowProps} />
         </>
       )}
-      {!isDesktop &&
-        showMobileNavigationArrows &&
-        swiperProps.slidesPerView &&
-        children.length > swiperProps.slidesPerView && (
-          <>
-            <NextArrow className={(nextButtonId as string).replace('.', '')} style={{ height: '100px' }} />
-            <PrevArrow className={(prevButtonId as string).replace('.', '')} style={{ height: '100px' }} />
-          </>
-        )}
     </Box>
   );
 }

@@ -34,7 +34,8 @@ export async function recordClosedPullRequest({
         some: {
           id: pullRequest.author.id
         }
-      }
+      },
+      deletedAt: null
     },
     select: {
       id: true,

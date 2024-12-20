@@ -40,7 +40,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
         })
       ).nftPurchaseEvent,
       builderNft
-    });
+    } as PartialNftPurchaseEvent);
 
     nftPurchaseEvents.push({
       ...(
@@ -53,7 +53,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
         })
       ).nftPurchaseEvent,
       builderNft
-    });
+    } as PartialNftPurchaseEvent);
 
     nftPurchaseEvents.push({
       ...(
@@ -67,7 +67,7 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
         })
       ).nftPurchaseEvent,
       builderNft: starterPackNft
-    });
+    } as PartialNftPurchaseEvent);
   });
 
   // Success Cases

@@ -65,13 +65,6 @@ export async function sendPointsForDailyClaim({
         }
       }
     });
-
-    await incrementPointsEarnedStats({
-      season,
-      userId: builderId,
-      builderPoints: points,
-      tx: _tx
-    });
   }
 
   if (tx) {

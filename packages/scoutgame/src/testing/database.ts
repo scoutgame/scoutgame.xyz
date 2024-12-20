@@ -159,12 +159,12 @@ export async function mockGemPayoutEvents({
   season = mockSeason
 }: {
   builderId: string;
-  recipients: { id: string; points: number }[];
+  recipients: { id: string; points: number; recipientType: 'scout' | 'builder' }[];
   week?: string;
   gems?: number;
   season?: string;
 }) {
-  return prisma.gemsPayoutEvent.create({
+  const event = await prisma.gemsPayoutEvent.create({
     data: {
       gems,
       points: 0,
@@ -187,7 +187,7 @@ export async function mockGemPayoutEvents({
           },
           pointsReceipts: {
             createMany: {
-              data: recipients.map(({ id, points }) => ({
+              data: recipients.map(({ id, recipientType, points }) => ({
                 value: points,
                 recipientId: id
               }))
@@ -197,6 +197,25 @@ export async function mockGemPayoutEvents({
       }
     }
   });
+  const pointsReceipts = await prisma.pointsReceipt.findMany({
+    where: {
+      event: {
+        gemsPayoutEventId: event.id
+      }
+    }
+  });
+
+  // create actvities so we know how they earned the points
+  await prisma.scoutGameActivity.createMany({
+    data: pointsReceipts.map(({ id: pointsReceiptId, recipientId }) => ({
+      recipientType: recipients.find(({ id }) => id === recipientId)!.recipientType,
+      type: 'points',
+      userId: recipientId!,
+      pointsReceiptId
+    }))
+  });
+
+  return event;
 }
 
 export async function mockGemPayoutEvent({
@@ -207,7 +226,7 @@ export async function mockGemPayoutEvent({
   season = mockSeason
 }: {
   builderId: string;
-  recipientId?: string;
+  recipientId: string;
   amount?: number;
   week?: string;
   season?: string;
@@ -236,7 +255,14 @@ export async function mockGemPayoutEvent({
           pointsReceipts: {
             create: {
               value: amount,
-              recipientId
+              recipientId,
+              activities: {
+                create: {
+                  recipientType: 'scout',
+                  type: 'points',
+                  userId: recipientId
+                }
+              }
             }
           }
         }

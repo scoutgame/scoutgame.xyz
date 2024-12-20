@@ -64,13 +64,6 @@ export async function sendPointsForSocialQuest({
         }
       }
     });
-
-    await incrementPointsEarnedStats({
-      season,
-      userId: builderId,
-      builderPoints: points,
-      tx: _tx
-    });
   }
 
   if (tx) {

@@ -1,35 +1,46 @@
+'use client';
+
 import { Box, Paper, Stack, Typography } from '@mui/material';
 import { getEditorialDescription } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 
+import { useLgScreen, useMdScreen } from '../../../hooks/useMediaScreens';
 import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
 import { Carousel } from '../../common/Carousel/Carousel';
-
-import 'swiper/css';
-import 'swiper/css/autoplay';
-
-import { StarterPackInfo } from './StarterPackInfo';
+import { StarterPackInfo } from '../StarterPackCarousel/StarterPackInfo';
 
 export function StarterPackCarousel({
   builders,
   remainingStarterCards
 }: {
   builders: StarterPackBuilder[];
-  remainingStarterCards?: number;
+  remainingStarterCards: number;
 }) {
+  const isDesktop = useMdScreen();
+  const isLgScreen = useLgScreen();
+  const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'small';
+
   return (
-    <Stack gap={2}>
-      <StarterPackInfo remainingStarterCards={remainingStarterCards} />
+    <Stack gap={4} flexDirection={{ xs: 'column-reverse', md: 'row' }}>
       <Carousel
         slidesPerView={1}
-        autoplay={false}
-        boxProps={{ width: { xs: '100%', md: '90%' }, margin: '0 auto' }}
+        autoplay
         navigation={{
           nextEl: '.swiper-starter-pack-button-next',
           prevEl: '.swiper-starter-pack-button-prev'
         }}
-        mobileMinHeight='550px'
-        showMobileNavigationArrows
+        slotProps={{
+          arrowProps: {
+            sx: {
+              display: 'flex',
+              bgcolor: { xs: 'transparent', md: 'background.paper' },
+              '&:hover': {
+                bgcolor: { xs: 'transparent', md: 'background.paper' }
+              }
+            }
+          },
+          boxProps: { width: { xs: '100%', md: '70%' }, margin: '0 auto' }
+        }}
       >
         {builders.map((builder) => (
           <Stack
@@ -38,19 +49,34 @@ export function StarterPackCarousel({
             component={Paper}
             gap={2}
             p={{ xs: 2, md: 4 }}
+            bgcolor='transparent'
+            border='1px solid'
+            borderColor='green.main'
+            sx={{
+              backgroundImage: `url(/images/backgrounds/star-bg.jpg)`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
           >
             <Box>
-              <BuilderCard builder={builder} showPurchaseButton markStarterCardPurchased={builder.purchased} />
+              <BuilderCard
+                builder={builder}
+                showPurchaseButton
+                markStarterCardPurchased={builder.purchased}
+                type='starter_pack'
+                size={size}
+              />
             </Box>
-            <Box display='flex' alignItems='center' flexWrap='wrap'>
-              {/* <Typography>{builder.bio}</Typography> */}
-              <Typography width='fit-container'>
-                {getEditorialDescription({ fid: builder.farcasterId as number }) ?? builder.bio}
+            <Box display='flex' alignItems='center' flexWrap='wrap' component={Paper} p={1}>
+              <Typography width='fit-container' variant='body2'>
+                {getEditorialDescription({ fid: builder.farcasterId }) ?? builder.bio}
               </Typography>
             </Box>
           </Stack>
         ))}
       </Carousel>
+      <StarterPackInfo remainingStarterCards={remainingStarterCards} />
     </Stack>
   );
 }

@@ -34,7 +34,7 @@ export async function processGemsPayout(
   }
 
   const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints, nftPurchaseEvents } =
-    await getWeeklyPointsPoolAndBuilders({ week });
+    await getWeeklyPointsPoolAndBuilders({ week, season });
 
   scoutgameMintsLogger.debug(`Allocation: ${weeklyAllocatedPoints} -- Total points for week ${week}: ${totalPoints}`, {
     topWeeklyBuilders: topWeeklyBuilders.length,

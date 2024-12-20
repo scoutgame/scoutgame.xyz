@@ -27,6 +27,9 @@ type ScoutWithGithubUser = {
 
 export async function GET() {
   const users = await prisma.scout.findMany({
+    where: {
+      deletedAt: null
+    },
     select: {
       id: true,
       path: true,

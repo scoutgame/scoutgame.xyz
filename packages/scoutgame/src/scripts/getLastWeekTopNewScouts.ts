@@ -47,6 +47,7 @@ export async function getLastWeekTopNewScouts() {
         id: {
           in: scoutIds
         },
+        deletedAt: null,
         nftPurchaseEvents: {
           every: {
             createdAt: {
