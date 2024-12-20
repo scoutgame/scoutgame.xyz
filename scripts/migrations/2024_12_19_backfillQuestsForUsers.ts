@@ -78,7 +78,6 @@ async function backfillQuestsForBuilders() {
 
       let contributedToCeloRepo = false, contributedToGame7Repo = false, contributedToLitProtocolRepo = false;
 
-
       builder.githubUsers.flatMap(user => user.events).filter(event => event.repo?.bonusPartner).forEach(event => {
         const bonusPartner = event.repo?.bonusPartner;
         if (bonusPartner === 'celo') {

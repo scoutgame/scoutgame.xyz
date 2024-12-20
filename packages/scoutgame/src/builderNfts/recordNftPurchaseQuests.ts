@@ -38,7 +38,7 @@ export async function recordNftPurchaseQuests(scoutId: string) {
     return acc + event.tokensPurchased;
   }, 0);
   const totalCardsPurchased = totalStarterPackCardsPurchased + totalFullSeasonCardsPurchased;
-  const uniqueCardPurchases = new Set(scoutNftPurchaseEvents.map((event) => event.builderNftId)).size;
+  const uniqueCardPurchases = new Set(fullSeasonCardPurchases.map((event) => event.builderNftId)).size;
   const questTypes: QuestType[] = [];
 
   // First starter pack card purchased
