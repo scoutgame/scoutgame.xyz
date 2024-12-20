@@ -27,7 +27,7 @@ export function ScoutPageCarousel({
   const color = tab === 'starter_pack' && isStarterPackEnabled ? 'green.main' : 'secondary';
 
   return (
-    <Box position='relative'>
+    <Box position='relative' mb={3}>
       {isStarterPackEnabled && (
         <Box width='100%' display='flex' justifyContent='flex-end'>
           <Box
