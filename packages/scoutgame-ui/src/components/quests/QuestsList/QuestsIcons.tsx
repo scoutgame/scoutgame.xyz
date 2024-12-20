@@ -1,10 +1,11 @@
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import XIcon from '@mui/icons-material/X';
 import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 
-const ScoutBinocularsIcon = <Image src='/images/scout-binoculars.svg' alt='Scout binoculars' width={34} height={34} />;
+import { PointsIcon } from '../../common/Icons';
+
+const ScoutBinocularsIcon = <PointsIcon size={34} color='default' />;
 const BuilderDogIcon = (
   <div style={{ position: 'relative', width: 34, height: 34 }}>
     <Image

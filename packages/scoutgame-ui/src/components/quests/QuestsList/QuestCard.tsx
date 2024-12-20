@@ -63,11 +63,6 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
       <Stack direction='row' gap={3} alignItems='center'>
         {icon}
         <Stack gap={1}>
-          <Stack direction='row' gap={0.5} alignItems='center'>
-            {quest.tags.map((tag) => (
-              <Chip size='small' key={tag} label={tag.charAt(0).toUpperCase() + tag.slice(1)} />
-            ))}
-          </Stack>
           <Stack>
             <Typography fontWeight={500} textAlign='left'>
               {quest.label}
@@ -111,7 +106,10 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
           ) : null}
         </Stack>
       </Stack>
-      {quest.completed ? <CheckCircleIcon color='secondary' /> : <KeyboardArrowRightIcon />}
+      <Stack direction='row' gap={0.5} alignItems='center'>
+        <Chip size='small' label={quest.tag.charAt(0).toUpperCase() + quest.tag.slice(1)} />
+        {quest.completed ? <CheckCircleIcon color='secondary' /> : <KeyboardArrowRightIcon />}
+      </Stack>
     </Button>
   );
 }

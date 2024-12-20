@@ -194,7 +194,7 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
         } catch (error) {
           log.error('Error completing quest for commit', {
             error,
-            builderId: githubUser.builderId
+            userId: githubUser.builderId
           });
         }
 

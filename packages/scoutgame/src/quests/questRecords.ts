@@ -6,7 +6,7 @@ type QuestRecord = {
   rewards?: string;
   internal?: boolean;
   totalSteps?: number;
-  tags: string[];
+  tag: string;
 };
 
 export type QuestType =
@@ -43,7 +43,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     points: 50,
     label: 'Follow @scoutgamexyz',
     link: 'https://x.com/@scoutgamexyz',
-    tags: ['scout']
+    tag: 'scout'
   },
   'share-x-telegram': {
     points: 50,
@@ -51,20 +51,20 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: `https://x.com/intent/tweet?text=${encodeURIComponent(
       "I'm playing @scoutgamexyz on Telegram! 🕹️ Come join me, play in the channel, and discover top builders while earning points and rewards. Let’s scout together! 👉 https://t.me/+J0dl4_uswBY2NTkx #PlayAndEarn"
     )}`,
-    tags: ['scout']
+    tag: 'scout'
   },
   'invite-friend': {
     points: 5,
     link: '/quests',
     label: 'Refer a Friend',
-    tags: ['scout']
+    tag: 'scout'
   },
   'scout-starter-card': {
     points: 5,
     label: 'Scout a Starter Card',
     link: '/builders',
     internal: true,
-    tags: ['scout']
+    tag: 'scout'
   },
   'scout-3-starter-cards': {
     label: 'Scout All 3 Starter Cards',
@@ -72,14 +72,14 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/builders',
     internal: true,
     totalSteps: 3,
-    tags: ['scout']
+    tag: 'scout'
   },
   'scout-full-season-card': {
     label: 'Scout a Full Season Card',
     points: 15,
     link: '/builders',
     internal: true,
-    tags: ['scout']
+    tag: 'scout'
   },
   'enter-op-new-scout-competition': {
     label: 'Enter the OP New Scout Competition',
@@ -88,7 +88,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     partner: 'Optimism',
     link: '/info/partner-rewards/optimism',
     internal: true,
-    tags: ['scout', 'partners']
+    tag: 'scout'
   },
   'scout-5-builders': {
     label: 'Scout 5 Builders',
@@ -98,14 +98,14 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/builders',
     internal: true,
     totalSteps: 5,
-    tags: ['scout', 'partners']
+    tag: 'scout'
   },
   'scout-share-builder': {
     label: 'Scout & Share a Builder',
     points: 5,
     link: '/builders',
     internal: true,
-    tags: ['scout']
+    tag: 'scout'
   },
   'scout-moxie-builder': {
     label: 'Scout a Moxie Builder',
@@ -114,56 +114,56 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     partner: 'Moxie',
     link: '/info/partner-rewards/moxie',
     internal: true,
-    tags: ['scout', 'partners']
+    tag: 'scout'
   },
   'share-weekly-claim': {
     label: 'Share a Weekly Claim',
     points: 10,
     link: '/claim',
     internal: true,
-    tags: ['scout']
+    tag: 'scout'
   },
   'share-scout-profile': {
     label: 'Share your Scout profile',
     points: 20,
     link: '/profile?tab=scout-build',
     internal: true,
-    tags: ['scout']
+    tag: 'scout'
   },
   'score-first-commit': {
     label: 'Score Your First Commit',
     points: 10,
     link: '/info/builders',
     internal: true,
-    tags: ['builder']
+    tag: 'builder'
   },
   'score-first-pr': {
     label: 'Score Your First PR',
     points: 15,
     link: '/info/builders',
     internal: true,
-    tags: ['builder']
+    tag: 'builder'
   },
   'score-streak': {
     label: 'Score a Streak',
     points: 20,
     link: '/info/builders',
     internal: true,
-    tags: ['builder']
+    tag: 'builder'
   },
   'first-repo-contribution': {
     label: 'First Contribution to a Repo',
     points: 25,
     link: '/info/builders',
     internal: true,
-    tags: ['builder']
+    tag: 'builder'
   },
   'share-builder-profile': {
     label: 'Share a Builder Profile',
     points: 25,
     link: '/profile?tab=scout-build',
     internal: true,
-    tags: ['builder']
+    tag: 'builder'
   },
   'contribute-celo-repo': {
     label: 'Fix a Celo Issue',
@@ -172,7 +172,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     partner: 'Celo',
     link: '/info/partner-rewards/celo',
     internal: true,
-    tags: ['builder', 'partners']
+    tag: 'builder'
   },
   'contribute-game7-repo': {
     label: 'Contribute to a Game7 Repo',
@@ -181,7 +181,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     partner: 'Game7',
     link: '/info/partner-rewards/game7',
     internal: true,
-    tags: ['builder', 'partners']
+    tag: 'builder'
   },
   'contribute-lit-repo': {
     label: 'Merge a PR in the Lit Protocol Repo',
@@ -190,7 +190,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     partner: 'Lit',
     link: '/info/partner-rewards/lit',
     internal: true,
-    tags: ['builder', 'partners']
+    tag: 'builder'
   }
   // 'link-farcaster-telegram-account': {
   //   label: 'Link your account with Farcaster or Telegram',
