@@ -43,9 +43,8 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Address } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
-import { useTrackEvent } from 'hooks/useTrackEvent';
-
 import { useUserWalletAddress } from '../../../../hooks/api/session';
+import { useTrackEvent } from '../../../../hooks/useTrackEvent';
 import { usePurchase } from '../../../../providers/PurchaseProvider';
 import { useSnackbar } from '../../../../providers/SnackbarContext';
 import { useUser } from '../../../../providers/UserProvider';
