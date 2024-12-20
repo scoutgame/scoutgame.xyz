@@ -27,7 +27,7 @@ type DecentTransactionProps = {
   tokensToPurchase: bigint;
   scoutId?: string;
   contractAddress?: string;
-  usingProtocolTokens?: boolean;
+  useScoutToken?: boolean;
 };
 
 async function prepareDecentTransaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
@@ -69,29 +69,29 @@ export function useDecentTransaction({
   scoutId,
   tokensToPurchase,
   contractAddress,
-  usingProtocolTokens
+  useScoutToken
 }: DecentTransactionProps) {
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
-    dstToken: usingProtocolTokens ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress,
+    dstToken: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress,
     srcChainId: sourceChainId,
-    dstChainId: usingProtocolTokens ? scoutProtocolChainId : builderNftChain.id,
+    dstChainId: useScoutToken ? scoutProtocolChainId : builderNftChain.id,
     slippage: 1,
     actionType: ActionType.NftMint,
     actionConfig: {
-      chainId: usingProtocolTokens ? scoutProtocolChainId : optimism.id,
+      chainId: useScoutToken ? scoutProtocolChainId : optimism.id,
       contractAddress:
-        contractAddress || usingProtocolTokens ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress(),
+        contractAddress || useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress(),
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
-        tokenAddress: usingProtocolTokens ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
+        tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: usingProtocolTokens
+      signature: useScoutToken
         ? 'function mint(address account, uint256 tokenId, uint256 amount)'
         : 'function mint(address account, uint256 tokenId, uint256 amount, string scout)',
-      args: usingProtocolTokens
+      args: useScoutToken
         ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
         : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
     }

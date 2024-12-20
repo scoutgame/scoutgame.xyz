@@ -1,5 +1,6 @@
 'use client';
 
+import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getChainById } from '@packages/blockchain/chains';
@@ -33,7 +34,7 @@ export function PointsClaimScreen({
   bonusPartners,
   builders,
   repos,
-  claimData
+  onchainClaimData
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
@@ -42,7 +43,7 @@ export function PointsClaimScreen({
     displayName: string;
   }[];
   repos: string[];
-  claimData?: ClaimData;
+  onchainClaimData?: ClaimData;
 }) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
   const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction);
@@ -65,15 +66,15 @@ export function PointsClaimScreen({
   };
 
   async function handleWalletClaim() {
-    if (walletClient?.chain.id !== scoutProtocolChainId) {
-      await switchChainAsync({
-        chainId: scoutProtocolChainId,
-        addEthereumChainParameter: {
-          ...scoutProtocolChain,
-          rpcUrls: getChainById(scoutProtocolChainId)?.rpcUrls as string[]
-        }
-      });
+    if (!walletClient) {
+      log.warn('No wallet client found');
       return;
+    }
+
+    if (walletClient.chain.id !== scoutProtocolChainId) {
+      await walletClient.switchChain({
+        id: scoutProtocolChainId
+      });
     }
 
     const extendedClient = walletClient.extend(publicActions);
@@ -86,7 +87,7 @@ export function PointsClaimScreen({
 
     const tx = await protocolClient.multiClaim({
       args: {
-        claims: claimData?.weeklyProofs?.map((claim) => ({
+        claims: onchainClaimData?.weeklyProofs?.map((claim) => ({
           week: claim.week,
           amount: BigInt(claim.amount),
           proofs: claim.proofs
@@ -96,7 +97,7 @@ export function PointsClaimScreen({
 
     await handleOnchainClaim({
       wallet: walletClient.account.address.toLowerCase(),
-      claimsProofs: claimData!.weeklyProofs,
+      claimsProofs: onchainClaimData!.weeklyProofs,
       claimTxHash: tx.transactionHash
     });
 
@@ -166,12 +167,14 @@ export function PointsClaimScreen({
               </Stack>
             </Stack>
             <Box width={{ xs: 'fit-content', md: '100%' }}>
-              {claimData && connectedAddress !== claimData.address.toLowerCase() ? (
-                <WalletLogin />
-              ) : (
-                <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
-              )}
-              {!claimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
+              {onchainClaimData ? (
+                connectedAddress !== onchainClaimData.address.toLowerCase() ? (
+                  <WalletLogin />
+                ) : (
+                  <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+                )
+              ) : null}
+              {!onchainClaimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
             </Box>
           </Stack>
         </>

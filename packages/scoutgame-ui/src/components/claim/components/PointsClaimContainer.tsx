@@ -42,7 +42,7 @@ export async function PointsClaimContainer() {
         bonusPartners={bonusPartners}
         builders={builders}
         repos={repos}
-        claimData={claimData}
+        onchainClaimData={claimData}
       />
       {points === 0 ? null : (
         <Suspense fallback={<LoadingTable />}>

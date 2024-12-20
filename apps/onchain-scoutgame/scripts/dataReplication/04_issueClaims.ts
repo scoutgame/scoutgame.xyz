@@ -1,5 +1,5 @@
 import { log } from "@charmverse/core/log";
-import { currentSeason, getAllISOWeeksFromSeasonStart, getCurrentWeek } from "@packages/scoutgame/dates";
+import { currentSeason, getAllISOWeeksFromSeasonStart, getAllISOWeeksFromSeasonStartUntilSeasonEnd, getCurrentWeek } from "@packages/scoutgame/dates";
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from "@packages/scoutgame/protocol/constants";
 import { generateWeeklyClaims } from "@packages/scoutgame/protocol/generateWeeklyClaims";
 import { resolveTokenOwnership } from "@packages/scoutgame/protocol/resolveTokenOwnership";
@@ -12,7 +12,7 @@ validateIsNotProductionDatabase()
 
 async function issueClaims() {
 
-  const seasonWeeks = getAllISOWeeksFromSeasonStart({ season: currentSeason, allSeasonWeeks: true });
+  const seasonWeeks = getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season: currentSeason });
 
   // The ownership will be empty for previous weeks, so we can use current ownership for past data simulations.
   const ownership = await resolveTokenOwnership({ week: getCurrentWeek(), chainId: scoutProtocolChainId, contractAddress: scoutProtocolBuilderNftContractAddress() });

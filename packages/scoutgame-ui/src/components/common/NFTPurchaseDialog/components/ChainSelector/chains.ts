@@ -83,7 +83,7 @@ export const chainOptionsTestnet: ChainOption[] = [
   }
 ];
 
-type AvailableCurrency = 'ETH' | 'USDC' | 'SCOUT';
+export type AvailableCurrency = 'ETH' | 'USDC' | 'SCOUT';
 
 export type ChainWithCurrency = ChainOption & { currency: AvailableCurrency };
 

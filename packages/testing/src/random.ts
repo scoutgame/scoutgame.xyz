@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import type { Address } from 'viem';
-import { isAddress, keccak256 } from 'viem/utils';
+import { keccak256 } from 'viem/utils';
 
 export function generateRandomEthAddress(): Address {
   const privateKey = randomBytes(32); // Generate 32 random bytes

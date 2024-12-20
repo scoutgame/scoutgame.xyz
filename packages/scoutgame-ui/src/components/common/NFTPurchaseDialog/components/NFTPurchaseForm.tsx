@@ -45,7 +45,6 @@ import {
 } from '@packages/scoutgame/protocol/constants';
 import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
-import { prettyPrint } from '@packages/utils/strings';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAction } from 'next-safe-action/hooks';
@@ -187,10 +186,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
                 args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
               });
       setPurchaseCost(_price);
-
-      prettyPrint({
-        _price
-      });
     },
     [setPurchaseCost]
   );
@@ -264,7 +259,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         : getBuilderContractAddressForNftType(builder.nftType),
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: getCurrencyContract(selectedPaymentOption),
-    usingProtocolTokens: platform === 'onchain_webapp',
+    useScoutToken: platform === 'onchain_webapp',
     tokensToPurchase: BigInt(tokensToBuy)
   });
 
@@ -592,7 +587,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             <BlockchainSelect
               value={selectedPaymentOption}
               balance={displayedBalance}
-              useTestnets={platform === 'onchain_webapp' ? true : useTestnets}
+              useTestnets={useTestnets}
               address={address}
               onSelectChain={(_paymentOption) => {
                 setSelectedPaymentOption(_paymentOption);

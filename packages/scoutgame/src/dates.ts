@@ -39,16 +39,6 @@ export const streakWindow = 7 * 24 * 60 * 60 * 1000;
 export const seasonAllocatedPoints = 18_141_850;
 // Currently, we are hardcoding the value of weekly allocated points to 100,000
 
-/**
- * ISOWeeks should be padded with a 0 if the week number is less than 10
- */
-function safeIsoWeekNumber(weekNumber: number): string {
-  if (weekNumber < 10) {
-    return `0${weekNumber}`;
-  }
-  return weekNumber.toString();
-}
-
 // Return the format of week
 export function getCurrentWeek(): ISOWeek {
   return _formatWeek(DateTime.utc());
@@ -80,7 +70,7 @@ export function getDateFromISOWeek(week: ISOWeek): DateTime {
 }
 
 export function getEndOfSeason(season: Season): DateTime {
-  const allWeeks = getAllISOWeeksFromSeasonStart({ season, allSeasonWeeks: true });
+  const allWeeks = getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season });
 
   const lastWeek = allWeeks[allWeeks.length - 1];
   return getDateFromISOWeek(lastWeek).endOf('week');
@@ -130,28 +120,28 @@ export function getSeasonWeekFromISOWeek({ season, week }: { season: ISOWeek; we
   return weeksDiff + 1;
 }
 
-export function getAllISOWeeksFromSeasonStart({
-  season,
-  allSeasonWeeks
-}: {
-  season: Season;
-  allSeasonWeeks?: boolean;
-}): string[] {
+export function getAllISOWeeksFromSeasonStart({ season }: { season: Season }): string[] {
   const start = getStartOfWeek(season);
   const end = DateTime.now();
 
   let current = start;
   const weeks: string[] = [];
-  if (allSeasonWeeks) {
-    for (let i = 0; i < weeksPerSeason; i++) {
-      weeks.push(`${current.weekYear}-W${safeIsoWeekNumber(current.weekNumber)}`);
-      current = current.plus({ weeks: 1 });
-    }
-  } else {
-    while (current <= end) {
-      weeks.push(`${current.weekYear}-W${safeIsoWeekNumber(current.weekNumber)}`);
-      current = current.plus({ weeks: 1 });
-    }
+  while (current <= end) {
+    weeks.push(_formatWeek(current));
+    current = current.plus({ weeks: 1 });
+  }
+
+  return weeks;
+}
+
+export function getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }: { season: Season }): string[] {
+  const start = getStartOfWeek(season);
+  let current = start;
+  const weeks: string[] = [];
+
+  for (let i = 0; i < weeksPerSeason; i++) {
+    weeks.push(_formatWeek(current));
+    current = current.plus({ weeks: 1 });
   }
 
   return weeks;
