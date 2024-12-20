@@ -15,6 +15,8 @@ const NextClaimCountdown = dynamic(
 );
 
 export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }) {
+  const isSequential = isSequentialUpToToday(dailyClaims);
+
   return (
     <Stack justifyContent='center' alignItems='center' gap={1} my={2}>
       <Typography variant='h4' color='secondary' fontWeight={600} zIndex={1}>
@@ -24,13 +26,21 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
       <Grid container spacing={1} width='100%'>
         {dailyClaims.map((dailyClaim) => (
           <Grid size={dailyClaim.isBonus ? 8 : 4} key={`${dailyClaim.day}-${dailyClaim.isBonus}`}>
-            <DailyClaimCard
-              dailyClaim={dailyClaim}
-              hasClaimedStreak={dailyClaims.filter((claim) => claim.claimed).length === 7}
-            />
+            <DailyClaimCard dailyClaim={dailyClaim} hasClaimedStreak={isSequential} />
           </Grid>
         ))}
       </Grid>
     </Stack>
   );
+}
+
+function isSequentialUpToToday(dailyClaims: DailyClaim[]) {
+  const today = new Date().getDay() || 7; // Sunday returns 0, so we convert it to 7
+  return dailyClaims
+    .slice(0, today)
+    .map((claim) => claim.claimed)
+    .every((bool, index, arr) => {
+      if (index === 0 && arr.length === 1) return true;
+      return bool;
+    });
 }

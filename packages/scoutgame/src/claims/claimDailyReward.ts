@@ -4,6 +4,8 @@ import { getCurrentWeek, getPreviousWeek, currentSeason } from '@packages/scoutg
 import { sendPointsForDailyClaim } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaim';
 import { sendPointsForDailyClaimStreak } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaimStreak';
 
+import { getRandomReward } from './getRandomReward';
+
 export async function claimDailyReward({
   userId,
   isBonus,
@@ -24,6 +26,8 @@ export async function claimDailyReward({
   if (dayOfWeek !== 7 && isBonus) {
     throw new Error('Bonus reward can only be claimed on the last day of the week');
   }
+
+  const points = getRandomReward(isBonus);
 
   if (isBonus) {
     const existingEvent = await prisma.scoutDailyClaimStreakEvent.findFirst({
@@ -50,9 +54,9 @@ export async function claimDailyReward({
 
     await sendPointsForDailyClaimStreak({
       builderId: userId,
-      points: 3,
       week,
-      season
+      season,
+      points
     });
     trackUserAction('daily_claim_streak', {
       userId
@@ -72,13 +76,15 @@ export async function claimDailyReward({
 
     await sendPointsForDailyClaim({
       builderId: userId,
-      points: 1,
       dayOfWeek,
       week,
-      season
+      season,
+      points
     });
     trackUserAction('daily_claim', {
       userId
     });
   }
+
+  return { points };
 }
