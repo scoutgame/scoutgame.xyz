@@ -37,7 +37,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
   private chain: Chain;
 
-  public abi: Abi = [
+  public abi = [
     {
       inputs: [],
       name: 'ERC20Token',
@@ -861,7 +861,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       name: 'Unpaused',
       type: 'event'
     }
-  ];
+  ] as const;
 
   constructor({
     contractAddress,
@@ -1389,7 +1389,13 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'safeBatchTransferFrom',
-      args: [params.args.from, params.args.to, params.args.tokenIds, params.args.amounts, params.args.data]
+      args: [
+        params.args.from,
+        params.args.to,
+        params.args.tokenIds,
+        params.args.amounts,
+        params.args.data as `0x${string}`
+      ]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -1418,7 +1424,13 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'safeTransferFrom',
-      args: [params.args.from, params.args.to, params.args.tokenId, params.args.amount, params.args.data]
+      args: [
+        params.args.from,
+        params.args.to,
+        params.args.tokenId,
+        params.args.amount,
+        params.args.data as `0x${string}`
+      ]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -1584,7 +1596,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'supportsInterface',
-      args: [params.args.interfaceId]
+      args: [params.args.interfaceId as `0x${string}`]
     });
 
     const { data } = await this.publicClient.call({

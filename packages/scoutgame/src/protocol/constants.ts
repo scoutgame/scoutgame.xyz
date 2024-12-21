@@ -1,4 +1,5 @@
 import env from '@beam-australia/react-env';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { LockupWeeklyStreamCreatorClient } from '@packages/scoutgame/builderNfts/clients/LockupWeeklyStreamCreatorClient';
 import { ScoutProtocolBuilderNFTImplementationClient } from '@packages/scoutgame/builderNfts/clients/ScoutProtocolBuilderNFTImplementationClient';
@@ -38,6 +39,22 @@ export function getScoutProtocolBuilderNFTContract() {
     chain: scoutProtocolChain,
     contractAddress,
     walletClient: getScoutAdminWalletClient()
+  });
+
+  return builderNFTContract;
+}
+
+export function getScoutProtocolBuilderNFTReadonlyContract() {
+  const contractAddress = scoutProtocolBuilderNftContractAddress();
+
+  if (!contractAddress) {
+    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
+  }
+
+  const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
+    chain: scoutProtocolChain,
+    contractAddress,
+    publicClient: getPublicClient(scoutProtocolChainId)
   });
 
   return builderNFTContract;
