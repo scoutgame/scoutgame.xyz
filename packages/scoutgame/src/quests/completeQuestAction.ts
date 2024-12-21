@@ -5,7 +5,7 @@ import * as yup from 'yup';
 
 import { authActionClient } from '../actions/actionClient';
 
-import { completeQuest } from './completeQuest';
+import { completeQuests } from './completeQuests';
 import type { QuestType } from './questRecords';
 
 export const completeQuestAction = authActionClient
@@ -15,6 +15,6 @@ export const completeQuestAction = authActionClient
     })
   )
   .action(async ({ parsedInput, ctx }) => {
-    await completeQuest(ctx.session.scoutId, parsedInput.questType);
+    await completeQuests(ctx.session.scoutId, [parsedInput.questType]);
     revalidatePath('/quests');
   });

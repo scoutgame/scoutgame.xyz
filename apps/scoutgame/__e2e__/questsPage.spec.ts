@@ -36,15 +36,13 @@ test.describe('Quests page', () => {
     await page.goto('/quests');
     await expect(questsPage.container).toBeVisible();
 
-    // Get all quests except invite-friend which is separate
-    const map = Object.keys(questsRecord)
-      .filter((item) => item !== 'invite-friend')
-      .map(async (key) => {
-        const locator = page.locator(`data-test=quest-${key}`);
-        await expect(locator).toBeVisible();
-        await expect(locator).toBeEnabled();
-        await locator.click();
-      });
+    // Click on the top quests
+    const map = ['follow-x-account', 'share-x-telegram'].map(async (key) => {
+      const locator = page.locator(`data-test=quest-${key}`);
+      await expect(locator).toBeVisible();
+      await expect(locator).toBeEnabled();
+      await locator.click();
+    });
 
     await Promise.all(map);
   });

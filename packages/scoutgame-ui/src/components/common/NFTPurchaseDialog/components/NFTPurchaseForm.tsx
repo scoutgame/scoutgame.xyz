@@ -1,7 +1,6 @@
 'use client';
 
 import env from '@beam-australia/react-env';
-import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma';
 import { ChainId } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
@@ -35,6 +34,7 @@ import {
 } from '@packages/scoutgame/builderNfts/constants';
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
+import { currentSeason } from '@packages/scoutgame/dates';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
 import {
@@ -53,6 +53,7 @@ import type { Address } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { useUserWalletAddress } from '../../../../hooks/api/session';
+import { useTrackEvent } from '../../../../hooks/useTrackEvent';
 import { usePurchase } from '../../../../providers/PurchaseProvider';
 import { useSnackbar } from '../../../../providers/SnackbarContext';
 import { useUser } from '../../../../providers/UserProvider';
@@ -112,6 +113,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
     usePurchase();
   const { showMessage } = useSnackbar();
+  const trackEvent = useTrackEvent();
 
   const { switchChainAsync } = useSwitchChain();
   const { data: nftStats } = useGetBuilderNftStats({ builderId });
@@ -343,6 +345,14 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         );
       });
     }
+
+    trackEvent('nft_purchase', {
+      amount: tokensToBuy,
+      paidWithPoints: paymentMethod === 'points',
+      builderPath: builder.path,
+      season: currentSeason,
+      nftType: builder.nftType
+    });
   };
 
   const isLoading =
