@@ -7,7 +7,7 @@ import { builderNftChain, getBuilderContractAddress, getBuilderStarterPackContra
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
 
-const transferSingleAbi = {
+export const transferSingleAbi = {
   anonymous: false,
   inputs: [
     { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
@@ -27,11 +27,16 @@ export type TransferSingleEvent = {
   blockNumber: bigint;
 };
 
-export function getTransferSingleEvents({ fromBlock, toBlock }: BlockRange): Promise<TransferSingleEvent[]> {
-  return getPublicClient(builderNftChain.id)
+export function getTransferSingleEvents({
+  fromBlock,
+  toBlock,
+  contractAddress = getBuilderContractAddress(),
+  chainId = builderNftChain.id
+}: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
+  return getPublicClient(chainId)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
-      address: getBuilderContractAddress(),
+      address: contractAddress,
       event: transferSingleAbi
     })
     .then((logs) =>

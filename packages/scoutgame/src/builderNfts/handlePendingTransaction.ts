@@ -1,19 +1,28 @@
 'use server';
 
 import { InvalidInputError } from '@charmverse/core/errors';
+import { log } from '@charmverse/core/log';
 import { prisma, TransactionStatus } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import {
   DecentTxFailedPermanently,
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
+import { getPlatform } from '@packages/mixpanel/utils';
 
 import { currentSeason } from '../dates';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import {
+  getScoutProtocolBuilderNFTContract,
+  scoutProtocolBuilderNftContractAddress,
+  scoutTokenDecimalsMultiplier
+} from '../protocol/constants';
 
 import { recordNftMint } from './recordNftMint';
+import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
 import { validateMint } from './validateMint';
+import { validateScoutProtocolMint } from './validateScoutProtocolMint';
 
 export async function handlePendingTransaction({
   pendingTransactionId
@@ -59,8 +68,15 @@ export async function handlePendingTransaction({
       where: {
         season: currentSeason,
         tokenId: Number(pendingTx.tokenId),
-        contractAddress: pendingTx.contractAddress
+        contractAddress: pendingTx.contractAddress.toLowerCase()
       }
+    });
+
+    scoutgameMintsLogger.info('Waiting for transaction to settle', {
+      sourceTxHash: pendingTx.sourceChainTxHash,
+      sourceChainId: pendingTx.sourceChainId,
+      contractAddress: pendingTx.contractAddress,
+      destinationChainId: pendingTx.destinationChainId
     });
     const txHash =
       pendingTx.destinationChainId === pendingTx.sourceChainId
@@ -70,10 +86,18 @@ export async function handlePendingTransaction({
             sourceTxHashChainId: pendingTx.sourceChainId
           });
 
-    const validatedMint = await validateMint({
-      chainId: pendingTx.destinationChainId,
-      txHash
-    });
+    scoutgameMintsLogger.info('Transaction settled', { txHash });
+
+    const validatedMint =
+      pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress().toLowerCase()
+        ? await validateScoutProtocolMint({
+            chainId: pendingTx.destinationChainId,
+            txHash
+          })
+        : await validateMint({
+            chainId: pendingTx.destinationChainId,
+            txHash
+          });
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {
@@ -92,15 +116,51 @@ export async function handlePendingTransaction({
         }
       });
 
-      await recordNftMint({
-        amount: pendingTx.tokenAmount,
-        builderNftId: builderNft.id,
-        mintTxHash: txHash,
-        paidWithPoints: false,
-        pointsValue: convertCostToPoints(pendingTx.targetAmountReceived),
-        recipientAddress: pendingTx.senderAddress,
-        scoutId: pendingTx.userId
-      });
+      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress().toLowerCase()) {
+        await refreshScoutProtocolBuilderNftPrice({
+          season: currentSeason,
+          builderId: builderNft.builderId
+        });
+
+        const balance = await getScoutProtocolBuilderNFTContract().balanceOf({
+          args: {
+            account: pendingTx.senderAddress as `0x${string}`,
+            tokenId: BigInt(pendingTx.tokenId)
+          }
+        });
+
+        await prisma.scoutNft.upsert({
+          where: {
+            builderNftId_walletAddress: {
+              builderNftId: builderNft.id,
+              walletAddress: pendingTx.senderAddress.toLowerCase() as `0x${string}`
+            }
+          },
+          update: {
+            balance: Number(balance)
+          },
+          create: {
+            builderNftId: builderNft.id,
+            walletAddress: pendingTx.senderAddress.toLowerCase() as `0x${string}`,
+            balance: Number(balance)
+          }
+        });
+
+        log.info('Builder NFT balance', { balance });
+      } else {
+        await recordNftMint({
+          amount: pendingTx.tokenAmount,
+          builderNftId: builderNft.id,
+          mintTxHash: txHash,
+          paidWithPoints: false,
+          pointsValue:
+            getPlatform() === 'onchain_webapp'
+              ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
+              : convertCostToPoints(pendingTx.targetAmountReceived),
+          recipientAddress: pendingTx.senderAddress,
+          scoutId: pendingTx.userId
+        });
+      }
     }
   } catch (error) {
     if (error instanceof DecentTxFailedPermanently) {
@@ -127,3 +187,7 @@ export async function handlePendingTransaction({
     }
   }
 }
+
+// handlePendingTransaction({
+//   pendingTransactionId: 'f059aafd-8203-45d9-910b-aced0fe27534'
+// }).then(console.log);

@@ -26,8 +26,17 @@ export async function mockBuilder({
   createNft = false,
   referralCode = randomString(),
   farcasterId,
-  farcasterName
-}: Partial<Scout & { githubUserId?: number; githubUserLogin?: string; createNft?: boolean; nftSeason?: string }> = {}) {
+  farcasterName,
+  wallets = []
+}: Partial<
+  Scout & {
+    githubUserId?: number;
+    githubUserLogin?: string;
+    createNft?: boolean;
+    nftSeason?: string;
+    wallets?: { address: string }[];
+  }
+> = {}) {
   const result = await prisma.scout.create({
     data: {
       createdAt,
@@ -39,6 +48,15 @@ export async function mockBuilder({
       farcasterId,
       referralCode,
       farcasterName,
+      wallets: wallets.length
+        ? {
+            createMany: {
+              data: wallets.map((wallet) => ({
+                address: wallet.address
+              }))
+            }
+          }
+        : undefined,
       githubUsers: {
         create: {
           id: githubUserId,

@@ -239,24 +239,6 @@ export const mergeUserAccount = async ({
         }
       });
 
-      await tx.tokensReceipt.updateMany({
-        where: {
-          recipientId: mergedUserId
-        },
-        data: {
-          recipientId: retainedUserId
-        }
-      });
-
-      await tx.tokensReceipt.updateMany({
-        where: {
-          senderId: mergedUserId
-        },
-        data: {
-          senderId: retainedUserId
-        }
-      });
-
       await tx.pendingNftTransaction.updateMany({
         where: {
           userId: mergedUserId
