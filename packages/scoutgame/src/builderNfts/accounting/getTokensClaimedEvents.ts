@@ -1,11 +1,11 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
-import { parseEventLogs } from 'viem';
+import { getAddress, parseEventLogs } from 'viem';
 
-import { getScoutProtocolAddress, scoutProtocolChainId } from '../../protocol/constants';
+import { getScoutProtocolAddress, protocolStartBlock, scoutProtocolChainId } from '../../protocol/constants';
 
-import { type BlockRange } from './convertBlockRange';
+import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
 const tokensClaimedAbi = {
   anonymous: false,
@@ -46,12 +46,17 @@ export type TokensClaimedEvent = {
   blockNumber: bigint;
 };
 
-export function getTokensClaimedEvents({ address }: BlockRange & { address: Address }): Promise<TokensClaimedEvent[]> {
+export function getTokensClaimedEvents({
+  address,
+  fromBlock = protocolStartBlock,
+  toBlock
+}: BlockRange & { address: Address }): Promise<TokensClaimedEvent[]> {
   return getPublicClient(scoutProtocolChainId)
     .getLogs({
+      ...convertBlockRange({ fromBlock, toBlock }),
       address: getScoutProtocolAddress(),
-      event: tokensClaimedAbi
-      // args: { user: getAddress(address) }
+      event: tokensClaimedAbi,
+      args: { user: getAddress(address) }
     })
     .then((logs) =>
       parseEventLogs({
@@ -61,7 +66,3 @@ export function getTokensClaimedEvents({ address }: BlockRange & { address: Addr
       })
     );
 }
-
-getTokensClaimedEvents({
-  address: '0x5058EF8Ec746d82D419e905cA82a29EB2E46FF14'
-}).then(prettyPrint);

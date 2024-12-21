@@ -17,6 +17,8 @@ export const scoutProtocolChainId = scoutProtocolChain.id;
 
 export const scoutTokenDecimals = 18;
 
+export const protocolStartBlock = 19_000_000;
+
 /**
  * $SCOUT has 18 decimals
  */
