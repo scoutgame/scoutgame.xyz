@@ -370,8 +370,6 @@ async function uploadScoutsBuildersReposAndGithubEvents() {
       season: currentSeason
     });
   }
-
-  prettyPrint({builderNfts});
 }
 
 uploadScoutsBuildersReposAndGithubEvents().then(console.log);
