@@ -3,6 +3,7 @@
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { getPlatform } from '@packages/mixpanel/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata } from '@packages/scoutgame/builders/getBuilders';
 import Image from 'next/image';
@@ -26,6 +27,8 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const platform = getPlatform();
 
   const handleSort = (sortBy: string) => {
     const params = new URLSearchParams(searchParams);
@@ -127,7 +130,12 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
             </TableCell>
             <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={1} justifyContent='flex-end'>
-                <TableCellText color='text.secondary'>{convertCostToPoints(builder.price || BigInt(0))}</TableCellText>
+                <TableCellText color='text.secondary'>
+                  {/* We need to migrate $SCOUT based NFT prices to numeric column. Until then, we are storing the price as the human friendly version */}
+                  {platform === 'onchain_webapp'
+                    ? Number(builder.price || 0)
+                    : convertCostToPoints(builder.price || BigInt(0))}
+                </TableCellText>
                 <Image width={15} height={15} src='/images/profile/scout-game-blue-icon.svg' alt='scout game icon ' />
               </Stack>
             </TableCell>

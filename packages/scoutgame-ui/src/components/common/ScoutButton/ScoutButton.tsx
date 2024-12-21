@@ -3,6 +3,7 @@
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { LoadingButton } from '@mui/lab';
 import { Button, Typography, useTheme } from '@mui/material';
+import { getPlatform } from '@packages/mixpanel/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -40,7 +41,11 @@ export function ScoutButton({
   const { user, isLoading } = useUser();
   const isAuthenticated = Boolean(user?.id);
 
-  const purchaseCostInPoints = convertCostToPoints(builder?.price || BigInt(0));
+  const platform = getPlatform();
+
+  // We need to migrate $SCOUT based NFT prices to numeric column. Until then, we are storing the price as the human friendly version
+  const purchaseCostInPoints =
+    platform === 'onchain_webapp' ? Number(builder?.price || 0) : convertCostToPoints(builder?.price || BigInt(0));
 
   const handleClick = () => {
     trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });

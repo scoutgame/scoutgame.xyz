@@ -1,6 +1,9 @@
 import { log } from '@charmverse/core/log';
 import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
+import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
+import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeeklyClaims';
+import { resolveTokenOwnership } from '@packages/scoutgame/protocol/resolveTokenOwnership';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
@@ -16,7 +19,18 @@ export async function processOnchainGemsPayout(
     return;
   }
 
-  const generatedClaims = await generateWeeklyClaims({ week });
+  const tokenBalances = await resolveTokenOwnership({
+    chainId: scoutProtocolChainId,
+    contractAddress: scoutProtocolBuilderNftContractAddress(),
+    week
+  });
+
+  const weeklyClaimsCalculated = await calculateWeeklyClaims({
+    week,
+    tokenBalances
+  });
+
+  const generatedClaims = await generateWeeklyClaims({ week, weeklyClaimsCalculated });
 
   log.info(`Processed ${generatedClaims.totalBuilders} builders points payout`, {
     totalBuilders: generatedClaims.totalBuilders

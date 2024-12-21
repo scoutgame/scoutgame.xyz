@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
-import { getAllISOWeeksFromSeasonStart } from '@packages/scoutgame/dates';
+import { getAllISOWeeksFromSeasonStart, currentSeason } from '@packages/scoutgame/dates';
 import {
   protocolImplementationReadonlyApiClient,
   protocolProxyReadonlyApiClient
@@ -43,10 +43,10 @@ export async function aggregateProtocolData({ userId }: { userId?: string }): Pr
   const [implementation, admin, claimsManager] = await Promise.all([
     protocolProxyReadonlyApiClient.implementation(),
     protocolProxyReadonlyApiClient.admin(),
-    protocolProxyReadonlyApiClient.claimsManager()
+    protocolImplementationReadonlyApiClient.claimsManager()
   ]);
 
-  const weeks = getAllISOWeeksFromSeasonStart();
+  const weeks = getAllISOWeeksFromSeasonStart({ season: currentSeason });
 
   const weeklyClaims = await prisma.weeklyClaims.findMany({
     where: {
@@ -59,22 +59,27 @@ export async function aggregateProtocolData({ userId }: { userId?: string }): Pr
   const merkleRoots = await Promise.all<MerkleRoot>(
     weeks.map((week) =>
       protocolImplementationReadonlyApiClient
-        .getMerkleRoot({ args: { week } })
-        .then((root) => {
+        .getWeeklyMerkleRoot({ args: { week } })
+        .then(async (root) => {
           const returnValue: MerkleRoot = { week, root, publishedOnchain: true };
 
           const weekFromDb = weeklyClaims.find((claim) => claim.week === week) as WeeklyClaimsTyped;
 
           if (userId && weekFromDb) {
-            const userClaim = weekFromDb.claims.leavesWithUserId.find((_claim) => _claim.userId === userId);
+            const userWallet = await prisma.scoutWallet.findFirst({ where: { scoutId: userId } });
+            if (userWallet) {
+              const userClaim = weekFromDb.claims.leaves.find(
+                (_claim) => _claim.address.toLowerCase() === userWallet?.address.toLowerCase()
+              );
 
-            const proofs = weekFromDb.proofsMap[userId];
+              const proofs = weekFromDb.proofsMap[userWallet.address.toLowerCase()];
 
-            if (userClaim && proofs) {
-              returnValue.testClaim = {
-                claim: userClaim,
-                proofs
-              };
+              if (userClaim && proofs) {
+                returnValue.testClaim = {
+                  claim: userClaim,
+                  proofs
+                };
+              }
             }
           }
 
