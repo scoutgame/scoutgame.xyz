@@ -4,7 +4,11 @@ import { checkDecentTransactionAction } from '@packages/scoutgame/builderNfts/ch
 import { builderNftChain, optimismUsdcContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { saveDecentTransactionAction } from '@packages/scoutgame/builderNfts/saveDecentTransactionAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
+import {
+  scoutProtocolBuilderNftContractAddress,
+  scoutProtocolChainId,
+  scoutTokenDecimalsMultiplier
+} from '@packages/scoutgame/protocol/constants';
 import { useAction } from 'next-safe-action/hooks';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
@@ -157,7 +161,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
               purchaseInfo: {
                 quotedPrice:
                   contractAddress === scoutProtocolBuilderNftContractAddress()
-                    ? Number(BigInt(purchaseCost) / BigInt(10 ** 18))
+                    ? Number(BigInt(purchaseCost) / scoutTokenDecimalsMultiplier)
                     : Number(purchaseCost),
                 tokenAmount: tokensToBuy,
                 builderContractAddress: contractAddress,

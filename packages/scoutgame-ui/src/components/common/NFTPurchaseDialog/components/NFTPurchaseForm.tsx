@@ -41,7 +41,8 @@ import {
   scoutProtocolChainId,
   scoutProtocolBuilderNftContractAddress,
   scoutProtocolChain,
-  scoutTokenErc20ContractAddress
+  scoutTokenErc20ContractAddress,
+  scoutTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
 import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
@@ -669,7 +670,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           erc20Address={getCurrencyContract(selectedPaymentOption) as Address}
           amount={amountToPay}
           onSuccess={() => refreshAllowance()}
-          decimals={selectedPaymentOption.currency === 'USDC' ? 6 : 18}
+          decimals={selectedPaymentOption.currency === 'USDC' ? 6 : scoutTokenDecimals}
           currency={selectedPaymentOption.currency}
         />
       )}

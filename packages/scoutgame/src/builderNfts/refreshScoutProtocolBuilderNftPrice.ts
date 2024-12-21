@@ -4,7 +4,7 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { getScoutProtocolBuilderNFTContract } from '../protocol/constants';
+import { getScoutProtocolBuilderNFTContract, scoutTokenDecimalsMultiplier } from '../protocol/constants';
 
 export async function refreshScoutProtocolBuilderNftPrice({
   builderId,
@@ -34,14 +34,12 @@ export async function refreshScoutProtocolBuilderNftPrice({
       }
     });
 
-    const decimals = BigInt(10) ** BigInt(18);
-
     const updatedNft = await prisma.builderNft.update({
       where: {
         id: existingNft.id
       },
       data: {
-        currentPrice: currentPrice / decimals
+        currentPrice: currentPrice / scoutTokenDecimalsMultiplier
       }
     });
 

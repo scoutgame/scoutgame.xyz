@@ -12,7 +12,11 @@ import { getPlatform } from '@packages/mixpanel/utils';
 
 import { currentSeason } from '../dates';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { getScoutProtocolBuilderNFTContract, scoutProtocolBuilderNftContractAddress } from '../protocol/constants';
+import {
+  getScoutProtocolBuilderNFTContract,
+  scoutProtocolBuilderNftContractAddress,
+  scoutTokenDecimalsMultiplier
+} from '../protocol/constants';
 
 import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
@@ -151,7 +155,7 @@ export async function handlePendingTransaction({
           paidWithPoints: false,
           pointsValue:
             getPlatform() === 'onchain_webapp'
-              ? Number(pendingTx.targetAmountReceived / BigInt(10 ** 18))
+              ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
               : convertCostToPoints(pendingTx.targetAmountReceived),
           recipientAddress: pendingTx.senderAddress,
           scoutId: pendingTx.userId

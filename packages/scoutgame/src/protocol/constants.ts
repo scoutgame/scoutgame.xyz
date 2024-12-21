@@ -15,6 +15,13 @@ export const scoutProtocolChain = baseSepolia;
 
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
+export const scoutTokenDecimals = 18;
+
+/**
+ * $SCOUT has 18 decimals
+ */
+export const scoutTokenDecimalsMultiplier = 1000000000000000000n;
+
 export function getScoutAdminWalletClient() {
   const key = process.env.SCOUT_PROTOCOL_BUILDER_NFT_ADMIN_KEY as string;
 
