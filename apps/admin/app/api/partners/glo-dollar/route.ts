@@ -11,6 +11,9 @@ export async function GET() {
     where: {
       nftPurchaseEvents: {
         some: {
+          builderNft: {
+            nftType: 'default'
+          },
           builderEvent: {
             week: lastWeek,
             season: currentSeason
