@@ -2,12 +2,12 @@
 
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
-import { Typography, Stack, Skeleton, Button } from '@mui/material';
+import { Typography, Stack, Skeleton } from '@mui/material';
 import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import dynamic from 'next/dynamic';
 import { useAction } from 'next-safe-action/hooks';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { generateTelegramQrCodeAction } from '../../actions/generateTelegramQrCode';
 import { verifyTelegramTokenAction } from '../../actions/verifyTelegramToken';
@@ -30,37 +30,18 @@ const TelegramConnect = dynamic(() => import('./components/TelegramConnect').the
 
 export function AccountsPage({ user }: { user: UserWithAccountsDetails }) {
   const [qrCode, setQrCode] = useState<string | null>(null);
-  const ref = useRef<NodeJS.Timeout | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const { execute: verifyToken } = useAction(verifyTelegramTokenAction);
 
   const { execute, isExecuting } = useAction(generateTelegramQrCodeAction, {
     onSuccess: (data) => {
       if (data.data?.qrCodeImage) {
         setQrCode(data.data.qrCodeImage);
       }
-
       if (data.data?.sessionId) {
-        setSessionId(data.data.sessionId);
+        verifyToken({ sessionId: data.data.sessionId });
       }
     }
   });
-
-  const { execute: verifyToken } = useAction(verifyTelegramTokenAction, {
-    onSuccess: ({ data }) => {
-      if (ref.current) {
-        clearTimeout(ref.current);
-        ref.current = null;
-      }
-    }
-  });
-
-  useEffect(() => {
-    if (sessionId) {
-      ref.current = setTimeout(() => {
-        verifyToken({ sessionId });
-      }, 2500);
-    }
-  }, [sessionId]);
 
   return (
     <PageContainer>
