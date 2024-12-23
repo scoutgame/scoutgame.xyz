@@ -1,15 +1,18 @@
 import { MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
+import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
+import { baseSepolia } from 'viem/chains';
 
 import { useGetTokenBalances } from '../../hooks/useGetTokenBalances';
 
 import { ChainComponent } from './ChainComponent';
+import type { ChainOption, ChainWithCurrency } from './chains';
 import { ETH_NATIVE_ADDRESS, getChainOptions } from './chains';
 
-export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' };
+export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'SCOUT' };
 
 function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency;
@@ -22,6 +25,7 @@ function SelectField(
     onSelectChain,
     value,
     address,
+    useScoutToken,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
     helperMessage?: ReactNode;
@@ -30,12 +34,24 @@ function SelectField(
     useTestnets?: boolean;
     balance?: string;
     address?: Address;
+    useScoutToken?: boolean;
   },
   ref: Ref<unknown>
 ) {
   const { helperMessage, ...restProps } = props;
 
-  const chainOpts = getChainOptions({ useTestnets });
+  const chainOpts: ChainWithCurrency[] = useScoutToken
+    ? [
+        {
+          chain: scoutProtocolChain,
+          icon: '/images/crypto/base64.png',
+          id: scoutProtocolChain.id,
+          name: 'Base Sepolia',
+          usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+          currency: 'SCOUT'
+        }
+      ]
+    : getChainOptions({ useTestnets });
 
   const { tokens } = useGetTokenBalances({ address: address as Address });
 

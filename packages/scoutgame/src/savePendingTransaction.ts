@@ -30,7 +30,7 @@ export async function savePendingTransaction(data: PendingNftTransactionToSave) 
       contractAddress: data.purchaseInfo.builderContractAddress.toLowerCase(),
       tokenAmount: data.purchaseInfo.tokenAmount,
       tokenId: data.purchaseInfo.tokenId,
-      targetAmountReceived: data.purchaseInfo.quotedPrice,
+      targetAmountReceived: BigInt(data.purchaseInfo.quotedPrice),
       targetCurrencyContractAddress: data.purchaseInfo.quotedPriceCurrency.toLowerCase(),
       status: 'pending'
     }

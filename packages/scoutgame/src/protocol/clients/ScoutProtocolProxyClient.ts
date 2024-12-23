@@ -28,7 +28,7 @@ type ReadWriteWalletClient<
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
 
-export class ProtocolProxyClient {
+export class ScoutProtocolProxyClient {
   private contractAddress: Address;
 
   private publicClient: PublicClient;
@@ -53,32 +53,6 @@ export class ProtocolProxyClient {
     },
     {
       inputs: [],
-      name: 'claimsManager',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address'
-        }
-      ],
-      stateMutability: 'view',
-      type: 'function'
-    },
-    {
-      inputs: [],
-      name: 'claimsToken',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address'
-        }
-      ],
-      stateMutability: 'view',
-      type: 'function'
-    },
-    {
-      inputs: [],
       name: 'implementation',
       outputs: [
         {
@@ -91,49 +65,43 @@ export class ProtocolProxyClient {
       type: 'function'
     },
     {
-      inputs: [
+      inputs: [],
+      name: 'isPaused',
+      outputs: [
+        {
+          internalType: 'bool',
+          name: '',
+          type: 'bool'
+        }
+      ],
+      stateMutability: 'view',
+      type: 'function'
+    },
+    {
+      inputs: [],
+      name: 'pause',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
+      inputs: [],
+      name: 'pauser',
+      outputs: [
         {
           internalType: 'address',
-          name: '_newAdmin',
+          name: '',
           type: 'address'
         }
       ],
-      name: 'setAdmin',
-      outputs: [],
-      stateMutability: 'nonpayable',
+      stateMutability: 'view',
       type: 'function'
     },
     {
       inputs: [
         {
           internalType: 'address',
-          name: 'account',
-          type: 'address'
-        }
-      ],
-      name: 'setClaimsManager',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: '_claimsToken',
-          type: 'address'
-        }
-      ],
-      name: 'setClaimsToken',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: '_newImplementation',
+          name: 'newImplementation',
           type: 'address'
         }
       ],
@@ -141,6 +109,90 @@ export class ProtocolProxyClient {
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function'
+    },
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: '_newPauser',
+          type: 'address'
+        }
+      ],
+      name: 'setPauser',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: '_newAdmin',
+          type: 'address'
+        }
+      ],
+      name: 'transferAdmin',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
+      inputs: [],
+      name: 'unPause',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'address',
+          name: '_callerAddress',
+          type: 'address'
+        }
+      ],
+      name: 'Paused',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'string',
+          name: 'roleName',
+          type: 'string'
+        },
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'previousHolder',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'newHolder',
+          type: 'address'
+        }
+      ],
+      name: 'RoleTransferred',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'address',
+          name: '_callerAddress',
+          type: 'address'
+        }
+      ],
+      name: 'Unpaused',
+      type: 'event'
     }
   ];
 
@@ -178,7 +230,7 @@ export class ProtocolProxyClient {
     }
   }
 
-  async admin(): Promise<string> {
+  async admin(): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'admin',
@@ -198,56 +250,10 @@ export class ProtocolProxyClient {
     });
 
     // Parse the result based on the return type
-    return result as string;
+    return result as Address;
   }
 
-  async claimsManager(): Promise<string> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'claimsManager',
-      args: []
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'claimsManager',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as string;
-  }
-
-  async claimsToken(): Promise<string> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'claimsToken',
-      args: []
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'claimsToken',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as string;
-  }
-
-  async implementation(): Promise<string> {
+  async implementation(): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'implementation',
@@ -267,11 +273,82 @@ export class ProtocolProxyClient {
     });
 
     // Parse the result based on the return type
-    return result as string;
+    return result as Address;
   }
 
-  async setAdmin(params: {
-    args: { _newAdmin: string };
+  async isPaused(): Promise<boolean> {
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'isPaused',
+      args: []
+    });
+
+    const { data } = await this.publicClient.call({
+      to: this.contractAddress,
+      data: txData
+    });
+
+    // Decode the result based on the expected return type
+    const result = decodeFunctionResult({
+      abi: this.abi,
+      functionName: 'isPaused',
+      data: data as `0x${string}`
+    });
+
+    // Parse the result based on the return type
+    return result as boolean;
+  }
+
+  async pause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'pause',
+      args: []
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+  }
+
+  async pauser(): Promise<Address> {
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'pauser',
+      args: []
+    });
+
+    const { data } = await this.publicClient.call({
+      to: this.contractAddress,
+      data: txData
+    });
+
+    // Decode the result based on the expected return type
+    const result = decodeFunctionResult({
+      abi: this.abi,
+      functionName: 'pauser',
+      data: data as `0x${string}`
+    });
+
+    // Parse the result based on the return type
+    return result as Address;
+  }
+
+  async setImplementation(params: {
+    args: { newImplementation: Address };
     value?: bigint;
     gasPrice?: bigint;
   }): Promise<TransactionReceipt> {
@@ -281,7 +358,65 @@ export class ProtocolProxyClient {
 
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'setAdmin',
+      functionName: 'setImplementation',
+      args: [params.args.newImplementation]
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+  }
+
+  async setPauser(params: {
+    args: { _newPauser: Address };
+    value?: bigint;
+    gasPrice?: bigint;
+  }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'setPauser',
+      args: [params.args._newPauser]
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+  }
+
+  async transferAdmin(params: {
+    args: { _newAdmin: Address };
+    value?: bigint;
+    gasPrice?: bigint;
+  }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'transferAdmin',
       args: [params.args._newAdmin]
     });
 
@@ -299,77 +434,15 @@ export class ProtocolProxyClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async setClaimsManager(params: {
-    args: { account: string };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
+  async unPause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
     if (!this.walletClient) {
       throw new Error('Wallet client is required for write operations.');
     }
 
     const txData = encodeFunctionData({
       abi: this.abi,
-      functionName: 'setClaimsManager',
-      args: [params.args.account]
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async setClaimsToken(params: {
-    args: { _claimsToken: string };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'setClaimsToken',
-      args: [params.args._claimsToken]
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async setImplementation(params: {
-    args: { _newImplementation: string };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'setImplementation',
-      args: [params.args._newImplementation]
+      functionName: 'unPause',
+      args: []
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {

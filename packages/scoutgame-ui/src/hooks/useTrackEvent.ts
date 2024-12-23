@@ -7,7 +7,7 @@ export function useTrackEvent() {
   const { execute } = useAction(trackEventAction);
 
   return useCallback(
-    function trackEvent(event: MixpanelEventName, properties?: Record<string, string | number>) {
+    function trackEvent(event: MixpanelEventName, properties?: Record<string, string | number | boolean>) {
       execute({
         event,
         currentPageTitle: document.title,
