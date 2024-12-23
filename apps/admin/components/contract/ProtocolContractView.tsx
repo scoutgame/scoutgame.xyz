@@ -1,6 +1,6 @@
 import { contributionSchemaDefinition, scoutGameUserProfileSchemaDefinition } from '@charmverse/core/protocol';
 import { Box, Button, Divider, Grid2, IconButton, Typography } from '@mui/material';
-import { ProtocolImplementationClient } from '@packages/scoutgame/protocol/clients/ProtocolImplementationClient';
+import { ScoutProtocolImplementationClient } from '@packages/scoutgame/protocol/clients/ScoutProtocolImplementationClient';
 import { scoutGameAttestationChain } from '@packages/scoutgameattestations/constants';
 import Link from 'next/link';
 import { MdLaunch } from 'react-icons/md';
@@ -77,7 +77,7 @@ export function ProtocolContractView(data: ProtocolData) {
       return;
     }
 
-    const client = new ProtocolImplementationClient({
+    const client = new ScoutProtocolImplementationClient({
       contractAddress: data.proxy,
       walletClient: walletClient as any,
       chain: scoutGameAttestationChain
@@ -85,9 +85,11 @@ export function ProtocolContractView(data: ProtocolData) {
 
     await client.claim({
       args: {
-        week: claimData.week,
-        amount: BigInt(claimData.testClaim.claim.amount),
-        proofs: claimData.testClaim.proofs
+        claimData: {
+          week: claimData.week,
+          amount: BigInt(claimData.testClaim.claim.amount),
+          proofs: claimData.testClaim.proofs
+        }
       }
     });
   }

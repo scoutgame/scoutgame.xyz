@@ -2,7 +2,6 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
 import type { Season } from '@packages/scoutgame/dates';
 import { getCurrentWeek } from '@packages/scoutgame/dates';
@@ -200,17 +199,6 @@ export async function recordNftMint(
     amount,
     userId: scoutId
   });
-
-  if (!skipMixpanel) {
-    trackUserAction('nft_purchase', {
-      userId: builderNft.builderId,
-      amount,
-      paidWithPoints,
-      builderPath: builderNft.builder.path!,
-      season: builderNft.season,
-      nftType: builderNft.nftType
-    });
-  }
 
   if (!skipPriceRefresh) {
     await refreshBuilderNftPrice({

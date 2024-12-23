@@ -1,11 +1,137 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getPlatform } from '@packages/mixpanel/utils';
+import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
+import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast7Days';
+import { mapGemReceiptsToLast7Days } from '../builders/mapGemReceiptsToLast7Days';
 import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
 import { currentSeason, getCurrentWeek } from '../dates';
+import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 import { BasicUserInfoSelect } from '../users/queries';
 
+async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
+  const wallets = await prisma.scoutWallet.findMany({
+    where: {
+      scoutId
+    }
+  });
+
+  if (wallets.length === 0) {
+    log.info('No wallets found for scout', { scoutId });
+    return [];
+  }
+
+  const scoutedBuilderNfts = await prisma.scoutNft.findMany({
+    where: {
+      walletAddress: {
+        in: wallets.map((wallet) => wallet.address.toLowerCase())
+      },
+      builderNft: {
+        chainId: scoutProtocolChainId,
+        contractAddress: scoutProtocolBuilderNftContractAddress()
+      }
+    },
+    include: {
+      builderNft: {
+        select: {
+          tokenId: true
+        }
+      }
+    }
+  });
+
+  // Get unique builder token IDs since multiple wallets may own the same NFT
+  const uniqueTokenIds = Array.from(new Set(scoutedBuilderNfts.map((nft) => nft.builderNft.tokenId)));
+
+  // Get builder info for each unique token ID
+  const builders = await prisma.scout.findMany({
+    where: {
+      builderNfts: {
+        some: {
+          tokenId: {
+            in: uniqueTokenIds
+          },
+          chainId: scoutProtocolChainId,
+          contractAddress: scoutProtocolBuilderNftContractAddress()
+        }
+      },
+      deletedAt: null
+    },
+    select: {
+      ...BasicUserInfoSelect,
+      events: {
+        where: {
+          createdAt: {
+            gte: DateTime.utc().minus({ days: 7 }).toJSDate()
+          },
+          gemsReceipt: {
+            isNot: null
+          }
+        },
+        select: {
+          createdAt: true,
+          gemsReceipt: {
+            select: {
+              value: true
+            }
+          }
+        }
+      },
+      userSeasonStats: {
+        where: {
+          season: currentSeason
+        },
+        select: {
+          nftsSold: true,
+          pointsEarnedAsBuilder: true
+        }
+      },
+      builderNfts: {
+        where: {
+          season: currentSeason,
+          contractAddress: scoutProtocolBuilderNftContractAddress()
+        },
+        select: {
+          contractAddress: true,
+          imageUrl: true,
+          currentPrice: true,
+          nftType: true,
+          tokenId: true,
+          congratsImageUrl: true
+        }
+      }
+    }
+  });
+
+  return builders.map((builder) => ({
+    ...builder,
+    nftsSold: builder.userSeasonStats?.[0]?.nftsSold ?? 0,
+    nftsSoldToScout: scoutedBuilderNfts.reduce((acc, nft) => {
+      if (nft.builderNft.tokenId === builder.builderNfts[0]?.tokenId) {
+        acc += nft.balance;
+      }
+      return acc;
+    }, 0),
+    nftImageUrl: builder.builderNfts[0].imageUrl,
+    nftType: builder.builderNfts[0].nftType,
+    congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
+    price: builder.builderNfts[0].currentPrice ?? BigInt(0),
+    rank: 0, // Would need to calculate this based on some criteria
+    builderPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder ?? 0,
+    last7DaysGems: mapGemReceiptsToLast7Days({
+      events: builder.events as Required<BuilderEventWithGemsReceipt>[],
+      currentDate: DateTime.now()
+    }).map((gem) => gem.gemsCount)
+  }));
+}
+
 export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
+  if (getPlatform() === 'onchain_webapp') {
+    return getScoutedBuildersUsingProtocolBuilderNfts({ scoutId });
+  }
+
   const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
       builderNft: {

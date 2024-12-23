@@ -20,16 +20,11 @@ jest.unstable_mockModule('../clients/builderContractReadClient', () => ({
   }
 }));
 
-jest.unstable_mockModule('@packages/mixpanel/trackUserAction', () => ({
-  trackUserAction: jest.fn()
-}));
-
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/refreshBuilderNftPrice', () => ({
   refreshBuilderNftPrice: jest.fn()
 }));
 
 const { recordNftMint } = await import('../recordNftMint');
-const { trackUserAction } = await import('@packages/mixpanel/trackUserAction');
 const { refreshBuilderNftPrice } = await import('@packages/scoutgame/builderNfts/refreshBuilderNftPrice');
 
 describe('recordNftMint', () => {
@@ -89,15 +84,6 @@ describe('recordNftMint', () => {
 
     expect(scoutStats?.nftsPurchased).toBe(amount);
 
-    expect(trackUserAction).toHaveBeenCalledWith('nft_purchase', {
-      userId: builderNft.builderId,
-      amount,
-      builderPath: builder.path,
-      paidWithPoints: true,
-      nftType: builderNft.nftType,
-      season: builderNft.season
-    });
-
     expect(refreshBuilderNftPrice).toHaveBeenCalledWith({
       builderId: builder.id,
       season: builderNft.season
@@ -121,8 +107,6 @@ describe('recordNftMint', () => {
       paidWithPoints: true,
       skipMixpanel: true
     });
-
-    expect(trackUserAction).not.toHaveBeenCalled();
   });
 
   it('should skip price refresh if this flag is provided', async () => {

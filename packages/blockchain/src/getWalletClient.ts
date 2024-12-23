@@ -3,6 +3,7 @@ import { createWalletClient, http, publicActions } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
 
 import { getChainById } from './chains';
+import { getAlchemyBaseUrl } from './provider/alchemy/client';
 
 export function getWalletClient({
   chainId,
@@ -27,10 +28,20 @@ export function getWalletClient({
     ? mnemonicToAccount(mnemonic)
     : privateKeyToAccount((privateKey!.startsWith('0x') ? privateKey : `0x${privateKey}`) as `0x${string}`);
 
+  let rpcUrl = chain.rpcUrls[0];
+
+  try {
+    const alchemyUrl = getAlchemyBaseUrl(chainId);
+
+    rpcUrl = alchemyUrl;
+  } catch (e) {
+    // If the alchemy url is not valid, we use the rpc url
+  }
+
   return createWalletClient({
     chain: chain.viem,
     account,
-    transport: http(chain.rpcUrls[0], {
+    transport: http(rpcUrl, {
       retryCount: 1,
       timeout: 5000
     })
