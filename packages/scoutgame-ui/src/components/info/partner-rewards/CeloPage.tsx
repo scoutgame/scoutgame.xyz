@@ -49,7 +49,7 @@ const tiers = [
 const qualifiedProjects = [
   'https://github.com/celo-org/faucet',
   'https://github.com/celo-org/celo-composer',
-  // 'https://github.com/celo-org/composer-kit',
+  'https://github.com/celo-org/composer-kit/issues',
   'https://github.com/mento-protocol/mento-web',
   // 'https://github.com/mento-protocol/reserve-site',
   // 'https://github.com/mento-protocol/mento-sdk',
@@ -58,7 +58,9 @@ const qualifiedProjects = [
   'https://github.com/GoodDollar/GoodCollective',
   'https://github.com/Glo-Foundation/glo-wallet',
   'https://github.com/Ubeswap/ubeswap-interface-v3',
-  'https://github.com/gitcoinco/grants-stack'
+  'https://github.com/gitcoinco/grants-stack',
+  'https://github.com/capsule-org/awesome-capsule/issues',
+  'https://github.com/capsule-org/examples-hub/issues'
 ];
 
 function Document() {
