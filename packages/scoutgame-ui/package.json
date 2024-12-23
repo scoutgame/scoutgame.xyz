@@ -33,7 +33,8 @@
     "qrcode": "^1.5.4",
     "react-dom": "18",
     "siwe": "^2.3.2",
-    "swiper": "^11.1.15"
+    "swiper": "^11.1.15",
+    "telegram": "^2.26.8"
   },
   "devDependencies": {
     "@types/qrcode": "^1.5.5"
