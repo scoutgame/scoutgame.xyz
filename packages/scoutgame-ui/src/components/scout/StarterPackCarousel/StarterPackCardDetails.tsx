@@ -3,11 +3,13 @@ import { Stack, Typography } from '@mui/material';
 export function StarterPackCardDetails({
   name,
   ecosystem,
-  description
+  description,
+  noTrim
 }: {
   name: string;
   ecosystem: string;
   description: string;
+  noTrim?: boolean;
 }) {
   return (
     <Stack gap={0.5}>
@@ -24,8 +26,8 @@ export function StarterPackCardDetails({
           whiteSpace: 'pre-wrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          display: '-webkit-box',
-          WebkitLineClamp: { xs: 9, md: 100 },
+          display: noTrim ? 'block' : '-webkit-box',
+          WebkitLineClamp: { xs: 7, md: 'initial' },
           WebkitBoxOrient: 'vertical'
         }}
       >

@@ -1,5 +1,6 @@
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Box, IconButton, Paper, Stack } from '@mui/material';
+'use client';
+
+import { Box, Button, Paper, Stack } from '@mui/material';
 import { getBuilderData } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { useState } from 'react';
@@ -20,7 +21,7 @@ export function StarterPackCard({ builder }: { builder: StarterPackBuilder }) {
   return (
     <Stack
       key={builder.id}
-      flexDirection={{ xs: 'row', md: 'row' }}
+      flexDirection='row'
       component={Paper}
       gap={2}
       p={{ xs: 1, md: 4 }}
@@ -43,26 +44,28 @@ export function StarterPackCard({ builder }: { builder: StarterPackBuilder }) {
           size={size}
         />
       </Box>
-      <Box component={Paper} p={1} pr={{ xs: 2, md: 1 }} position='relative'>
+      <Stack component={Paper} p={1} pr={{ xs: 2, md: 1 }} position='relative' justifyContent='center'>
         <StarterPackCardDetails
           name={builderData.name}
           description={builderData.description}
           ecosystem={builderData.ecosystem}
         />
-        <IconButton
+        <Button
+          variant='text'
           onClick={() => setIsModalOpen(true)}
-          sx={{ px: 0, py: 0.2, position: 'absolute', bottom: 0, right: 2, display: { xs: 'block', md: 'none' } }}
+          sx={{ display: { xs: 'block', md: 'none' }, width: 'fit-content' }}
         >
-          <VisibilityIcon color='inherit' fontSize='small' />
-        </IconButton>
+          Read more
+        </Button>
         <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} title='Builder info'>
           <StarterPackCardDetails
             name={builderData.name}
             description={builderData.description}
             ecosystem={builderData.ecosystem}
+            noTrim
           />
         </Dialog>
-      </Box>
+      </Stack>
     </Stack>
   );
 }
