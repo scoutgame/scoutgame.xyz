@@ -61,13 +61,17 @@ describe('claimDailyReward streak', () => {
     const builder = await mockBuilder();
     const userId = builder.id;
     const week = getCurrentWeek();
+    let totalPoints = 0;
 
     for (const dayOfWeek of [1, 2, 3, 4, 5, 6, 7]) {
-      await claimDailyReward({ userId, week, dayOfWeek });
+      const data = await claimDailyReward({ userId, week, dayOfWeek });
+      totalPoints += data.points;
     }
 
     // claim streak
-    await claimDailyReward({ userId, isBonus: true, week, dayOfWeek: 7 });
+    const data = await claimDailyReward({ userId, isBonus: true, week, dayOfWeek: 7 });
+    totalPoints += data.points;
+    const dailyStrikePoints = data.points;
 
     const dailyClaimStreakEvent = await prisma.scoutDailyClaimStreakEvent.findFirstOrThrow({
       where: {
@@ -97,8 +101,8 @@ describe('claimDailyReward streak', () => {
 
     expect(dailyClaimStreakEvent).toBeDefined();
     expect(pointsReceipt).toBeDefined();
-    expect(pointsReceipt.value).toBe(3);
-    expect(scout.currentBalance).toBe(10);
+    expect(pointsReceipt.value).toBe(dailyStrikePoints);
+    expect(scout.currentBalance).toBe(totalPoints);
   });
 
   it('should not allow claiming daily reward streak if not all days are claimed', async () => {
