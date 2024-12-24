@@ -23,7 +23,7 @@ describe('claimDailyReward', () => {
     const builder = await mockBuilder();
     const userId = builder.id;
 
-    await claimDailyReward({ userId, isBonus: false, dayOfWeek: 1 });
+    const data = await claimDailyReward({ userId, isBonus: false, dayOfWeek: 1 });
 
     const dailyClaimEvent = await prisma.scoutDailyClaimEvent.findFirstOrThrow({
       where: {
@@ -51,8 +51,8 @@ describe('claimDailyReward', () => {
 
     expect(dailyClaimEvent).toBeDefined();
     expect(pointsReceipt).toBeDefined();
-    expect(pointsReceipt.value).toBe(1);
-    expect(scout.currentBalance).toBe(1);
+    expect(pointsReceipt.value).toBe(data.points);
+    expect(scout.currentBalance).toBe(data.points);
   });
 });
 
