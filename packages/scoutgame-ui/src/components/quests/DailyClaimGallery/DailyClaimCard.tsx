@@ -5,11 +5,12 @@ import { Stack, Typography } from '@mui/material';
 import { claimDailyRewardAction } from '@packages/scoutgame/claims/claimDailyRewardAction';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import { getCurrentLocalWeek } from '@packages/scoutgame/dates';
+import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { useUser } from '../../../providers/UserProvider';
 import { DailyClaimGift } from '../../claim/components/common/DailyClaimGift';
@@ -121,8 +122,11 @@ export function DailyClaimCard({
   hasClaimedStreak: boolean;
 }) {
   const { refreshUser } = useUser();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const myConfetti = confetti.create(canvasRef.current || undefined, { resize: true });
+
   const {
-    execute: claimDailyReward,
+    executeAsync: claimDailyReward,
     isExecuting,
     result
   } = useAction(claimDailyRewardAction, {
@@ -162,6 +166,16 @@ export function DailyClaimCard({
     }
   }
 
+  async function handleClaim() {
+    if (canClaim) {
+      await claimDailyReward({
+        isBonus: dailyClaim.isBonus,
+        dayOfWeek: currentWeekDay,
+        week: getCurrentLocalWeek()
+      });
+      myConfetti({ origin: { x: 0.5, y: 1 }, particleCount: 150 });
+    }
+  }
   const buttonLabel = getButtonLabel();
   const variant = getVariant();
 
@@ -185,11 +199,7 @@ export function DailyClaimCard({
         cursor: canClaim ? 'pointer' : 'default'
       }}
       data-test={`daily-claim-${canClaim ? 'enabled' : 'disabled'}`}
-      onClick={() => {
-        if (canClaim) {
-          claimDailyReward({ isBonus: dailyClaim.isBonus, dayOfWeek: currentWeekDay, week: getCurrentLocalWeek() });
-        }
-      }}
+      onClick={handleClaim}
     >
       <Stack
         component={motion.div}
@@ -217,6 +227,17 @@ export function DailyClaimCard({
         <AnimatedGift isClaimed={isClaimed} isBonus={dailyClaim.isBonus} variant={variant} />
         <AnimatedClaimedIcon isClaimed={isClaimed} />
         <AnimatedContent isClaimed={isClaimed} points={dailyClaim.points} />
+        {isClaimToday && (
+          <Stack
+            component='canvas'
+            ref={canvasRef}
+            position='absolute'
+            bottom={-150}
+            zIndex={100}
+            width={300}
+            height={300}
+          />
+        )}
       </Stack>
       <Typography
         variant='body2'
