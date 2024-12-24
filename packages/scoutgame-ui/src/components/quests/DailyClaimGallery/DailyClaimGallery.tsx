@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Stack, Typography } from '@mui/material';
+import { Grid2 as Grid, Skeleton, Stack, Typography } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import { DailyClaimCard } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimCard';
 import dynamic from 'next/dynamic';
@@ -10,7 +10,8 @@ const NextClaimCountdown = dynamic(
       (mod) => mod.NextClaimCountdown
     ),
   {
-    ssr: false
+    ssr: false,
+    loading: () => <Skeleton animation='wave' height={24} width='50%' sx={{ mx: 'auto', my: 0.5 }} />
   }
 );
 
