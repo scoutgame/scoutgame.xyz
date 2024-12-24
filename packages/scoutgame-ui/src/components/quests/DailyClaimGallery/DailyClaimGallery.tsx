@@ -41,8 +41,5 @@ function isSequentialUpToToday(dailyClaims: DailyClaim[]) {
   return dailyClaims
     .slice(0, today - 1)
     .map((claim) => claim.claimed)
-    .every((bool, index, arr) => {
-      if (index === 0 && arr.length === 1) return true;
-      return bool;
-    });
+    .every((bool) => bool);
 }
