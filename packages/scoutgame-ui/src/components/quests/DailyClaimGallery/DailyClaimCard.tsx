@@ -115,7 +115,7 @@ export function AnimatedClaimedIcon({ isClaimed }: { isClaimed: boolean }) {
 }
 
 export function DailyClaimCard({
-  dailyClaim: _dailyClaim,
+  dailyClaim,
   hasClaimedStreak
 }: {
   dailyClaim: DailyClaim;
@@ -134,11 +134,6 @@ export function DailyClaimCard({
       refreshUser();
     }
   });
-
-  const dailyClaim = useMemo(
-    () => (result?.data?.points ? { ..._dailyClaim, claimed: true, points: result?.data?.points } : _dailyClaim),
-    [result?.data?.points]
-  );
 
   const currentWeekDay = DateTime.fromJSDate(new Date()).weekday;
   const isPastDay = currentWeekDay > dailyClaim.day;
