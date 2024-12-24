@@ -1,14 +1,18 @@
 'use client';
 
-import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
-import { Paper, Stack, Typography } from '@mui/material';
+import { Box, Paper, Stack, Typography } from '@mui/material';
 import { connectTelegramAccountAction } from '@packages/scoutgame/telegram/connectTelegramAccountAction';
+import { generateTelegramQrCodeAction } from '@packages/scoutgame/telegram/generateTelegramQrCodeAction';
 import { mergeUserTelegramAccountAction } from '@packages/scoutgame/telegram/mergeUserTelegramAccountAction';
+import { removeTelegramClientAction } from '@packages/scoutgame/telegram/removeTelegramClientAction';
+import { verifyTelegramTokenAction } from '@packages/scoutgame/telegram/verifyTelegramTokenAction';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
-import { useCallback, useEffect } from 'react';
+import { useState } from 'react';
+
+import { Dialog } from 'components/common/Dialog';
 
 import type { UserWithAccountsDetails } from '../AccountsPage';
 import { useAccountConnect } from '../hooks/useAccountConnect';
@@ -16,22 +20,11 @@ import { useAccountConnect } from '../hooks/useAccountConnect';
 import { AccountConnect } from './AccountConnect';
 
 export type TelegramAccount = {
-  auth_date: number;
-  first_name: string;
-  hash: string;
-  id: number;
-  last_name: string;
-  photo_url: string;
-  username: string;
+  id: string;
 };
 
-export function loginWithTelegram(callback: (user: TelegramAccount) => void) {
-  const TELEGRAM_OAUTH_BOT_ID = env('TELEGRAM_OAUTH_BOT_ID');
-  // @ts-ignore - defined by the script: https://telegram.org/js/telegram-widget.js
-  window.Telegram.Login.auth({ bot_id: TELEGRAM_OAUTH_BOT_ID, request_access: true }, callback);
-}
-
 export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const {
     isRevalidatingPath,
     connectAccountOnSuccess,
@@ -50,14 +43,6 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
     onCloseModal
   } = useAccountConnect<TelegramAccount>({ user, identity: 'telegram' });
 
-  const { executeAsync: mergeUserTelegramAccount, isExecuting: isMergingUserAccount } = useAction(
-    mergeUserTelegramAccountAction,
-    {
-      onSuccess: mergeAccountOnSuccess,
-      onError: mergeAccountOnError
-    }
-  );
-
   const { executeAsync: connectTelegramAccount, isExecuting: isConnectingTelegramAccount } = useAction(
     connectTelegramAccountAction,
     {
@@ -66,67 +51,118 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
     }
   );
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-    document.getElementById('telegram-login-container')?.appendChild(script);
-  }, []);
-
-  const handleConnectTelegramAccount = useCallback((telegramAccount: TelegramAccount) => {
-    if (telegramAccount && 'id' in telegramAccount && 'hash' in telegramAccount) {
-      setAuthData(telegramAccount);
-      connectTelegramAccount(telegramAccount);
-    } else {
-      log.error('Invalid Telegram account', { telegramAccount });
-      setConnectionError('Invalid Telegram account');
+  const { executeAsync: verifyTelegramToken } = useAction(verifyTelegramTokenAction, {
+    onSuccess({ data }) {
+      const telegramAccount = data?.telegramUser;
+      if (telegramAccount && 'id' in telegramAccount) {
+        setAuthData(telegramAccount);
+        connectTelegramAccount(telegramAccount);
+      } else {
+        log.error('Invalid Telegram account', { telegramAccount });
+        setConnectionError('Invalid Telegram account');
+      }
+      setQrCode(null);
     }
-  }, []);
+  });
+
+  const { executeAsync: removeTelegramClient } = useAction(removeTelegramClientAction);
+
+  const { executeAsync: generateTelegramQrCode, isExecuting: isGeneratingQrCode } = useAction(
+    generateTelegramQrCodeAction,
+    {
+      onSuccess: (data) => {
+        if (data.data?.qrCodeImage) {
+          setQrCode(data.data.qrCodeImage);
+          verifyTelegramToken();
+        }
+      }
+    }
+  );
+
+  const { executeAsync: mergeUserTelegramAccount, isExecuting: isMergingUserAccount } = useAction(
+    mergeUserTelegramAccountAction,
+    {
+      onSuccess: mergeAccountOnSuccess,
+      onError: mergeAccountOnError
+    }
+  );
 
   const isConnecting = isConnectingTelegramAccount || isRevalidatingPath || isMergingUserAccount;
 
   return (
-    <Paper elevation={2} sx={{ p: 2 }}>
-      <Stack gap={2}>
-        <Stack direction='row' gap={1} alignItems='center'>
-          <Image src='/images/logos/telegram.png' alt='Telegram' width={24} height={24} />
-          <Typography variant='h6'>Telegram</Typography>
-        </Stack>
-        {user.telegramId ? (
-          <Typography variant='body1'>{user.telegramId}</Typography>
-        ) : (
-          <LoadingButton
-            disabled={isConnecting}
-            loading={isConnecting}
-            sx={{ width: 'fit-content' }}
-            onClick={() => loginWithTelegram(handleConnectTelegramAccount)}
-            variant='contained'
-          >
-            {isConnecting ? 'Connecting...' : 'Connect'}
-            <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
-          </LoadingButton>
-        )}
+    <>
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Stack gap={2}>
+          <Stack direction='row' gap={1} alignItems='center'>
+            <Image src='/images/logos/telegram.png' alt='Telegram' width={24} height={24} />
+            <Typography variant='h6'>Telegram</Typography>
+          </Stack>
+          {user.telegramId ? (
+            <Typography variant='body1'>{user.telegramId}</Typography>
+          ) : (
+            <LoadingButton
+              loading={isConnecting || isGeneratingQrCode}
+              sx={{ width: 'fit-content' }}
+              onClick={() => generateTelegramQrCode()}
+              variant='contained'
+            >
+              {isGeneratingQrCode || isConnecting ? 'Connecting...' : 'Connect'}
+              <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
+            </LoadingButton>
+          )}
 
-        {connectionError && (
-          <Typography variant='body2' color='error'>
-            {connectionError}
-          </Typography>
+          {connectionError && (
+            <Typography variant='body2' color='error'>
+              {connectionError}
+            </Typography>
+          )}
+        </Stack>
+        {connectedUser && (
+          <AccountConnect
+            identity='telegram'
+            accountMergeError={accountMergeError}
+            isMergeDisabled={isMergeDisabled}
+            isMergingUserAccount={isMergingUserAccount}
+            mergeUserAccount={() => authData && mergeUserTelegramAccount({ authData, selectedProfile })}
+            onClose={onCloseModal}
+            selectedProfile={selectedProfile}
+            setSelectedProfile={setSelectedProfile}
+            user={user}
+            connectedUser={connectedUser}
+          />
         )}
-      </Stack>
-      {connectedUser && (
-        <AccountConnect
-          identity='telegram'
-          accountMergeError={accountMergeError}
-          isMergeDisabled={isMergeDisabled}
-          isMergingUserAccount={isMergingUserAccount}
-          mergeUserAccount={() => authData && mergeUserTelegramAccount({ authData, selectedProfile })}
-          onClose={onCloseModal}
-          selectedProfile={selectedProfile}
-          setSelectedProfile={setSelectedProfile}
-          user={user}
-          connectedUser={connectedUser}
-        />
-      )}
-    </Paper>
+      </Paper>
+      <Dialog
+        open={!!qrCode}
+        onClose={() => {
+          setQrCode(null);
+          removeTelegramClient();
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            border: 0,
+            borderRadius: 3
+          }}
+        >
+          <Typography variant='h6' fontWeight='bold'>
+            Sign in with Telegram
+          </Typography>
+          <Typography variant='body1' color='secondary'>
+            Go to Telegram app, Settings &gt; Devices &gt; Link Device and scan the QR.
+          </Typography>
+
+          <Box display='flex' justifyContent='center' flexDirection='column' my={2} gap={2} alignItems='center' pt={2}>
+            <img width={250} height={250} src={qrCode || ''} alt='Telegram QR Code' />
+          </Box>
+          <Typography color='textDisabled' variant='subtitle2'>
+            The QR code will expire in 30 seconds. Once scanned, please wait upto 15 seconds to be verified. If it
+            fails, close the dialog and try again.
+          </Typography>
+        </Paper>
+      </Dialog>
+    </>
   );
 }
