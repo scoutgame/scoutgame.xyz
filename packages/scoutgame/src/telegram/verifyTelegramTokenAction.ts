@@ -69,8 +69,8 @@ export const verifyTelegramTokenAction = authActionClient
     await Promise.race([updatePromise, sleep(TIMEOUT_MS)]);
     const telegramUser = (await loginTelegramUser({ client })) as Api.User;
     delete telegramClients[scoutId];
+    await client.destroy();
     const encryptedTelegramId = encrypt(telegramUser.id.toString(), TELEGRAM_API_HASH);
-
     return {
       success: true,
       telegramUser: {

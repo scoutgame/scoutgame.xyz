@@ -12,8 +12,7 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 
-import { Dialog } from 'components/common/Dialog';
-
+import { Dialog } from '../../../components/common/Dialog';
 import type { UserWithAccountsDetails } from '../AccountsPage';
 import { useAccountConnect } from '../hooks/useAccountConnect';
 

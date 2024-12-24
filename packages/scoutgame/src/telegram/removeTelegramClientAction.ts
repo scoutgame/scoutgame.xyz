@@ -7,5 +7,10 @@ export const removeTelegramClientAction = authActionClient
   .metadata({ actionName: 'remove_telegram_client' })
   .action(async ({ ctx }) => {
     const scoutId = ctx.session.scoutId;
+    const client = telegramClients[scoutId];
+    if (!client) {
+      throw new Error('Telegram client not found');
+    }
+    await client.destroy();
     delete telegramClients[scoutId];
   });
