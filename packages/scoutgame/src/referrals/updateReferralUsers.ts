@@ -1,24 +1,26 @@
-import type { BuilderEventType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
 import { rewardPoints } from '../constants';
-import { currentSeason, getCurrentWeek } from '../dates';
 import { BasicUserInfoSelect } from '../users/queries';
 
-export async function updateReferralUsers(referralCode: string, refereeId: string) {
-  const initialReferrer = await prisma.scout.findUniqueOrThrow({
+export async function updateReferralUsers(refereeId: string) {
+  const referralCodeEvent = await prisma.referralCodeEvent.findFirst({
     where: {
-      referralCode
+      refereeId,
+      completedAt: null
     },
-    select: {
-      id: true
+    include: {
+      builderEvent: true
     }
   });
 
-  const referrerId = initialReferrer?.id;
+  if (!referralCodeEvent) {
+    // The user was not referred
+    return [];
+  }
 
-  const eventType: BuilderEventType = 'referral';
+  const referrerId = referralCodeEvent.builderEvent.builderId;
 
   const txs = await prisma.$transaction(async (tx) => {
     // Update referrer
@@ -44,18 +46,8 @@ export async function updateReferralUsers(referralCode: string, refereeId: strin
           }
         },
         event: {
-          create: {
-            season: currentSeason,
-            type: eventType,
-            description: `Received points for being a referrer`,
-            week: getCurrentWeek(),
-            builderId: referrerId,
-            referralCodeEvent: {
-              create: {
-                refereeId,
-                platform: 'telegram'
-              }
-            }
+          connect: {
+            id: referralCodeEvent.builderEvent.id
           }
         }
       }
@@ -81,9 +73,18 @@ export async function updateReferralUsers(referralCode: string, refereeId: strin
       select: BasicUserInfoSelect
     });
 
+    await prisma.referralCodeEvent.update({
+      where: {
+        id: referralCodeEvent.id
+      },
+      data: {
+        completedAt: new Date()
+      }
+    });
+
     trackUserAction('referral_link_used', {
       userId: refereeId,
-      referralCode,
+      referralCode: referrer.referralCode,
       referrerPath: referrer.path
     });
 

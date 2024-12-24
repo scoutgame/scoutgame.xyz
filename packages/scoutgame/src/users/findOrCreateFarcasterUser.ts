@@ -1,12 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
-import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { generateRandomName } from '@packages/scoutgame/users/generateRandomName';
 import { generateUserPath } from '@packages/scoutgame/users/generateUserPath';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
-import { updateReferralUsers } from '../referrals/updateReferralUsers';
+import { createReferralEvent } from '../referrals/createReferralEvent';
 import type { ConnectWaitlistTier } from '../waitlist/scoring/constants';
 
 import { findOrCreateUser } from './findOrCreateUser';
@@ -51,17 +50,10 @@ export async function findOrCreateFarcasterUser({
   });
 
   if (user?.isNew && referralCode) {
-    const users = await updateReferralUsers(referralCode, user.id).catch((error) => {
+    await createReferralEvent(referralCode, user.id).catch((error) => {
       // There can be a case where the referrer is not found. Maybe someone will try to guess referral codes to get rewards.
       log.warn('Error creating referral event.', { error, startParam: referralCode, referrerId: user.id });
-      return null;
     });
-
-    if (users) {
-      const [, referee] = users;
-
-      return { ...referee, isNew: true };
-    }
   }
 
   return user;
