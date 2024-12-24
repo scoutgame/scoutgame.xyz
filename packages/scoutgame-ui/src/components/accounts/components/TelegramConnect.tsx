@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import { connectTelegramAccountAction } from '@packages/scoutgame/telegram/connectTelegramAccountAction';
 import { generateTelegramQrCodeAction } from '@packages/scoutgame/telegram/generateTelegramQrCodeAction';
 import { mergeUserTelegramAccountAction } from '@packages/scoutgame/telegram/mergeUserTelegramAccountAction';
@@ -24,6 +24,7 @@ export type TelegramAccount = {
 
 export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const [isSessionPasswordNeeded, setIsSessionPasswordNeeded] = useState(false);
   const {
     isRevalidatingPath,
     connectAccountOnSuccess,
@@ -61,6 +62,11 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
         setConnectionError('Invalid Telegram account');
       }
       setQrCode(null);
+    },
+    onError({ error }) {
+      if (error.serverError?.message?.toLowerCase().includes('session password')) {
+        setIsSessionPasswordNeeded(true);
+      }
     }
   });
 
@@ -160,6 +166,11 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
             The QR code will expire in 30 seconds. Once scanned, please wait upto 15 seconds to be verified. If it
             fails, close the dialog and try again.
           </Typography>
+          {isSessionPasswordNeeded && (
+            <Alert severity='warning' sx={{ mt: 2 }}>
+              You have 2FA enabled. Please disable it, close the dialog, try again and then enable it again.
+            </Alert>
+          )}
         </Paper>
       </Dialog>
     </>

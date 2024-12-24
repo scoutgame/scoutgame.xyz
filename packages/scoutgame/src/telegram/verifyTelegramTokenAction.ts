@@ -14,6 +14,12 @@ const TIMEOUT_MS = 30000;
 // eslint-disable-next-line
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+class SessionPasswordNeededError extends Error {
+  constructor() {
+    super('Session password needed');
+  }
+}
+
 async function loginTelegramUser({ client }: { client: TelegramClient }) {
   const result = await client.invoke(
     new Api.auth.ExportLoginToken({
@@ -26,18 +32,24 @@ async function loginTelegramUser({ client }: { client: TelegramClient }) {
   if (result instanceof Api.auth.LoginTokenSuccess && result.authorization instanceof Api.auth.Authorization) {
     return result.authorization.user;
   } else if (result instanceof Api.auth.LoginTokenMigrateTo) {
-    await client._switchDC(result.dcId);
-    const migratedResult = await client.invoke(
-      new Api.auth.ImportLoginToken({
-        token: result.token
-      })
-    );
+    try {
+      await client._switchDC(result.dcId);
+      const migratedResult = await client.invoke(
+        new Api.auth.ImportLoginToken({
+          token: result.token
+        })
+      );
 
-    if (
-      migratedResult instanceof Api.auth.LoginTokenSuccess &&
-      migratedResult.authorization instanceof Api.auth.Authorization
-    ) {
-      return migratedResult.authorization.user;
+      if (
+        migratedResult instanceof Api.auth.LoginTokenSuccess &&
+        migratedResult.authorization instanceof Api.auth.Authorization
+      ) {
+        return migratedResult.authorization.user;
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('SESSION_PASSWORD_NEEDED')) {
+        throw new SessionPasswordNeededError();
+      }
     }
   }
 
@@ -68,9 +80,9 @@ export const verifyTelegramTokenAction = authActionClient
 
     await Promise.race([updatePromise, sleep(TIMEOUT_MS)]);
     const telegramUser = (await loginTelegramUser({ client })) as Api.User;
+    const encryptedTelegramId = encrypt(telegramUser.id.toString(), TELEGRAM_API_HASH);
     delete telegramClients[scoutId];
     await client.destroy();
-    const encryptedTelegramId = encrypt(telegramUser.id.toString(), TELEGRAM_API_HASH);
     return {
       success: true,
       telegramUser: {
