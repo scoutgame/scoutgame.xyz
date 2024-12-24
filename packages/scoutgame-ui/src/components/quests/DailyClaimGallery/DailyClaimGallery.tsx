@@ -37,8 +37,9 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
 
 function isSequentialUpToToday(dailyClaims: DailyClaim[]) {
   const today = new Date().getDay() || 7; // Sunday returns 0, so we convert it to 7
+
   return dailyClaims
-    .slice(0, today)
+    .slice(0, today - 1)
     .map((claim) => claim.claimed)
     .every((bool, index, arr) => {
       if (index === 0 && arr.length === 1) return true;
