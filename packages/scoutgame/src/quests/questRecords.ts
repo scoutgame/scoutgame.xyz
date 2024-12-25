@@ -29,8 +29,9 @@ export type QuestType =
   | 'share-builder-profile'
   | 'contribute-celo-repo'
   | 'contribute-game7-repo'
-  | 'contribute-lit-repo';
-// | 'link-farcaster-telegram-account';
+  | 'contribute-lit-repo'
+  | 'link-telegram-account'
+  | 'link-farcaster-account';
 
 export type QuestInfo = {
   type: QuestType;
@@ -191,10 +192,19 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/partner-rewards/lit',
     internal: true,
     tag: 'builder'
+  },
+  'link-farcaster-account': {
+    label: 'Link your account with Farcaster',
+    points: 10,
+    internal: true,
+    link: '/accounts',
+    tag: 'scout'
+  },
+  'link-telegram-account': {
+    label: 'Link your account with Telegram',
+    points: 10,
+    internal: true,
+    link: '/accounts',
+    tag: 'scout'
   }
-  // 'link-farcaster-telegram-account': {
-  //   label: 'Link your account with Farcaster or Telegram',
-  //   points: 10,
-  //   link: '/accounts'
-  // }
 };

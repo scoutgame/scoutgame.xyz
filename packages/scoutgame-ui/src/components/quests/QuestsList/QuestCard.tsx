@@ -36,8 +36,6 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
     }
   };
 
-  const icon = QuestIcon[quest.type] || null;
-
   return (
     <Button
       disabled={quest.completed}
@@ -61,7 +59,7 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
       }}
     >
       <Stack direction='row' gap={3} alignItems='center'>
-        {icon}
+        {QuestIcon[quest.type]}
         <Stack gap={1}>
           <Stack>
             <Typography fontWeight={500} textAlign='left'>

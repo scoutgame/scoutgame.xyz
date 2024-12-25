@@ -1,5 +1,5 @@
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
-import { Typography, Stack, Skeleton } from '@mui/material';
+import { Skeleton, Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import dynamic from 'next/dynamic';

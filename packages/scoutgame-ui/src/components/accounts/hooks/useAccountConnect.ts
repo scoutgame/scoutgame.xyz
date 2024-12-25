@@ -40,13 +40,13 @@ export function useAccountConnect<AuthData>({
   }, []);
 
   const mergeAccountOnSuccess = useCallback(async () => {
-    await revalidatePath();
-    await refreshUser();
-    resetState();
     if ((connectedUser && connectedUser.builderStatus !== null) || selectedProfile === 'new') {
       await logout();
       router.push('/login');
     }
+    await revalidatePath();
+    await refreshUser();
+    resetState();
   }, [revalidatePath, refreshUser, resetState, logout, connectedUser, selectedProfile, router]);
 
   const onCloseModal = useCallback(() => {
