@@ -38,3 +38,36 @@ export async function sendEmail({ client, html, subject, to, attachment, senderA
     attachment: attachment ? { data: attachment.data, filename: attachment.name } : undefined
   });
 }
+
+export async function sendEmailTemplate({
+  client,
+  to,
+  subject,
+  templateVariables,
+  senderAddress,
+  template
+}: {
+  client?: IMailgunClient | null;
+  to: EmailRecipient;
+  subject: string;
+  templateVariables: Record<string, string | number>;
+  senderAddress: string;
+  template: string;
+}) {
+  const recipientAddress = to.displayName ? `${to.displayName} <${to.email}>` : to.email;
+  client = client ?? mailgunClient;
+
+  if (!client) {
+    log.debug('No mailgun client, not sending email');
+  } else {
+    log.debug('Sending email to Mailgun', { subject, userId: to.userId });
+  }
+
+  return client?.messages.create(DOMAIN, {
+    from: senderAddress,
+    to: recipientAddress,
+    subject,
+    template,
+    't:variables': templateVariables
+  });
+}

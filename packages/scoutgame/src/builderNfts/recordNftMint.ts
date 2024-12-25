@@ -2,12 +2,14 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
 import type { Season } from '@packages/scoutgame/dates';
 import { getCurrentWeek } from '@packages/scoutgame/dates';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
+import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
 import { recordNftPurchaseQuests } from './recordNftPurchaseQuests';
 
@@ -56,9 +58,11 @@ export async function recordNftMint(
       season: true,
       tokenId: true,
       builderId: true,
+      imageUrl: true,
       builder: {
         select: {
           path: true,
+          email: true,
           displayName: true,
           hasMoxieProfile: true
         }
@@ -211,6 +215,51 @@ export async function recordNftMint(
     await recordNftPurchaseQuests(scoutId, skipMixpanel);
   } catch (error) {
     log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
+  }
+
+  if (builderNft.builder.email) {
+    try {
+      const [scout, nft] = await Promise.all([
+        prisma.scout.findUniqueOrThrow({
+          where: {
+            id: scoutId
+          },
+          select: {
+            displayName: true,
+            path: true
+          }
+        }),
+        prisma.builderNft.findUniqueOrThrow({
+          where: {
+            id: builderNftId
+          },
+          select: {
+            currentPrice: true
+          }
+        })
+      ]);
+      await sendEmailTemplate({
+        senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+        subject: 'Your Builder Card Was Just Scouted! 🎉',
+        template: 'test template',
+        to: {
+          email: builderNft.builder.email,
+          userId: builderNft.builderId
+        },
+        templateVariables: {
+          builder_name: builderNft.builder.displayName,
+          builder_profile_link: `https://scoutgame.xyz/u/${builderNft.builder.path}`,
+          cards_purchased: amount,
+          total_purchase_cost: pointsValue,
+          builder_card_image: builderNft.imageUrl,
+          scout_name: scout.displayName,
+          scout_profile_link: `https://scoutgame.xyz/u/${scout.path}`,
+          current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
+        }
+      });
+    } catch (error) {
+      log.error('Error sending email', { error, builderId: builderNft.builderId });
+    }
   }
 
   return {
