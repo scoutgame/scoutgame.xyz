@@ -1,5 +1,6 @@
 import type { BuilderEventType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
 import { rewardPoints } from '../constants';
@@ -12,7 +13,9 @@ export async function updateReferralUsers(referralCode: string, refereeId: strin
       referralCode
     },
     select: {
-      id: true
+      id: true,
+      displayName: true,
+      email: true
     }
   });
 
@@ -89,6 +92,33 @@ export async function updateReferralUsers(referralCode: string, refereeId: strin
 
     return [referrer, referee];
   });
+
+  const referee = await prisma.scout.findUniqueOrThrow({
+    where: {
+      id: refereeId
+    },
+    select: {
+      displayName: true,
+      path: true
+    }
+  });
+
+  if (initialReferrer.email) {
+    await sendEmailTemplate({
+      to: {
+        email: initialReferrer.email,
+        userId: initialReferrer.id
+      },
+      senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+      subject: 'Someone Joined Scout Game Using Your Referral! 🎉',
+      template: 'Referral link signup',
+      templateVariables: {
+        name: initialReferrer.displayName,
+        scout_name: referee.displayName,
+        scout_profile_link: `https://scoutgame.xyz/u/${referee.path}`
+      }
+    });
+  }
 
   return txs;
 }
