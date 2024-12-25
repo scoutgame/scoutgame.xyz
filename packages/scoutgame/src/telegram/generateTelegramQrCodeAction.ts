@@ -37,12 +37,10 @@ export const generateTelegramQrCodeAction = authActionClient
       const base64Token = Buffer.from(loginToken.token).toString('base64url');
       const qrUrl = `tg://login?token=${base64Token}`;
       const qrCodeImage = await QRCode.toDataURL(qrUrl);
-      const sessionId = client.session.save() as unknown as string;
       return {
         success: true,
         qrCodeImage,
-        expires: loginToken.expires,
-        sessionId
+        expires: loginToken.expires
       };
     }
 

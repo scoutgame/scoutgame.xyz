@@ -11,6 +11,7 @@ export const removeTelegramClientAction = authActionClient
     if (!client) {
       throw new Error('Telegram client not found');
     }
+    client.session.delete();
     await client.destroy();
     delete telegramClients[scoutId];
   });

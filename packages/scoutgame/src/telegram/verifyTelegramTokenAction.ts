@@ -7,12 +7,10 @@ import type { TelegramClient } from 'telegram';
 import { Api } from 'telegram';
 import { UpdateConnectionState } from 'telegram/network';
 
+import { delay } from '../utils/async';
 import { encrypt } from '../utils/crypto';
 
 const TIMEOUT_MS = 30000;
-
-// eslint-disable-next-line
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class SessionPasswordNeededError extends Error {
   constructor() {
@@ -50,6 +48,7 @@ async function loginTelegramUser({ client }: { client: TelegramClient }) {
       if (error instanceof Error && error.message.includes('SESSION_PASSWORD_NEEDED')) {
         throw new SessionPasswordNeededError();
       }
+      throw error;
     }
   }
 
@@ -78,9 +77,10 @@ export const verifyTelegramTokenAction = authActionClient
       });
     });
 
-    await Promise.race([updatePromise, sleep(TIMEOUT_MS)]);
+    await Promise.race([updatePromise, delay(TIMEOUT_MS)]);
     const telegramUser = (await loginTelegramUser({ client })) as Api.User;
     const encryptedTelegramId = encrypt(telegramUser.id.toString(), TELEGRAM_API_HASH);
+    client.session.delete();
     delete telegramClients[scoutId];
     await client.destroy();
     return {

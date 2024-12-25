@@ -168,7 +168,8 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
           </Typography>
           {isSessionPasswordNeeded && (
             <Alert severity='warning' sx={{ mt: 2 }}>
-              You have 2FA enabled. Please disable it, close the dialog, try again and then enable it again.
+              You have 2FA enabled. Please disable it momentarily, close the dialog, scan the QR code and then enable it
+              back again.
             </Alert>
           )}
         </Paper>

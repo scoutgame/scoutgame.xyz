@@ -3,6 +3,7 @@
 import { authSchema } from '@packages/farcaster/config';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 
+import { completeQuests } from '../quests/completeQuests';
 import type { UserProfile } from '../users/getUserProfile';
 
 import { connectFarcasterAccount } from './connectFarcasterAccount';
@@ -15,6 +16,8 @@ export const connectFarcasterAccountAction = authActionClient
     const userId = ctx.session.scoutId;
 
     const existingFarcasterUser = await connectFarcasterAccount({ fid, userId });
+
+    await completeQuests(userId, ['link-farcaster-account']);
 
     return { success: true, connectedUser: existingFarcasterUser };
   });
