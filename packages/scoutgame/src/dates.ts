@@ -20,11 +20,17 @@ export const seasons = [
     end: '2024-W41',
     title: 'Pre Season'
   },
-  // 1st season
+  // Preseason 1
   {
     start: '2024-W41',
     end: '2025-W02',
     title: 'Season 1'
+  },
+  // Preseason 2
+  {
+    start: '2025-W02',
+    end: '2025-W14',
+    title: 'Season 2'
   }
 ] as const;
 
