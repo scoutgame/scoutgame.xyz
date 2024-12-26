@@ -256,6 +256,7 @@ export async function mockGemPayoutEvent({
             create: {
               value: amount,
               recipientId,
+              season,
               activities: {
                 create: {
                   recipientType: 'scout',
@@ -408,6 +409,7 @@ export async function mockNFTPurchaseEvent({
       pointsReceipts: {
         create: {
           value: points,
+          season,
           recipientId: builderId,
           senderId: scoutId
         }

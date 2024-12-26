@@ -3,7 +3,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 
 import type { ISOWeek } from '../../dates';
 import { currentSeason, getCurrentWeek } from '../../dates';
-import { incrementPointsEarnedStats } from '../updatePointsEarned';
 
 export async function sendPointsForDailyClaim({
   builderId,
@@ -41,6 +40,7 @@ export async function sendPointsForDailyClaim({
                 claimedAt: new Date(),
                 value: points,
                 recipientId: builderId,
+                season: currentSeason,
                 activities: {
                   create: {
                     type: 'points',
