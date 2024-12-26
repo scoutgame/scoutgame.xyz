@@ -1,12 +1,13 @@
 import { log } from '@charmverse/core/log';
 import { getENSDetails, getENSName } from '@packages/blockchain/getENSName';
 import { getFarcasterUsersByAddresses } from '@packages/farcaster/getFarcasterUsersByAddresses';
-import { updateReferralUsers } from '@packages/scoutgame/referrals/updateReferralUsers';
 import { findOrCreateUser } from '@packages/scoutgame/users/findOrCreateUser';
 import type { FindOrCreateUserResult } from '@packages/scoutgame/users/findOrCreateUser';
 import { generateRandomName } from '@packages/scoutgame/users/generateRandomName';
 import { generateUserPath } from '@packages/scoutgame/users/generateUserPath';
 import { getAddress } from 'viem';
+
+import { createReferralEvent } from '../referrals/createReferralEvent';
 
 export async function findOrCreateWalletUser({
   wallet,
@@ -50,17 +51,10 @@ export async function findOrCreateWalletUser({
   });
 
   if (user?.isNew && referralCode) {
-    const users = await updateReferralUsers(referralCode, user.id).catch((error) => {
+    await createReferralEvent(referralCode, user.id).catch((error) => {
       // There can be a case where the referrer is not found. Maybe someone will try to guess referral codes to get rewards.
       log.warn('Error creating referral event.', { error, startParam: referralCode, referrerId: user.id });
-      return null;
     });
-
-    if (users) {
-      const [, referee] = users;
-
-      return { ...referee, isNew: true };
-    }
   }
 
   return user;

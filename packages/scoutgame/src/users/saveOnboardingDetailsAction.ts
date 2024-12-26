@@ -5,6 +5,7 @@ import { registerLoopsContact } from '@packages/loops/registerLoopsContact';
 import { getPlatform } from '@packages/mixpanel/utils';
 
 import { authActionClient } from '../actions/actionClient';
+import { updateReferralUsers } from '../referrals/updateReferralUsers';
 
 import { generateUserPath } from './generateUserPath';
 import { saveOnboardingDetailsSchema } from './saveOnboardingDetailsSchema';
@@ -55,6 +56,8 @@ export const saveOnboardingDetailsAction = authActionClient
         getPlatform()
       );
     }
+
+    await updateReferralUsers(userId);
 
     return { success: true };
   });
