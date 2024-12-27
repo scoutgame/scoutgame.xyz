@@ -2,6 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
 import { rewardPoints } from '../constants';
+import { currentSeason } from '../dates';
 import { BasicUserInfoSelect } from '../users/queries';
 
 export async function updateReferralUsers(refereeId: string) {
