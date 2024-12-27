@@ -8,8 +8,8 @@ import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 import { getMoxieCandidates } from './export/route';
 
 export const dynamic = 'force-dynamic';
-export async function GET() {
-  const lastWeek = getLastWeek();
+export async function GET(lastWeek: string) {
+  // const lastWeek = getLastWeek();
   const candidates = await getMoxieCandidates({ week: lastWeek, season: currentSeason });
 
   if (candidates.length === 0) {
@@ -55,6 +55,7 @@ export async function GET() {
   } catch (e) {
     log.error('Error posting to moxie', { error: e });
   }
+  log.info('Moxie bonus sent', { lastWeek, currentSeason });
 
   return respondWithTSV(candidates, `moxie-bonus_${lastWeek}.tsv`);
 }
