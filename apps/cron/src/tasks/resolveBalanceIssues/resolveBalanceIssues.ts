@@ -22,7 +22,8 @@ export async function resolveBalanceIssues() {
           create: {
             value: balanceToResolve.currentBalance - balanceToResolve.expectedBalance,
             recipientId: balanceToResolve.scoutId,
-            claimedAt: new Date()
+            claimedAt: new Date(),
+            season: currentSeason
           }
         }
       }

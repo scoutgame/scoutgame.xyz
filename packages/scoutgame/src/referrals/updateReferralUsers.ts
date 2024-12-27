@@ -39,6 +39,7 @@ export async function updateReferralUsers(refereeId: string) {
     const referrerPointsReceived = await tx.pointsReceipt.create({
       data: {
         value: rewardPoints,
+        season: currentSeason,
         claimedAt: new Date(),
         recipient: {
           connect: {
