@@ -7,8 +7,9 @@ export function Info() {
     <Stack borderRadius={1} alignItems='center' flexDirection='row' p={2} gap={1} bgcolor='primary.dark'>
       <DailyClaimGift size={50} />
       <Typography fontWeight={600}>
-        Invite friends to play and earn +5 <img src='/images/profile/scout-game-icon.svg' alt='points' /> per referral
-        for you and your friends!
+        +10 <img src='/images/profile/scout-game-icon.svg' alt='points' /> for every player that signs up with your
+        link. <br />
+        +40 <img src='/images/profile/scout-game-icon.svg' alt='points' /> if the player buys a Builder Card.
       </Typography>
     </Stack>
   );

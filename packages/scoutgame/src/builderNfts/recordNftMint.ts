@@ -4,8 +4,9 @@ import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
 import type { Season } from '@packages/scoutgame/dates';
-import { getCurrentWeek } from '@packages/scoutgame/dates';
+import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
 
+import { referralBonusPoints } from '../constants';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
 import type { MintNFTParams } from './mintNFT';
@@ -211,6 +212,83 @@ export async function recordNftMint(
     await recordNftPurchaseQuests(scoutId, skipMixpanel);
   } catch (error) {
     log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
+  }
+
+  try {
+    // Find the referrer of the scout first
+    const referrer = await prisma.scout.findFirst({
+      where: {
+        events: {
+          some: {
+            referralCodeEvent: {
+              refereeId: scoutId
+            }
+          }
+        }
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (referrer) {
+      const referralCodeEvent = await prisma.referralCodeEvent.findFirst({
+        where: {
+          refereeId: scoutId
+        },
+        select: {
+          id: true
+        }
+      });
+
+      // If the referral code event exists and doesn't have a bonus event, create one
+      if (referralCodeEvent && !referralCodeEvent.bonusEvent) {
+        await prisma.$transaction(async (tx) => {
+          await tx.builderEvent.create({
+            data: {
+              type: 'referral_bonus',
+              season: currentSeason,
+              description: 'Received points for a referred user scouting a builder',
+              week: getCurrentWeek(),
+              builder: {
+                connect: {
+                  id: referrer.id
+                }
+              },
+              referralBonusEvent: {
+                connect: {
+                  id: referralCodeEvent.id
+                }
+              },
+              pointsReceipts: {
+                create: {
+                  value: referralBonusPoints,
+                  claimedAt: new Date(),
+                  recipient: {
+                    connect: {
+                      id: referrer.id
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          await tx.scout.update({
+            where: {
+              id: referrer.id
+            },
+            data: {
+              currentBalance: {
+                increment: referralBonusPoints
+              }
+            }
+          });
+        });
+      }
+    }
+  } catch (error) {
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, scoutId });
   }
 
   return {
