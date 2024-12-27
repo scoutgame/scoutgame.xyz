@@ -1,5 +1,6 @@
 'use client';
 
+import { log } from '@charmverse/core/log';
 import { ArrowDropDown as ArrowDropDownIcon, Add as AddIcon } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Box, Divider, Menu, MenuItem, Stack, Button } from '@mui/material';
@@ -103,7 +104,12 @@ export function HeaderActions() {
         <MenuItem>
           <LoadingButton
             loading={isMutating}
-            onClick={sendMoxieTokens}
+            onClick={() => {
+              sendMoxieTokens().catch((error) => {
+                log.error('Error sending Moxie tokens', error);
+                alert(`There was an error sending tokens. Please try again: ${(error as Error).message}`);
+              });
+            }}
             fullWidth
             size='small'
             sx={{ justifyContent: 'flex-start' }}
