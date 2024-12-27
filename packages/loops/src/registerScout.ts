@@ -9,7 +9,7 @@ type ScoutFields = Pick<Scout, 'createdAt' | 'email' | 'displayName' | 'sendMark
 
 // Creates a user if one does not exist
 // Call this whenever a user toggles subscriptions, ie. "emailNewsletter", or update their email
-export async function registerLoopsContact(scout: ScoutFields, source: string) {
+export async function registerScout(scout: ScoutFields, source: string) {
   if (!isEnabled) {
     return { success: false, isNewContact: false };
   }
