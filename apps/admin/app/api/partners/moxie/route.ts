@@ -55,6 +55,7 @@ export async function GET() {
   } catch (e) {
     log.error('Error posting to moxie', { error: e });
   }
+  log.info('Moxie bonus sent', { lastWeek, currentSeason });
 
   return respondWithTSV(candidates, `moxie-bonus_${lastWeek}.tsv`);
 }

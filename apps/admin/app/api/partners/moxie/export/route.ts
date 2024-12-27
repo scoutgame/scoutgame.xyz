@@ -129,10 +129,9 @@ export async function getMoxieCandidates({ week, season }: { week: string; seaso
               'Scout path': scout?.path || '',
               'Moxie fan tokens': 0,
               'Moxie tokens earned': 0,
-              'Moxie sent': !moxiePartnerRewardEventUserFids.includes(scoutFid)
+              'Moxie sent': moxiePartnerRewardEventUserFids.includes(scoutFid)
             };
           }
-          scoutMoxieAmounts[scoutFid]['Moxie sent'] = true;
           scoutMoxieAmounts[scoutFid]['Moxie fan tokens'] += 1;
         }
       }
@@ -175,7 +174,9 @@ async function getMoxieFanTokenAmount({
       }
     }
   `;
-  const data = await airstackRequest(query);
-  // console.log('data', data);
-  return data.data.MoxieUserPortfolios.MoxieUserPortfolio?.[0]?.amount || 0;
+  const data = await airstackRequest<{
+    data: { MoxieUserPortfolios: { MoxieUserPortfolio: { amount: number }[] | null } };
+  }>(query);
+  const amount = data.data.MoxieUserPortfolios.MoxieUserPortfolio?.[0]?.amount || 0;
+  return amount;
 }
