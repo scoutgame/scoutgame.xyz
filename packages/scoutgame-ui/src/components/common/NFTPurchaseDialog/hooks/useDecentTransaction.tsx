@@ -82,7 +82,7 @@ export function useDecentTransaction({
     actionConfig: {
       chainId: useScoutToken ? scoutProtocolChainId : optimism.id,
       contractAddress:
-        contractAddress || useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress(),
+        contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress()),
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
