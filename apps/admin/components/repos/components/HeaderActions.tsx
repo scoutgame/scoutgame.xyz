@@ -134,17 +134,6 @@ export function HeaderActions() {
             Talent Protocol
           </FileDownloadButton>
         </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Glo Dollar Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/glo-dollar'
-          >
-            Glo Dollar
-          </FileDownloadButton>
-        </MenuItem>
       </Menu>
     </Stack>
   );

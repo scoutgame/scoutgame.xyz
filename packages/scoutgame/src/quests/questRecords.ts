@@ -94,8 +94,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'scout-5-builders': {
     label: 'Scout 5 Builders',
     points: 10,
-    partner: 'GLO',
-    rewards: 'GLO (up to 5)',
     link: '/builders',
     internal: true,
     totalSteps: 5,
