@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
+import { currentSeason } from '@packages/scoutgame/dates';
 
 import { rewardPoints } from '../constants';
 import { BasicUserInfoSelect } from '../users/queries';
