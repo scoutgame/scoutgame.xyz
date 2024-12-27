@@ -145,8 +145,6 @@ export async function getMoxieCandidates({ week, season }: { week: string; seaso
   return Object.values(scoutMoxieAmounts);
 }
 
-const cache = new Map<string, number>();
-
 async function getMoxieFanTokenAmount({
   builderFid,
   scoutFid
@@ -154,10 +152,6 @@ async function getMoxieFanTokenAmount({
   builderFid: number;
   scoutFid: number;
 }): Promise<number> {
-  const cacheKey = `${builderFid}-${scoutFid}`;
-  if (cache.has(cacheKey)) {
-    return cache.get(cacheKey) as number;
-  }
   const query = `
     query GetPortfolioInfo {
       MoxieUserPortfolios(
@@ -184,6 +178,5 @@ async function getMoxieFanTokenAmount({
     data: { MoxieUserPortfolios: { MoxieUserPortfolio: { amount: number }[] | null } };
   }>(query);
   const amount = data.data.MoxieUserPortfolios.MoxieUserPortfolio?.[0]?.amount || 0;
-  cache.set(cacheKey, amount);
   return amount;
 }
