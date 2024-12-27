@@ -8,7 +8,6 @@ export class ScoutPage extends GeneralPageLayout {
     public container = page.locator('data-test=scout-page'),
     public optimismPromoCard = page.locator('data-test=promo-card-optimism'),
     public moxiePromoCard = page.locator('data-test=promo-card-moxie'),
-    public gloCard = page.locator('data-test=promo-card-glo'),
     public carouselTabSwitch = page.locator('data-test=carousel-tab-switch')
   ) {
     super(page);
