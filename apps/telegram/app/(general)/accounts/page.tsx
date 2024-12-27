@@ -14,7 +14,7 @@ export default async function Accounts() {
     return notFound();
   }
 
-  const [error, currentUserAccountsMetadata] = await safeAwaitSSRData(
+  const [, currentUserAccountsMetadata] = await safeAwaitSSRData(
     prisma.scout.findFirstOrThrow({
       where: {
         id: user.id
@@ -41,7 +41,7 @@ export default async function Accounts() {
     })
   );
 
-  if (error) {
+  if (!currentUserAccountsMetadata) {
     return notFound();
   }
 
