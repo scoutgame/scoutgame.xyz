@@ -39,7 +39,7 @@ export async function sendBuilderStatusEmails() {
         senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
       })
     } catch (error) {
-      log.error(`Error sending email to ${builder.email}`, { error });
+      log.error(`Error sending builder status email to ${builder.email}`, { error, userId: builder.id });
     }
   }
 }

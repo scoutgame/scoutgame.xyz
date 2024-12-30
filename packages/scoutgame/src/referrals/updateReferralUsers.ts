@@ -120,7 +120,7 @@ export async function updateReferralUsers(refereeId: string) {
         }
       });
     } catch (error) {
-      log.error('Error sending email', { error, userId: referrer.id });
+      log.error('Error sending referral email', { error, userId: referrer.id });
     }
   }
 
