@@ -1,13 +1,12 @@
 import { log } from '@charmverse/core/log';
-import { prisma } from '@charmverse/core/prisma-client';
+import { getMoxieCandidates } from '@packages/moxie/getMoxieCandidates';
+import { sendMoxieTokens } from '@packages/moxie/sendMoxieTokens';
 import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
-import { v4 } from 'uuid';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
-import { getMoxieCandidates } from './export/route';
-
 export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const lastWeek = getLastWeek();
   const candidates = await getMoxieCandidates({ week: lastWeek, season: currentSeason });
@@ -25,32 +24,9 @@ export async function GET() {
   }
 
   try {
-    await fetch(`https://rewards.moxie.xyz/partners/${process.env.MOXIE_PARTNER_ID}/events`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.MOXIE_API_KEY}`
-      },
-      body: JSON.stringify({
-        id: v4(),
-        timestamp: new Date().toISOString(),
-        data: candidatesNeedingPayment.map(({ 'Scout FID': fid, 'Moxie tokens earned': amount }) => ({
-          fid,
-          amount
-        }))
-      })
-    });
-
-    await prisma.partnerRewardEvent.createMany({
-      data: candidatesNeedingPayment.map(({ 'Scout ID': userId, 'Moxie tokens earned': amount }) => ({
-        reward: {
-          amount
-        },
-        week: lastWeek,
-        partner: 'moxie',
-        season: currentSeason,
-        userId
-      }))
+    await sendMoxieTokens({
+      week: lastWeek,
+      candidates: candidatesNeedingPayment
     });
   } catch (e) {
     log.error('Error posting to moxie', { error: e });
