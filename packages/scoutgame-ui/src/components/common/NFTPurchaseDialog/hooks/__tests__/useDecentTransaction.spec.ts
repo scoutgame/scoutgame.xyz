@@ -8,6 +8,19 @@ jest.unstable_mockModule('@packages/utils/http', () => ({
   GET: jest.fn()
 }));
 
+const mockScoutProtocolAddress = '0x5ba1cf70b94592e21ff1b68b3c0e68c0c2279865';
+const mockScoutTokenAddress = '0xa5a71c88478894077650f27dd7b14fdabe3a03f0';
+
+jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
+  getScoutProtocolAddress: jest.fn(() => mockScoutProtocolAddress),
+  scoutProtocolBuilderNftContractAddress: jest.fn(() => mockScoutTokenAddress)
+}));
+
+jest.unstable_mockModule('packages/scoutgame/src/protocol/constants.ts', () => ({
+  realOptimismMainnetBuildersContract: '0x1d305a06cb9dbdc32e08c3d230889acb9fe8a4dd',
+  usdcOptimismMainnetContractAddress: '0x0b2c639c533813f4aa9d7837caf62653d097ff85'
+}));
+
 const { GET: mockGET } = await import('@packages/utils/http');
 
 describe('useDecentTransaction', () => {
