@@ -17,6 +17,7 @@
   "dependencies": {
     "@datadog/browser-logs": "^5.33.0",
     "@hookform/resolvers": "^3.9.1",
+    "@packages/beehiiv": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
     "@packages/github": "^0.0.0",
     "@packages/mailer": "^0.0.0",

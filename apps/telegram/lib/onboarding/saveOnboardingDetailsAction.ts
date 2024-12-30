@@ -1,7 +1,8 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
-import { registerLoopsContact } from '@packages/loops/registerLoopsContact';
+import { registerScout as registerBeehiiv } from '@packages/beehiiv/registerScout';
+import { registerScout as registerLoops } from '@packages/loops/registerScout';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
 
@@ -26,7 +27,7 @@ export const saveOnboardingDetailsAction = authActionClient
       }
     });
     if (parsedInput.email) {
-      await registerLoopsContact(
+      await registerLoops(
         {
           email: parsedInput.email,
           displayName: scout.displayName,
@@ -35,6 +36,10 @@ export const saveOnboardingDetailsAction = authActionClient
         },
         getPlatform()
       );
+      await registerBeehiiv({
+        email: parsedInput.email,
+        sendMarketing: !!parsedInput.sendMarketing
+      });
     }
 
     return { success: true };
