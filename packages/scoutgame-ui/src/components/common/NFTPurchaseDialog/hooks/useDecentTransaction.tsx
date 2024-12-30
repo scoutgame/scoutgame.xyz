@@ -75,6 +75,9 @@ export function useDecentTransaction({
   contractAddress,
   useScoutToken
 }: DecentTransactionProps) {
+  const _contractAddress =
+    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress());
+
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
@@ -85,8 +88,7 @@ export function useDecentTransaction({
     actionType: ActionType.NftMint,
     actionConfig: {
       chainId: useScoutToken ? scoutProtocolChainId : optimism.id,
-      contractAddress:
-        contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress()),
+      contractAddress: _contractAddress,
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
@@ -106,7 +108,7 @@ export function useDecentTransaction({
     data: decentTransactionInfo
   } = useSWR(
     address && paymentAmountOut
-      ? `buy-token-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
+      ? `buy-token-${contractAddress}-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
       : null,
     () =>
       prepareDecentTransaction({
