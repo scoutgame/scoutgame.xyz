@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
@@ -102,20 +103,24 @@ export async function updateReferralUsers(refereeId: string) {
   const [referrer, referee] = txs;
 
   if (referrer.email) {
-    await sendEmailTemplate({
-      to: {
-        email: referrer.email,
-        userId: referrer.id
-      },
-      senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-      subject: 'Someone Joined Scout Game Using Your Referral! 🎉',
-      template: 'Referral link signup',
-      templateVariables: {
-        name: referrer.displayName,
-        scout_name: referee.displayName,
-        scout_profile_link: `${baseUrl}/u/${referee.path}`
-      }
-    });
+    try {
+      await sendEmailTemplate({
+        to: {
+          email: referrer.email,
+          userId: referrer.id
+        },
+        senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+        subject: 'Someone Joined Scout Game Using Your Referral! 🎉',
+        template: 'Referral link signup',
+        templateVariables: {
+          name: referrer.displayName,
+          scout_name: referee.displayName,
+          scout_profile_link: `${baseUrl}/u/${referee.path}`
+        }
+      });
+    } catch (error) {
+      log.error('Error sending email', { error, userId: referrer.id });
+    }
   }
 
   return txs;

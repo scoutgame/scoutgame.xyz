@@ -32,7 +32,7 @@ export async function sendEmailsToNoPurchaseScouts() {
         templateVariables: {
           name: scout.displayName,
         },
-        senderAddress: 'Scout Game <support@scoutgame.xyz>',
+        senderAddress: 'Scout Game <updates@mail.scoutgame.xyz>',
       });
     } catch (error) {
       log.error(`Error sending email to ${scout.email}`, { error });

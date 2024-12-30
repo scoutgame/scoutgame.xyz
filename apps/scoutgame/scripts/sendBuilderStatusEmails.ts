@@ -36,7 +36,7 @@ export async function sendBuilderStatusEmails() {
           builder_name: builder.displayName,
           builder_card_image: builder.builderNfts[0].imageUrl,
         },
-        senderAddress: 'Scout Game <support@scoutgame.xyz>'
+        senderAddress: 'Scout Game <updates@mail.scoutgame.xyz>'
       })
     } catch (error) {
       log.error(`Error sending email to ${builder.email}`, { error });
