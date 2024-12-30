@@ -26,13 +26,13 @@ export async function sendEmailsToNoPurchaseScouts() {
   for (const scout of nonPurchasingScouts) {
     try {
       await sendEmailTemplate({
-        to: { email: scout.email!, userId: scout.id },
+        to: { displayName: scout.displayName, email: scout.email!, userId: scout.id },
         subject: 'Ready to Start Your Scout Game Journey?',
         template: 'no purchased cards by user',
         templateVariables: {
           name: scout.displayName,
         },
-        senderAddress: 'Scout Game <updates@mail.scoutgame.xyz>',
+        senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>',
       });
     } catch (error) {
       log.error(`Error sending email to ${scout.email}`, { error });

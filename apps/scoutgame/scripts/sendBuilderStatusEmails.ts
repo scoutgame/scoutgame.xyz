@@ -29,14 +29,14 @@ export async function sendBuilderStatusEmails() {
   for (const builder of builders) {
     try {
       await sendEmailTemplate({
-        to: { email: builder.email!, userId: builder.id },
+        to: { displayName: builder.displayName, email: builder.email!, userId: builder.id },
         subject: 'You’re Already Making an Impact in Scout Game! 🎉',
         template: 'builder status',
         templateVariables: {
           builder_name: builder.displayName,
           builder_card_image: builder.builderNfts[0].imageUrl,
         },
-        senderAddress: 'Scout Game <updates@mail.scoutgame.xyz>'
+        senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
       })
     } catch (error) {
       log.error(`Error sending email to ${builder.email}`, { error });

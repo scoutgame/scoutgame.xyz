@@ -181,6 +181,7 @@ export async function recordClosedPullRequest({
 
       await sendEmailTemplate({
         to: {
+          displayName: builder.displayName,
           email: builder.email,
           userId: builder.id
         },

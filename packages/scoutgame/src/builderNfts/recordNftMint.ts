@@ -6,6 +6,7 @@ import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
 import type { Season } from '@packages/scoutgame/dates';
 import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
+import { baseUrl } from '@packages/utils/constants';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
@@ -246,6 +247,7 @@ export async function recordNftMint(
         subject: 'Your Builder Card Was Just Scouted! 🎉',
         template: 'Builder card scouted',
         to: {
+          displayName: builderNft.builder.displayName,
           email: builderNft.builder.email,
           userId: builderNft.builderId
         },

@@ -106,6 +106,7 @@ export async function updateReferralUsers(refereeId: string) {
     try {
       await sendEmailTemplate({
         to: {
+          displayName: referrer.displayName,
           email: referrer.email,
           userId: referrer.id
         },

@@ -53,7 +53,7 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
 
   if (scout.email) {
     await sendEmailTemplate({
-      to: { email: scout.email, userId: scout.id },
+      to: { displayName: scout.displayName, email: scout.email, userId: scout.id },
       subject: 'Welcome to Scout Game, Builder! 🎉',
       template: 'Builder Approved',
       templateVariables: {
@@ -61,7 +61,7 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
         builder_card_image: scout.builderNfts[0].imageUrl,
         builder_profile_link: `${baseUrl}/u/${scout.path}`
       },
-      senderAddress: 'Scout Game <updates@mail.scoutgame.xyz>'
+      senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
     });
   }
 }
