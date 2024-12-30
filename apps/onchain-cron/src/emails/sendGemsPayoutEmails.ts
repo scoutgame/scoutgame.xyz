@@ -1,10 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmail } from '@packages/mailer/mailer';
+import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
-import { render } from '@react-email/render';
-
-import { ClaimPointsTemplate } from './ClaimPointsTemplate';
 
 export async function sendGemsPayoutEmails({ week }: { week: string }) {
   const scouts = await prisma.scout.findMany({
@@ -27,18 +24,19 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
     try {
       const { points: weeklyClaimablePoints } = await getClaimablePoints({ userId: scout.id, week });
       if (weeklyClaimablePoints) {
-        const html = await render(
-          ClaimPointsTemplate({ points: weeklyClaimablePoints, displayName: scout.displayName })
-        );
-        await sendEmail({
+        await sendEmailTemplate({
           to: {
             displayName: scout.displayName,
             email: scout.email!,
             userId: scout.id
           },
           senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-          subject: 'Congratulations you just earned points in the Scout Game',
-          html
+          subject: 'Claim Your Scout Points This Week! 🎉',
+          template: 'Weekly Claim',
+          templateVariables: {
+            name: scout.displayName,
+            points: weeklyClaimablePoints
+          }
         });
         totalEmailsSent += 1;
       }

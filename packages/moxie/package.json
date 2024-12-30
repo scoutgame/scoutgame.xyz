@@ -1,15 +1,13 @@
 {
-  "name": "@packages/mailer",
+  "name": "@packages/moxie",
   "version": "0.0.0",
   "description": "",
+  "main": "index.js",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "exports": {
     "./*": "./src/*.ts"
-  },
-  "dependencies": {
-    "mailgun.js": "^10.2.4"
   }
 }
