@@ -64,7 +64,7 @@ jobs:
       - name: Build app
         uses: ./.github/actions/build_app
         with:
-          app_name: cron
+          app_name: onchain-cron
 
   test:
     name: Test apps
@@ -243,4 +243,4 @@ jobs:
         env:
           DISCORD_WARNINGS_WEBHOOK: ${{ secrets.DISCORD_WARNINGS_WEBHOOK }}
         with:
-          app_name: cron
+          app_name: onchain-cron

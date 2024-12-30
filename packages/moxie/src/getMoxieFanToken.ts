@@ -40,6 +40,6 @@ export async function getMoxieFanToken(farcasterId: number): Promise<MoxieFanTok
       }
     }
   `;
-  const data = await airstackRequest(query);
+  const data = await airstackRequest<any>(query);
   return data.data.MoxieFanTokens.MoxieFanToken?.[0] || null;
 }

@@ -187,9 +187,10 @@ export async function mockGemPayoutEvents({
           },
           pointsReceipts: {
             createMany: {
-              data: recipients.map(({ id, recipientType, points }) => ({
+              data: recipients.map(({ id, points }) => ({
                 value: points,
-                recipientId: id
+                recipientId: id,
+                season
               }))
             }
           }
