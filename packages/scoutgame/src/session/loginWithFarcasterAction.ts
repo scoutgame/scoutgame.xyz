@@ -1,6 +1,7 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { actionClient } from '@packages/scoutgame/actions/actionClient';
 import { authSchema } from '@packages/scoutgame/farcaster/config';
 import { verifyFarcasterUser } from '@packages/scoutgame/farcaster/verifyFarcasterUser';
@@ -27,6 +28,16 @@ export const loginWithFarcasterAction = actionClient
 
     const user = await findOrCreateFarcasterUser({ fid, referralCode: parsedInput.referralCode });
     await saveSession(ctx, { scoutId: user.id });
+
+    if (user.isNew) {
+      trackUserAction('sign_up', {
+        userId: user.id
+      });
+    } else {
+      trackUserAction('sign_in', {
+        userId: user.id
+      });
+    }
 
     return { success: true, userId: user.id, onboarded: !!user.onboardedAt, user };
   });
