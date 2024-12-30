@@ -101,5 +101,10 @@ describe('date utils', () => {
       const unsortedSeasons = ['2024-W03', '2024-W02'];
       expect(() => getCurrentSeason(currentWeek, unsortedSeasons as Season[])).toThrow();
     });
+
+    it('Should fail if the current week is before the first season', () => {
+      const currentWeek = '2023-W01';
+      expect(() => getCurrentSeason(currentWeek, seasonStarts as Season[])).toThrow();
+    });
   });
 });
