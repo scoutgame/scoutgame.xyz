@@ -41,7 +41,7 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
         totalEmailsSent += 1;
       }
     } catch (error) {
-      log.error('Error sending points claim email', { error, scoutId: scout.id });
+      log.error('Error sending points claim email', { error, userId: scout.id });
     }
   }
 
