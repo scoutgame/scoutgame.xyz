@@ -51,6 +51,7 @@ export async function distributeWaitlistPoints() {
             data: {
               value: points,
               claimedAt: new Date(),
+              season: currentSeason,
               event: {
                 create: {
                   season: currentSeason,

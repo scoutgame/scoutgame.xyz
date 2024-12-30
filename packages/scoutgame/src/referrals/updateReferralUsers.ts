@@ -68,7 +68,8 @@ export async function updateReferralUsers(refereeId: string) {
           create: {
             value: rewardPoints,
             claimedAt: new Date(),
-            eventId: referrerPointsReceived.eventId
+            eventId: referrerPointsReceived.eventId,
+            season: currentSeason
           }
         }
       },
