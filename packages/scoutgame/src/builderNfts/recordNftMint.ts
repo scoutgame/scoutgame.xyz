@@ -263,7 +263,7 @@ export async function recordNftMint(
         }
       });
     } catch (error) {
-      log.error('Error sending email', { error, builderId: builderNft.builderId });
+      log.error('Error sending builder card scouted email', { error, userId: builderNft.builderId });
     }
   }
 

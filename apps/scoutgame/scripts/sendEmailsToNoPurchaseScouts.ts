@@ -35,7 +35,7 @@ export async function sendEmailsToNoPurchaseScouts() {
         senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>',
       });
     } catch (error) {
-      log.error(`Error sending email to ${scout.email}`, { error });
+      log.error(`Error sending no purchased cards email to ${scout.email}`, { error, userId: scout.id });
     }
   }
 }
