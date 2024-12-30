@@ -15,10 +15,12 @@ const mockScoutProtocolAddress = '0x5ba1cf70b94592e21ff1b68b3c0e68c0c2279865';
 const mockScoutTokenAddress = '0xa5a71c88478894077650f27dd7b14fdabe3a03f0';
 const mockScoutProtocolChainId = baseSepolia.id;
 
+const mockBuilderNftChain = optimism;
+
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   realOptimismMainnetBuildersContract: '0x1d305a06cb9dbdc32e08c3d230889acb9fe8a4dd',
   optimismUsdcContractAddress: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
-  builderNftChain: optimism,
+  builderNftChain: mockBuilderNftChain,
   getDecentApiKey: jest.fn(() => '123'),
   getBuilderContractAddress: jest.fn(() => mockBuilderContractAddress)
 }));
@@ -30,22 +32,24 @@ jest.unstable_mockModule('@packages/scoutgame/protocol/constants', () => ({
   scoutTokenErc20ContractAddress: jest.fn(() => mockScoutTokenAddress)
 }));
 
-const { GET: mockGET } = await import('@packages/utils/http');
-
 describe('useDecentTransaction', () => {
   const address = '0xc0ffee254729296a45a3885639AC7E10F9d54979';
   const contractAddress = '0x1d305a06cb9dbdc32e08c3d230889acb9fe8a4dd';
   const tokenAddress = '0x0b2c639c533813f4aa9d7837caf62653d097ff85';
 
-  beforeEach(() => {
+  // beforeEach(() => {
+  //   jest.clearAllMocks();
+  // });
+
+  it('should pass the correct contract address when useScoutToken is false', async () => {
+    const { GET: mockGET } = await import('@packages/utils/http');
+
     (mockGET as jest.Mock<any>).mockResolvedValueOnce({
       data: {
         action: '0x123'
       }
     });
-  });
 
-  test('should pass the correct contract address when useScoutToken is false', async () => {
     const { useDecentTransaction, _appendDecentQueryParams } = await import('../useDecentTransaction');
 
     const testInput: DecentTransactionProps = {
@@ -72,11 +76,11 @@ describe('useDecentTransaction', () => {
           srcToken: testInput.sourceToken,
           dstToken: usdcOptimismMainnetContractAddress,
           srcChainId: testInput.sourceChainId,
-          dstChainId: 10,
+          dstChainId: mockBuilderNftChain.id,
           slippage: 1,
           actionType: 'nft-mint',
           actionConfig: {
-            chainId: 10,
+            chainId: mockBuilderNftChain.id,
             contractAddress,
             cost: {
               amount: '1n',
@@ -101,7 +105,15 @@ describe('useDecentTransaction', () => {
     );
   });
 
-  test('should pass the correct contract address when useScoutToken is true', async () => {
+  it('should pass the correct contract address when useScoutToken is true', async () => {
+    const { GET: mockGET } = await import('@packages/utils/http');
+
+    (mockGET as jest.Mock<any>).mockResolvedValueOnce({
+      data: {
+        action: '0x123'
+      }
+    });
+
     const { useDecentTransaction, _appendDecentQueryParams } = await import('../useDecentTransaction');
 
     const testInput: DecentTransactionProps = {
