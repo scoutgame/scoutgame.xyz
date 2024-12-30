@@ -1,5 +1,4 @@
 import { log } from '@charmverse/core/log';
-import { htmlToText } from 'html-to-text';
 import type { IMailgunClient } from 'mailgun.js/Interfaces';
 
 import mailgunClient, { DOMAIN } from './mailgunClient';
@@ -10,16 +9,21 @@ export interface EmailRecipient {
   userId: string;
 }
 
-interface EmailProps {
-  html: string;
-  subject: string;
-  to: EmailRecipient;
-  attachment?: { data: Buffer; name: string };
-  senderAddress: string;
+export async function sendEmailTemplate({
+  client,
+  to,
+  subject,
+  templateVariables,
+  senderAddress,
+  template
+}: {
   client?: IMailgunClient | null;
-}
-
-export async function sendEmail({ client, html, subject, to, attachment, senderAddress }: EmailProps) {
+  to: EmailRecipient;
+  subject: string;
+  templateVariables: Record<string, string | number>;
+  senderAddress: string;
+  template: string;
+}) {
   const recipientAddress = to.displayName ? `${to.displayName} <${to.email}>` : to.email;
   client = client ?? mailgunClient;
 
@@ -31,10 +35,9 @@ export async function sendEmail({ client, html, subject, to, attachment, senderA
 
   return client?.messages.create(DOMAIN, {
     from: senderAddress,
-    to: [recipientAddress],
+    to: recipientAddress,
     subject,
-    text: htmlToText(html),
-    html,
-    attachment: attachment ? { data: attachment.data, filename: attachment.name } : undefined
+    template,
+    't:variables': templateVariables
   });
 }
