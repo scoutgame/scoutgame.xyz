@@ -11,5 +11,5 @@
       "providers/*": ["./src/providers/*"]
     }
   },
-  "exclude": ["jest.config.ts", "jest.teardown.ts"]
+  "exclude": ["jest.config.ts", "jest.setup.ts"]
 }
