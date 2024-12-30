@@ -54,14 +54,4 @@ test.describe('Info page partners', () => {
 
     await expect(infoPage.moxieContainer).toBeVisible();
   });
-  test('Open Glo from the scout page', async ({ page, scoutPage, infoPage, utils }) => {
-    const newUser = await mockScout();
-    await utils.loginAsUserId(newUser.id);
-
-    await page.goto('/scout');
-    await expect(scoutPage.gloCard).toBeVisible();
-    await scoutPage.gloCard.click();
-
-    await expect(infoPage.gloContainer).toBeVisible();
-  });
 });

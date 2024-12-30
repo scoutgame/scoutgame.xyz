@@ -5,7 +5,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
 import type { Season } from '@packages/scoutgame/dates';
-import { getCurrentWeek } from '@packages/scoutgame/dates';
+import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
@@ -71,19 +71,22 @@ export async function recordNftMint(
   });
 
   // The builder receives 20% of the points value, regardless of whether the purchase was paid with points or not
-  const pointsReceipts: { value: number; recipientId?: string; senderId?: string; createdAt?: Date }[] = [
-    {
-      value: Math.floor(pointsValue * 0.2),
-      recipientId: builderNft.builderId,
-      createdAt
-    }
-  ];
+  const pointsReceipts: { value: number; recipientId?: string; senderId?: string; createdAt?: Date; season: string }[] =
+    [
+      {
+        value: Math.floor(pointsValue * 0.2),
+        recipientId: builderNft.builderId,
+        createdAt,
+        season: currentSeason
+      }
+    ];
 
   if (paidWithPoints) {
     pointsReceipts.push({
       value: pointsValue,
       senderId: scoutId,
-      createdAt
+      createdAt,
+      season: currentSeason
     });
   }
 

@@ -59,7 +59,7 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
       templateVariables: {
         builder_name: scout.displayName,
         builder_card_image: scout.builderNfts[0].imageUrl,
-        builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
+        builder_profile_link: `${baseUrl}/u/${scout.path}`
       },
       senderAddress: 'Scout Game <support@scoutgame.xyz>'
     });

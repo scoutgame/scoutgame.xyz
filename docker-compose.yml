@@ -220,6 +220,7 @@ services:
       - prd-sunnyawards
       - prd-sockets
       - prd-scoutgame
+      - prd-scoutgameadmin
       - prd-scoutgamecron
       - prd-waitlist
       - prd-scoutgametelegram

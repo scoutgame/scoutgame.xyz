@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
+import { currentSeason, getCurrentWeek, getLastWeek, seasons, seasonStarts } from '@packages/scoutgame/dates';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import type { Context } from 'koa';
@@ -66,4 +66,25 @@ export async function processGemsPayout(
   const emailsSent = await sendGemsPayoutEmails({ week });
 
   scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
+
+  const currentWeek = getCurrentWeek();
+
+  const preseason2Start = seasons.find((d) => d.title === 'Season 2')?.start;
+  const preseason1Start = seasons.find((d) => d.title === 'Season 1')?.start;
+
+  if (currentWeek === preseason2Start && preseason1Start) {
+    await prisma.scout.updateMany({
+      data: {
+        currentBalance: 0
+      }
+    });
+    await prisma.pointsReceipt.updateMany({
+      where: {
+        season: preseason1Start
+      },
+      data: {
+        claimedAt: new Date()
+      }
+    });
+  }
 }

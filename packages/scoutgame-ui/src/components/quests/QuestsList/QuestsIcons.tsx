@@ -25,7 +25,7 @@ export const QuestIcon: Record<QuestType, ReactNode> = {
   'scout-starter-card': ScoutBinocularsIcon,
   'scout-3-starter-cards': ScoutBinocularsIcon,
   'scout-full-season-card': ScoutBinocularsIcon,
-  'scout-5-builders': <Image src='/images/glo-dollar.svg' alt='Glo Dollar' width={34} height={34} />,
+  'scout-5-builders': ScoutBinocularsIcon,
   'scout-share-builder': ScoutBinocularsIcon,
   'share-weekly-claim': ScoutBinocularsIcon,
   'share-scout-profile': ScoutBinocularsIcon,

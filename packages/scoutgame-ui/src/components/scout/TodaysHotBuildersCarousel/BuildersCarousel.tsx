@@ -54,16 +54,6 @@ export function BuildersCarousel({
           }}
         />,
         ...builderCardsList.slice(promoInsertIndex, promoInsertIndex * 2),
-        <PromoCard
-          data-test='promo-card-glo'
-          key='glo-ad'
-          size={size}
-          path='/info/partner-rewards/glo'
-          src='/images/home/glo-ad.png'
-          onClick={() => {
-            trackEvent('click_moxie_promo');
-          }}
-        />,
         ...builderCardsList.slice(promoInsertIndex * 2)
       ]
     : builderCardsList;

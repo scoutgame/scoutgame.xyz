@@ -1,27 +1,29 @@
-import type { BuilderEventType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
+import { currentSeason } from '@packages/scoutgame/dates';
+import { baseUrl } from '@packages/utils/constants';
 
 import { rewardPoints } from '../constants';
-import { currentSeason, getCurrentWeek } from '../dates';
 import { BasicUserInfoSelect } from '../users/queries';
 
-export async function updateReferralUsers(referralCode: string, refereeId: string) {
-  const initialReferrer = await prisma.scout.findUniqueOrThrow({
+export async function updateReferralUsers(refereeId: string) {
+  const referralCodeEvent = await prisma.referralCodeEvent.findFirst({
     where: {
-      referralCode
+      refereeId,
+      completedAt: null
     },
-    select: {
-      id: true,
-      displayName: true,
-      email: true
+    include: {
+      builderEvent: true
     }
   });
 
-  const referrerId = initialReferrer?.id;
+  if (!referralCodeEvent) {
+    // The user was not referred
+    return [];
+  }
 
-  const eventType: BuilderEventType = 'referral';
+  const referrerId = referralCodeEvent.builderEvent.builderId;
 
   const txs = await prisma.$transaction(async (tx) => {
     // Update referrer
@@ -34,12 +36,16 @@ export async function updateReferralUsers(referralCode: string, refereeId: strin
           increment: rewardPoints
         }
       },
-      select: BasicUserInfoSelect
+      select: {
+        ...BasicUserInfoSelect,
+        email: true
+      }
     });
 
     const referrerPointsReceived = await tx.pointsReceipt.create({
       data: {
         value: rewardPoints,
+        season: currentSeason,
         claimedAt: new Date(),
         recipient: {
           connect: {
@@ -47,18 +53,8 @@ export async function updateReferralUsers(referralCode: string, refereeId: strin
           }
         },
         event: {
-          create: {
-            season: currentSeason,
-            type: eventType,
-            description: `Received points for being a referrer`,
-            week: getCurrentWeek(),
-            builderId: referrerId,
-            referralCodeEvent: {
-              create: {
-                refereeId,
-                platform: 'telegram'
-              }
-            }
+          connect: {
+            id: referralCodeEvent.builderEvent.id
           }
         }
       }
@@ -77,45 +73,47 @@ export async function updateReferralUsers(referralCode: string, refereeId: strin
           create: {
             value: rewardPoints,
             claimedAt: new Date(),
-            eventId: referrerPointsReceived.eventId
+            eventId: referrerPointsReceived.eventId,
+            season: currentSeason
           }
         }
       },
       select: BasicUserInfoSelect
     });
 
+    await prisma.referralCodeEvent.update({
+      where: {
+        id: referralCodeEvent.id
+      },
+      data: {
+        completedAt: new Date()
+      }
+    });
+
     trackUserAction('referral_link_used', {
       userId: refereeId,
-      referralCode,
+      referralCode: referrer.referralCode,
       referrerPath: referrer.path
     });
 
-    return [referrer, referee];
+    return [referrer, referee] as const;
   });
 
-  const referee = await prisma.scout.findUniqueOrThrow({
-    where: {
-      id: refereeId
-    },
-    select: {
-      displayName: true,
-      path: true
-    }
-  });
+  const [referrer, referee] = txs;
 
-  if (initialReferrer.email) {
+  if (referrer.email) {
     await sendEmailTemplate({
       to: {
-        email: initialReferrer.email,
-        userId: initialReferrer.id
+        email: referrer.email,
+        userId: referrer.id
       },
       senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
       subject: 'Someone Joined Scout Game Using Your Referral! 🎉',
       template: 'Referral link signup',
       templateVariables: {
-        name: initialReferrer.displayName,
+        name: referrer.displayName,
         scout_name: referee.displayName,
-        scout_profile_link: `https://scoutgame.xyz/u/${referee.path}`
+        scout_profile_link: `${baseUrl}/u/${referee.path}`
       }
     });
   }
