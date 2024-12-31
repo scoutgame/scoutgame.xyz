@@ -59,6 +59,9 @@ export type MixpanelEventMap = {
     referralCode: string;
     referrerPath: string;
   };
+  referral_bonus: BaseEvent & {
+    referrerId: string;
+  };
   complete_quest: BaseEvent & {
     questType: string;
   };
