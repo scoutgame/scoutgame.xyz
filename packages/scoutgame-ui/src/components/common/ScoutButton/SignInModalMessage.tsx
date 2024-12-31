@@ -25,8 +25,15 @@ export function SignInModalMessage({
   const title =
     path === 'claim'
       ? 'Please sign in to view your very own Claim page and collect your rewards!'
-      : 'Please sign in to scout this builder!';
-  const src = path === 'claim' ? '/images/profile/purple-unicorn.png' : '/images/profile/builder-dog.png';
+      : path === 'quests'
+        ? 'Please sign in to continue your Quest!'
+        : 'Please sign in to scout this builder!';
+  const src =
+    path === 'claim'
+      ? '/images/profile/purple-unicorn.png'
+      : path === 'quests'
+        ? '/images/profile/magnifying_glass.png'
+        : '/images/profile/builder-dog.png';
 
   return (
     <Dialog
