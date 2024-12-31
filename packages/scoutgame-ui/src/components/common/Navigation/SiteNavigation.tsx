@@ -1,13 +1,14 @@
 'use client';
 
-import { BottomNavigation, BottomNavigationAction, styled } from '@mui/material';
+import type { LinkProps } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, styled, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
 import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
 import { SignInModalMessage } from '@packages/scoutgame-ui/components/common/ScoutButton/SignInModalMessage';
 import { useGetClaimablePoints } from '@packages/scoutgame-ui/hooks/api/session';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
@@ -43,9 +44,14 @@ const StyledBottomNavigation = styled(BottomNavigation, {
   }
 }));
 
+function DisabledLink(props: LinkProps) {
+  return <Link {...props} href='#' />;
+}
+
 export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const platform = getPlatform();
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useUser();
   const isAuthenticated = Boolean(user);
   const value = getActiveButton(pathname);
@@ -57,7 +63,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
 
   const openAuthModal = isAuthenticated
     ? undefined
-    : (e: MouseEvent<HTMLAnchorElement>, path: string) => {
+    : (e: MouseEvent<HTMLAnchorElement | HTMLButtonElement>, path: string) => {
         e.preventDefault();
         setAuthPopup({ open: true, path });
       };
@@ -86,20 +92,33 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           LinkComponent={Link}
         />
         <BottomNavigationAction
-          LinkComponent={Link}
+          LinkComponent={DisabledLink}
           label='Claim'
           href='/claim'
+          // className='.Mui-BottomNavigationAction-root'
           value='claim'
           icon={<ClaimIcon animate={claimablePoints && claimablePoints.points > 0} />}
-          onClick={(e) => openAuthModal?.(e, 'claim')}
+          onClick={(e) => {
+            if (openAuthModal) {
+              openAuthModal(e, 'claim');
+            } else {
+              router.push('/claim');
+            }
+          }}
         />
         <BottomNavigationAction
           label='Quests'
           href='/quests'
           value='quests'
-          icon={<QuestsIcon size='19px' />}
-          LinkComponent={Link}
-          onClick={(e) => openAuthModal?.(e, 'quests')}
+          icon={<QuestsIcon size='24px' />}
+          LinkComponent={DisabledLink}
+          onClick={(e) => {
+            if (openAuthModal) {
+              openAuthModal(e, 'quests');
+            } else {
+              router.push('/quests');
+            }
+          }}
         />
       </StyledBottomNavigation>
       <SignInModalMessage
