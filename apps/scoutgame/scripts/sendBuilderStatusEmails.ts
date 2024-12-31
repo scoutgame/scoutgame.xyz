@@ -6,9 +6,13 @@ import { currentSeason } from '@packages/scoutgame/dates';
 export async function sendBuilderStatusEmails() {
   const builders = await prisma.scout.findMany({
     where: {
+      email: {
+        not: null
+      },
       builderStatus: {
         not: null
-      }
+      },
+      sendTransactionEmails: true,
     },
     select: {
       id: true,

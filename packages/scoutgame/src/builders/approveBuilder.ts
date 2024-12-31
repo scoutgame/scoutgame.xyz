@@ -24,6 +24,7 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
       email: true,
       displayName: true,
       path: true,
+      sendTransactionEmails: true,
       builderNfts: {
         where: {
           season: currentSeason
@@ -52,7 +53,7 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
     }
   });
 
-  if (scout.email) {
+  if (scout.email && scout.sendTransactionEmails) {
     try {
       await sendEmailTemplate({
         to: { displayName: scout.displayName, email: scout.email, userId: scout.id },

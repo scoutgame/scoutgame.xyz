@@ -41,6 +41,7 @@ export async function recordClosedPullRequest({
       builderStatus: true,
       displayName: true,
       email: true,
+      sendTransactionEmails: true,
       strikes: {
         select: {
           id: true,
@@ -173,7 +174,7 @@ export async function recordClosedPullRequest({
       log.info('Banned builder', { userId: builder.id, strikes: currentStrikesCount });
     }
 
-    if (builder.email) {
+    if (builder.email && builder.sendTransactionEmails) {
       const events = builder.strikes
         .map((strike) => strike.githubEvent)
         .filter(isTruthy)

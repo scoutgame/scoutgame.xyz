@@ -9,6 +9,7 @@ export async function sendEmailsToNoPurchaseScouts() {
       email: {
         not: null
       },
+      sendTransactionEmails: true,
       userSeasonStats: {
         some: {
           season: currentSeason,

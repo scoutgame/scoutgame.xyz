@@ -42,6 +42,7 @@ export async function recordClosedPullRequest({
       displayName: true,
       builderStatus: true,
       email: true,
+      sendTransactionEmails: true,
       strikes: {
         select: {
           id: true,
@@ -171,7 +172,7 @@ export async function recordClosedPullRequest({
         }
       });
 
-      if (builder.email) {
+      if (builder.email && builder.sendTransactionEmails) {
         const events = builder.strikes
           .map((strike) => strike.githubEvent)
           .filter(isTruthy)

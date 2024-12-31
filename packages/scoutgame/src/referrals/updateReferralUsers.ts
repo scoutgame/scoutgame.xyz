@@ -39,7 +39,8 @@ export async function updateReferralUsers(refereeId: string) {
       },
       select: {
         ...BasicUserInfoSelect,
-        email: true
+        email: true,
+        sendTransactionEmails: true
       }
     });
 
@@ -102,7 +103,7 @@ export async function updateReferralUsers(refereeId: string) {
 
   const [referrer, referee] = txs;
 
-  if (referrer.email) {
+  if (referrer.email && referrer.sendTransactionEmails) {
     try {
       await sendEmailTemplate({
         to: {

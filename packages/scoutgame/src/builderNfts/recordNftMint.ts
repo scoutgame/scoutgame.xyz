@@ -66,7 +66,8 @@ export async function recordNftMint(
           path: true,
           email: true,
           displayName: true,
-          hasMoxieProfile: true
+          hasMoxieProfile: true,
+          sendTransactionEmails: true
         }
       }
     }
@@ -222,7 +223,7 @@ export async function recordNftMint(
     log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
   }
 
-  if (builderNft.builder.email) {
+  if (builderNft.builder.email && builderNft.builder.sendTransactionEmails) {
     try {
       const [scout, nft] = await Promise.all([
         prisma.scout.findUniqueOrThrow({

@@ -14,7 +14,8 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
     select: {
       id: true,
       displayName: true,
-      email: true
+      email: true,
+      sendTransactionEmails: true
     }
   });
 
@@ -23,7 +24,7 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
   for (const scout of scouts) {
     try {
       const { points: weeklyClaimablePoints } = await getClaimablePoints({ userId: scout.id, week });
-      if (weeklyClaimablePoints) {
+      if (weeklyClaimablePoints && scout.sendTransactionEmails && scout.email) {
         await sendEmailTemplate({
           to: {
             displayName: scout.displayName,
