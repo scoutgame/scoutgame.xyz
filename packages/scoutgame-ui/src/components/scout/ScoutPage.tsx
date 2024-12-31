@@ -71,7 +71,7 @@ export async function ScoutPage({
             gap: 2
           }}
         >
-          <Suspense fallback={<LoadingCards count={3} withTitle={true} />}>
+          <Suspense key='scout-page-carousel' fallback={<LoadingCards count={3} withTitle={true} />}>
             <ScoutPageCarousel />
           </Suspense>
           <Stack

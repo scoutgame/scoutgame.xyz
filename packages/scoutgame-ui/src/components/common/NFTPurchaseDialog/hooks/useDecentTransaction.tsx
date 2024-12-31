@@ -18,7 +18,7 @@ import useSWR from 'swr';
 import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
 
-type DecentTransactionProps = {
+export type DecentTransactionProps = {
   address: Address;
   sourceChainId: number;
   sourceToken: Address;
@@ -30,32 +30,36 @@ type DecentTransactionProps = {
   useScoutToken?: boolean;
 };
 
+export function _appendDecentQueryParams(path: string, data: any) {
+  const queryString = Object.keys(data)
+    .filter((key) => !!data[key])
+    .map((key) => {
+      const value = data[key];
+      return Array.isArray(value)
+        ? `${value.map((v: string) => `${key}=${v}`).join('&')}`
+        : typeof value === 'object'
+          ? `${key}=${JSON.stringify(value, (_key, val) => (typeof val === 'bigint' ? `${val.toString()}n` : val))}`
+          : `${key}=${encodeURIComponent(value)}`;
+    })
+    .join('&');
+  return `${path}${queryString ? `?${queryString}` : ''}`;
+}
+
 async function prepareDecentTransaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
   const DECENT_API_KEY = getDecentApiKey();
 
-  function _appendQuery(path: string, data: any) {
-    const queryString = Object.keys(data)
-      .filter((key) => !!data[key])
-      .map((key) => {
-        const value = data[key];
-        return Array.isArray(value)
-          ? `${value.map((v: string) => `${key}=${v}`).join('&')}`
-          : typeof value === 'object'
-            ? `${key}=${JSON.stringify(value, (_key, val) => (typeof val === 'bigint' ? `${val.toString()}n` : val))}`
-            : `${key}=${encodeURIComponent(value)}`;
-      })
-      .join('&');
-    return `${path}${queryString ? `?${queryString}` : ''}`;
-  }
-
   const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';
 
-  const response = await GET<BoxActionResponse>(_appendQuery(basePath, { arguments: txConfig }), undefined, {
-    headers: {
-      'x-api-key': DECENT_API_KEY
-    },
-    credentials: 'omit'
-  });
+  const response = await GET<BoxActionResponse>(
+    _appendDecentQueryParams(basePath, { arguments: txConfig }),
+    undefined,
+    {
+      headers: {
+        'x-api-key': DECENT_API_KEY
+      },
+      credentials: 'omit'
+    }
+  );
 
   return response;
 }
@@ -71,6 +75,9 @@ export function useDecentTransaction({
   contractAddress,
   useScoutToken
 }: DecentTransactionProps) {
+  const _contractAddress =
+    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress());
+
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
@@ -81,8 +88,7 @@ export function useDecentTransaction({
     actionType: ActionType.NftMint,
     actionConfig: {
       chainId: useScoutToken ? scoutProtocolChainId : optimism.id,
-      contractAddress:
-        contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress()),
+      contractAddress: _contractAddress,
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
@@ -102,7 +108,7 @@ export function useDecentTransaction({
     data: decentTransactionInfo
   } = useSWR(
     address && paymentAmountOut
-      ? `buy-token-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
+      ? `buy-token-${contractAddress}-${_contractAddress}-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
       : null,
     () =>
       prepareDecentTransaction({
