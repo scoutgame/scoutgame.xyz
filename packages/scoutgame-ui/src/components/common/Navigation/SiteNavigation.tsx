@@ -90,16 +90,26 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         <BottomNavigationAction
           LinkComponent={Link}
           label='Claim'
-          href='/claim'
+          href={isAuthenticated ? '/claim' : '#'}
           value='claim'
           icon={<ClaimIcon animate={claimablePoints && claimablePoints.points > 0} />}
+          onClick={(e) => {
+            if (!isAuthenticated) {
+              setAuthPopup({ open: true, path: '/claim' });
+            }
+          }}
         />
         <BottomNavigationAction
           label='Quests'
-          href='/quests'
+          href={isAuthenticated ? '/quests' : '#'}
           value='quests'
           icon={<QuestsIcon size='24px' />}
           LinkComponent={Link}
+          onClick={(e) => {
+            if (!isAuthenticated) {
+              setAuthPopup({ open: true, path: '/quests' });
+            }
+          }}
         />
       </StyledBottomNavigation>
       <SignInModalMessage
