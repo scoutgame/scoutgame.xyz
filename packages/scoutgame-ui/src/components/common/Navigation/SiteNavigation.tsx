@@ -95,7 +95,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           icon={<ClaimIcon animate={claimablePoints && claimablePoints.points > 0} />}
           onClick={(e) => {
             if (!isAuthenticated) {
-              setAuthPopup({ open: true, path: '/claim' });
+              setAuthPopup({ open: true, path: 'claim' });
             }
           }}
         />
@@ -107,7 +107,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           LinkComponent={Link}
           onClick={(e) => {
             if (!isAuthenticated) {
-              setAuthPopup({ open: true, path: '/quests' });
+              setAuthPopup({ open: true, path: 'quests' });
             }
           }}
         />
