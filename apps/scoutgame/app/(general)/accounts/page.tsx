@@ -1,41 +1,48 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { currentSeason } from '@packages/scoutgame/dates';
 import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { AccountsPage } from '@packages/scoutgame-ui/components/accounts/AccountsPage';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Accounts() {
-  const user = await getUserFromSession();
+  const [, user] = await safeAwaitSSRData(getUserFromSession());
   if (!user) {
     return notFound();
   }
 
-  const currentUserAccountsMetadata = await prisma.scout.findFirstOrThrow({
-    where: {
-      id: user.id
-    },
-    select: {
-      telegramId: true,
-      wallets: {
-        select: {
-          address: true
-        }
+  const [, currentUserAccountsMetadata] = await safeAwaitSSRData(
+    prisma.scout.findFirstOrThrow({
+      where: {
+        id: user.id
       },
-      nftPurchaseEvents: {
-        where: {
-          builderNft: {
-            season: currentSeason,
-            nftType: 'starter_pack'
+      select: {
+        telegramId: true,
+        wallets: {
+          select: {
+            address: true
           }
         },
-        select: {
-          id: true
+        nftPurchaseEvents: {
+          where: {
+            builderNft: {
+              season: currentSeason,
+              nftType: 'starter_pack'
+            }
+          },
+          select: {
+            id: true
+          }
         }
       }
-    }
-  });
+    })
+  );
+
+  if (!currentUserAccountsMetadata) {
+    return notFound();
+  }
 
   return (
     <AccountsPage

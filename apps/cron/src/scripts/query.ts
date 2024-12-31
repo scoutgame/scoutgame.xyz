@@ -1,5 +1,5 @@
 import { updateMoxieProfile } from '../tasks/updateTalentMoxieProfiles/updateTalentMoxieProfile';
-import { sendGemsPayoutEmails } from '../emails/sendGemsPayoutEmails/sendGemsPayoutEmails';
+import { sendGemsPayoutEmails } from '../emails/sendGemsPayoutEmails';
 import { prisma } from '@charmverse/core/prisma-client';
 
 export async function query() {

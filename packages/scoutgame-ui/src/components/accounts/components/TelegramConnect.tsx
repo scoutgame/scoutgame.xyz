@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Box, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { connectTelegramAccountAction } from '@packages/scoutgame/telegram/connectTelegramAccountAction';
 import { generateTelegramQrCodeAction } from '@packages/scoutgame/telegram/generateTelegramQrCodeAction';
 import { mergeUserTelegramAccountAction } from '@packages/scoutgame/telegram/mergeUserTelegramAccountAction';
@@ -13,6 +13,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 
 import { Dialog } from '../../../components/common/Dialog';
+import { useMdScreen } from '../../../hooks/useMediaScreens';
 import type { UserWithAccountsDetails } from '../AccountsPage';
 import { useAccountConnect } from '../hooks/useAccountConnect';
 
@@ -24,6 +25,7 @@ export type TelegramAccount = {
 
 export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const isDesktop = useMdScreen();
   const [isSessionPasswordNeeded, setIsSessionPasswordNeeded] = useState(false);
   const {
     isRevalidatingPath,
@@ -105,15 +107,21 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
           {user.telegramId ? (
             <Typography variant='body1'>{user.telegramId}</Typography>
           ) : (
-            <LoadingButton
-              loading={isConnecting || isGeneratingQrCode}
-              sx={{ width: 'fit-content' }}
-              onClick={() => generateTelegramQrCode()}
-              variant='contained'
-            >
-              {isGeneratingQrCode || isConnecting ? 'Connecting...' : 'Connect'}
-              <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
-            </LoadingButton>
+            <>
+              <LoadingButton
+                loading={isConnecting || isGeneratingQrCode}
+                sx={{ width: 'fit-content' }}
+                onClick={() => generateTelegramQrCode()}
+                variant='contained'
+                disabled={!isDesktop}
+              >
+                {isGeneratingQrCode || isConnecting ? 'Connecting...' : 'Connect'}
+                <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
+              </LoadingButton>
+              {!isDesktop && (
+                <Alert severity='warning'>Please login from desktop to connect your Telegram account.</Alert>
+              )}
+            </>
           )}
 
           {connectionError && (

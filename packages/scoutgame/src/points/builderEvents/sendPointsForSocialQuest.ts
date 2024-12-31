@@ -40,6 +40,7 @@ export async function sendPointsForSocialQuest({
                 claimedAt: new Date(),
                 value: points,
                 recipientId: builderId,
+                season: currentSeason,
                 activities: {
                   create: {
                     type: 'points',

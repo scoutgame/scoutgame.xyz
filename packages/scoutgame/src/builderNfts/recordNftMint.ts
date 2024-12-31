@@ -2,13 +2,16 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
 import type { Season } from '@packages/scoutgame/dates';
 import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
+import { baseUrl } from '@packages/utils/constants';
 
 import { referralBonusPoints } from '../constants';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
+import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
 import { recordNftPurchaseQuests } from './recordNftPurchaseQuests';
 
@@ -57,9 +60,11 @@ export async function recordNftMint(
       season: true,
       tokenId: true,
       builderId: true,
+      imageUrl: true,
       builder: {
         select: {
           path: true,
+          email: true,
           displayName: true,
           hasMoxieProfile: true
         }
@@ -68,19 +73,22 @@ export async function recordNftMint(
   });
 
   // The builder receives 20% of the points value, regardless of whether the purchase was paid with points or not
-  const pointsReceipts: { value: number; recipientId?: string; senderId?: string; createdAt?: Date }[] = [
-    {
-      value: Math.floor(pointsValue * 0.2),
-      recipientId: builderNft.builderId,
-      createdAt
-    }
-  ];
+  const pointsReceipts: { value: number; recipientId?: string; senderId?: string; createdAt?: Date; season: string }[] =
+    [
+      {
+        value: Math.floor(pointsValue * 0.2),
+        recipientId: builderNft.builderId,
+        createdAt,
+        season: currentSeason
+      }
+    ];
 
   if (paidWithPoints) {
     pointsReceipts.push({
       value: pointsValue,
       senderId: scoutId,
-      createdAt
+      createdAt,
+      season: currentSeason
     });
   }
 
@@ -214,81 +222,50 @@ export async function recordNftMint(
     log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
   }
 
-  try {
-    // Find the referrer of the scout first
-    const referrer = await prisma.scout.findFirst({
-      where: {
-        events: {
-          some: {
-            referralCodeEvent: {
-              refereeId: scoutId
-            }
+  if (builderNft.builder.email) {
+    try {
+      const [scout, nft] = await Promise.all([
+        prisma.scout.findUniqueOrThrow({
+          where: {
+            id: scoutId
+          },
+          select: {
+            displayName: true,
+            path: true
           }
-        }
-      },
-      select: {
-        id: true
-      }
-    });
-
-    if (referrer) {
-      const referralCodeEvent = await prisma.referralCodeEvent.findFirst({
-        where: {
-          refereeId: scoutId
+        }),
+        prisma.builderNft.findUniqueOrThrow({
+          where: {
+            id: builderNftId
+          },
+          select: {
+            currentPrice: true
+          }
+        })
+      ]);
+      await sendEmailTemplate({
+        senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+        subject: 'Your Builder Card Was Just Scouted! 🎉',
+        template: 'Builder card scouted',
+        to: {
+          displayName: builderNft.builder.displayName,
+          email: builderNft.builder.email,
+          userId: builderNft.builderId
         },
-        select: {
-          id: true
+        templateVariables: {
+          builder_name: builderNft.builder.displayName,
+          builder_profile_link: `https://scoutgame.xyz/u/${builderNft.builder.path}`,
+          cards_purchased: amount,
+          total_purchase_cost: pointsValue,
+          builder_card_image: builderNft.imageUrl,
+          scout_name: scout.displayName,
+          scout_profile_link: `https://scoutgame.xyz/u/${scout.path}`,
+          current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
         }
       });
-
-      // If the referral code event exists and doesn't have a bonus event, create one
-      if (referralCodeEvent && !referralCodeEvent.bonusEvent) {
-        await prisma.$transaction(async (tx) => {
-          await tx.builderEvent.create({
-            data: {
-              type: 'referral_bonus',
-              season: currentSeason,
-              description: 'Received points for a referred user scouting a builder',
-              week: getCurrentWeek(),
-              builder: {
-                connect: {
-                  id: referrer.id
-                }
-              },
-              referralBonusEvent: {
-                connect: {
-                  id: referralCodeEvent.id
-                }
-              },
-              pointsReceipts: {
-                create: {
-                  value: referralBonusPoints,
-                  claimedAt: new Date(),
-                  recipient: {
-                    connect: {
-                      id: referrer.id
-                    }
-                  }
-                }
-              }
-            }
-          });
-
-          await tx.scout.update({
-            where: {
-              id: referrer.id
-            },
-            data: {
-              currentBalance: {
-                increment: referralBonusPoints
-              }
-            }
-          });
-        });
-      }
+    } catch (error) {
+      log.error('Error sending builder card scouted email', { error, userId: builderNft.builderId });
     }
-  } catch (error) {
-    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, scoutId });
   }
 
   return {

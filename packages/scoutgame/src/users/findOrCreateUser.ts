@@ -160,6 +160,7 @@ export async function findOrCreateUser({
               create: {
                 value: points,
                 claimedAt: new Date(),
+                season: currentSeason,
                 event: {
                   create: {
                     season: currentSeason,

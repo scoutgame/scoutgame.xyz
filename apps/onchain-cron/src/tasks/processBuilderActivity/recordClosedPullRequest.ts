@@ -1,8 +1,8 @@
 import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { isTruthy } from '@packages/utils/types';
-import { sendClosedPullRequestEmail } from 'src/emails/sendClosedPullRequestEmail/sendClosedPullRequestEmail';
 import { v4 as uuid } from 'uuid';
 
 import { getClosedPullRequest } from './github/getClosedPullRequest';
@@ -39,10 +39,23 @@ export async function recordClosedPullRequest({
     select: {
       id: true,
       builderStatus: true,
+      displayName: true,
       email: true,
       strikes: {
         select: {
-          id: true
+          id: true,
+          githubEvent: {
+            select: {
+              title: true,
+              url: true,
+              createdAt: true,
+              repo: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -161,12 +174,39 @@ export async function recordClosedPullRequest({
     }
 
     if (builder.email) {
-      await sendClosedPullRequestEmail({
-        currentStrikesCount,
-        pullRequestLink: pullRequest.url,
-        userId: builder.id,
-        email: builder.email
-      });
+      const events = builder.strikes
+        .map((strike) => strike.githubEvent)
+        .filter(isTruthy)
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+      try {
+        await sendEmailTemplate({
+          to: {
+            displayName: builder.displayName,
+            email: builder.email,
+            userId: builder.id
+          },
+          senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+          subject: 'Your Scout Game Account Has Been Suspended',
+          template: 'Builder suspended',
+          templateVariables: {
+            builder_name: builder.displayName,
+            repo_1_title: events[0].repo.name,
+            pr_1_link: events[0].url,
+            pr_1_title: events[0].title,
+            repo_2_title: events[1].repo.name,
+            pr_2_link: events[1].url,
+            pr_2_title: events[1].title,
+            repo_3_title: events[2].repo.name,
+            pr_3_link: events[2].url,
+            pr_3_title: events[2].title
+          }
+        });
+
+        log.info('Banned builder', { userId: builder.id, strikes: currentStrikesCount });
+      } catch (error) {
+        log.error('Error sending email to banned builder', { error, userId: builder.id });
+      }
     }
   }
 }

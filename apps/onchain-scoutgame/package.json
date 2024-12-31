@@ -23,6 +23,7 @@
     "@mui/lab": "^6.0.0-beta.10",
     "@packages/farcaster": "^0.0.0",
     "@packages/github": "^0.0.0",
+    "@packages/mailer": "^0.0.0",
     "@packages/mixpanel": "^0.0.0",
     "@packages/scoutgame": "^0.0.0",
     "@packages/scoutgame-router": "^1.0.0",

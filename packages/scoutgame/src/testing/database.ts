@@ -187,9 +187,10 @@ export async function mockGemPayoutEvents({
           },
           pointsReceipts: {
             createMany: {
-              data: recipients.map(({ id, recipientType, points }) => ({
+              data: recipients.map(({ id, points }) => ({
                 value: points,
-                recipientId: id
+                recipientId: id,
+                season
               }))
             }
           }
@@ -256,6 +257,7 @@ export async function mockGemPayoutEvent({
             create: {
               value: amount,
               recipientId,
+              season,
               activities: {
                 create: {
                   recipientType: 'scout',
@@ -408,6 +410,7 @@ export async function mockNFTPurchaseEvent({
       pointsReceipts: {
         create: {
           value: points,
+          season,
           recipientId: builderId,
           senderId: scoutId
         }
