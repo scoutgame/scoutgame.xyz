@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
 
 import { authActionClient } from '../actions/actionClient';
-import { getUserFromSession } from '../session/getUserFromSession';
+import { getSession } from '../session/getSession';
 
 import { handlePendingTransaction } from './handlePendingTransaction';
 
@@ -17,7 +17,8 @@ export const checkDecentTransactionAction = authActionClient
     })
   )
   .action(async ({ parsedInput }) => {
-    const userId = await getUserFromSession().then((u) => u?.id);
+    const session = await getSession();
+    const userId = session?.scoutId;
 
     if (!userId) {
       throw new Error('User not found');
