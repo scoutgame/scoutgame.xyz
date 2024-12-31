@@ -8,8 +8,8 @@ import type { Season } from '@packages/scoutgame/dates';
 import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
 import { baseUrl } from '@packages/utils/constants';
 
-import { referralBonusPoints } from '../constants';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { createReferralBonusEvent } from '../referrals/createReferralBonusEvent';
 
 import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
@@ -254,18 +254,24 @@ export async function recordNftMint(
         },
         templateVariables: {
           builder_name: builderNft.builder.displayName,
-          builder_profile_link: `https://scoutgame.xyz/u/${builderNft.builder.path}`,
+          builder_profile_link: `${baseUrl}/u/${builderNft.builder.path}`,
           cards_purchased: amount,
           total_purchase_cost: pointsValue,
           builder_card_image: builderNft.imageUrl,
           scout_name: scout.displayName,
-          scout_profile_link: `https://scoutgame.xyz/u/${scout.path}`,
+          scout_profile_link: `${baseUrl}/u/${scout.path}`,
           current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
         }
       });
     } catch (error) {
       log.error('Error sending builder card scouted email', { error, userId: builderNft.builderId });
     }
+  }
+
+  try {
+    await createReferralBonusEvent(scoutId);
+  } catch (error) {
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, scoutId });
   }
 
   return {
