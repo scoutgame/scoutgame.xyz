@@ -6,7 +6,7 @@ import {
   currentSeason,
   getPreviousWeek,
   getNextWeek,
-  currentSeasonNumber,
+  currentSeasonTitle,
   getSeasonWeekFromISOWeek
 } from '@packages/scoutgame/dates';
 import Link from 'next/link';
@@ -44,9 +44,7 @@ export function BuilderRewardsScreen({ period }: { period: string }) {
           </IconButton>
         </Link>
         <Typography>
-          {!week
-            ? `Season ${currentSeasonNumber}`
-            : `Week ${getSeasonWeekFromISOWeek({ season: currentSeason, week })}`}
+          {!week ? `${currentSeasonTitle}` : `Week ${getSeasonWeekFromISOWeek({ season: currentSeason, week })}`}
         </Typography>
         <Link href={nextWeek ? `/claim?tab=${nextWeek}` : ''}>
           <IconButton disabled={!nextWeek} size='small'>

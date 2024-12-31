@@ -7,43 +7,62 @@ type WeekOfSeason = number; // the week in the season, e.g. 1
 
 export const weeksPerSeason = 13;
 
+// the end of each season is the start of the next season
 export const seasons = [
   // dev season
   {
     start: '2024-W38',
-    end: '2024-W40',
     title: 'Dev Season'
   },
   // pre-release season
   {
     start: '2024-W40',
-    end: '2024-W41',
     title: 'Pre Season'
   },
   // Preseason 1
   {
     start: '2024-W41',
-    end: '2025-W02',
     title: 'Season 1'
   },
   // Preseason 2
   {
     start: '2025-W02',
-    end: '2025-W14',
     title: 'Season 2'
   }
 ] as const;
 
-export type Season = (typeof seasons)[number]['start'];
 export const seasonStarts = seasons.map((s) => s.start);
 
-export const currentSeason: Season = '2024-W41';
+export type Season = (typeof seasons)[number]['start'];
 
-export const currentSeasonNumber = 1;
+export const currentWeek = getCurrentWeek();
+export const currentSeason = getCurrentSeason(currentWeek, seasonStarts);
+export const currentSeasonTitle = seasons.find((s) => s.start === currentSeason)?.title;
+
 export const streakWindow = 7 * 24 * 60 * 60 * 1000;
 
-export const seasonAllocatedPoints = 18_141_850;
-// Currently, we are hardcoding the value of weekly allocated points to 100,000
+export function getCurrentSeason(_currentWeek: ISOWeek, seasonList: Season[]): Season {
+  validateSeasonList(seasonList);
+  const _seasonList = seasonList.slice(); // clone array to avoid mutating the original
+  let _currentSeason = _seasonList.shift()!;
+  if (_currentWeek < _currentSeason) {
+    throw new Error('Current week is before the first season');
+  }
+  while (_currentWeek >= _seasonList[0]) {
+    _currentSeason = _seasonList.shift()!;
+  }
+
+  return _currentSeason;
+}
+
+export function validateSeasonList(seasonList: Season[]): void {
+  if (!seasonList.every((s) => s)) {
+    throw new Error('Invalid season list');
+  }
+  if (seasonList.slice().sort().join(',') !== seasonList.join(',')) {
+    throw new Error('Season list is not sorted');
+  }
+}
 
 // Return the format of week
 export function getCurrentWeek(): ISOWeek {

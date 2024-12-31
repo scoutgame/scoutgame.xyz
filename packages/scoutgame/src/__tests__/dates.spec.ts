@@ -1,6 +1,14 @@
 import { DateTime } from 'luxon';
 
-import { getWeekFromDate, getWeekStartEnd, getSeasonWeekFromISOWeek, validateISOWeek, getCurrentWeek } from '../dates';
+import type { Season } from '../dates';
+import {
+  getWeekFromDate,
+  getWeekStartEnd,
+  getSeasonWeekFromISOWeek,
+  validateISOWeek,
+  getCurrentWeek,
+  getCurrentSeason
+} from '../dates';
 
 describe('date utils', () => {
   describe('getWeekFromDate', () => {
@@ -62,6 +70,41 @@ describe('date utils', () => {
       expect(validateISOWeek('2024-W40')).toBe(true);
       expect(validateISOWeek('2024-W01')).toBe(true);
       expect(validateISOWeek(getCurrentWeek())).toBe(true);
+    });
+  });
+
+  describe('getCurrentSeason', () => {
+    const seasonStarts = ['2024-W01', '2024-W05', '2024-W10'];
+
+    it('should return the season when the current week is the first week of a season', () => {
+      const currentSeason = getCurrentSeason('2024-W01', seasonStarts as Season[]);
+      expect(currentSeason).toEqual('2024-W01');
+    });
+
+    it('should return the season when the current week is the in the middle of a season', () => {
+      const currentSeason = getCurrentSeason('2024-W03', seasonStarts as Season[]);
+      expect(currentSeason).toEqual('2024-W01');
+    });
+
+    it('should return the season when the current week is after the last season', () => {
+      const currentSeason = getCurrentSeason('2024-W15', seasonStarts as Season[]);
+      expect(currentSeason).toEqual('2024-W10');
+    });
+
+    it('Should throw an error when given an invalid season list', () => {
+      const missingSeason = ['2024-W03', ''];
+      expect(() => getCurrentSeason('2024-W03', missingSeason as Season[])).toThrow();
+    });
+
+    it('Should throw an error when given an invalid season list', () => {
+      const currentWeek = '2024-W03';
+      const unsortedSeasons = ['2024-W03', '2024-W02'];
+      expect(() => getCurrentSeason(currentWeek, unsortedSeasons as Season[])).toThrow();
+    });
+
+    it('Should fail if the current week is before the first season', () => {
+      const currentWeek = '2023-W01';
+      expect(() => getCurrentSeason(currentWeek, seasonStarts as Season[])).toThrow();
     });
   });
 });
