@@ -1,6 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 
+import { referralBonusPoints } from '../../constants';
+import { createReferralEvent } from '../../referrals/createReferralEvent';
+import { updateReferralUsers } from '../../referrals/updateReferralUsers';
 import { mockBuilder, mockScout, mockBuilderNft } from '../../testing/database';
 import { randomLargeInt } from '../../testing/generators';
 
@@ -128,5 +131,46 @@ describe('recordNftMint', () => {
     });
 
     expect(refreshBuilderNftPrice).not.toHaveBeenCalled();
+  });
+
+  it('should create a referral bonus event if the scout has a referral code', async () => {
+    const referrer = await mockScout();
+    const referee = await mockScout();
+    const builder = await mockBuilder();
+    const builderNft = await mockBuilderNft({ builderId: builder.id });
+
+    await createReferralEvent(referrer.referralCode, referee.id);
+
+    await updateReferralUsers(referee.id);
+
+    const referrerAfterReferral = await prisma.scout.findUniqueOrThrow({
+      where: {
+        id: referrer.id
+      },
+      select: {
+        currentBalance: true
+      }
+    });
+
+    await recordNftMint({
+      builderNftId: builderNft.id,
+      amount: 1,
+      mintTxHash: `0x123${Math.random().toString()}`,
+      pointsValue: 100,
+      recipientAddress: referee.id,
+      scoutId: referee.id,
+      paidWithPoints: true
+    });
+
+    const referrerAfterReferralBonus = await prisma.scout.findUniqueOrThrow({
+      where: {
+        id: referrer.id
+      },
+      select: {
+        currentBalance: true
+      }
+    });
+
+    expect(referrerAfterReferralBonus.currentBalance).toBe(referrerAfterReferral.currentBalance + referralBonusPoints);
   });
 });

@@ -22,55 +22,60 @@ export async function createReferralBonusEvent(refereeId: string) {
 
   const referrerId = referralCodeEvent?.builderEvent?.builderId;
 
-  // If the referral code event exists and doesn't have a bonus event, create one
-  if (referrerId && !referralCodeEvent.bonusBuilderEvent) {
-    await prisma.$transaction(async (tx) => {
-      await tx.builderEvent.create({
-        data: {
-          type: 'referral_bonus',
-          season: currentSeason,
-          description: 'Received points for a referred user scouting a builder',
-          week: getCurrentWeek(),
-          builder: {
-            connect: {
-              id: referrerId
-            }
-          },
-          referralBonusEvent: {
-            connect: {
-              id: referralCodeEvent.id
-            }
-          },
-          pointsReceipts: {
-            create: {
-              value: referralBonusPoints,
-              claimedAt: new Date(),
-              recipient: {
-                connect: {
-                  id: referrerId
-                }
-              },
-              season: currentSeason
-            }
-          }
-        }
-      });
-
-      await tx.scout.update({
-        where: {
-          id: referrerId
-        },
-        data: {
-          currentBalance: {
-            increment: referralBonusPoints
-          }
-        }
-      });
-
-      trackUserAction('referral_bonus', {
-        userId: refereeId,
-        referrerId
-      });
-    });
+  if (!referrerId) {
+    throw new Error('Referrer not found');
   }
+
+  if (referralCodeEvent?.bonusBuilderEvent) {
+    throw new Error('Referral bonus event already exists');
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.builderEvent.create({
+      data: {
+        type: 'referral_bonus',
+        season: currentSeason,
+        description: 'Received points for a referred user scouting a builder',
+        week: getCurrentWeek(),
+        builder: {
+          connect: {
+            id: referrerId
+          }
+        },
+        referralBonusEvent: {
+          connect: {
+            id: referralCodeEvent.id
+          }
+        },
+        pointsReceipts: {
+          create: {
+            value: referralBonusPoints,
+            claimedAt: new Date(),
+            recipient: {
+              connect: {
+                id: referrerId
+              }
+            },
+            season: currentSeason
+          }
+        }
+      }
+    });
+
+    await tx.scout.update({
+      where: {
+        id: referrerId
+      },
+      data: {
+        currentBalance: {
+          increment: referralBonusPoints
+        }
+      }
+    });
+
+    trackUserAction('referral_bonus', {
+      userId: refereeId,
+      referrerId
+    });
+  });
 }
