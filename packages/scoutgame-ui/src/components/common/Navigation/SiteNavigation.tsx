@@ -44,10 +44,6 @@ const StyledBottomNavigation = styled(BottomNavigation, {
   }
 }));
 
-function DisabledLink(props: LinkProps) {
-  return <Link {...props} href='#' />;
-}
-
 export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const platform = getPlatform();
   const pathname = usePathname();
@@ -92,33 +88,18 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           LinkComponent={Link}
         />
         <BottomNavigationAction
-          LinkComponent={DisabledLink}
+          LinkComponent={Link}
           label='Claim'
           href='/claim'
-          // className='.Mui-BottomNavigationAction-root'
           value='claim'
           icon={<ClaimIcon animate={claimablePoints && claimablePoints.points > 0} />}
-          onClick={(e) => {
-            if (openAuthModal) {
-              openAuthModal(e, 'claim');
-            } else {
-              router.push('/claim');
-            }
-          }}
         />
         <BottomNavigationAction
           label='Quests'
           href='/quests'
           value='quests'
           icon={<QuestsIcon size='24px' />}
-          LinkComponent={DisabledLink}
-          onClick={(e) => {
-            if (openAuthModal) {
-              openAuthModal(e, 'quests');
-            } else {
-              router.push('/quests');
-            }
-          }}
+          LinkComponent={Link}
         />
       </StyledBottomNavigation>
       <SignInModalMessage
