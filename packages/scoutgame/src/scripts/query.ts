@@ -4,7 +4,7 @@ import { uploadArtwork } from '../builderNfts/artwork/uploadArtwork';
 import { uploadMetadata } from '../builderNfts/artwork/uploadMetadata';
 
 const currentSeasonStartDate = DateTime.fromObject({ year: 2024, month: 9, day: 30 }, { zone: 'utc' }); // Actual launch: 2024-W40
-const currentSeason = getCurrentSeasonStart()StartDate.toFormat(`kkkk-'W'WW`);
+const currentSeason = getCurrentSeasonStartDate.toFormat(`kkkk-'W'WW`);
 
 async function query() {
   const nfts = await prisma.builderNft.findMany({

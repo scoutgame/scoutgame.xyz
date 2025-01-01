@@ -1,6 +1,6 @@
 'use server';
 
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
+import { authActionClient } from '../actions/actionClient';
 
 import { connectWalletAccount } from './connectWalletAccount';
 import { connectWalletAccountSchema } from './connectWalletAccountSchema';

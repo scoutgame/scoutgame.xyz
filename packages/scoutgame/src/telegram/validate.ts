@@ -1,8 +1,9 @@
 import crypto from 'node:crypto';
 
 import { DataNotFoundError, InvalidInputError } from '@charmverse/core/errors';
-import { TELEGRAM_BOT_TOKEN } from '@packages/scoutgame/constants';
 import type { WebAppInitData } from '@twa-dev/types/index';
+
+import { TELEGRAM_BOT_TOKEN } from '../constants';
 
 function parseInitData(initData: string) {
   const params = new URLSearchParams(initData);

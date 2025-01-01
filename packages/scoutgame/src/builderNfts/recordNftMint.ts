@@ -3,11 +3,11 @@ import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
-import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
-import type { Season } from '@packages/scoutgame/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/scoutgame/dates/utils';
 import { baseUrl } from '@packages/utils/constants';
 
+import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
+import type { Season } from '../dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { createReferralBonusEvent } from '../referrals/createReferralBonusEvent';
 

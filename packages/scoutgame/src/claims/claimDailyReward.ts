@@ -1,8 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { getCurrentWeek, getPreviousWeek, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
-import { sendPointsForDailyClaim } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaim';
-import { sendPointsForDailyClaimStreak } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaimStreak';
+
+import { getCurrentWeek, getPreviousWeek, getCurrentSeasonStart } from '../dates/utils';
+import { sendPointsForDailyClaim } from '../points/builderEvents/sendPointsForDailyClaim';
+import { sendPointsForDailyClaimStreak } from '../points/builderEvents/sendPointsForDailyClaimStreak';
 
 import { getRandomReward } from './getRandomReward';
 

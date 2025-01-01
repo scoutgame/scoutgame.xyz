@@ -23,12 +23,12 @@ jest.unstable_mockModule('../clients/builderContractReadClient', () => ({
   }
 }));
 
-jest.unstable_mockModule('@packages/scoutgame/builderNfts/refreshBuilderNftPrice', () => ({
+jest.unstable_mockModule('../refreshBuilderNftPrice', () => ({
   refreshBuilderNftPrice: jest.fn()
 }));
 
 const { recordNftMint } = await import('../recordNftMint');
-const { refreshBuilderNftPrice } = await import('@packages/scoutgame/builderNfts/refreshBuilderNftPrice');
+const { refreshBuilderNftPrice } = await import('../refreshBuilderNftPrice');
 
 describe('recordNftMint', () => {
   afterEach(() => {

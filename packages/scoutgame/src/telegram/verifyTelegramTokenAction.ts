@@ -1,12 +1,12 @@
 'use server';
 
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
-import { TELEGRAM_API_HASH, TELEGRAM_API_ID } from '@packages/scoutgame/constants';
 import { telegramClients } from '@packages/scoutgame-ui/actions/telegramClient';
 import type { TelegramClient } from 'telegram';
 import { Api } from 'telegram';
 import { UpdateConnectionState } from 'telegram/network';
 
+import { authActionClient } from '../actions/actionClient';
+import { TELEGRAM_API_HASH, TELEGRAM_API_ID } from '../constants';
 import { delay } from '../utils/async';
 import { encrypt } from '../utils/crypto';
 
