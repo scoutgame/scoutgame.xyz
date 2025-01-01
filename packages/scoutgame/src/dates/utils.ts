@@ -15,7 +15,7 @@ export function getCurrentSeason(
   if (_currentWeek < _currentSeason.start) {
     throw new Error('Current week is before the first season');
   }
-  while (_currentWeek >= _seasonStarts[0]) {
+  while (_seasons.length > 0 && _currentWeek >= _seasons[0].start) {
     _currentSeason = _seasons.shift()!;
   }
 
