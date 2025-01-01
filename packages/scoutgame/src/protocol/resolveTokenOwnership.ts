@@ -4,7 +4,8 @@ import type { Address } from 'viem';
 import { baseSepolia, optimism } from 'viem/chains';
 
 import { getTransferSingleWithBatchMerged } from '../builderNfts/accounting/getTransferSingleWithBatchMerged';
-import { getDateFromISOWeek, getWeekStartEnd, type ISOWeek } from '../dates';
+import type { ISOWeek } from '../dates/config';
+import { getDateFromISOWeek, getWeekStartEnd } from '../dates/utils';
 
 async function getLastBlockOfWeek({ week, chainId }: { week: string; chainId: number }): Promise<number> {
   // Step 1: Parse the ISO week (e.g., '2024-W50') and calculate the end of the week (Sunday 23:59:59 UTC)

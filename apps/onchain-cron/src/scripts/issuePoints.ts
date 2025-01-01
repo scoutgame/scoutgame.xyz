@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
+import { currentSeason, getLastWeek } from '@packages/scoutgame/dates/utils';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 import { refreshPointStatsFromHistory } from '@packages/scoutgame/points/refreshPointStatsFromHistory';
 
@@ -44,7 +44,7 @@ async function issuePoints({ points }: { points: number }) {
           claimed: true,
           description: `Friends of Scout Game`,
           hideFromNotifications: true,
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           week: getLastWeek(),
           tx
         });

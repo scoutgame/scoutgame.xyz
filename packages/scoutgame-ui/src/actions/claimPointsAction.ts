@@ -1,7 +1,7 @@
 'use server';
 
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
-import { getLastWeek } from '@packages/scoutgame/dates';
+import { getLastWeek } from '@packages/scoutgame/dates/utils';
 import { claimPoints } from '@packages/scoutgame/points/claimPoints';
 import { isTestEnv } from '@packages/utils/constants';
 

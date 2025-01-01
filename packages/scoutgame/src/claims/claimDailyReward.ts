@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { getCurrentWeek, getPreviousWeek, currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentWeek, getPreviousWeek, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { sendPointsForDailyClaim } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaim';
 import { sendPointsForDailyClaimStreak } from '@packages/scoutgame/points/builderEvents/sendPointsForDailyClaimStreak';
 
@@ -11,7 +11,7 @@ export async function claimDailyReward({
   isBonus,
   dayOfWeek,
   week = getCurrentWeek(),
-  season = currentSeason
+  season = getCurrentSeasonStart()
 }: {
   userId: string;
   isBonus?: boolean;
@@ -19,7 +19,7 @@ export async function claimDailyReward({
   week?: string;
   season?: string;
 }) {
-  const validWeeks = [getCurrentWeek(), getPreviousWeek(getCurrentWeek())];
+  const validWeeks = [week, getPreviousWeek(week)];
   if (!validWeeks.includes(week)) {
     throw new Error(`Invalid week: ${week}. Valid weeks are ${validWeeks.join(', ')}`);
   }

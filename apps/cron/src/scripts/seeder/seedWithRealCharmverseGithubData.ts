@@ -4,7 +4,7 @@ import { registerBuilderNFT } from '@packages/scoutgame/builderNfts/builderRegis
 import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderStarterPackNFT';
 import { refreshUserStats } from '@packages/scoutgame/refreshUserStats';
 
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { log } from '@charmverse/core/log';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -150,10 +150,10 @@ async function seedBuilderNFTs() {
 
   for (const { builderId, login } of githubUser) {
     log.info(`-- Processing builder ${login}`);
-    const nft = await registerBuilderNFT({ builderId: builderId as string, season: currentSeason });
+    const nft = await registerBuilderNFT({ builderId: builderId as string, season: getCurrentSeasonStart() });
 
     if (devUsers[login].createStarterPack) {
-      await registerBuilderStarterPackNFT({ builderId: nft.builderId, season: currentSeason });
+      await registerBuilderStarterPackNFT({ builderId: nft.builderId, season: getCurrentSeasonStart() });
     }
 
     await generateNftPurchaseEvents({ builderId: nft.builderId, amount: 4 });

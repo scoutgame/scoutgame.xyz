@@ -1,16 +1,9 @@
-import { prisma } from "@charmverse/core/prisma-client";
-import { currentSeason } from "@packages/scoutgame/dates";
-import fs from "node:fs/promises";
+import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import fs from 'node:fs/promises';
 
 // Team member profile paths
-const profilePaths = [
-  'val3ntin.eth',
-  'safwan',
-  'meb',
-  'alexpoon.eth',
-  'mattcasey',
-  'ccarella.eth'
-]
+const profilePaths = ['val3ntin.eth', 'safwan', 'meb', 'alexpoon.eth', 'mattcasey', 'ccarella.eth'];
 
 // Run this against the production database
 async function downloadScoutsBuildersReposAndGithubEvents() {
@@ -18,7 +11,7 @@ async function downloadScoutsBuildersReposAndGithubEvents() {
     where: {
       builderNfts: {
         some: {
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: 'default'
         }
       },
@@ -29,14 +22,13 @@ async function downloadScoutsBuildersReposAndGithubEvents() {
     include: {
       builderNfts: {
         where: {
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: 'default'
         }
       },
-      githubUsers: true,
+      githubUsers: true
     }
   });
-
 
   // Only get repos that have a merged pull request
   const repos = await prisma.githubRepo.findMany({
@@ -64,7 +56,7 @@ async function downloadScoutsBuildersReposAndGithubEvents() {
       displayName: true,
       wallets: {
         select: {
-          address: true,
+          address: true
         },
         orderBy: {
           createdAt: 'asc'
@@ -72,17 +64,17 @@ async function downloadScoutsBuildersReposAndGithubEvents() {
         take: 1
       },
       farcasterId: true,
-      farcasterName: true,
+      farcasterName: true
     }
   });
 
   const githubEvents = await prisma.githubEvent.findMany({
     where: {
       repoId: {
-        in: repos.map(repo => repo.id)
+        in: repos.map((repo) => repo.id)
       },
       createdBy: {
-        in: builders.map(builder => builder.githubUsers[0].id)
+        in: builders.map((builder) => builder.githubUsers[0].id)
       }
     },
     include: {
@@ -93,7 +85,7 @@ async function downloadScoutsBuildersReposAndGithubEvents() {
   const builderEvents = await prisma.builderEvent.findMany({
     where: {
       builderId: {
-        in: builders.map(builder => builder.id)
+        in: builders.map((builder) => builder.id)
       },
       type: {
         in: ['daily_commit', 'merged_pull_request']
@@ -107,11 +99,26 @@ async function downloadScoutsBuildersReposAndGithubEvents() {
     }
   });
 
-  await fs.writeFile('apps/onchain-scoutgame/scripts/dataReplication/cache/builderEvents.ts', `export const builderEvents = ${JSON.stringify(builderEvents, null, 2)} as const;`);
-  await fs.writeFile('apps/onchain-scoutgame/scripts/dataReplication/cache/githubEvents.ts', `export const githubEvents = ${JSON.stringify(githubEvents, null, 2)} as const;`);
-  await fs.writeFile('apps/onchain-scoutgame/scripts/dataReplication/cache/scouts.ts', `export const scouts = ${JSON.stringify(scouts, null, 2)} as const;`);
-  await fs.writeFile('apps/onchain-scoutgame/scripts/dataReplication/cache/builders.ts', `export const builders = ${JSON.stringify(builders, null, 2)} as const;`);
-  await fs.writeFile('apps/onchain-scoutgame/scripts/dataReplication/cache/repos.ts', `export const repos = ${JSON.stringify(repos, null, 2)} as const;`);
+  await fs.writeFile(
+    'apps/onchain-scoutgame/scripts/dataReplication/cache/builderEvents.ts',
+    `export const builderEvents = ${JSON.stringify(builderEvents, null, 2)} as const;`
+  );
+  await fs.writeFile(
+    'apps/onchain-scoutgame/scripts/dataReplication/cache/githubEvents.ts',
+    `export const githubEvents = ${JSON.stringify(githubEvents, null, 2)} as const;`
+  );
+  await fs.writeFile(
+    'apps/onchain-scoutgame/scripts/dataReplication/cache/scouts.ts',
+    `export const scouts = ${JSON.stringify(scouts, null, 2)} as const;`
+  );
+  await fs.writeFile(
+    'apps/onchain-scoutgame/scripts/dataReplication/cache/builders.ts',
+    `export const builders = ${JSON.stringify(builders, null, 2)} as const;`
+  );
+  await fs.writeFile(
+    'apps/onchain-scoutgame/scripts/dataReplication/cache/repos.ts',
+    `export const repos = ${JSON.stringify(repos, null, 2)} as const;`
+  );
 }
 
 downloadScoutsBuildersReposAndGithubEvents();

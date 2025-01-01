@@ -3,12 +3,18 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
-import type { Season } from '../dates';
-import { currentSeason } from '../dates';
+import type { Season } from '../dates/config';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 const baseUrl = process.env.DOMAIN as string;
 
-export async function approveBuilder({ builderId, season = currentSeason }: { builderId: string; season?: Season }) {
+export async function approveBuilder({
+  builderId,
+  season = getCurrentSeasonStart()
+}: {
+  builderId: string;
+  season?: Season;
+}) {
   if (!baseUrl) {
     throw new Error('DOMAIN is not set');
   }
@@ -26,7 +32,7 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
       path: true,
       builderNfts: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           imageUrl: true

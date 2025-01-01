@@ -1,5 +1,5 @@
-import type { Season } from '../dates';
-import { getLastWeek, getCurrentWeek } from '../dates';
+import type { Season } from '../dates/config';
+import { getLastWeek, getCurrentWeek } from '../dates/utils';
 
 export const randomLargeInt = () => Math.floor(Math.random() * 1000000000) + 1000000000;
 

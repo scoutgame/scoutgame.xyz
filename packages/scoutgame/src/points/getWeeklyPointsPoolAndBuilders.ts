@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getPointsCountForWeekWithNormalisation } from './getPointsCountForWeekWithNormalisation';
 
@@ -16,7 +16,7 @@ export type PartialNftPurchaseEvent = {
 
 export async function getWeeklyPointsPoolAndBuilders({
   week,
-  season = currentSeason
+  season = getCurrentSeasonStart()
 }: {
   week: string;
   season?: string;

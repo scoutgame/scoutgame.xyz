@@ -4,8 +4,8 @@ import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { refreshBuilderNftPrice } from '@packages/scoutgame/builderNfts/refreshBuilderNftPrice';
-import type { Season } from '@packages/scoutgame/dates';
-import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
+import type { Season } from '@packages/scoutgame/dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/scoutgame/dates/utils';
 import { baseUrl } from '@packages/utils/constants';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
@@ -79,7 +79,7 @@ export async function recordNftMint(
         value: Math.floor(pointsValue * 0.2),
         recipientId: builderNft.builderId,
         createdAt,
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }
     ];
 
@@ -88,7 +88,7 @@ export async function recordNftMint(
       value: pointsValue,
       senderId: scoutId,
       createdAt,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
   }
 

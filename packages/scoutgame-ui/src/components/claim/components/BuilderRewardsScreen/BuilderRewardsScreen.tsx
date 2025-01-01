@@ -3,12 +3,11 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { IconButton, Stack, Typography } from '@mui/material';
 import {
   getLastWeek,
-  currentSeason,
+  getCurrentSeason,
   getPreviousWeek,
   getNextWeek,
-  currentSeasonTitle,
   getSeasonWeekFromISOWeek
-} from '@packages/scoutgame/dates';
+} from '@packages/scoutgame/dates/utils';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
@@ -18,10 +17,11 @@ import { TabsMenu } from '../../../common/Tabs/TabsMenu';
 import { BuilderRewardsTableContainer } from './BuilderRewardsTableContainer';
 
 export function BuilderRewardsScreen({ period }: { period: string }) {
+  const currentSeason = getCurrentSeason();
   const isSeason = period === 'season';
   const lastWeek = getLastWeek();
   const week = isSeason ? null : period || lastWeek;
-  const previousWeek = week ? (week === currentSeason ? null : getPreviousWeek(week)) : null;
+  const previousWeek = week ? (week === currentSeason.start ? null : getPreviousWeek(week)) : null;
   const nextWeek = week ? (week === lastWeek ? null : getNextWeek(week)) : null;
 
   return (
@@ -44,7 +44,7 @@ export function BuilderRewardsScreen({ period }: { period: string }) {
           </IconButton>
         </Link>
         <Typography>
-          {!week ? `${currentSeasonTitle}` : `Week ${getSeasonWeekFromISOWeek({ season: currentSeason, week })}`}
+          {!week ? `${currentSeason.title}` : `Week ${getSeasonWeekFromISOWeek({ season: currentSeason.start, week })}`}
         </Typography>
         <Link href={nextWeek ? `/claim?tab=${nextWeek}` : ''}>
           <IconButton disabled={!nextWeek} size='small'>

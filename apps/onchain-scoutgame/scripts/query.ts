@@ -1,6 +1,6 @@
 import { getLeaderboard } from '@packages/scoutgame/builders/getLeaderboard';
 import { getTopScoutsByWeek } from 'lib/scouts/getTopScouts';
-import { getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/scoutgame/dates';
+import { getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/scoutgame/dates/utils';
 async function query() {
   // const existingAccounts = await getUserByPath('thescoho');
   // console.log(existingAccounts);

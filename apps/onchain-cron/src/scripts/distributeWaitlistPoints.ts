@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { BuilderEventType, prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/scoutgame/dates/utils';
 import { ConnectWaitlistTier, getTier } from '@packages/scoutgame/waitlist/scoring/constants';
 
 const waitlistTierPointsRecord: Record<ConnectWaitlistTier, number> = {
@@ -51,10 +51,10 @@ export async function distributeWaitlistPoints() {
             data: {
               value: points,
               claimedAt: new Date(),
-              season: currentSeason,
+              season: getCurrentSeasonStart(),
               event: {
                 create: {
-                  season: currentSeason,
+                  season: getCurrentSeasonStart(),
                   type: 'misc_event' as BuilderEventType,
                   week: getCurrentWeek(),
                   description: 'Received points for participating in pre-season week as a Builder',

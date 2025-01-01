@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { isTruthy } from '@packages/utils/types';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 import type { BasicUserInfo } from '../users/interfaces';
 import { BasicUserInfoSelect } from '../users/queries';
 
@@ -21,7 +21,7 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
     where: {
       builderEvent: {
         builderId,
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }
     },
     select: {

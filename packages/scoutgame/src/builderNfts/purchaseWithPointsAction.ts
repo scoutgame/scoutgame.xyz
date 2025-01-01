@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { revalidatePath } from 'next/cache';
 
 import { authActionClient } from '../actions/actionClient';
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
 import { builderContractReadonlyApiClient } from './clients/builderContractReadClient';
@@ -21,7 +21,7 @@ export const purchaseWithPointsAction = authActionClient
       prisma.builderNft.findFirstOrThrow({
         where: {
           builderId: parsedInput.builderId,
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: parsedInput.nftType,
           builder: {
             deletedAt: null

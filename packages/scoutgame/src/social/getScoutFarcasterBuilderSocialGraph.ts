@@ -2,7 +2,7 @@ import { fetchQueryWithPagination, init } from '@airstack/node';
 import { InvalidInputError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 const apiKey = process.env.AIRSTACK_API_KEY;
 
@@ -16,7 +16,7 @@ function getBuildersWithFarcasterIds(): Promise<number[]> {
       where: {
         builderNfts: {
           some: {
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         },
         farcasterId: {
@@ -45,7 +45,7 @@ async function getBuildersFollowingUser({ fid }: { fid: number }): Promise<numbe
   const uniqueBuilderFids = await getBuildersWithFarcasterIds();
   // For debugging, replace by this line and reimport gql from '@apollo/client'
   // const query = gql`
-  const query = `  
+  const query = `
     query GetFarcasterFollowers($fid: String!, $selectedFids: [String!], $cursor: String) {
       SocialFollowers(
         input: {
@@ -110,7 +110,7 @@ async function getBuildersFollowedByUser({ fid }: { fid: number }): Promise<numb
   const uniqueBuilderFids = await getBuildersWithFarcasterIds();
   // For debugging, replace by this line and reimport gql from '@apollo/client'
   // const query = gql`
-  const query = `  
+  const query = `
     query GetUserFarcasterFollowings($fid: String!, $selectedFids: [String!], $cursor: String) {
   SocialFollowings(
     input: {blockchain: ALL, filter: {dappName: {_eq: farcaster}, followerProfileId: {_eq: $fid}, followingProfileId: {_in: $selectedFids}}, limit: 10, cursor: $cursor, order: {blockNumber: ASC}}

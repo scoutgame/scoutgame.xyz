@@ -1,5 +1,5 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 export type BuilderSearchResult = {
   id: string;
@@ -53,7 +53,7 @@ export async function searchBuilders({
       avatar: true,
       userSeasonStats: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           pointsEarnedAsBuilder: true
@@ -61,7 +61,7 @@ export async function searchBuilders({
       },
       builderNfts: {
         where: {
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: BuilderNftType.default
         },
         select: {

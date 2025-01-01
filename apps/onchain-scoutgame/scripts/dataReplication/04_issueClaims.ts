@@ -9,10 +9,9 @@
 
 // validateIsNotProductionDatabase()
 
-
 // async function issueClaims() {
 
-//   const seasonWeeks = getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season: currentSeason });
+//   const seasonWeeks = getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season: getCurrentSeasonStart() });
 
 //   // The ownership will be empty for previous weeks, so we can use current ownership for past data simulations.
 //   const ownership = await resolveTokenOwnership({ week: getCurrentWeek(), chainId: scoutProtocolChainId, contractAddress: scoutProtocolBuilderNftContractAddress() });
@@ -25,17 +24,17 @@
 //       const week = seasonWeeks[i];
 
 //       log.info(`Calculating claims for week ${week} ${i+1} of ${seasonWeeks.length}`)
-  
+
 //       const weeklyClaimsCalculated = await calculateWeeklyClaims({
 //         week,
 //         tokenBalances: ownership
 //       });
-  
+
 //       await generateWeeklyClaims({
 //         week,
 //         weeklyClaimsCalculated
 //       })
-  
+
 //       log.info(`Issued claims for week ${week}`)
 
 //     } catch (error) {

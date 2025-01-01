@@ -1,5 +1,5 @@
 import { NFTPurchaseEvent, prisma, UserWeeklyStats } from '@charmverse/core/prisma-client';
-import { currentSeason, getLastWeek, getStartOfWeek } from '../dates';
+import { getCurrentSeasonStart, getLastWeek, getStartOfWeek } from '../dates/utils';
 import { prettyPrint } from '@packages/utils/strings';
 
 export async function getLastWeekTopNewScouts() {
@@ -36,7 +36,7 @@ export async function getLastWeekTopNewScouts() {
     prisma.userWeeklyStats.findMany({
       where: {
         week: lastWeek,
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         userId: {
           in: Array.from(new Set(Object.values(scoutBuilderIdsRecord).flat()))
         }

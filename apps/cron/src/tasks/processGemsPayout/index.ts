@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getCurrentWeek, getLastWeek, seasons, seasonStarts } from '@packages/scoutgame/dates';
+import { currentSeason, getCurrentWeek, getLastWeek, seasons, seasonStarts } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import type { Context } from 'koa';
@@ -11,7 +11,7 @@ import { processScoutPointsPayout } from './processScoutPointsPayout';
 
 export async function processGemsPayout(
   ctx: Context,
-  { season = currentSeason, now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
+  { season = getCurrentSeasonStart(), now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
 ) {
   const week = getLastWeek(now);
 

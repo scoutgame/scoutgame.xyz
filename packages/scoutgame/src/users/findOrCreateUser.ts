@@ -15,7 +15,7 @@ import { v4 } from 'uuid';
 import type { Address } from 'viem';
 import { isAddress } from 'viem/utils';
 
-import { currentSeason, getCurrentWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { getTier } from '../waitlist/scoring/constants';
 import type { ConnectWaitlistTier } from '../waitlist/scoring/constants';
 
@@ -160,10 +160,10 @@ export async function findOrCreateUser({
               create: {
                 value: points,
                 claimedAt: new Date(),
-                season: currentSeason,
+                season: getCurrentSeasonStart(),
                 event: {
                   create: {
-                    season: currentSeason,
+                    season: getCurrentSeasonStart(),
                     type: 'misc_event' as BuilderEventType,
                     description: `Received points for achieving ${capitalize(tier)} status on waitlist`,
                     week: getCurrentWeek(),

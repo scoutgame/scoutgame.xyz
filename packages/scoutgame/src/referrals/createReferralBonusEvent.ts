@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
 import { referralBonusPoints } from '../constants';
-import { currentSeason, getCurrentWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 export async function createReferralBonusEvent(refereeId: string) {
   const referralCodeEvent = await prisma.referralCodeEvent.findFirst({
@@ -34,7 +34,7 @@ export async function createReferralBonusEvent(refereeId: string) {
     await tx.builderEvent.create({
       data: {
         type: 'referral_bonus',
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         description: 'Received points for a referred user scouting a builder',
         week: getCurrentWeek(),
         builder: {
@@ -56,7 +56,7 @@ export async function createReferralBonusEvent(refereeId: string) {
                 id: referrerId
               }
             },
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         }
       }

@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
@@ -30,21 +30,21 @@ export async function createBuilderNft({
   const fileUrl = await uploadArtwork({
     imageHostingBaseUrl,
     displayName,
-    season: currentSeason,
+    season: getCurrentSeasonStart(),
     avatar,
     tokenId
   });
 
   const congratsImageUrl = await uploadShareImage({
     imageHostingBaseUrl,
-    season: currentSeason,
+    season: getCurrentSeasonStart(),
     tokenId,
     userImage: fileUrl,
     builderId
   });
 
   await uploadMetadata({
-    season: currentSeason,
+    season: getCurrentSeasonStart(),
     tokenId,
     path
   });
@@ -55,7 +55,7 @@ export async function createBuilderNft({
       chainId: builderNftChain.id,
       contractAddress: getBuilderContractAddress(),
       tokenId: Number(tokenId),
-      season: currentSeason,
+      season: getCurrentSeasonStart(),
       currentPrice,
       imageUrl: fileUrl,
       congratsImageUrl

@@ -2,7 +2,7 @@ import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 
 import { getFarcasterUserByUsername } from '@packages/farcaster/getFarcasterUserByUsername';
 import { octokit } from '@packages/github/client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 import { log } from '@charmverse/core/log';
@@ -66,7 +66,7 @@ async function createBuilder({ fid, githubLogin }: { fid: number; githubLogin: s
     }
   });
   console.log('Created a builder record', builder);
-  await approveBuilder({ builderId: builder.id, season: currentSeason });
+  await approveBuilder({ builderId: builder.id, season: getCurrentSeasonStart() });
   console.log('Builder profile approved:', 'https://scoutgame.xyz/u/' + builder.path);
   process.exit(0);
 }

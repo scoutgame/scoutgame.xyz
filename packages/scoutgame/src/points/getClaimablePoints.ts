@@ -1,12 +1,12 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
 import type { BonusPartner } from '../bonus';
-import type { Season } from '../dates';
-import { currentSeason, getPreviousSeason } from '../dates';
+import type { Season } from '../dates/config';
+import { getCurrentSeasonStart, getPreviousSeason } from '../dates/utils';
 
 export async function getClaimablePoints({
   userId,
-  season = currentSeason,
+  season = getCurrentSeasonStart(),
   week
 }: {
   userId: string;
@@ -20,7 +20,7 @@ export async function getClaimablePoints({
   const previousSeason = getPreviousSeason(season);
   const claimableSeasons = [previousSeason, season].filter(Boolean);
   if (claimableSeasons.length === 0) {
-    throw new Error(`No seasons found to claim points: ${currentSeason}`);
+    throw new Error(`No seasons found to claim points: ${season}`);
   }
   const pointsReceipts = await prisma.pointsReceipt.findMany({
     where: {

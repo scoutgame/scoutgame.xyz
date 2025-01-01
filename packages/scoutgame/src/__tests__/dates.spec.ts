@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 
-import type { Season } from '../dates';
+import type { Season } from '../dates/config';
 import {
   getWeekFromDate,
   getWeekStartEnd,
@@ -8,7 +8,7 @@ import {
   validateISOWeek,
   getCurrentWeek,
   getCurrentSeason
-} from '../dates';
+} from '../dates/utils';
 
 describe('date utils', () => {
   describe('getWeekFromDate', () => {

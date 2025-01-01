@@ -1,6 +1,6 @@
 import { POST } from '@charmverse/core/http';
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { v4 } from 'uuid';
 
 import type { MoxieBonusRow } from './getMoxieCandidates';
@@ -40,7 +40,7 @@ export async function sendMoxieTokens({ week, candidates }: { week: string; cand
       },
       week,
       partner: 'moxie',
-      season: currentSeason,
+      season: getCurrentSeasonStart(),
       userId
     }))
   });
