@@ -2,12 +2,11 @@ import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 import type { ISOWeek } from '../../dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '../../dates/utils';
+import { getCurrentSeason, getCurrentWeek } from '../../dates/utils';
 import { incrementPointsEarnedStats } from '../updatePointsEarned';
 
 export async function sendPointsForMiscEvent({
   builderId,
-  season = getCurrentSeasonStart(),
   week = getCurrentWeek(),
   points,
   description,
@@ -18,7 +17,6 @@ export async function sendPointsForMiscEvent({
 }: {
   builderId: string;
   points: number;
-  season?: ISOWeek;
   week?: ISOWeek;
   description: string;
   claimed: boolean;
@@ -26,6 +24,7 @@ export async function sendPointsForMiscEvent({
   hideFromNotifications?: boolean;
   tx?: Prisma.TransactionClient;
 }) {
+  const season = getCurrentSeason(week).start;
   async function txHandler(_tx: Prisma.TransactionClient) {
     await _tx.builderEvent.create({
       data: {
@@ -39,7 +38,7 @@ export async function sendPointsForMiscEvent({
             claimedAt: claimed ? new Date() : null,
             value: points,
             recipientId: builderId,
-            season: getCurrentSeasonStart(),
+            season,
             activities: hideFromNotifications
               ? undefined
               : {

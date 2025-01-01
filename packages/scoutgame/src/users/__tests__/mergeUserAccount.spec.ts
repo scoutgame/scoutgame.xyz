@@ -244,7 +244,7 @@ describe('mergeUserAccount', () => {
       })
     ]);
 
-    await claimPoints({ userId: builder1.id, season: getCurrentSeasonStart() });
+    await claimPoints({ userId: builder1.id });
 
     const { retainedUserId } = await mergeUserAccount({ userId: scout1.id, farcasterId: builder1.farcasterId });
 
@@ -272,7 +272,7 @@ describe('mergeUserAccount', () => {
     expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(4);
     expect(retainedUser.userSeasonStats[0].nftOwners).toEqual(2);
 
-    await claimPoints({ userId: retainedUserId, season: getCurrentSeasonStart() });
+    await claimPoints({ userId: retainedUserId });
 
     const retainedUserAfterClaim = await prisma.scout.findUniqueOrThrow({
       where: { id: retainedUserId },

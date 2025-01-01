@@ -2,7 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 
-import { getCurrentWeek, getCurrentSeasonStart, validateISOWeek } from '../dates/utils';
+import { getCurrentWeek, getCurrentSeason, validateISOWeek } from '../dates/utils';
 
 export type LeaderBoardRow = {
   id: string;
@@ -19,14 +19,13 @@ export type LeaderBoardRow = {
 
 export async function getLeaderboard({
   limit = 10,
-  week = getCurrentWeek(),
-  season = getCurrentSeasonStart()
+  week = getCurrentWeek()
 }: {
   limit?: number;
   week?: string;
-  season?: string;
 }): Promise<LeaderBoardRow[]> {
   const isWeekValid = validateISOWeek(week);
+  const season = getCurrentSeason(week).start;
 
   if (!isWeekValid) {
     throw new InvalidInputError('Invalid week for leaderboard');

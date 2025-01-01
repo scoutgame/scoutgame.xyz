@@ -1,16 +1,16 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 
-import { getCurrentSeasonStart, getCurrentWeek, getPreviousWeek } from '../dates/utils';
+import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '../dates/utils';
 import { BasicUserInfoSelect } from '../users/queries';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
 
-const userSelect = {
+const userSelect = (week: string, season: string) => ({
   ...BasicUserInfoSelect,
   userSeasonStats: {
     where: {
-      season: getCurrentSeasonStart()
+      season
     },
     select: {
       pointsEarnedAsBuilder: true,
@@ -24,7 +24,7 @@ const userSelect = {
   },
   userWeeklyStats: {
     where: {
-      week: getCurrentWeek()
+      week
     },
     select: {
       gemsCollected: true,
@@ -33,7 +33,7 @@ const userSelect = {
   },
   builderNfts: {
     where: {
-      season: getCurrentSeasonStart(),
+      season,
       nftType: BuilderNftType.default
     },
     select: {
@@ -42,12 +42,12 @@ const userSelect = {
       congratsImageUrl: true
     }
   }
-};
+});
 
-export async function getTodaysHotBuilders({
-  season = getCurrentSeasonStart(),
-  week = getCurrentWeek()
-}: { season?: string; week?: string } = {}): Promise<BuilderInfo[]> {
+export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?: string } = {}): Promise<
+  BuilderInfo[]
+> {
+  const season = getCurrentSeason(week).start;
   const currentWeekBuilders = await prisma.userWeeklyStats.findMany({
     where: {
       user: {
@@ -75,7 +75,7 @@ export async function getTodaysHotBuilders({
     },
     select: {
       user: {
-        select: userSelect
+        select: userSelect(week, season)
       }
     }
   });
@@ -98,7 +98,7 @@ export async function getTodaysHotBuilders({
     take: 10 - totalCurrentWeekBuilders,
     select: {
       user: {
-        select: userSelect
+        select: userSelect(week, season)
       }
     }
   });

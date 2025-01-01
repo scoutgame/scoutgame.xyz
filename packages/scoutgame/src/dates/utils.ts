@@ -114,7 +114,8 @@ export function isToday(date: Date, now = DateTime.utc()) {
   return dateDay.equals(now.startOf('day'));
 }
 
-export function getCurrentSeasonWeekNumber(week: ISOWeek = getCurrentWeek(), season = getCurrentSeasonStart()): number {
+export function getCurrentSeasonWeekNumber(week: ISOWeek = getCurrentWeek()): number {
+  const season = getCurrentSeason(week).start;
   return getSeasonWeekFromISOWeek({ season, week });
 }
 

@@ -1,17 +1,14 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
 import type { BonusPartner } from '../bonus';
-import type { Season } from '../dates/config';
-import { getCurrentSeasonStart, getPreviousSeason } from '../dates/utils';
+import { getPreviousSeason, getCurrentSeasonStart } from '../dates/utils';
 
 export async function getClaimablePoints({
   userId,
-  season = getCurrentSeasonStart(),
-  week
+  season = getCurrentSeasonStart()
 }: {
   userId: string;
-  season?: Season;
-  week?: string;
+  season?: string;
 }): Promise<{
   points: number;
   bonusPartners: BonusPartner[];
@@ -27,7 +24,6 @@ export async function getClaimablePoints({
       recipientId: userId,
       claimedAt: null,
       event: {
-        week,
         season: {
           in: claimableSeasons
         }
