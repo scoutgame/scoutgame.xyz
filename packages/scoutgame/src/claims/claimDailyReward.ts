@@ -77,7 +77,6 @@ export async function claimDailyReward({
       builderId: userId,
       dayOfWeek,
       week,
-      season,
       points
     });
     trackUserAction('daily_claim', {
