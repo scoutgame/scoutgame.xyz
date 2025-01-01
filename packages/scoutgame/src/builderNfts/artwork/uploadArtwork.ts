@@ -1,7 +1,7 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
 import { builderNftArtworkContractName } from './constants';
-import { generateArtwork, updateArtwork } from './generateArtwork';
+import { generateArtwork } from './generateArtwork';
 import { getNftTokenUrlPath, imageDomain } from './utils';
 
 export async function uploadArtwork({
@@ -9,26 +9,20 @@ export async function uploadArtwork({
   avatar,
   tokenId,
   season,
-  displayName,
-  currentNftImage
+  displayName
 }: {
   imageHostingBaseUrl?: string;
   displayName: string;
   season: string;
   avatar: string | null;
   tokenId: bigint | number;
-  currentNftImage?: string;
 }) {
-  const imageBuffer = currentNftImage
-    ? await updateArtwork({
-        displayName,
-        currentNftImage
-      })
-    : await generateArtwork({
-        avatar,
-        displayName,
-        imageHostingBaseUrl
-      });
+  const imageBuffer = await generateArtwork({
+    avatar,
+    displayName,
+    imageHostingBaseUrl,
+    tokenId
+  });
 
   const imagePath = getNftTokenUrlPath({
     season,

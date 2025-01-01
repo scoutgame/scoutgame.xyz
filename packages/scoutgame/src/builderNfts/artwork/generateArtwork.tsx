@@ -6,6 +6,8 @@ import React from 'react';
 import type { Font } from 'satori';
 import sharp from 'sharp';
 
+import { currentSeason } from '../../dates';
+
 // fails inside of Next.js
 function getAssetsFromDisk() {
   const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../'), 'assets');
@@ -31,7 +33,7 @@ function getAssetsFromDisk() {
 async function getAssetsFromServer(baseUrl: string) {
   const overlaysBase64 = await Promise.all(
     ['scratch_reveal.png', 'rounded_square.png', 'paint_splatter.png', 'checked_corners.png'].map(async (file) => {
-      const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/overlays/${file}`);
+      const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/overlays/${currentSeason}/${file}`);
       return _getImageDataURI(noAvatarResponse);
     })
   );
@@ -81,87 +83,19 @@ function calculateFontSize(text: string, maxWidth: number, initialFontSize: numb
   return minFontSize;
 }
 
-export async function updateArtwork({
-  displayName,
-  currentNftImage
-}: {
-  currentNftImage: string;
-  displayName: string;
-}): Promise<Buffer> {
-  const cutoutWidth = 300;
-  const cutoutHeight = 400;
-
-  const { ImageResponse } = await import('@vercel/og');
-
-  const baseImage = new ImageResponse(
-    (
-      <div
-        style={{
-          height: cutoutHeight,
-          width: cutoutWidth,
-          position: 'relative',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          backgroundColor: 'white'
-        }}
-      >
-        <img
-          src={currentNftImage}
-          width={cutoutWidth}
-          height={cutoutHeight}
-          style={{ position: 'absolute', top: 0, left: 0 }}
-        />
-        <div
-          style={{
-            width: cutoutWidth - 20,
-            display: 'flex',
-            justifyContent: 'center',
-            backgroundColor: 'black',
-            flexDirection: 'row',
-            bottom: 40,
-            position: 'absolute',
-            paddingLeft: 10,
-            paddingRight: 10
-          }}
-        >
-          <p
-            style={{
-              color: 'white',
-              textAlign: 'center',
-              fontSize: `${calculateFontSize(displayName, 280, 24)}px`,
-              whiteSpace: 'nowrap',
-              maxWidth: `${280}px`
-            }}
-          >
-            {displayName}
-          </p>
-        </div>
-      </div>
-    ),
-    {
-      width: cutoutWidth,
-      height: cutoutHeight
-    }
-  );
-
-  const baseImageBuffer = await baseImage.arrayBuffer();
-  const imageBuffer = await sharp(Buffer.from(baseImageBuffer)).png().toBuffer();
-
-  return imageBuffer;
-}
-
 export async function generateArtwork({
   avatar,
   displayName,
-  imageHostingBaseUrl
+  imageHostingBaseUrl,
+  tokenId
 }: {
   avatar: string | null;
+  tokenId: bigint | number;
   displayName: string;
   imageHostingBaseUrl?: string; // when running inside of next.js, we need to use the server url
 }): Promise<Buffer> {
   const { overlaysBase64, noPfpAvatarBase64, font } = await getAssets(imageHostingBaseUrl);
-  const randomOverlay = overlaysBase64[Math.floor(Math.random() * overlaysBase64.length)];
+  const overlay = overlaysBase64[Number(tokenId) % overlaysBase64.length];
   let avatarBuffer: Buffer | null = null;
   const cutoutWidth = 300;
   const cutoutHeight = 400;
@@ -195,7 +129,7 @@ export async function generateArtwork({
           }}
         />
         <img
-          src={randomOverlay}
+          src={overlay}
           width={cutoutWidth}
           height={cutoutHeight}
           style={{ position: 'absolute', top: 0, left: 0 }}

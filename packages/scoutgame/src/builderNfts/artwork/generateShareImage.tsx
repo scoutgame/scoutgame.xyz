@@ -9,6 +9,7 @@ import sharp from 'sharp';
 import type { BuilderActivity } from '../../builders/getBuilderActivities';
 import type { BuilderScouts } from '../../builders/getBuilderScouts';
 import type { BuilderStats } from '../../builders/getBuilderStats';
+import { currentSeason } from '../../dates';
 
 import { BuilderShareImage } from './components/BuilderShareImage';
 
@@ -37,7 +38,7 @@ function getAssetsFromDisk() {
 async function getAssetsFromServer(baseUrl: string) {
   const overlaysBase64 = await Promise.all(
     ['scratch_reveal.png', 'rounded_square.png', 'paint_splatter.png', 'checked_corners.png'].map(async (file) => {
-      const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/overlays/${file}`);
+      const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/overlays/${currentSeason}/${file}`);
       return _getImageDataURI(noAvatarResponse);
     })
   );
