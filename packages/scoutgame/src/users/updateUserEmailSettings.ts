@@ -15,7 +15,8 @@ export const updateUserEmailSettingsAction = authActionClient
       where: { id: userId },
       data: {
         email: parsedInput.email,
-        sendTransactionEmails: parsedInput.sendTransactionEmails
+        sendTransactionEmails: parsedInput.sendTransactionEmails,
+        sendMarketing: parsedInput.sendMarketing
       }
     });
 

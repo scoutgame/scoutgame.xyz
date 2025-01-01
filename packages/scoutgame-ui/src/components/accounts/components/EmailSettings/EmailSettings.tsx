@@ -29,7 +29,8 @@ export function EmailSettings({ user }: { user: UserWithAccountsDetails }) {
     mode: 'onChange',
     defaultValues: {
       email: user.email,
-      sendTransactionEmails: user.sendTransactionEmails
+      sendTransactionEmails: user.sendTransactionEmails,
+      sendMarketing: user.sendMarketing
     }
   });
 
@@ -75,17 +76,30 @@ export function EmailSettings({ user }: { user: UserWithAccountsDetails }) {
               <TextField error={!!formState.errors.email} {...field} sx={{ maxWidth: 250 }} />
             )}
           />
-          <Controller
-            control={control}
-            name='sendTransactionEmails'
-            render={({ field }) => (
-              <FormControlLabel
-                disabled={isExecuting}
-                control={<Checkbox checked={field.value} {...field} />}
-                label='Disable all Scout Game email notifications (activity and pending actions)'
-              />
-            )}
-          />
+
+          <Stack>
+            <Controller
+              control={control}
+              name='sendTransactionEmails'
+              render={({ field }) => (
+                <FormControlLabel
+                  disabled={isExecuting}
+                  control={<Checkbox checked={field.value} {...field} />}
+                  label='Disable all Scout Game email notifications (activity and pending actions)'
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name='sendMarketing'
+              render={({ field }) => (
+                <FormControlLabel
+                  control={<Checkbox checked={field.value} {...field} />}
+                  label='Notify me of new opportunities (grants, accelerators, etc)'
+                />
+              )}
+            />
+          </Stack>
           <Button
             variant='contained'
             color='primary'

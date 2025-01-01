@@ -28,6 +28,7 @@ export default async function Accounts() {
         },
         email: true,
         sendTransactionEmails: true,
+        sendMarketing: true,
         nftPurchaseEvents: {
           where: {
             builderNft: {
@@ -56,7 +57,8 @@ export default async function Accounts() {
         wallets: currentUserAccountsMetadata.wallets.map((wallet) => wallet.address),
         avatar: user.avatar as string,
         starterPackNftCount: currentUserAccountsMetadata.nftPurchaseEvents.length,
-        sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails
+        sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails,
+        sendMarketing: currentUserAccountsMetadata.sendMarketing
       }}
     />
   );

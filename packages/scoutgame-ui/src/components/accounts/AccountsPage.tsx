@@ -16,6 +16,7 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   starterPackNftCount: number;
   email: string;
   sendTransactionEmails: boolean;
+  sendMarketing: boolean;
 };
 
 const TelegramConnect = dynamic(() => import('./components/TelegramConnect').then((mod) => mod.TelegramConnect), {
