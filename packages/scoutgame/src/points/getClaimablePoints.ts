@@ -5,10 +5,12 @@ import { getPreviousSeason, getCurrentSeasonStart } from '../dates/utils';
 
 export async function getClaimablePoints({
   userId,
-  season = getCurrentSeasonStart()
+  season = getCurrentSeasonStart(),
+  week
 }: {
   userId: string;
   season?: string;
+  week?: string;
 }): Promise<{
   points: number;
   bonusPartners: BonusPartner[];
@@ -24,6 +26,7 @@ export async function getClaimablePoints({
       recipientId: userId,
       claimedAt: null,
       event: {
+        week,
         season: {
           in: claimableSeasons
         }
