@@ -4,6 +4,8 @@ import type { IMailgunClient } from 'mailgun.js/Interfaces';
 
 import mailgunClient, { DOMAIN } from './mailgunClient';
 
+const isTestEnv = process.env.REACT_APP_APP_ENV === 'test';
+
 export async function sendEmailTemplate({
   client,
   subject,
@@ -20,6 +22,10 @@ export async function sendEmailTemplate({
   template: string;
 }) {
   client = client ?? mailgunClient;
+
+  if (isTestEnv) {
+    return;
+  }
 
   if (!client) {
     log.debug('No mailgun client, not sending email');
