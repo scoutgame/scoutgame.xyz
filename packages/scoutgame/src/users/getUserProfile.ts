@@ -1,7 +1,7 @@
 import { prisma, type BuilderStatus } from '@charmverse/core/prisma-client';
 import type { UserProfileData } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 export type UserProfile = UserProfileData & {
   builderStatus: BuilderStatus | null;
@@ -45,7 +45,7 @@ export async function getUserProfile({
       nftPurchaseEvents: {
         where: {
           builderNft: {
-            season: currentSeason,
+            season: getCurrentSeasonStart(),
             nftType: 'starter_pack'
           }
         },

@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder } from '../../testing/database';
 import { sendPointsForMiscEvent } from '../builderEvents/sendPointsForMiscEvent';
 
@@ -14,7 +14,7 @@ describe('sendPoints', () => {
       hideFromNotifications: true,
       claimed: true,
       description: `Test points`,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
     const updated = await prisma.scout.findUnique({
       where: {

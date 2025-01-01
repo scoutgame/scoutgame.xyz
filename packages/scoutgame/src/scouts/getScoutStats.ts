@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 export async function getScoutStats(scoutId: string) {
   const scout = await prisma.scout.findUniqueOrThrow({
@@ -10,7 +10,7 @@ export async function getScoutStats(scoutId: string) {
     select: {
       userSeasonStats: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           pointsEarnedAsScout: true,
@@ -26,7 +26,7 @@ export async function getScoutStats(scoutId: string) {
         where: {
           scoutId,
           builderNft: {
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         },
         select: {

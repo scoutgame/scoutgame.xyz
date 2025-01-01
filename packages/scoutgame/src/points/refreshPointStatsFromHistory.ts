@@ -1,14 +1,14 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getPointStatsFromHistory, type PointStats } from './getPointStatsFromHistory';
 import { setPointsEarnedStats } from './updatePointsEarned';
 
 export async function refreshPointStatsFromHistory({
   userIdOrPath,
-  season = currentSeason,
+  season = getCurrentSeasonStart(),
   tx
 }: {
   userIdOrPath: string;

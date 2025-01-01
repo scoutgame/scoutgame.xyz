@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import type { NextRequest } from 'next/server';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
@@ -46,7 +46,7 @@ export async function GET() {
       userWeeklyStats: true,
       builderNfts: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         }
       }
     }

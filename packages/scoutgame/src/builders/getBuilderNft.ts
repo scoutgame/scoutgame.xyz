@@ -1,13 +1,13 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 export async function getBuilderNft(builderId: string) {
   return prisma.builderNft.findUnique({
     where: {
       builderId_season_nftType: {
         builderId,
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         nftType: 'default'
       }
     },

@@ -6,7 +6,7 @@ import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderAct
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import type { BuilderUserInfo } from '@packages/scoutgame/users/interfaces';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -32,7 +32,7 @@ export async function BuilderProfile({
             where: {
               builderId_season_nftType: {
                 builderId: builder.id,
-                season: currentSeason,
+                season: getCurrentSeasonStart(),
                 nftType: 'default'
               }
             },

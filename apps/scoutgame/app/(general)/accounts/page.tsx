@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { AccountsPage } from '@packages/scoutgame-ui/components/accounts/AccountsPage';
@@ -31,7 +31,7 @@ export default async function Accounts() {
         nftPurchaseEvents: {
           where: {
             builderNft: {
-              season: currentSeason,
+              season: getCurrentSeasonStart(),
               nftType: 'starter_pack'
             }
           },

@@ -4,7 +4,7 @@ import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById'
 import { isTruthy } from '@packages/utils/types';
 
 import type { BonusPartner } from '../bonus';
-import { currentSeason, getCurrentWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 import { getClaimablePoints } from './getClaimablePoints';
 
@@ -21,7 +21,10 @@ export type UnclaimedPointsSource = {
 };
 
 export async function getClaimablePointsWithSources(userId: string): Promise<UnclaimedPointsSource> {
-  const { points, bonusPartners, pointsReceiptIds } = await getClaimablePoints({ season: currentSeason, userId });
+  const { points, bonusPartners, pointsReceiptIds } = await getClaimablePoints({
+    season: getCurrentSeasonStart(),
+    userId
+  });
   const pointsReceipts = await prisma.pointsReceipt.findMany({
     where: {
       id: {

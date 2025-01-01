@@ -10,7 +10,7 @@
 // import { refreshUserStats } from "@packages/scoutgame/refreshUserStats";
 // import { refreshScoutProtocolBuilderNftPrice } from "@packages/scoutgame/builderNfts/refreshScoutProtocolBuilderNftPrice";
 // import { prettyPrint } from "@packages/utils/strings";
-// import { currentSeason } from "@packages/scoutgame/dates";
+// import { getCurrentSeasonStart } from "@packages/scoutgame/dates";
 // import { builderEvents } from './cache/builderEvents';
 // import { builders } from "./cache/builders";
 // import { githubEvents } from "./cache/githubEvents";
@@ -18,7 +18,6 @@
 // // Commented this blob so CI passes. Re-enable when performing upload
 // import { repos } from "./cache/repos";
 // import { scouts } from "./cache/scouts";
-
 
 // // const repos = [] as any[];
 // // const scouts = [] as any[];
@@ -36,8 +35,6 @@
 //   });
 
 //   const deletedGithubUsers = await prisma.githubUser.deleteMany()
-
-
 
 //   prettyPrint({
 //     deletedScouts,
@@ -64,7 +61,6 @@
 //   for (let i = 0; i < sortedBuilders.length; i++) {
 //     const {builderNfts, githubUsers, ...builder} = sortedBuilders[i];
 
-
 //     const currentTokenId = builderNfts[0]!.tokenId;
 //     log.info('--------------------------------')
 //     log.info(`Processing builder ${i + 1}/${sortedBuilders.length} with id ${builder.id} token id ${currentTokenId}`);
@@ -86,7 +82,7 @@
 //         log.error();
 //         throw new Error(`Contract token id ${contractMaxTokenId} does not permit token id ${currentTokenId}`);
 //       }
-      
+
 //       while (contractMaxTokenId < currentTokenId - 1) {
 
 //         log.info('Adding intermediate empty tokens')
@@ -125,7 +121,6 @@
 //         farcasterId: builder.farcasterId as number
 //       }
 //     }) : null;
-
 
 //     const createdBuilder = await prisma.scout.upsert({
 //       where: {
@@ -195,7 +190,7 @@
 //     }
 //   });
 
-//   const scoutsToCreate = scouts.filter(scout => !existingScoutsByWallet.find(existing => 
+//   const scoutsToCreate = scouts.filter(scout => !existingScoutsByWallet.find(existing =>
 //     existing.wallets.some(wallet => wallet.address === scout.wallets[0].address)
 //   ));
 
@@ -230,10 +225,9 @@
 //           }
 //         }
 //       });
-  
+
 //     }
 //   }
-
 
 //   const existingRepos = await prisma.githubRepo.findMany({
 //     where: {
@@ -272,7 +266,7 @@
 //     }
 //   });
 
-//   const githubEventsToCreate = githubEvents.filter(event => !existingGithubEvents.find(existing => existing.id === event.id) && 
+//   const githubEventsToCreate = githubEvents.filter(event => !existingGithubEvents.find(existing => existing.id === event.id) &&
 //   // Make sure the createdBy user exists
 //   existingGithubUsers.find(existing => existing.id === event.createdBy));
 
@@ -339,11 +333,9 @@
 //     });
 //   }
 
-
 //   log.info('Refreshing user stats');
 
-//   const weeks = getAllISOWeeksFromSeasonStart({season: currentSeason});
-
+//   const weeks = getAllISOWeeksFromSeasonStart({season: getCurrentSeasonStart()});
 
 //   const allScouts = await prisma.scout.findMany({
 //     select: {
@@ -369,10 +361,9 @@
 //     log.info(`Refreshing builder nft ${i+1}/${builderNfts.length} - tokenId:${builderNfts[i].tokenId} price`);
 //     await refreshScoutProtocolBuilderNftPrice({
 //       builderId: builderNfts[i].builderId,
-//       season: currentSeason
+//       season: getCurrentSeasonStart()
 //     });
 //   }
 // }
 
 // uploadScoutsBuildersReposAndGithubEvents().then(console.log);
-

@@ -1,11 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 async function addPointsReceiptsSeason() {
   await prisma.pointsReceipt.updateMany({
     data: {
-      season: currentSeason
+      season: getCurrentSeasonStart()
     }
   });
 }

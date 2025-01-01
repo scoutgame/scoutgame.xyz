@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { getBuildersByFid } from '@packages/scoutgame/social/getBuildersByFid';
 import { ScoutInfoPage } from '@packages/scoutgame-ui/components/welcome/scout-info/ScoutInfoPage';
 import type { Metadata } from 'next';
@@ -19,7 +19,7 @@ export default async function ScoutInfo() {
   const starterPackBuilder = await getBuildersByFid({
     // piesrtasty
     fids: [547807],
-    season: currentSeason,
+    season: getCurrentSeasonStart(),
     nftType: BuilderNftType.starter_pack,
     limit: 1
   });

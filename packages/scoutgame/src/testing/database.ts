@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { randomString } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
 
-import { getCurrentWeek } from '../dates';
+import { getCurrentWeek } from '../dates/utils';
 
 import { randomLargeInt, mockSeason } from './generators';
 

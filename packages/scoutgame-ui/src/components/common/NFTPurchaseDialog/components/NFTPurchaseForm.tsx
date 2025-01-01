@@ -34,7 +34,7 @@ import {
 } from '@packages/scoutgame/builderNfts/constants';
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
 import {
@@ -351,7 +351,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       amount: tokensToBuy,
       paidWithPoints: paymentMethod === 'points',
       builderPath: builder.path,
-      season: currentSeason,
+      season: getCurrentSeasonStart(),
       nftType: builder.nftType
     });
   };

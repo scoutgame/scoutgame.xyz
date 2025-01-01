@@ -1,13 +1,13 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 export async function getUserSeasonStats(userId: string) {
   return prisma.userSeasonStats.findUnique({
     where: {
       userId_season: {
         userId,
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }
     },
     select: {

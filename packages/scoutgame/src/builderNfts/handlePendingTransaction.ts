@@ -10,7 +10,7 @@ import {
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
 import { getPlatform } from '@packages/mixpanel/utils';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import {
   getScoutProtocolBuilderNFTContract,
@@ -66,7 +66,7 @@ export async function handlePendingTransaction({
     // Fetch the builder NFT
     const builderNft = await prisma.builderNft.findFirstOrThrow({
       where: {
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         tokenId: Number(pendingTx.tokenId),
         contractAddress: pendingTx.contractAddress.toLowerCase()
       }
@@ -118,7 +118,7 @@ export async function handlePendingTransaction({
 
       if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress().toLowerCase()) {
         await refreshScoutProtocolBuilderNftPrice({
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           builderId: builderNft.builderId
         });
 

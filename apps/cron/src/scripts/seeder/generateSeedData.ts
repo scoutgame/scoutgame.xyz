@@ -2,7 +2,7 @@ import { log } from '@charmverse/core/log';
 import { type GithubRepo, type GithubUser, prisma } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
 import { claimPoints } from '@packages/scoutgame/points/claimPoints';
-import { getWeekFromDate, currentSeason } from '@packages/scoutgame/dates';
+import { getWeekFromDate, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
 import { DateTime } from 'luxon';
 import { findOrCreateFarcasterUser } from '@packages/scoutgame/users/findOrCreateFarcasterUser';
@@ -173,7 +173,7 @@ export async function generateSeedData(
       const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
         where: {
           builderNft: {
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         },
         include: {
@@ -187,7 +187,7 @@ export async function generateSeedData(
             rank,
             gemsCollected,
             week,
-            season: currentSeason,
+            season: getCurrentSeasonStart(),
             createdAt: date.toJSDate(),
             nftPurchaseEvents,
             // We started with 100k points per week

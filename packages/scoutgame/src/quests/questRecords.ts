@@ -55,7 +55,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     tag: 'scout'
   },
   'invite-friend': {
-    points: 5,
+    points: 50,
     link: '/quests',
     label: 'Refer a Friend',
     tag: 'scout'

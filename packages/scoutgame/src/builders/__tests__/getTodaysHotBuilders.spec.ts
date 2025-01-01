@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { getCurrentWeek, getPreviousWeek } from '../../dates';
+import { getCurrentWeek, getPreviousWeek } from '../../dates/utils';
 import { mockBuilder, mockUserWeeklyStats } from '../../testing/database';
 import { getTodaysHotBuilders } from '../getTodaysHotBuilders';
 

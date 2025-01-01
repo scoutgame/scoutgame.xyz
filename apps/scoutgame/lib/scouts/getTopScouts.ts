@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 export type TopScout = {
   id: string;
@@ -15,7 +15,7 @@ export type TopScout = {
 export async function getTopScouts({ limit }: { limit: number }): Promise<TopScout[]> {
   const topScouts = await prisma.userSeasonStats.findMany({
     where: {
-      season: currentSeason
+      season: getCurrentSeasonStart()
     },
     orderBy: {
       pointsEarnedAsScout: 'desc'
@@ -32,7 +32,7 @@ export async function getTopScouts({ limit }: { limit: number }): Promise<TopSco
           nftPurchaseEvents: {
             where: {
               builderNft: {
-                season: currentSeason
+                season: getCurrentSeasonStart()
               }
             },
             select: {
@@ -50,7 +50,7 @@ export async function getTopScouts({ limit }: { limit: number }): Promise<TopSco
           },
           userSeasonStats: {
             where: {
-              season: currentSeason
+              season: getCurrentSeasonStart()
             },
             select: {
               nftsPurchased: true
@@ -103,7 +103,7 @@ export async function getTopScoutsByWeek({ week, limit = 10 }: { week: string; l
     where: {
       event: {
         type: 'gems_payout',
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         week
       }
     },

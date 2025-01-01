@@ -2,7 +2,7 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { baseUrl } from '@packages/utils/constants';
 
 import { rewardPoints } from '../constants';
@@ -43,7 +43,7 @@ export async function updateReferralUsers(refereeId: string) {
     const referrerPointsReceived = await tx.pointsReceipt.create({
       data: {
         value: rewardPoints,
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         claimedAt: new Date(),
         recipient: {
           connect: {
@@ -72,7 +72,7 @@ export async function updateReferralUsers(refereeId: string) {
             value: rewardPoints,
             claimedAt: new Date(),
             eventId: referrerPointsReceived.eventId,
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         }
       },

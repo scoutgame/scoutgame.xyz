@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 export type ScoutsSortBy = 'cards' | 'points' | 'builders' | 'rank';
 
@@ -30,7 +30,7 @@ export async function getScouts({
       pointsEarnedAsScout: {
         gt: 0
       },
-      season: currentSeason,
+      season: getCurrentSeasonStart(),
       user: {
         deletedAt: null
       }
@@ -56,7 +56,7 @@ export async function getScouts({
         pointsEarnedAsScout: {
           gt: 0
         },
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         user: {
           deletedAt: null
         }
@@ -101,7 +101,7 @@ export async function getScouts({
   } else if (sortBy === 'cards' || sortBy === 'builders') {
     const builders = await prisma.userSeasonStats.findMany({
       where: {
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         pointsEarnedAsScout: {
           gt: 0
         },

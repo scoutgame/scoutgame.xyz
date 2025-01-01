@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { recordNftPurchaseQuests } from '@packages/scoutgame/builderNfts/recordNftPurchaseQuests';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { QuestType } from '@packages/scoutgame/quests/questRecords';
@@ -11,7 +11,7 @@ async function backfillQuestsForScouts() {
       nftPurchaseEvents: {
         some: {
           builderNft: {
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         }
       }
@@ -68,26 +68,37 @@ async function backfillQuestsForBuilders() {
         }
       }
     }
-  })
+  });
 
   for (const builder of builders) {
     try {
-      const commitsCount = builder.githubUsers.flatMap((user) => user.events).filter((event) => event.type === 'commit').length;
-      const prsCount = builder.githubUsers.flatMap((user) => user.events).filter((event) => event.type === 'merged_pull_request').length;
-      const prStreaks = builder.githubUsers.flatMap(user => user.events).filter(event => event.builderEvent?.gemsReceipt?.type === "third_pr_in_streak");
+      const commitsCount = builder.githubUsers
+        .flatMap((user) => user.events)
+        .filter((event) => event.type === 'commit').length;
+      const prsCount = builder.githubUsers
+        .flatMap((user) => user.events)
+        .filter((event) => event.type === 'merged_pull_request').length;
+      const prStreaks = builder.githubUsers
+        .flatMap((user) => user.events)
+        .filter((event) => event.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak');
 
-      let contributedToCeloRepo = false, contributedToGame7Repo = false, contributedToLitProtocolRepo = false;
+      let contributedToCeloRepo = false,
+        contributedToGame7Repo = false,
+        contributedToLitProtocolRepo = false;
 
-      builder.githubUsers.flatMap(user => user.events).filter(event => event.repo?.bonusPartner).forEach(event => {
-        const bonusPartner = event.repo?.bonusPartner;
-        if (bonusPartner === 'celo') {
-          contributedToCeloRepo = true;
-        } else if (bonusPartner === 'game7') {
-          contributedToGame7Repo = true;
-        } else if (bonusPartner === 'lit_protocol') {
-          contributedToLitProtocolRepo = true;
-        }
-      })
+      builder.githubUsers
+        .flatMap((user) => user.events)
+        .filter((event) => event.repo?.bonusPartner)
+        .forEach((event) => {
+          const bonusPartner = event.repo?.bonusPartner;
+          if (bonusPartner === 'celo') {
+            contributedToCeloRepo = true;
+          } else if (bonusPartner === 'game7') {
+            contributedToGame7Repo = true;
+          } else if (bonusPartner === 'lit_protocol') {
+            contributedToLitProtocolRepo = true;
+          }
+        });
 
       const questTypes: QuestType[] = [];
 

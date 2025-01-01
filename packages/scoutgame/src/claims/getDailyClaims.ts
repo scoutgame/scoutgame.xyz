@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { getCurrentWeek } from '../dates';
+import { getCurrentWeek } from '../dates/utils';
 
 export type DailyClaim = {
   day: number;

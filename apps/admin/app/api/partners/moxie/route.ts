@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { getMoxieCandidates } from '@packages/moxie/getMoxieCandidates';
 import { sendMoxieTokens } from '@packages/moxie/sendMoxieTokens';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const lastWeek = getLastWeek();
+  const currentSeason = getCurrentSeasonStart();
   const candidates = await getMoxieCandidates({ week: lastWeek, season: currentSeason });
 
   if (candidates.length === 0) {

@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
-import { getAllISOWeeksFromSeasonStart, currentSeason } from '@packages/scoutgame/dates';
+import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import {
   protocolImplementationReadonlyApiClient,
   protocolProxyReadonlyApiClient
@@ -46,7 +46,7 @@ export async function aggregateProtocolData({ userId }: { userId?: string }): Pr
     protocolImplementationReadonlyApiClient.claimsManager()
   ]);
 
-  const weeks = getAllISOWeeksFromSeasonStart({ season: currentSeason });
+  const weeks = getAllISOWeeksFromSeasonStart({ season: getCurrentSeasonStart() });
 
   const weeklyClaims = await prisma.weeklyClaims.findMany({
     where: {

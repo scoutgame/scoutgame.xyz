@@ -1,13 +1,14 @@
 import { log } from '@charmverse/core/log';
 import { getENSDetails, getENSName } from '@packages/blockchain/getENSName';
 import { getFarcasterUsersByAddresses } from '@packages/farcaster/getFarcasterUsersByAddresses';
-import { findOrCreateUser } from '@packages/scoutgame/users/findOrCreateUser';
-import type { FindOrCreateUserResult } from '@packages/scoutgame/users/findOrCreateUser';
-import { generateRandomName } from '@packages/scoutgame/users/generateRandomName';
-import { generateUserPath } from '@packages/scoutgame/users/generateUserPath';
 import { getAddress } from 'viem';
 
 import { createReferralEvent } from '../referrals/createReferralEvent';
+
+import { findOrCreateUser } from './findOrCreateUser';
+import type { FindOrCreateUserResult } from './findOrCreateUser';
+import { generateRandomName } from './generateRandomName';
+import { generateUserPath } from './generateUserPath';
 
 export async function findOrCreateWalletUser({
   wallet,

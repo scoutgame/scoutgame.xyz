@@ -7,7 +7,7 @@ import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWe
 import { v4 as uuid } from 'uuid';
 import { type Address } from 'viem';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { findOrCreateWalletUser } from '../users/findOrCreateWalletUser';
 
@@ -160,7 +160,7 @@ export async function calculateWeeklyClaims({
           id: builderEventId,
           builderId: builder.builder.id,
           week,
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           type: 'gems_payout',
           weeklyClaimId
         };

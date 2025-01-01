@@ -1,8 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
-import { generateRandomName } from '@packages/scoutgame/users/generateRandomName';
-import { generateUserPath } from '@packages/scoutgame/users/generateUserPath';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 import { createReferralEvent } from '../referrals/createReferralEvent';
@@ -10,6 +8,8 @@ import type { ConnectWaitlistTier } from '../waitlist/scoring/constants';
 
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
+import { generateRandomName } from './generateRandomName';
+import { generateUserPath } from './generateUserPath';
 
 export async function findOrCreateFarcasterUser({
   fid,

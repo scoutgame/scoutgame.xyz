@@ -1,4 +1,4 @@
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder, mockGemPayoutEvent } from '../../testing/database';
 import { claimPoints } from '../claimPoints';
 import { getClaimablePoints } from '../getClaimablePoints';
@@ -10,7 +10,7 @@ describe('getClaimablePoints', () => {
       builderId: builder.id,
       recipientId: builder.id,
       amount: 10,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
     const result = await getClaimablePoints({ userId: builder.id });
     expect(result.points).toEqual(10);
@@ -22,7 +22,7 @@ describe('getClaimablePoints', () => {
       builderId: builder.id,
       recipientId: builder.id,
       amount: 10,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
     await claimPoints({ userId: builder.id });
     const result = await getClaimablePoints({ userId: builder.id });
