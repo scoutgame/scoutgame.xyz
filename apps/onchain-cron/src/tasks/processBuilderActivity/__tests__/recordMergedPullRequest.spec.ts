@@ -36,7 +36,7 @@ describe('recordMergedPullRequest', () => {
     const repoId = randomLargeInt();
     const username = v4();
 
-    const mockWeek = getCurrentSeasonStart();
+    const mockWeek = currentSeason;
     const eventDate = DateTime.fromISO(`${mockWeek}-1`, { zone: 'utc' }).toJSDate();
 
     const builder = await mockBuilder();
@@ -44,7 +44,7 @@ describe('recordMergedPullRequest', () => {
 
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -65,7 +65,7 @@ describe('recordMergedPullRequest', () => {
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    const result = await recordMergedPullRequest({ pullRequest, repo, season: getCurrentSeasonStart() });
+    const result = await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
 
     expect(result?.builderEvent).toBeTruthy();
     expect(result?.githubEvent).toBeTruthy();
@@ -141,7 +141,7 @@ describe('recordMergedPullRequest', () => {
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest, repo, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
 
     const builderEvent = await prisma.builderEvent.findFirst({
       where: {
@@ -169,7 +169,7 @@ describe('recordMergedPullRequest', () => {
     const scout = await mockScout();
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -177,7 +177,7 @@ describe('recordMergedPullRequest', () => {
       mockPullRequest()
     ]);
 
-    await recordMergedPullRequest({ pullRequest, repo, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
 
     const githubEvent = await prisma.githubEvent.findFirst({
       where: {
@@ -233,7 +233,7 @@ describe('recordMergedPullRequest', () => {
     const scout = await mockScout();
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -254,7 +254,7 @@ describe('recordMergedPullRequest', () => {
     await recordMergedPullRequest({
       pullRequest: lastWeekPr,
       repo,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       now: DateTime.fromISO(lastWeekPr.createdAt, { zone: 'utc' })
     });
 
@@ -265,7 +265,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: getCurrentSeasonStart(), now });
+    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: currentSeason, now });
 
     const pullRequest3 = mockPullRequest({
       createdAt: now.toISO(),
@@ -274,7 +274,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest3, repo, season: getCurrentSeasonStart(), now });
+    await recordMergedPullRequest({ pullRequest: pullRequest3, repo, season: currentSeason, now });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
@@ -335,7 +335,7 @@ describe('recordMergedPullRequest', () => {
     await recordMergedPullRequest({
       pullRequest: lastWeekPr,
       repo,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       now: DateTime.fromISO(lastWeekPr.createdAt, { zone: 'utc' })
     });
 
@@ -346,7 +346,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: getCurrentSeasonStart(), now });
+    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: currentSeason, now });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
@@ -380,7 +380,7 @@ describe('recordMergedPullRequest', () => {
     await recordMergedPullRequest({
       pullRequest: lastWeekPr,
       repo,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       now: DateTime.fromISO(lastWeekPr.createdAt, { zone: 'utc' })
     });
 
@@ -391,7 +391,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest2, repo: repo2, season: getCurrentSeasonStart(), now });
+    await recordMergedPullRequest({ pullRequest: pullRequest2, repo: repo2, season: currentSeason, now });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
@@ -409,7 +409,7 @@ describe('recordMergedPullRequest', () => {
     const scout = await mockScout();
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -422,9 +422,9 @@ describe('recordMergedPullRequest', () => {
     });
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest, repo, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
 
-    await recordMergedPullRequest({ pullRequest, repo, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
 
     const builderEvents = await prisma.builderEvent.count({
       where: {
@@ -469,7 +469,7 @@ describe('recordMergedPullRequest', () => {
     const scout = await mockScout();
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -485,7 +485,7 @@ describe('recordMergedPullRequest', () => {
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest, repo, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
 
     const builderEvents = await prisma.builderEvent.findMany({
       where: {
@@ -531,7 +531,7 @@ describe('recordMergedPullRequest', () => {
 
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -546,7 +546,7 @@ describe('recordMergedPullRequest', () => {
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest: firstPR, repo: repo1, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest: firstPR, repo: repo1, season: currentSeason });
 
     // Second PR in repo2 was created a week before and merged in the last 7 days
     const secondPR = mockPullRequest({
@@ -559,7 +559,7 @@ describe('recordMergedPullRequest', () => {
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest: secondPR, repo: repo2, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest: secondPR, repo: repo2, season: currentSeason });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
@@ -587,7 +587,7 @@ describe('recordMergedPullRequest', () => {
 
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -602,7 +602,7 @@ describe('recordMergedPullRequest', () => {
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest: firstPR, repo: repo1, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest: firstPR, repo: repo1, season: currentSeason });
 
     // Second PR in repo2, more than 7 days later
     const secondPR = mockPullRequest({
@@ -615,7 +615,7 @@ describe('recordMergedPullRequest', () => {
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest: secondPR, repo: repo2, season: getCurrentSeasonStart() });
+    await recordMergedPullRequest({ pullRequest: secondPR, repo: repo2, season: currentSeason });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
