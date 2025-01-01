@@ -42,7 +42,7 @@ describe('processGemsPayout', () => {
   it('should not run twice', async () => {
     // Mock the current time to be Monday at 00:00:00 UTC
     const mockNow = DateTime.fromObject(
-      { year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0 },
+      { year: 2024, month: 11, day: 4, hour: 0, minute: 0, second: 0 },
       { zone: 'utc' }
     );
 
@@ -64,7 +64,7 @@ describe('processGemsPayout', () => {
     const { getBuildersLeaderboard } = await import('@packages/scoutgame/builders/getBuildersLeaderboard');
     // Mock the current time to be Monday at 04:00:00 UTC (outside the 3-hour window)
     const mockNow = DateTime.fromObject(
-      { year: 2024, month: 1, day: 1, hour: 4, minute: 0, second: 0 },
+      { year: 2024, month: 11, day: 4, hour: 0, minute: 0, second: 0 },
       { zone: 'utc' }
     );
 
