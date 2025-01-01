@@ -1,13 +1,13 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import type { ISOWeek } from '../../dates';
-import { currentSeason, getCurrentWeek } from '../../dates';
+import type { ISOWeek } from '../../dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '../../dates/utils';
 import { incrementPointsEarnedStats } from '../updatePointsEarned';
 
 export async function sendPointsForMiscEvent({
   builderId,
-  season = currentSeason,
+  season = getCurrentSeasonStart(),
   week = getCurrentWeek(),
   points,
   description,
@@ -39,7 +39,7 @@ export async function sendPointsForMiscEvent({
             claimedAt: claimed ? new Date() : null,
             value: points,
             recipientId: builderId,
-            season: currentSeason,
+            season: getCurrentSeasonStart(),
             activities: hideFromNotifications
               ? undefined
               : {

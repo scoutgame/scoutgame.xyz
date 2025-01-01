@@ -1,7 +1,7 @@
 import type { UserWeeklyStats } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason, getCurrentWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
 
@@ -18,7 +18,7 @@ export type NewScout = {
 // look at gems instead of points for current week
 export async function getRankedNewScoutsForCurrentWeek({
   week = getCurrentWeek(),
-  season = currentSeason
+  season = getCurrentSeasonStart()
 }: {
   week?: string;
   season?: string;
@@ -80,7 +80,7 @@ export async function getRankedNewScoutsForCurrentWeek({
 // TODO: cache the pointsEarned as part of userWeeklyStats like we do in userSeasonStats
 export async function getRankedNewScoutsForPastWeek({
   week,
-  season = currentSeason
+  season = getCurrentSeasonStart()
 }: {
   week: string;
   season?: string;
@@ -90,7 +90,7 @@ export async function getRankedNewScoutsForPastWeek({
       where: {
         event: {
           type: 'gems_payout',
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           week
         }
       },

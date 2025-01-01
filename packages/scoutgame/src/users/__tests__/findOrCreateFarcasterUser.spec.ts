@@ -5,7 +5,7 @@ jest.unstable_mockModule('@packages/farcaster/getFarcasterUserById', () => ({
   getFarcasterUserById: jest.fn()
 }));
 
-jest.unstable_mockModule('@packages/scoutgame/users/findOrCreateUser', () => ({
+jest.unstable_mockModule('../findOrCreateUser', () => ({
   findOrCreateUser: jest.fn()
 }));
 

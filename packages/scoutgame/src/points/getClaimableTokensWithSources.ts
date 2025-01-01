@@ -5,8 +5,8 @@ import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
 
 import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
-import type { ISOWeek } from '../dates';
-import { currentSeason, getCurrentWeek } from '../dates';
+import type { ISOWeek } from '../dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import type { WeeklyClaimsTyped } from '../protocol/generateWeeklyClaims';
 
 import type { UnclaimedPointsSource } from './getClaimablePointsWithSources';
@@ -136,7 +136,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const weeklyClaims = (await prisma.weeklyClaims.findMany({
     where: {
-      season: currentSeason
+      season: getCurrentSeasonStart()
     }
   })) as WeeklyClaimsTyped[];
 

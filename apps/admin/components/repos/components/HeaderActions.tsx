@@ -4,7 +4,7 @@ import { log } from '@charmverse/core/log';
 import { ArrowDropDown as ArrowDropDownIcon, Add as AddIcon } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Box, Divider, Menu, MenuItem, Stack, Button } from '@mui/material';
-import { getLastWeek, getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/scoutgame/dates';
+import { getLastWeek, getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/scoutgame/dates/utils';
 import { useGETtrigger } from '@packages/scoutgame-ui/hooks/helpers';
 import React, { useState } from 'react';
 

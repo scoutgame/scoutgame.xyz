@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getCurrentWeek } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/scoutgame/dates/utils';
 import { detectBalanceIssues } from '@packages/scoutgame/points/detectBalanceIssues';
 
 export async function resolveBalanceIssues() {
@@ -10,7 +10,7 @@ export async function resolveBalanceIssues() {
 
     await prisma.builderEvent.create({
       data: {
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         type: 'misc_event',
         week: getCurrentWeek(),
         builder: {
@@ -23,7 +23,7 @@ export async function resolveBalanceIssues() {
             value: balanceToResolve.currentBalance - balanceToResolve.expectedBalance,
             recipientId: balanceToResolve.scoutId,
             claimedAt: new Date(),
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         }
       }

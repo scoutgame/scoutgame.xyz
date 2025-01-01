@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { isTruthy } from '@packages/utils/types';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 export type BuilderReward = {
   path: string;
@@ -21,7 +21,7 @@ export async function getSeasonBuilderRewards({ userId }: { userId: string }): P
       nftPurchaseEvents: {
         where: {
           builderNft: {
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         },
         select: {
@@ -109,7 +109,7 @@ export async function getWeeklyBuilderRewards({
             }
           },
           builderNft: {
-            season: currentSeason
+            season: getCurrentSeasonStart()
           }
         },
         select: {

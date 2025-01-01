@@ -1,7 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import type { Season } from '../dates';
-import { currentSeason, getPreviousSeason, getSeasonWeekFromISOWeek, seasonStarts } from '../dates';
+import type { Season } from '../dates/config';
+import { seasonStarts } from '../dates/config';
+import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '../dates/utils';
 
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
 
@@ -41,15 +42,17 @@ export type PointsReceiptReward =
 
 export async function getPointsReceiptsRewards({
   isClaimed,
-  userId
+  userId,
+  season = getCurrentSeasonStart()
 }: {
   userId: string;
   isClaimed: boolean;
+  season?: string;
 }): Promise<PointsReceiptReward[]> {
-  const previousSeason = getPreviousSeason(currentSeason);
-  const seasons = [previousSeason, currentSeason].filter(Boolean);
+  const previousSeason = getPreviousSeason(season);
+  const seasons = [previousSeason, season].filter(Boolean);
   if (seasons.length === 0) {
-    throw new Error(`No seasons found to claim points: ${currentSeason}`);
+    throw new Error(`No seasons found to claim points: ${season}`);
   }
   const pointsReceipts = await prisma.pointsReceipt.findMany({
     where: {

@@ -1,12 +1,12 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
-import type { Season } from '../dates';
-import { currentSeason } from '../dates';
+import type { Season } from '../dates/config';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getClaimablePoints } from './getClaimablePoints';
 
-export async function claimPoints({ season = currentSeason, userId }: { season?: Season; userId: string }) {
+export async function claimPoints({ season = getCurrentSeasonStart(), userId }: { season?: Season; userId: string }) {
   const { points, pointsReceiptIds } = await getClaimablePoints({ season, userId });
 
   await prisma.$transaction([

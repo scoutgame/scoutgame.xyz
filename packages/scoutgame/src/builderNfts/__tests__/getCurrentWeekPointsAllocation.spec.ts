@@ -1,7 +1,7 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder } from '../../testing/database';
 import { getCurrentWeekPointsAllocation } from '../getCurrentWeekPointsAllocation';
 
@@ -19,10 +19,10 @@ describe('getCurrentWeekPointsAllocation', () => {
 
     await prisma.userWeeklyStats.createMany({
       data: [
-        { week: testWeek, gemsCollected: 10, userId: builder1.id, season: currentSeason },
-        { week: testWeek, gemsCollected: 15, season: currentSeason, userId: builder2.id },
-        { week: testWeek, gemsCollected: 0, season: currentSeason, userId: builderWithoutPoints.id },
-        { week: '2024-W40', gemsCollected: 0, season: currentSeason, userId: excludedBuilder.id }
+        { week: testWeek, gemsCollected: 10, userId: builder1.id, season: getCurrentSeasonStart() },
+        { week: testWeek, gemsCollected: 15, season: getCurrentSeasonStart(), userId: builder2.id },
+        { week: testWeek, gemsCollected: 0, season: getCurrentSeasonStart(), userId: builderWithoutPoints.id },
+        { week: '2024-W40', gemsCollected: 0, season: getCurrentSeasonStart(), userId: excludedBuilder.id }
       ]
     });
 

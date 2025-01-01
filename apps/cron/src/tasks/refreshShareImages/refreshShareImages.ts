@@ -1,12 +1,12 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { refreshShareImage } from '@packages/scoutgame/builders/refreshShareImage';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 export async function refreshShareImages() {
   const builderNfts = await prisma.builderNft.findMany({
     where: {
-      season: currentSeason
+      season: getCurrentSeasonStart()
     }
   });
 

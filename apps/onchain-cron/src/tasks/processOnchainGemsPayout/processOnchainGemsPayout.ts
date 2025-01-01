@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeeklyClaims';
@@ -9,7 +9,7 @@ import { DateTime } from 'luxon';
 
 export async function processOnchainGemsPayout(
   ctx: Context,
-  { season = currentSeason, now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
+  { season = getCurrentSeasonStart(), now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
 ) {
   const week = getLastWeek(now);
 

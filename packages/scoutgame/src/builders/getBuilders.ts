@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason, getCurrentWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 export type BuildersSortBy = 'cards' | 'points' | 'price' | 'rank';
 
@@ -45,7 +45,7 @@ export async function getBuilders({
             displayName: true,
             builderNfts: {
               where: {
-                season: currentSeason,
+                season: getCurrentSeasonStart(),
                 nftType: BuilderNftType.default
               },
               select: {
@@ -54,7 +54,7 @@ export async function getBuilders({
             },
             userSeasonStats: {
               where: {
-                season: currentSeason
+                season: getCurrentSeasonStart()
               },
               select: {
                 pointsEarnedAsBuilder: true,
@@ -83,7 +83,7 @@ export async function getBuilders({
           builderStatus: 'approved',
           deletedAt: null
         },
-        season: currentSeason
+        season: getCurrentSeasonStart()
       },
       orderBy: {
         pointsEarnedAsBuilder: order
@@ -105,7 +105,7 @@ export async function getBuilders({
             },
             builderNfts: {
               where: {
-                season: currentSeason,
+                season: getCurrentSeasonStart(),
                 nftType: BuilderNftType.default
               },
               select: {
@@ -131,7 +131,7 @@ export async function getBuilders({
   } else if (sortBy === 'price') {
     const builders = await prisma.builderNft.findMany({
       where: {
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         nftType: BuilderNftType.default,
         builder: {
           builderStatus: 'approved',
@@ -158,7 +158,7 @@ export async function getBuilders({
             },
             userSeasonStats: {
               where: {
-                season: currentSeason
+                season: getCurrentSeasonStart()
               },
               select: {
                 pointsEarnedAsBuilder: true,
@@ -167,7 +167,7 @@ export async function getBuilders({
             },
             builderNfts: {
               where: {
-                season: currentSeason,
+                season: getCurrentSeasonStart(),
                 nftType: BuilderNftType.default
               },
               select: {
@@ -196,7 +196,7 @@ export async function getBuilders({
           builderStatus: 'approved',
           deletedAt: null
         },
-        season: currentSeason
+        season: getCurrentSeasonStart()
       },
       orderBy: {
         nftsSold: order
@@ -218,7 +218,7 @@ export async function getBuilders({
             },
             builderNfts: {
               where: {
-                season: currentSeason,
+                season: getCurrentSeasonStart(),
                 nftType: BuilderNftType.default
               }
             }

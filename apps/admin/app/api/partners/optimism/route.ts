@@ -1,4 +1,4 @@
-import { getLastWeek } from '@packages/scoutgame/dates';
+import { getLastWeek } from '@packages/scoutgame/dates/utils';
 import { getRankedNewScoutsForPastWeek } from '@packages/scoutgame/scouts/getNewScouts';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';

@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 import {
   mockBuilder,
   mockScout,
@@ -18,20 +18,20 @@ describe('claimPoints', () => {
       builderId: builder.id,
       recipientId: builder.id,
       amount: 10,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
     await mockBuilderNft({
       builderId: builder.id,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
     await mockNFTPurchaseEvent({
       builderId: builder.id,
       scoutId: scout.id,
       points: 20,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
-    await claimPoints({ userId: builder.id, season: currentSeason });
+    await claimPoints({ userId: builder.id, season: getCurrentSeasonStart() });
 
     const transactions = await prisma.pointsReceipt.findMany({
       where: {

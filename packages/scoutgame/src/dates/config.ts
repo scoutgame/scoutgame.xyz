@@ -1,0 +1,50 @@
+export type ISOWeek = string; // isoweek, e.g. '2024-W01'
+
+// Season start MUST be on a Monday, when isoweek begins
+
+export const weeksPerSeason = 13;
+
+export type SeasonConfig = {
+  title: string;
+  start: ISOWeek;
+};
+
+// the end of each season is the start of the next season
+export const seasons = [
+  // dev season
+  {
+    start: '2024-W38',
+    title: 'Dev Season'
+  },
+  // pre-release season
+  {
+    start: '2024-W40',
+    title: 'Pre Season'
+  },
+  // Preseason 1
+  {
+    start: '2024-W41',
+    title: 'Season 1'
+  },
+  // Preseason 2
+  {
+    start: '2025-W02',
+    title: 'Season 2'
+  }
+] satisfies SeasonConfig[];
+
+export const seasonStarts = seasons.map((s) => s.start);
+
+export type Season = (typeof seasons)[number]['start'];
+
+export const streakWindow = 7 * 24 * 60 * 60 * 1000;
+
+// Validate the season list just in case it is configured wrong
+function validateSeasonList(seasonList: Season[]): void {
+  if (!seasonList.every((s) => s)) {
+    throw new Error('Invalid season list');
+  }
+  if (seasonList.slice().sort().join(',') !== seasonList.join(',')) {
+    throw new Error('Season list is not sorted');
+  }
+}

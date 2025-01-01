@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getBuilderContractAddress } from '@packages/scoutgame/builderNfts/constants';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { mockBuilder, mockScout, mockBuilderNft } from '@packages/scoutgame/testing/database';
 
 import { expect, test } from './test';
@@ -17,7 +17,7 @@ test.describe('Buy Nft', () => {
     // Only for testing locally. Ensure the database is clean
     // await prisma.scout.deleteMany({});
     const builder = await mockBuilder({
-      nftSeason: currentSeason,
+      nftSeason: getCurrentSeasonStart(),
       avatar:
         'https://cdn.charmverse.io/user-content/5906c806-9497-43c7-9ffc-2eecd3c3a3ec/cbed10a8-4f05-4b35-9463-fe8f15413311/b30047899c1514539cc32cdb3db0c932.jpg',
       bio: 'Software Engineer @charmverse.',
@@ -90,7 +90,7 @@ test.describe('Buy Nft', () => {
     });
 
     const builder = await mockBuilder({
-      nftSeason: currentSeason,
+      nftSeason: getCurrentSeasonStart(),
       avatar:
         'https://cdn.charmverse.io/user-content/5906c806-9497-43c7-9ffc-2eecd3c3a3ec/cbed10a8-4f05-4b35-9463-fe8f15413311/b30047899c1514539cc32cdb3db0c932.jpg',
       bio: 'Software Engineer @charmverse.',

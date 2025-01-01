@@ -7,7 +7,7 @@ import type { BuilderInfo } from '../builders/interfaces';
 import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast7Days';
 import { mapGemReceiptsToLast7Days } from '../builders/mapGemReceiptsToLast7Days';
 import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
-import { currentSeason, getCurrentWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 import { BasicUserInfoSelect } from '../users/queries';
 
@@ -81,7 +81,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
       },
       userSeasonStats: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           nftsSold: true,
@@ -90,7 +90,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
       },
       builderNfts: {
         where: {
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           contractAddress: scoutProtocolBuilderNftContractAddress()
         },
         select: {
@@ -135,7 +135,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
   const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
       builderNft: {
-        season: currentSeason
+        season: getCurrentSeasonStart()
       },
       scoutId
     },
@@ -163,7 +163,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
       ...BasicUserInfoSelect,
       userSeasonStats: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           nftsSold: true,
@@ -172,7 +172,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
       },
       builderNfts: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           contractAddress: true,

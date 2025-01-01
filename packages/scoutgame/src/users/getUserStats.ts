@@ -1,7 +1,7 @@
 import type { Scout, UserAllTimeStats, UserSeasonStats } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 export type UserStats = {
   seasonPoints?: Pick<UserSeasonStats, 'pointsEarnedAsBuilder' | 'pointsEarnedAsScout'>;
@@ -17,7 +17,7 @@ export async function getUserStats(userId: string): Promise<UserStats> {
     select: {
       userSeasonStats: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           pointsEarnedAsBuilder: true,

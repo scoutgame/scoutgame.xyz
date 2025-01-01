@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { mockBuilder } from '@packages/scoutgame/testing/database';
 
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 
 jest.unstable_mockModule('../../builderNfts/builderRegistration/registerBuilderNFT', () => ({
   registerBuilderNFT: jest.fn()
@@ -37,7 +37,7 @@ describe('approveBuilder', () => {
     expect(registerBuilderNFT).toHaveBeenCalledWith(
       expect.objectContaining({
         builderId: builder.id,
-        season: currentSeason
+        season: getCurrentSeasonStart()
       })
     );
   });

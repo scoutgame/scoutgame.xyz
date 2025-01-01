@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 
 async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath: string }) {
@@ -16,7 +16,7 @@ async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath
   const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
       builderNft: {
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         builder: {
           path: builderPath
         }
@@ -70,7 +70,7 @@ async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath
           where: {
             userId_season: {
               userId: scoutId,
-              season: currentSeason
+              season: getCurrentSeasonStart()
             }
           },
           data: {

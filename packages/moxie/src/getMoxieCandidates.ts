@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
 import { uniq } from 'lodash';
 
 import { airstackRequest } from './airstackRequest';
@@ -43,7 +43,7 @@ export async function getMoxieCandidates({ week, season }: { week: string; seaso
       path: true,
       builderNfts: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           nftSoldEvents: {

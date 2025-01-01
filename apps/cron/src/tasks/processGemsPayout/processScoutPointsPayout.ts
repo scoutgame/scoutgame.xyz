@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import { dividePointsBetweenBuilderAndScouts } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
@@ -90,7 +90,7 @@ export async function processScoutPointsPayout({
               value: scoutPoints,
               recipientId: scoutId,
               eventId: builderEventId,
-              season: currentSeason,
+              season: getCurrentSeasonStart(),
               activities: {
                 create: {
                   recipientType: 'scout',
