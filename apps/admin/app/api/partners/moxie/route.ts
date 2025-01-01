@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { getMoxieCandidates } from '@packages/moxie/getMoxieCandidates';
 import { sendMoxieTokens } from '@packages/moxie/sendMoxieTokens';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -9,7 +9,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const lastWeek = getLastWeek();
-  const candidates = await getMoxieCandidates({ week: lastWeek, season: getCurrentSeasonStart() });
+  const currentSeason = getCurrentSeasonStart();
+  const candidates = await getMoxieCandidates({ week: lastWeek, season: currentSeason });
 
   if (candidates.length === 0) {
     log.warn('No candidates found for moxie', { lastWeek, currentSeason });

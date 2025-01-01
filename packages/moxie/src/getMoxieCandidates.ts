@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
 import { uniq } from 'lodash';
 
 import { airstackRequest } from './airstackRequest';

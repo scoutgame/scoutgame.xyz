@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
-import { getAllISOWeeksFromSeasonStart, currentSeason } from '@packages/scoutgame/dates/utils';
+import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import {
   protocolImplementationReadonlyApiClient,
   protocolProxyReadonlyApiClient

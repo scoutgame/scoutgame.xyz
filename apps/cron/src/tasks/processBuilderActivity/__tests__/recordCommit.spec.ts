@@ -27,7 +27,7 @@ describe('recordCommit', () => {
 
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -44,7 +44,7 @@ describe('recordCommit', () => {
       repo
     });
 
-    await recordCommit({ commit, season: getCurrentSeasonStart() });
+    await recordCommit({ commit, season: currentSeason });
 
     const githubEvent = await prisma.githubEvent.findFirst({
       where: {
@@ -111,7 +111,7 @@ describe('recordCommit', () => {
       repo
     });
 
-    await recordCommit({ commit, season: getCurrentSeasonStart() });
+    await recordCommit({ commit, season: currentSeason });
 
     const builderEvent = await prisma.builderEvent.findFirst({
       where: {
@@ -138,11 +138,11 @@ describe('recordCommit', () => {
 
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
-    await recordCommit({ commit, season: getCurrentSeasonStart() });
+    await recordCommit({ commit, season: currentSeason });
 
     const githubEvent = await prisma.githubEvent.findFirst({
       where: {
@@ -206,7 +206,7 @@ describe('recordCommit', () => {
     // record a builder event for the last week PR, use a different date so that it creates a builder event for the last week
     await recordCommit({
       commit: firstCommit,
-      season: getCurrentSeasonStart()
+      season: currentSeason
     });
 
     const secondCommit = mockCommit({
@@ -215,7 +215,7 @@ describe('recordCommit', () => {
       author: builder.githubUser
     });
 
-    await recordCommit({ commit: secondCommit, season: getCurrentSeasonStart() });
+    await recordCommit({ commit: secondCommit, season: currentSeason });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
@@ -233,7 +233,7 @@ describe('recordCommit', () => {
     const scout = await mockScout();
     await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: currentSeason,
       owners: [scout]
     });
 
@@ -244,9 +244,9 @@ describe('recordCommit', () => {
       author: builder.githubUser
     });
 
-    await recordCommit({ commit, season: getCurrentSeasonStart() });
+    await recordCommit({ commit, season: currentSeason });
 
-    await recordCommit({ commit, season: getCurrentSeasonStart() });
+    await recordCommit({ commit, season: currentSeason });
 
     const builderEvents = await prisma.builderEvent.count({
       where: {

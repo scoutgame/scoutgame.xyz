@@ -1,5 +1,5 @@
 import { getMoxieCandidates } from '@packages/moxie/getMoxieCandidates';
-import { currentSeason, getLastWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
