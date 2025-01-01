@@ -1,6 +1,7 @@
 import type { BuilderEvent, NFTPurchaseEvent, PointsReceipt } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client'; // Assuming prisma is directly imported from your Prisma client instance
 
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '../database'; // Assuming mockBuilderNft is in a separate file
 
 describe('mockNFTPurchaseEvent', () => {
@@ -10,8 +11,6 @@ describe('mockNFTPurchaseEvent', () => {
     const scout = await mockScout();
     const points = 10;
     const tokensPurchased = 100;
-
-    const currentSeason = 'current-mock-season';
 
     const builderNft = await mockBuilderNft({
       builderId: builder.id,
