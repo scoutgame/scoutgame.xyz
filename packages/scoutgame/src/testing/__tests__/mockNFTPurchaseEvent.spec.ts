@@ -15,7 +15,7 @@ describe('mockNFTPurchaseEvent', () => {
 
     const builderNft = await mockBuilderNft({
       builderId: builder.id,
-      season: getCurrentSeasonStart()
+      season: currentSeason
     });
 
     const result = await mockNFTPurchaseEvent({
@@ -23,7 +23,7 @@ describe('mockNFTPurchaseEvent', () => {
       scoutId: scout.id,
       points,
       tokensPurchased,
-      season: getCurrentSeasonStart()
+      season: currentSeason
     });
 
     // Verify builderEvent and nftPurchaseEvent creation
@@ -38,7 +38,7 @@ describe('mockNFTPurchaseEvent', () => {
       expect.objectContaining<Partial<BuilderEvent & { nftPurchaseEvent: Partial<NFTPurchaseEvent> }>>({
         builderId: builder.id,
         type: 'nft_purchase',
-        season: getCurrentSeasonStart(),
+        season: currentSeason,
         nftPurchaseEvent: expect.objectContaining({
           pointsValue: points,
           tokensPurchased,
