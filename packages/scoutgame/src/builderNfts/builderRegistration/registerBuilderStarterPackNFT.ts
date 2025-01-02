@@ -7,7 +7,7 @@ import type { Address } from 'viem';
 import { builderContractReadonlyApiClient } from '../clients/builderContractReadClient';
 import { getBuilderContractStarterPackMinterClient } from '../clients/builderContractStarterPackMinterWriteClient';
 import { builderContractStarterPackReadonlyApiClient } from '../clients/builderContractStarterPackReadClient';
-import { builderNftChain, getBuilderStarterPackContractAddress } from '../constants';
+import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
 
@@ -27,7 +27,7 @@ export async function registerBuilderStarterPackNFT({
   }
 
   if (!contractAddress) {
-    contractAddress = getBuilderStarterPackContractAddress(season);
+    contractAddress = getBuilderNftStarterPackContractAddress(season);
   }
 
   if (!stringUtils.isUUID(builderId)) {

@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { builderNftChain, getBuilderNftContractAddress, getBuilderStarterPackContractAddress } from '../constants';
+import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
@@ -52,7 +52,7 @@ export function getStarterPackTransferSingleEvents({ fromBlock, toBlock }: Block
   return getPublicClient(builderNftChain.id)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
-      address: getBuilderStarterPackContractAddress(),
+      address: getBuilderNftStarterPackContractAddress(),
       event: transferSingleAbi
     })
     .then((logs) =>

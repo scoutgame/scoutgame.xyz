@@ -1,11 +1,11 @@
-import { builderNftChain, getBuilderStarterPackContractAddress } from '../constants';
+import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 import { getScoutGameNftMinterWallet } from '../getScoutGameNftMinterWallet';
 
 import { BuilderNFTSeasonOneStarterPackImplementationClient } from './BuilderNFTSeasonOneStarterPackImplementationClient';
 
 // lazily create the client to avoid exceptions if the environment is not configured
 export function getBuilderContractStarterPackMinterClient() {
-  const contractAddress = getBuilderStarterPackContractAddress();
+  const contractAddress = getBuilderNftStarterPackContractAddress();
   if (!contractAddress) {
     throw new Error('Builder contract starter pack address not set');
   }

@@ -36,16 +36,16 @@ export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonS
 
   const envVarName = `BUILDER_NFT_CONTRACT_ADDRESS_${seasonName}`;
 
-  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`]) as `0x${string}`;
+  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as `0x${string}`;
 }
 
-export function getBuilderStarterPackContractAddress(season: ISOWeek = getCurrentSeasonStart()): `0x${string}` {
+export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCurrentSeasonStart()): `0x${string}` {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
   const envVarName = `BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS_${seasonName}`;
 
-  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`]) as `0x${string}`;
+  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as `0x${string}`;
 }
 
 /**
@@ -54,7 +54,7 @@ export function getBuilderStarterPackContractAddress(season: ISOWeek = getCurren
 export const MAX_STARTER_PACK_PURCHASES = 3;
 
 export function getBuilderNftContractAddressForNftType(nftType: BuilderNftType): `0x${string}` {
-  return nftType === 'starter_pack' ? getBuilderStarterPackContractAddress() : getBuilderNftContractAddress();
+  return nftType === 'starter_pack' ? getBuilderNftStarterPackContractAddress() : getBuilderNftContractAddress();
 }
 
 // USDC Contract we use for payments
