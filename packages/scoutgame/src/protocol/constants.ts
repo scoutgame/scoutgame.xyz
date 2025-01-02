@@ -41,7 +41,7 @@ export function getScoutProtocolBuilderNFTContract() {
   const contractAddress = scoutProtocolBuilderNftContractAddress();
 
   if (!contractAddress) {
-    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41 is not set');
+    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
   }
 
   const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
@@ -57,7 +57,7 @@ export function getScoutProtocolBuilderNFTReadonlyContract() {
   const contractAddress = scoutProtocolBuilderNftContractAddress();
 
   if (!contractAddress) {
-    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41 is not set');
+    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
   }
 
   const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
