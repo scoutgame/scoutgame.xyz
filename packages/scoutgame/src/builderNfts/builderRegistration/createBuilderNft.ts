@@ -5,7 +5,7 @@ import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
 import { builderContractReadonlyApiClient } from '../clients/builderContractReadClient';
-import { builderNftChain, getBuilderContractAddress } from '../constants';
+import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 
 export async function createBuilderNft({
   imageHostingBaseUrl,
@@ -53,7 +53,7 @@ export async function createBuilderNft({
     data: {
       builderId,
       chainId: builderNftChain.id,
-      contractAddress: getBuilderContractAddress(),
+      contractAddress: getBuilderNftContractAddress(),
       tokenId: Number(tokenId),
       season: getCurrentSeasonStart(),
       currentPrice,

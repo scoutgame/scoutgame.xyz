@@ -27,8 +27,9 @@ const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9f
 const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
 export const realOptimismMainnetBuildersContract = '0x743ec903fe6d05e73b19a6db807271bb66100e83';
 
-export function getBuilderContractAddress(): `0x${string}` {
-  return (env('BUILDER_NFT_CONTRACT_ADDRESS') || process.env.REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS) as `0x${string}`;
+export function getBuilderNftContractAddress(): `0x${string}` {
+  return (env('BUILDER_NFT_CONTRACT_ADDRESS_2024_W41') ||
+    process.env.REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41) as `0x${string}`;
 }
 
 export function getBuilderStarterPackContractAddress(): `0x${string}` {
@@ -41,8 +42,8 @@ export function getBuilderStarterPackContractAddress(): `0x${string}` {
  */
 export const MAX_STARTER_PACK_PURCHASES = 3;
 
-export function getBuilderContractAddressForNftType(nftType: BuilderNftType): `0x${string}` {
-  return nftType === 'starter_pack' ? getBuilderStarterPackContractAddress() : getBuilderContractAddress();
+export function getBuilderNftContractAddressForNftType(nftType: BuilderNftType): `0x${string}` {
+  return nftType === 'starter_pack' ? getBuilderStarterPackContractAddress() : getBuilderNftContractAddress();
 }
 
 // USDC Contract we use for payments
@@ -73,7 +74,7 @@ export const weeklyRewardableBuilders = 100;
 
 // const apiClient = new BuilderNFTSeasonOneClient({
 //   chain: builderNftChain,
-//   contractAddress: getBuilderContractAddress(),
+//   contractAddress: getBuilderNftContractAddress(),
 //   walletClient: serverClient
 // });
 

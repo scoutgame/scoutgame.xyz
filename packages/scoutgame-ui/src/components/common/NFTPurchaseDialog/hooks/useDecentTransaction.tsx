@@ -3,7 +3,7 @@ import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common
 import { ActionType } from '@decent.xyz/box-common';
 import {
   builderNftChain,
-  getBuilderContractAddress,
+  getBuilderNftContractAddress,
   getDecentApiKey,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
@@ -76,7 +76,7 @@ export function useDecentTransaction({
   useScoutToken
 }: DecentTransactionProps) {
   const _contractAddress =
-    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress());
+    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress());
 
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
