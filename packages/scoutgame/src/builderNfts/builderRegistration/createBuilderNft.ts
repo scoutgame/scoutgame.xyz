@@ -7,7 +7,6 @@ import { builderContractReadonlyApiClient } from '../clients/builderContractRead
 import { builderNftChain, getBuilderContractAddress } from '../constants';
 
 export async function createBuilderNft({
-  imageHostingBaseUrl,
   avatar,
   tokenId,
   builderId,
@@ -17,10 +16,9 @@ export async function createBuilderNft({
   chainId = builderNftChain.id,
   contractAddress = getBuilderContractAddress()
 }: {
-  imageHostingBaseUrl?: string;
   displayName: string;
   path: string;
-  avatar: string | null;
+  avatar: string;
   tokenId: bigint;
   builderId: string;
   starterNft?: boolean;
@@ -33,7 +31,6 @@ export async function createBuilderNft({
   });
 
   const fileUrl = await uploadArtwork({
-    imageHostingBaseUrl,
     displayName,
     season,
     avatar,
@@ -41,7 +38,6 @@ export async function createBuilderNft({
   });
 
   const congratsImageUrl = await uploadShareImage({
-    imageHostingBaseUrl,
     season,
     tokenId,
     userImage: fileUrl,

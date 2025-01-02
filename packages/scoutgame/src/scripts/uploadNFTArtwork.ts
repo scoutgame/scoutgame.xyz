@@ -40,7 +40,6 @@ async function uploadNFTArtwork() {
         tokenId: builderNft.tokenId,
         userImage: imageUrl,
         builderId: builder.id,
-        imageHostingBaseUrl: process.env.DOMAIN
       });
 
       await prisma.builderNft.update({

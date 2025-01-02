@@ -13,13 +13,11 @@ import { createBuilderNft } from './createBuilderNft';
 export async function registerBuilderNFT({
   builderId,
   season,
-  imageHostingBaseUrl,
   chain = builderNftChain,
   contractAddress
 }: {
   builderId: string;
   season: string;
-  imageHostingBaseUrl?: string;
   chain?: Chain;
   contractAddress?: Address;
 }) {
@@ -70,11 +68,10 @@ export async function registerBuilderNFT({
   }
 
   const builderNft = await createBuilderNft({
-    imageHostingBaseUrl,
     season,
     tokenId,
     builderId,
-    avatar: builder.avatar,
+    avatar: builder.avatar ?? '',
     path: builder.path!,
     displayName: builder.displayName,
     chainId: chain.id,

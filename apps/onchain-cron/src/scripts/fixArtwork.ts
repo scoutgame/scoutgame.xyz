@@ -36,7 +36,7 @@ async function refreshArtworks() {
     const nft = builderNfts[i];
     log.info(`[tokenId: ${nft.tokenId}] Updating artwork for NFT ${i + 1} of ${totalNfts} `);
 
-    const avatar = nft.builder.avatar;
+    const avatar = nft.builder.avatar as string;
 
     if (!avatar) {
       log.warn(`No avatar found for builder ${nft.builderId} at index ${i}`);

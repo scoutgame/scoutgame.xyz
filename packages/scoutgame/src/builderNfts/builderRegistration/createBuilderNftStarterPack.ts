@@ -3,13 +3,11 @@ import type { Address } from 'viem';
 
 import { getCurrentSeasonStart } from '../../dates/utils';
 import { uploadMetadata } from '../artwork/uploadMetadata';
+import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from '../artwork/uploadStarterPackArtwork';
 import { builderContractStarterPackReadonlyApiClient } from '../clients/builderContractStarterPackReadClient';
 import { builderNftChain, getBuilderStarterPackContractAddress } from '../constants';
 
-import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from './starterPack/uploadStarterPackArtwork';
-
 export async function createBuilderNftStarterPack({
-  imageHostingBaseUrl,
   avatar,
   tokenId,
   builderId,
@@ -19,10 +17,9 @@ export async function createBuilderNftStarterPack({
   chainId = builderNftChain.id,
   contractAddress = getBuilderStarterPackContractAddress()
 }: {
-  imageHostingBaseUrl?: string;
   displayName: string;
   path: string;
-  avatar: string | null;
+  avatar: string;
   tokenId: bigint;
   builderId: string;
   starterNft?: boolean;
@@ -35,7 +32,6 @@ export async function createBuilderNftStarterPack({
   });
 
   const fileUrl = await uploadStarterPackArtwork({
-    imageHostingBaseUrl,
     displayName,
     season,
     avatar,
@@ -43,7 +39,6 @@ export async function createBuilderNftStarterPack({
   });
 
   const congratsImageUrl = await uploadStarterPackArtworkCongrats({
-    imageHostingBaseUrl,
     season,
     tokenId,
     userImage: fileUrl,
