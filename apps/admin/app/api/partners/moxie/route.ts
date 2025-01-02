@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const lastWeek = getLastWeek();
-  const currentSeason = getCurrentSeasonStart();
-  const candidates = await getMoxieCandidates({ week: lastWeek, season: currentSeason });
+  const currentSeason = getCurrentSeasonStart(lastWeek);
+  const candidates = await getMoxieCandidates({ week: lastWeek });
 
   if (candidates.length === 0) {
     log.warn('No candidates found for moxie', { lastWeek, currentSeason });

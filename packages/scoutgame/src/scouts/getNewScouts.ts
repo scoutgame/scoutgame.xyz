@@ -1,7 +1,6 @@
-import type { UserWeeklyStats } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
+import { getCurrentSeason, getCurrentWeek } from '../dates/utils';
 import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
 
@@ -17,18 +16,15 @@ export type NewScout = {
 
 // look at gems instead of points for current week
 export async function getRankedNewScoutsForCurrentWeek({
-  week = getCurrentWeek(),
-  season = getCurrentSeasonStart()
+  week = getCurrentWeek()
 }: {
   week?: string;
-  season?: string;
 } = {}): Promise<NewScout[]> {
   const [{ pointsPerScout: _pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
     (async function calculatePointsPerScout() {
       const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints, nftPurchaseEvents } =
         await getWeeklyPointsPoolAndBuilders({
-          week,
-          season
+          week
         });
       // aggregate values for each scout per topWeeklyBuilder
       const pointsPerScout: Record<string, number> = {};
@@ -50,7 +46,7 @@ export async function getRankedNewScoutsForCurrentWeek({
         pointsPerScout
       };
     })(),
-    getNewScouts({ week, season })
+    getNewScouts({ week })
   ]);
 
   return (
@@ -78,19 +74,14 @@ export async function getRankedNewScoutsForCurrentWeek({
 }
 
 // TODO: cache the pointsEarned as part of userWeeklyStats like we do in userSeasonStats
-export async function getRankedNewScoutsForPastWeek({
-  week,
-  season = getCurrentSeasonStart()
-}: {
-  week: string;
-  season?: string;
-}) {
+export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) {
+  const season = getCurrentSeason(week).start;
   const [receipts, newScouts] = await Promise.all([
     prisma.pointsReceipt.findMany({
       where: {
         event: {
           type: 'gems_payout',
-          season: getCurrentSeasonStart(),
+          season,
           week
         }
       },
@@ -100,7 +91,7 @@ export async function getRankedNewScoutsForPastWeek({
         }
       }
     }),
-    getNewScouts({ week, season })
+    getNewScouts({ week })
   ]);
 
   // remove receipts for builder payout
@@ -124,7 +115,8 @@ export async function getRankedNewScoutsForPastWeek({
 }
 
 // new Scout definition: only scouts that purchased NFT this week for the first time
-export async function getNewScouts({ week, season }: { week: string; season: string }) {
+export async function getNewScouts({ week }: { week: string }) {
+  const season = getCurrentSeason(week).start;
   return prisma.scout.findMany({
     where: {
       deletedAt: null,

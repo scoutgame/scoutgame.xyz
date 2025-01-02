@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { Address } from 'viem';
 
 import { getCurrentSeasonStart } from '../../dates/utils';
 import { uploadMetadata } from '../artwork/uploadMetadata';
@@ -11,7 +12,10 @@ export async function createBuilderNftStarterPack({
   tokenId,
   builderId,
   displayName,
-  path
+  path,
+  season = getCurrentSeasonStart(),
+  chainId = builderNftChain.id,
+  contractAddress = getBuilderStarterPackContractAddress()
 }: {
   displayName: string;
   path: string;
@@ -19,6 +23,9 @@ export async function createBuilderNftStarterPack({
   tokenId: bigint;
   builderId: string;
   starterNft?: boolean;
+  season?: string;
+  chainId?: number;
+  contractAddress?: Address;
 }) {
   const currentPrice = await builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({
     args: { amount: BigInt(1) }
@@ -26,20 +33,20 @@ export async function createBuilderNftStarterPack({
 
   const fileUrl = await uploadStarterPackArtwork({
     displayName,
-    season: getCurrentSeasonStart(),
+    season,
     avatar,
     tokenId
   });
 
   const congratsImageUrl = await uploadStarterPackArtworkCongrats({
-    season: getCurrentSeasonStart(),
+    season,
     tokenId,
     userImage: fileUrl,
     builderId
   });
 
   await uploadMetadata({
-    season: getCurrentSeasonStart(),
+    season,
     tokenId,
     path,
     starterPack: true
@@ -48,10 +55,10 @@ export async function createBuilderNftStarterPack({
   const builderNft = await prisma.builderNft.create({
     data: {
       builderId,
-      chainId: builderNftChain.id,
-      contractAddress: getBuilderStarterPackContractAddress(),
+      chainId,
+      contractAddress,
       tokenId: Number(tokenId),
-      season: getCurrentSeasonStart(),
+      season,
       currentPrice,
       imageUrl: fileUrl,
       congratsImageUrl,

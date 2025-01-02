@@ -2,8 +2,7 @@ import type { BuilderNft } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import type { NftPurchaseEvent } from '@packages/mixpanel/interfaces';
 
-import type { Season } from '../dates/config';
-import { getCurrentWeek, getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentWeek, getCurrentSeason } from '../dates/utils';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
@@ -11,16 +10,15 @@ import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
 export type StarterPackBuilder = BuilderInfo & { purchased: boolean };
 
 export async function getStarterPackBuilders({
-  season = getCurrentSeasonStart(),
   week = getCurrentWeek(),
   limit,
   userId
 }: {
-  season?: Season;
   week?: string;
   limit?: number;
   userId?: string;
 } = {}): Promise<StarterPackBuilder[]> {
+  const season = getCurrentSeason(week).start;
   const starterPackBuilders = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
