@@ -2,21 +2,20 @@ import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 import type { ISOWeek } from '../../dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '../../dates/utils';
+import { getCurrentSeason, getCurrentWeek } from '../../dates/utils';
 
 export async function sendPointsForDailyClaimStreak({
   builderId,
-  season = getCurrentSeasonStart(),
   week = getCurrentWeek(),
   points,
   tx
 }: {
   builderId: string;
   points: number;
-  season?: ISOWeek;
   week?: ISOWeek;
   tx?: Prisma.TransactionClient;
 }) {
+  const season = getCurrentSeason(week).start;
   async function txHandler(_tx: Prisma.TransactionClient) {
     await _tx.scoutDailyClaimStreakEvent.create({
       data: {

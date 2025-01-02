@@ -44,7 +44,6 @@ async function issuePoints({ points }: { points: number }) {
           claimed: true,
           description: `Friends of Scout Game`,
           hideFromNotifications: true,
-          season: getCurrentSeasonStart(),
           week: getLastWeek(),
           tx
         });

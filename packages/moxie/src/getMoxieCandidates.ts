@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
+import type { ISOWeek } from '@packages/scoutgame/dates/config';
+import { getCurrentSeasonStart, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/scoutgame/dates/utils';
 import { uniq } from 'lodash';
 
 import { airstackRequest } from './airstackRequest';
@@ -16,7 +17,9 @@ export type MoxieBonusRow = {
   'Moxie tokens earned': number;
 };
 
-export async function getMoxieCandidates({ week, season }: { week: string; season: string }): Promise<MoxieBonusRow[]> {
+export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<MoxieBonusRow[]> {
+  const season = getCurrentSeasonStart(week);
+
   const builders = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
@@ -43,7 +46,7 @@ export async function getMoxieCandidates({ week, season }: { week: string; seaso
       path: true,
       builderNfts: {
         where: {
-          season: getCurrentSeasonStart()
+          season
         },
         select: {
           nftSoldEvents: {

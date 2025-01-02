@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
-import { getCurrentWeek, getPreviousWeek, getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentWeek, getPreviousWeek, getCurrentSeason } from '../dates/utils';
 import { sendPointsForDailyClaim } from '../points/builderEvents/sendPointsForDailyClaim';
 import { sendPointsForDailyClaimStreak } from '../points/builderEvents/sendPointsForDailyClaimStreak';
 
@@ -11,15 +11,14 @@ export async function claimDailyReward({
   userId,
   isBonus,
   dayOfWeek,
-  week = getCurrentWeek(),
-  season = getCurrentSeasonStart()
+  week = getCurrentWeek()
 }: {
   userId: string;
   isBonus?: boolean;
   dayOfWeek: number;
   week?: string;
-  season?: string;
 }) {
+  const season = getCurrentSeason(week).start;
   const validWeeks = [week, getPreviousWeek(week)];
   if (!validWeeks.includes(week)) {
     throw new Error(`Invalid week: ${week}. Valid weeks are ${validWeeks.join(', ')}`);
@@ -56,7 +55,6 @@ export async function claimDailyReward({
     await sendPointsForDailyClaimStreak({
       builderId: userId,
       week,
-      season,
       points
     });
     trackUserAction('daily_claim_streak', {
@@ -79,7 +77,6 @@ export async function claimDailyReward({
       builderId: userId,
       dayOfWeek,
       week,
-      season,
       points
     });
     trackUserAction('daily_claim', {

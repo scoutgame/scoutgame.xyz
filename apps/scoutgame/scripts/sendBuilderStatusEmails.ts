@@ -8,12 +8,11 @@ export async function sendBuilderStatusEmails() {
     where: {
       builderStatus: {
         not: null
-      }
+      },
     },
     select: {
       id: true,
       displayName: true,
-      email: true,
       builderNfts: {
         where: {
           season: getCurrentSeasonStart(),
@@ -29,7 +28,7 @@ export async function sendBuilderStatusEmails() {
   for (const builder of builders) {
     try {
       await sendEmailTemplate({
-        to: { displayName: builder.displayName, email: builder.email!, userId: builder.id },
+        userId: builder.id,
         subject: 'You’re Already Making an Impact in Scout Game! 🎉',
         template: 'builder status',
         templateVariables: {
@@ -39,7 +38,7 @@ export async function sendBuilderStatusEmails() {
         senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
       });
     } catch (error) {
-      log.error(`Error sending builder status email to ${builder.email}`, { error, userId: builder.id });
+      log.error(`Error sending builder status email to ${builder.id}`, { error, userId: builder.id });
     }
   }
 }
