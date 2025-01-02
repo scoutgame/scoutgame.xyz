@@ -23,7 +23,7 @@ import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
 import { validatePreseason01Mint } from './validatePreseason01Mint';
-import { validateTransferrableNftMint } from './validateTransferrableNFTMint';
+import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
 export async function handlePendingTransaction({
   pendingTransactionId

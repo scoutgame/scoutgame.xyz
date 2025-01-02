@@ -7,6 +7,12 @@ import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getBuilderContractMinterClient } from './clients/builderContractMinterWriteClient';
 import { getBuilderContractStarterPackMinterClient } from './clients/builderContractStarterPackMinterWriteClient';
+import {
+  builderNftChain,
+  getBuilderNftContractAddress,
+  getBuilderNftStarterPackContractAddress,
+  isPreseason01Contract
+} from './constants';
 import { recordNftMint } from './recordNftMint';
 
 export type MintNFTParams = {
@@ -30,8 +36,17 @@ export async function mintNFT(params: MintNFTParams) {
       season
     }
   });
+
   const apiClient =
-    nftType === 'starter_pack' ? getBuilderContractStarterPackMinterClient() : getBuilderContractMinterClient();
+    nftType === 'starter_pack'
+      ? getBuilderContractStarterPackMinterClient({
+          chain: builderNftChain,
+          contractAddress: getBuilderNftStarterPackContractAddress(season)
+        })
+      : getBuilderContractMinterClient({
+          chain: builderNftChain,
+          contractAddress: getBuilderNftContractAddress(season)
+        });
 
   // Proceed with minting
   const txResult = await apiClient.mintTo({
@@ -39,7 +54,8 @@ export async function mintNFT(params: MintNFTParams) {
       account: recipientAddress as Address,
       tokenId: BigInt(builderNft.tokenId),
       amount: BigInt(amount),
-      scout: scoutId
+      // For preseason02 onwards, we don't need to pass the scoutId as it's not used
+      scout: (isPreseason01Contract(season) ? undefined : scoutId) as any
     }
   });
 
