@@ -21,6 +21,8 @@ COPY --parents apps/*/package.json \
 
 # Copy compiled code
 COPY --parents apps/*/.next apps/*/public .
+COPY packages/scoutgame/src/assets public/assets
+
 
 ENV PORT=3000
 
