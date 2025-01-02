@@ -226,18 +226,18 @@ async function clearNfts() {
 
 async function script() {
 
-  await prisma.scout.deleteMany({
-  });
+  // await prisma.scout.deleteMany({
+  // });
 
-  await prisma.githubUser.deleteMany({
-  });
+  // await prisma.githubUser.deleteMany({
+  // });
 
   await seedWithRealCharmverseGithubData();
   await seedBuilderNFTs('2024-W41');
 }
 
 async function seedPurchases() {
-  const user
+
 }
 
 script();
