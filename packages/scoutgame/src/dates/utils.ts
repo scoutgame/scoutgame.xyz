@@ -13,7 +13,7 @@ export function getCurrentSeason(
   const _seasons = seasonList.slice(); // make a copy of the season list
   let _currentSeason = _seasons.shift()!;
   if (_currentWeek < _currentSeason.start) {
-    throw new Error('Current week is before the first season');
+    throw new Error(`Current week (${_currentWeek}) is before the first season (${_currentSeason.start})`);
   }
   while (_seasons.length > 0 && _currentWeek >= _seasons[0].start) {
     _currentSeason = _seasons.shift()!;
