@@ -38,4 +38,4 @@ export function getShareImagePath({
   return `seasons/${season}/${contractName}/${tokenId}/congrats.png`;
 }
 
-export const imageDomain = 'https://nft.scoutgame.xyz';
+export const imageDomain = process.env.NFT_ASSETS_HOST as string;
