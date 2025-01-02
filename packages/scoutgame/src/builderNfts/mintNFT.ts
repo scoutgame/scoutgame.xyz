@@ -1,18 +1,20 @@
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { Address } from 'viem';
+import type { Address, TransactionReceipt } from 'viem';
 
 import type { ISOWeek } from '../dates/config';
 import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getBuilderContractMinterClient } from './clients/builderContractMinterWriteClient';
 import { getBuilderContractStarterPackMinterClient } from './clients/builderContractStarterPackMinterWriteClient';
+import { BuilderNFTPreSeason02ImplementationClient } from './clients/BuilderNFTPreSeason02ImplementationClient';
 import {
   builderNftChain,
   getBuilderNftContractAddress,
   getBuilderNftStarterPackContractAddress,
   isPreseason01Contract
 } from './constants';
+import { getScoutGameNftMinterWallet } from './getScoutGameNftMinterWallet';
 import { recordNftMint } from './recordNftMint';
 
 export type MintNFTParams = {
@@ -37,27 +39,54 @@ export async function mintNFT(params: MintNFTParams) {
     }
   });
 
-  const apiClient =
-    nftType === 'starter_pack'
-      ? getBuilderContractStarterPackMinterClient({
-          chain: builderNftChain,
-          contractAddress: getBuilderNftStarterPackContractAddress(season)
-        })
-      : getBuilderContractMinterClient({
-          chain: builderNftChain,
-          contractAddress: getBuilderNftContractAddress(season)
-        });
+  let txResult: TransactionReceipt | null = null;
 
-  // Proceed with minting
-  const txResult = await apiClient.mintTo({
-    args: {
-      account: recipientAddress as Address,
-      tokenId: BigInt(builderNft.tokenId),
-      amount: BigInt(amount),
-      // For preseason02 onwards, we don't need to pass the scoutId as it's not used
-      scout: (isPreseason01Contract(season) ? undefined : scoutId) as any
-    }
-  });
+  if (nftType === 'starter_pack') {
+    const apiClient = getBuilderContractStarterPackMinterClient({
+      chain: builderNftChain,
+      contractAddress: getBuilderNftStarterPackContractAddress(season)
+    });
+
+    txResult = await apiClient.mintTo({
+      args: {
+        account: recipientAddress as Address,
+        tokenId: BigInt(builderNft.tokenId),
+        amount: BigInt(amount),
+        // For preseason02 onwards, we don't need to pass the scoutId as it's not used, except for starter packs which use the scoutId to track the mint status
+        scout: (!isPreseason01Contract(season) && nftType !== 'starter_pack' ? undefined : scoutId) as any
+      }
+    });
+  } else if (season === '2024-W41') {
+    const apiClient = getBuilderContractMinterClient({
+      chain: builderNftChain,
+      contractAddress: getBuilderNftContractAddress(season)
+    });
+
+    txResult = await apiClient.mintTo({
+      args: {
+        account: recipientAddress as Address,
+        tokenId: BigInt(builderNft.tokenId),
+        amount: BigInt(amount),
+        scout: scoutId
+      }
+    });
+  } else {
+    const apiClient = new BuilderNFTPreSeason02ImplementationClient({
+      chain: builderNftChain,
+      contractAddress: getBuilderNftContractAddress(season),
+      walletClient: getScoutGameNftMinterWallet()
+    });
+
+    txResult = await apiClient.mintTo({
+      args: {
+        account: recipientAddress as Address,
+        tokenId: BigInt(builderNft.tokenId),
+        amount: BigInt(amount)
+      }
+    });
+  }
 
   await recordNftMint({ ...params, mintTxHash: txResult.transactionHash });
+
+  // Proceed with minting
 }
