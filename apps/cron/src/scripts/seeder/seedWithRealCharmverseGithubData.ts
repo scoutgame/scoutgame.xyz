@@ -4,10 +4,9 @@ import { registerBuilderNFT } from '@packages/scoutgame/builderNfts/builderRegis
 import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderStarterPackNFT';
 import { refreshUserStats } from '@packages/scoutgame/refreshUserStats';
 
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { log } from '@charmverse/core/log';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
-import { v4 as uuidv4 } from 'uuid';
 import { ISOWeek } from '@packages/scoutgame/dates/config';
 
 function getRandomValue<T>(arr: T[]): T {
@@ -233,7 +232,7 @@ async function script() {
   // });
 
   await seedWithRealCharmverseGithubData();
-  await seedBuilderNFTs('2024-W41');
+  await seedBuilderNFTs('2025-W01');
 }
 
 async function seedPurchases() {

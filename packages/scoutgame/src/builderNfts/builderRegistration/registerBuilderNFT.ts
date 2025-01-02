@@ -14,13 +14,21 @@ export async function registerBuilderNFT({
   builderId,
   season,
   chain = builderNftChain,
-  contractAddress = getBuilderNftContractAddress()
+  contractAddress
 }: {
   builderId: string;
   season: string;
   chain?: Chain;
   contractAddress?: Address;
 }) {
+  if (!season) {
+    throw new InvalidInputError('Season is required');
+  }
+
+  if (!contractAddress) {
+    contractAddress = getBuilderNftContractAddress(season);
+  }
+
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
