@@ -6,11 +6,11 @@ import React from 'react';
 import type { Font } from 'satori';
 import sharp from 'sharp';
 
-import type { BuilderActivity } from '../../../builders/getBuilderActivities';
-import type { BuilderScouts } from '../../../builders/getBuilderScouts';
-import type { BuilderStats } from '../../../builders/getBuilderStats';
-import { currentSeason } from '../../../dates';
-import { BuilderShareImage } from '../../artwork/components/BuilderShareImage';
+import type { BuilderActivity } from '../../builders/getBuilderActivities';
+import type { BuilderScouts } from '../../builders/getBuilderScouts';
+import type { BuilderStats } from '../../builders/getBuilderStats';
+
+import { BuilderShareImage } from './components/BuilderShareImage';
 
 // fails inside of Next.js
 function getAssetsFromDisk() {
@@ -32,46 +32,6 @@ function getAssetsFromDisk() {
     weight: 400
   };
   return { font, noPfpAvatarBase64, overlaysBase64 };
-}
-
-async function getAssetsFromServer(baseUrl: string) {
-  const overlaysBase64 = await Promise.all(
-    ['scratch_reveal.png', 'rounded_square.png', 'paint_splatter.png', 'checked_corners.png', 'starter_pack.png'].map(
-      async (file) => {
-        const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/overlays/${currentSeason}/${file}`);
-        return _getImageDataURI(noAvatarResponse);
-      }
-    )
-  );
-
-  const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/no_pfp_avatar.png`);
-  const noPfpAvatarBase64 = _getImageDataURI(noAvatarResponse);
-  const fontBuffer = await fetch(`${baseUrl}/nft-assets/fonts/K2D-Medium.ttf`).then((res) => res.arrayBuffer());
-  const font: Font = {
-    name: 'K2D',
-    data: fontBuffer,
-    style: 'normal',
-    weight: 400
-  };
-  return { font, noPfpAvatarBase64, overlaysBase64 };
-}
-
-function _getBufferFromUrl(url: string) {
-  return fetch(url)
-    .then((res) => res.blob())
-    .then((blob) => blob.arrayBuffer())
-    .then((buffer) => Buffer.from(buffer));
-}
-
-function _getImageDataURI(buffer: Buffer) {
-  return `data:image/png;base64,${buffer.toString('base64')}`;
-}
-
-async function getAssets(imageHostingBaseUrl?: string) {
-  if (imageHostingBaseUrl) {
-    return getAssetsFromServer(imageHostingBaseUrl);
-  }
-  return getAssetsFromDisk();
 }
 
 // Function to determine font size
@@ -161,14 +121,12 @@ export async function updateNftStarterPackImage({
 
 export async function generateNftStarterPackImage({
   avatar,
-  displayName,
-  imageHostingBaseUrl
+  displayName
 }: {
   avatar: string | null;
   displayName: string;
-  imageHostingBaseUrl?: string; // when running inside of next.js, we need to use the server url
 }): Promise<Buffer> {
-  const { overlaysBase64, noPfpAvatarBase64, font } = await getAssets(imageHostingBaseUrl);
+  const { overlaysBase64, noPfpAvatarBase64, font } = getAssetsFromDisk();
   const randomOverlay = overlaysBase64[Math.floor(Math.random() * overlaysBase64.length)];
   let avatarBuffer: Buffer | null = null;
   const cutoutWidth = 300;
@@ -249,14 +207,12 @@ export async function generateNftStarterPackImage({
 }
 
 export async function generateNftStarterPackCongrats({
-  imageHostingBaseUrl,
   userImage,
   activities,
   builderPrice,
   stats,
   builderScouts
 }: {
-  imageHostingBaseUrl?: string;
   userImage: string | null;
   activities: BuilderActivity[];
   stats: BuilderStats;
@@ -266,7 +222,7 @@ export async function generateNftStarterPackCongrats({
   let avatarBuffer: Buffer | null = null;
   const size = 550;
 
-  const { noPfpAvatarBase64 } = await getAssets(imageHostingBaseUrl);
+  const { noPfpAvatarBase64 } = getAssetsFromDisk();
 
   if (userImage) {
     const response = await fetch(userImage);

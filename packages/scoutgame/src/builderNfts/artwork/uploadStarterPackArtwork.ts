@@ -1,43 +1,29 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
-import { getBuilderActivities } from '../../../builders/getBuilderActivities';
-import { getBuilderNft } from '../../../builders/getBuilderNft';
-import { getBuilderScouts } from '../../../builders/getBuilderScouts';
-import { getBuilderStats } from '../../../builders/getBuilderStats';
-import { getNftCongratsPath, getNftTokenUrlPath, imageDomain } from '../../artwork/utils';
-import { getBuilderStarterPackContractAddress } from '../../constants';
+import { getBuilderActivities } from '../../builders/getBuilderActivities';
+import { getBuilderNft } from '../../builders/getBuilderNft';
+import { getBuilderScouts } from '../../builders/getBuilderScouts';
+import { getBuilderStats } from '../../builders/getBuilderStats';
+import { getBuilderStarterPackContractAddress } from '../constants';
 
-import {
-  generateNftStarterPackImage,
-  generateNftStarterPackCongrats,
-  updateNftStarterPackImage
-} from './generateStarterPackNftImage';
+import { generateNftStarterPackImage, generateNftStarterPackCongrats } from './generateStarterPackNftImage';
+import { getNftCongratsPath, getNftTokenUrlPath, imageDomain } from './utils';
 
 export async function uploadStarterPackArtwork({
-  imageHostingBaseUrl,
   avatar,
   tokenId,
   season,
-  displayName,
-  currentNftImage
+  displayName
 }: {
-  imageHostingBaseUrl?: string;
   displayName: string;
   season: string;
   avatar: string | null;
   tokenId: bigint | number;
-  currentNftImage?: string;
 }) {
-  const imageBuffer = currentNftImage
-    ? await updateNftStarterPackImage({
-        displayName,
-        currentNftImage
-      })
-    : await generateNftStarterPackImage({
-        avatar,
-        displayName,
-        imageHostingBaseUrl
-      });
+  const imageBuffer = await generateNftStarterPackImage({
+    avatar,
+    displayName
+  });
 
   const imagePath = getNftTokenUrlPath({
     season,
@@ -76,7 +62,6 @@ export async function uploadStarterPackArtworkCongrats({
 
   const imageBuffer = await generateNftStarterPackCongrats({
     userImage,
-    imageHostingBaseUrl,
     activities,
     stats,
     builderScouts,

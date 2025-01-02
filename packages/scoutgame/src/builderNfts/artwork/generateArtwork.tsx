@@ -1,72 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-
 // Must be there otherwise React is not defined error is thrown
 import React from 'react';
-import type { Font } from 'satori';
 import sharp from 'sharp';
 
-import { currentSeason } from '../../dates';
-
-// fails inside of Next.js
-function getAssetsFromDisk() {
-  const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../'), 'assets');
-  const overlayFiles = fs.readdirSync(`${folder}/overlays`);
-  const overlaysBase64 = overlayFiles.map((file) => {
-    const filePath = path.join(`${folder}/overlays`, file);
-    const data = fs.readFileSync(filePath);
-    return `data:image/png;base64,${data.toString('base64')}`;
-  });
-  const noPfpAvatarFile = `${folder}/no_pfp_avatar.png`;
-  const noPfpAvatarBase64 = `data:image/png;base64,${fs.readFileSync(noPfpAvatarFile).toString('base64')}`;
-  const fontPath = `${folder}/fonts/K2D-Medium.ttf`;
-  const fontBuffer = fs.readFileSync(fontPath);
-  const font: Font = {
-    name: 'K2D',
-    data: fontBuffer,
-    style: 'normal',
-    weight: 400
-  };
-  return { font, noPfpAvatarBase64, overlaysBase64 };
-}
-
-async function getAssetsFromServer(baseUrl: string) {
-  const overlaysBase64 = await Promise.all(
-    ['scratch_reveal.png', 'rounded_square.png', 'paint_splatter.png', 'checked_corners.png'].map(async (file) => {
-      const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/overlays/${currentSeason}/${file}`);
-      return _getImageDataURI(noAvatarResponse);
-    })
-  );
-
-  const noAvatarResponse = await _getBufferFromUrl(`${baseUrl}/nft-assets/no_pfp_avatar.png`);
-  const noPfpAvatarBase64 = _getImageDataURI(noAvatarResponse);
-  const fontBuffer = await fetch(`${baseUrl}/nft-assets/fonts/K2D-Medium.ttf`).then((res) => res.arrayBuffer());
-  const font: Font = {
-    name: 'K2D',
-    data: fontBuffer,
-    style: 'normal',
-    weight: 400
-  };
-  return { font, noPfpAvatarBase64, overlaysBase64 };
-}
-
-function _getBufferFromUrl(url: string) {
-  return fetch(url)
-    .then((res) => res.blob())
-    .then((blob) => blob.arrayBuffer())
-    .then((buffer) => Buffer.from(buffer));
-}
-
-function _getImageDataURI(buffer: Buffer) {
-  return `data:image/png;base64,${buffer.toString('base64')}`;
-}
-
-async function getAssets(imageHostingBaseUrl?: string) {
-  if (imageHostingBaseUrl) {
-    return getAssetsFromServer(imageHostingBaseUrl);
-  }
-  return getAssetsFromDisk();
-}
+import { getAssetsFromDisk } from './getAssetsFromDisk';
 
 // Function to determine font size
 function calculateFontSize(text: string, maxWidth: number, initialFontSize: number): number {
@@ -86,15 +22,13 @@ function calculateFontSize(text: string, maxWidth: number, initialFontSize: numb
 export async function generateArtwork({
   avatar,
   displayName,
-  imageHostingBaseUrl,
   tokenId
 }: {
   avatar: string | null;
   tokenId: bigint | number;
   displayName: string;
-  imageHostingBaseUrl?: string; // when running inside of next.js, we need to use the server url
 }): Promise<Buffer> {
-  const { overlaysBase64, noPfpAvatarBase64, font } = await getAssets(imageHostingBaseUrl);
+  const { overlaysBase64, noPfpAvatarBase64, font } = getAssetsFromDisk();
   const overlay = overlaysBase64[Number(tokenId) % overlaysBase64.length];
   let avatarBuffer: Buffer | null = null;
   const cutoutWidth = 300;
