@@ -12,7 +12,7 @@ jest.unstable_mockModule('../../dates/utils', () => ({
 const { getNewScouts } = await import('../getNewScouts');
 
 describe('getNewScouts', () => {
-  afterEach(() => {
+  afterAll(() => {
     jest.resetAllMocks();
   });
 
