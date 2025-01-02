@@ -1,43 +1,30 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
-import { getBuilderActivities } from '../../../builders/getBuilderActivities';
-import { getBuilderNft } from '../../../builders/getBuilderNft';
-import { getBuilderScouts } from '../../../builders/getBuilderScouts';
-import { getBuilderStats } from '../../../builders/getBuilderStats';
-import { getNftCongratsPath, getNftTokenUrlPath, imageDomain } from '../../artwork/utils';
-import { getBuilderStarterPackContractAddress } from '../../constants';
+import { getBuilderActivities } from '../../builders/getBuilderActivities';
+import { getBuilderNft } from '../../builders/getBuilderNft';
+import { getBuilderScouts } from '../../builders/getBuilderScouts';
+import { getBuilderStats } from '../../builders/getBuilderStats';
+import { getBuilderStarterPackContractAddress } from '../constants';
 
-import {
-  generateNftStarterPackImage,
-  generateNftStarterPackCongrats,
-  updateNftStarterPackImage
-} from './generateStarterPackNftImage';
+import { generateShareImage } from './generateShareImage';
+import { generateNftStarterPackImage } from './generateStarterPackNftImage';
+import { getNftCongratsPath, getNftTokenUrlPath, imageDomain } from './utils';
 
 export async function uploadStarterPackArtwork({
-  imageHostingBaseUrl,
   avatar,
   tokenId,
   season,
-  displayName,
-  currentNftImage
+  displayName
 }: {
-  imageHostingBaseUrl?: string;
   displayName: string;
   season: string;
-  avatar: string | null;
+  avatar: string;
   tokenId: bigint | number;
-  currentNftImage?: string;
 }) {
-  const imageBuffer = currentNftImage
-    ? await updateNftStarterPackImage({
-        displayName,
-        currentNftImage
-      })
-    : await generateNftStarterPackImage({
-        avatar,
-        displayName,
-        imageHostingBaseUrl
-      });
+  const imageBuffer = await generateNftStarterPackImage({
+    avatar,
+    displayName
+  });
 
   const imagePath = getNftTokenUrlPath({
     season,
@@ -57,16 +44,14 @@ export async function uploadStarterPackArtwork({
 }
 
 export async function uploadStarterPackArtworkCongrats({
-  imageHostingBaseUrl,
   season,
   tokenId,
   userImage,
   builderId
 }: {
-  imageHostingBaseUrl?: string;
   season: string;
   tokenId: bigint | number;
-  userImage: string | null;
+  userImage: string;
   builderId: string;
 }) {
   const activities = await getBuilderActivities({ builderId, limit: 3 });
@@ -74,9 +59,8 @@ export async function uploadStarterPackArtworkCongrats({
   const builderScouts = await getBuilderScouts(builderId);
   const builderNft = await getBuilderNft(builderId);
 
-  const imageBuffer = await generateNftStarterPackCongrats({
+  const imageBuffer = await generateShareImage({
     userImage,
-    imageHostingBaseUrl,
     activities,
     stats,
     builderScouts,

@@ -76,7 +76,7 @@ export async function generateSeedData(
   let totalNftsPurchasedEvents = 0;
 
   const builderPromises = Array.from({ length: totalBuilders }, async (_, i) => {
-    const { githubUser, builder, builderNft } = await generateBuilder({ index: i });
+    const { githubUser, builder, builderNft } = await generateBuilder({ tokenId: i + 1 });
     const assignedRepos = assignReposToBuilder(githubRepos);
     const isScout = percentageOfBuilderScouts > faker.number.int({ min: 0, max: 100 });
 

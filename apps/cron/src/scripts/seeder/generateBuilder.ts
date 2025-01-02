@@ -9,7 +9,7 @@ import { generateArtwork } from '@packages/scoutgame/builderNfts/artwork/generat
 import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { randomString } from '@packages/utils/strings';
 
-export async function generateBuilder({ index }: { index: number }) {
+export async function generateBuilder({ tokenId }: { tokenId: number }) {
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
   const displayName = `${firstName} ${lastName}`;
@@ -25,8 +25,6 @@ export async function generateBuilder({ index }: { index: number }) {
       })
     : undefined;
   const avatar = `https://avatars.githubusercontent.com/u/${faker.number.int({ min: 1, max: 250000 })}`;
-  const currentBuilderCount = index + 1;
-
   const githubUser = {
     id: faker.number.int({ min: 10000000, max: 25000000 }),
     login: path,
@@ -41,7 +39,8 @@ export async function generateBuilder({ index }: { index: number }) {
   if (builderStatus === 'approved') {
     const nftImageBuffer = await generateArtwork({
       avatar,
-      displayName
+      displayName,
+      tokenId
     });
 
     // images will be hosted by the
@@ -66,7 +65,7 @@ export async function generateBuilder({ index }: { index: number }) {
         console.error(e);
       }
     }
-    await fs.writeFile(`${scoutgamePublicFolder}/${currentBuilderCount}.png`, new Uint8Array(nftImageBuffer));
+    await fs.writeFile(`${scoutgamePublicFolder}/${tokenId}.png`, new Uint8Array(nftImageBuffer));
 
     builderNft = {
       id: faker.string.uuid(),
@@ -74,8 +73,8 @@ export async function generateBuilder({ index }: { index: number }) {
       contractAddress: getBuilderNftContractAddress(),
       currentPrice: faker.number.int({ min: 1000000, max: 10000000 }),
       season: getCurrentSeasonStart(),
-      tokenId: currentBuilderCount,
-      imageUrl: `http://localhost:3000/builder-nfts/${currentBuilderCount}.png`
+      tokenId,
+      imageUrl: `http://localhost:3000/builder-nfts/${tokenId}.png`
     };
   }
   if (builderNft) {
@@ -106,7 +105,7 @@ export async function generateBuilder({ index }: { index: number }) {
           address: faker.finance.ethereumAddress()
         }
       },
-      farcasterId: faker.number.int({ min: 1, max: 5000000 }) + index,
+      farcasterId: faker.number.int({ min: 1, max: 5000000 }),
       farcasterName: path,
       builderStatus,
       githubUsers: {

@@ -42,7 +42,6 @@ export async function approveBuilder({
 
   // Register an NFT for the builder
   await registerBuilderNFT({
-    imageHostingBaseUrl: baseUrl,
     builderId,
     season
   });
