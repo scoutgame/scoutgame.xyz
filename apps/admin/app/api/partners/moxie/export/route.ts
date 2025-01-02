@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const lastWeek = getLastWeek();
 
-  const rows = await getMoxieCandidates({ week: lastWeek, season: getCurrentSeasonStart() });
+  const rows = await getMoxieCandidates({ week: lastWeek });
 
   return respondWithTSV(rows, `moxie-bonus_${lastWeek}.tsv`);
 }

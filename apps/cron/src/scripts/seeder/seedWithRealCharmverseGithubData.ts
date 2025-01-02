@@ -8,6 +8,7 @@ import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { log } from '@charmverse/core/log';
 
 import { v4 as uuidv4 } from 'uuid';
+import { ISOWeek } from '@packages/scoutgame/dates/config';
 
 function getRandomValue<T>(arr: T[]): T {
   const randomIndex = Math.floor(Math.random() * arr.length);
@@ -68,6 +69,7 @@ const repoId = 444649883;
 const repoName = 'app.charmverse.io';
 
 export async function seedWithRealCharmverseGithubData() {
+
   // Initialize the github repo
   let githubRepo = await prisma.githubRepo.findFirst({
     where: {
@@ -137,7 +139,8 @@ export async function seedWithRealCharmverseGithubData() {
   }
 }
 
-async function seedBuilderNFTs() {
+async function seedBuilderNFTs(season: ISOWeek = getCurrentSeasonStart()) {
+
   const githubUser = await prisma.githubUser.findMany({
     where: {
       login: {
@@ -150,10 +153,10 @@ async function seedBuilderNFTs() {
 
   for (const { builderId, login } of githubUser) {
     log.info(`-- Processing builder ${login}`);
-    const nft = await registerBuilderNFT({ builderId: builderId as string, season: getCurrentSeasonStart() });
+    const nft = await registerBuilderNFT({ builderId: builderId as string, season });
 
     if (devUsers[login].createStarterPack) {
-      await registerBuilderStarterPackNFT({ builderId: nft.builderId, season: getCurrentSeasonStart() });
+      await registerBuilderStarterPackNFT({ builderId: nft.builderId, season });
     }
 
     await generateNftPurchaseEvents({ builderId: nft.builderId, amount: 4 });

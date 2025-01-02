@@ -1,12 +1,34 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { jest } from '@jest/globals';
 
-import { getCurrentWeek, getPreviousWeek } from '../../dates/utils';
+import { getPreviousWeek } from '../../dates/utils';
 import { mockBuilder, mockUserWeeklyStats } from '../../testing/database';
-import { getTodaysHotBuilders } from '../getTodaysHotBuilders';
+
+const mockSeason = `2020-W01${Math.random()}`;
+
+// mock the getCurrentSeason function
+jest.unstable_mockModule('../../dates/utils', () => ({
+  getCurrentWeek: jest.fn(() => '2020-W40'),
+  getPreviousWeek: jest.fn(() => '2020-W39'),
+  getCurrentSeason: jest.fn(() => ({ start: mockSeason }))
+}));
+
+const { getTodaysHotBuilders } = await import('../getTodaysHotBuilders');
 
 describe('getTodaysHotBuilders', () => {
+  afterEach(async () => {
+    await prisma.scout.deleteMany({
+      where: {
+        builderNfts: {
+          some: {
+            season: mockSeason
+          }
+        }
+      }
+    });
+  });
+
   it('should filter banned builders and return current and previous week builders', async () => {
-    const mockSeason = `2024-W01${Math.random()}`;
     const week = '2020-W40';
     const currentWeekBuilders = await Promise.all([
       mockBuilder({ nftSeason: mockSeason, createNft: true }),
@@ -47,7 +69,7 @@ describe('getTodaysHotBuilders', () => {
       )
     );
 
-    const result = await getTodaysHotBuilders({ season: mockSeason, week });
+    const result = await getTodaysHotBuilders({ week });
     expect(result).toHaveLength(4);
     expect(result[0].id).toBe(currentWeekBuilders[0].id);
     expect(result[1].id).toBe(currentWeekBuilders[2].id);
@@ -56,7 +78,6 @@ describe('getTodaysHotBuilders', () => {
   });
 
   it('should skip builders with no gems collected in current week', async () => {
-    const mockSeason = `2024-W01${Math.random()}`;
     const currentWeekBuilder = await mockBuilder({ createNft: true, nftSeason: mockSeason });
     const previousWeekBuilder = await mockBuilder({ createNft: true, nftSeason: mockSeason });
     const week = '2022-W32';
@@ -73,7 +94,7 @@ describe('getTodaysHotBuilders', () => {
       gemsCollected: 5
     });
 
-    const result = await getTodaysHotBuilders({ week, season: mockSeason });
+    const result = await getTodaysHotBuilders({ week });
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe(previousWeekBuilder.id);
   });

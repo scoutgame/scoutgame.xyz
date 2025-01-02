@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { seasons } from '@packages/scoutgame/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import type { Context } from 'koa';
@@ -10,11 +10,9 @@ import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
 
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
-export async function processGemsPayout(
-  ctx: Context,
-  { season = getCurrentSeasonStart(), now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
-) {
+export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: { now?: DateTime } = {}) {
   const week = getLastWeek(now);
+  const season = getCurrentSeason(week).start;
 
   // run for the first few hours every Monday at midnight UTC
   if (now.weekday !== 1 || now.hour > 3) {
@@ -35,7 +33,7 @@ export async function processGemsPayout(
   }
 
   const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints, nftPurchaseEvents } =
-    await getWeeklyPointsPoolAndBuilders({ week, season });
+    await getWeeklyPointsPoolAndBuilders({ week });
 
   scoutgameMintsLogger.debug(`Allocation: ${weeklyAllocatedPoints} -- Total points for week ${week}: ${totalPoints}`, {
     topWeeklyBuilders: topWeeklyBuilders.length,
