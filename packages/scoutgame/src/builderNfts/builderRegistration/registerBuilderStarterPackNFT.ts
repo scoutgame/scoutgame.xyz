@@ -10,15 +10,7 @@ import { builderNftChain } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
 
-export async function registerBuilderStarterPackNFT({
-  builderId,
-  season,
-  imageHostingBaseUrl
-}: {
-  builderId: string;
-  season: string;
-  imageHostingBaseUrl?: string;
-}) {
+export async function registerBuilderStarterPackNFT({ builderId, season }: { builderId: string; season: string }) {
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
@@ -78,7 +70,6 @@ export async function registerBuilderStarterPackNFT({
   }
 
   const builderNft = await createBuilderNftStarterPack({
-    imageHostingBaseUrl,
     tokenId,
     builderId,
     avatar: builder.avatar,

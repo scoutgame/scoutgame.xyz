@@ -7,14 +7,12 @@ import { builderContractStarterPackReadonlyApiClient } from '../clients/builderC
 import { builderNftChain, getBuilderStarterPackContractAddress } from '../constants';
 
 export async function createBuilderNftStarterPack({
-  imageHostingBaseUrl,
   avatar,
   tokenId,
   builderId,
   displayName,
   path
 }: {
-  imageHostingBaseUrl?: string;
   displayName: string;
   path: string;
   avatar: string | null;
@@ -27,7 +25,6 @@ export async function createBuilderNftStarterPack({
   });
 
   const fileUrl = await uploadStarterPackArtwork({
-    imageHostingBaseUrl,
     displayName,
     season: currentSeason,
     avatar,
@@ -35,7 +32,6 @@ export async function createBuilderNftStarterPack({
   });
 
   const congratsImageUrl = await uploadStarterPackArtworkCongrats({
-    imageHostingBaseUrl,
     season: currentSeason,
     tokenId,
     userImage: fileUrl,

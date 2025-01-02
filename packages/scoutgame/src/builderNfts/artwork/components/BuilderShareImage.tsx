@@ -1,3 +1,4 @@
+import { baseUrl } from '@packages/utils/constants';
 import { getRelativeTime } from '@packages/utils/dates';
 // It is a MUST to import React
 import React from 'react';
@@ -16,8 +17,7 @@ export function BuilderShareImage({
   builderScouts,
   stats,
   builderPrice,
-  size = 550,
-  imageHostingBaseUrl = process.env.DOMAIN
+  size = 550
 }: {
   nftImageUrl: string | null;
   activities: BuilderActivity[];
@@ -25,8 +25,8 @@ export function BuilderShareImage({
   stats: BuilderStats;
   builderPrice: bigint;
   size?: number;
-  imageHostingBaseUrl?: string;
 }) {
+  const domain = baseUrl;
   const overlays = [
     { name: 'red', src: `/images/profile/builder/red-sky.jpg`, color: '#661933' },
     { name: 'purple', src: '/images/profile/builder/purple-sky.jpg', color: '#190D4D' },
@@ -34,12 +34,11 @@ export function BuilderShareImage({
     { name: 'blue', src: '/images/profile/builder/blue-sky.jpg', color: '#02143C' }
   ];
 
-  const domain = imageHostingBaseUrl;
   const random = randomInt(0, 3);
 
-  const { rank = 0, seasonPoints = 0, allTimePoints = 0, gemsCollected = 0 } = stats;
+  const { rank = 0, seasonPoints = 0, gemsCollected = 0 } = stats;
 
-  const { totalScouts = 0, totalNftsSold = 0, scouts = [] } = builderScouts;
+  const { totalScouts = 0, totalNftsSold = 0 } = builderScouts;
 
   const purchaseCostInPoints = convertCostToPoints(builderPrice);
 

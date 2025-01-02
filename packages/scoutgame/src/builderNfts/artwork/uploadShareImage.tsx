@@ -10,13 +10,11 @@ import { generateShareImage } from './generateShareImage';
 import { getShareImagePath, imageDomain } from './utils';
 
 export async function uploadShareImage({
-  imageHostingBaseUrl,
   season,
   tokenId,
   userImage,
   builderId
 }: {
-  imageHostingBaseUrl?: string;
   season: string;
   tokenId: bigint | number;
   userImage: string | null;
@@ -36,7 +34,6 @@ export async function uploadShareImage({
 
   const imageBuffer = await generateShareImage({
     userImage,
-    imageHostingBaseUrl,
     activities,
     stats,
     builderScouts,

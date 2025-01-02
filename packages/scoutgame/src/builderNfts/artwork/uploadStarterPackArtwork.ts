@@ -43,13 +43,11 @@ export async function uploadStarterPackArtwork({
 }
 
 export async function uploadStarterPackArtworkCongrats({
-  imageHostingBaseUrl,
   season,
   tokenId,
   userImage,
   builderId
 }: {
-  imageHostingBaseUrl?: string;
   season: string;
   tokenId: bigint | number;
   userImage: string | null;

@@ -9,15 +9,7 @@ import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
 import { createBuilderNft } from './createBuilderNft';
 
-export async function registerBuilderNFT({
-  builderId,
-  season,
-  imageHostingBaseUrl
-}: {
-  builderId: string;
-  season: string;
-  imageHostingBaseUrl?: string;
-}) {
+export async function registerBuilderNFT({ builderId, season }: { builderId: string; season: string }) {
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
@@ -65,7 +57,6 @@ export async function registerBuilderNFT({
   }
 
   const builderNft = await createBuilderNft({
-    imageHostingBaseUrl,
     tokenId,
     builderId,
     avatar: builder.avatar,

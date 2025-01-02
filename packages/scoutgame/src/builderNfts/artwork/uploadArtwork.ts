@@ -5,13 +5,11 @@ import { generateArtwork } from './generateArtwork';
 import { getNftTokenUrlPath, imageDomain } from './utils';
 
 export async function uploadArtwork({
-  imageHostingBaseUrl,
   avatar,
   tokenId,
   season,
   displayName
 }: {
-  imageHostingBaseUrl?: string;
   displayName: string;
   season: string;
   avatar: string | null;
@@ -20,7 +18,6 @@ export async function uploadArtwork({
   const imageBuffer = await generateArtwork({
     avatar,
     displayName,
-    imageHostingBaseUrl,
     tokenId
   });
 

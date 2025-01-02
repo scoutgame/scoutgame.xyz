@@ -32,7 +32,6 @@ async function deployStarterPack() {
     await registerBuilderStarterPackNFT({
       builderId: builder.id,
       season: currentSeason,
-      imageHostingBaseUrl: baseUrl
     });
   }
 }
