@@ -5,7 +5,7 @@ import { stringUtils } from '@charmverse/core/utilities';
 import type { Address, Chain } from 'viem';
 
 import { getBuilderContractMinterClient } from '../clients/builderContractMinterWriteClient';
-import { builderNftChain } from '../constants';
+import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
 import { createBuilderNft } from './createBuilderNft';
@@ -14,7 +14,7 @@ export async function registerBuilderNFT({
   builderId,
   season,
   chain = builderNftChain,
-  contractAddress
+  contractAddress = getBuilderNftContractAddress()
 }: {
   builderId: string;
   season: string;
