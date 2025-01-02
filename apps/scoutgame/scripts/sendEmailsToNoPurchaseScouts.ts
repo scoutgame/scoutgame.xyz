@@ -6,9 +6,6 @@ import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 export async function sendEmailsToNoPurchaseScouts() {
   const nonPurchasingScouts = await prisma.scout.findMany({
     where: {
-      email: {
-        not: null
-      },
       userSeasonStats: {
         some: {
           season: getCurrentSeasonStart(),
@@ -19,14 +16,13 @@ export async function sendEmailsToNoPurchaseScouts() {
     select: {
       id: true,
       displayName: true,
-      email: true
     }
   });
 
   for (const scout of nonPurchasingScouts) {
     try {
       await sendEmailTemplate({
-        to: { displayName: scout.displayName, email: scout.email!, userId: scout.id },
+        userId: scout.id,
         subject: 'Ready to Start Your Scout Game Journey?',
         template: 'no purchased cards by user',
         templateVariables: {
@@ -35,7 +31,7 @@ export async function sendEmailsToNoPurchaseScouts() {
         senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
       });
     } catch (error) {
-      log.error(`Error sending no purchased cards email to ${scout.email}`, { error, userId: scout.id });
+      log.error(`Error sending no purchased cards email to ${scout.id}`, { error, userId: scout.id });
     }
   }
 }
