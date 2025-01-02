@@ -3,6 +3,7 @@ import { seasons } from '@packages/scoutgame/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
+import { questsRecord } from '@packages/scoutgame/quests/questRecords';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
@@ -74,18 +75,29 @@ export async function processGemsPayout(
   const preseason1Start = seasons.find((d) => d.title === 'Season 1')?.start;
 
   if (currentWeek === preseason2Start && preseason1Start) {
-    await prisma.scout.updateMany({
-      data: {
-        currentBalance: 0
-      }
-    });
-    await prisma.pointsReceipt.updateMany({
-      where: {
-        season: preseason1Start
-      },
-      data: {
-        claimedAt: new Date()
-      }
+    await prisma.$transaction(async (tx) => {
+      await tx.scout.updateMany({
+        data: {
+          currentBalance: 0
+        }
+      });
+      await tx.pointsReceipt.updateMany({
+        where: {
+          season: preseason1Start
+        },
+        data: {
+          claimedAt: new Date()
+        }
+      });
+      await tx.scoutSocialQuest.deleteMany({
+        where: {
+          type: {
+            notIn: Object.entries(questsRecord)
+              .filter(([_, q]) => q.resettable)
+              .map(([type]) => type)
+          }
+        }
+      });
     });
   }
 }
