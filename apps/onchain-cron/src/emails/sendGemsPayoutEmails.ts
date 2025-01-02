@@ -6,15 +6,11 @@ import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoint
 export async function sendGemsPayoutEmails({ week }: { week: string }) {
   const scouts = await prisma.scout.findMany({
     where: {
-      email: {
-        not: null
-      },
       deletedAt: null
     },
     select: {
       id: true,
-      displayName: true,
-      email: true
+      displayName: true
     }
   });
 
@@ -25,11 +21,7 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
       const { points: weeklyClaimablePoints } = await getClaimablePoints({ userId: scout.id, week });
       if (weeklyClaimablePoints) {
         await sendEmailTemplate({
-          to: {
-            displayName: scout.displayName,
-            email: scout.email!,
-            userId: scout.id
-          },
+          userId: scout.id,
           senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
           subject: 'Claim Your Scout Points This Week! 🎉',
           template: 'Weekly Claim',

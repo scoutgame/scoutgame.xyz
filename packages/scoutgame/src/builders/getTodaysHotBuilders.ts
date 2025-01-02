@@ -1,6 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason, getCurrentWeek, getPreviousWeek, getLastWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek, getPreviousWeek } from '../dates/utils';
 import { BasicUserInfoSelect } from '../users/queries';
 
 import type { BuilderInfo } from './interfaces';
@@ -10,7 +10,7 @@ const userSelect = {
   ...BasicUserInfoSelect,
   userSeasonStats: {
     where: {
-      season: currentSeason
+      season: getCurrentSeasonStart()
     },
     select: {
       pointsEarnedAsBuilder: true,
@@ -33,7 +33,7 @@ const userSelect = {
   },
   builderNfts: {
     where: {
-      season: currentSeason,
+      season: getCurrentSeasonStart(),
       nftType: BuilderNftType.default
     },
     select: {
@@ -45,7 +45,7 @@ const userSelect = {
 };
 
 export async function getTodaysHotBuilders({
-  season = currentSeason,
+  season = getCurrentSeasonStart(),
   week = getCurrentWeek()
 }: { season?: string; week?: string } = {}): Promise<BuilderInfo[]> {
   const currentWeekBuilders = await prisma.userWeeklyStats.findMany({

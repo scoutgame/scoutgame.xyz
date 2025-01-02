@@ -1,24 +1,27 @@
 import { log } from '@charmverse/core/log';
 import { getScoutFarcasterBuilderSocialGraph } from '@packages/farcaster/getScoutFarcasterBuilderSocialGraph';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getBuildersByFid } from './getBuildersByFid';
 
 export async function loadBuildersUserKnows({ fid }: { fid: number }) {
   try {
-    const { followers, following } = await getScoutFarcasterBuilderSocialGraph({ fid, season: currentSeason });
+    const { followers, following } = await getScoutFarcasterBuilderSocialGraph({
+      fid,
+      season: getCurrentSeasonStart()
+    });
 
     const { builders: buildersUserFollows } = await getBuildersByFid({
       fids: following,
       limit: 30,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
     const { builders: buildersFollowingUser } = await getBuildersByFid({
       fids: followers,
       limit: 30,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
     // Remove any builders that appear in both arrays to avoid duplicates

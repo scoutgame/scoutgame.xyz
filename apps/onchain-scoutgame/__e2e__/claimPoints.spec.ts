@@ -1,4 +1,4 @@
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { mockGemPayoutEvent, mockScout, mockBuilder } from '@packages/scoutgame/testing/database';
 
 import { expect, test } from './test';
@@ -15,7 +15,7 @@ test.describe('Claim points', () => {
       builderId: builder.id,
       recipientId: newUser.id,
       amount: 10,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
     await page.goto('/claim');

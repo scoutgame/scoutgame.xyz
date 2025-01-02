@@ -2,12 +2,16 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
-import { getWeekFromDate } from '@packages/scoutgame/dates';
+import { getWeekFromDate } from '@packages/scoutgame/dates/utils';
 import { DateTime } from 'luxon';
 import { BuilderInfo } from './generateSeedData';
 import { randomTimeOfDay } from './generator';
 
-export async function generateNftPurchaseEvents(scoutId: string, assignedBuilders: Pick<BuilderInfo, 'builderNftId' | 'nftPrice'>[], date: DateTime) {
+export async function generateNftPurchaseEvents(
+  scoutId: string,
+  assignedBuilders: Pick<BuilderInfo, 'builderNftId' | 'nftPrice'>[],
+  date: DateTime
+) {
   if (assignedBuilders.length === 0) {
     return 0;
   }

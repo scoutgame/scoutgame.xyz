@@ -2,8 +2,8 @@ import type { Prisma, UserSeasonStats, UserWeeklyStats } from '@charmverse/core/
 import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
 
-import type { ISOWeek } from './dates';
-import { currentSeason, getCurrentWeek } from './dates';
+import type { ISOWeek } from './dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from './dates/utils';
 
 export async function refreshUserStats({
   userId,
@@ -35,7 +35,7 @@ export async function refreshUserStats({
     },
     create: {
       userId,
-      season: currentSeason,
+      season: getCurrentSeasonStart(),
       week,
       gemsCollected
     },
@@ -62,7 +62,7 @@ export async function refreshUserStats({
 
   const builderNft = await tx.builderNft.findFirst({
     where: {
-      season: currentSeason,
+      season: getCurrentSeasonStart(),
       builderId: userId
     },
     include: {
@@ -79,7 +79,7 @@ export async function refreshUserStats({
     where: {
       scoutId: userId,
       builderNft: {
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }
     }
   });
@@ -87,7 +87,7 @@ export async function refreshUserStats({
   const seasonStats = {
     pointsEarnedAsBuilder: allTimeBuilderNftPoints.length,
     pointsEarnedAsScout: 0,
-    season: currentSeason,
+    season: getCurrentSeasonStart(),
     nftsPurchased: nftsBought,
     nftsSold: builderNft?.nftSoldEvents.length,
     nftOwners: builderNft ? arrayUtils.uniqueValues(builderNft.nftSoldEvents.map((ev) => ev.scoutId)).length : undefined
@@ -96,7 +96,7 @@ export async function refreshUserStats({
   const season = await tx.userSeasonStats.upsert({
     where: {
       userId_season: {
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         userId
       }
     },

@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { getCurrentWeek } from '../dates';
+import { getCurrentWeek } from '../dates/utils';
 
 import { getBuildersLeaderboard } from './getBuildersLeaderboard';
 

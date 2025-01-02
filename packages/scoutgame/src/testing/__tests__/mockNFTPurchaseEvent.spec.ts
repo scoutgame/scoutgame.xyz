@@ -1,6 +1,7 @@
 import type { BuilderEvent, NFTPurchaseEvent, PointsReceipt } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client'; // Assuming prisma is directly imported from your Prisma client instance
 
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '../database'; // Assuming mockBuilderNft is in a separate file
 
 describe('mockNFTPurchaseEvent', () => {
@@ -11,11 +12,9 @@ describe('mockNFTPurchaseEvent', () => {
     const points = 10;
     const tokensPurchased = 100;
 
-    const currentSeason = 'current-mock-season';
-
     const builderNft = await mockBuilderNft({
       builderId: builder.id,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
     const result = await mockNFTPurchaseEvent({
@@ -23,7 +22,7 @@ describe('mockNFTPurchaseEvent', () => {
       scoutId: scout.id,
       points,
       tokensPurchased,
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
     // Verify builderEvent and nftPurchaseEvent creation
@@ -38,7 +37,7 @@ describe('mockNFTPurchaseEvent', () => {
       expect.objectContaining<Partial<BuilderEvent & { nftPurchaseEvent: Partial<NFTPurchaseEvent> }>>({
         builderId: builder.id,
         type: 'nft_purchase',
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         nftPurchaseEvent: expect.objectContaining({
           pointsValue: points,
           tokensPurchased,

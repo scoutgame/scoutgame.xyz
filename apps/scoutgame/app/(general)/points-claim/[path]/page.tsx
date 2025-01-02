@@ -1,4 +1,4 @@
-import { getLastWeek } from '@packages/scoutgame/dates';
+import { getLastWeek } from '@packages/scoutgame/dates/utils';
 import { getUserByPathCached } from '@packages/scoutgame/users/getUserByPathCached';
 import { notFound } from 'next/navigation';
 

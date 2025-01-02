@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { AccountsPage } from '@packages/scoutgame-ui/components/accounts/AccountsPage';
@@ -25,10 +25,13 @@ export default async function Accounts() {
             address: true
           }
         },
+        email: true,
+        sendTransactionEmails: true,
+        sendMarketing: true,
         nftPurchaseEvents: {
           where: {
             builderNft: {
-              season: currentSeason,
+              season: getCurrentSeasonStart(),
               nftType: 'starter_pack'
             }
           },
@@ -48,6 +51,9 @@ export default async function Accounts() {
     <AccountsPage
       user={{
         ...user,
+        email: currentUserAccountsMetadata.email as string,
+        sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails,
+        sendMarketing: currentUserAccountsMetadata.sendMarketing,
         telegramId: currentUserAccountsMetadata.telegramId,
         wallets: currentUserAccountsMetadata.wallets.map((wallet) => wallet.address),
         avatar: user.avatar as string,

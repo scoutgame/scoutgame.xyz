@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 import { questsRecord, type QuestInfo, type QuestType } from './questRecords';
 
@@ -15,7 +15,7 @@ export async function getQuests(userId: string): Promise<QuestInfo[]> {
     where: {
       scoutId: userId,
       builderNft: {
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }
     },
     select: {

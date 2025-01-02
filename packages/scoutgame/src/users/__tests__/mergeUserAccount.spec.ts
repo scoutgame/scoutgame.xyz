@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { v4 } from 'uuid';
 
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { claimPoints } from '../../points/claimPoints';
 import {
   mockBuilder,
@@ -62,7 +62,7 @@ describe('mergeUserAccount', () => {
     const builders = await Promise.all(Array.from({ length: 3 }).map(() => mockBuilder()));
     await Promise.all(
       builders.map((builder) =>
-        mockBuilderNft({ builderId: builder.id, nftType: 'starter_pack', season: currentSeason })
+        mockBuilderNft({ builderId: builder.id, nftType: 'starter_pack', season: getCurrentSeasonStart() })
       )
     );
     const primaryUser = await mockScout();
@@ -75,14 +75,14 @@ describe('mergeUserAccount', () => {
           builderId: builders[index].id,
           nftType: 'starter_pack',
           scoutId: primaryUser.id,
-          season: currentSeason
+          season: getCurrentSeasonStart()
         })
       ),
       mockNFTPurchaseEvent({
         builderId: builders[2].id,
         nftType: 'starter_pack',
         scoutId: secondaryUser.id,
-        season: currentSeason
+        season: getCurrentSeasonStart()
       })
     ]);
     await expect(mergeUserAccount({ userId: primaryUser.id, farcasterId: secondaryUser.farcasterId })).rejects.toThrow(
@@ -177,12 +177,12 @@ describe('mergeUserAccount', () => {
       mockBuilderNft({
         builderId: builder1.id,
         nftType: 'default',
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }),
       mockBuilderNft({
         builderId: builder2.id,
         nftType: 'default',
-        season: currentSeason
+        season: getCurrentSeasonStart()
       })
     ]);
 
@@ -193,7 +193,7 @@ describe('mergeUserAccount', () => {
         scoutId: scout1.id,
         points: 150,
         nftType: 'default',
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         tokensPurchased: 2
       }),
       // Purchase builder 1 nft using scout 1
@@ -202,7 +202,7 @@ describe('mergeUserAccount', () => {
         scoutId: scout1.id,
         points: 250,
         nftType: 'default',
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }),
       // Purchase builder 2 nft using builder 1
       mockNFTPurchaseEvent({
@@ -210,7 +210,7 @@ describe('mergeUserAccount', () => {
         scoutId: builder1.id,
         points: 150,
         nftType: 'default',
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         tokensPurchased: 2
       }),
       // Purchase builder 1 nft using scout 2
@@ -219,7 +219,7 @@ describe('mergeUserAccount', () => {
         scoutId: scout2.id,
         points: 100,
         nftType: 'default',
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         tokensPurchased: 3
       }),
       // Weekly gems payout for builder 1, scout 1 and scout 2 by builder 1
@@ -230,7 +230,7 @@ describe('mergeUserAccount', () => {
           { id: scout1.id, points: 100, recipientType: 'scout' },
           { id: scout2.id, points: 150, recipientType: 'scout' }
         ],
-        season: currentSeason
+        season: getCurrentSeasonStart()
       }),
       // Weekly gems payout for builder 2 and scout 1 by builder 2
       mockGemPayoutEvents({
@@ -240,11 +240,11 @@ describe('mergeUserAccount', () => {
           { id: scout1.id, points: 500, recipientType: 'scout' },
           { id: builder1.id, points: 200, recipientType: 'scout' }
         ],
-        season: currentSeason
+        season: getCurrentSeasonStart()
       })
     ]);
 
-    await claimPoints({ userId: builder1.id, season: currentSeason });
+    await claimPoints({ userId: builder1.id, season: getCurrentSeasonStart() });
 
     const { retainedUserId } = await mergeUserAccount({ userId: scout1.id, farcasterId: builder1.farcasterId });
 
@@ -272,7 +272,7 @@ describe('mergeUserAccount', () => {
     expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(4);
     expect(retainedUser.userSeasonStats[0].nftOwners).toEqual(2);
 
-    await claimPoints({ userId: retainedUserId, season: currentSeason });
+    await claimPoints({ userId: retainedUserId, season: getCurrentSeasonStart() });
 
     const retainedUserAfterClaim = await prisma.scout.findUniqueOrThrow({
       where: { id: retainedUserId },

@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason } from '../../dates';
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '../../testing/database';
 import { recordNftPurchaseQuests } from '../recordNftPurchaseQuests';
 
@@ -10,12 +10,12 @@ describe('recordNftPurchaseQuests', () => {
     await Promise.all([
       mockBuilderNft({
         builderId: builder1.id,
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         nftType: 'starter_pack'
       }),
       mockBuilderNft({
         builderId: builder2.id,
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         nftType: 'starter_pack'
       })
     ]);
@@ -24,14 +24,14 @@ describe('recordNftPurchaseQuests', () => {
       scoutId: scout.id,
       builderId: builder1.id,
       nftType: 'starter_pack',
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
     await mockNFTPurchaseEvent({
       scoutId: scout.id,
       builderId: builder2.id,
       nftType: 'starter_pack',
-      season: currentSeason
+      season: getCurrentSeasonStart()
     });
 
     await recordNftPurchaseQuests(scout.id);
@@ -75,7 +75,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: 'starter_pack'
         })
       )
@@ -87,7 +87,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'starter_pack',
-          season: currentSeason
+          season: getCurrentSeasonStart()
         })
       )
     );
@@ -113,7 +113,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: 'default'
         })
       )
@@ -125,7 +125,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'default',
-          season: currentSeason
+          season: getCurrentSeasonStart()
         })
       )
     );
@@ -173,7 +173,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: 'default'
         })
       )
@@ -185,7 +185,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'default',
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           tokensPurchased: 2
         })
       )
@@ -210,7 +210,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: currentSeason,
+          season: getCurrentSeasonStart(),
           nftType: 'default'
         })
       )
@@ -221,7 +221,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'default',
-          season: currentSeason
+          season: getCurrentSeasonStart()
         })
       )
     );
@@ -249,8 +249,13 @@ describe('recordNftPurchaseQuests', () => {
       }
     });
     const scout = await mockScout();
-    await mockBuilderNft({ builderId: builder.id, season: currentSeason, nftType: 'default' });
-    await mockNFTPurchaseEvent({ scoutId: scout.id, builderId: builder.id, nftType: 'default', season: currentSeason });
+    await mockBuilderNft({ builderId: builder.id, season: getCurrentSeasonStart(), nftType: 'default' });
+    await mockNFTPurchaseEvent({
+      scoutId: scout.id,
+      builderId: builder.id,
+      nftType: 'default',
+      season: getCurrentSeasonStart()
+    });
     await recordNftPurchaseQuests(scout.id);
 
     const quest = await prisma.scoutSocialQuest.findUnique({

@@ -5,7 +5,8 @@ import type { ProvableClaim } from '@charmverse/core/protocol';
 import { getMerkleProofs } from '@charmverse/core/protocol';
 import { type Address } from 'viem';
 
-import { currentSeason, getDateFromISOWeek, weeksPerSeason } from '../dates';
+import { weeksPerSeason } from '../dates/config';
+import { getCurrentSeasonStart, getDateFromISOWeek } from '../dates/utils';
 
 import type { WeeklyClaimsCalculated } from './calculateWeeklyClaims';
 import { protocolImplementationWriteClient } from './clients/protocolWriteClients';
@@ -67,7 +68,7 @@ export async function generateWeeklyClaims({
       weeklyRoot: {
         isoWeek: week,
         // Tokens can be claimed until the end of the season and the next season
-        validUntil: getDateFromISOWeek(currentSeason).plus({ weeks: 2 * weeksPerSeason }),
+        validUntil: getDateFromISOWeek(getCurrentSeasonStart()).plus({ weeks: 2 * weeksPerSeason }),
         merkleRoot: rootHashWithNullByte,
         // Stub definition until we add in IPFS
         merkleTreeUri: `ipfs://scoutgame/merkle-tree/${week}`
@@ -92,7 +93,7 @@ export async function generateWeeklyClaims({
         id: weeklyClaimId,
         week,
         merkleTreeRoot: rootHashWithNullByte,
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         totalClaimable: claims.reduce((acc, claim) => acc + claim.amount, 0),
         claims: claimsBody,
         proofsMap

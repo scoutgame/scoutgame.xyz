@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { currentSeason, getCurrentWeek } from '../dates';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 export type BuilderStats = {
   seasonPoints?: number;
@@ -22,7 +22,7 @@ export async function getBuilderStats(builderId: string): Promise<BuilderStats> 
       },
       userSeasonStats: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           pointsEarnedAsBuilder: true

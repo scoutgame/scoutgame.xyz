@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
 import { v4 } from 'uuid';
 
-import { currentSeason } from '../dates';
+import { getCurrentSeasonStart } from '../dates/utils';
 import { refreshPointStatsFromHistory } from '../points/refreshPointStatsFromHistory';
 
 export type ProfileToKeep = 'current' | 'new';
@@ -69,7 +69,7 @@ export const mergeUserAccount = async ({
         nftPurchaseEvents: {
           where: {
             builderNft: {
-              season: currentSeason,
+              season: getCurrentSeasonStart(),
               nftType: 'starter_pack'
             }
           },
@@ -103,7 +103,7 @@ export const mergeUserAccount = async ({
         nftPurchaseEvents: {
           where: {
             builderNft: {
-              season: currentSeason,
+              season: getCurrentSeasonStart(),
               nftType: 'starter_pack'
             }
           },
@@ -294,7 +294,7 @@ export const mergeUserAccount = async ({
           where: {
             scoutId: retainedUserId,
             builderNft: {
-              season: currentSeason
+              season: getCurrentSeasonStart()
             }
           },
           select: {
@@ -305,7 +305,7 @@ export const mergeUserAccount = async ({
         const nftSoldEvents = await tx.nFTPurchaseEvent.findMany({
           where: {
             builderNft: {
-              season: currentSeason,
+              season: getCurrentSeasonStart(),
               builderId: retainedUserId
             }
           },
@@ -319,7 +319,7 @@ export const mergeUserAccount = async ({
           where: {
             userId_season: {
               userId: retainedUserId,
-              season: currentSeason
+              season: getCurrentSeasonStart()
             }
           },
           data: {

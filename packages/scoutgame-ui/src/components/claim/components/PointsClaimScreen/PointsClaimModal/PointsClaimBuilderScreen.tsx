@@ -1,4 +1,4 @@
-import { currentSeason, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/scoutgame/dates/utils';
 import React from 'react';
 
 import { primaryTextColorDarkMode, secondaryText } from '../../../../../theme/colors';
@@ -14,7 +14,7 @@ export function PointsClaimBuilderScreen({
   repos: string[];
   baseUrl?: string;
 }) {
-  const lastWeek = getSeasonWeekFromISOWeek({ season: currentSeason, week: getLastWeek() });
+  const lastWeek = getSeasonWeekFromISOWeek({ season: getCurrentSeasonStart(), week: getLastWeek() });
 
   return (
     <div

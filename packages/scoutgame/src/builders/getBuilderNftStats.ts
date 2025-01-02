@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentWeek, currentSeason } from '@packages/scoutgame/dates';
-import { dividePointsBetweenBuilderAndScouts } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
+
+import { getCurrentWeek, getCurrentSeasonStart } from '../dates/utils';
+import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
 
 export type NftStats = {
   builderStrikes: number;
@@ -9,7 +10,7 @@ export type NftStats = {
 
 export async function getBuilderNftStats({
   builderId,
-  season = currentSeason,
+  season = getCurrentSeasonStart(),
   week = getCurrentWeek()
 }: {
   builderId: string;

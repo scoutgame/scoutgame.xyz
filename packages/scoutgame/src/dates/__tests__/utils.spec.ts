@@ -1,8 +1,16 @@
 import { DateTime } from 'luxon';
 
-import { getWeekFromDate, getWeekStartEnd, getSeasonWeekFromISOWeek, validateISOWeek, getCurrentWeek } from '../dates';
+import type { Season, SeasonConfig } from '../config';
+import {
+  getWeekFromDate,
+  getWeekStartEnd,
+  getSeasonWeekFromISOWeek,
+  validateISOWeek,
+  getCurrentWeek,
+  getCurrentSeasonStart
+} from '../utils';
 
-describe('date utils', () => {
+describe('scoutgame date utils', () => {
   describe('getWeekFromDate', () => {
     it('should return the previous year when the first day of the year is a Sunday', () => {
       const jan1 = DateTime.fromObject({ year: 2023, month: 1, day: 1 }, { zone: 'utc' }).toJSDate();
@@ -62,6 +70,51 @@ describe('date utils', () => {
       expect(validateISOWeek('2024-W40')).toBe(true);
       expect(validateISOWeek('2024-W01')).toBe(true);
       expect(validateISOWeek(getCurrentWeek())).toBe(true);
+    });
+  });
+
+  describe('getCurrentSeasonStart', () => {
+    const seasons: SeasonConfig[] = [
+      { start: '2024-W01', title: 'season 1' },
+      { start: '2024-W05', title: 'season 2' },
+      { start: '2024-W10', title: 'season 3' }
+    ];
+
+    it('should return the season when the current week is the first week of a season', () => {
+      const currentSeason = getCurrentSeasonStart('2024-W01', seasons);
+      expect(currentSeason).toEqual('2024-W01');
+    });
+
+    it('should return the season when the current week is the in the middle of a season', () => {
+      const currentSeason = getCurrentSeasonStart('2024-W03', seasons);
+      expect(currentSeason).toEqual('2024-W01');
+    });
+
+    it('should return the season when the current week is after the last season', () => {
+      const currentSeason = getCurrentSeasonStart('2024-W15', seasons);
+      expect(currentSeason).toEqual('2024-W10');
+    });
+
+    it('Should throw an error when given an invalid season list', () => {
+      const missingSeason: SeasonConfig[] = [
+        { start: '2024-W03', title: 'season 1' },
+        { start: '2024-W02', title: 'season 2' }
+      ];
+      expect(() => getCurrentSeasonStart('2024-W03', missingSeason)).toThrow();
+    });
+
+    it('Should throw an error when given an invalid season list', () => {
+      const currentWeek = '2024-W03';
+      const unsortedSeasons: SeasonConfig[] = [
+        { start: '2024-W03', title: 'season 1' },
+        { start: '2024-W02', title: 'season 2' }
+      ];
+      expect(() => getCurrentSeasonStart(currentWeek, unsortedSeasons)).toThrow();
+    });
+
+    it('Should fail if the current week is before the first season', () => {
+      const currentWeek = '2023-W01';
+      expect(() => getCurrentSeasonStart(currentWeek, seasons)).toThrow();
     });
   });
 });

@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { refreshShareImage } from '@packages/scoutgame/builders/refreshShareImage';
-import { currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 export async function PUT(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,7 +15,7 @@ export async function PUT(request: Request) {
     const existingNft = await prisma.builderNft.findFirstOrThrow({
       where: {
         builderId: search,
-        season: currentSeason,
+        season: getCurrentSeasonStart(),
         nftType: BuilderNftType.default
       }
     });

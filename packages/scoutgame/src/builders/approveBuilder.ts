@@ -3,12 +3,18 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
-import type { Season } from '../dates';
-import { currentSeason } from '../dates';
+import type { Season } from '../dates/config';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 const baseUrl = process.env.DOMAIN as string;
 
-export async function approveBuilder({ builderId, season = currentSeason }: { builderId: string; season?: Season }) {
+export async function approveBuilder({
+  builderId,
+  season = getCurrentSeasonStart()
+}: {
+  builderId: string;
+  season?: Season;
+}) {
   if (!baseUrl) {
     throw new Error('DOMAIN is not set');
   }
@@ -21,12 +27,11 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
     select: {
       id: true,
       githubUsers: true,
-      email: true,
       displayName: true,
       path: true,
       builderNfts: {
         where: {
-          season: currentSeason
+          season: getCurrentSeasonStart()
         },
         select: {
           imageUrl: true
@@ -51,21 +56,19 @@ export async function approveBuilder({ builderId, season = currentSeason }: { bu
     }
   });
 
-  if (scout.email) {
-    try {
-      await sendEmailTemplate({
-        to: { displayName: scout.displayName, email: scout.email, userId: scout.id },
-        subject: 'Welcome to Scout Game, Builder! 🎉',
-        template: 'Builder Approved',
-        templateVariables: {
-          builder_name: scout.displayName,
-          builder_card_image: scout.builderNfts[0].imageUrl,
-          builder_profile_link: `${baseUrl}/u/${scout.path}`
-        },
-        senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
-      });
-    } catch (error) {
-      log.error('Error sending email', { error, userId: scout.id });
-    }
+  try {
+    await sendEmailTemplate({
+      userId: scout.id,
+      subject: 'Welcome to Scout Game, Builder! 🎉',
+      template: 'Builder Approved',
+      templateVariables: {
+        builder_name: scout.displayName,
+        builder_card_image: scout.builderNfts[0].imageUrl,
+        builder_profile_link: `${baseUrl}/u/${scout.path}`
+      },
+      senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
+    });
+  } catch (error) {
+    log.error('Error sending email', { error, userId: scout.id });
   }
 }

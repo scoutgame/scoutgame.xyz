@@ -15,7 +15,7 @@ const tierByPoints = {
 } as any;
 
 const currentSeasonStartDate = DateTime.fromObject({ year: 2024, month: 9, day: 30 }, { zone: 'utc' }); // Actual launch: 2024-W40
-const currentSeason = currentSeasonStartDate.toFormat(`kkkk-'W'WW`);
+const currentSeason = getCurrentSeasonStartDate.toFormat(`kkkk-'W'WW`);
 
 async function query() {
   // const scout = await prisma.scout.findFirstOrThrow({
@@ -214,7 +214,7 @@ async function fixEvents({
         event: {
           create: {
             createdAt,
-            season: currentSeason,
+            season: getCurrentSeasonStart(),
             type: 'misc_event' as const,
             description: `Received points for achieving ${tierByPoints[points]} status on waitlist`,
             week,

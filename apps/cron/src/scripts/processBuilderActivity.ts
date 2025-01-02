@@ -2,7 +2,7 @@ import { processAllBuilderActivity } from '../tasks/processBuilderActivity';
 import { processBuilderActivity } from '../tasks/processBuilderActivity/processBuilderActivity';
 import { getBuilderActivity } from '../tasks/processBuilderActivity/getBuilderActivity';
 import { DateTime } from 'luxon';
-import { getCurrentWeek, currentSeason } from '@packages/scoutgame/dates';
+import { getCurrentWeek, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { prisma } from '@charmverse/core/prisma-client';
 
 const windowStart = DateTime.fromISO('2024-10-28', { zone: 'utc' }).toJSDate();
@@ -29,7 +29,7 @@ const windowStart = DateTime.fromISO('2024-10-28', { zone: 'utc' }).toJSDate();
     builderId: builder.id,
     githubUser: builder.githubUsers[0]!,
     createdAfter: windowStart,
-    season: currentSeason
+    season: getCurrentSeasonStart()
   });
   return;
   console.log('Getting builder activity');

@@ -1,49 +1,43 @@
 import { DateTime } from 'luxon';
 
-export type ISOWeek = string; // isoweek, e.g. '2024-W01'
-type WeekOfSeason = number; // the week in the season, e.g. 1
+import type { ISOWeek, Season, SeasonConfig } from './config';
+import { weeksPerSeason, seasons } from './config';
 
-// Season start MUST be on a Monday, when isoweek begins
-
-export const weeksPerSeason = 13;
-
-export const seasons = [
-  // dev season
-  {
-    start: '2024-W38',
-    end: '2024-W40',
-    title: 'Dev Season'
-  },
-  // pre-release season
-  {
-    start: '2024-W40',
-    end: '2024-W41',
-    title: 'Pre Season'
-  },
-  // Preseason 1
-  {
-    start: '2024-W41',
-    end: '2025-W02',
-    title: 'Season 1'
-  },
-  // Preseason 2
-  {
-    start: '2025-W02',
-    end: '2025-W14',
-    title: 'Season 2'
+export function getCurrentSeason(
+  _currentWeek: ISOWeek = getCurrentWeek(),
+  seasonList: SeasonConfig[] = seasons
+): SeasonConfig {
+  const _seasonStarts = seasonList.map((s) => s.start);
+  // Validate the season list so that logic can make assumptions below
+  validateSeasonList(_seasonStarts);
+  const _seasons = seasonList.slice(); // make a copy of the season list
+  let _currentSeason = _seasons.shift()!;
+  if (_currentWeek < _currentSeason.start) {
+    throw new Error('Current week is before the first season');
   }
-] as const;
+  while (_seasons.length > 0 && _currentWeek >= _seasons[0].start) {
+    _currentSeason = _seasons.shift()!;
+  }
 
-export type Season = (typeof seasons)[number]['start'];
-export const seasonStarts = seasons.map((s) => s.start);
+  return _currentSeason;
+}
 
-export const currentSeason: Season = '2024-W41';
+// Return the start of the current season
+export function getCurrentSeasonStart(
+  _currentWeek: ISOWeek = getCurrentWeek(),
+  seasonList: SeasonConfig[] = seasons
+): ISOWeek {
+  return getCurrentSeason(_currentWeek, seasonList).start;
+}
 
-export const currentSeasonNumber = 1;
-export const streakWindow = 7 * 24 * 60 * 60 * 1000;
-
-export const seasonAllocatedPoints = 18_141_850;
-// Currently, we are hardcoding the value of weekly allocated points to 100,000
+export function validateSeasonList(seasonList: Season[]): void {
+  if (!seasonList.every((s) => s)) {
+    throw new Error('Invalid season list');
+  }
+  if (seasonList.slice().sort().join(',') !== seasonList.join(',')) {
+    throw new Error('Season list is not sorted');
+  }
+}
 
 // Return the format of week
 export function getCurrentWeek(): ISOWeek {
@@ -120,11 +114,11 @@ export function isToday(date: Date, now = DateTime.utc()) {
   return dateDay.equals(now.startOf('day'));
 }
 
-export function getCurrentSeasonWeekNumber(week: ISOWeek = getCurrentWeek()): WeekOfSeason {
-  return getSeasonWeekFromISOWeek({ season: currentSeason, week });
+export function getCurrentSeasonWeekNumber(week: ISOWeek = getCurrentWeek(), season = getCurrentSeasonStart()): number {
+  return getSeasonWeekFromISOWeek({ season, week });
 }
 
-export function getSeasonWeekFromISOWeek({ season, week }: { season: ISOWeek; week: ISOWeek }): WeekOfSeason {
+export function getSeasonWeekFromISOWeek({ season, week }: { season: ISOWeek; week: ISOWeek }): number {
   const weekDate = DateTime.fromISO(week, { zone: 'utc' });
   const seasonDate = DateTime.fromISO(season, { zone: 'utc' });
   const weeksDiff = weekDate.diff(seasonDate, 'weeks').weeks;
