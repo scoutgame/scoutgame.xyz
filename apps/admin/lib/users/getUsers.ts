@@ -105,6 +105,7 @@ export async function getUsers({
       wallets: true
     }
   });
+
   return users.map(({ githubUsers, userSeasonStats, wallets, ...user }) => ({
     ...user,
     githubLogin: githubUsers[0]?.login || null,
