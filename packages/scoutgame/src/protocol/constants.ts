@@ -112,7 +112,7 @@ export function getScoutProtocolAddress(): Address {
 
 export function scoutProtocolBuilderNftContractAddress() {
   return (
-    (env('SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41') as Address) ||
-    (process.env.REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41 as Address)
+    (env('SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS') as Address) ||
+    (process.env.REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS as Address)
   );
 }

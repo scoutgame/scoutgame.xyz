@@ -9,7 +9,7 @@ type MintValidation = {
   tokensMinted: number;
 };
 
-export async function validateScoutProtocolMint({
+export async function validateTransferrableNftMint({
   txHash,
   chainId
 }: {
