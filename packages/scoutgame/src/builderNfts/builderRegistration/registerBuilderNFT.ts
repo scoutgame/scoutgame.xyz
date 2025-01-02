@@ -2,6 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
+import type { Address, Chain } from 'viem';
 
 import { getBuilderContractMinterClient } from '../clients/builderContractMinterWriteClient';
 import { builderNftChain } from '../constants';
@@ -12,22 +13,26 @@ import { createBuilderNft } from './createBuilderNft';
 export async function registerBuilderNFT({
   builderId,
   season,
-  imageHostingBaseUrl
+  imageHostingBaseUrl,
+  chain = builderNftChain,
+  contractAddress
 }: {
   builderId: string;
   season: string;
   imageHostingBaseUrl?: string;
+  chain?: Chain;
+  contractAddress?: Address;
 }) {
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
 
-  const contractClient = getBuilderContractMinterClient();
+  const contractClient = getBuilderContractMinterClient({ chain, contractAddress });
 
   const existingBuilderNft = await prisma.builderNft.findFirst({
     where: {
       builderId,
-      chainId: builderNftChain.id,
+      chainId: chain.id,
       season,
       nftType: BuilderNftType.default
     }
@@ -66,18 +71,23 @@ export async function registerBuilderNFT({
 
   const builderNft = await createBuilderNft({
     imageHostingBaseUrl,
+    season,
     tokenId,
     builderId,
     avatar: builder.avatar,
     path: builder.path!,
-    displayName: builder.displayName
+    displayName: builder.displayName,
+    chainId: chain.id,
+    contractAddress
   });
 
   log.info(`Registered builder NFT for builder`, {
     userId: builderId,
     builderPath: builder.path,
     tokenId,
-    season
+    season,
+    chainId: chain.id,
+    contractAddress
   });
 
   return builderNft;
