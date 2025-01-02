@@ -17,7 +17,7 @@ export async function uploadShareImage({
 }: {
   season: string;
   tokenId: bigint | number;
-  userImage: string | null;
+  userImage: string;
   builderId: string;
 }) {
   const [activities, stats, builderScouts, builderNft] = await Promise.all([

@@ -24,22 +24,19 @@ export async function generateArtwork({
   displayName,
   tokenId
 }: {
-  avatar: string | null;
+  avatar: string;
   tokenId: bigint | number;
   displayName: string;
 }): Promise<Buffer> {
   const { overlaysBase64, noPfpAvatarBase64, font } = getAssetsFromDisk();
   const overlay = overlaysBase64[Number(tokenId) % overlaysBase64.length];
-  let avatarBuffer: Buffer | null = null;
+  const response = await fetch(avatar);
+  const avatarBuffer = await sharp(Buffer.from(await response.arrayBuffer()))
+    .resize(300, 300)
+    .png()
+    .toBuffer();
   const cutoutWidth = 300;
   const cutoutHeight = 400;
-
-  if (avatar) {
-    const response = await fetch(avatar);
-    const arrayBuffer = await response.arrayBuffer();
-    avatarBuffer = await sharp(Buffer.from(arrayBuffer)).resize(300, 300).png().toBuffer();
-  }
-
   const { ImageResponse } = await import('@vercel/og');
 
   const baseImage = new ImageResponse(

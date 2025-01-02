@@ -72,7 +72,7 @@ export async function registerBuilderStarterPackNFT({ builderId, season }: { bui
   const builderNft = await createBuilderNftStarterPack({
     tokenId,
     builderId,
-    avatar: builder.avatar,
+    avatar: builder.avatar ?? '',
     path: builder.path!,
     displayName: builder.displayName
   });

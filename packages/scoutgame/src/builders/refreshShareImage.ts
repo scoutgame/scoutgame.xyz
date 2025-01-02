@@ -7,7 +7,7 @@ export async function refreshShareImage(builderNft: BuilderNft) {
   const congratsImageUrl = await uploadShareImage({
     season: builderNft.season,
     tokenId: builderNft.tokenId,
-    userImage: builderNft.imageUrl || null,
+    userImage: builderNft.imageUrl,
     builderId: builderNft.builderId
   });
 

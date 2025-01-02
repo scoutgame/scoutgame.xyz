@@ -19,7 +19,7 @@ export function BuilderShareImage({
   builderPrice,
   size = 550
 }: {
-  nftImageUrl: string | null;
+  nftImageUrl: string;
   activities: BuilderActivity[];
   builderScouts: BuilderScouts;
   stats: BuilderStats;
@@ -84,7 +84,7 @@ export function BuilderShareImage({
       >
         {/* Profile Card - Centered at the top */}
         <img
-          src={nftImageUrl ?? ''}
+          src={nftImageUrl}
           alt='NFT Artwork'
           width={200}
           height={250}

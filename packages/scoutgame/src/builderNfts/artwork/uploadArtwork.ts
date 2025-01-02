@@ -12,7 +12,7 @@ export async function uploadArtwork({
 }: {
   displayName: string;
   season: string;
-  avatar: string | null;
+  avatar: string;
   tokenId: bigint | number;
 }) {
   const imageBuffer = await generateArtwork({

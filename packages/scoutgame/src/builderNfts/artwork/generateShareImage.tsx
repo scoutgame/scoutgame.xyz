@@ -7,7 +7,6 @@ import type { BuilderScouts } from '../../builders/getBuilderScouts';
 import type { BuilderStats } from '../../builders/getBuilderStats';
 
 import { BuilderShareImage } from './components/BuilderShareImage';
-import { getAssetsFromDisk } from './getAssetsFromDisk';
 
 export async function generateShareImage({
   userImage,
@@ -16,23 +15,16 @@ export async function generateShareImage({
   stats,
   builderScouts
 }: {
-  userImage: string | null;
+  userImage: string;
   activities: BuilderActivity[];
   stats: BuilderStats;
   builderScouts: BuilderScouts;
   builderPrice: bigint;
 }): Promise<Buffer> {
-  let avatarBuffer: Buffer | null = null;
+  const response = await fetch(userImage);
+  const arrayBuffer = await response.arrayBuffer();
+  const avatarBuffer = await sharp(Buffer.from(arrayBuffer)).resize(150, 200).png().toBuffer();
   const size = 550;
-
-  const { noPfpAvatarBase64 } = getAssetsFromDisk();
-
-  if (userImage) {
-    const response = await fetch(userImage);
-    const arrayBuffer = await response.arrayBuffer();
-    avatarBuffer = await sharp(Buffer.from(arrayBuffer)).resize(150, 200).png().toBuffer();
-  }
-
   const { ImageResponse } = await import('@vercel/og');
 
   const baseImage = new ImageResponse(
@@ -41,7 +33,7 @@ export async function generateShareImage({
         activities={activities}
         builderScouts={builderScouts}
         stats={stats}
-        nftImageUrl={avatarBuffer ? `data:image/png;base64,${avatarBuffer.toString('base64')}` : noPfpAvatarBase64}
+        nftImageUrl={`data:image/png;base64,${avatarBuffer.toString('base64')}`}
         size={size}
         builderPrice={builderPrice}
       />

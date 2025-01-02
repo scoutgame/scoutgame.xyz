@@ -41,7 +41,8 @@ export async function generateBuilder({ index }: { index: number }) {
   if (builderStatus === 'approved') {
     const nftImageBuffer = await generateArtwork({
       avatar,
-      displayName
+      displayName,
+      tokenId: index
     });
 
     // images will be hosted by the

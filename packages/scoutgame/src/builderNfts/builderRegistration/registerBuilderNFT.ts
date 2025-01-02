@@ -59,7 +59,7 @@ export async function registerBuilderNFT({ builderId, season }: { builderId: str
   const builderNft = await createBuilderNft({
     tokenId,
     builderId,
-    avatar: builder.avatar,
+    avatar: builder.avatar ?? '',
     path: builder.path!,
     displayName: builder.displayName
   });

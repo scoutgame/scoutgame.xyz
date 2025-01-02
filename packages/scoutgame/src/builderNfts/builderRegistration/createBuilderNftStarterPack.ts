@@ -15,7 +15,7 @@ export async function createBuilderNftStarterPack({
 }: {
   displayName: string;
   path: string;
-  avatar: string | null;
+  avatar: string;
   tokenId: bigint;
   builderId: string;
   starterNft?: boolean;
