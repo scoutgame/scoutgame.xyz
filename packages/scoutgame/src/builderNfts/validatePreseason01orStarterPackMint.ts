@@ -9,7 +9,7 @@ type MintValidation = {
   tokensMinted: number;
 };
 
-export async function validatePreseason01Mint({
+export async function validatePreseason01orStarterPackMint({
   txHash,
   chainId
 }: {

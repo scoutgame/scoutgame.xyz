@@ -22,7 +22,7 @@ import { isPreseason01Contract, isStarterPackContract } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
-import { validatePreseason01Mint } from './validatePreseason01Mint';
+import { validatePreseason01orStarterPackMint } from './validatePreseason01orStarterPackMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
 export async function handlePendingTransaction({
@@ -90,7 +90,7 @@ export async function handlePendingTransaction({
 
     const validatedMint =
       isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress)
-        ? await validatePreseason01Mint({
+        ? await validatePreseason01orStarterPackMint({
             chainId: pendingTx.destinationChainId,
             txHash
           })
@@ -116,7 +116,7 @@ export async function handlePendingTransaction({
         }
       });
 
-      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress().toLowerCase()) {
+      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress()) {
         await refreshScoutProtocolBuilderNftPrice({
           season: getCurrentSeasonStart(),
           builderId: builderNft.builderId
@@ -187,7 +187,3 @@ export async function handlePendingTransaction({
     }
   }
 }
-
-// handlePendingTransaction({
-//   pendingTransactionId: 'f059aafd-8203-45d9-910b-aced0fe27534'
-// }).then(console.log);
