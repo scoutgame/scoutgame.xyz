@@ -14,8 +14,6 @@ export async function refreshUserStats({
   week?: ISOWeek;
   tx?: Prisma.TransactionClient;
 }): Promise<{ weekly: UserWeeklyStats; season: UserSeasonStats }> {
-  const season = getCurrentSeasonStart(week);
-
   const gemsReceipts = await tx.gemsReceipt.findMany({
     where: {
       event: {
@@ -37,7 +35,7 @@ export async function refreshUserStats({
     },
     create: {
       userId,
-      season,
+      season: getCurrentSeasonStart(),
       week,
       gemsCollected
     },
@@ -64,7 +62,7 @@ export async function refreshUserStats({
 
   const builderNft = await tx.builderNft.findFirst({
     where: {
-      season,
+      season: getCurrentSeasonStart(),
       builderId: userId
     },
     include: {
@@ -81,7 +79,7 @@ export async function refreshUserStats({
     where: {
       scoutId: userId,
       builderNft: {
-        season
+        season: getCurrentSeasonStart()
       }
     }
   });
@@ -89,13 +87,13 @@ export async function refreshUserStats({
   const seasonStats = {
     pointsEarnedAsBuilder: allTimeBuilderNftPoints.length,
     pointsEarnedAsScout: 0,
-    season,
+    season: getCurrentSeasonStart(),
     nftsPurchased: nftsBought,
     nftsSold: builderNft?.nftSoldEvents.length,
     nftOwners: builderNft ? arrayUtils.uniqueValues(builderNft.nftSoldEvents.map((ev) => ev.scoutId)).length : undefined
   };
 
-  const seasonStatsRecord = await tx.userSeasonStats.upsert({
+  const season = await tx.userSeasonStats.upsert({
     where: {
       userId_season: {
         season: getCurrentSeasonStart(),
@@ -118,6 +116,6 @@ export async function refreshUserStats({
 
   return {
     weekly,
-    season: seasonStatsRecord
+    season
   };
 }

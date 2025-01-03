@@ -7,7 +7,7 @@ import type { Address } from 'viem';
 import { builderContractReadonlyApiClient } from '../clients/builderContractReadClient';
 import { getBuilderContractStarterPackMinterClient } from '../clients/builderContractStarterPackMinterWriteClient';
 import { builderContractStarterPackReadonlyApiClient } from '../clients/builderContractStarterPackReadClient';
-import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
+import { builderNftChain, getBuilderStarterPackContractAddress } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
 
@@ -15,21 +15,13 @@ export async function registerBuilderStarterPackNFT({
   builderId,
   season,
   chainId = builderNftChain.id,
-  contractAddress
+  contractAddress = getBuilderStarterPackContractAddress()
 }: {
   builderId: string;
   season: string;
   chainId?: number;
   contractAddress?: Address;
 }) {
-  if (!season) {
-    throw new InvalidInputError('Season is required');
-  }
-
-  if (!contractAddress) {
-    contractAddress = getBuilderNftStarterPackContractAddress(season);
-  }
-
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }

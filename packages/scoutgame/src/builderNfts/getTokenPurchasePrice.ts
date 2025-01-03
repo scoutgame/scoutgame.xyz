@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { decodeFunctionResult, encodeFunctionData } from 'viem';
 import { optimism } from 'viem/chains';
 
-import { getBuilderNftContractAddress } from './constants';
+import { getBuilderContractAddress } from './constants';
 
 /**
  * Optional block number to query the contract at, enabling past pricing data
@@ -31,7 +31,7 @@ export async function getTokenPurchasePrice(params: {
   });
 
   const { data } = await getPublicClient(optimism.id).call({
-    to: getBuilderNftContractAddress(),
+    to: getBuilderContractAddress(),
     data: txData,
     blockNumber: params.blockNumber
   });

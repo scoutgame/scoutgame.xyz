@@ -3,7 +3,7 @@
 import * as yup from 'yup';
 
 import { actionClient } from '../actions/actionClient';
-import { getCurrentWeek } from '../dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 import type { CompositeCursor } from './getPaginatedBuilders';
 import { getPaginatedBuilders } from './getPaginatedBuilders';
@@ -26,6 +26,7 @@ export const getPaginatedBuildersAction = actionClient
     const { builders, nextCursor } = await getPaginatedBuilders({
       limit: 30, // 6 rows per page
       week: getCurrentWeek(),
+      season: getCurrentSeasonStart(),
       cursor
     });
 

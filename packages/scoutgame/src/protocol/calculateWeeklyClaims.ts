@@ -48,8 +48,6 @@ export async function calculateWeeklyClaims({
     week
   });
 
-  const season = getCurrentSeasonStart(week);
-
   const builderEvents: Prisma.BuilderEventCreateManyInput[] = [];
   const tokenReceipts: Prisma.TokensReceiptCreateManyInput[] = [];
   const weeklyClaimId = uuid();
@@ -162,7 +160,7 @@ export async function calculateWeeklyClaims({
           id: builderEventId,
           builderId: builder.builder.id,
           week,
-          season,
+          season: getCurrentSeasonStart(),
           type: 'gems_payout',
           weeklyClaimId
         };
