@@ -5,6 +5,9 @@ import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import { optimism, optimismSepolia } from 'viem/chains';
 
+import type { ISOWeek } from '../dates/config';
+import { getCurrentSeasonStart } from '../dates/utils';
+
 export const decentApiKey = env('DECENT_API_KEY') || (process.env.REACT_APP_DECENT_API_KEY as string);
 
 export const useTestnets = false;
@@ -28,13 +31,22 @@ const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9f
 const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
 export const realOptimismMainnetBuildersContract = '0x743ec903fe6d05e73b19a6db807271bb66100e83';
 
-export function getBuilderContractAddress(): `0x${string}` {
-  return (env('BUILDER_NFT_CONTRACT_ADDRESS') || process.env.REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS) as `0x${string}`;
+export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
+  // Convert from ISOWeek "-" to "_" which is used in the env variables
+  const seasonName = season.replace('-', '_');
+
+  const envVarName = `BUILDER_NFT_CONTRACT_ADDRESS_${seasonName}`;
+
+  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address;
 }
 
-export function getBuilderStarterPackContractAddress(): `0x${string}` {
-  return (env('BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS') ||
-    process.env.REACT_APP_BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS) as `0x${string}`;
+export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
+  // Convert from ISOWeek "-" to "_" which is used in the env variables
+  const seasonName = season.replace('-', '_');
+
+  const envVarName = `BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS_${seasonName}`;
+
+  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address;
 }
 
 /**
@@ -42,8 +54,8 @@ export function getBuilderStarterPackContractAddress(): `0x${string}` {
  */
 export const MAX_STARTER_PACK_PURCHASES = 3;
 
-export function getBuilderContractAddressForNftType(nftType: BuilderNftType): `0x${string}` {
-  return nftType === 'starter_pack' ? getBuilderStarterPackContractAddress() : getBuilderContractAddress();
+export function getBuilderNftContractAddressForNftType(nftType: BuilderNftType): Address {
+  return nftType === 'starter_pack' ? getBuilderNftStarterPackContractAddress() : getBuilderNftContractAddress();
 }
 
 // USDC Contract we use for payments
@@ -101,7 +113,7 @@ export function isStarterPackContract(contractAddress: string): boolean {
 
 // const apiClient = new BuilderNFTSeasonOneClient({
 //   chain: builderNftChain,
-//   contractAddress: getBuilderContractAddress(),
+//   contractAddress: getBuilderNftContractAddress(),
 //   walletClient: serverClient
 // });
 
