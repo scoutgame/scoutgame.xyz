@@ -22,8 +22,7 @@ async function refreshArtworks() {
     },
     orderBy: {
       tokenId: 'asc'
-    },
-    skip: 124
+    }
   });
 
   console.log('Contract ', getBuilderNftContractAddress());
