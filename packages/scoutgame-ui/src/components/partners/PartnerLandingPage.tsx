@@ -247,11 +247,36 @@ function PartnerRewardsSection({
   partnerRewardsText: string;
 }) {
   return (
-    <Paper sx={{ bgcolor: 'background.dark', zIndex: 1, py: 4 }}>
-      <Container maxWidth='lg'>
-        <Stack alignItems='center' gap={3} flexDirection='row' justifyContent='center'>
-          <Image src={partnerBanner} width={1500 * 0.5} height={500 * 0.5} alt='Partner banner' />
-          <Stack gap={2} alignItems='center'>
+    <Paper
+      sx={{
+        bgcolor: 'background.dark',
+        zIndex: 1,
+        py: {
+          xs: 0,
+          md: 4
+        },
+        pb: {
+          xs: 2,
+          md: 0
+        },
+        mb: {
+          xs: 2,
+          md: 0
+        }
+      }}
+    >
+      <Container maxWidth='lg' sx={{ p: { xs: 0, md: 4 } }}>
+        <Stack
+          alignItems='center'
+          gap={3}
+          flexDirection={{
+            xs: 'column',
+            md: 'row'
+          }}
+          justifyContent='center'
+        >
+          <img src={partnerBanner} width='100%' style={{ maxWidth: 750, objectFit: 'cover' }} alt='Partner banner' />
+          <Stack gap={2} alignItems='center' sx={{ px: { xs: 2, md: 0 } }}>
             <Typography variant='h4' color={accentColor} fontWeight={500} textAlign='center'>
               Scout Game + {partnerName}
             </Typography>
