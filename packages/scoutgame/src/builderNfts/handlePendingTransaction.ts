@@ -18,7 +18,7 @@ import {
   scoutTokenDecimalsMultiplier
 } from '../protocol/constants';
 
-import { isPreseason01Contract } from './constants';
+import { isPreseason01Contract, isStarterPackContract } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
@@ -67,7 +67,6 @@ export async function handlePendingTransaction({
     // Fetch the builder NFT
     const builderNft = await prisma.builderNft.findFirstOrThrow({
       where: {
-        season: getCurrentSeasonStart(),
         tokenId: Number(pendingTx.tokenId),
         contractAddress: pendingTx.contractAddress.toLowerCase()
       }
@@ -89,15 +88,16 @@ export async function handlePendingTransaction({
 
     scoutgameMintsLogger.info('Transaction settled', { txHash });
 
-    const validatedMint = isPreseason01Contract(pendingTx.contractAddress)
-      ? await validatePreseason01Mint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        })
-      : await validateTransferrableNftMint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        });
+    const validatedMint =
+      isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress)
+        ? await validatePreseason01Mint({
+            chainId: pendingTx.destinationChainId,
+            txHash
+          })
+        : await validateTransferrableNftMint({
+            chainId: pendingTx.destinationChainId,
+            txHash
+          });
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {
