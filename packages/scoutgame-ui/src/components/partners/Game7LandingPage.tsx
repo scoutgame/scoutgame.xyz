@@ -1,6 +1,6 @@
-import { PartnerLandingPage } from '@packages/scoutgame-ui/components/partners/PartnerLandingPage';
+import { PartnerLandingPage } from './PartnerLandingPage';
 
-export default function LandingPage() {
+export function Game7LandingPage() {
   return (
     <PartnerLandingPage
       heroSubtitle={

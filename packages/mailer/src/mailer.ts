@@ -29,8 +29,7 @@ export async function sendEmailTemplate({
 
   if (!client) {
     log.debug('No mailgun client, not sending email');
-  } else {
-    log.debug('Sending email to Mailgun', { subject, userId });
+    return;
   }
 
   const user = await prisma.scout.findUniqueOrThrow({
@@ -46,16 +45,18 @@ export async function sendEmailTemplate({
   });
 
   if (!user.email) {
-    log.debug('User does not have an email, not sending email');
+    log.debug('User does not have an email, not sending email', { userId });
     return;
   }
 
   if (!user.sendTransactionEmails) {
-    log.debug('User does not want to receive any emails, not sending email');
+    log.debug('User does not want to receive any emails, not sending email', { userId });
     return;
   }
 
   const recipientAddress = user.displayName ? `${user.displayName} <${user.email}>` : (user.email as string);
+
+  log.debug('Sending email to Mailgun', { subject, userId });
 
   return client?.messages.create(DOMAIN, {
     from: senderAddress,
