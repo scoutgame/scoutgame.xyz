@@ -1,12 +1,8 @@
 import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma';
-import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import { optimism, optimismSepolia } from 'viem/chains';
-
-import type { ISOWeek } from '../dates/config';
-import { getCurrentSeasonStart } from '../dates/utils';
 
 export const decentApiKey = env('DECENT_API_KEY') || (process.env.REACT_APP_DECENT_API_KEY as string);
 
@@ -31,22 +27,13 @@ const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9f
 const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
 export const realOptimismMainnetBuildersContract = '0x743ec903fe6d05e73b19a6db807271bb66100e83';
 
-export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
-  // Convert from ISOWeek "-" to "_" which is used in the env variables
-  const seasonName = season.replace('-', '_');
-
-  const envVarName = `BUILDER_NFT_CONTRACT_ADDRESS_${seasonName}`;
-
-  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address;
+export function getBuilderContractAddress(): `0x${string}` {
+  return (env('BUILDER_NFT_CONTRACT_ADDRESS') || process.env.REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS) as `0x${string}`;
 }
 
-export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
-  // Convert from ISOWeek "-" to "_" which is used in the env variables
-  const seasonName = season.replace('-', '_');
-
-  const envVarName = `BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS_${seasonName}`;
-
-  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address;
+export function getBuilderStarterPackContractAddress(): `0x${string}` {
+  return (env('BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS') ||
+    process.env.REACT_APP_BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS) as `0x${string}`;
 }
 
 /**
@@ -54,8 +41,8 @@ export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCur
  */
 export const MAX_STARTER_PACK_PURCHASES = 3;
 
-export function getBuilderNftContractAddressForNftType(nftType: BuilderNftType): Address {
-  return nftType === 'starter_pack' ? getBuilderNftStarterPackContractAddress() : getBuilderNftContractAddress();
+export function getBuilderContractAddressForNftType(nftType: BuilderNftType): `0x${string}` {
+  return nftType === 'starter_pack' ? getBuilderStarterPackContractAddress() : getBuilderContractAddress();
 }
 
 // USDC Contract we use for payments
@@ -82,26 +69,11 @@ export const builderPointsShare = 0.2;
 // Selecting the top 100 builders
 export const weeklyRewardableBuilders = 100;
 
-export function isPreseason01Contract(contractAddress: string): boolean {
-  const preseason01 = '2024-W41';
-
-  const preseason01Addresses = [
-    getBuilderNftContractAddress(preseason01),
-    getBuilderNftStarterPackContractAddress(preseason01)
-  ];
-
-  if (preseason01Addresses.includes(contractAddress.toLowerCase() as Address)) {
-    return true;
-  }
-
-  return false;
-}
-
 // const serverClient = getWalletClient({ chainId: builderNftChain.id, privateKey: builderSmartContractMinterKey });
 
 // const apiClient = new BuilderNFTSeasonOneClient({
 //   chain: builderNftChain,
-//   contractAddress: getBuilderNftContractAddress(),
+//   contractAddress: getBuilderContractAddress(),
 //   walletClient: serverClient
 // });
 

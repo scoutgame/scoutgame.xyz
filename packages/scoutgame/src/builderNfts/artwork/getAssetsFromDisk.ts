@@ -8,7 +8,7 @@ import { getCurrentSeasonStart } from '../../dates/utils';
 
 export function getAssetsFromDisk() {
   const currentSeason = getCurrentSeasonStart();
-  const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../../src'), 'assets');
+  const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../../'), 'assets');
   const overlaysFolder = `${folder}/overlays/${currentSeason}`;
   const overlayFiles = fs.readdirSync(overlaysFolder);
   const overlaysBase64 = overlayFiles

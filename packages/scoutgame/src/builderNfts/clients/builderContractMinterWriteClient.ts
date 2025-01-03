@@ -1,6 +1,6 @@
 import type { Address, Chain } from 'viem';
 
-import { getBuilderNftContractAddress, builderNftChain } from '../constants';
+import { getBuilderContractAddress, builderNftChain } from '../constants';
 import { getScoutGameNftMinterWallet } from '../getScoutGameNftMinterWallet';
 
 import { BuilderNFTSeasonOneImplementation01Client } from './builderNFTSeasonOneClient';
@@ -8,7 +8,7 @@ import { BuilderNFTSeasonOneImplementation01Client } from './builderNFTSeasonOne
 // lazily create the client to avoid exceptions if the environment is not configured
 export function getBuilderContractMinterClient({
   chain = builderNftChain,
-  contractAddress = getBuilderNftContractAddress()
+  contractAddress = getBuilderContractAddress()
 }: {
   chain?: Chain;
   contractAddress?: Address;

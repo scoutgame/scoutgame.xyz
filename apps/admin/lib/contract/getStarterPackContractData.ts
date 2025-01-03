@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
-import { getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getBuilderStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import type { Address } from 'viem';
 
 import { aggregateNftSalesData, type NftSalesData } from './aggregateNftSalesData';
@@ -24,7 +24,7 @@ export async function getStarterPackContractData(): Promise<StarterPackNFTContra
   return {
     totalSupply,
     currentMinter: currentMinter as Address,
-    contractAddress: getBuilderNftStarterPackContractAddress(),
+    contractAddress: getBuilderStarterPackContractAddress(),
     nftSalesData
   };
 }

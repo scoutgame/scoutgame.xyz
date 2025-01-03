@@ -1,8 +1,5 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 
-import type { ISOWeek } from '../dates/config';
-import { getCurrentSeasonStart } from '../dates/utils';
-
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
 
@@ -14,14 +11,14 @@ export type CompositeCursor = {
 export async function getPaginatedBuilders({
   limit,
   week,
+  season,
   cursor
 }: {
   limit: number;
-  week: ISOWeek;
+  week: string;
+  season: string;
   cursor: CompositeCursor | null;
 }): Promise<{ builders: BuilderInfo[]; nextCursor: CompositeCursor | null }> {
-  const season = getCurrentSeasonStart(week);
-
   const builders = await prisma.userWeeklyStats
     .findMany({
       where: {

@@ -4,7 +4,7 @@ import { jest } from '@jest/globals';
 
 import { mockBuilder, mockBuilderNft } from '../../testing/database';
 import { randomLargeInt } from '../../testing/generators';
-import { builderNftChain, getBuilderNftContractAddress } from '../constants';
+import { builderNftChain, getBuilderContractAddress } from '../constants';
 
 jest.unstable_mockModule('../clients/builderContractMinterWriteClient', () => ({
   getBuilderContractMinterClient: () => ({
@@ -46,7 +46,7 @@ describe('registerBuilderNFT', () => {
         builderId: builder.id,
         season: mockSeason,
         chainId: builderNftChain.id,
-        contractAddress: getBuilderNftContractAddress()
+        contractAddress: getBuilderContractAddress()
       });
     });
 
@@ -58,7 +58,7 @@ describe('registerBuilderNFT', () => {
       where: {
         builderId: builder.id,
         chainId: builderNftChain.id,
-        contractAddress: getBuilderNftContractAddress(),
+        contractAddress: getBuilderContractAddress(),
         season: mockSeason
       }
     });
@@ -67,7 +67,7 @@ describe('registerBuilderNFT', () => {
     expect(createdNft?.builderId).toBe(builder.id);
     expect(createdNft?.season).toBe(mockSeason);
     expect(createdNft?.chainId).toBe(builderNftChain.id);
-    expect(createdNft?.contractAddress).toBe(getBuilderNftContractAddress());
+    expect(createdNft?.contractAddress).toBe(getBuilderContractAddress());
   });
 
   it('should return existing builder NFT if already registered', async () => {
@@ -76,7 +76,7 @@ describe('registerBuilderNFT', () => {
       builderId: builder.id,
       season: mockSeason,
       chainId: builderNftChain.id,
-      contractAddress: getBuilderNftContractAddress()
+      contractAddress: getBuilderContractAddress()
     });
 
     const result = await registerBuilderNFT({
