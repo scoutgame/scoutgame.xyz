@@ -1,8 +1,9 @@
 import type { StackProps } from '@mui/material';
-import { Button, Container, Stack, Typography } from '@mui/material';
+import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 function ContainerStack({ children, ...props }: { children: React.ReactNode } & StackProps) {
   return (
@@ -87,7 +88,15 @@ function Step({
   );
 }
 
-function HeroSection() {
+function HeroSection({
+  heroSubtitle,
+  heroImage,
+  partnerUtmCampaign
+}: {
+  heroSubtitle: ReactNode;
+  heroImage: string;
+  partnerUtmCampaign: string;
+}) {
   return (
     <Stack sx={{ position: 'relative' }}>
       <Hidden mdDown>
@@ -147,16 +156,12 @@ function HeroSection() {
             </Typography>
             <Hidden mdUp>
               <Typography variant='h6' textAlign='center'>
-                Pick great developers. Earn rewards.
-                <br />
-                Everyone can play. No coding required!
+                {heroSubtitle}
               </Typography>
             </Hidden>
             <Hidden mdDown>
               <Typography variant='h5' textAlign='left'>
-                Pick great developers. Earn rewards.
-                <br />
-                Everyone can play. No coding required!
+                {heroSubtitle}
               </Typography>
             </Hidden>
             <Button
@@ -171,14 +176,14 @@ function HeroSection() {
               }}
               data-test='get-started-button'
             >
-              <Link href='/login'>Get started</Link>
+              <Link href={`/login?utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
             </Button>
           </Stack>
           <Hidden mdDown>
-            <Image src='/images/home/cool-dev.png' width={350} height={350} alt='Cool dev' />
+            <Image src={heroImage} width={350} height={350} alt='Cool dev' />
           </Hidden>
           <Hidden mdUp>
-            <Image src='/images/home/cool-dev.png' width={250} height={250} alt='Cool dev' />
+            <Image src={heroImage} width={250} height={250} alt='Cool dev' />
           </Hidden>
         </Stack>
       </Container>
@@ -208,61 +213,26 @@ function HowToPlaySection() {
         >
           <Step
             stepNumber='Step 1'
-            title='Discover Builders & Projects'
-            description='Anyone can play Scout Game. Discover and back talented developers working on impactful open source projects. Get to know the players who are moving the onchain ecosystem forward.'
-            iconSrc='/images/home/scout-icon.svg'
+            title='Sign Up & Apply'
+            description="Connect your GitHub and let us verify your open-source contributions. Once you're approved, your Builder Card goes live, and you're in the game!"
+            iconSrc='/images/home/github-icon.svg'
           />
           <Step
             stepNumber='Step 2'
-            title='Collect Builder Cards'
-            description='Scout promising developers by collecting seasonal Builder NFT Cards. Earn Scout Points based on their contributions and activity—your insights help highlight the best talent.'
-            iconSrc='/images/home/card-icon.svg'
-            additionalContent={
-              <Stack alignItems='center'>
-                <Typography variant='h6' color='secondary' mt={2} mb={1} textAlign='center'>
-                  carl's Builder Card
-                </Typography>
-                <Hidden mdDown>
-                  <Image
-                    src='/images/home/card-diagram.png'
-                    width='350'
-                    height='350'
-                    alt='Collect cards'
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                      objectFit: 'contain'
-                    }}
-                  />
-                </Hidden>
-                <Hidden mdUp>
-                  <Stack alignItems='center'>
-                    <Image
-                      src='/images/home/card-diagram-mobile.png'
-                      width='350'
-                      height='350'
-                      alt='Collect cards'
-                      style={{
-                        height: '100%',
-                        width: '85%',
-                        objectFit: 'cover'
-                      }}
-                    />
-                  </Stack>
-                </Hidden>
-              </Stack>
-            }
+            title='Collect Gems Weekly'
+            description='Earn Gems every week by tackling issues in qualified open-source projects. Contributions earn you 1, 10, 30, or even 100 Gems based on their impact. More Gems mean more Scout Points and higher ranks!'
+            iconSrc='/images/home/code-icon.svg'
           />
           <Step
             stepNumber='Step 3'
-            title='Compete & Win'
-            description='Compete with other Scouts in weekly challenges to climb the leaderboard and win. Scout talent, earn rewards, and prove you’re the best in the game!'
+            title='Earn Rewards'
+            description='Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You’ll also get 20% of the revenue from Builder Card sales, boosting your rewards!'
             iconSrc='/images/home/trophy-icon.svg'
           />
           <Step
             stepNumber='Step 4'
-            title='Earn Rewards'
-            description='Collect Scout Points weekly based on the success of your scouted Builders. Win additional prizes like $Moxie or OP from our partners. Supporting innovation has never been so rewarding.'
+            title='Earn Tokens'
+            description='Turn your skills into real rewards. Collect tokens and prizes from top partners like Celo and Optimism for your contributions to the ecosystem.'
             iconSrc='/images/home/quests-icon.svg'
           />
         </Container>
@@ -271,7 +241,68 @@ function HowToPlaySection() {
   );
 }
 
-function FooterSection() {
+function PartnerRewardsSection({
+  partnerName,
+  partnerBanner,
+  partnerInfoLink,
+  accentColor,
+  partnerRewardsText
+}: {
+  partnerName: string;
+  partnerBanner: string;
+  partnerInfoLink: string;
+  accentColor: string;
+  partnerRewardsText: string;
+}) {
+  return (
+    <Paper
+      sx={{
+        bgcolor: 'background.dark',
+        zIndex: 1,
+        py: {
+          xs: 0,
+          md: 4
+        },
+        pb: {
+          xs: 2
+        },
+        mb: {
+          xs: 2,
+          md: 0
+        }
+      }}
+    >
+      <Container maxWidth='lg' sx={{ px: { xs: 0, md: 4 } }}>
+        <Stack
+          alignItems='center'
+          gap={3}
+          flexDirection={{
+            xs: 'column',
+            md: 'row'
+          }}
+          justifyContent='center'
+        >
+          <img src={partnerBanner} width='100%' style={{ maxWidth: 750, objectFit: 'cover' }} alt='Partner banner' />
+          <Stack gap={2} alignItems='center' sx={{ px: { xs: 2, md: 0 } }}>
+            <Typography variant='h4' color={accentColor} fontWeight={500} textAlign='center'>
+              Scout Game + {partnerName}
+            </Typography>
+            <Typography variant='h6' fontWeight={500}>
+              {partnerRewardsText}
+            </Typography>
+            <Button variant='outlined' sx={{ px: 2, borderColor: accentColor }}>
+              <Link href={partnerInfoLink}>
+                <Typography color={accentColor}>Learn more</Typography>
+              </Link>
+            </Button>
+          </Stack>
+        </Stack>
+      </Container>
+    </Paper>
+  );
+}
+
+function FooterSection({ partnerUtmCampaign }: { partnerUtmCampaign: string }) {
   return (
     <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }} mb={{ xs: 4, md: 0 }}>
       <Hidden mdDown>
@@ -304,14 +335,32 @@ function FooterSection() {
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
         <Button variant='contained' sx={{ width: '50%' }}>
-          <Link href='/login'>Get started</Link>
+          <Link href={`/login?utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
         </Button>
       </Stack>
     </Stack>
   );
 }
 
-export function LandingPage() {
+export function PartnerLandingPage({
+  heroSubtitle,
+  heroImage,
+  partnerName,
+  partnerBanner,
+  partnerInfoLink,
+  accentColor,
+  partnerRewardsText,
+  partnerUtmCampaign
+}: {
+  heroSubtitle: ReactNode;
+  heroImage: string;
+  partnerName: string;
+  partnerBanner: string;
+  partnerInfoLink: string;
+  accentColor: string;
+  partnerRewardsText: string;
+  partnerUtmCampaign: string;
+}) {
   return (
     <Stack height='100%' overflow='hidden'>
       <Image
@@ -328,9 +377,16 @@ export function LandingPage() {
         }}
       />
       <Stack height='100%' overflow='auto'>
-        <HeroSection />
+        <HeroSection heroSubtitle={heroSubtitle} heroImage={heroImage} partnerUtmCampaign={partnerUtmCampaign} />
         <HowToPlaySection />
-        <FooterSection />
+        <PartnerRewardsSection
+          partnerName={partnerName}
+          partnerBanner={partnerBanner}
+          partnerInfoLink={partnerInfoLink}
+          accentColor={accentColor}
+          partnerRewardsText={partnerRewardsText}
+        />
+        <FooterSection partnerUtmCampaign={partnerUtmCampaign} />
       </Stack>
     </Stack>
   );
