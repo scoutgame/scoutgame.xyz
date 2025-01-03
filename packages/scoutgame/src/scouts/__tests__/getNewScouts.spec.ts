@@ -6,7 +6,8 @@ const mockSeason = '2023-W01';
 // mock the getCurrentSeason function
 jest.unstable_mockModule('../../dates/utils', () => ({
   getCurrentWeek: jest.fn(() => '2023-W02'),
-  getCurrentSeason: jest.fn(() => ({ start: mockSeason }))
+  getCurrentSeason: jest.fn(() => ({ start: mockSeason })),
+  getCurrentSeasonStart: jest.fn(() => mockSeason)
 }));
 
 const { getNewScouts } = await import('../getNewScouts');

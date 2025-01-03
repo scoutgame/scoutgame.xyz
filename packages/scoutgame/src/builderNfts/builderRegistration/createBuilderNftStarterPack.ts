@@ -5,7 +5,7 @@ import { getCurrentSeasonStart } from '../../dates/utils';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from '../artwork/uploadStarterPackArtwork';
 import { builderContractStarterPackReadonlyApiClient } from '../clients/builderContractStarterPackReadClient';
-import { builderNftChain, getBuilderStarterPackContractAddress } from '../constants';
+import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 export async function createBuilderNftStarterPack({
   avatar,
@@ -15,7 +15,7 @@ export async function createBuilderNftStarterPack({
   path,
   season = getCurrentSeasonStart(),
   chainId = builderNftChain.id,
-  contractAddress = getBuilderStarterPackContractAddress()
+  contractAddress = getBuilderNftStarterPackContractAddress()
 }: {
   displayName: string;
   path: string;
