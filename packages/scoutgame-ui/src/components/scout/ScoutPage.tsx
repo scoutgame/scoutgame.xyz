@@ -36,8 +36,7 @@ export async function ScoutPage({
   builderOrder,
   scoutTab,
   buildersLayout,
-  tab,
-  carousel
+  tab
 }: {
   scoutSort: string;
   builderSort: string;
@@ -46,9 +45,8 @@ export async function ScoutPage({
   scoutTab: string;
   buildersLayout: string;
   tab: string;
-  carousel: string;
 }) {
-  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder, carousel })
+  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder })
     .filter(([, value]) => isTruthy(value))
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
@@ -74,7 +72,7 @@ export async function ScoutPage({
           }}
         >
           <Suspense key='scout-page-carousel' fallback={<LoadingCards count={3} withTitle={true} />}>
-            <ScoutPageCarousel tab={carousel} />
+            <ScoutPageCarousel />
           </Suspense>
           <Stack
             position='sticky'

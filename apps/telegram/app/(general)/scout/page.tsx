@@ -12,7 +12,6 @@ export default async function Scout({
   const scoutTab = (searchParams.scoutTab as string) || 'scouts';
   const buildersLayout = (searchParams.buildersLayout as string) || 'table';
   const tab = (searchParams.tab as string) || 'scouts';
-  const carousel = (searchParams.carousel as string) || 'starter_pack';
 
   return (
     <ScoutPage
@@ -23,7 +22,6 @@ export default async function Scout({
       scoutTab={scoutTab}
       buildersLayout={buildersLayout}
       tab={tab}
-      carousel={carousel}
     />
   );
 }
