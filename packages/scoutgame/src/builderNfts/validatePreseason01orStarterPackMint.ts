@@ -9,11 +9,7 @@ type MintValidation = {
   tokensMinted: number;
 };
 
-<<<<<<<< HEAD:packages/scoutgame/src/builderNfts/validatePreseason01orStarterPackMint.ts
 export async function validatePreseason01orStarterPackMint({
-========
-export async function validateMint({
->>>>>>>> f8eda4458986a6fbfacb32ff08140c06327f0cdc:packages/scoutgame/src/builderNfts/validateMint.ts
   txHash,
   chainId
 }: {
