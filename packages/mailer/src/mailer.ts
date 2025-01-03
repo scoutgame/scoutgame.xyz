@@ -50,7 +50,7 @@ export async function sendEmailTemplate({
     return;
   }
 
-  if (!user.sendMarketing && !user.sendTransactionEmails) {
+  if (!user.sendTransactionEmails) {
     log.debug('User does not want to receive any emails, not sending email');
     return;
   }
