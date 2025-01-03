@@ -256,8 +256,7 @@ function PartnerRewardsSection({
           md: 4
         },
         pb: {
-          xs: 2,
-          md: 0
+          xs: 2
         },
         mb: {
           xs: 2,
@@ -265,7 +264,7 @@ function PartnerRewardsSection({
         }
       }}
     >
-      <Container maxWidth='lg' sx={{ p: { xs: 0, md: 4 } }}>
+      <Container maxWidth='lg' sx={{ px: { xs: 0, md: 4 } }}>
         <Stack
           alignItems='center'
           gap={3}
