@@ -37,7 +37,11 @@ export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonS
 
   const envVarName = `BUILDER_NFT_CONTRACT_ADDRESS_${seasonName}`;
 
-  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address;
+  const address = env(envVarName) || process.env[`REACT_APP_${envVarName}`];
+  if (!address) {
+    throw new Error(`Builder NFT contract address for ${season} not found`);
+  }
+  return address.toLowerCase() as Address;
 }
 
 export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
