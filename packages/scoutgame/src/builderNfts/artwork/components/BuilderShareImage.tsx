@@ -26,7 +26,7 @@ export function BuilderShareImage({
   builderPrice: bigint;
   size?: number;
 }) {
-  const domain = baseUrl;
+  const domain = baseUrl || process.env.IMAGE_HOSTING_DOMAIN;
   const overlays = [
     { name: 'red', src: `/images/profile/builder/red-sky.jpg`, color: '#661933' },
     { name: 'purple', src: '/images/profile/builder/purple-sky.jpg', color: '#190D4D' },
