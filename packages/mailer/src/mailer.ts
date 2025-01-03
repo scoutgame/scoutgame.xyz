@@ -35,10 +35,7 @@ export async function sendEmailTemplate({
 
   const user = await prisma.scout.findUniqueOrThrow({
     where: {
-      id: userId,
-      email: {
-        not: null
-      }
+      id: userId
     },
     select: {
       sendMarketing: true,
@@ -48,7 +45,12 @@ export async function sendEmailTemplate({
     }
   });
 
-  if (!user.sendMarketing && !user.sendTransactionEmails) {
+  if (!user.email) {
+    log.debug('User does not have an email, not sending email');
+    return;
+  }
+
+  if (!user.sendTransactionEmails) {
     log.debug('User does not want to receive any emails, not sending email');
     return;
   }

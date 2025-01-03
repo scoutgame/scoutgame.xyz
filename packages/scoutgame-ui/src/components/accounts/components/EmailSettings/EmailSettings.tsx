@@ -73,18 +73,27 @@ export function EmailSettings({ user }: { user: UserWithAccountsDetails }) {
             name='email'
             disabled={isExecuting}
             render={({ field, formState }) => (
-              <TextField error={!!formState.errors.email} {...field} sx={{ maxWidth: 250 }} />
+              <TextField
+                error={!!formState.errors.email}
+                {...field}
+                sx={{
+                  maxWidth: {
+                    xs: '100%',
+                    md: 250
+                  }
+                }}
+              />
             )}
           />
 
-          <Stack>
+          <Stack gap={{ xs: 1, md: 0 }}>
             <Controller
               control={control}
               name='sendTransactionEmails'
               render={({ field }) => (
                 <FormControlLabel
                   disabled={isExecuting}
-                  control={<Checkbox checked={field.value} {...field} />}
+                  control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
                   label='Disable all Scout Game email notifications (activity and pending actions)'
                 />
               )}
@@ -94,7 +103,7 @@ export function EmailSettings({ user }: { user: UserWithAccountsDetails }) {
               name='sendMarketing'
               render={({ field }) => (
                 <FormControlLabel
-                  control={<Checkbox checked={field.value} {...field} />}
+                  control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
                   label='Notify me of new opportunities (grants, accelerators, etc)'
                 />
               )}

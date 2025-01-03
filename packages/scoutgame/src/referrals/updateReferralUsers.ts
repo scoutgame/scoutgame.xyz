@@ -26,76 +26,81 @@ export async function updateReferralUsers(refereeId: string) {
 
   const referrerId = referralCodeEvent.builderEvent.builderId;
 
-  const txs = await prisma.$transaction(async (tx) => {
-    // Update referrer
-    const referrer = await tx.scout.update({
-      where: {
-        id: referrerId
-      },
-      data: {
-        currentBalance: {
-          increment: rewardPoints
-        }
-      },
-      select: BasicUserInfoSelect
-    });
-
-    const referrerPointsReceived = await tx.pointsReceipt.create({
-      data: {
-        value: rewardPoints,
-        season: getCurrentSeasonStart(),
-        claimedAt: new Date(),
-        recipient: {
-          connect: {
-            id: referrerId
+  const txs = await prisma.$transaction(
+    async (tx) => {
+      // Update referrer
+      const referrer = await tx.scout.update({
+        where: {
+          id: referrerId
+        },
+        data: {
+          currentBalance: {
+            increment: rewardPoints
           }
         },
-        event: {
-          connect: {
-            id: referralCodeEvent.builderEvent.id
+        select: BasicUserInfoSelect
+      });
+
+      const referrerPointsReceived = await tx.pointsReceipt.create({
+        data: {
+          value: rewardPoints,
+          season: getCurrentSeasonStart(),
+          claimedAt: new Date(),
+          recipient: {
+            connect: {
+              id: referrerId
+            }
+          },
+          event: {
+            connect: {
+              id: referralCodeEvent.builderEvent.id
+            }
           }
         }
-      }
-    });
+      });
 
-    // Update referee
-    const referee = await tx.scout.update({
-      where: {
-        id: refereeId
-      },
-      data: {
-        currentBalance: {
-          increment: rewardPoints
+      // Update referee
+      const referee = await tx.scout.update({
+        where: {
+          id: refereeId
         },
-        pointsReceived: {
-          create: {
-            value: rewardPoints,
-            claimedAt: new Date(),
-            eventId: referrerPointsReceived.eventId,
-            season: getCurrentSeasonStart()
+        data: {
+          currentBalance: {
+            increment: rewardPoints
+          },
+          pointsReceived: {
+            create: {
+              value: rewardPoints,
+              claimedAt: new Date(),
+              eventId: referrerPointsReceived.eventId,
+              season: getCurrentSeasonStart()
+            }
           }
+        },
+        select: BasicUserInfoSelect
+      });
+
+      await prisma.referralCodeEvent.update({
+        where: {
+          id: referralCodeEvent.id
+        },
+        data: {
+          completedAt: new Date()
         }
-      },
-      select: BasicUserInfoSelect
-    });
+      });
 
-    await prisma.referralCodeEvent.update({
-      where: {
-        id: referralCodeEvent.id
-      },
-      data: {
-        completedAt: new Date()
-      }
-    });
+      trackUserAction('referral_link_used', {
+        userId: refereeId,
+        referralCode: referrer.referralCode,
+        referrerPath: referrer.path
+      });
 
-    trackUserAction('referral_link_used', {
-      userId: refereeId,
-      referralCode: referrer.referralCode,
-      referrerPath: referrer.path
-    });
-
-    return [referrer, referee] as const;
-  });
+      return [referrer, referee] as const;
+    },
+    {
+      timeout: 10000
+    }
+  );
 
   const [referrer, referee] = txs;
 
