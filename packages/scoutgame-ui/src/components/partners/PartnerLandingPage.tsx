@@ -88,7 +88,15 @@ function Step({
   );
 }
 
-function HeroSection({ heroSubtitle, heroImage }: { heroSubtitle: ReactNode; heroImage: string }) {
+function HeroSection({
+  heroSubtitle,
+  heroImage,
+  partnerUtmCampaign
+}: {
+  heroSubtitle: ReactNode;
+  heroImage: string;
+  partnerUtmCampaign: string;
+}) {
   return (
     <Stack sx={{ position: 'relative' }}>
       <Hidden mdDown>
@@ -168,7 +176,7 @@ function HeroSection({ heroSubtitle, heroImage }: { heroSubtitle: ReactNode; her
               }}
               data-test='get-started-button'
             >
-              <Link href='/login'>Get started</Link>
+              <Link href={`/login?utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
             </Button>
           </Stack>
           <Hidden mdDown>
@@ -294,7 +302,7 @@ function PartnerRewardsSection({
   );
 }
 
-function FooterSection() {
+function FooterSection({ partnerUtmCampaign }: { partnerUtmCampaign: string }) {
   return (
     <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }} mb={{ xs: 4, md: 0 }}>
       <Hidden mdDown>
@@ -327,7 +335,7 @@ function FooterSection() {
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
         <Button variant='contained' sx={{ width: '50%' }}>
-          <Link href='/login'>Get started</Link>
+          <Link href={`/login?utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
         </Button>
       </Stack>
     </Stack>
@@ -341,7 +349,8 @@ export function PartnerLandingPage({
   partnerBanner,
   partnerInfoLink,
   accentColor,
-  partnerRewardsText
+  partnerRewardsText,
+  partnerUtmCampaign
 }: {
   heroSubtitle: ReactNode;
   heroImage: string;
@@ -350,6 +359,7 @@ export function PartnerLandingPage({
   partnerInfoLink: string;
   accentColor: string;
   partnerRewardsText: string;
+  partnerUtmCampaign: string;
 }) {
   return (
     <Stack height='100%' overflow='hidden'>
@@ -367,7 +377,7 @@ export function PartnerLandingPage({
         }}
       />
       <Stack height='100%' overflow='auto'>
-        <HeroSection heroSubtitle={heroSubtitle} heroImage={heroImage} />
+        <HeroSection heroSubtitle={heroSubtitle} heroImage={heroImage} partnerUtmCampaign={partnerUtmCampaign} />
         <HowToPlaySection />
         <PartnerRewardsSection
           partnerName={partnerName}
@@ -376,7 +386,7 @@ export function PartnerLandingPage({
           accentColor={accentColor}
           partnerRewardsText={partnerRewardsText}
         />
-        <FooterSection />
+        <FooterSection partnerUtmCampaign={partnerUtmCampaign} />
       </Stack>
     </Stack>
   );

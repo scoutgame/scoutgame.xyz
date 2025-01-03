@@ -16,6 +16,7 @@ export function CeloLandingPage() {
       partnerBanner='/images/promos/celo-promo-slide.png'
       partnerInfoLink='/info/partner-rewards/celo'
       partnerRewardsText='Celo is partnering with Scout Game to support developers who contribute to the ecosystem.'
+      partnerUtmCampaign='celo'
     />
   );
 }

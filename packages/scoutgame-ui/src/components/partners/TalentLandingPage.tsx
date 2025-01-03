@@ -16,6 +16,7 @@ export function TalentLandingPage() {
       partnerBanner='/images/promos/talent-promo-slide.png'
       partnerInfoLink='/info/partner-rewards/talent-protocol'
       partnerRewardsText='Talent Protocol is partnering with Scout Game to reward Talented Builders.'
+      partnerUtmCampaign='talent'
     />
   );
 }
