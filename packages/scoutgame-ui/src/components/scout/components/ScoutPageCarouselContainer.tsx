@@ -10,7 +10,7 @@ import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { ScoutPageCarousel } from './ScoutPageCarousel';
 
-export async function ScoutPageCarouselContainer({ tab }: { tab: string }) {
+export async function ScoutPageCarouselContainer() {
   const session = await getSession();
   const scoutId = session.scoutId;
   const [, builders = []] = await safeAwaitSSRData(getTodaysHotBuilders());
@@ -32,7 +32,6 @@ export async function ScoutPageCarouselContainer({ tab }: { tab: string }) {
 
   return (
     <ScoutPageCarousel
-      tab={tab}
       builders={builders}
       starterPackBuilders={starterPackBuilders}
       remainingStarterCards={remainingStarterCards}
