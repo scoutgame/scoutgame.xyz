@@ -5,7 +5,7 @@ import { stringUtils } from '@charmverse/core/utilities';
 import type { Address, Chain } from 'viem';
 
 import { getBuilderContractMinterClient } from '../clients/builderContractMinterWriteClient';
-import { builderNftChain, getBuilderNftContractAddress } from '../constants';
+import { builderNftChain } from '../constants';
 import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
 import { createBuilderNft } from './createBuilderNft';
@@ -21,14 +21,6 @@ export async function registerBuilderNFT({
   chain?: Chain;
   contractAddress?: Address;
 }) {
-  if (!season) {
-    throw new InvalidInputError('Season is required');
-  }
-
-  if (!contractAddress) {
-    contractAddress = getBuilderNftContractAddress(season);
-  }
-
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }

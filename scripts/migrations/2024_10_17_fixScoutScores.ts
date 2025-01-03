@@ -6,7 +6,6 @@ import { getPointStatsFromHistory } from '@packages/scoutgame/points/getPointSta
 import { refreshPointStatsFromHistory } from '@packages/scoutgame/points/refreshPointStatsFromHistory';
 import { log } from '@charmverse/core/log';
 import { sendPoints } from '@packages/scoutgame/points/sendPoints';
-import { getCurrentSeason } from '@packages/scoutgame/dates/utils';
 const tierByPoints = {
   60: 'Legendary',
   30: 'Mythic',
@@ -15,7 +14,8 @@ const tierByPoints = {
   10: 'Common'
 } as any;
 
-const currentSeason = getCurrentSeason()
+const currentSeasonStartDate = DateTime.fromObject({ year: 2024, month: 9, day: 30 }, { zone: 'utc' }); // Actual launch: 2024-W40
+const currentSeason = getCurrentSeasonStartDate.toFormat(`kkkk-'W'WW`);
 
 async function query() {
   // const scout = await prisma.scout.findFirstOrThrow({
@@ -83,7 +83,7 @@ async function query() {
     //   console.log(event.builder.username, event.pointsReceipts[0].value, event.builder.nftPurchaseEvents.length);
     // }
     // await refreshPointStatsFromHistory({ userIdOrUsername: event.builder.id });
-    const stats = await getPointStatsFromHistory({ userIdOrPath: event.builder.id, season: getCurrentSeasonStart() });
+    const stats = await getPointStatsFromHistory({ userIdOrPath: event.builder.id });
     const currentbalance = event.builder.currentBalance;
     const newBalance = stats.balance + event.pointsReceipts[0].value;
     if (newBalance === currentbalance) {

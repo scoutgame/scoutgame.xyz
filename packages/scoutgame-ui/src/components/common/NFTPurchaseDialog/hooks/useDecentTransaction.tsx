@@ -3,10 +3,8 @@ import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common
 import { ActionType } from '@decent.xyz/box-common';
 import {
   builderNftChain,
-  getBuilderNftContractAddress,
-  getBuilderNftStarterPackContractAddress,
+  getBuilderContractAddress,
   getDecentApiKey,
-  isPreseason01Contract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import {
@@ -31,10 +29,6 @@ export type DecentTransactionProps = {
   contractAddress?: string;
   useScoutToken?: boolean;
 };
-
-const preseason01NftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount, string scout)';
-
-const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
 
 export function _appendDecentQueryParams(path: string, data: any) {
   const queryString = Object.keys(data)
@@ -82,7 +76,7 @@ export function useDecentTransaction({
   useScoutToken
 }: DecentTransactionProps) {
   const _contractAddress =
-    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress());
+    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress());
 
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
@@ -100,10 +94,12 @@ export function useDecentTransaction({
         isNative: false,
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: isPreseason01Contract(_contractAddress) ? preseason01NftMintSignature : transferableNftMintSignature,
-      args: isPreseason01Contract(_contractAddress)
-        ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
-        : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
+      signature: useScoutToken
+        ? 'function mint(address account, uint256 tokenId, uint256 amount)'
+        : 'function mint(address account, uint256 tokenId, uint256 amount, string scout)',
+      args: useScoutToken
+        ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
+        : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
     }
   };
   const {

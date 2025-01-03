@@ -18,12 +18,11 @@ import {
   scoutTokenDecimalsMultiplier
 } from '../protocol/constants';
 
-import { isPreseason01Contract } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
-import { validatePreseason01Mint } from './validatePreseason01Mint';
-import { validateTransferrableNftMint } from './validateTransferrableNftMint';
+import { validateMint } from './validateMint';
+import { validateScoutProtocolMint } from './validateScoutProtocolMint';
 
 export async function handlePendingTransaction({
   pendingTransactionId
@@ -89,15 +88,16 @@ export async function handlePendingTransaction({
 
     scoutgameMintsLogger.info('Transaction settled', { txHash });
 
-    const validatedMint = isPreseason01Contract(pendingTx.contractAddress)
-      ? await validatePreseason01Mint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        })
-      : await validateTransferrableNftMint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        });
+    const validatedMint =
+      pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress().toLowerCase()
+        ? await validateScoutProtocolMint({
+            chainId: pendingTx.destinationChainId,
+            txHash
+          })
+        : await validateMint({
+            chainId: pendingTx.destinationChainId,
+            txHash
+          });
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {

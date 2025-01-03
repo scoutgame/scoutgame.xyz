@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { builderNftChain, getBuilderNftContractAddress } from '../constants';
+import { builderNftChain, getBuilderContractAddress } from '../constants';
 
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
@@ -31,7 +31,7 @@ const transferBatchAbi = {
 function getTransferBatchEvents({
   fromBlock,
   toBlock,
-  contractAddress = getBuilderNftContractAddress(),
+  contractAddress = getBuilderContractAddress(),
   chainId = builderNftChain.id
 }: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<TransferBatchEvent[]> {
   return getPublicClient(chainId)
@@ -67,7 +67,7 @@ function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSin
 export async function getTransferSingleWithBatchMerged({
   fromBlock,
   toBlock,
-  contractAddress = getBuilderNftContractAddress(),
+  contractAddress = getBuilderContractAddress(),
   chainId = builderNftChain.id
 }: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
   const [singleEvents, batchEvents] = await Promise.all([

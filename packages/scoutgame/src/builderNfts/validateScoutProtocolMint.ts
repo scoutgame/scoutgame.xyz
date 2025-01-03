@@ -1,7 +1,7 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { parseEventLogs } from 'viem';
 
-import { transferSingleAbi } from './accounting/getTransferSingleEvents';
+import { getScoutProtocolBuilderNFTReadonlyContract } from '../protocol/constants';
 
 type MintValidation = {
   walletAddress: string;
@@ -9,7 +9,7 @@ type MintValidation = {
   tokensMinted: number;
 };
 
-export async function validateTransferrableNftMint({
+export async function validateScoutProtocolMint({
   txHash,
   chainId
 }: {
@@ -21,7 +21,7 @@ export async function validateTransferrableNftMint({
   });
 
   const transferSingleEvent = parseEventLogs({
-    abi: [transferSingleAbi],
+    abi: getScoutProtocolBuilderNFTReadonlyContract().abi,
     logs: onchainEvent.logs,
     eventName: ['TransferSingle']
   })[0];
