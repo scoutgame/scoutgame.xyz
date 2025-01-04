@@ -104,77 +104,84 @@ function HeroSection() {
           }}
         />
       </Hidden>
-      <Stack
-        zIndex={{
-          xs: 0,
-          md: 1
+      <Container
+        maxWidth='lg'
+        sx={{
+          p: 0,
+          zIndex: {
+            xs: 0,
+            md: 1
+          }
         }}
-        mx='auto'
-        flexDirection={{
-          xs: 'column',
-          md: 'row'
-        }}
-        alignItems='center'
       >
         <Stack
-          gap={2}
-          my={{
-            xs: 2,
-            md: 4
+          flexDirection={{
+            xs: 'column',
+            md: 'row'
           }}
-          mr={{
-            xs: 0,
-            md: 12
-          }}
-          justifyContent='center'
+          justifyContent='space-between'
+          alignItems='center'
         >
-          <Typography
-            variant='h3'
-            color='secondary'
-            fontWeight={500}
-            textAlign={{
-              xs: 'center',
-              md: 'left'
+          <Stack
+            gap={2}
+            my={{
+              xs: 2,
+              md: 4
             }}
+            mr={{
+              xs: 0,
+              md: 12
+            }}
+            justifyContent='center'
           >
-            Fantasy Sports for <br /> Onchain Builders
-          </Typography>
-          <Hidden mdUp>
-            <Typography variant='h6' textAlign='center'>
-              Pick great developers. Earn rewards.
-              <br />
-              Everyone can play. No coding required!
+            <Typography
+              variant='h3'
+              color='secondary'
+              fontWeight={500}
+              textAlign={{
+                xs: 'center',
+                md: 'left'
+              }}
+            >
+              Fantasy Sports for <br /> Onchain Builders
             </Typography>
-          </Hidden>
+            <Hidden mdUp>
+              <Typography variant='h6' textAlign='center'>
+                Pick great developers. Earn rewards.
+                <br />
+                Everyone can play. No coding required!
+              </Typography>
+            </Hidden>
+            <Hidden mdDown>
+              <Typography variant='h5' textAlign='left'>
+                Pick great developers. Earn rewards.
+                <br />
+                Everyone can play. No coding required!
+              </Typography>
+            </Hidden>
+            <Button
+              variant='contained'
+              sx={{
+                my: 2,
+                width: '50%',
+                mx: {
+                  xs: 'auto',
+                  md: 0
+                }
+              }}
+              data-test='get-started-button'
+            >
+              <Link href='/login'>Get started</Link>
+            </Button>
+          </Stack>
           <Hidden mdDown>
-            <Typography variant='h5' textAlign='left'>
-              Pick great developers. Earn rewards.
-              <br />
-              Everyone can play. No coding required!
-            </Typography>
+            <Image src='/images/home/cool-dev.png' width={350} height={350} alt='Cool dev' />
           </Hidden>
-          <Button
-            variant='contained'
-            sx={{
-              my: 2,
-              width: '50%',
-              mx: {
-                xs: 'auto',
-                md: 0
-              }
-            }}
-            data-test='get-started-button'
-          >
-            <Link href='/login'>Get started</Link>
-          </Button>
+          <Hidden mdUp>
+            <Image src='/images/home/cool-dev.png' width={250} height={250} alt='Cool dev' />
+          </Hidden>
         </Stack>
-        <Hidden mdDown>
-          <Image src='/images/home/cool-dev.png' width={350} height={350} alt='Cool dev' />
-        </Hidden>
-        <Hidden mdUp>
-          <Image src='/images/home/cool-dev.png' width={250} height={250} alt='Cool dev' />
-        </Hidden>
-      </Stack>
+      </Container>
     </Stack>
   );
 }
@@ -237,7 +244,7 @@ function HowToPlaySection() {
                       alt='Collect cards'
                       style={{
                         height: '100%',
-                        width: '75%',
+                        width: '85%',
                         objectFit: 'cover'
                       }}
                     />
