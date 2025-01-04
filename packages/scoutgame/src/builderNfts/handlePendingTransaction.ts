@@ -68,7 +68,10 @@ export async function handlePendingTransaction({
     const builderNft = await prisma.builderNft.findFirstOrThrow({
       where: {
         tokenId: Number(pendingTx.tokenId),
-        contractAddress: pendingTx.contractAddress.toLowerCase()
+        contractAddress: {
+          equals: pendingTx.contractAddress.toLowerCase(),
+          mode: 'insensitive'
+        }
       }
     });
 
