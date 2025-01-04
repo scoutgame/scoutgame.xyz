@@ -8,6 +8,15 @@ export default async function Builders({
 }) {
   const tab = (searchParams.tab as string) || 'leaderboard';
   const week = searchParams.week as string | undefined;
+  const builderSort = (searchParams.builderSort as string | undefined) || 'rank';
+  const builderOrder = (searchParams.builderOrder as string | undefined) || 'asc';
 
-  return <BuildersPage tab={tab} week={week && validateISOWeek(week) ? week : getCurrentWeek()} />;
+  return (
+    <BuildersPage
+      tab={tab}
+      week={week && validateISOWeek(week) ? week : getCurrentWeek()}
+      builderSort={builderSort}
+      builderOrder={builderOrder}
+    />
+  );
 }
