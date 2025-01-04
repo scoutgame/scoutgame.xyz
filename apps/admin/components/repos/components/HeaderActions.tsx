@@ -1,11 +1,8 @@
 'use client';
 
-import { log } from '@charmverse/core/log';
 import { ArrowDropDown as ArrowDropDownIcon, Add as AddIcon } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
 import { Box, Divider, Menu, MenuItem, Stack, Button } from '@mui/material';
 import { getLastWeek, getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/scoutgame/dates/utils';
-import { useGETtrigger } from '@packages/scoutgame-ui/hooks/helpers';
 import React, { useState } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
@@ -18,7 +15,6 @@ export function HeaderActions() {
   function closeMenu() {
     setAnchorEl(null);
   }
-  const { trigger: sendMoxieTokens, isMutating } = useGETtrigger('/api/partners/moxie');
 
   const lastWeek = getWeekStartEndFormatted(getDateFromISOWeek(getLastWeek()).toJSDate());
   return (
@@ -99,34 +95,6 @@ export function HeaderActions() {
             src='/api/partners/op_supersim'
           >
             OP Supersim
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <LoadingButton
-            loading={isMutating}
-            onClick={() => {
-              sendMoxieTokens().catch((error) => {
-                log.error('Error sending Moxie tokens', error);
-                alert(`There was an error sending tokens. Please try again: ${(error as Error).message}`);
-              });
-            }}
-            fullWidth
-            size='small'
-            sx={{ justifyContent: 'flex-start' }}
-          >
-            Send Moxie Tokens
-          </LoadingButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Moxie Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/moxie/export'
-            onComplete={closeMenu}
-          >
-            Export Moxie Report
           </FileDownloadButton>
         </MenuItem>
         <MenuItem>
