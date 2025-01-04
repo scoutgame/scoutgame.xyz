@@ -9,7 +9,6 @@ export async function ScoutPageBuildersGallery({ showHotIcon }: { showHotIcon: b
     getPaginatedBuilders({
       limit: 10,
       week: getCurrentWeek(),
-      season: getCurrentSeasonStart(),
       cursor: null
     })
   );

@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { builderNftChain, getBuilderContractAddress, getBuilderStarterPackContractAddress } from '../constants';
+import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
@@ -46,7 +46,7 @@ function ignoreEvent(ev: BuilderScoutedEvent) {
 export function getBuilderScoutedEvents({
   fromBlock,
   toBlock,
-  contractAddress = getBuilderContractAddress(),
+  contractAddress = getBuilderNftContractAddress(),
   chainId = builderNftChain.id
 }: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<BuilderScoutedEvent[]> {
   return getPublicClient(chainId)
@@ -68,7 +68,7 @@ export function getBuilderStarterPackScoutedEvents({ fromBlock, toBlock }: Block
   return getPublicClient(builderNftChain.id)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
-      address: getBuilderStarterPackContractAddress(),
+      address: getBuilderNftStarterPackContractAddress(),
       event: builderScoutedAbi
     })
     .then((logs) =>

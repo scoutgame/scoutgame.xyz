@@ -22,7 +22,7 @@ jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   optimismUsdcContractAddress: mockOptimismUsdcContractAddress,
   builderNftChain: mockBuilderNftChain,
   getDecentApiKey: jest.fn().mockImplementation(() => '123'),
-  getBuilderContractAddress: jest.fn().mockImplementation(() => mockBuilderContractAddress)
+  getBuilderNftContractAddress: jest.fn().mockImplementation(() => mockBuilderContractAddress)
 }));
 
 jest.unstable_mockModule('@packages/scoutgame/protocol/constants', () => ({

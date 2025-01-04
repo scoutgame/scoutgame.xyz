@@ -1,11 +1,11 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 
-import { builderNftChain, getBuilderContractAddress } from '../constants';
+import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 
 import { BuilderNFTSeasonOneUpgradeableABIClient } from './BuilderNFTSeasonOneUpgradeableABIClient';
 
 export const builderProxyContractReadonlyApiClient = new BuilderNFTSeasonOneUpgradeableABIClient({
   chain: builderNftChain,
-  contractAddress: getBuilderContractAddress(),
+  contractAddress: getBuilderNftContractAddress(),
   publicClient: getPublicClient(builderNftChain.id)
 });
