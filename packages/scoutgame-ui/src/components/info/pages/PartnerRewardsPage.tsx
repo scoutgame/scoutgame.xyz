@@ -17,8 +17,8 @@ function Document() {
   return (
     <InfoCard title='Partner Rewards'>
       <Typography>
-        Scout Game is partnering with Celo, Game7, Moxie and Bountycatser to reward builders for doing what they do
-        best! Find details about each partnership on the following pages:
+        Scout Game is partnering with Celo, Game7 and Bountycatser to reward builders for doing what they do best! Find
+        details about each partnership on the following pages:
       </Typography>
       <List>
         <ListItem>
@@ -29,11 +29,6 @@ function Document() {
         <ListItem>
           <Link component={NextLink} href='/info/partner-rewards/game7'>
             Game7
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link component={NextLink} href='/info/partner-rewards/moxie'>
-            Moxie
           </Link>
         </ListItem>
         <ListItem>

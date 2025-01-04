@@ -20,7 +20,6 @@ export type QuestType =
   | 'enter-op-new-scout-competition'
   | 'scout-5-builders'
   | 'scout-share-builder'
-  | 'scout-moxie-builder'
   | 'share-weekly-claim'
   | 'share-scout-profile'
   | 'score-first-commit'
@@ -112,16 +111,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Scout & Share a Builder',
     points: 5,
     link: '/builders',
-    internal: true,
-    tag: 'scout',
-    resettable: true
-  },
-  'scout-moxie-builder': {
-    label: 'Scout a Moxie Builder',
-    points: 10,
-    rewards: '$Moxie tokens',
-    partner: 'Moxie',
-    link: '/info/partner-rewards/moxie',
     internal: true,
     tag: 'scout',
     resettable: true
