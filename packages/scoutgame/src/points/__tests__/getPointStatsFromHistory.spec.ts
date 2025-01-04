@@ -4,6 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { v4 as uuid } from 'uuid';
 
+import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockScout } from '../../testing/database';
 import type { PointStats } from '../getPointStatsFromHistory';
 import { getPointStatsFromHistory } from '../getPointStatsFromHistory';
@@ -11,12 +12,14 @@ import { getPointStatsFromHistory } from '../getPointStatsFromHistory';
 describe('getPointStatsFromHistory', () => {
   let user: Scout;
 
+  const season = getCurrentSeasonStart();
+
   beforeAll(async () => {
     user = await mockScout({ path: `user-${uuid()}` });
   });
 
   it('should return point stats when valid UUID is provided', async () => {
-    const stats = await getPointStatsFromHistory({ userIdOrPath: user.id });
+    const stats = await getPointStatsFromHistory({ userIdOrPath: user.id, season });
     expect(stats).toMatchObject({
       userId: user.id,
       pointsSpent: expect.any(Number),
@@ -31,7 +34,7 @@ describe('getPointStatsFromHistory', () => {
 
   // @TODO: Redo the find by username logic
   it('should return point stats when valid username is provided', async () => {
-    const stats = await getPointStatsFromHistory({ userIdOrPath: user.path! });
+    const stats = await getPointStatsFromHistory({ userIdOrPath: user.path!, season });
     expect(stats).toMatchObject({
       userId: user.id,
       pointsSpent: expect.any(Number),
@@ -83,7 +86,7 @@ describe('getPointStatsFromHistory', () => {
 
     jest.spyOn(prisma.pointsReceipt, 'findMany').mockResolvedValueOnce(allPointsReceivedRecords as PointsReceipt[]);
 
-    const pointStats = await getPointStatsFromHistory({ userIdOrPath: user.id });
+    const pointStats = await getPointStatsFromHistory({ userIdOrPath: user.id, season });
 
     // Sanity check that the points add up
     expect(pointStats.claimedPoints + pointStats.unclaimedPoints).toEqual(
@@ -103,12 +106,12 @@ describe('getPointStatsFromHistory', () => {
   });
 
   it('should throw InvalidInputError when userIdOrUsername is empty', async () => {
-    await expect(getPointStatsFromHistory({ userIdOrPath: '' })).rejects.toThrow(InvalidInputError);
+    await expect(getPointStatsFromHistory({ userIdOrPath: '', season })).rejects.toThrow(InvalidInputError);
   });
 
   it('should throw an error when userIdOrUsername is invalid UUID and does not exist as a username', async () => {
     const nonExistentUserId = uuid();
-    await expect(getPointStatsFromHistory({ userIdOrPath: nonExistentUserId })).rejects.toThrow();
+    await expect(getPointStatsFromHistory({ userIdOrPath: nonExistentUserId, season })).rejects.toThrow();
   });
 
   it.skip('should throw an assertion error if point records for individual categories do not match the full list of point records', async () => {
@@ -134,6 +137,6 @@ describe('getPointStatsFromHistory', () => {
     jest.spyOn(prisma.pointsReceipt, 'findMany').mockResolvedValueOnce(bonusPointsReceivedRecords as PointsReceipt[]); // Mismatch points
 
     jest.spyOn(prisma.pointsReceipt, 'findMany').mockResolvedValueOnce(allPointsReceivedRecords as PointsReceipt[]); // Mismatch points
-    await expect(getPointStatsFromHistory({ userIdOrPath: user.id })).rejects.toThrow();
+    await expect(getPointStatsFromHistory({ userIdOrPath: user.id, season })).rejects.toThrow();
   });
 });

@@ -26,8 +26,8 @@ import { BuilderNFTSeasonOneImplementation01Client } from '@packages/scoutgame/b
 import { ScoutProtocolBuilderNFTImplementationClient } from '@packages/scoutgame/builderNfts/clients/ScoutProtocolBuilderNFTImplementationClient';
 import {
   builderNftChain,
-  getBuilderContractAddress,
-  getBuilderContractAddressForNftType,
+  getBuilderNftContractAddress,
+  getBuilderNftContractAddressForNftType,
   treasuryAddress,
   usdcOptimismMainnetContractAddress,
   useTestnets
@@ -121,7 +121,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const builderContractReadonlyApiClient = new BuilderNFTSeasonOneImplementation01Client({
     chain: builderNftChain,
-    contractAddress: getBuilderContractAddress(),
+    contractAddress: getBuilderNftContractAddress(),
     publicClient: getPublicClient(builderNftChain.id)
   });
 
@@ -263,7 +263,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     contractAddress:
       platform === 'onchain_webapp'
         ? scoutProtocolBuilderNftContractAddress()
-        : getBuilderContractAddressForNftType(builder.nftType),
+        : getBuilderNftContractAddressForNftType(builder.nftType),
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: getCurrencyContract(selectedPaymentOption),
     useScoutToken: platform === 'onchain_webapp',
@@ -330,7 +330,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           contractAddress:
             platform === 'onchain_webapp'
               ? scoutProtocolBuilderNftContractAddress()
-              : getBuilderContractAddressForNftType(builder.nftType),
+              : getBuilderNftContractAddressForNftType(builder.nftType),
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,
           builderTokenId: Number(builderTokenId),

@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getBuilderContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getBuilderNftContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { mockBuilder, mockScout, mockBuilderNft } from '@packages/scoutgame/testing/database';
 
@@ -32,7 +32,7 @@ test.describe('Buy Nft', () => {
     await mockBuilderNft({
       builderId: builder.id,
       chainId: 10,
-      contractAddress: getBuilderContractAddress(),
+      contractAddress: getBuilderNftContractAddress(),
       tokenId: Math.floor(Math.random() * 1000000)
     });
 
@@ -105,7 +105,7 @@ test.describe('Buy Nft', () => {
     await mockBuilderNft({
       builderId: builder.id,
       chainId: 10,
-      contractAddress: getBuilderContractAddress(),
+      contractAddress: getBuilderNftContractAddress(),
       tokenId: Math.floor(Math.random() * 1000000)
     });
 

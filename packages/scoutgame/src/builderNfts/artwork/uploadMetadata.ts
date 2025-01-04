@@ -1,6 +1,6 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
-import { getBuilderStarterPackContractAddress } from '../constants';
+import { getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { builderNftArtworkContractName } from './constants';
 import { getNftTokenUrlPath, imageDomain } from './utils';
@@ -113,7 +113,7 @@ export async function uploadMetadata({
     season,
     tokenId: Number(tokenId),
     filename: starterPack ? 'starter-pack-metadata.json' : 'metadata.json',
-    contractName: starterPack ? getBuilderStarterPackContractAddress() : builderNftArtworkContractName
+    contractName: starterPack ? getBuilderNftStarterPackContractAddress() : builderNftArtworkContractName
   });
 
   // Generate the metadata object
@@ -125,7 +125,7 @@ export async function uploadMetadata({
       season,
       tokenId: Number(tokenId),
       filename: starterPack ? 'starter-pack-artwork.png' : 'artwork.png',
-      contractName: starterPack ? getBuilderStarterPackContractAddress() : builderNftArtworkContractName
+      contractName: starterPack ? getBuilderNftStarterPackContractAddress() : builderNftArtworkContractName
     })}`,
     attributes: attributes || []
   };

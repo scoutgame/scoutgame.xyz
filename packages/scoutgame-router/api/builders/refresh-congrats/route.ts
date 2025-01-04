@@ -1,20 +1,21 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
+import { stringUtils } from '@charmverse/core/utilities';
 import { refreshShareImage } from '@packages/scoutgame/builders/refreshShareImage';
 import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 export async function PUT(request: Request) {
   const { searchParams } = new URL(request.url);
-  const search = searchParams.get('builderId');
+  const builderId = searchParams.get('builderId') ?? (await request.json()).builderId;
 
-  if (typeof search !== 'string' || !search) {
+  if (!stringUtils.isUUID(builderId)) {
     return new Response('builderId is not defined', { status: 400 });
   }
 
   try {
     const existingNft = await prisma.builderNft.findFirstOrThrow({
       where: {
-        builderId: search,
+        builderId,
         season: getCurrentSeasonStart(),
         nftType: BuilderNftType.default
       }
@@ -24,7 +25,7 @@ export async function PUT(request: Request) {
 
     return Response.json({});
   } catch (error) {
-    log.error('Error refreshing share image', { error, search });
+    log.error('Error refreshing share image', { error, builderId });
     return new Response(`Unknown error: ${(error as Error).message}`, { status: 500 });
   }
 }

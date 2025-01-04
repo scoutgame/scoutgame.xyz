@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 
+import { getCurrentSeasonStart } from '../dates/utils';
 import { getPointStatsFromHistory } from '../points/getPointStatsFromHistory';
 
 export async function detectBalanceIssues() {
@@ -31,7 +32,8 @@ export async function detectBalanceIssues() {
     const scout = scouts[i];
 
     const balances = await getPointStatsFromHistory({
-      userIdOrPath: scout.id
+      userIdOrPath: scout.id,
+      season: getCurrentSeasonStart()
     });
 
     if (balances.balance !== scout.currentBalance) {

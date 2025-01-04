@@ -6,6 +6,8 @@ import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { validate as isUuid } from 'uuid';
 
+import type { ISOWeek, Season } from '../dates/config';
+
 export type PointStats = {
   userId: string;
   pointsReceivedAsScout: number;
@@ -27,6 +29,7 @@ export async function getPointStatsFromHistory({
   tx = prisma
 }: {
   userIdOrPath: string;
+  season: ISOWeek;
   tx?: Prisma.TransactionClient;
 }): Promise<PointStats> {
   if (!userIdOrPath) {

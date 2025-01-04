@@ -18,11 +18,12 @@ import {
   scoutTokenDecimalsMultiplier
 } from '../protocol/constants';
 
+import { isPreseason01Contract, isStarterPackContract } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
-import { validateMint } from './validateMint';
-import { validateScoutProtocolMint } from './validateScoutProtocolMint';
+import { validatePreseason01orStarterPackMint } from './validatePreseason01orStarterPackMint';
+import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
 export async function handlePendingTransaction({
   pendingTransactionId
@@ -66,7 +67,6 @@ export async function handlePendingTransaction({
     // Fetch the builder NFT
     const builderNft = await prisma.builderNft.findFirstOrThrow({
       where: {
-        season: getCurrentSeasonStart(),
         tokenId: Number(pendingTx.tokenId),
         contractAddress: pendingTx.contractAddress.toLowerCase()
       }
@@ -89,12 +89,12 @@ export async function handlePendingTransaction({
     scoutgameMintsLogger.info('Transaction settled', { txHash });
 
     const validatedMint =
-      pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress().toLowerCase()
-        ? await validateScoutProtocolMint({
+      isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress)
+        ? await validatePreseason01orStarterPackMint({
             chainId: pendingTx.destinationChainId,
             txHash
           })
-        : await validateMint({
+        : await validateTransferrableNftMint({
             chainId: pendingTx.destinationChainId,
             txHash
           });
@@ -116,7 +116,7 @@ export async function handlePendingTransaction({
         }
       });
 
-      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress().toLowerCase()) {
+      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress()) {
         await refreshScoutProtocolBuilderNftPrice({
           season: getCurrentSeasonStart(),
           builderId: builderNft.builderId
@@ -187,7 +187,3 @@ export async function handlePendingTransaction({
     }
   }
 }
-
-// handlePendingTransaction({
-//   pendingTransactionId: 'f059aafd-8203-45d9-910b-aced0fe27534'
-// }).then(console.log);

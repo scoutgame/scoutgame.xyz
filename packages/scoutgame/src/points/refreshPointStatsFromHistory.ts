@@ -16,7 +16,7 @@ export async function refreshPointStatsFromHistory({
   tx?: Prisma.TransactionClient;
 }): Promise<PointStats> {
   async function txHandler(_tx: Prisma.TransactionClient) {
-    const stats = await getPointStatsFromHistory({ userIdOrPath, tx: _tx });
+    const stats = await getPointStatsFromHistory({ userIdOrPath, tx: _tx, season });
     await setPointsEarnedStats({
       season,
       builderPoints: stats.pointsReceivedAsBuilder,

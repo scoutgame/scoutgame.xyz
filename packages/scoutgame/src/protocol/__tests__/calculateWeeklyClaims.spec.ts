@@ -19,7 +19,7 @@ describe('calculateWeeklyClaims', () => {
   it('should generate the correct claims', async () => {
     const builder1Wallet = generateRandomEthAddress().toLowerCase();
 
-    const mockWeek = '2024-TEST01';
+    const mockWeek = '2024-W42';
 
     const builder1 = await mockBuilder({
       wallets: [{ address: builder1Wallet }]

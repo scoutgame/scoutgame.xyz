@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { builderContractReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractReadClient';
 import { builderProxyContractReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderProxyContractReadClient';
 import {
-  getBuilderContractAddress,
+  getBuilderNftContractAddress,
   usdcOptimismMainnetContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
@@ -45,7 +45,7 @@ export async function getContractData(): Promise<BuilderNFTContractData> {
     currentImplementation: currentImplementation as Address,
     proceedsReceiver: proceedsReceiver as Address,
     totalSupply,
-    contractAddress: getBuilderContractAddress(),
+    contractAddress: getBuilderNftContractAddress(),
     receiverUsdcBalance: Number(balance / BigInt(1e6)),
     nftSalesData
   };

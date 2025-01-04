@@ -197,6 +197,25 @@ export async function recordNftMint(
       });
     }
 
+    await tx.scoutNft.upsert({
+      where: {
+        builderNftId_walletAddress: {
+          builderNftId,
+          walletAddress: recipientAddress.toLowerCase() as `0x${string}`
+        }
+      },
+      create: {
+        builderNftId,
+        walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
+        balance: amount
+      },
+      update: {
+        balance: {
+          increment: amount
+        }
+      }
+    });
+
     return builderEvent.nftPurchaseEvent;
   });
 
