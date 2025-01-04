@@ -28,7 +28,7 @@ export const seasons = [
   },
   // Preseason 2
   {
-    start: '2025-W01',
+    start: '2025-W02',
     title: 'Season 2'
   }
 ] satisfies SeasonConfig[];
