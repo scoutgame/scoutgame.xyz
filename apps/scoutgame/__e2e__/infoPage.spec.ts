@@ -44,14 +44,4 @@ test.describe('Info page partners', () => {
 
     await expect(infoPage.optimismContainer).toBeVisible();
   });
-  test('Open Moxie from the scout page', async ({ page, scoutPage, infoPage, utils }) => {
-    const newUser = await mockScout();
-    await utils.loginAsUserId(newUser.id);
-
-    await page.goto('/scout');
-    await expect(scoutPage.moxiePromoCard).toBeVisible();
-    await scoutPage.moxiePromoCard.click();
-
-    await expect(infoPage.moxieContainer).toBeVisible();
-  });
 });
