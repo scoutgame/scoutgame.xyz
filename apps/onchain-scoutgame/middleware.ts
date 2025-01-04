@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 
 // These are the links that are only accessible to logged in users
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests'];
-const partnerPages = ['/celo', '/talent', '/game7', '/lit'];
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();
@@ -17,14 +16,6 @@ export async function middleware(request: NextRequest) {
     // eslint-disable-next-line no-console
     console.log('Redirecting to login', { path, ...session });
     return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  const partner = partnerPages.find((link) => path.startsWith(link))?.slice(1);
-
-  if (!isLoggedIn && partner) {
-    // eslint-disable-next-line no-console
-    console.log('Redirecting to login', { path, partner, ...session });
-    return NextResponse.redirect(new URL(`/?partner=${partner}`, request.url));
   }
 
   // Redirect to home if logged in user clicks on login

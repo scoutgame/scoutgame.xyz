@@ -98,29 +98,21 @@ function HeroSection({
   partnerUtmCampaign: string;
 }) {
   return (
-    <Stack sx={{ position: 'relative' }}>
-      <Hidden mdDown>
-        <Image
-          src='/images/home/landing-bg.png'
-          width='500'
-          height='350'
-          alt='title icon'
-          style={{
-            width: '100%',
-            objectFit: 'cover',
-            position: 'absolute',
-            top: 0
-          }}
-        />
-      </Hidden>
+    <Stack
+      sx={{
+        backgroundImage: {
+          xs: undefined,
+          md: 'url(/images/home/landing-bg.png)'
+        },
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <Container
         maxWidth='lg'
         sx={{
-          p: 0,
-          zIndex: {
-            xs: 0,
-            md: 1
-          }
+          p: 0
         }}
       >
         <Stack
@@ -193,50 +185,41 @@ function HeroSection({
 
 function HowToPlaySection() {
   return (
-    <Stack position='relative'>
-      <Stack
-        zIndex={{
-          xs: 0,
-          md: 1
+    <Stack alignItems='center' mt={3}>
+      <Typography variant='h4' color='secondary' fontWeight={500}>
+        How to Play
+      </Typography>
+      <Container
+        maxWidth='lg'
+        sx={{
+          p: 0
         }}
-        alignItems='center'
-        mt={3}
       >
-        <Typography variant='h4' color='secondary' fontWeight={500}>
-          How to Play
-        </Typography>
-        <Container
-          maxWidth='lg'
-          sx={{
-            p: 0
-          }}
-        >
-          <Step
-            stepNumber='Step 1'
-            title='Sign Up & Apply'
-            description="Connect your GitHub and let us verify your open-source contributions. Once you're approved, your Builder Card goes live, and you're in the game!"
-            iconSrc='/images/home/github-icon.svg'
-          />
-          <Step
-            stepNumber='Step 2'
-            title='Collect Gems Weekly'
-            description='Earn Gems every week by tackling issues in qualified open-source projects. Contributions earn you 1, 10, 30, or even 100 Gems based on their impact. More Gems mean more Scout Points and higher ranks!'
-            iconSrc='/images/home/code-icon.svg'
-          />
-          <Step
-            stepNumber='Step 3'
-            title='Earn Rewards'
-            description='Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You’ll also get 20% of the revenue from Builder Card sales, boosting your rewards!'
-            iconSrc='/images/home/trophy-icon.svg'
-          />
-          <Step
-            stepNumber='Step 4'
-            title='Earn Tokens'
-            description='Turn your skills into real rewards. Collect tokens and prizes from top partners like Celo and Optimism for your contributions to the ecosystem.'
-            iconSrc='/images/home/quests-icon.svg'
-          />
-        </Container>
-      </Stack>
+        <Step
+          stepNumber='Step 1'
+          title='Sign Up & Apply'
+          description="Connect your GitHub and let us verify your open-source contributions. Once you're approved, your Builder Card goes live, and you're in the game!"
+          iconSrc='/images/home/github-icon.svg'
+        />
+        <Step
+          stepNumber='Step 2'
+          title='Collect Gems Weekly'
+          description='Earn Gems every week by tackling issues in qualified open-source projects. Contributions earn you 1, 10, 30, or even 100 Gems based on their impact. More Gems mean more Scout Points and higher ranks!'
+          iconSrc='/images/home/code-icon.svg'
+        />
+        <Step
+          stepNumber='Step 3'
+          title='Earn Rewards'
+          description='Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You’ll also get 20% of the revenue from Builder Card sales, boosting your rewards!'
+          iconSrc='/images/home/trophy-icon.svg'
+        />
+        <Step
+          stepNumber='Step 4'
+          title='Earn Tokens'
+          description='Turn your skills into real rewards. Collect tokens and prizes from top partners like Celo and Optimism for your contributions to the ecosystem.'
+          iconSrc='/images/home/quests-icon.svg'
+        />
+      </Container>
     </Stack>
   );
 }
@@ -258,7 +241,6 @@ function PartnerRewardsSection({
     <Paper
       sx={{
         bgcolor: 'background.dark',
-        zIndex: 1,
         py: {
           xs: 0,
           md: 4
@@ -304,33 +286,22 @@ function PartnerRewardsSection({
 
 function FooterSection({ partnerUtmCampaign }: { partnerUtmCampaign: string }) {
   return (
-    <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }} mb={{ xs: 4, md: 0 }}>
-      <Hidden mdDown>
-        <Image
-          src='/images/home/landing-bg.png'
-          width='500'
-          height='250'
-          alt='footer bg'
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            position: 'absolute',
-            top: 0,
-            left: 0
-          }}
-        />
-      </Hidden>
-      <Stack
-        mx='auto'
-        zIndex={{
-          xs: 0,
-          md: 1
-        }}
-        justifyContent='center'
-        alignItems='center'
-        gap={2}
-      >
+    <Stack
+      position='relative'
+      alignItems='center'
+      gap={2}
+      py={{ xs: 0, md: 4 }}
+      mb={{ xs: 4, md: 0 }}
+      sx={{
+        backgroundImage: {
+          xs: undefined,
+          md: 'url(/images/home/landing-bg.png)'
+        },
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <Stack mx='auto' justifyContent='center' alignItems='center' gap={2}>
         <Typography variant='h6' textAlign='center'>
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
@@ -362,20 +333,15 @@ export function PartnerLandingPage({
   partnerUtmCampaign: string;
 }) {
   return (
-    <Stack height='100%' overflow='hidden'>
-      <Image
-        src='/images/home/starry-bg.png'
-        width='500'
-        height='350'
-        alt='title icon'
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          position: 'absolute',
-          top: 0
-        }}
-      />
+    <Stack
+      height='100%'
+      overflow='hidden'
+      sx={{
+        backgroundImage: 'url(/images/home/starry-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
       <Stack height='100%' overflow='auto'>
         <HeroSection heroSubtitle={heroSubtitle} heroImage={heroImage} partnerUtmCampaign={partnerUtmCampaign} />
         <HowToPlaySection />
