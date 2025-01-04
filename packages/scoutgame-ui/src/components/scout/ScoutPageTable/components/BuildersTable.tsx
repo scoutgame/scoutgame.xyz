@@ -35,7 +35,6 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
     params.set('tab', 'builders');
     params.set('builderSort', sortBy);
     params.set('builderOrder', order === 'desc' || sort !== sortBy ? 'asc' : 'desc');
-
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
