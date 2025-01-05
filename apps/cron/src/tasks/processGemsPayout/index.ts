@@ -6,6 +6,7 @@ import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWe
 import { questsRecord } from '@packages/scoutgame/quests/questRecords';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
+import { sendPreseason2WelcomeEmails } from 'src/emails/sendPreseason2WelcomeEmails';
 
 import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
 
@@ -98,5 +99,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
         }
       });
     });
+
+    await sendPreseason2WelcomeEmails();
   }
 }

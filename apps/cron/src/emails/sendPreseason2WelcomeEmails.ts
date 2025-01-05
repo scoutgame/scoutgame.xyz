@@ -1,18 +1,24 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/src/mailer';
+import { sendEmailTemplate } from '@packages/mailer/mailer';
 
-async function sendPreseason2WelcomeEmail() {
+export async function sendPreseason2WelcomeEmails() {
   const users = await prisma.scout.findMany({
+    where: {
+      deletedAt: null,
+      onboardedAt: {
+        not: null
+      }
+    },
     orderBy: {
       id: 'desc'
     },
     select: {
-      id: true,
+      id: true
     }
   });
   const totalEmails = users.length;
-  let emailsSent = 0; 
+  let emailsSent = 0;
 
   for (const user of users) {
     try {
@@ -22,13 +28,11 @@ async function sendPreseason2WelcomeEmail() {
         template: 'new season welcome',
         userId: user.id
       });
-      emailsSent++;
+      emailsSent += 1;
     } catch (error) {
       log.error('Error sending email', { error, userId: user.id });
     }
   }
 
-  log.info('Preseason welcome emails sent', { totalEmails, emailsSent });
+  log.info('Preseason 2 welcome emails sent', { totalEmails, emailsSent });
 }
-
-sendPreseason2WelcomeEmail();
