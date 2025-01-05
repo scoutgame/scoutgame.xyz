@@ -17,7 +17,7 @@ export async function sendEmailTemplate({
   userId: string;
   client?: IMailgunClient | null;
   subject: string;
-  templateVariables: Record<string, string | number>;
+  templateVariables?: Record<string, string | number>;
   senderAddress: string;
   template: string;
 }) {
