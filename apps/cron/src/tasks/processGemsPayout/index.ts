@@ -63,9 +63,10 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     }
   }
 
-  const emailsSent = await sendGemsPayoutEmails({ week });
+  // TODO: Enable for 2nd week of preseason 2
+  // const emailsSent = await sendGemsPayoutEmails({ week });
 
-  scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
+  scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent: 0 });
 
   const currentWeek = getCurrentWeek();
 

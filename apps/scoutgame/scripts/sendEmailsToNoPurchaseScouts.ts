@@ -11,7 +11,8 @@ export async function sendEmailsToNoPurchaseScouts() {
           season: getCurrentSeasonStart(),
           nftsPurchased: 0
         }
-      }
+      },
+      deletedAt: null
     },
     select: {
       id: true,

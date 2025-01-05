@@ -73,7 +73,8 @@ export async function calculateWeeklyClaims({
             mode: 'insensitive'
           }
         }
-      }
+      },
+      deletedAt: null
     },
     include: {
       wallets: true

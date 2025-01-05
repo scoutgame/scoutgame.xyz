@@ -9,6 +9,7 @@ export async function sendBuilderStatusEmails() {
       builderStatus: {
         not: null
       },
+      deletedAt: null
     },
     select: {
       id: true,
