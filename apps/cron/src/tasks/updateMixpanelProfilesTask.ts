@@ -24,6 +24,7 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
   });
   return scouts.map((user) => ({
     userId: user.id,
+    $ip: '0', // don't set the user location. Set it only if the user chooses a location for himself
     profile: {
       $name: user.displayName,
       $email: user.email,
@@ -32,6 +33,8 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
       'Agreed To TOS': !!user.agreedToTermsAt,
       'Enable Marketing': user.sendMarketing,
       'Builder Status': user.builderStatus,
+      createdAt: user.createdAt,
+      onboardedAt: user.agreedToTermsAt,
       referrals: user.events.filter((e) => e.type === 'referral').length
     }
   }));
