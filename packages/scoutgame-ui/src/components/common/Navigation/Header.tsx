@@ -138,11 +138,11 @@ export function Header() {
                       onClose={handleCloseUserMenu}
                       onClick={handleCloseUserMenu}
                     >
-                      <MenuItem data-test='user-profile-button'>
-                        <Link href='/profile'>{user.displayName}</Link>
+                      <MenuItem component={Link} href='/profile' data-test='user-profile-button'>
+                        {user.displayName}
                       </MenuItem>
-                      <MenuItem>
-                        <Link href='/accounts'>Accounts</Link>
+                      <MenuItem component={Link} href='/accounts'>
+                        Accounts
                       </MenuItem>
                       {platform === 'webapp' && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
