@@ -21,6 +21,7 @@ export function StarterPackCarousel({
           nextEl: '.swiper-starter-pack-button-next',
           prevEl: '.swiper-starter-pack-button-prev'
         }}
+        autoplay
         slotProps={{
           arrowProps: {
             sx: {
