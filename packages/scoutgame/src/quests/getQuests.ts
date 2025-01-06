@@ -52,7 +52,9 @@ export async function getQuests(userId: string): Promise<QuestInfo[]> {
       ...questsRecord[type],
       type,
       // if a quest is resettable, we only count it if it's from the current season
-      completed: socialQuests.some((q) => q.type === type && (q.resettable === false || q.event?.season === season)),
+      completed: socialQuests.some(
+        (q) => q.type === type && (questsRecord[type].resettable === false || q.event?.season === season)
+      ),
       completedSteps
     };
   });
