@@ -9,11 +9,11 @@ import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
 import type { ISOWeek, Season } from '../dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 import { createReferralBonusEvent } from '../referrals/createReferralBonusEvent';
 
 import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
-import { recordNftPurchaseQuests } from './recordNftPurchaseQuests';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
