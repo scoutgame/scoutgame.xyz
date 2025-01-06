@@ -18,7 +18,7 @@ describe('getPointStatsFromHistory', () => {
     user = await mockScout({ path: `user-${uuid()}` });
   });
 
-  it('should return point stats when valid UUID is provided', async () => {
+  it('should return point stats only when valid UUID is provided', async () => {
     const stats = await getPointStatsFromHistory({ userIdOrPath: user.id, season });
     expect(stats).toMatchObject({
       userId: user.id,
@@ -29,6 +29,136 @@ describe('getPointStatsFromHistory', () => {
       claimedPoints: expect.any(Number),
       unclaimedPoints: expect.any(Number),
       balance: expect.any(Number)
+    });
+  });
+
+  it('should only return point stats from the provided season', async () => {
+    const mockUser = await mockScout();
+
+    const previousSeason = '2024-W41';
+
+    const currentSeason = '2024-W02';
+
+    const previousSeasonEvent = await prisma.builderEvent.create({
+      data: {
+        season: previousSeason,
+        week: '2024-W44',
+        builderId: mockUser.id,
+        type: 'misc_event',
+        description: 'Test event'
+      }
+    });
+
+    const previousSeasonPointsReceivedReceipt = await prisma.pointsReceipt.create({
+      data: {
+        value: 100,
+        season: previousSeason,
+        recipientId: mockUser.id,
+        eventId: previousSeasonEvent.id,
+        claimedAt: new Date()
+      }
+    });
+
+    const previousSeasonPointsSpentReceipt = await prisma.pointsReceipt.create({
+      data: {
+        value: 50,
+        season: previousSeason,
+        senderId: mockUser.id,
+        eventId: previousSeasonEvent.id,
+        claimedAt: new Date()
+      }
+    });
+
+    const previousSeasonGemPayoutEvent = await prisma.builderEvent.create({
+      data: {
+        season: previousSeason,
+        week: '2024-W44',
+        builderId: mockUser.id,
+        type: 'gems_payout',
+        description: 'Test event',
+        pointsReceipts: {
+          create: {
+            season: previousSeason,
+            value: 120,
+            recipientId: mockUser.id,
+            claimedAt: new Date()
+          }
+        }
+      }
+    });
+
+    const currentSeasonEvent = await prisma.builderEvent.create({
+      data: {
+        season: currentSeason,
+        week: '2024-W03',
+        builderId: mockUser.id,
+        type: 'misc_event',
+        description: 'Test event'
+      }
+    });
+
+    const currentSeasonPointsReceivedReceipt = await prisma.pointsReceipt.create({
+      data: {
+        value: 210,
+        season: currentSeason,
+        recipientId: mockUser.id,
+        eventId: currentSeasonEvent.id,
+        claimedAt: new Date()
+      }
+    });
+
+    const currentSeasonPointsSpentReceipt = await prisma.pointsReceipt.create({
+      data: {
+        value: 80,
+        season: currentSeason,
+        senderId: mockUser.id,
+        eventId: currentSeasonEvent.id,
+        claimedAt: new Date()
+      }
+    });
+
+    const currentSeasonGemPayoutEvent = await prisma.builderEvent.create({
+      data: {
+        season: currentSeason,
+        week: '2024-W03',
+        builderId: mockUser.id,
+        type: 'gems_payout',
+        description: 'Test event',
+        pointsReceipts: {
+          create: {
+            season: currentSeason,
+            value: 40,
+            recipientId: mockUser.id,
+            claimedAt: new Date()
+          }
+        }
+      }
+    });
+
+    const previousSeasonStats = await getPointStatsFromHistory({ userIdOrPath: mockUser.id, season: previousSeason });
+
+    expect(previousSeasonStats).toMatchObject<PointStats>({
+      userId: mockUser.id,
+      pointsSpent: 50,
+      balance: 170,
+      pointsReceivedAsBuilder: 0,
+      pointsReceivedAsScout: 0,
+      bonusPointsReceived: 100,
+      claimedPoints: 220,
+      unclaimedPoints: 0
+    });
+
+    const currentSeasonStats = await getPointStatsFromHistory({ userIdOrPath: mockUser.id, season: currentSeason });
+
+    expect(currentSeasonStats).toMatchObject<PointStats>({
+      userId: mockUser.id,
+      pointsSpent: 80,
+      balance: 170,
+      pointsReceivedAsBuilder: 0,
+      pointsReceivedAsScout: 0,
+      bonusPointsReceived: 210,
+      claimedPoints: 250,
+      unclaimedPoints: 0
     });
   });
 
@@ -47,7 +177,7 @@ describe('getPointStatsFromHistory', () => {
     });
   });
 
-  it('should return detailed point stats, with a balance calculated based on points claimed minus claimed points (unclaimed points not in balance)', async () => {
+  it('should return detailed point stats, with a balance calculated based on points claimed minus claimed points (unclaimed points not in balance), and only take points stats from the provided season', async () => {
     const pointsSpentRecords = [{ value: 100 }, { value: 50 }];
 
     const pointsSpent = 100 + 50;
