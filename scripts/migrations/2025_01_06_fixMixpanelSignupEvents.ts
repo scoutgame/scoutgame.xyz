@@ -29,7 +29,7 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
           properties: {
             userId: item.id,
             $insert_id: uuidFromNumber(index),
-            time: new Date(item.onboardedAt).getTime()
+            time: item.onboardedAt.getTime()
           }
         }))
     );
