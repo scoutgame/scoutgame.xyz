@@ -13,10 +13,12 @@ import { generateUserPath } from './generateUserPath';
 
 export async function findOrCreateFarcasterUser({
   fid,
+  newUserId,
   tierOverride,
   referralCode
 }: {
   fid: number;
+  newUserId?: string;
   tierOverride?: ConnectWaitlistTier;
   referralCode?: string | null;
 }): Promise<FindOrCreateUserResult> {
@@ -38,7 +40,7 @@ export async function findOrCreateFarcasterUser({
   });
   const displayName = profile?.display_name || generateRandomName();
   const user = await findOrCreateUser({
-    newUserId: uuidFromNumber(fid),
+    newUserId,
     farcasterId: fid,
     avatar: profile?.pfp_url,
     bio: profile?.profile?.bio?.text,

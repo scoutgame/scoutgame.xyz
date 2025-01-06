@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
@@ -70,6 +71,11 @@ export async function claimDailyReward({
     });
 
     if (existingEvent) {
+      log.warn('Daily reward already claimed', {
+        userId,
+        week,
+        dayOfWeek
+      });
       throw new Error('Daily reward already claimed');
     }
 

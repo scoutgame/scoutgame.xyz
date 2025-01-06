@@ -3,7 +3,7 @@ import { prisma } from "@charmverse/core/prisma-client";
 import { builderContractReadonlyApiClient } from "@packages/scoutgame/builderNfts/clients/builderContractReadClient";
 import path from "node:path";
 import fs from "node:fs"
-import { validatePreseason01Mint } from "@packages/scoutgame/builderNfts/validatePreseason01Mint";
+import { validatePreseason01orStarterPackMint } from "@packages/scoutgame/builderNfts/validatePreseason01orStarterPackMint";
 import { builderNftChain } from "@packages/scoutgame/builderNfts/constants";
 
 async function checkSavedVsOnchainSupply() {
@@ -58,7 +58,7 @@ async function checkSavedVsOnchainSupply() {
     let invalidTransactions: {id: string; txHash: string}[] = [];
 
     for (const purchaseEvent of nft.nftSoldEvents) {
-      const validatedMint = await validatePreseason01Mint({
+      const validatedMint = await validatePreseason01orStarterPackMint({
         chainId: builderNftChain.id,
         txHash: purchaseEvent.txHash
       });

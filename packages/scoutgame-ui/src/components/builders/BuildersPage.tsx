@@ -16,7 +16,17 @@ export const mobileTabOptions: TabItem[] = [
   { label: 'Recent Activity', value: 'activity' }
 ];
 
-export async function BuildersPage({ week, tab }: { week: string; tab: string }) {
+export async function BuildersPage({
+  week,
+  tab,
+  builderSort,
+  builderOrder
+}: {
+  week: string;
+  tab: string;
+  builderSort?: string;
+  builderOrder?: string;
+}) {
   return (
     <>
       <HeaderMessage />
@@ -50,13 +60,13 @@ export async function BuildersPage({ week, tab }: { week: string; tab: string })
               Leaderboard
             </Typography>
             <Suspense key='leaderboard' fallback={<LoadingTable />}>
-              <BuilderPageTable tab='leaderboard' week={week} />
+              <BuilderPageTable tab='leaderboard' week={week} builderSort={builderSort} builderOrder={builderOrder} />
             </Suspense>
           </Stack>
           <Stack display={{ xs: 'block', md: 'none' }}>
             <TabsMenu value={tab} tabs={mobileTabOptions} queryKey='tab' />
             <Suspense key={tab} fallback={<LoadingTable />}>
-              <BuilderPageTable tab={tab} week={week} />
+              <BuilderPageTable tab={tab} week={week} builderSort={builderSort} builderOrder={builderOrder} />
             </Suspense>
           </Stack>
         </Grid>

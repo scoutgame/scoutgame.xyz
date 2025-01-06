@@ -92,7 +92,8 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const builders = await prisma.scout.findMany({
     where: {
-      id: { in: topBuilderIds }
+      id: { in: topBuilderIds },
+      deletedAt: null
     },
     select: {
       id: true,

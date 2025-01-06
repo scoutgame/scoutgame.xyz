@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { generateRandomEthAddress } from '@packages/testing/random';
 
 import { referralBonusPoints } from '../../constants';
 import { createReferralEvent } from '../../referrals/createReferralEvent';
@@ -37,7 +38,8 @@ describe('recordNftMint', () => {
 
   it('should record a new NFT mint', async () => {
     const builder = await mockBuilder();
-    const scout = await mockScout();
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const scout = await mockScout({ wallets: [mockWallet] });
     const builderNft = await mockBuilderNft({ builderId: builder.id });
 
     const amount = 10;
@@ -47,7 +49,7 @@ describe('recordNftMint', () => {
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: scout.id,
+      recipientAddress: mockWallet,
       scoutId: scout.id,
       paidWithPoints: true
     });
@@ -95,7 +97,8 @@ describe('recordNftMint', () => {
 
   it.skip('should skip mixpanel if this flag is provided', async () => {
     const builder = await mockBuilder();
-    const scout = await mockScout();
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const scout = await mockScout({ wallets: [mockWallet] });
     const builderNft = await mockBuilderNft({ builderId: builder.id });
 
     const amount = 10;
@@ -105,7 +108,7 @@ describe('recordNftMint', () => {
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: scout.id,
+      recipientAddress: mockWallet,
       scoutId: scout.id,
       paidWithPoints: true,
       skipMixpanel: true
@@ -114,7 +117,8 @@ describe('recordNftMint', () => {
 
   it('should skip price refresh if this flag is provided', async () => {
     const builder = await mockBuilder();
-    const scout = await mockScout();
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const scout = await mockScout({ wallets: [mockWallet] });
     const builderNft = await mockBuilderNft({ builderId: builder.id });
 
     const amount = 10;
@@ -124,7 +128,7 @@ describe('recordNftMint', () => {
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: scout.id,
+      recipientAddress: mockWallet,
       scoutId: scout.id,
       paidWithPoints: true,
       skipPriceRefresh: true
@@ -135,7 +139,9 @@ describe('recordNftMint', () => {
 
   it('should create a referral bonus event if the scout has a referral code', async () => {
     const referrer = await mockScout();
-    const referee = await mockScout();
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const referee = await mockScout({ wallets: [mockWallet] });
+
     const builder = await mockBuilder();
     const builderNft = await mockBuilderNft({ builderId: builder.id });
 
@@ -157,7 +163,7 @@ describe('recordNftMint', () => {
       amount: 1,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: referee.id,
+      recipientAddress: mockWallet,
       scoutId: referee.id,
       paidWithPoints: true
     });

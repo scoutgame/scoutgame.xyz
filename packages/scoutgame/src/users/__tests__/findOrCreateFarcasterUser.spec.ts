@@ -30,7 +30,6 @@ describe('findOrCreateFarcasterUser', () => {
       expect.objectContaining({
         displayName: expect.any(String),
         path: expect.any(String),
-        newUserId: uuidFromNumber(fid),
         farcasterId: fid
       })
     );
