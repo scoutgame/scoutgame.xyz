@@ -1,22 +1,33 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
+import { getCurrentSeasonStart } from '../dates/utils';
 import { sendPointsForSocialQuest } from '../points/builderEvents/sendPointsForSocialQuest';
 
 import type { QuestType } from './questRecords';
 import { questsRecord } from './questRecords';
 
 export async function completeQuests(userId: string, questTypes: QuestType[], skipMixpanel: boolean = false) {
+  const season = getCurrentSeasonStart();
   const completedQuests = await prisma.scoutSocialQuest.findMany({
     where: {
       type: {
         in: questTypes
       },
       userId
+    },
+    include: {
+      event: {
+        select: {
+          season: true
+        }
+      }
     }
   });
 
-  const completedQuestTypes = completedQuests.map((quest) => quest.type);
+  const completedQuestTypes = completedQuests.map(
+    (quest) => (quest.type && !questsRecord[quest.type].resettable) || quest.event?.season === season
+  );
 
   const unfinishedQuests = questTypes.filter((questType) => !completedQuestTypes.includes(questType));
 
