@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { completeQuests } from '../quests/completeQuests';
-import type { QuestType } from '../quests/questRecords';
+import { completeQuests } from './completeQuests';
+import type { QuestType } from './questRecords';
 
 export async function recordNftPurchaseQuests(scoutId: string, skipMixpanel: boolean = false) {
   const scoutNftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({

@@ -1,13 +1,14 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { sendPointsForSocialQuest } from '../points/builderEvents/sendPointsForSocialQuest';
 
 import type { QuestType } from './questRecords';
 import { questsRecord } from './questRecords';
 
 export async function completeQuests(userId: string, questTypes: QuestType[], skipMixpanel: boolean = false) {
+  const week = getCurrentWeek();
   const season = getCurrentSeasonStart();
   const completedQuests = await prisma.scoutSocialQuest.findMany({
     where: {
@@ -28,8 +29,8 @@ export async function completeQuests(userId: string, questTypes: QuestType[], sk
     await sendPointsForSocialQuest({
       builderId: userId,
       points,
-      type: questType,
-      season
+      week,
+      type: questType
     });
     if (!skipMixpanel) {
       trackUserAction('complete_quest', { userId, questType });

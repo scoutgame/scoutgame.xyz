@@ -39,9 +39,25 @@ export function SuccessView({
       </Typography>
       <Typography>You scouted {builder.displayName}</Typography>
       {builder.congratsImageUrl ? (
-        <Image src={builder.congratsImageUrl} alt={builder.path} width={400} height={400} />
+        <Image
+          src={builder.congratsImageUrl}
+          alt={`${builder.displayName} nft`}
+          width={400}
+          height={400}
+          sizes='100vw'
+          style={{
+            width: '100%',
+            height: 'auto'
+          }}
+        />
       ) : (
-        <Image src='/images/no_nft_person.png' alt='no nft image available' width={200} height={200} />
+        <Image
+          src='/images/no_nft_person.png'
+          alt='no nft image available'
+          width={200}
+          height={200}
+          style={{ margin: '0 auto' }}
+        />
       )}
       <Stack
         sx={{

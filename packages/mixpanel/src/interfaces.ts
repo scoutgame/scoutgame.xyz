@@ -5,10 +5,12 @@ export interface MixpanelTrackBase {
   distinct_id: string;
   isAnonymous?: boolean;
   platform?: ReferralPlatform;
+  ip?: string;
 }
 
 export type BaseEvent = {
   userId: string;
+  ip?: string;
 };
 
 export type NftPurchaseEvent = BaseEvent & {
