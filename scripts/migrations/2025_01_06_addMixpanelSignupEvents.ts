@@ -9,29 +9,24 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
     where: {
       id: {
         in: userIds
-      },
-      onboardedAt: {
-        not: null
       }
     },
     select: {
       id: true,
-      onboardedAt: true
+      createdAt: true
     }
   });
 
   try {
     await batchImportMixpanelEvent(
-      scouts
-        .filter((item): item is { id: string; onboardedAt: Date } => !!item.onboardedAt)
-        .map((item, index) => ({
-          event: 'sign_up',
-          properties: {
-            userId: item.id,
-            $insert_id: uuidFromNumber(index),
-            time: item.onboardedAt.getTime()
-          }
-        }))
+      scouts.map((item, index) => ({
+        event: 'sign_up',
+        properties: {
+          userId: item.id,
+          $insert_id: uuidFromNumber(index),
+          time: item.createdAt.getTime()
+        }
+      }))
     );
   } catch (err) {
     log.error('There was an error while importing event sign_up', { err });
