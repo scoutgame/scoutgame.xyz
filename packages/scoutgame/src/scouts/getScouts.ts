@@ -56,6 +56,9 @@ export async function getScouts({
         // pointsEarnedAsScout: {
         //   gt: 0
         // },
+        nftsPurchased: {
+          not: 0
+        },
         season: getCurrentSeasonStart(),
         user: {
           deletedAt: null
@@ -102,7 +105,10 @@ export async function getScouts({
   } else if (sortBy === 'cards' || sortBy === 'builders') {
     const builders = await prisma.userSeasonStats.findMany({
       where: {
-        // season: getCurrentSeasonStart(),
+        season: getCurrentSeasonStart(),
+        nftsPurchased: {
+          not: 0
+        },
         // pointsEarnedAsScout: {
         //   gt: 0
         // },
