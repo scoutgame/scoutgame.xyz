@@ -115,20 +115,32 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
 }
 
 // new Scout definition: only scouts that purchased NFT this week for the first time
-export async function getNewScouts({ week }: { week: string }) {
-  const season = getCurrentSeason(week).start;
+export async function getNewScouts({ week, season: testSeason }: { week: string; season?: string }) {
+  const season = testSeason || getCurrentSeason(week).start;
   return prisma.scout.findMany({
     where: {
       deletedAt: null,
       nftPurchaseEvents: {
         every: {
-          // every nft purchase event must have been purchased this week or later
-          builderEvent: {
-            week: {
-              gte: week
+          OR: [
+            {
+              // every nft purchase event must have been purchased this week or later
+              builderEvent: {
+                week: {
+                  gte: week
+                },
+                season
+              }
             },
-            season
-          }
+            {
+              // every nft purchase event must have been purchased this week or later
+              builderEvent: {
+                season: {
+                  not: season
+                }
+              }
+            }
+          ]
         },
         // at least one NFT was purchased this week
         some: {
