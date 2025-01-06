@@ -78,6 +78,7 @@ export async function getPointStatsFromHistory({
     // Points received as scout
     tx.pointsReceipt.findMany({
       where: {
+        season,
         recipientId: userId,
         event: {
           type: 'gems_payout'

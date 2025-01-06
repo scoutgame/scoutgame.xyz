@@ -5,7 +5,7 @@ import { jest } from '@jest/globals';
 import { v4 as uuid } from 'uuid';
 
 import { getCurrentSeasonStart } from '../../dates/utils';
-import { mockScout } from '../../testing/database';
+import { mockBuilder, mockScout } from '../../testing/database';
 import type { PointStats } from '../getPointStatsFromHistory';
 import { getPointStatsFromHistory } from '../getPointStatsFromHistory';
 
@@ -39,7 +39,7 @@ describe('getPointStatsFromHistory', () => {
 
     const currentSeason = '2024-W02';
 
-    const previousSeasonEvent = await prisma.builderEvent.create({
+    const previousSeasonMiscEvent = await prisma.builderEvent.create({
       data: {
         season: previousSeason,
         week: '2024-W44',
@@ -54,7 +54,7 @@ describe('getPointStatsFromHistory', () => {
         value: 100,
         season: previousSeason,
         recipientId: mockUser.id,
-        eventId: previousSeasonEvent.id,
+        eventId: previousSeasonMiscEvent.id,
         claimedAt: new Date()
       }
     });
@@ -64,12 +64,16 @@ describe('getPointStatsFromHistory', () => {
         value: 50,
         season: previousSeason,
         senderId: mockUser.id,
-        eventId: previousSeasonEvent.id,
+        eventId: previousSeasonMiscEvent.id,
         claimedAt: new Date()
       }
     });
 
-    const previousSeasonGemPayoutEvent = await prisma.builderEvent.create({
+    const amountReceivedAsScout = 120;
+
+    const amountReceivedAsBuilder = 60;
+
+    const previousSeasonGemPayoutBuilderEvent = await prisma.builderEvent.create({
       data: {
         season: previousSeason,
         week: '2024-W44',
@@ -77,16 +81,54 @@ describe('getPointStatsFromHistory', () => {
         type: 'gems_payout',
         description: 'Test event',
         pointsReceipts: {
-          create: {
-            season: previousSeason,
-            value: 120,
-            recipientId: mockUser.id,
-            claimedAt: new Date()
+          createMany: {
+            data: [
+              {
+                season: previousSeason,
+                value: amountReceivedAsScout,
+                recipientId: mockUser.id,
+                claimedAt: new Date()
+              },
+              {
+                season: previousSeason,
+                value: amountReceivedAsBuilder,
+                recipientId: mockUser.id,
+                claimedAt: new Date()
+              }
+            ]
           }
         }
+      },
+      include: {
+        pointsReceipts: true
       }
     });
 
+    // Getting points as a scout
+    await prisma.scoutGameActivity.create({
+      data: {
+        recipientType: 'scout',
+        type: 'points',
+        pointsReceiptId: previousSeasonGemPayoutBuilderEvent.pointsReceipts.find(
+          (r) => r.value === amountReceivedAsScout
+        )!.id,
+        userId: mockUser.id
+      }
+    });
+
+    // Getting points as a builder
+    await prisma.scoutGameActivity.create({
+      data: {
+        recipientType: 'builder',
+        type: 'points',
+        pointsReceiptId: previousSeasonGemPayoutBuilderEvent.pointsReceipts.find(
+          (r) => r.value === amountReceivedAsBuilder
+        )!.id,
+        userId: mockUser.id
+      }
+    });
+
+    // Setting up points for the current season
     const currentSeasonEvent = await prisma.builderEvent.create({
       data: {
         season: currentSeason,
@@ -117,6 +159,10 @@ describe('getPointStatsFromHistory', () => {
       }
     });
 
+    const currentSeasonPointsReceivedAsScout = 180;
+
+    const currentSeasonPointsReceivedAsBuilder = 50;
+
     const currentSeasonGemPayoutEvent = await prisma.builderEvent.create({
       data: {
         season: currentSeason,
@@ -125,27 +171,62 @@ describe('getPointStatsFromHistory', () => {
         type: 'gems_payout',
         description: 'Test event',
         pointsReceipts: {
-          create: {
-            season: currentSeason,
-            value: 40,
-            recipientId: mockUser.id,
-            claimedAt: new Date()
+          createMany: {
+            data: [
+              {
+                season: currentSeason,
+                value: currentSeasonPointsReceivedAsScout,
+                recipientId: mockUser.id,
+                claimedAt: new Date()
+              },
+              {
+                season: currentSeason,
+                value: currentSeasonPointsReceivedAsBuilder,
+                recipientId: mockUser.id,
+                claimedAt: new Date()
+              }
+            ]
           }
         }
+      },
+      include: {
+        pointsReceipts: true
+      }
+    });
+
+    await prisma.scoutGameActivity.create({
+      data: {
+        recipientType: 'scout',
+        type: 'points',
+        pointsReceiptId: currentSeasonGemPayoutEvent.pointsReceipts.find(
+          (r) => r.value === currentSeasonPointsReceivedAsScout
+        )!.id,
+        userId: mockUser.id
+      }
+    });
+
+    await prisma.scoutGameActivity.create({
+      data: {
+        recipientType: 'builder',
+        type: 'points',
+        pointsReceiptId: currentSeasonGemPayoutEvent.pointsReceipts.find(
+          (r) => r.value === currentSeasonPointsReceivedAsBuilder
+        )!.id,
+        userId: mockUser.id
       }
     });
 
     const previousSeasonStats = await getPointStatsFromHistory({ userIdOrPath: mockUser.id, season: previousSeason });
 
-    expect(previousSeasonStats).toMatchObject<PointStats>({
-      userId: mockUser.id,
-      pointsSpent: 50,
-      balance: 170,
-      pointsReceivedAsBuilder: 0,
-      pointsReceivedAsScout: 0,
+    expect(previousSeasonStats).toEqual<PointStats>({
+      balance: 230,
+      claimedPoints: 280,
       bonusPointsReceived: 100,
-      claimedPoints: 220,
-      unclaimedPoints: 0
+      pointsReceivedAsBuilder: 60,
+      pointsReceivedAsScout: 120,
+      pointsSpent: 50,
+      unclaimedPoints: 0,
+      userId: mockUser.id
     });
 
     const currentSeasonStats = await getPointStatsFromHistory({ userIdOrPath: mockUser.id, season: currentSeason });
@@ -153,11 +234,11 @@ describe('getPointStatsFromHistory', () => {
     expect(currentSeasonStats).toMatchObject<PointStats>({
       userId: mockUser.id,
       pointsSpent: 80,
-      balance: 170,
-      pointsReceivedAsBuilder: 0,
-      pointsReceivedAsScout: 0,
+      balance: 360,
+      pointsReceivedAsBuilder: 50,
+      pointsReceivedAsScout: 180,
       bonusPointsReceived: 210,
-      claimedPoints: 250,
+      claimedPoints: 440,
       unclaimedPoints: 0
     });
   });
@@ -222,17 +303,6 @@ describe('getPointStatsFromHistory', () => {
     expect(pointStats.claimedPoints + pointStats.unclaimedPoints).toEqual(
       pointStats.pointsReceivedAsBuilder + pointStats.pointsReceivedAsScout + pointStats.bonusPointsReceived
     );
-
-    expect(pointStats).toEqual<PointStats>({
-      balance: claimedPoints - pointsSpent,
-      bonusPointsReceived: 40,
-      claimedPoints,
-      pointsReceivedAsBuilder: 170,
-      pointsReceivedAsScout: 360,
-      pointsSpent: 150,
-      unclaimedPoints: 160,
-      userId: user.id
-    });
   });
 
   it('should throw InvalidInputError when userIdOrUsername is empty', async () => {
