@@ -2,7 +2,7 @@ import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 import type { ISOWeek } from '../../dates/config';
-import { getCurrentSeason, getCurrentWeek } from '../../dates/utils';
+import { getCurrentWeek } from '../../dates/utils';
 import type { QuestType } from '../../quests/questRecords';
 
 export async function sendPointsForSocialQuest({
@@ -10,15 +10,16 @@ export async function sendPointsForSocialQuest({
   week = getCurrentWeek(),
   points,
   type,
-  tx
+  tx,
+  season
 }: {
   type: QuestType;
   builderId: string;
   points: number;
   week?: ISOWeek;
+  season: string;
   tx?: Prisma.TransactionClient;
 }) {
-  const season = getCurrentSeason(week).start;
   async function txHandler(_tx: Prisma.TransactionClient) {
     await _tx.scoutSocialQuest.create({
       data: {
@@ -28,6 +29,7 @@ export async function sendPointsForSocialQuest({
             id: builderId
           }
         },
+        season,
         event: {
           create: {
             builderId,

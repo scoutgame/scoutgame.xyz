@@ -14,20 +14,12 @@ export async function completeQuests(userId: string, questTypes: QuestType[], sk
       type: {
         in: questTypes
       },
-      userId
-    },
-    include: {
-      event: {
-        select: {
-          season: true
-        }
-      }
+      userId,
+      season
     }
   });
 
-  const completedQuestTypes = completedQuests
-    .filter((quest) => !questsRecord[quest.type as QuestType].resettable || quest.event?.season === season)
-    .map((quest) => quest.type);
+  const completedQuestTypes = completedQuests.map((quest) => quest.type);
 
   const unfinishedQuests = questTypes.filter((questType) => !completedQuestTypes.includes(questType));
 
@@ -36,7 +28,8 @@ export async function completeQuests(userId: string, questTypes: QuestType[], sk
     await sendPointsForSocialQuest({
       builderId: userId,
       points,
-      type: questType
+      type: questType,
+      season
     });
     if (!skipMixpanel) {
       trackUserAction('complete_quest', { userId, questType });
