@@ -1,5 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
 import { batchUpdateMixpanelUserProfiles } from '@packages/mixpanel/updateUserProfile';
 import type { MixPanelUserProfile } from '@packages/mixpanel/updateUserProfile';
 
@@ -28,6 +29,7 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
       $name: user.displayName,
       $email: user.email,
       path: user.path!,
+      deleted: !!user.deletedAt,
       onboarded: !!user.onboardedAt,
       'Agreed To TOS': !!user.agreedToTermsAt,
       'Enable Marketing': user.sendMarketing,
@@ -52,6 +54,14 @@ async function updateMixpanelUserProfiles({
 
   if (users.length > 0) {
     log.debug(`Processed ${users.length} users in Mixpanel. Total processed: ${total}`);
+
+    // Delete user profiles for users that are deleted in our system
+    await deleteMixpanelProfiles(
+      users.filter((user) => user.profile.deleted).map((user) => ({ id: user.userId }))
+    ).catch((_error) => {
+      log.error('Failed to delete user profiles in Mixpanel', { error: _error });
+    });
+
     return updateMixpanelUserProfiles({ offset: offset + perBatch, total });
   }
   return total;

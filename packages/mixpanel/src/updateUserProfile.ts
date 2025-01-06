@@ -9,6 +9,7 @@ export type MixPanelUserProfile = {
   $email: string | null;
   path: string;
   onboarded: boolean;
+  deleted: boolean;
   'Agreed To TOS': boolean;
   'Enable Marketing': boolean;
   'Builder Status': BuilderStatus | null;
