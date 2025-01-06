@@ -50,17 +50,21 @@ async function updateMixpanelUserProfiles({
 
   total += users.length;
 
+  // Update user profiles
   await batchUpdateMixpanelUserProfiles(users);
+
+  // Delete user profiles for users that are deleted in our system
+  const usersToDelete = users.filter((user) => user.profile.deleted);
+  await deleteMixpanelProfiles(usersToDelete.map((user) => ({ id: user.userId })))
+    .catch((_error) => {
+      log.error('Failed to delete user profiles in Mixpanel', { error: _error });
+    })
+    .finally(() => {
+      log.info(`Deleted ${usersToDelete.length} users in Mixpanel`);
+    });
 
   if (users.length > 0) {
     log.debug(`Processed ${users.length} users in Mixpanel. Total processed: ${total}`);
-
-    // Delete user profiles for users that are deleted in our system
-    await deleteMixpanelProfiles(
-      users.filter((user) => user.profile.deleted).map((user) => ({ id: user.userId }))
-    ).catch((_error) => {
-      log.error('Failed to delete user profiles in Mixpanel', { error: _error });
-    });
 
     return updateMixpanelUserProfiles({ offset: offset + perBatch, total });
   }
