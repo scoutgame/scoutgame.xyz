@@ -55,6 +55,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - test_name: 'Typecheck scoutgame'
+            test_command: 'npm run typecheck -w apps/scoutgame'
+          - test_name: 'Typecheck scoutgame telegram'
+            test_command: 'npm run typecheck -w apps/scoutgametelegram'
+          - test_name: 'Typecheck scoutgame cron'
+            test_command: 'npm run typecheck -w apps/scoutgamecron'
           - test_name: 'Typecheck scoutgame admin'
             test_command: 'npm run typecheck -w apps/admin'
 
