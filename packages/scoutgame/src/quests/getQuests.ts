@@ -5,11 +5,16 @@ import { getCurrentSeasonStart } from '../dates/utils';
 import { questsRecord, type QuestInfo, type QuestType } from './questRecords';
 
 export async function getQuests(userId: string): Promise<QuestInfo[]> {
+  const season = getCurrentSeasonStart();
   const socialQuests = await prisma.scoutSocialQuest.findMany({
     where: {
-      userId,
+      userId
+    },
+    include: {
       event: {
-        season: getCurrentSeasonStart()
+        select: {
+          season: true
+        }
       }
     }
   });
@@ -18,7 +23,7 @@ export async function getQuests(userId: string): Promise<QuestInfo[]> {
     where: {
       scoutId: userId,
       builderNft: {
-        season: getCurrentSeasonStart()
+        season
       }
     },
     select: {
@@ -46,7 +51,10 @@ export async function getQuests(userId: string): Promise<QuestInfo[]> {
     return {
       ...questsRecord[type],
       type,
-      completed: socialQuests.some((q) => q.type === type),
+      // if a quest is resettable, we only count it if it's from the current season
+      completed: socialQuests.some(
+        (q) => q.type === type && (questsRecord[type].resettable === false || q.event?.season === season)
+      ),
       completedSteps
     };
   });
