@@ -36,6 +36,8 @@ export async function recordNftMint(
     skipPriceRefresh
   } = params;
 
+  const season = getCurrentSeasonStart();
+
   if (!mintTxHash.trim().startsWith('0x')) {
     throw new InvalidInputError(`Mint transaction hash is required`);
   }
@@ -53,7 +55,8 @@ export async function recordNftMint(
 
   const builderNft = await prisma.builderNft.findFirstOrThrow({
     where: {
-      id: builderNftId
+      id: builderNftId,
+      season
     },
     select: {
       nftType: true,
@@ -78,7 +81,7 @@ export async function recordNftMint(
         value: Math.floor(pointsValue * 0.2),
         recipientId: builderNft.builderId,
         createdAt,
-        season: getCurrentSeasonStart()
+        season
       }
     ];
 
@@ -87,7 +90,7 @@ export async function recordNftMint(
       value: pointsValue,
       senderId: scoutId,
       createdAt,
-      season: getCurrentSeasonStart()
+      season
     });
   }
 
