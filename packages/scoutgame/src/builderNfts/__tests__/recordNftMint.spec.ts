@@ -36,16 +36,20 @@ describe('recordNftMint', () => {
     jest.resetAllMocks();
   });
 
+  const season = '2024-W41';
+
   it('should record a new NFT mint', async () => {
     const builder = await mockBuilder();
     const mockWallet = generateRandomEthAddress().toLowerCase();
     const scout = await mockScout({ wallets: [mockWallet] });
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     const amount = 10;
 
     await recordNftMint({
       builderNftId: builderNft.id,
+      season,
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
@@ -99,12 +103,13 @@ describe('recordNftMint', () => {
     const builder = await mockBuilder();
     const mockWallet = generateRandomEthAddress().toLowerCase();
     const scout = await mockScout({ wallets: [mockWallet] });
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     const amount = 10;
 
     await recordNftMint({
       builderNftId: builderNft.id,
+      season,
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
@@ -119,12 +124,13 @@ describe('recordNftMint', () => {
     const builder = await mockBuilder();
     const mockWallet = generateRandomEthAddress().toLowerCase();
     const scout = await mockScout({ wallets: [mockWallet] });
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     const amount = 10;
 
     await recordNftMint({
       builderNftId: builderNft.id,
+      season,
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
@@ -143,7 +149,7 @@ describe('recordNftMint', () => {
     const referee = await mockScout({ wallets: [mockWallet] });
 
     const builder = await mockBuilder();
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     await createReferralEvent(referrer.referralCode, referee.id);
 
@@ -163,6 +169,7 @@ describe('recordNftMint', () => {
       amount: 1,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
+      season,
       recipientAddress: mockWallet,
       scoutId: referee.id,
       paidWithPoints: true
