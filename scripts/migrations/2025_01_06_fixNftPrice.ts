@@ -6,14 +6,15 @@ import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 export async function fixNftPrice() {
   const builders = await prisma.scout.findMany({
     where: {
-      builderStatus: {
-        not: null
-      }
+      builderStatus: 'approved'
     },
     select: {
       id: true,
     }
   })
+
+  let totalBuilders = builders.length;
+  let currentBuilder = 0
 
   const currentSeasonStart = getCurrentSeasonStart()
   for (const builder of builders) {
@@ -22,6 +23,7 @@ export async function fixNftPrice() {
         builderId: builder.id,
         season: currentSeasonStart
       })
+      console.log(`Builder updated ${++currentBuilder}/${totalBuilders}`)
     } catch (err) {
       log.error('Error updating builder nft price', {userId: builder.id})
     }
