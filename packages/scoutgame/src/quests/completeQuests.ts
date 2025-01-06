@@ -25,9 +25,9 @@ export async function completeQuests(userId: string, questTypes: QuestType[], sk
     }
   });
 
-  const completedQuestTypes = completedQuests.map(
-    (quest) => (quest.type && !questsRecord[quest.type].resettable) || quest.event?.season === season
-  );
+  const completedQuestTypes = completedQuests
+    .filter((quest) => !questsRecord[quest.type].resettable || quest.event?.season === season)
+    .map((quest) => quest.type);
 
   const unfinishedQuests = questTypes.filter((questType) => !completedQuestTypes.includes(questType));
 
