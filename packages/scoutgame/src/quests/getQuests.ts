@@ -7,7 +7,10 @@ import { questsRecord, type QuestInfo, type QuestType } from './questRecords';
 export async function getQuests(userId: string): Promise<QuestInfo[]> {
   const socialQuests = await prisma.scoutSocialQuest.findMany({
     where: {
-      userId
+      userId,
+      event: {
+        season: getCurrentSeasonStart()
+      }
     }
   });
 

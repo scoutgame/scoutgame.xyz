@@ -70,6 +70,11 @@ export async function claimDailyReward({
     });
 
     if (existingEvent) {
+      log.warn('Daily reward already claimed', {
+        userId,
+        week,
+        dayOfWeek
+      });
       throw new Error('Daily reward already claimed');
     }
 
