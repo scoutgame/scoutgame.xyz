@@ -53,7 +53,8 @@ export async function recordNftMint(
 
   const builderNft = await prisma.builderNft.findFirstOrThrow({
     where: {
-      id: builderNftId
+      id: builderNftId,
+      season: getCurrentSeasonStart()
     },
     select: {
       nftType: true,
