@@ -57,7 +57,7 @@ jobs:
         include:
           - test_name: 'Typecheck scoutgame'
             test_command: 'npm run typecheck -w apps/scoutgame'
-          - test_name: 'Test scoutgame packages'
+          - test_name: 'Test @packages/scoutgame'
             test_command: 'dotenv -e .env.test.local -- npm run test -w packages/scoutgame'
           - test_name: 'Typecheck scoutgame telegram'
             test_command: 'npm run typecheck -w apps/scoutgametelegram'
