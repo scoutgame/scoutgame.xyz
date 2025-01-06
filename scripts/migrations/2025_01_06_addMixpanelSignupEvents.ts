@@ -38,7 +38,7 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
   }
 }
 
-function fixMixpanelSignupEvents() {
+function addMixpanelSignupEvents() {
   fs.readFile('../../userIds.json', 'utf8', async function (err, data) {
     if (data && !err) {
       const userIds = JSON.parse(data) as { userId: string }[];
@@ -47,7 +47,11 @@ function fixMixpanelSignupEvents() {
         await trackMixpanelSignupEvents(userIds.map((item) => item.userId));
       }
     }
+
+    if (err) {
+      log.error('There was an error while reading the json file', { err });
+    }
   });
 }
 
-// fixMixpanelSignupEvents()
+// addMixpanelSignupEvents()
