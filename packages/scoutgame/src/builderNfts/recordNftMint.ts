@@ -17,7 +17,6 @@ import { recordNftPurchaseQuests } from './recordNftPurchaseQuests';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
-    season: ISOWeek;
     createdAt?: Date;
     mintTxHash: string;
     skipMixpanel?: boolean;
