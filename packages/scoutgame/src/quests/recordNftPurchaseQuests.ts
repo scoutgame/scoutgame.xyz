@@ -1,12 +1,17 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
+import { getCurrentSeasonStart } from '../dates/utils';
+
 import { completeQuests } from './completeQuests';
 import type { QuestType } from './questRecords';
 
 export async function recordNftPurchaseQuests(scoutId: string, skipMixpanel: boolean = false) {
   const scoutNftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
-      scoutId
+      scoutId,
+      builderEvent: {
+        season: getCurrentSeasonStart()
+      }
     },
     select: {
       builderNftId: true,
