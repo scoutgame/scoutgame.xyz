@@ -38,19 +38,6 @@ export function batchUpdateMixpanelUserProfiles(users: { userId: string; profile
   );
 }
 
-export async function deleteMixpanelProfiles(users: { id: string }[]) {
-  const apiKey = getApiKey();
-
-  return POST(
-    'https://api.mixpanel.com/engage#profile-delete',
-    users.map((user) => ({
-      $token: apiKey,
-      $distinct_id: user.id,
-      $delete: 'null'
-    }))
-  );
-}
-
 // We accept up to 2000 events and 2MB uncompressed per request
 export async function batchImportMixpanelEvent<T extends MixpanelEventName>(
   data: { event: T; properties: MixpanelEventMap[T] & { time: number; $insert_id: string } }[]

@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { deleteMixpanelProfiles } from '@packages/mixpanel/updateUserProfile';
+import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
 import fs from 'node:fs';
 
 export async function deleteMixpanelProfilesScript() {
