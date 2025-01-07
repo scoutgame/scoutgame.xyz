@@ -1,8 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
 import { referralBonusPoints } from '../constants';
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 export async function createReferralBonusEvent(refereeId: string) {
   const referralCodeEvent = await prisma.referralCodeEvent.findFirst({

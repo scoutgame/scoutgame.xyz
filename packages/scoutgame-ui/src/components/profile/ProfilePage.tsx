@@ -1,5 +1,5 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { TalentProfile } from '@packages/users/getUserByPath';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { Suspense } from 'react';

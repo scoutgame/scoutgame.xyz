@@ -1,4 +1,4 @@
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { redirect } from 'next/navigation';
 
 import { WelcomePage } from 'components/welcome/WelcomePage';

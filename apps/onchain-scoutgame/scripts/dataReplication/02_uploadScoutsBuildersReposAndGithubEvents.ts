@@ -10,11 +10,11 @@
 // import { refreshUserStats } from "@packages/scoutgame/refreshUserStats";
 // import { refreshScoutProtocolBuilderNftPrice } from "@packages/scoutgame/builderNfts/refreshScoutProtocolBuilderNftPrice";
 // import { prettyPrint } from "@packages/utils/strings";
-// import { getCurrentSeasonStart } from "@packages/scoutgame/dates";
+// import { getCurrentSeasonStart } from "@packages/dates";
 // import { builderEvents } from './cache/builderEvents';
 // import { builders } from "./cache/builders";
 // import { githubEvents } from "./cache/githubEvents";
-// import { getAllISOWeeksFromSeasonStart } from "@packages/scoutgame/dates";
+// import { getAllISOWeeksFromSeasonStart } from "@packages/dates";
 // // Commented this blob so CI passes. Re-enable when performing upload
 // import { repos } from "./cache/repos";
 // import { scouts } from "./cache/scouts";

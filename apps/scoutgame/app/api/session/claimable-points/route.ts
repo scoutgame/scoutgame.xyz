@@ -1,5 +1,5 @@
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
 import { NextResponse } from 'next/server';
 
 export async function GET() {

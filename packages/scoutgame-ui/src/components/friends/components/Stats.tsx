@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
-import { rewardPoints } from '@packages/scoutgame/constants';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
+import { rewardPoints } from '@packages/users/constants';
 
 export function Stats({ friends }: { friends: SessionUser[] }) {
   const friendsJoined = friends.length;

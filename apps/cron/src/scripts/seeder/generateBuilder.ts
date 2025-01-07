@@ -6,7 +6,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
 import { getBuilderNftContractAddress, builderNftChain } from '@packages/scoutgame/builderNfts/constants';
 import { generateArtwork } from '@packages/scoutgame/builderNfts/artwork/generateArtwork';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
 
 export async function generateBuilder({ tokenId }: { tokenId: number }) {

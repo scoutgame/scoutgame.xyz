@@ -9,15 +9,14 @@ import {
   getFilenameWithExtension
 } from '@packages/aws/uploadToS3Server';
 import { getENSName } from '@packages/blockchain/getENSName';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { capitalize, randomString } from '@packages/utils/strings';
+import { getTier } from '@packages/waitlist/scoring/constants';
+import type { ConnectWaitlistTier } from '@packages/waitlist/scoring/constants';
 import sharp from 'sharp';
 import { v4 } from 'uuid';
 import type { Address } from 'viem';
 import { isAddress } from 'viem/utils';
-
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
-import { getTier } from '../waitlist/scoring/constants';
-import type { ConnectWaitlistTier } from '../waitlist/scoring/constants';
 
 import { generateRandomAvatar } from './generateRandomAvatar';
 

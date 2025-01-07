@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { recordNftPurchaseQuests } from '@packages/scoutgame/builderNfts/recordNftPurchaseQuests';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { QuestType } from '@packages/scoutgame/quests/questRecords';

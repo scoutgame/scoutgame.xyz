@@ -1,6 +1,6 @@
 import { DataNotFoundError } from '@charmverse/core/errors';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { getSession } from '@packages/scoutgame/session/getSession';
+import { getSession } from '@packages/nextjs/session/getSession';
 import { validateTelegramData } from '@packages/scoutgame/telegram/validate';
 import { findOrCreateTelegramUser } from '@packages/users/findOrCreateTelegramUser';
 

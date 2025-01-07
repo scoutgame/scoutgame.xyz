@@ -1,10 +1,9 @@
 'use server';
 
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { getSession } from '@packages/nextjs/session/getSession';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
-
-import { getSession } from '../session/getSession';
 
 import { handlePendingTransaction } from './handlePendingTransaction';
 

@@ -1,7 +1,6 @@
 import { prisma, type BuilderStatus } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { UserProfileData } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
-
-import { getCurrentSeasonStart } from '../dates/utils';
 
 export type UserProfile = UserProfileData & {
   builderStatus: BuilderStatus | null;

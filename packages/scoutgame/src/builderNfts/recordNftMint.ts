@@ -2,13 +2,13 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek, Season } from '@packages/dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
 import { baseUrl } from '@packages/utils/constants';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
-import type { ISOWeek, Season } from '../dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 

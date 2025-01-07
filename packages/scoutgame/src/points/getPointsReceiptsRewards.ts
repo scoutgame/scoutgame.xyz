@@ -1,8 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
-
-import type { Season } from '../dates/config';
-import { seasonStarts } from '../dates/config';
-import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '../dates/utils';
+import type { Season } from '@packages/dates/config';
+import { seasonStarts } from '@packages/dates/config';
+import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
 

@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
-import { getCurrentSeasonStart } from '../../dates/utils';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from '../artwork/uploadStarterPackArtwork';
 import { builderContractStarterPackReadonlyApiClient } from '../clients/builderContractStarterPackReadClient';

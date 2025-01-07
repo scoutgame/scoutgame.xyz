@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getBuildersByFid } from '@packages/scoutgame/social/getBuildersByFid';
 import { ScoutInfoPage } from '@packages/scoutgame-ui/components/welcome/scout-info/ScoutInfoPage';
 import type { Metadata } from 'next';

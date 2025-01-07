@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getUserStats } from '@packages/users/getUserStats';
 
 import { ErrorSSRMessage } from '../../../common/ErrorSSRMessage';

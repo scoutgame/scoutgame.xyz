@@ -1,4 +1,4 @@
-import { type SessionUser } from '@packages/scoutgame/session/interfaces';
+import { type SessionUser } from '@packages/nextjs/session/interfaces';
 
 import { SinglePageLayout } from '../common/Layout';
 import { SinglePageWrapper } from '../common/SinglePageWrapper';

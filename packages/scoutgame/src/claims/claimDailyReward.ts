@@ -1,8 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek, getPreviousWeek, getCurrentSeason } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
-import { getCurrentWeek, getPreviousWeek, getCurrentSeason } from '../dates/utils';
 import { sendPointsForDailyClaim } from '../points/builderEvents/sendPointsForDailyClaim';
 import { sendPointsForDailyClaimStreak } from '../points/builderEvents/sendPointsForDailyClaimStreak';
 

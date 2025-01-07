@@ -1,10 +1,9 @@
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
-import { BasicUserInfoSelect } from '../users/queries';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import type { BasicUserInfo } from './interfaces';
+import { BasicUserInfoSelect } from './queries';
 
 export type TalentProfile = {
   id: number;

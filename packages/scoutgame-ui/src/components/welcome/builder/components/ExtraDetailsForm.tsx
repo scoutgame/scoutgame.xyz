@@ -14,7 +14,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { saveOnboardingDetailsAction } from '@packages/users/saveOnboardingDetailsAction';
 import type { SaveOnboardingDetailsFormValues } from '@packages/users/saveOnboardingDetailsSchema';
 import { saveOnboardingDetailsSchema } from '@packages/users/saveOnboardingDetailsSchema';

@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 
 import { Hidden } from '../../common/Hidden';
 import { Info } from '../../friends/components/Info';

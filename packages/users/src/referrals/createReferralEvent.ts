@@ -1,8 +1,7 @@
 import type { BuilderEventType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { getPlatform } from '@packages/mixpanel/utils';
-
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 export async function createReferralEvent(referralCode: string, refereeId: string) {
   const referrer = await prisma.scout.findUniqueOrThrow({

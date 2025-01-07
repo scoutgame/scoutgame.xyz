@@ -1,7 +1,6 @@
 import type { Scout, UserAllTimeStats, UserSeasonStats } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export type UserStats = {
   seasonPoints?: Pick<UserSeasonStats, 'pointsEarnedAsBuilder' | 'pointsEarnedAsScout'>;

@@ -1,7 +1,6 @@
 import { baseUrl } from '@packages/utils/env';
+import { getTier } from '@packages/waitlist/scoring/constants';
 import { ImageResponse } from 'next/og';
-
-import { getTier } from '../../../../../../../packages/waitlist/waitlist/scoring/constants';
 
 export const runtime = 'edge';
 export const contentType = 'image/jpeg';

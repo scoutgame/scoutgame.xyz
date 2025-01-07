@@ -1,12 +1,12 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { baseUrl } from '@packages/utils/constants';
 
 import { rewardPoints } from '../constants';
-import { BasicUserInfoSelect } from '../users/queries';
+import { BasicUserInfoSelect } from '../queries';
 
 export async function updateReferralUsers(refereeId: string) {
   const referralCodeEvent = await prisma.referralCodeEvent.findFirst({

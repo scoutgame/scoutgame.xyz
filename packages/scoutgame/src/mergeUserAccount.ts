@@ -2,10 +2,10 @@ import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { v4 } from 'uuid';
 
-import { getCurrentSeasonStart } from '../dates/utils';
-import { refreshPointStatsFromHistory } from '../points/refreshPointStatsFromHistory';
+import { refreshPointStatsFromHistory } from './points/refreshPointStatsFromHistory';
 
 export type ProfileToKeep = 'current' | 'new';
 

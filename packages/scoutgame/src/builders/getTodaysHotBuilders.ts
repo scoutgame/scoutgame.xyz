@@ -1,7 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '../dates/utils';
-import { BasicUserInfoSelect } from '../users/queries';
+import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
+import { BasicUserInfoSelect } from '@packages/users/queries';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';

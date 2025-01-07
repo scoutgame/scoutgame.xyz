@@ -1,6 +1,6 @@
 'use server';
 
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { TELEGRAM_API_HASH } from '@packages/scoutgame/constants';
 
 import { completeQuests } from '../quests/completeQuests';

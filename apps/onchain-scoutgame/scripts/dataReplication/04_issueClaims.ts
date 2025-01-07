@@ -1,5 +1,5 @@
 // import { log } from "@charmverse/core/log";
-// import { currentSeason, getAllISOWeeksFromSeasonStart, getAllISOWeeksFromSeasonStartUntilSeasonEnd, getCurrentWeek } from "@packages/scoutgame/dates";
+// import { currentSeason, getAllISOWeeksFromSeasonStart, getAllISOWeeksFromSeasonStartUntilSeasonEnd, getCurrentWeek } from "@packages/dates";
 // import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from "@packages/scoutgame/protocol/constants";
 // import { generateWeeklyClaims } from "@packages/scoutgame/protocol/generateWeeklyClaims";
 // import { resolveTokenOwnership } from "@packages/scoutgame/protocol/resolveTokenOwnership";

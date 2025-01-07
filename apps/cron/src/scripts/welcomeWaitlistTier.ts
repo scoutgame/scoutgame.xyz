@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { Prisma, prisma } from '@charmverse/core/prisma-client';
-import { ConnectWaitlistTier, getWaitlistRange } from '../../../../packages/waitlist/waitlist/scoring/constants';
-import { welcomeFromWaitlistToScoutgame } from '../../../../packages/waitlist/waitlist/welcomeToScoutgame';
+import { ConnectWaitlistTier, getWaitlistRange } from '@packages/waitlist/scoring/constants';
+import { welcomeFromWaitlistToScoutgame } from '@packages/waitlist/welcomeToScoutgame';
 import { RateLimit } from 'async-sema';
 
 const limiter = RateLimit(1);

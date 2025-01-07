@@ -1,6 +1,6 @@
 import { UnauthorisedActionError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
-import { actionClientBase } from '@packages/scoutgame/actions/actionClient';
+import { actionClientBase } from '@packages/nextjs/actions/actionClient';
 import { headers } from 'next/headers';
 
 import { getSession } from '../session/getSession';

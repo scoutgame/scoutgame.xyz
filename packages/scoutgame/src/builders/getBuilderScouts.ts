@@ -1,9 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
-
-import { getCurrentSeasonStart } from '../dates/utils';
 
 export type ScoutInfo = BasicUserInfo & {
   displayName: string;
