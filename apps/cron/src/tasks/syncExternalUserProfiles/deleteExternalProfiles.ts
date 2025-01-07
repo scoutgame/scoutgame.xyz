@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import { deleteSubscriptionByEmail as deleteBeehiivSubscription } from '@packages/beehiiv/deleteSubscriptionByEmail';
 import { deleteContact as deleteLoopsContact } from '@packages/loops/client';
 import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
-import { DateTime } from 'luxon';
 
 export async function deleteExternalProfiles(users: { id: string; email: string | null }[]) {
   await deleteMixpanelProfiles(users);
