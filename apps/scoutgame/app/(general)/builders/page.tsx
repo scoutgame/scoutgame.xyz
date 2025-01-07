@@ -8,7 +8,8 @@ export default async function Builders({
 }) {
   const tab = (searchParams.tab as string) || 'leaderboard';
   const week = searchParams.week as string | undefined;
-  const builderSort = (searchParams.builderSort as string | undefined) || 'rank';
+  // sort by price by default as it does not require any season or weekly stats
+  const builderSort = (searchParams.builderSort as string | undefined) || 'price';
   const builderOrder = (searchParams.builderOrder as string | undefined) || 'asc';
 
   return (

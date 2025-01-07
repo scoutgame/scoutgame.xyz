@@ -32,7 +32,7 @@ export async function BuilderPageTable({
     }
     // empty state
     else {
-      return <ScoutPageTable tab='builders' sort={builderSort} order={builderOrder} />;
+      return <ScoutPageTable tab='builders' sort={builderSort || 'price'} order={builderOrder} />;
     }
   }
   return null;

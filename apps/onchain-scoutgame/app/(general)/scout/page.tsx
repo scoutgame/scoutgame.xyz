@@ -6,7 +6,8 @@ export default async function Scout({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const scoutSort = (searchParams.scoutSort as string) || 'points';
-  const builderSort = (searchParams.builderSort as string) || 'rank';
+  // sort by price by default as it does not require any season or weekly stats
+  const builderSort = (searchParams.builderSort as string | undefined) || 'price';
   const builderOrder = (searchParams.builderOrder as string) || 'asc';
   const scoutOrder = (searchParams.scoutOrder as string) || 'desc';
   const scoutTab = (searchParams.scoutTab as string) || 'scouts';
