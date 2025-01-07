@@ -1,8 +1,10 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
 import { batchUpdateMixpanelUserProfiles } from '@packages/mixpanel/updateUserProfile';
 import type { MixPanelUserProfile } from '@packages/mixpanel/updateUserProfile';
+import { DateTime } from 'luxon';
+
+import { deleteExternalProfiles } from './deleteExternalProfiles';
 
 const perBatch = 1000;
 
@@ -14,6 +16,9 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
     take: perBatch,
     orderBy: {
       id: 'asc'
+    },
+    where: {
+      OR: [{ deletedAt: null }, { deletedAt: { gt: DateTime.now().minus({ hours: 2 }).toJSDate() } }]
     },
     include: {
       events: {
@@ -42,7 +47,7 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
   }));
 }
 
-async function updateMixpanelUserProfiles({
+async function syncExternalUserProfilesRecursively({
   offset = 0,
   total = 0
 }: {
@@ -58,7 +63,7 @@ async function updateMixpanelUserProfiles({
 
   // Delete user profiles for users that are deleted in our system
   const usersToDelete = users.filter((user) => user.profile.deleted);
-  await deleteMixpanelProfiles(usersToDelete.map((user) => ({ id: user.userId })))
+  await deleteExternalProfiles(usersToDelete.map((user) => ({ id: user.userId, email: user.profile.$email })))
     .catch((_error) => {
       log.error('Failed to delete user profiles in Mixpanel', { error: _error });
     })
@@ -69,12 +74,12 @@ async function updateMixpanelUserProfiles({
   if (users.length > 0) {
     log.debug(`Processed ${users.length} users in Mixpanel. Total processed: ${total}`);
 
-    return updateMixpanelUserProfiles({ offset: offset + perBatch, total });
+    return syncExternalUserProfilesRecursively({ offset: offset + perBatch, total });
   }
   return total;
 }
 
-export async function updateMixpanelUserProfilesTask(): Promise<void> {
-  const totalProcessed = await updateMixpanelUserProfiles();
+export async function syncExternalUserProfilesTask(): Promise<void> {
+  const totalProcessed = await syncExternalUserProfilesRecursively();
   log.info(`Updated ${totalProcessed} users in Mixpanel`);
 }
