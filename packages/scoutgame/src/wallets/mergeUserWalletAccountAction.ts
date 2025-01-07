@@ -1,9 +1,8 @@
 'use server';
 
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
-
-import { mergeUserAccount } from '../users/mergeUserAccount';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { mergeUserAccount } from '@packages/scoutgame/mergeUserAccount';
 
 import { mergeUserWalletAccountSchema } from './mergeUserWalletAccountSchema';
 import { verifyWalletSignature } from './verifyWalletSignature';

@@ -2,7 +2,7 @@ import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 
 import { getFarcasterUserByUsername } from '@packages/farcaster/getFarcasterUserByUsername';
 import { octokit } from '@packages/github/client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 import { log } from '@charmverse/core/log';

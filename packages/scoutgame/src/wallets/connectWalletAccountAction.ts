@@ -1,6 +1,6 @@
 'use server';
 
-import { authActionClient } from '../actions/actionClient';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 
 import { connectWalletAccount } from './connectWalletAccount';
 import { connectWalletAccountSchema } from './connectWalletAccountSchema';

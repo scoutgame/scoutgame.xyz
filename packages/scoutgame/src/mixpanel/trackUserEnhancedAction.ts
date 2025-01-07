@@ -1,11 +1,10 @@
 import type { MixpanelEventMap, MixpanelEventName } from '@packages/mixpanel/interfaces';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import type { UTMParams } from '@packages/mixpanel/utils';
+import { getIPFromRequest } from '@packages/nextjs/utils/getIPFromRequest';
 import { isValidURL } from '@packages/utils/url';
 import { headers } from 'next/headers';
 import { userAgent } from 'next/server';
-
-import { getIp } from '../session/getIp';
 
 /**
  * Used for tracking events with user agent details in mixpanel
@@ -28,7 +27,7 @@ export function trackUserEnhancedAction<T extends MixpanelEventName>(
     return;
   }
 
-  const ip = getIp();
+  const ip = getIPFromRequest();
 
   const deviceProps = {
     $browser: reqUserAgent?.browser.name,

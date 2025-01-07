@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 export type BuilderStats = {
   seasonPoints?: number;

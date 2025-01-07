@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Skeleton, Typography } from '@mui/material';
-import { getCurrentSeasonWeekNumber, getWeekStartEnd } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonWeekNumber, getWeekStartEnd } from '@packages/dates/utils';
 import { useEffect, useState } from 'react';
 
 import { useIsMounted } from '../../../hooks/useIsMounted';

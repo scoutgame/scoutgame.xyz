@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { seasons } from '@packages/scoutgame/dates/config';
-import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/scoutgame/dates/utils';
+import { seasons } from '@packages/dates/config';
+import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { questsRecord } from '@packages/scoutgame/quests/questRecords';

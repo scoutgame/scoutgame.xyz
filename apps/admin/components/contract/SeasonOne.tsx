@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 
 import { getContractData } from 'lib/contract/getContractData';
 import { getStarterPackContractData } from 'lib/contract/getStarterPackContractData';

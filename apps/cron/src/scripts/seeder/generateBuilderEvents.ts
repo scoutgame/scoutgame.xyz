@@ -2,8 +2,8 @@ import { prisma, type GithubRepo, type GithubUser } from '@charmverse/core/prism
 import { faker } from '@faker-js/faker';
 import { DateTime } from 'luxon';
 
-import { Season } from '@packages/scoutgame/dates/config';
-import { getCurrentSeasonStart, getWeekFromDate } from '@packages/scoutgame/dates/utils';
+import { Season } from '@packages/dates/config';
+import { getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
 import { generatePullRequest } from './generatePullRequest';
 import { randomTimeOfDay } from './generator';
 import { PullRequest } from '../../tasks/processBuilderActivity/github/getPullRequestsByUser';

@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentWeek } from '@packages/dates/utils';
 import { mockBuilder } from '@packages/scoutgame/testing/database';
 
 import { claimDailyReward } from '../claimDailyReward';
