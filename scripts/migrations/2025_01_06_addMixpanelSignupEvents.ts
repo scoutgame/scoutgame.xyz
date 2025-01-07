@@ -3,6 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { batchImportMixpanelEvent } from '@packages/mixpanel/updateUserProfile';
 import { uuidFromNumber } from '@packages/utils/uuid';
 import fs from 'node:fs';
+import path from 'node:path';
 
 async function trackMixpanelSignupEvents(userIds: string[]) {
   const scouts = await prisma.scout.findMany({
@@ -34,7 +35,8 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
 }
 
 function addMixpanelSignupEvents() {
-  fs.readFile('../../userIds.json', 'utf8', async function (err, data) {
+  const filePath = path.join(__dirname, '../../csvjson.json');
+  fs.readFile(filePath, 'utf8', async function (err, data) {
     if (data && !err) {
       const userIds = JSON.parse(data) as { userId: string }[];
 
@@ -49,4 +51,4 @@ function addMixpanelSignupEvents() {
   });
 }
 
-// addMixpanelSignupEvents()
+addMixpanelSignupEvents();
