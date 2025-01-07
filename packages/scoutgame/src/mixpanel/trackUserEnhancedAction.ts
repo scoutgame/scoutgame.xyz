@@ -18,7 +18,7 @@ export function trackUserEnhancedAction<T extends MixpanelEventName>(
   utmParams?: UTMParams
 ) {
   const headersList = headers();
-  const referrer = headersList.get('referrer');
+  const referrer = headersList.get('Referer') || undefined;
   const isReferrerValid = isValidURL(referrer);
   const referrerDomain = isReferrerValid ? new URL(referrer).hostname : undefined;
 
@@ -28,16 +28,18 @@ export function trackUserEnhancedAction<T extends MixpanelEventName>(
     return;
   }
 
+  const ip = getIp();
+
   const deviceProps = {
     $browser: reqUserAgent?.browser.name,
     $device: reqUserAgent?.device?.model,
     $os: reqUserAgent?.os.name,
-    $referrer: referrer || undefined,
+    $referrer: referrer,
     $referring_domain: referrerDomain,
+    ip,
+    // Custom event props
     deviceType: reqUserAgent.device?.type
   } as const;
 
-  const ip = getIp();
-
-  return trackUserAction(eventName, { ...params, ...deviceProps, ip }, utmParams);
+  return trackUserAction(eventName, { ...deviceProps, ...params }, utmParams);
 }
