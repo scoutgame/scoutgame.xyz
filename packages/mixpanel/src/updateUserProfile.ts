@@ -23,6 +23,7 @@ export function updateMixpanelUserProfile(userId: string, profile: Partial<MixPa
   return POST('https://api.mixpanel.com/engage#profile-set', {
     $token: apiKey,
     $distinct_id: userId,
+    $ip: '0',
     $set: profile
   });
 }
@@ -46,19 +47,26 @@ export async function batchImportMixpanelEvent<T extends MixpanelEventName>(
   data: { event: T; properties: MixpanelEventMap[T] & { time: number; $insert_id: string } }[]
 ) {
   const apiKey = getApiKey();
+  const projectId = '1234';
 
   return POST(
-    `https://api.mixpanel.com/import?strict=1&project_id=${apiKey}`,
+    `https://api.mixpanel.com/import?strict=1&project_id=${projectId}`,
     data.map(({ event, properties }) => {
       const { userId, ...restProps } = properties;
 
       return {
         event,
         properties: {
+          ip: '0', // don't set the user location.
           distinct_id: userId,
           ...restProps
         }
       };
-    })
+    }),
+    {
+      headers: {
+        authorization: `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`
+      }
+    }
   );
 }
