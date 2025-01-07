@@ -39,7 +39,11 @@ export async function processNftMints() {
 
       scoutgameMintsLogger.info(`Processed ${i + 1}/${totalPendingTxs} pending txs`);
     } catch (error) {
-      scoutgameMintsLogger.warn(`Error processing pending tx`, { pendingTransactionId: pendingTx.id, error });
+      scoutgameMintsLogger.warn(`Error processing pending tx`, {
+        pendingTransactionId: pendingTx.id,
+        userId: pendingTx.userId,
+        error
+      });
     }
   }
 }
