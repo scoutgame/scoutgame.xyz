@@ -8,13 +8,21 @@ import { builderContractReadonlyApiClient } from '@packages/scoutgame/builderNft
 import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
+import type { ISOWeek } from '@packages/scoutgame/dates/config';
+import { getCurrentSeason, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { findOrCreateWalletUser } from '@packages/scoutgame/users/findOrCreateWalletUser';
 
 // Deploy date for new version of contract Jan 03 2025
 const startBlockNumberForReindexing = 130_157_497;
 
-export async function findAndIndexMissingPurchases({ nftType }: { nftType: BuilderNftType }) {
+export async function findAndIndexMissingPurchases({
+  nftType,
+  season = getCurrentSeasonStart()
+}: {
+  nftType: BuilderNftType;
+  season?: ISOWeek;
+}) {
   const transferSingleEvents = await (nftType === BuilderNftType.starter_pack
     ? getStarterPackTransferSingleEvents({ fromBlock: startBlockNumberForReindexing })
     : getTransferSingleEvents({ fromBlock: startBlockNumberForReindexing }));
@@ -65,20 +73,31 @@ export async function findAndIndexMissingPurchases({ nftType }: { nftType: Build
     {} as Record<number, { records: TransferSingleEvent[] }>
   );
 
-  const allTokenIdsAsString = Object.keys(groupedByTokenId).filter((_tokenId) => _tokenId !== '163');
+  const allTokenIdsAsString = Object.keys(groupedByTokenId);
 
   const nfts = await prisma.builderNft.findMany({
     where: {
       tokenId: {
         in: allTokenIdsAsString.map((key) => Number(key))
       },
-      nftType
+      nftType,
+      season
     }
   });
 
   for (const key of allTokenIdsAsString) {
     for (const missingTx of groupedByTokenId[key as any].records) {
       scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
+
+      if (missingTx.args.to === '0x0000000000000000000000000000000000000000') {
+        scoutgameMintsLogger.error('Skipping burn tx', missingTx.transactionHash, 'tokenId', key);
+        // eslint-disable-next-line no-continue
+        continue;
+      } else if (missingTx.args.from !== '0x0000000000000000000000000000000000000000') {
+        scoutgameMintsLogger.error('Skipping transfer tx', missingTx.transactionHash, 'tokenId', key);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
 
       const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
 
@@ -131,3 +150,5 @@ export async function findAndIndexMissingPurchases({ nftType }: { nftType: Build
     }
   }
 }
+
+// findAndIndexMissingPurchases({ nftType: BuilderNftType.default }).then(console.log);
