@@ -1,9 +1,4 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-import type { BuilderScoutedEvent } from '@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents';
-import {
-  getBuilderScoutedEvents,
-  getBuilderStarterPackScoutedEvents
-} from '@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import {
   getStarterPackTransferSingleEvents,
@@ -13,39 +8,48 @@ import { builderContractReadonlyApiClient } from '@packages/scoutgame/builderNft
 import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
+import type { ISOWeek } from '@packages/scoutgame/dates/config';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
+import { findOrCreateWalletUser } from '@packages/scoutgame/users/findOrCreateWalletUser';
 
-// Start block number for refetching events - Nov.14th 2024 - Last manual reindexing was Nov. 17th 2024
-const startBlockNumberForReindexing = 128000000;
+// Deploy date for new version of contract Jan 03 2025
+const startBlockNumberForReindexing = 130_157_497;
 
-export async function findAndIndexMissingPurchases({ nftType }: { nftType: BuilderNftType }) {
-  const builderScoutedEvents = await (nftType === BuilderNftType.starter_pack
-    ? getBuilderStarterPackScoutedEvents({ fromBlock: startBlockNumberForReindexing })
-    : getBuilderScoutedEvents({ fromBlock: startBlockNumberForReindexing }));
-  const transferSingleEvents = await (
-    nftType === BuilderNftType.starter_pack
-      ? getStarterPackTransferSingleEvents({ fromBlock: startBlockNumberForReindexing })
-      : getTransferSingleEvents({ fromBlock: startBlockNumberForReindexing })
-  ).then((events) =>
-    events.reduce(
-      (acc, val) => {
-        acc[val.transactionHash] = val;
+export async function findAndIndexMissingPurchases({
+  nftType,
+  season = getCurrentSeasonStart()
+}: {
+  nftType: BuilderNftType;
+  season?: ISOWeek;
+}) {
+  const transferSingleEvents = await (nftType === BuilderNftType.starter_pack
+    ? getStarterPackTransferSingleEvents({ fromBlock: startBlockNumberForReindexing })
+    : getTransferSingleEvents({ fromBlock: startBlockNumberForReindexing }));
 
-        return acc;
-      },
-      {} as Record<string, TransferSingleEvent>
-    )
+  const transferSingleEventsMapped = transferSingleEvents.reduce(
+    (acc, val) => {
+      acc[val.transactionHash] = val;
+
+      return acc;
+    },
+    {} as Record<string, TransferSingleEvent>
   );
 
-  const missingEvents: typeof builderScoutedEvents = [];
+  const missingEvents: typeof transferSingleEvents = [];
 
   const uniqueTxHashes = await prisma.nFTPurchaseEvent
     .groupBy({
-      by: ['txHash']
+      by: ['txHash'],
+      where: {
+        builderNft: {
+          season
+        }
+      }
     })
     .then((transactions) => new Set(transactions.map((tx) => tx.txHash)));
 
-  for (const event of builderScoutedEvents) {
+  for (const event of transferSingleEvents) {
     if (!uniqueTxHashes.has(event.transactionHash)) {
       missingEvents.push(event);
     }
@@ -61,7 +65,7 @@ export async function findAndIndexMissingPurchases({ nftType }: { nftType: Build
 
   const groupedByTokenId = missingEvents.reduce(
     (acc, val) => {
-      const tokenId = Number(val.args.tokenId);
+      const tokenId = Number(val.args.id);
 
       if (!acc[tokenId]) {
         acc[tokenId] = { records: [] };
@@ -71,23 +75,34 @@ export async function findAndIndexMissingPurchases({ nftType }: { nftType: Build
 
       return acc;
     },
-    {} as Record<number, { records: BuilderScoutedEvent[] }>
+    {} as Record<number, { records: TransferSingleEvent[] }>
   );
 
-  const allTokenIdsAsString = Object.keys(groupedByTokenId).filter((_tokenId) => _tokenId !== '163');
+  const allTokenIdsAsString = Object.keys(groupedByTokenId);
 
   const nfts = await prisma.builderNft.findMany({
     where: {
       tokenId: {
         in: allTokenIdsAsString.map((key) => Number(key))
       },
-      nftType
+      nftType,
+      season
     }
   });
 
   for (const key of allTokenIdsAsString) {
     for (const missingTx of groupedByTokenId[key as any].records) {
       scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
+
+      if (missingTx.args.to === '0x0000000000000000000000000000000000000000') {
+        scoutgameMintsLogger.error('Skipping burn tx', missingTx.transactionHash, 'tokenId', key);
+        // eslint-disable-next-line no-continue
+        continue;
+      } else if (missingTx.args.from !== '0x0000000000000000000000000000000000000000') {
+        scoutgameMintsLogger.error('Skipping transfer tx', missingTx.transactionHash, 'tokenId', key);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
 
       const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
 
@@ -100,26 +115,37 @@ export async function findAndIndexMissingPurchases({ nftType }: { nftType: Build
       const price = await (nftType === BuilderNftType.starter_pack
         ? builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({
             args: {
-              amount: BigInt(missingTx.args.amount)
+              amount: BigInt(missingTx.args.value)
             },
             blockNumber: missingTx.blockNumber
           })
         : builderContractReadonlyApiClient.getTokenPurchasePrice({
-            args: { tokenId: BigInt(key), amount: BigInt(missingTx.args.amount) },
+            args: { tokenId: BigInt(key), amount: BigInt(missingTx.args.value) },
             blockNumber: missingTx.blockNumber
           }));
 
       const asPoints = convertCostToPoints(price);
 
-      const address = transferSingleEvents[missingTx.transactionHash].args.to;
+      const address = transferSingleEventsMapped[missingTx.transactionHash].args.to;
 
       if (!address) {
         scoutgameMintsLogger.error(`Tx ${missingTx.transactionHash} has no recipient address`);
       }
 
+      let scoutId = await prisma.scoutWallet
+        .findFirst({ where: { address: address.toLowerCase() } })
+        .then((scout) => scout?.scoutId);
+
+      if (!scoutId) {
+        scoutgameMintsLogger.info(
+          `Scout with unknown address ${address} who minted ${missingTx.args.value} NFTs with tokenId ${missingTx.args.id} at transaction ${missingTx.transactionHash} not found, creating new user`
+        );
+        scoutId = await findOrCreateWalletUser({ wallet: address }).then((scout) => scout.id);
+      }
+
       await recordNftMint({
-        amount: Number(missingTx.args.amount),
-        scoutId: missingTx.args.scout,
+        amount: Number(missingTx.args.value),
+        scoutId: scoutId as string,
         mintTxHash: missingTx.transactionHash,
         paidWithPoints: false,
         pointsValue: asPoints,
@@ -129,3 +155,5 @@ export async function findAndIndexMissingPurchases({ nftType }: { nftType: Build
     }
   }
 }
+
+// findAndIndexMissingPurchases({ nftType: BuilderNftType.default }).then(console.log);
