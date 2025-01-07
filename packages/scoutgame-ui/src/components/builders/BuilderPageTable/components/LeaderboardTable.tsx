@@ -4,8 +4,8 @@ import { Box, Stack, TableHead } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import type { ISOWeek } from '@packages/dates/config';
 import type { LeaderBoardRow } from '@packages/scoutgame/builders/getLeaderboard';
-import type { ISOWeek } from '@packages/scoutgame/dates/config';
 import Link from 'next/link';
 
 import { Avatar } from '../../../common/Avatar';

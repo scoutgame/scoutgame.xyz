@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { WelcomePage } from '@packages/scoutgame-ui/components/welcome/WelcomePage';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';

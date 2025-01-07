@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { Season } from '@packages/scoutgame/dates/config';
-import { getWeekFromDate } from '@packages/scoutgame/dates/utils';
+import type { Season } from '@packages/dates/config';
+import { getWeekFromDate } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
 import { getBuilderActivity } from './getBuilderActivity';

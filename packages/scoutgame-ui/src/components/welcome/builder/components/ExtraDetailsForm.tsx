@@ -14,10 +14,10 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
-import { saveOnboardingDetailsAction } from '@packages/scoutgame/users/saveOnboardingDetailsAction';
-import type { SaveOnboardingDetailsFormValues } from '@packages/scoutgame/users/saveOnboardingDetailsSchema';
-import { saveOnboardingDetailsSchema } from '@packages/scoutgame/users/saveOnboardingDetailsSchema';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
+import { saveOnboardingDetailsAction } from '@packages/users/saveOnboardingDetailsAction';
+import type { SaveOnboardingDetailsFormValues } from '@packages/users/saveOnboardingDetailsSchema';
+import { saveOnboardingDetailsSchema } from '@packages/users/saveOnboardingDetailsSchema';
 import { concatenateStringValues } from '@packages/utils/strings';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';

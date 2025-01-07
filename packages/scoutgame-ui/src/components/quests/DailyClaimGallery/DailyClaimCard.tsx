@@ -2,16 +2,17 @@
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Stack, Typography } from '@mui/material';
+import { getCurrentLocalWeek } from '@packages/dates/utils';
 import { claimDailyRewardAction } from '@packages/scoutgame/claims/claimDailyRewardAction';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
-import { getCurrentLocalWeek } from '@packages/scoutgame/dates/utils';
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
+import { useGetQuests } from '../../../hooks/api/quests';
 import { useUser } from '../../../providers/UserProvider';
 import { DailyClaimGift } from '../../claim/components/common/DailyClaimGift';
 
@@ -124,13 +125,11 @@ export function DailyClaimCard({
   const { refreshUser } = useUser();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const myConfetti = confetti.create(canvasRef.current || undefined, { resize: true });
+  const { mutate: refreshQuests } = useGetQuests();
 
-  const {
-    executeAsync: claimDailyReward,
-    isExecuting,
-    result
-  } = useAction(claimDailyRewardAction, {
+  const { executeAsync: claimDailyReward } = useAction(claimDailyRewardAction, {
     onSuccess: () => {
+      refreshQuests(); // Refresh quests in the entire app
       refreshUser();
     }
   });

@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { BasicUserInfoSelect } from '../users/queries';
+import { BasicUserInfoSelect } from '@packages/users/queries';
 
 export async function findScoutOrThrow(scoutId: string) {
   return prisma.scout.findUniqueOrThrow({

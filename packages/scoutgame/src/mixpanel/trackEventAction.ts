@@ -1,13 +1,12 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
-import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { getPlatform, getUTMParamsFromSearch } from '@packages/mixpanel/utils';
+import { actionClient } from '@packages/nextjs/actions/actionClient';
 import { v4 as uuid } from 'uuid';
 
-import { actionClient } from '../actions/actionClient';
-
 import { eventSchema } from './trackEventActionSchema';
+import { trackUserEnhancedAction } from './trackUserEnhancedAction';
 
 export const trackEventAction = actionClient
   .metadata({ actionName: 'mixpanel_event' })
@@ -36,7 +35,7 @@ export const trackEventAction = actionClient
       event.isAnonymous = true;
     }
 
-    trackUserAction(eventName, event, ctx.session.utmParams);
+    trackUserEnhancedAction(eventName, event, ctx.session.utmParams);
 
     log.debug(`Track user event: ${eventName}`, {
       userId: event.userId,

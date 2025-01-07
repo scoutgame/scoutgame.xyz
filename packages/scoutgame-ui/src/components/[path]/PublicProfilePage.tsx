@@ -2,7 +2,7 @@ import 'server-only';
 
 import { BuilderNftType, type BuilderStatus } from '@charmverse/core/prisma-client';
 import { Box, Stack, Paper } from '@mui/material';
-import type { BasicUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { BasicUserInfo } from '@packages/users/interfaces';
 
 import { BackButton } from '../common/Button/BackButton';
 import { Hidden } from '../common/Hidden';

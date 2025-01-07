@@ -1,15 +1,15 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { getPlatform } from '@packages/mixpanel/utils';
+import { BasicUserInfoSelect } from '@packages/users/queries';
 import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
 import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast7Days';
 import { mapGemReceiptsToLast7Days } from '../builders/mapGemReceiptsToLast7Days';
 import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
-import { BasicUserInfoSelect } from '../users/queries';
 
 async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
   const wallets = await prisma.scoutWallet.findMany({

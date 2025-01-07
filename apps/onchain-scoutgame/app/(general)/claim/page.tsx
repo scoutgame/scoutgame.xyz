@@ -1,4 +1,4 @@
-import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { ClaimPage } from '@packages/scoutgame-ui/components/claim/ClaimPage';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import type { Metadata } from 'next';

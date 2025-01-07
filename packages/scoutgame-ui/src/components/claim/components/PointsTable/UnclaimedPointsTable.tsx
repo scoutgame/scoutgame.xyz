@@ -1,6 +1,6 @@
+import { getSession } from '@packages/nextjs/session/getSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getPointsReceiptsRewards } from '@packages/scoutgame/points/getPointsReceiptsRewards';
-import { getSession } from '@packages/scoutgame/session/getSession';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { PointsTable } from './PointsTable';
 

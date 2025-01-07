@@ -1,7 +1,7 @@
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import { getCurrentWeek } from '@packages/scoutgame/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
 
 import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';

@@ -1,6 +1,6 @@
 'use server';
 
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { telegramClients } from '@packages/scoutgame-ui/actions/telegramClient';
 
 export const removeTelegramClientAction = authActionClient

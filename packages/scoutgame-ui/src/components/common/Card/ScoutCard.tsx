@@ -1,7 +1,7 @@
 'use client';
 
 import { Paper, Stack, Typography } from '@mui/material';
-import type { BasicUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { BasicUserInfo } from '@packages/users/interfaces';
 import Image from 'next/image';
 import React from 'react';
 

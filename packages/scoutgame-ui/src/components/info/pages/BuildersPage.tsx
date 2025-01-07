@@ -12,6 +12,8 @@ export function BuildersPage() {
   );
 }
 
+const googleDoc = 'https://docs.google.com/spreadsheets/d/1K7vxnjyWu1ylApuz6K2ZqKlbWZQV8cFwzmrPgDULsaI';
+
 function Document() {
   return (
     <InfoCard>
@@ -37,13 +39,8 @@ function Document() {
         <Typography>Approved Open-Source Project Owners</Typography>
         <List>
           <ListItem>
-            <Link
-              href='https://docs.google.com/spreadsheets/d/1K-p1ekVWzc062Z9xlmObwWSjjt5aWLeZZL3zS0e77DE/edit?usp=sharing'
-              target='_blank'
-              rel='noopener noreferrer'
-              sx={{ wordBreak: 'break-word' }}
-            >
-              https://docs.google.com/spreadsheets/d/1K-p1ekVWzc062Z9xlmObwWSjjt5aWLeZZL3zS0e77DE/edit?usp=sharing
+            <Link href={googleDoc} target='_blank' rel='noopener noreferrer' sx={{ wordBreak: 'break-word' }}>
+              {googleDoc}
             </Link>
           </ListItem>
         </List>

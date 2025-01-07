@@ -1,4 +1,4 @@
-import { getCurrentSeasonStart, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 import React from 'react';
 
 import { primaryTextColorDarkMode, secondaryText } from '../../../../../theme/colors';

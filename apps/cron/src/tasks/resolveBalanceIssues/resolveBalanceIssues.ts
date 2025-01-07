@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { detectBalanceIssues } from '@packages/scoutgame/points/detectBalanceIssues';
 
 export async function resolveBalanceIssues() {

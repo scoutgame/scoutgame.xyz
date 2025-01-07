@@ -1,5 +1,5 @@
-import { getTier } from '@packages/scoutgame/waitlist/scoring/constants';
 import { baseUrl } from '@packages/utils/env';
+import { getTier } from '@packages/waitlist/scoring/constants';
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';

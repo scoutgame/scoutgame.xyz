@@ -7,6 +7,7 @@ import {
   getBuilderNftStarterPackContractAddress,
   getDecentApiKey,
   isPreseason01Contract,
+  isStarterPackContract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import {
@@ -84,6 +85,8 @@ export function useDecentTransaction({
   const _contractAddress =
     contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress());
 
+  const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterPackContract(_contractAddress);
+
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
@@ -100,8 +103,8 @@ export function useDecentTransaction({
         isNative: false,
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: isPreseason01Contract(_contractAddress) ? preseason01NftMintSignature : transferableNftMintSignature,
-      args: isPreseason01Contract(_contractAddress)
+      signature: useScoutIdValidation ? preseason01NftMintSignature : transferableNftMintSignature,
+      args: useScoutIdValidation
         ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
         : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }

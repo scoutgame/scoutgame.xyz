@@ -14,6 +14,9 @@ export function useTrackEvent() {
         currentDomain: window.location.hostname,
         currentUrlPath: window.location.pathname,
         currentUrlSearch: window.location.search,
+        // default event props in mixpanel
+        $screen_width: String(window.screen.width),
+        $screen_height: String(window.screen.height),
         ...properties
       });
     },

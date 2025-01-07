@@ -1,4 +1,4 @@
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { loadBuildersUserKnows } from '@packages/scoutgame/social/loadBuildersUserKnows';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';

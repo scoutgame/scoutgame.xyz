@@ -3,13 +3,13 @@ import type { Prisma, WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { generateMerkleTree } from '@charmverse/core/protocol';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
 import { type Address } from 'viem';
 
-import { getCurrentSeasonStart } from '../dates/utils';
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
-import { findOrCreateWalletUser } from '../users/findOrCreateWalletUser';
 
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from './constants';
 import type { TokenOwnership } from './resolveTokenOwnership';

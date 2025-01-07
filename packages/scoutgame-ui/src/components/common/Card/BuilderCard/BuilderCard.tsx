@@ -36,7 +36,8 @@ export function BuilderCard({
         opacity: builder.builderStatus === 'banned' ? 0.25 : 1,
         width: 'fit-content',
         height: 'fit-content',
-        margin: '0 auto'
+        margin: '0 auto',
+        overflow: 'initial'
       }}
     >
       <BuilderCardNftDisplay

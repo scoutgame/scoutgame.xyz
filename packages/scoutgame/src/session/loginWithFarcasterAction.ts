@@ -2,15 +2,14 @@
 
 import { log } from '@charmverse/core/log';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { actionClient } from '@packages/scoutgame/actions/actionClient';
+import { actionClient } from '@packages/nextjs/actions/actionClient';
+import { saveSession } from '@packages/nextjs/session/saveSession';
 import { authSchema } from '@packages/scoutgame/farcaster/config';
 import { verifyFarcasterUser } from '@packages/scoutgame/farcaster/verifyFarcasterUser';
-import { findOrCreateFarcasterUser } from '@packages/scoutgame/users/findOrCreateFarcasterUser';
+import { findOrCreateFarcasterUser } from '@packages/users/findOrCreateFarcasterUser';
 import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 import { cookies } from 'next/headers';
-
-import { saveSession } from './saveSession';
 
 export const loginWithFarcasterAction = actionClient
   .metadata({ actionName: 'login_with_farcaster' })
