@@ -10,7 +10,8 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
     where: {
       id: {
         in: userIds
-      }
+      },
+      deletedAt: null
     },
     select: {
       id: true,
@@ -19,7 +20,7 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
   });
 
   try {
-    await batchImportMixpanelEvent(
+    const data = await batchImportMixpanelEvent(
       scouts.map((item, index) => ({
         event: 'sign_up',
         properties: {
@@ -29,7 +30,7 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
         }
       }))
     );
-    log.info('Loaded with success the following event', { event: 'sign_up' });
+    log.info('Loaded with success the following event', { event: 'sign_up', data });
   } catch (err) {
     log.error('There was an error while importing event sign_up', { err });
   }

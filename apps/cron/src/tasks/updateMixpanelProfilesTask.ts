@@ -63,8 +63,8 @@ async function updateMixpanelUserProfiles({
     .catch((_error) => {
       log.error('Failed to delete user profiles in Mixpanel', { error: _error });
     })
-    .finally(() => {
-      log.info(`Deleted ${usersToDelete.length} users in Mixpanel`);
+    .then((data) => {
+      log.info(`Deleted ${usersToDelete.length} users in Mixpanel`, { data });
     });
 
   if (users.length > 0) {
