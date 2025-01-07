@@ -20,6 +20,7 @@ import {
   Typography
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
 import { BuilderNFTSeasonOneImplementation01Client } from '@packages/scoutgame/builderNfts/clients/builderNFTSeasonOneClient';
@@ -34,7 +35,6 @@ import {
 } from '@packages/scoutgame/builderNfts/constants';
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
 import {
@@ -44,7 +44,7 @@ import {
   scoutTokenErc20ContractAddress,
   scoutTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
-import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { MinimalUserInfo } from '@packages/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
 import Image from 'next/image';
 import Link from 'next/link';

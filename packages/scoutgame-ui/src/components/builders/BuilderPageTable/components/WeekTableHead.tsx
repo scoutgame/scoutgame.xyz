@@ -1,13 +1,8 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Stack, Link as MuiLink } from '@mui/material';
-import type { ISOWeek } from '@packages/scoutgame/dates/config';
-import {
-  getCurrentSeasonWeekNumber,
-  getCurrentWeek,
-  getNextWeek,
-  getPreviousWeek
-} from '@packages/scoutgame/dates/utils';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonWeekNumber, getCurrentWeek, getNextWeek, getPreviousWeek } from '@packages/dates/utils';
 import Link from 'next/link';
 
 export function WeekTableHead({ week = getCurrentWeek() }: { week?: ISOWeek }) {

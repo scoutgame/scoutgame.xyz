@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 
 import { uploadArtwork } from '../builderNfts/artwork/uploadArtwork';
 import { uploadShareImage } from '../builderNfts/artwork/uploadShareImage';
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { log } from '@charmverse/core/log';
 
 async function uploadNFTArtwork() {
@@ -39,7 +39,7 @@ async function uploadNFTArtwork() {
         season: getCurrentSeasonStart(),
         tokenId: builderNft.tokenId,
         userImage: imageUrl,
-        builderId: builder.id,
+        builderId: builder.id
       });
 
       await prisma.builderNft.update({

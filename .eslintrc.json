@@ -85,10 +85,13 @@
           "./packages/github/",
           "./packages/loops/",
           "./packages/mixpanel/",
+          "./packages/nextjs/",
           "./packages/scoutgame/",
           "./packages/scoutgame-ui/",
           "./packages/testing/",
-          "./packages/utils/"
+          "./packages/users/",
+          "./packages/utils/",
+          "./packages/waitlist/"
         ]
       }
     ],

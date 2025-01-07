@@ -13,6 +13,7 @@
   "dependencies": {
     "@farcaster/auth-kit": "^0.6.0",
     "@packages/blockchain": "^0.0.0",
+    "@packages/dates": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
     "@packages/moxie": "^0.0.0",
     "@packages/scoutgame": "^0.0.0",

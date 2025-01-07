@@ -5,9 +5,9 @@ import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/b
 import { refreshUserStats } from '@packages/scoutgame/refreshUserStats';
 
 import { log } from '@charmverse/core/log';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { ISOWeek } from '@packages/scoutgame/dates/config';
+import { ISOWeek } from '@packages/dates/config';
 
 function getRandomValue<T>(arr: T[]): T {
   const randomIndex = Math.floor(Math.random() * arr.length);
@@ -40,7 +40,7 @@ const devUsers: Record<string, DevUser> = {
     id: 34683631,
     avatar:
       'https://cdn.charmverse.io/user-content/f50534c5-22e7-47ee-96cb-54f4ce1a0e3e/42697dc0-35ad-4361-8311-a92702c76062/breaking_wave.jpg'
-  },
+  }
   // ccarella: {
   //   id: 199823,
   //   avatar: 'https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/43760426-bca9-406b-4afe-20138acd5f00/rectcrop3',
@@ -68,7 +68,6 @@ const repoId = 444649883;
 const repoName = 'app.charmverse.io';
 
 export async function seedWithRealCharmverseGithubData() {
-
   // Initialize the github repo
   let githubRepo = await prisma.githubRepo.findFirst({
     where: {
@@ -139,7 +138,6 @@ export async function seedWithRealCharmverseGithubData() {
 }
 
 async function seedBuilderNFTs(season: ISOWeek = getCurrentSeasonStart()) {
-
   const githubUser = await prisma.githubUser.findMany({
     where: {
       login: {
@@ -224,7 +222,6 @@ async function clearNfts() {
 }
 
 async function script() {
-
   // await prisma.scout.deleteMany({
   // });
 
@@ -235,8 +232,6 @@ async function script() {
   await seedBuilderNFTs('2025-W01');
 }
 
-async function seedPurchases() {
-
-}
+async function seedPurchases() {}
 
 script();

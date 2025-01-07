@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getCurrentSeasonStart, getWeekStartEnd } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getWeekStartEnd } from '@packages/dates/utils';
 import {
   mockBuilder,
   mockBuilderNft,

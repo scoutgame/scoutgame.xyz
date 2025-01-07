@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Stack, Typography } from '@mui/material';
-import { saveOnboardedAction } from '@packages/scoutgame/users/saveOnboardedAction';
+import { saveOnboardedAction } from '@packages/users/saveOnboardedAction';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 

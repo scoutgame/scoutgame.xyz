@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { getCurrentSeasonStart } from '../dates/utils';
 import { getPointStatsFromHistory } from '../points/getPointStatsFromHistory';
 
 export async function detectBalanceIssues() {
