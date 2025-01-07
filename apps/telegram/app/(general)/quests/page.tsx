@@ -1,9 +1,9 @@
+import { getSession } from '@packages/nextjs/session/getSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getDailyClaims } from '@packages/scoutgame/claims/getDailyClaims';
 import { getQuests } from '@packages/scoutgame/quests/getQuests';
-import { getSession } from '@packages/scoutgame/session/getSession';
-import { getFriends } from '@packages/scoutgame/users/getFriends';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { QuestsPage } from '@packages/scoutgame-ui/components/quests/QuestsPage';
+import { getFriends } from '@packages/users/getFriends';
 
 export default async function Quests() {
   const session = await getSession();

@@ -1,8 +1,7 @@
 import { fetchQueryWithPagination, init } from '@airstack/node';
 import { InvalidInputError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 const apiKey = process.env.AIRSTACK_API_KEY;
 

@@ -1,12 +1,12 @@
 import 'server-only';
 
+import { getSession } from '@packages/nextjs/session/getSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { MAX_STARTER_PACK_PURCHASES } from '@packages/scoutgame/builderNfts/constants';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { getStarterPackBuilders } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { getTodaysHotBuilders } from '@packages/scoutgame/builders/getTodaysHotBuilders';
 import { aggregateTokensPurchased } from '@packages/scoutgame/scouts/aggregateTokensPurchased';
-import { getSession } from '@packages/scoutgame/session/getSession';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { ScoutPageCarousel } from './ScoutPageCarousel';
 

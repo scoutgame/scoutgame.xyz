@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@mui/material';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 
 import { Hidden } from '../../common/Hidden';
 

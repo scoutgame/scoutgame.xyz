@@ -1,10 +1,10 @@
 import 'server-only';
 
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { getBuilders } from '@packages/scoutgame/builders/getBuilders';
 import { getRankedNewScoutsForCurrentWeek } from '@packages/scoutgame/scouts/getNewScouts';
 import { getScouts, type ScoutsSortBy } from '@packages/scoutgame/scouts/getScouts';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { BuildersTable } from './components/BuildersTable';
 import { NewScoutsTable } from './components/NewScoutsTable';

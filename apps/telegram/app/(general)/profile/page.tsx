@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
+import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import type { ProfileTab } from '@packages/scoutgame-ui/components/profile/ProfilePage';
 import { ProfilePage } from '@packages/scoutgame-ui/components/profile/ProfilePage';
 import type { Metadata } from 'next';

@@ -1,11 +1,11 @@
 'use server';
 
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { telegramClients } from '@packages/scoutgame-ui/actions/telegramClient';
 import * as QRCode from 'qrcode';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 
-import { authActionClient } from '../actions/actionClient';
 import { TELEGRAM_API_HASH, TELEGRAM_API_ID } from '../constants';
 
 export const generateTelegramQrCodeAction = authActionClient

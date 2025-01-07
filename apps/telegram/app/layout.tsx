@@ -1,4 +1,4 @@
-import { getCachedUserFromSession as getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { AppProviders } from '@packages/scoutgame-ui/providers/AppProviders';
 import type { Metadata, Viewport } from 'next';
 import dynamic from 'next/dynamic';

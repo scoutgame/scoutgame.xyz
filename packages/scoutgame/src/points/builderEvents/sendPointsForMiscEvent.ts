@@ -1,8 +1,8 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
-import type { ISOWeek } from '../../dates/config';
-import { getCurrentSeason, getCurrentWeek } from '../../dates/utils';
 import { incrementPointsEarnedStats } from '../updatePointsEarned';
 
 export async function sendPointsForMiscEvent({

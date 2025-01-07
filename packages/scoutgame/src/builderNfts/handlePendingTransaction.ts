@@ -8,9 +8,9 @@ import {
   DecentTxFailedPermanently,
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getPlatform } from '@packages/mixpanel/utils';
 
-import { getCurrentSeasonStart } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import {
   getScoutProtocolBuilderNFTContract,

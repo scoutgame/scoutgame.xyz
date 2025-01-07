@@ -1,10 +1,10 @@
 'use server';
 
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { TELEGRAM_API_HASH } from '@packages/scoutgame/constants';
+import { mergeUserAccount } from '@packages/scoutgame/mergeUserAccount';
 
-import { mergeUserAccount } from '../users/mergeUserAccount';
 import { decrypt } from '../utils/crypto';
 
 import { mergeUserTelegramAccountSchema } from './mergeUserTelegramAccountSchema';

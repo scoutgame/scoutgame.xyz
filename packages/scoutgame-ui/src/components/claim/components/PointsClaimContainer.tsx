@@ -1,9 +1,9 @@
 import { getPlatform } from '@packages/mixpanel/utils';
+import { getSession } from '@packages/nextjs/session/getSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
 import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
-import { getSession } from '@packages/scoutgame/session/getSession';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { Suspense } from 'react';
 
 import { LoadingTable } from '../../common/Loading/LoadingTable';

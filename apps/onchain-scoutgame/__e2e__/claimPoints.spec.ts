@@ -1,4 +1,4 @@
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockGemPayoutEvent, mockScout, mockBuilder } from '@packages/scoutgame/testing/database';
 
 import { expect, test } from './test';

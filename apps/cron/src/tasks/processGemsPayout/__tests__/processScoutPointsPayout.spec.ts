@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek } from '@packages/dates/utils';
 import { builderPointsShare, scoutPointsShare } from '@packages/scoutgame/builderNfts/constants';
-import { getCurrentWeek } from '@packages/scoutgame/dates/utils';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/scoutgame/testing/database';

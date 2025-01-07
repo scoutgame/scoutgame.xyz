@@ -2,8 +2,8 @@
 
 import { log } from '@charmverse/core/log';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
-import { mergeUserAccount } from '@packages/scoutgame/users/mergeUserAccount';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { mergeUserAccount } from '@packages/scoutgame/mergeUserAccount';
 
 import { mergeUserFarcasterAccountSchema } from './mergeUserFarcasterAccountSchema';
 import { verifyFarcasterUser } from './verifyFarcasterUser';

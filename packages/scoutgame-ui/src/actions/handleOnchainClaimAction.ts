@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { getScoutTokenERC20Contract } from '@packages/scoutgame/protocol/constants';
 import type { Address } from 'viem';
 import * as yup from 'yup';

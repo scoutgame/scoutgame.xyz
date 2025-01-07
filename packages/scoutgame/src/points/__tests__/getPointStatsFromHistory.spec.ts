@@ -2,9 +2,9 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { PointsReceipt, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { v4 as uuid } from 'uuid';
 
-import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder, mockScout } from '../../testing/database';
 import type { PointStats } from '../getPointStatsFromHistory';
 import { getPointStatsFromHistory } from '../getPointStatsFromHistory';
