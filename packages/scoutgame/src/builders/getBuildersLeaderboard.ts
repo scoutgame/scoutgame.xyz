@@ -13,12 +13,14 @@ export type LeaderboardBuilder = {
 
 export async function getBuildersLeaderboard({
   quantity,
-  week
+  week,
+  season
 }: {
   quantity?: number;
   week: string;
+  season?: string;
 }): Promise<LeaderboardBuilder[]> {
-  const season = getCurrentSeasonStart(week);
+  season ||= getCurrentSeasonStart(week);
   const userWeeklyStats = await prisma.userWeeklyStats.findMany({
     where: {
       week,
