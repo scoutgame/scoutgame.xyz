@@ -25,10 +25,10 @@ jobs:
         with:
           core_pkg_version: ${{ inputs.core_pkg_version }}
 
-      - name: Build app
-        uses: ./.github/actions/build
-        with:
-          REACT_APP_APP_ENV: 'test'
+      # - name: Build app
+      #   uses: ./.github/actions/build
+      #   with:
+      #     REACT_APP_APP_ENV: 'test'
 
   integration-test:
     name: Tests
