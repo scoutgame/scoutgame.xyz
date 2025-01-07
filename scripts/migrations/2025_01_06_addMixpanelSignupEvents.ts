@@ -29,6 +29,7 @@ async function trackMixpanelSignupEvents(userIds: string[]) {
         }
       }))
     );
+    log.info('Loaded with success the following event', { event: 'sign_up' });
   } catch (err) {
     log.error('There was an error while importing event sign_up', { err });
   }
