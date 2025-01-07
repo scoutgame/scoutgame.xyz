@@ -1,9 +1,7 @@
 import type { Prisma, UserSeasonStats, UserWeeklyStats } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
-
-import type { ISOWeek } from './dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from './dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 export async function refreshUserStats({
   userId,
