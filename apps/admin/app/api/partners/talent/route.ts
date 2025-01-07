@@ -1,7 +1,7 @@
 import type { Scout } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getLastWeek } from '@packages/dates/utils';
 import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
-import { getLastWeek } from '@packages/scoutgame/dates/utils';
 import { getTalentProfile } from '@packages/scoutgame/talent/getTalentProfile';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';

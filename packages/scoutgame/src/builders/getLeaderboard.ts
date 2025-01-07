@@ -1,8 +1,7 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentWeek, getCurrentSeason, validateISOWeek } from '../dates/utils';
+import { getCurrentWeek, getCurrentSeason, validateISOWeek } from '@packages/dates/utils';
 
 export type LeaderBoardRow = {
   id: string;

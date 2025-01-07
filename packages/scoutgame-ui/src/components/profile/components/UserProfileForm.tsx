@@ -1,9 +1,9 @@
 'use client';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { updateUserDetailsAction } from '@packages/scoutgame/users/updateUserDetailsAction';
-import { updateUserDetailsSchema } from '@packages/scoutgame/users/updateUserDetailsSchema';
-import type { UpdateUserDetailsFormValues } from '@packages/scoutgame/users/updateUserDetailsSchema';
+import { updateUserDetailsAction } from '@packages/users/updateUserDetailsAction';
+import { updateUserDetailsSchema } from '@packages/users/updateUserDetailsSchema';
+import type { UpdateUserDetailsFormValues } from '@packages/users/updateUserDetailsSchema';
 import { useAction } from 'next-safe-action/hooks';
 import { useForm } from 'react-hook-form';
 

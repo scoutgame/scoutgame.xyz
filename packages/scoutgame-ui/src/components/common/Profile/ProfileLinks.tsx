@@ -1,5 +1,5 @@
 import { IconButton, Tooltip, Chip } from '@mui/material';
-import type { TalentProfile } from '@packages/scoutgame/users/getUserByPath';
+import type { TalentProfile } from '@packages/users/getUserByPath';
 import Image from 'next/image';
 import Link from 'next/link';
 

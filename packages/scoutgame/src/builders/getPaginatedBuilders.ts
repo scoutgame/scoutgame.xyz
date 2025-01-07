@@ -1,7 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-
-import type { ISOWeek } from '../dates/config';
-import { getCurrentSeasonStart } from '../dates/utils';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';

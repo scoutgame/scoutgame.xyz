@@ -1,5 +1,5 @@
+import { getSession } from '@packages/nextjs/session/getSession';
 import { getDailyClaims } from '@packages/scoutgame/claims/getDailyClaims';
-import { getSession } from '@packages/scoutgame/session/getSession';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 

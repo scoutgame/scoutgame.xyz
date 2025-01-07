@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import type { Font } from 'satori';
-
-import { getCurrentSeasonStart } from '../../dates/utils';
 
 export function getAssetsFromDisk() {
   const currentSeason = getCurrentSeasonStart();

@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getMoxieCandidates } from '@packages/moxie/getMoxieCandidates';
 import { sendMoxieTokens } from '@packages/moxie/sendMoxieTokens';
-import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 

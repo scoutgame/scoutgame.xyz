@@ -1,12 +1,11 @@
 import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import { optimism, optimismSepolia } from 'viem/chains';
-
-import type { ISOWeek } from '../dates/config';
-import { getCurrentSeasonStart } from '../dates/utils';
 
 export const decentApiKey = env('DECENT_API_KEY') || (process.env.REACT_APP_DECENT_API_KEY as string);
 

@@ -1,9 +1,8 @@
 import type { BuilderEvent, BuilderEventType, BuilderNftType, GithubRepo, Scout } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
-
-import { getCurrentWeek } from '../dates/utils';
 
 import { randomLargeInt, mockSeason } from './generators';
 

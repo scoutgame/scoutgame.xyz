@@ -1,12 +1,12 @@
 'use server';
 
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
-import { authActionClient } from '../actions/actionClient';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { savePendingTransaction } from '../savePendingTransaction';
-import { getUserFromSession } from '../session/getUserFromSession';
 
 export const saveDecentTransactionAction = authActionClient
   .metadata({ actionName: 'save-decent-transaction' })

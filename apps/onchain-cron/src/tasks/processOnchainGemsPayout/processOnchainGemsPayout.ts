@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { getCurrentSeasonStart, getLastWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeeklyClaims';
