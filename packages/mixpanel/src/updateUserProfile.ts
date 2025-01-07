@@ -35,6 +35,7 @@ export function batchUpdateMixpanelUserProfiles(users: { userId: string; profile
     users.map((user) => ({
       $token: apiKey,
       $distinct_id: user.userId,
+      $ip: '0', // don't set the user location. Set it only if the user chooses a location for himself
       $set: user.profile
     }))
   );
