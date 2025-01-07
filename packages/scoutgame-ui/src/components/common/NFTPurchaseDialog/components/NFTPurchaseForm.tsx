@@ -20,21 +20,21 @@ import {
   Typography
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
 import { BuilderNFTSeasonOneImplementation01Client } from '@packages/scoutgame/builderNfts/clients/builderNFTSeasonOneClient';
 import { ScoutProtocolBuilderNFTImplementationClient } from '@packages/scoutgame/builderNfts/clients/ScoutProtocolBuilderNFTImplementationClient';
 import {
   builderNftChain,
-  getBuilderContractAddress,
-  getBuilderContractAddressForNftType,
+  getBuilderNftContractAddress,
+  getBuilderNftContractAddressForNftType,
   treasuryAddress,
   usdcOptimismMainnetContractAddress,
   useTestnets
 } from '@packages/scoutgame/builderNfts/constants';
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
 import {
@@ -44,7 +44,7 @@ import {
   scoutTokenErc20ContractAddress,
   scoutTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
-import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { MinimalUserInfo } from '@packages/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -121,7 +121,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const builderContractReadonlyApiClient = new BuilderNFTSeasonOneImplementation01Client({
     chain: builderNftChain,
-    contractAddress: getBuilderContractAddress(),
+    contractAddress: getBuilderNftContractAddress(),
     publicClient: getPublicClient(builderNftChain.id)
   });
 
@@ -255,15 +255,17 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
+  const contractAddress =
+    platform === 'onchain_webapp'
+      ? scoutProtocolBuilderNftContractAddress()
+      : getBuilderNftContractAddressForNftType(builder.nftType);
+
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address: address as Address,
     builderTokenId,
     scoutId: user?.id as string,
     paymentAmountOut: purchaseCost,
-    contractAddress:
-      platform === 'onchain_webapp'
-        ? scoutProtocolBuilderNftContractAddress()
-        : getBuilderContractAddressForNftType(builder.nftType),
+    contractAddress,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: getCurrencyContract(selectedPaymentOption),
     useScoutToken: platform === 'onchain_webapp',
@@ -330,7 +332,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           contractAddress:
             platform === 'onchain_webapp'
               ? scoutProtocolBuilderNftContractAddress()
-              : getBuilderContractAddressForNftType(builder.nftType),
+              : getBuilderNftContractAddressForNftType(builder.nftType),
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,
           builderTokenId: Number(builderTokenId),

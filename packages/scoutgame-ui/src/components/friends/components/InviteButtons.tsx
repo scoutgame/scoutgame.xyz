@@ -2,8 +2,8 @@
 
 import { Box, Button, IconButton, Link, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/utils';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { telegramBotName } from '@packages/scoutgame/constants';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import WebApp from '@twa-dev/sdk';
 import type { ReactNode } from 'react';

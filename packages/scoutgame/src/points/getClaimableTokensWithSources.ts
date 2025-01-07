@@ -1,12 +1,12 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
 
 import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
-import type { ISOWeek } from '../dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import type { WeeklyClaimsTyped } from '../protocol/generateWeeklyClaims';
 
 import type { UnclaimedPointsSource } from './getClaimablePointsWithSources';
@@ -92,7 +92,8 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const builders = await prisma.scout.findMany({
     where: {
-      id: { in: topBuilderIds }
+      id: { in: topBuilderIds },
+      deletedAt: null
     },
     select: {
       id: true,

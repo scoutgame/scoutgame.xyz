@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { seasons } from '@packages/scoutgame/dates/config';
-import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/scoutgame/dates/utils';
+import { seasons } from '@packages/dates/config';
+import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { questsRecord } from '@packages/scoutgame/quests/questRecords';
@@ -8,6 +8,7 @@ import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
 import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
+import { sendPreseason2WelcomeEmails } from '../../emails/sendPreseason2WelcomeEmails';
 
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
@@ -63,9 +64,10 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     }
   }
 
-  const emailsSent = await sendGemsPayoutEmails({ week });
+  // TODO: Enable for 2nd week of preseason 2
+  // const emailsSent = await sendGemsPayoutEmails({ week });
 
-  scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
+  scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent: 0 });
 
   const currentWeek = getCurrentWeek();
 
@@ -97,5 +99,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
         }
       });
     });
+
+    await sendPreseason2WelcomeEmails();
   }
 }

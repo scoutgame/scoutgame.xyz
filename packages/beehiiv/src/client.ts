@@ -18,22 +18,25 @@ const headers = {
   Authorization: `Bearer ${apiToken}`
 };
 
-// ref: https://developers.beehiiv.com/docs/v2/1f82a0eaf9b68-create
+// ref: https://developers.beehiiv.com/api-reference/subscriptions/create
 export async function createSubscription(params: BeehiivSubscription & { reactivate_existing?: boolean }) {
+  _validateConfig();
   return POST(`${apiBaseUrl}/publications/${publicationId}/subscriptions`, params, {
     headers
   });
 }
 
-// ref: https://developers.beehiiv.com/docs/v2/ac72589d509bc-index
+// ref: https://developers.beehiiv.com/api-reference/subscriptions/index
 export async function findSubscriptions(query: Partial<BeehiivSubscription>) {
+  _validateConfig();
   return GET<{ data: { id: string }[] }>(`${apiBaseUrl}/publications/${publicationId}/subscriptions`, query, {
     headers
   });
 }
 
-// ref: https://developers.beehiiv.com/docs/v2/5fa5aa2351d71-delete
+// ref: https://developers.beehiiv.com/api-reference/subscriptions/delete
 export async function deleteSubscription({ id }: { id: string }) {
+  _validateConfig();
   return DELETE(
     `${apiBaseUrl}/publications/${publicationId}/subscriptions/${id}`,
     {},
@@ -43,7 +46,9 @@ export async function deleteSubscription({ id }: { id: string }) {
   );
 }
 
+// ref: https://developers.beehiiv.com/api-reference/subscriptions/put
 export async function unsubscribeSubscription({ email }: BeehiivSubscription) {
+  _validateConfig();
   const existing = await findSubscriptions({ email });
   if (existing.data.length > 0) {
     return PUT(
@@ -53,5 +58,17 @@ export async function unsubscribeSubscription({ email }: BeehiivSubscription) {
         headers
       }
     );
+  }
+}
+
+function _validateConfig() {
+  if (!apiToken) {
+    throw new Error('Beehiiv API token is not set');
+  }
+  if (!apiBaseUrl) {
+    throw new Error('Beehiiv API base URL is not set');
+  }
+  if (!publicationId) {
+    throw new Error('Beehiiv Publication ID is not set');
   }
 }

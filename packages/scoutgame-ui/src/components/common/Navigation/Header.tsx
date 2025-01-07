@@ -4,8 +4,8 @@ import { log } from '@charmverse/core/log';
 import InfoIcon from '@mui/icons-material/Info';
 import { Box, Container, Menu, MenuItem, Toolbar, AppBar, Button, Typography, Stack, IconButton } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/utils';
-import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
-import { logoutAction } from '@packages/scoutgame/session/logoutAction';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
+import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { SiteNavigation } from '@packages/scoutgame-ui/components/common/Navigation/SiteNavigation';
@@ -138,11 +138,11 @@ export function Header() {
                       onClose={handleCloseUserMenu}
                       onClick={handleCloseUserMenu}
                     >
-                      <MenuItem data-test='user-profile-button'>
-                        <Link href='/profile'>{user.displayName}</Link>
+                      <MenuItem component={Link} href='/profile' data-test='user-profile-button'>
+                        {user.displayName}
                       </MenuItem>
-                      <MenuItem>
-                        <Link href='/accounts'>Accounts</Link>
+                      <MenuItem component={Link} href='/accounts'>
+                        Accounts
                       </MenuItem>
                       {platform === 'webapp' && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>

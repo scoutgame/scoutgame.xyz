@@ -1,9 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { generateRandomEthAddress } from '@packages/testing/random';
+import { referralBonusPoints } from '@packages/users/constants';
+import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
+import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 
-import { referralBonusPoints } from '../../constants';
-import { createReferralEvent } from '../../referrals/createReferralEvent';
-import { updateReferralUsers } from '../../referrals/updateReferralUsers';
 import { mockBuilder, mockScout, mockBuilderNft } from '../../testing/database';
 import { randomLargeInt } from '../../testing/generators';
 
@@ -35,19 +36,24 @@ describe('recordNftMint', () => {
     jest.resetAllMocks();
   });
 
+  const season = '2024-W41';
+
   it('should record a new NFT mint', async () => {
     const builder = await mockBuilder();
-    const scout = await mockScout();
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const scout = await mockScout({ wallets: [mockWallet] });
+
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     const amount = 10;
 
     await recordNftMint({
       builderNftId: builderNft.id,
+      season,
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: scout.id,
+      recipientAddress: mockWallet,
       scoutId: scout.id,
       paidWithPoints: true
     });
@@ -95,17 +101,19 @@ describe('recordNftMint', () => {
 
   it.skip('should skip mixpanel if this flag is provided', async () => {
     const builder = await mockBuilder();
-    const scout = await mockScout();
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const scout = await mockScout({ wallets: [mockWallet] });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     const amount = 10;
 
     await recordNftMint({
       builderNftId: builderNft.id,
+      season,
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: scout.id,
+      recipientAddress: mockWallet,
       scoutId: scout.id,
       paidWithPoints: true,
       skipMixpanel: true
@@ -114,17 +122,19 @@ describe('recordNftMint', () => {
 
   it('should skip price refresh if this flag is provided', async () => {
     const builder = await mockBuilder();
-    const scout = await mockScout();
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const scout = await mockScout({ wallets: [mockWallet] });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     const amount = 10;
 
     await recordNftMint({
       builderNftId: builderNft.id,
+      season,
       amount,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: scout.id,
+      recipientAddress: mockWallet,
       scoutId: scout.id,
       paidWithPoints: true,
       skipPriceRefresh: true
@@ -135,9 +145,11 @@ describe('recordNftMint', () => {
 
   it('should create a referral bonus event if the scout has a referral code', async () => {
     const referrer = await mockScout();
-    const referee = await mockScout();
+    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const referee = await mockScout({ wallets: [mockWallet] });
+
     const builder = await mockBuilder();
-    const builderNft = await mockBuilderNft({ builderId: builder.id });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     await createReferralEvent(referrer.referralCode, referee.id);
 
@@ -157,7 +169,8 @@ describe('recordNftMint', () => {
       amount: 1,
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
-      recipientAddress: referee.id,
+      season,
+      recipientAddress: mockWallet,
       scoutId: referee.id,
       paidWithPoints: true
     });

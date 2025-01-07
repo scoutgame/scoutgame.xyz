@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export type TopScout = {
   id: string;
@@ -128,7 +128,8 @@ export async function getTopScoutsByWeek({ week, limit = 10 }: { week: string; l
     where: {
       id: {
         in: sortedUsers.map((user) => user[0])
-      }
+      },
+      deletedAt: null
     }
   });
 

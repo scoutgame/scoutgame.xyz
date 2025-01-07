@@ -1,9 +1,8 @@
-import assert from 'node:assert';
-
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
 import { validate as isUuid } from 'uuid';
 
 export type PointStats = {
@@ -24,9 +23,11 @@ const include: Prisma.PointsReceiptInclude = {
 
 export async function getPointStatsFromHistory({
   userIdOrPath,
-  tx = prisma
+  tx = prisma,
+  season
 }: {
   userIdOrPath: string;
+  season: ISOWeek;
   tx?: Prisma.TransactionClient;
 }): Promise<PointStats> {
   if (!userIdOrPath) {
@@ -52,12 +53,14 @@ export async function getPointStatsFromHistory({
     // Points spent
     tx.pointsReceipt.findMany({
       where: {
+        season,
         senderId: userId
       }
     }),
     // Points received as builder
     tx.pointsReceipt.findMany({
       where: {
+        season,
         recipientId: userId,
         event: {
           type: 'gems_payout'
@@ -74,6 +77,7 @@ export async function getPointStatsFromHistory({
     // Points received as scout
     tx.pointsReceipt.findMany({
       where: {
+        season,
         recipientId: userId,
         event: {
           type: 'gems_payout'
@@ -90,6 +94,7 @@ export async function getPointStatsFromHistory({
     // Bonus points received
     tx.pointsReceipt.findMany({
       where: {
+        season,
         recipientId: userId,
         event: {
           type: {
@@ -101,6 +106,7 @@ export async function getPointStatsFromHistory({
     // All points received
     tx.pointsReceipt.findMany({
       where: {
+        season,
         recipientId: userId
       },
       include

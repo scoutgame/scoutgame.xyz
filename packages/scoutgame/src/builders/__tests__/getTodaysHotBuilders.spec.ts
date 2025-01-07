@@ -1,13 +1,13 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { getPreviousWeek } from '@packages/dates/utils';
 
-import { getPreviousWeek } from '../../dates/utils';
 import { mockBuilder, mockUserWeeklyStats } from '../../testing/database';
 
 const mockSeason = `2020-W01${Math.random()}`;
 
 // mock the getCurrentSeason function
-jest.unstable_mockModule('../../dates/utils', () => ({
+jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentWeek: jest.fn(() => '2020-W40'),
   getPreviousWeek: jest.fn(() => '2020-W39'),
   getCurrentSeason: jest.fn(() => ({ start: mockSeason }))

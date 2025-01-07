@@ -1,9 +1,9 @@
 import 'server-only';
 
 import { Typography, Stack, Paper } from '@mui/material';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { getUserSeasonStats } from '@packages/scoutgame/scouts/getUserSeasonStats';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { ErrorSSRMessage } from '../../../common/ErrorSSRMessage';
 import { BuildersGallery } from '../../../common/Gallery/BuildersGallery';

@@ -1,5 +1,11 @@
 import { jest } from '@jest/globals';
-import { cleanup, renderHook, waitFor } from '@testing-library/react';
+import {
+  getBuilderNftStarterPackContractAddress,
+  isStarterPackContract,
+  isPreseason01Contract
+} from '@packages/scoutgame/builderNfts/constants';
+import { renderHook, waitFor } from '@testing-library/react';
+import { v4 as uuid } from 'uuid';
 import { baseSepolia, optimism } from 'viem/chains';
 
 import type { DecentTransactionProps } from '../useDecentTransaction';
@@ -22,7 +28,9 @@ jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   optimismUsdcContractAddress: mockOptimismUsdcContractAddress,
   builderNftChain: mockBuilderNftChain,
   getDecentApiKey: jest.fn().mockImplementation(() => '123'),
-  getBuilderContractAddress: jest.fn().mockImplementation(() => mockBuilderContractAddress)
+  getBuilderNftContractAddress: jest.fn().mockImplementation(() => mockBuilderContractAddress),
+  isStarterPackContract,
+  isPreseason01Contract
 }));
 
 jest.unstable_mockModule('@packages/scoutgame/protocol/constants', () => ({
@@ -85,12 +93,76 @@ describe('useDecentTransaction', () => {
               isNative: false,
               tokenAddress
             },
+            signature: 'function mint(address account, uint256 tokenId, uint256 amount)',
+            args: [address, `${testInput.builderTokenId.toString()}n`, `${testInput.tokensToPurchase.toString()}n`]
+          }
+        }
+      }),
+      undefined,
+      {
+        headers: expect.any(Object),
+        credentials: 'omit'
+      }
+    );
+  });
+
+  it('should use a scoutId based signature when the contract address is a starter pack address', async () => {
+    const { GET: mockGET } = await import('@packages/utils/http');
+
+    const scoutId = uuid();
+
+    (mockGET as jest.Mock<any>).mockResolvedValueOnce({
+      data: {
+        action: '0x123'
+      }
+    });
+
+    const { useDecentTransaction, _appendDecentQueryParams } = await import('../useDecentTransaction');
+
+    const contractAddress = getBuilderNftStarterPackContractAddress('2025-W02');
+
+    const testInput: DecentTransactionProps = {
+      address,
+      builderTokenId: BigInt(1),
+      paymentAmountOut: BigInt(1),
+      sourceChainId: 10,
+      sourceToken: tokenAddress,
+      tokensToPurchase: BigInt(1),
+      contractAddress,
+      useScoutToken: false,
+      scoutId
+    };
+
+    const { result } = renderHook(() => useDecentTransaction(testInput));
+
+    await waitFor(() => {
+      expect(result.current.isLoadingDecentSdk).toBe(false);
+    });
+
+    expect(mockGET).toHaveBeenCalledWith(
+      _appendDecentQueryParams('https://box-v3-2-0.api.decent.xyz/api/getBoxAction', {
+        arguments: {
+          sender: testInput.address,
+          srcToken: testInput.sourceToken,
+          dstToken: mockOptimismUsdcContractAddress,
+          srcChainId: testInput.sourceChainId,
+          dstChainId: mockBuilderNftChain.id,
+          slippage: 1,
+          actionType: 'nft-mint',
+          actionConfig: {
+            chainId: mockBuilderNftChain.id,
+            contractAddress,
+            cost: {
+              amount: '1n',
+              isNative: false,
+              tokenAddress
+            },
             signature: 'function mint(address account, uint256 tokenId, uint256 amount, string scout)',
             args: [
               address,
               `${testInput.builderTokenId.toString()}n`,
               `${testInput.tokensToPurchase.toString()}n`,
-              null
+              scoutId
             ]
           }
         }

@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.102.0",
+    "@charmverse/core": "^0.104.0",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",
@@ -81,8 +81,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.5.0",
     "material-ui-popup-state": "^5.3.1",
-    "next": "^14.2.20",
-    "next-safe-action": "^7.9.9",
+    "next": "^14.2.22",
     "next-view-transitions": "^0.3.4",
     "pino-pretty": "^13.0.0",
     "react": "^18.3.1",

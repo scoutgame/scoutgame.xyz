@@ -1,14 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import type { Font } from 'satori';
 
-import { getCurrentSeasonStart } from '../../dates/utils';
-
 export function getAssetsFromDisk() {
   const currentSeason = getCurrentSeasonStart();
-  const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../../'), 'assets');
+  const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../../src'), 'assets');
   const overlaysFolder = `${folder}/overlays/${currentSeason}`;
   const overlayFiles = fs.readdirSync(overlaysFolder);
   const overlaysBase64 = overlayFiles

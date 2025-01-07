@@ -7,7 +7,7 @@ import {
   getPreviousWeek,
   getNextWeek,
   getSeasonWeekFromISOWeek
-} from '@packages/scoutgame/dates/utils';
+} from '@packages/dates/utils';
 import Link from 'next/link';
 import { Suspense } from 'react';
 

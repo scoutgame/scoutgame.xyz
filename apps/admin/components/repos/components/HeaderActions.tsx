@@ -2,7 +2,8 @@
 
 import { ArrowDropDown as ArrowDropDownIcon, Add as AddIcon } from '@mui/icons-material';
 import { Box, Divider, Menu, MenuItem, Stack, Button } from '@mui/material';
-import { getLastWeek, getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/scoutgame/dates/utils';
+import { getLastWeek, getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/dates/utils';
+import { useGETtrigger } from '@packages/scoutgame-ui/hooks/helpers';
 import React, { useState } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';

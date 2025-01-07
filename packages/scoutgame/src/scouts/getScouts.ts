@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export type ScoutsSortBy = 'cards' | 'points' | 'builders' | 'rank';
 
@@ -24,13 +23,14 @@ export async function getScouts({
   sortBy?: ScoutsSortBy;
   order?: 'asc' | 'desc';
 }) {
+  const season = getCurrentSeasonStart();
   // First get all users sorted by points to establish ranks
   const allUsers = await prisma.userSeasonStats.findMany({
     where: {
       pointsEarnedAsScout: {
         gt: 0
       },
-      season: getCurrentSeasonStart(),
+      season,
       user: {
         deletedAt: null
       }
@@ -39,40 +39,50 @@ export async function getScouts({
       pointsEarnedAsScout: 'desc'
     },
     select: {
-      user: {
-        select: {
-          path: true
-        }
-      }
+      userId: true
     }
   });
 
   // Create a map of user path to their rank
-  const rankMap = new Map(allUsers.map((user, index) => [user.user.path, index + 1]));
+  const rankMap = new Map(allUsers.map((user, index) => [user.userId, index + 1]));
 
   if (sortBy === 'points' || sortBy === 'rank') {
     const scouts = await prisma.userSeasonStats.findMany({
       where: {
-        pointsEarnedAsScout: {
-          gt: 0
+        nftsPurchased: {
+          not: 0
         },
-        season: getCurrentSeasonStart(),
+        season,
         user: {
           deletedAt: null
         }
       },
       take: limit,
-      orderBy: {
-        pointsEarnedAsScout: 'desc'
-      },
+      orderBy: [
+        {
+          pointsEarnedAsScout: 'desc'
+        },
+        {
+          nftsPurchased: 'desc'
+        }
+      ],
       select: {
         user: {
           select: {
+            id: true,
             path: true,
             avatar: true,
             displayName: true,
             nftPurchaseEvents: {
-              distinct: ['builderNftId']
+              distinct: ['builderNftId'],
+              where: {
+                builderEvent: {
+                  season
+                }
+              },
+              select: {
+                id: true
+              }
             }
           }
         },
@@ -86,7 +96,7 @@ export async function getScouts({
         path: scout.user.path,
         avatar: scout.user.avatar as string,
         displayName: scout.user.displayName,
-        rank: rankMap.get(scout.user.path) || 0,
+        rank: rankMap.get(scout.user.id) || 0,
         points: scout.pointsEarnedAsScout || 0,
         cards: scout.nftsPurchased || 0,
         builders: scout.user.nftPurchaseEvents.length
@@ -102,8 +112,8 @@ export async function getScouts({
     const builders = await prisma.userSeasonStats.findMany({
       where: {
         season: getCurrentSeasonStart(),
-        pointsEarnedAsScout: {
-          gt: 0
+        nftsPurchased: {
+          not: 0
         },
         user: {
           deletedAt: null
@@ -116,11 +126,20 @@ export async function getScouts({
       select: {
         user: {
           select: {
+            id: true,
             path: true,
             avatar: true,
             displayName: true,
             nftPurchaseEvents: {
-              distinct: ['builderNftId']
+              distinct: ['builderNftId'],
+              where: {
+                builderEvent: {
+                  season
+                }
+              },
+              select: {
+                id: true
+              }
             }
           }
         },
@@ -133,7 +152,7 @@ export async function getScouts({
       path: builder.user.path,
       avatar: builder.user.avatar as string,
       displayName: builder.user.displayName,
-      rank: rankMap.get(builder.user.path) || 0,
+      rank: rankMap.get(builder.user.id) || 0,
       points: builder.pointsEarnedAsScout || 0,
       cards: builder.nftsPurchased || 0,
       builders: builder.user.nftPurchaseEvents.length

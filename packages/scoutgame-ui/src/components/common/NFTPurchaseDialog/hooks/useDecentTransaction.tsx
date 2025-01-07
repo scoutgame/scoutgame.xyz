@@ -3,8 +3,11 @@ import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common
 import { ActionType } from '@decent.xyz/box-common';
 import {
   builderNftChain,
-  getBuilderContractAddress,
+  getBuilderNftContractAddress,
+  getBuilderNftStarterPackContractAddress,
   getDecentApiKey,
+  isPreseason01Contract,
+  isStarterPackContract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import {
@@ -29,6 +32,10 @@ export type DecentTransactionProps = {
   contractAddress?: string;
   useScoutToken?: boolean;
 };
+
+const preseason01NftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount, string scout)';
+
+const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
 
 export function _appendDecentQueryParams(path: string, data: any) {
   const queryString = Object.keys(data)
@@ -76,7 +83,9 @@ export function useDecentTransaction({
   useScoutToken
 }: DecentTransactionProps) {
   const _contractAddress =
-    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderContractAddress());
+    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress());
+
+  const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterPackContract(_contractAddress);
 
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
@@ -94,12 +103,10 @@ export function useDecentTransaction({
         isNative: false,
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: useScoutToken
-        ? 'function mint(address account, uint256 tokenId, uint256 amount)'
-        : 'function mint(address account, uint256 tokenId, uint256 amount, string scout)',
-      args: useScoutToken
-        ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
-        : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
+      signature: useScoutIdValidation ? preseason01NftMintSignature : transferableNftMintSignature,
+      args: useScoutIdValidation
+        ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
+        : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }
   };
   const {

@@ -1,4 +1,4 @@
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 
 import { useGETImmutable, useGETtrigger } from '../helpers';
 

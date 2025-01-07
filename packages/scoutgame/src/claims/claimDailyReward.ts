@@ -1,7 +1,8 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek, getPreviousWeek, getCurrentSeason } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
-import { getCurrentWeek, getPreviousWeek, getCurrentSeason } from '../dates/utils';
 import { sendPointsForDailyClaim } from '../points/builderEvents/sendPointsForDailyClaim';
 import { sendPointsForDailyClaimStreak } from '../points/builderEvents/sendPointsForDailyClaimStreak';
 
@@ -70,6 +71,11 @@ export async function claimDailyReward({
     });
 
     if (existingEvent) {
+      log.warn('Daily reward already claimed', {
+        userId,
+        week,
+        dayOfWeek
+      });
       throw new Error('Daily reward already claimed');
     }
 

@@ -1,8 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { Season } from '@packages/dates/config';
+import { getCurrentWeek, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
-import type { Season } from '@packages/scoutgame/dates/config';
-import { getCurrentWeek, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/scoutgame/dates/utils';
 import type Koa from 'koa';
 
 import { processBuilderActivity } from './processBuilderActivity';

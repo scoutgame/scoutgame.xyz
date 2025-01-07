@@ -4,7 +4,7 @@ import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
-import { getBuilderStarterPackContractAddress } from '../constants';
+import { getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { generateShareImage } from './generateShareImage';
 import { generateNftStarterPackImage } from './generateStarterPackNftImage';
@@ -30,7 +30,7 @@ export async function uploadStarterPackArtwork({
     season,
     tokenId: Number(tokenId),
     filename: 'starter-pack-artwork.png',
-    contractName: getBuilderStarterPackContractAddress()
+    contractName: getBuilderNftStarterPackContractAddress()
   });
 
   await uploadFileToS3({
@@ -71,7 +71,7 @@ export async function uploadStarterPackArtworkCongrats({
     season,
     tokenId: Number(tokenId),
     starterPack: true,
-    contractName: getBuilderStarterPackContractAddress()
+    contractName: getBuilderNftStarterPackContractAddress()
   });
 
   await uploadFileToS3({

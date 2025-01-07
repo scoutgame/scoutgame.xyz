@@ -1,16 +1,24 @@
 import 'server-only';
 
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { getBuilders } from '@packages/scoutgame/builders/getBuilders';
 import { getRankedNewScoutsForCurrentWeek } from '@packages/scoutgame/scouts/getNewScouts';
 import { getScouts, type ScoutsSortBy } from '@packages/scoutgame/scouts/getScouts';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { BuildersTable } from './components/BuildersTable';
 import { NewScoutsTable } from './components/NewScoutsTable';
 import { ScoutsTable } from './components/ScoutsTable';
 
-export async function ScoutPageTable({ tab, order, sort }: { tab: string; order: string; sort: string }) {
+export async function ScoutPageTable({
+  tab,
+  order = 'asc',
+  sort = 'rank'
+}: {
+  tab: string;
+  order?: string;
+  sort?: string;
+}) {
   if (tab === 'builders') {
     const [, builders = []] = await safeAwaitSSRData(
       getBuilders({ limit: 200, sortBy: sort as BuildersSortBy, order: order as 'asc' | 'desc' })

@@ -1,9 +1,8 @@
 import type { Prisma, UserSeasonStats, UserWeeklyStats } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { arrayUtils } from '@charmverse/core/utilities';
-
-import type { ISOWeek } from './dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from './dates/utils';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 export async function refreshUserStats({
   userId,
@@ -14,6 +13,8 @@ export async function refreshUserStats({
   week?: ISOWeek;
   tx?: Prisma.TransactionClient;
 }): Promise<{ weekly: UserWeeklyStats; season: UserSeasonStats }> {
+  const season = getCurrentSeasonStart(week);
+
   const gemsReceipts = await tx.gemsReceipt.findMany({
     where: {
       event: {
@@ -35,7 +36,7 @@ export async function refreshUserStats({
     },
     create: {
       userId,
-      season: getCurrentSeasonStart(),
+      season,
       week,
       gemsCollected
     },
@@ -62,7 +63,7 @@ export async function refreshUserStats({
 
   const builderNft = await tx.builderNft.findFirst({
     where: {
-      season: getCurrentSeasonStart(),
+      season,
       builderId: userId
     },
     include: {
@@ -79,7 +80,7 @@ export async function refreshUserStats({
     where: {
       scoutId: userId,
       builderNft: {
-        season: getCurrentSeasonStart()
+        season
       }
     }
   });
@@ -87,13 +88,13 @@ export async function refreshUserStats({
   const seasonStats = {
     pointsEarnedAsBuilder: allTimeBuilderNftPoints.length,
     pointsEarnedAsScout: 0,
-    season: getCurrentSeasonStart(),
+    season,
     nftsPurchased: nftsBought,
     nftsSold: builderNft?.nftSoldEvents.length,
     nftOwners: builderNft ? arrayUtils.uniqueValues(builderNft.nftSoldEvents.map((ev) => ev.scoutId)).length : undefined
   };
 
-  const season = await tx.userSeasonStats.upsert({
+  const seasonStatsRecord = await tx.userSeasonStats.upsert({
     where: {
       userId_season: {
         season: getCurrentSeasonStart(),
@@ -116,6 +117,6 @@ export async function refreshUserStats({
 
   return {
     weekly,
-    season
+    season: seasonStatsRecord
   };
 }

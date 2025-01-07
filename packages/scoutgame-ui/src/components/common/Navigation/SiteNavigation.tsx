@@ -1,19 +1,20 @@
 'use client';
 
-import type { LinkProps } from '@mui/material';
-import { BottomNavigation, BottomNavigationAction, styled, Typography } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, styled } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/utils';
-import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
-import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
-import { SignInModalMessage } from '@packages/scoutgame-ui/components/common/ScoutButton/SignInModalMessage';
-import { useGetClaimablePoints } from '@packages/scoutgame-ui/hooks/api/session';
-import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { usePathname, useRouter } from 'next/navigation';
+import { DateTime } from 'luxon';
+import { usePathname } from 'next/navigation';
 import { Link } from 'next-view-transitions';
-import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { ImGift as QuestsIcon } from 'react-icons/im';
 import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
+
+import { useGetQuests } from '../../../hooks/api/quests';
+import { useGetClaimablePoints } from '../../../hooks/api/session';
+import { useUser } from '../../../providers/UserProvider';
+import { BuilderIcon } from '../Icons/BuilderIcon';
+import { ClaimIcon } from '../Icons/ClaimIcon';
+import { SignInModalMessage } from '../ScoutButton/SignInModalMessage';
 
 const StyledBottomNavigation = styled(BottomNavigation, {
   shouldForwardProp: (prop) => prop !== 'topNav' && prop !== 'isTelegram'
@@ -47,22 +48,21 @@ const StyledBottomNavigation = styled(BottomNavigation, {
 export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const platform = getPlatform();
   const pathname = usePathname();
-  const router = useRouter();
   const { user } = useUser();
   const isAuthenticated = Boolean(user);
   const value = getActiveButton(pathname);
-  const { data: claimablePoints } = useGetClaimablePoints();
+  const { data: claimablePoints = { points: 0 } } = useGetClaimablePoints();
+  const { data: dailyClaims = [] } = useGetQuests();
+  const todaysClaim = dailyClaims?.find((claim) => {
+    const currentWeekDay = DateTime.fromJSDate(new Date()).weekday;
+    const isClaimToday = currentWeekDay === claim.day;
+    return isClaimToday;
+  });
+  const canClaim = todaysClaim ? !todaysClaim?.claimed : false;
   const [authPopup, setAuthPopup] = useState({
     open: false,
     path: 'scout'
   });
-
-  const openAuthModal = isAuthenticated
-    ? undefined
-    : (e: MouseEvent<HTMLAnchorElement | HTMLButtonElement>, path: string) => {
-        e.preventDefault();
-        setAuthPopup({ open: true, path });
-      };
 
   return (
     <>
@@ -92,7 +92,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           label='Claim'
           href={isAuthenticated ? '/claim' : '#'}
           value='claim'
-          icon={<ClaimIcon animate={claimablePoints && claimablePoints.points > 0} />}
+          icon={<ClaimIcon animate={claimablePoints.points > 0} />}
           onClick={(e) => {
             if (!isAuthenticated) {
               setAuthPopup({ open: true, path: 'claim' });
@@ -103,7 +103,14 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           label='Quests'
           href={isAuthenticated ? '/quests' : '#'}
           value='quests'
-          icon={<QuestsIcon size='24px' />}
+          icon={
+            <QuestsIcon
+              size='24px'
+              style={{
+                animation: canClaim ? 'wiggle 2s ease-in-out infinite' : 'none'
+              }}
+            />
+          }
           LinkComponent={Link}
           onClick={(e) => {
             if (!isAuthenticated) {

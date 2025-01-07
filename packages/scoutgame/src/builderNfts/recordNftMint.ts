@@ -2,18 +2,18 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek, Season } from '@packages/dates/config';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
+import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
 import { baseUrl } from '@packages/utils/constants';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
-import type { Season } from '../dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { createReferralBonusEvent } from '../referrals/createReferralBonusEvent';
+import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
-import { recordNftPurchaseQuests } from './recordNftPurchaseQuests';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
@@ -24,6 +24,7 @@ export async function recordNftMint(
   }
 ) {
   const {
+    season = getCurrentSeasonStart(),
     amount,
     builderNftId,
     paidWithPoints,
@@ -53,7 +54,8 @@ export async function recordNftMint(
 
   const builderNft = await prisma.builderNft.findFirstOrThrow({
     where: {
-      id: builderNftId
+      id: builderNftId,
+      season
     },
     select: {
       nftType: true,
@@ -78,7 +80,7 @@ export async function recordNftMint(
         value: Math.floor(pointsValue * 0.2),
         recipientId: builderNft.builderId,
         createdAt,
-        season: getCurrentSeasonStart()
+        season
       }
     ];
 
@@ -87,7 +89,7 @@ export async function recordNftMint(
       value: pointsValue,
       senderId: scoutId,
       createdAt,
-      season: getCurrentSeasonStart()
+      season
     });
   }
 
@@ -196,6 +198,25 @@ export async function recordNftMint(
         }
       });
     }
+
+    await tx.scoutNft.upsert({
+      where: {
+        builderNftId_walletAddress: {
+          builderNftId,
+          walletAddress: recipientAddress.toLowerCase() as `0x${string}`
+        }
+      },
+      create: {
+        builderNftId,
+        walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
+        balance: amount
+      },
+      update: {
+        balance: {
+          increment: amount
+        }
+      }
+    });
 
     return builderEvent.nftPurchaseEvent;
   });

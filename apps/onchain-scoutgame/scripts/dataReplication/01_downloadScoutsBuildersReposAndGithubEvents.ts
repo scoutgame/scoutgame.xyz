@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import fs from 'node:fs/promises';
 
 // Team member profile paths

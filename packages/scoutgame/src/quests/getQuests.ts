@@ -1,13 +1,14 @@
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { questsRecord, type QuestInfo, type QuestType } from './questRecords';
 
 export async function getQuests(userId: string): Promise<QuestInfo[]> {
+  const season = getCurrentSeasonStart();
   const socialQuests = await prisma.scoutSocialQuest.findMany({
     where: {
-      userId
+      userId,
+      season
     }
   });
 
@@ -15,7 +16,7 @@ export async function getQuests(userId: string): Promise<QuestInfo[]> {
     where: {
       scoutId: userId,
       builderNft: {
-        season: getCurrentSeasonStart()
+        season
       }
     },
     select: {

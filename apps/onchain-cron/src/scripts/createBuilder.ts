@@ -2,8 +2,9 @@ import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 
 import { getFarcasterUserByUsername } from '@packages/farcaster/getFarcasterUserByUsername';
 import { octokit } from '@packages/github/client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getBuilderNftContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 import { log } from '@charmverse/core/log';
 
@@ -13,8 +14,11 @@ async function createBuilder({ fid, githubLogin }: { fid: number; githubLogin: s
   if (!process.env.BUILDER_SMART_CONTRACT_MINTER_PRIVKEY) {
     throw new Error('BUILDER_SMART_CONTRACT_MINTER_PRIVKEY is not set');
   }
-  if (!process.env.REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS) {
-    throw new Error('REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS is not set');
+
+  const nftContract = getBuilderNftContractAddress(getCurrentSeasonStart());
+
+  if (!process.env.REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41) {
+    throw new Error('REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41 is not set');
   }
   const githubUser = await octokit.rest.users.getByUsername({ username: githubLogin });
   const profile = await getFarcasterUserById(fid);
