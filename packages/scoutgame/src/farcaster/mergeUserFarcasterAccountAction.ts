@@ -3,7 +3,7 @@
 import { log } from '@charmverse/core/log';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/scoutgame/actions/actionClient';
-import { mergeUserAccount } from '@packages/scoutgame/users/mergeUserAccount';
+import { mergeUserAccount } from '@packages/users/mergeUserAccount';
 
 import { mergeUserFarcasterAccountSchema } from './mergeUserFarcasterAccountSchema';
 import { verifyFarcasterUser } from './verifyFarcasterUser';

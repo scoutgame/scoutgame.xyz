@@ -2,11 +2,10 @@ import { log } from '@charmverse/core/log';
 import { uuidFromNumber } from '@packages/utils/uuid';
 import type { WebAppInitData } from '@twa-dev/types';
 
-import { createReferralEvent } from '../referrals/createReferralEvent';
-
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
 import { generateUserPath } from './generateUserPath';
+import { createReferralEvent } from './referrals/createReferralEvent';
 
 export async function findOrCreateTelegramUser(
   telegramUser: WebAppInitData['user'] & Pick<WebAppInitData, 'start_param'>

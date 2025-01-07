@@ -11,7 +11,7 @@ import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { ISOWeek } from '@packages/scoutgame/dates/config';
 import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { findOrCreateWalletUser } from '@packages/scoutgame/users/findOrCreateWalletUser';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 
 // Deploy date for new version of contract Jan 03 2025
 const startBlockNumberForReindexing = 130_157_497;

@@ -2,11 +2,11 @@
 
 import { log } from '@charmverse/core/log';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
+import { actionClient } from '@packages/nextjs/actions/actionClient';
 import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 import { cookies } from 'next/headers';
 
-import { actionClient } from '../actions/actionClient';
 import { getUserFromSession } from '../session/getUserFromSession';
 import { type SessionUser } from '../session/interfaces';
 import { findOrCreateWalletUser } from '../users/findOrCreateWalletUser';

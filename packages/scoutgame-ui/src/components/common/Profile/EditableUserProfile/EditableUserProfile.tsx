@@ -2,7 +2,7 @@
 
 import { Stack } from '@mui/material';
 import type { SessionUser } from '@packages/scoutgame/session/interfaces';
-import type { TalentProfile } from '@packages/scoutgame/users/getUserByPath';
+import type { TalentProfile } from '@packages/users/getUserByPath';
 import type { Control } from 'react-hook-form';
 
 import { useIsMounted } from '../../../../hooks/useIsMounted';

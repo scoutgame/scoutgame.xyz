@@ -5,7 +5,7 @@ import { claimPoints } from '@packages/scoutgame/points/claimPoints';
 import { getWeekFromDate, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
 import { DateTime } from 'luxon';
-import { findOrCreateFarcasterUser } from '@packages/scoutgame/users/findOrCreateFarcasterUser';
+import { findOrCreateFarcasterUser } from '@packages/users/findOrCreateFarcasterUser';
 
 import { processScoutPointsPayout } from '../../tasks/processGemsPayout/processScoutPointsPayout';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';

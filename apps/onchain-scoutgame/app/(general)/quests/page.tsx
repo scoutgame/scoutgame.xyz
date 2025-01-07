@@ -1,9 +1,9 @@
 import { getDailyClaims } from '@packages/scoutgame/claims/getDailyClaims';
 import { getQuests } from '@packages/scoutgame/quests/getQuests';
 import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
-import { getFriends } from '@packages/scoutgame/users/getFriends';
 import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 import { QuestsPage } from '@packages/scoutgame-ui/components/quests/QuestsPage';
+import { getFriends } from '@packages/users/getFriends';
 
 export default async function Quests() {
   const user = await getUserFromSession();

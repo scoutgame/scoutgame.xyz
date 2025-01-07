@@ -1,8 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Stack, Typography } from '@mui/material';
-import type { UserProfile } from '@packages/scoutgame/users/getUserProfile';
-import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
+import type { UserProfile } from '@packages/users/getUserProfile';
+import type { ProfileToKeep } from '@packages/users/mergeUserAccount';
 
 import { Dialog } from '../../common/Dialog';
 import type { UserWithAccountsDetails } from '../AccountsPage';

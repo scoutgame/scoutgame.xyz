@@ -3,12 +3,11 @@ import { getENSDetails, getENSName } from '@packages/blockchain/getENSName';
 import { getFarcasterUsersByAddresses } from '@packages/farcaster/getFarcasterUsersByAddresses';
 import { getAddress } from 'viem';
 
-import { createReferralEvent } from '../referrals/createReferralEvent';
-
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
 import { generateRandomName } from './generateRandomName';
 import { generateUserPath } from './generateUserPath';
+import { createReferralEvent } from './referrals/createReferralEvent';
 
 export async function findOrCreateWalletUser({
   wallet,

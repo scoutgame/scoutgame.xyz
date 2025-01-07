@@ -7,7 +7,7 @@ import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts'
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
 import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
-import type { BuilderUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { BuilderUserInfo } from '@packages/users/interfaces';
 import Link from 'next/link';
 import { Suspense } from 'react';
 

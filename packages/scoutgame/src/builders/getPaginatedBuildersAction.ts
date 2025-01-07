@@ -1,8 +1,8 @@
 'use server';
 
+import { actionClient } from '@packages/nextjs/actions/actionClient';
 import * as yup from 'yup';
 
-import { actionClient } from '../actions/actionClient';
 import { getCurrentWeek } from '../dates/utils';
 
 import type { CompositeCursor } from './getPaginatedBuilders';

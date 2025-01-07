@@ -1,10 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { generateRandomEthAddress } from '@packages/testing/random';
+import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
+import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 
 import { referralBonusPoints } from '../../constants';
-import { createReferralEvent } from '../../referrals/createReferralEvent';
-import { updateReferralUsers } from '../../referrals/updateReferralUsers';
 import { mockBuilder, mockScout, mockBuilderNft } from '../../testing/database';
 import { randomLargeInt } from '../../testing/generators';
 

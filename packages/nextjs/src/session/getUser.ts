@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { replaceS3Domain } from '@packages/utils/url';
 import { cache } from 'react';
 
-import type { SessionUser } from '../session/interfaces';
+import type { SessionUser } from './interfaces';
 
 export async function getUser(userId?: string): Promise<SessionUser | null> {
   if (!userId) {

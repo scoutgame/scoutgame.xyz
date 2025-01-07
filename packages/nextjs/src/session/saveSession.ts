@@ -1,6 +1,4 @@
-import type { SessionData } from '@packages/scoutgame/session/interfaces';
-
-import type { RequestContext } from './interfaces';
+import type { SessionData, RequestContext } from './interfaces';
 
 export async function saveSession(ctx: RequestContext, session: SessionData) {
   Object.assign(ctx.session, {

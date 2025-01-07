@@ -1,7 +1,7 @@
 'use client';
 
 import { Paper, Stack, Tab, Tabs, Typography, tabClasses, tabsClasses } from '@mui/material';
-import type { UserStats } from '@packages/scoutgame/users/getUserStats';
+import type { UserStats } from '@packages/users/getUserStats';
 import Image from 'next/image';
 import { useState } from 'react';
 

@@ -1,33 +1,34 @@
-import { log } from "@charmverse/core/log";
-import { Prisma, prisma } from "@charmverse/core/prisma-client";
-import { ConnectWaitlistTier, getWaitlistRange } from "@packages/scoutgame/waitlist/scoring/constants";
-import { welcomeFromWaitlistToScoutgame } from '@packages/scoutgame/waitlist/welcomeToScoutgame';
-import {RateLimit} from 'async-sema';
+import { log } from '@charmverse/core/log';
+import { Prisma, prisma } from '@charmverse/core/prisma-client';
+import { ConnectWaitlistTier, getWaitlistRange } from '../../../../packages/waitlist/waitlist/scoring/constants';
+import { welcomeFromWaitlistToScoutgame } from '../../../../packages/waitlist/waitlist/welcomeToScoutgame';
+import { RateLimit } from 'async-sema';
 
 const limiter = RateLimit(1);
 
-
 async function welcomeWaitlistTier(tier: ConnectWaitlistTier) {
-
   const tierInfo = getWaitlistRange(tier);
 
-  const whereQuery: Prisma.ConnectWaitlistSlotWhereInput = tier === 'legendary' ? {
-    percentile: {
-      gte: tierInfo.min,
-    }
-  } : tier === 'common' ? {
-    percentile: {
-      lte: tierInfo.max
-    }
-  
-  }
-  // Other tiers have a minMax range
-  : {
-    percentile: {
-      gte: tierInfo.min,
-      lte: tierInfo.max
-    }
-  };
+  const whereQuery: Prisma.ConnectWaitlistSlotWhereInput =
+    tier === 'legendary'
+      ? {
+          percentile: {
+            gte: tierInfo.min
+          }
+        }
+      : tier === 'common'
+        ? {
+            percentile: {
+              lte: tierInfo.max
+            }
+          }
+        : // Other tiers have a minMax range
+          {
+            percentile: {
+              gte: tierInfo.min,
+              lte: tierInfo.max
+            }
+          };
 
   const existingScouts = await prisma.scout.findMany({
     where: {
@@ -38,11 +39,15 @@ async function welcomeWaitlistTier(tier: ConnectWaitlistTier) {
     select: {
       farcasterId: true
     }
-  })
+  });
 
   // Only message users who are not already scouts
   const users = await prisma.connectWaitlistSlot.findMany({
-    where: {...whereQuery, fid: {notIn: existingScouts.map(scout => scout.farcasterId).filter(Boolean) as number[]}, isPartnerAccount: {not: true}},
+    where: {
+      ...whereQuery,
+      fid: { notIn: existingScouts.map((scout) => scout.farcasterId).filter(Boolean) as number[] },
+      isPartnerAccount: { not: true }
+    },
     orderBy: {
       fid: 'asc'
     },
@@ -53,7 +58,6 @@ async function welcomeWaitlistTier(tier: ConnectWaitlistTier) {
 
   log.info(`Processing ${totalUsersInTier} users in tier ${tier}`);
 
-
   const limit = totalUsersInTier;
   //  const limit = 1;
 
@@ -61,10 +65,8 @@ async function welcomeWaitlistTier(tier: ConnectWaitlistTier) {
     const user = users[i];
     console.log(`Processing FID:${user.fid} ${user.username} user ${i + 1} of ${totalUsersInTier}`);
     await limiter();
-    await welcomeFromWaitlistToScoutgame({fid: user.fid});
+    await welcomeFromWaitlistToScoutgame({ fid: user.fid });
   }
-
 }
-
 
 welcomeWaitlistTier('common').then(console.log).catch(console.error);

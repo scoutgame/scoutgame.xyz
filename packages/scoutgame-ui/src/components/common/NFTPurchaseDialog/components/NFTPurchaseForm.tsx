@@ -44,7 +44,7 @@ import {
   scoutTokenErc20ContractAddress,
   scoutTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
-import type { MinimalUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { MinimalUserInfo } from '@packages/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
 import Image from 'next/image';
 import Link from 'next/link';

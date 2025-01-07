@@ -1,9 +1,10 @@
-import type { TierChange } from '@packages/scoutgame/waitlist/scoring/constants';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 import { ScoutGameLaunchedFrame } from 'components/waitlistFrame/ScoutGameLaunchedFrame';
 import { getReferrerFidFromUrl } from 'lib/waitlist/frame/getInfoFromUrl';
 import { trackWaitlistMixpanelEvent } from 'lib/waitlist/mixpanel/trackWaitlistMixpanelEvent';
+
+import type { TierChange } from '../../../../../../../packages/waitlist/waitlist/scoring/constants';
 
 export async function GET(req: Request) {
   const reqAsURL = new URL(req.url);

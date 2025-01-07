@@ -1,9 +1,9 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 
-import { authActionClient } from '../actions/actionClient';
 import { getCurrentSeasonStart } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 

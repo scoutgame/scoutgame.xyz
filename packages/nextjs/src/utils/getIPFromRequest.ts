@@ -5,7 +5,7 @@ import { headers } from 'next/headers';
  *
  * @returns IP address as string
  */
-export function getIp() {
+export function getIPFromRequest() {
   const forwardedFor = headers().get('x-forwarded-for');
   const realIp = headers().get('x-real-ip');
 

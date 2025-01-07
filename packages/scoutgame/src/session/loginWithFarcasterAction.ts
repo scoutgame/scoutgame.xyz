@@ -5,7 +5,7 @@ import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { actionClient } from '@packages/scoutgame/actions/actionClient';
 import { authSchema } from '@packages/scoutgame/farcaster/config';
 import { verifyFarcasterUser } from '@packages/scoutgame/farcaster/verifyFarcasterUser';
-import { findOrCreateFarcasterUser } from '@packages/scoutgame/users/findOrCreateFarcasterUser';
+import { findOrCreateFarcasterUser } from '@packages/users/findOrCreateFarcasterUser';
 import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 import { cookies } from 'next/headers';
