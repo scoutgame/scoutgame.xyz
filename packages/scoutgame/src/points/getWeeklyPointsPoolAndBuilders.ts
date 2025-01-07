@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
-import { getCurrentSeason } from '../dates/utils';
+import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getPointsCountForWeekWithNormalisation } from './getPointsCountForWeekWithNormalisation';
 
@@ -15,11 +15,10 @@ export type PartialNftPurchaseEvent = {
 };
 
 export async function getWeeklyPointsPoolAndBuilders({ week }: { week: string }) {
-  const season = getCurrentSeason(week).start;
   const [topWeeklyBuilders, nftPurchaseEvents, { normalisationFactor, totalPoints }, weeklyAllocatedPoints] =
     await Promise.all([
       getBuildersLeaderboard({ quantity: weeklyRewardableBuilders, week }),
-      getNftPurchaseEvents({ week, season }),
+      getNftPurchaseEvents({ week }),
       getPointsCountForWeekWithNormalisation({ week }),
       getCurrentWeekPointsAllocation({ week })
     ]);
@@ -33,13 +32,8 @@ export async function getWeeklyPointsPoolAndBuilders({ week }: { week: string })
   };
 }
 
-async function getNftPurchaseEvents({
-  week,
-  season
-}: {
-  week: string;
-  season: string;
-}): Promise<PartialNftPurchaseEvent[]> {
+async function getNftPurchaseEvents({ week }: { week: string }): Promise<PartialNftPurchaseEvent[]> {
+  const season = getCurrentSeasonStart(week);
   return prisma.nFTPurchaseEvent.findMany({
     where: {
       builderEvent: {
