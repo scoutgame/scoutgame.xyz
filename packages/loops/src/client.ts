@@ -67,7 +67,7 @@ export async function updateContact(payload: Omit<LoopsUser, 'id'>) {
   });
 }
 
-// Note: teh docs say that update will create a user if they don't exist, but it doesn't seem to work
+// Note: the docs say that update will create a user if they don't exist, but it doesn't seem to work
 export async function createOrUpdateContact(payload: Omit<LoopsUser, 'id'>) {
   const [existing] = await findContact(payload);
   const result = await (existing ? updateContact(payload) : createContact(payload));
