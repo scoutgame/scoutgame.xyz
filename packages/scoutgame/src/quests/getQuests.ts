@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { questsRecord, type QuestInfo, type QuestType } from './questRecords';
 

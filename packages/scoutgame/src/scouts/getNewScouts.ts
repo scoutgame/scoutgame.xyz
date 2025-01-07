@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
-import { getCurrentSeason, getCurrentWeek } from '../dates/utils';
 import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
 

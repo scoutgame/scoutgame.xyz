@@ -1,10 +1,10 @@
 'use server';
 
 import { authSchema } from '@packages/farcaster/config';
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import type { UserProfile } from '@packages/users/getUserProfile';
 
 import { completeQuests } from '../quests/completeQuests';
-import type { UserProfile } from '../users/getUserProfile';
 
 import { connectFarcasterAccount } from './connectFarcasterAccount';
 import { verifyFarcasterUser } from './verifyFarcasterUser';

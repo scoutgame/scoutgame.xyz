@@ -1,4 +1,4 @@
-import { getSession as rootGetSession } from '@packages/scoutgame/session/getSession';
+import { getSession as rootGetSession } from '@packages/nextjs/session/getSession';
 
 import type { SessionData } from './interfaces';
 

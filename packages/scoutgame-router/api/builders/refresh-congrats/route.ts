@@ -1,8 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { refreshShareImage } from '@packages/scoutgame/builders/refreshShareImage';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 export async function PUT(request: Request) {
   const { searchParams } = new URL(request.url);

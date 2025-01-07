@@ -6,7 +6,7 @@ import { getPointStatsFromHistory } from '@packages/scoutgame/points/getPointSta
 import { refreshPointStatsFromHistory } from '@packages/scoutgame/points/refreshPointStatsFromHistory';
 import { log } from '@charmverse/core/log';
 import { sendPoints } from '@packages/scoutgame/points/sendPoints';
-import { getCurrentSeason } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeason } from '@packages/dates/utils';
 const tierByPoints = {
   60: 'Legendary',
   30: 'Mythic',
@@ -15,7 +15,7 @@ const tierByPoints = {
   10: 'Common'
 } as any;
 
-const currentSeason = getCurrentSeason()
+const currentSeason = getCurrentSeason();
 
 async function query() {
   // const scout = await prisma.scout.findFirstOrThrow({

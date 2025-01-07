@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import type { Season } from '@packages/scoutgame/dates/config';
+import type { Season } from '@packages/dates/config';
 import { mockRepo, mockBuilder } from '@packages/scoutgame/testing/database';
 import { mockSeason } from '@packages/scoutgame/testing/generators';
 import { DateTime } from 'luxon';

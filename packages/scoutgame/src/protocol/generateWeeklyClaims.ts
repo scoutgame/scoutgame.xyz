@@ -3,10 +3,9 @@ import type { WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { getMerkleProofs } from '@charmverse/core/protocol';
+import { weeksPerSeason } from '@packages/dates/config';
+import { getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
 import { type Address } from 'viem';
-
-import { weeksPerSeason } from '../dates/config';
-import { getCurrentSeasonStart, getDateFromISOWeek } from '../dates/utils';
 
 import type { WeeklyClaimsCalculated } from './calculateWeeklyClaims';
 import { protocolImplementationWriteClient } from './clients/protocolWriteClients';

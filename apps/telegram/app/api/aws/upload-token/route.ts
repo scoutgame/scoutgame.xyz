@@ -1,5 +1,5 @@
 import { uploadToken } from '@packages/aws/uploadToken';
-import { getSession } from '@packages/scoutgame/session/getSession';
+import { getSession } from '@packages/nextjs/session/getSession';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

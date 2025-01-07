@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import type { ReactNode } from 'react';
 
 import { Header } from 'components/common/Header';

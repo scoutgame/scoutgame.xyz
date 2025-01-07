@@ -6,9 +6,9 @@ import type {
   ScoutGameActivityType
 } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { Season } from '@packages/scoutgame/dates/config';
-import { streakWindow } from '@packages/scoutgame/dates/config';
-import { getStartOfWeek, getWeekFromDate, isToday } from '@packages/scoutgame/dates/utils';
+import type { Season } from '@packages/dates/config';
+import { streakWindow } from '@packages/dates/config';
+import { getStartOfWeek, getWeekFromDate, isToday } from '@packages/dates/utils';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import { isTruthy } from '@packages/utils/types';

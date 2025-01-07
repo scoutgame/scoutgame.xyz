@@ -3,7 +3,7 @@ import type { Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 import { octokit } from '@packages/github/client';
-import { findOrCreateFarcasterUser } from '@packages/scoutgame/users/findOrCreateFarcasterUser';
+import { findOrCreateFarcasterUser } from '@packages/users/findOrCreateFarcasterUser';
 import { randomString } from '@packages/utils/strings';
 
 import type { SearchUserResult } from './searchForUser';
