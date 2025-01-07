@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { BuilderEventType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { ConnectWaitlistTier, getTier } from '@packages/scoutgame/waitlist/scoring/constants';
+import { ConnectWaitlistTier, getTier } from '@packages/waitlist/scoring/constants';
 
 const waitlistTierPointsRecord: Record<ConnectWaitlistTier, number> = {
   legendary: 60,
