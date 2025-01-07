@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { registerScout as registerBeehiiv } from '@packages/beehiiv/registerScout';
 import { registerScout as registerLoops } from '@packages/loops/registerScout';
 import { getPlatform } from '@packages/mixpanel/utils';
-import { authActionClient } from '@packages/scoutgame/actions/actionClient';
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 
 import { saveOnboardingDetailsSchema } from './saveOnboardingDetailsSchema';
 

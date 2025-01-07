@@ -1,7 +1,7 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder } from '../../testing/database';
 import { getCurrentWeekPointsAllocation } from '../getCurrentWeekPointsAllocation';
 

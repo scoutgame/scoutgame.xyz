@@ -1,6 +1,6 @@
 import { Paper, Typography, Box } from '@mui/material';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { getSeasonBuilderRewards, getWeeklyBuilderRewards } from '@packages/scoutgame/builders/getBuilderRewards';
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
 import Image from 'next/image';
 
 import { BuilderRewardsTable } from './BuilderRewardsTable';

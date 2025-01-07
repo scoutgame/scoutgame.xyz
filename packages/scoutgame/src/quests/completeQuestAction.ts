@@ -1,9 +1,8 @@
 'use server';
 
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
-
-import { authActionClient } from '../actions/actionClient';
 
 import { completeQuests } from './completeQuests';
 import type { QuestType } from './questRecords';

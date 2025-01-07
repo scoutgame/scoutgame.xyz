@@ -1,8 +1,8 @@
 import 'server-only';
 
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderActivities';
 import { getLeaderboard } from '@packages/scoutgame/builders/getLeaderboard';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { ScoutPageTable } from '../../scout/ScoutPageTable/ScoutPageTable';
 

@@ -1,5 +1,5 @@
-import type { TierChange } from '@packages/scoutgame/waitlist/scoring/constants';
 import { uuidFromNumber } from '@packages/utils/uuid';
+import type { TierChange } from '@packages/waitlist/scoring/constants';
 
 import { ScoutGameLaunchedFrame } from 'components/waitlistFrame/ScoutGameLaunchedFrame';
 import { getReferrerFidFromUrl } from 'lib/waitlist/frame/getInfoFromUrl';

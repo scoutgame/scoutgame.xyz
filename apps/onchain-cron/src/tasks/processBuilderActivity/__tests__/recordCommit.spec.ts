@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder, mockBuilderNft, mockRepo, mockScout } from '@packages/scoutgame/testing/database';
 import { DateTime } from 'luxon';
 import { v4 } from 'uuid';

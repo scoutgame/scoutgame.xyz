@@ -4,7 +4,7 @@ import { log } from '@charmverse/core/log';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Typography } from '@mui/material';
-import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useConnectModal, RainbowKitProvider } from '@rainbow-me/rainbowkit';

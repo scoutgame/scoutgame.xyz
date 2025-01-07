@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
-import { getWeekFromDate } from '@packages/scoutgame/dates/utils';
+import { getWeekFromDate } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 import { BuilderInfo } from './generateSeedData';
 import { randomTimeOfDay } from './generator';

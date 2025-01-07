@@ -1,7 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
-
-import { getCurrentSeasonStart } from '../dates/utils';
 
 export type BuilderReward = {
   path: string;

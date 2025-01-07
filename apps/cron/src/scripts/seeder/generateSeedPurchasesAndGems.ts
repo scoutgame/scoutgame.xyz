@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { DateTime } from 'luxon';
 import { generateNftPurchaseEvents } from './generateNftPurchaseEvents';
 import { generateScout } from './generateScout';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 async function generateScoutsSeedPurchasesAndGems() {
   const builderNfts = await prisma.builderNft.findMany({});

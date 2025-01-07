@@ -1,10 +1,10 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { Season } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
-import type { Season } from '../dates/config';
-import { getCurrentSeasonStart } from '../dates/utils';
 
 const baseUrl = process.env.DOMAIN as string;
 

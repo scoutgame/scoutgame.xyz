@@ -1,8 +1,8 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import type { ISOWeek } from '../../dates/config';
-import { getCurrentSeasonStart } from '../../dates/utils';
 import type { QuestType } from '../../quests/questRecords';
 
 export async function sendPointsForSocialQuest({

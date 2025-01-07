@@ -1,5 +1,5 @@
 import { Stack, TableCell, TableRow, Typography } from '@mui/material';
-import { seasons } from '@packages/scoutgame/dates/config';
+import { seasons } from '@packages/dates/config';
 import type {
   BuilderPointsReceiptReward,
   LeaderboardRankPointsReceiptReward,

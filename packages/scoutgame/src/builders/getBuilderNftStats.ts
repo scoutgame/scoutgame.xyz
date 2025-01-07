@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek, getCurrentSeason } from '@packages/dates/utils';
 
-import { getCurrentWeek, getCurrentSeason } from '../dates/utils';
 import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
 
 export type NftStats = {

@@ -1,6 +1,6 @@
 import { POST } from '@charmverse/core/http';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { v4 } from 'uuid';
 
 import type { MoxieBonusRow } from './getMoxieCandidates';

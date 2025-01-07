@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getScoutFarcasterBuilderSocialGraph } from '@packages/farcaster/getScoutFarcasterBuilderSocialGraph';
-
-import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getBuildersByFid } from './getBuildersByFid';
 

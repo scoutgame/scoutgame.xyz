@@ -5,7 +5,7 @@ import { Box, Paper, Stack, styled, Typography } from '@mui/material';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
-import type { BasicUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { BasicUserInfo } from '@packages/users/interfaces';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
