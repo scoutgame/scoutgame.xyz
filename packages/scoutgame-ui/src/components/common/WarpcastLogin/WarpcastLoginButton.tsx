@@ -5,7 +5,7 @@ import { useProfile } from '@farcaster/auth-kit';
 import type { StatusAPIResponse, AuthClientError } from '@farcaster/auth-kit';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
-import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithFarcasterAction } from '@packages/scoutgame/session/loginWithFarcasterAction';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import { FarcasterLoginModal } from '@packages/scoutgame-ui/components/common/Warpcast/FarcasterModal';

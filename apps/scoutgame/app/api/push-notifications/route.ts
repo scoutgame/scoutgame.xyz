@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getSession } from '@packages/scoutgame/session/getSession';
+import { getSession } from '@packages/nextjs/session/getSession';
 import webpush from 'web-push';
 
 import { initWebPush } from 'lib/pwa/initWebPush';

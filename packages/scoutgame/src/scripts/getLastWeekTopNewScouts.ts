@@ -1,5 +1,5 @@
 import { NFTPurchaseEvent, prisma, UserWeeklyStats } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getLastWeek, getStartOfWeek } from '../dates/utils';
+import { getCurrentSeasonStart, getLastWeek, getStartOfWeek } from '@packages/dates/utils';
 import { prettyPrint } from '@packages/utils/strings';
 
 export async function getLastWeekTopNewScouts() {

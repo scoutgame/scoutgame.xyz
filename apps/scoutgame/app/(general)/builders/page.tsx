@@ -1,4 +1,4 @@
-import { getCurrentWeek, validateISOWeek } from '@packages/scoutgame/dates/utils';
+import { getCurrentWeek, validateISOWeek } from '@packages/dates/utils';
 import { BuildersPage } from '@packages/scoutgame-ui/components/builders/BuildersPage';
 
 export default async function Builders({

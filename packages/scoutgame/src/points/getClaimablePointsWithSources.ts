@@ -1,10 +1,10 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 
 import type { BonusPartner } from '../bonus';
-import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 
 import { getClaimablePoints } from './getClaimablePoints';
 

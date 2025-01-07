@@ -3,8 +3,8 @@
 import { log } from '@charmverse/core/log';
 import type { Scout } from '@charmverse/core/prisma';
 import { Avatar, Box, Container, IconButton, Menu, MenuItem, Toolbar, AppBar, Stack } from '@mui/material';
-import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
-import { logoutAction } from '@packages/scoutgame/session/logoutAction';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
+import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

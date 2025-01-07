@@ -1,5 +1,5 @@
-import { getLastWeek } from '@packages/scoutgame/dates/utils';
-import { getUserByPathCached } from '@packages/scoutgame/users/getUserByPathCached';
+import { getLastWeek } from '@packages/dates/utils';
+import { getUserByPathCached } from '@packages/users/getUserByPathCached';
 import { notFound } from 'next/navigation';
 
 export default async function Claim({

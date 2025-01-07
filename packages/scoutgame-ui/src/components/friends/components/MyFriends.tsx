@@ -9,7 +9,7 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 
 import { Avatar } from '../../common/Avatar';
 

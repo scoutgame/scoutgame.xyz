@@ -1,6 +1,5 @@
 import type { BuilderNftType, BuilderStatus } from '@charmverse/core/prisma';
-
-import type { BasicUserInfo } from '../users/interfaces';
+import type { BasicUserInfo } from '@packages/users/interfaces';
 
 export type PointMetrics = {
   seasonPoints: number;

@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { AccountsPage } from '@packages/scoutgame-ui/components/accounts/AccountsPage';
 import { notFound } from 'next/navigation';
 

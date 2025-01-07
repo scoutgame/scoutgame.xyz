@@ -2,9 +2,8 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
 import { validate as isUuid } from 'uuid';
-
-import type { ISOWeek } from '../dates/config';
 
 export type PointStats = {
   userId: string;

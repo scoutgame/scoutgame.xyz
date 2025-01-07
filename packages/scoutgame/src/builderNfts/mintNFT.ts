@@ -1,9 +1,8 @@
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address, TransactionReceipt } from 'viem';
-
-import type { ISOWeek } from '../dates/config';
-import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getBuilderContractMinterClient } from './clients/builderContractMinterWriteClient';
 import { getBuilderContractStarterPackMinterClient } from './clients/builderContractStarterPackMinterWriteClient';

@@ -6,7 +6,7 @@ import { LoadingButton } from '@mui/lab';
 import type { ButtonProps } from '@mui/material';
 import { Box, Typography } from '@mui/material';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
-import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { usePopupState } from 'material-ui-popup-state/hooks';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';

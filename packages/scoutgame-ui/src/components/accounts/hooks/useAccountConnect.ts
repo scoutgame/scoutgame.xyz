@@ -1,9 +1,9 @@
 import { log } from '@charmverse/core/log';
-import { revalidatePathAction } from '@packages/scoutgame/actions/revalidatePathAction';
-import { logoutAction } from '@packages/scoutgame/session/logoutAction';
-import type { UserProfile } from '@packages/scoutgame/users/getUserProfile';
-import type { ProfileToKeep } from '@packages/scoutgame/users/mergeUserAccount';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
+import { logoutAction } from '@packages/nextjs/session/logoutAction';
+import type { ProfileToKeep } from '@packages/scoutgame/mergeUserAccount';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import type { UserProfile } from '@packages/users/getUserProfile';
 import { usePopupState } from 'material-ui-popup-state/hooks';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';

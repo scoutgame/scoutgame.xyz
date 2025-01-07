@@ -1,10 +1,10 @@
 import type { BuilderNftType } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeason } from '@packages/dates/utils';
 
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
-import { getCurrentSeason } from '../dates/utils';
 
 import { getPointsCountForWeekWithNormalisation } from './getPointsCountForWeekWithNormalisation';
 

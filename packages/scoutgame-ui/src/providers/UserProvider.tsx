@@ -1,7 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useEffect } from 'react';
