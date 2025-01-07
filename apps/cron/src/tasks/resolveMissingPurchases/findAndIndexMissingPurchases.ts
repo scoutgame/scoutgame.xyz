@@ -9,7 +9,7 @@ import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { ISOWeek } from '@packages/scoutgame/dates/config';
-import { getCurrentSeason, getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { findOrCreateWalletUser } from '@packages/scoutgame/users/findOrCreateWalletUser';
 
@@ -40,7 +40,12 @@ export async function findAndIndexMissingPurchases({
 
   const uniqueTxHashes = await prisma.nFTPurchaseEvent
     .groupBy({
-      by: ['txHash']
+      by: ['txHash'],
+      where: {
+        builderNft: {
+          season
+        }
+      }
     })
     .then((transactions) => new Set(transactions.map((tx) => tx.txHash)));
 
