@@ -89,18 +89,20 @@ export async function handlePendingTransaction({
             sourceTxHashChainId: pendingTx.sourceChainId
           });
 
+    const useScoutIdValidation =
+      isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress);
+
     scoutgameMintsLogger.info('Transaction settled', { txHash });
 
-    const validatedMint =
-      isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress)
-        ? await validatePreseason01orStarterPackMint({
-            chainId: pendingTx.destinationChainId,
-            txHash
-          })
-        : await validateTransferrableNftMint({
-            chainId: pendingTx.destinationChainId,
-            txHash
-          });
+    const validatedMint = useScoutIdValidation
+      ? await validatePreseason01orStarterPackMint({
+          chainId: pendingTx.destinationChainId,
+          txHash
+        })
+      : await validateTransferrableNftMint({
+          chainId: pendingTx.destinationChainId,
+          txHash
+        });
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {

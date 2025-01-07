@@ -7,6 +7,8 @@ export const eventSchema = yup.object().shape({
   currentPageTitle: yup.string(),
   currentDomain: yup.string(),
   currentUrlPath: yup.string(),
-  currentUrlSearch: yup.string()
+  currentUrlSearch: yup.string(),
+  $screen_height: yup.string(),
+  $screen_width: yup.string()
 });
 export type Payload = yup.InferType<typeof eventSchema>;

@@ -6,14 +6,14 @@ import { sendEmailTemplate } from '@packages/mailer/mailer';
 import { baseUrl } from '@packages/utils/constants';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
-import type { Season } from '../dates/config';
+import type { ISOWeek, Season } from '../dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '../dates/utils';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 import { createReferralBonusEvent } from '../referrals/createReferralBonusEvent';
 
 import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
-import { recordNftPurchaseQuests } from './recordNftPurchaseQuests';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
@@ -24,6 +24,7 @@ export async function recordNftMint(
   }
 ) {
   const {
+    season = getCurrentSeasonStart(),
     amount,
     builderNftId,
     paidWithPoints,
@@ -35,8 +36,6 @@ export async function recordNftMint(
     skipMixpanel,
     skipPriceRefresh
   } = params;
-
-  const season = getCurrentSeasonStart();
 
   if (!mintTxHash.trim().startsWith('0x')) {
     throw new InvalidInputError(`Mint transaction hash is required`);

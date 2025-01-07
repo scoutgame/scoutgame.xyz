@@ -20,7 +20,7 @@ export function PublicBuilderStats({
   return (
     <Stack gap={0.5}>
       <Typography fontWeight={500} color='secondary' variant={isDesktop ? 'subtitle1' : 'caption'}>
-        THIS SEASON (ALL TIME)
+        THIS SEASON
       </Typography>
       <Stack flexDirection='row' gap={1} alignItems='center'>
         <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'h6'} color='orange.main'>

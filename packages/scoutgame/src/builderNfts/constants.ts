@@ -103,7 +103,8 @@ export function isPreseason01Contract(contractAddress: string): boolean {
 
 export function isStarterPackContract(contractAddress: string): boolean {
   const starterPackAddresses = [
-    getBuilderNftStarterPackContractAddress('2024-W41') || getBuilderNftStarterPackContractAddress('2025-W02')
+    getBuilderNftStarterPackContractAddress('2024-W41'),
+    getBuilderNftStarterPackContractAddress('2025-W02')
   ];
 
   if (starterPackAddresses.includes(contractAddress.toLowerCase() as Address)) {

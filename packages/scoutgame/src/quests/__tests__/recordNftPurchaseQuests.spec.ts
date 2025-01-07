@@ -4,18 +4,20 @@ import { getCurrentSeasonStart } from '../../dates/utils';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '../../testing/database';
 import { recordNftPurchaseQuests } from '../recordNftPurchaseQuests';
 
+const season = getCurrentSeasonStart();
+
 describe('recordNftPurchaseQuests', () => {
   it('should record scout-starter-card and op quest completion for scout with 1 starter pack card', async () => {
     const [builder1, builder2] = await Promise.all([mockBuilder(), mockBuilder()]);
     await Promise.all([
       mockBuilderNft({
         builderId: builder1.id,
-        season: getCurrentSeasonStart(),
+        season,
         nftType: 'starter_pack'
       }),
       mockBuilderNft({
         builderId: builder2.id,
-        season: getCurrentSeasonStart(),
+        season,
         nftType: 'starter_pack'
       })
     ]);
@@ -24,41 +26,44 @@ describe('recordNftPurchaseQuests', () => {
       scoutId: scout.id,
       builderId: builder1.id,
       nftType: 'starter_pack',
-      season: getCurrentSeasonStart()
+      season
     });
 
     await mockNFTPurchaseEvent({
       scoutId: scout.id,
       builderId: builder2.id,
       nftType: 'starter_pack',
-      season: getCurrentSeasonStart()
+      season
     });
 
     await recordNftPurchaseQuests(scout.id);
 
     const quest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-starter-card',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
 
     const opQuest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'enter-op-new-scout-competition',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
 
     const moxieQuest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-moxie-builder',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
@@ -75,7 +80,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: getCurrentSeasonStart(),
+          season,
           nftType: 'starter_pack'
         })
       )
@@ -87,7 +92,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'starter_pack',
-          season: getCurrentSeasonStart()
+          season
         })
       )
     );
@@ -96,9 +101,10 @@ describe('recordNftPurchaseQuests', () => {
 
     const quest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-3-starter-cards',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
@@ -113,7 +119,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: getCurrentSeasonStart(),
+          season,
           nftType: 'default'
         })
       )
@@ -125,7 +131,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'default',
-          season: getCurrentSeasonStart()
+          season
         })
       )
     );
@@ -134,27 +140,30 @@ describe('recordNftPurchaseQuests', () => {
 
     const quest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-full-season-card',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
 
     const opQuest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'enter-op-new-scout-competition',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
 
     const moxieQuest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-moxie-builder',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
@@ -173,7 +182,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: getCurrentSeasonStart(),
+          season,
           nftType: 'default'
         })
       )
@@ -185,7 +194,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'default',
-          season: getCurrentSeasonStart(),
+          season,
           tokensPurchased: 2
         })
       )
@@ -195,9 +204,10 @@ describe('recordNftPurchaseQuests', () => {
 
     const quest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-5-builders',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
@@ -210,7 +220,7 @@ describe('recordNftPurchaseQuests', () => {
       builderIds.map((builderId) =>
         mockBuilderNft({
           builderId,
-          season: getCurrentSeasonStart(),
+          season,
           nftType: 'default'
         })
       )
@@ -221,7 +231,7 @@ describe('recordNftPurchaseQuests', () => {
           scoutId: scout.id,
           builderId,
           nftType: 'default',
-          season: getCurrentSeasonStart()
+          season
         })
       )
     );
@@ -230,9 +240,10 @@ describe('recordNftPurchaseQuests', () => {
 
     const updatedQuest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-5-builders',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });
@@ -249,20 +260,21 @@ describe('recordNftPurchaseQuests', () => {
       }
     });
     const scout = await mockScout();
-    await mockBuilderNft({ builderId: builder.id, season: getCurrentSeasonStart(), nftType: 'default' });
+    await mockBuilderNft({ builderId: builder.id, season, nftType: 'default' });
     await mockNFTPurchaseEvent({
       scoutId: scout.id,
       builderId: builder.id,
       nftType: 'default',
-      season: getCurrentSeasonStart()
+      season
     });
     await recordNftPurchaseQuests(scout.id);
 
     const quest = await prisma.scoutSocialQuest.findUnique({
       where: {
-        type_userId: {
+        type_userId_season: {
           type: 'scout-moxie-builder',
-          userId: scout.id
+          userId: scout.id,
+          season
         }
       }
     });

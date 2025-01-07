@@ -16,7 +16,7 @@ export function PublicScoutProfileStats({
     <Paper sx={{ p: 2 }}>
       <Box maxWidth={500} mx='auto'>
         <Typography paddingY={1} variant='subtitle1' textAlign='center' color='secondary'>
-          THIS SEASON (ALL TIME)
+          THIS SEASON
         </Typography>
         <Stack flexDirection='row' justifyContent='space-between' gap={2}>
           <Stack flexDirection='row' gap={0.5}>

@@ -35,6 +35,7 @@
       "@packages/blockchain/*": ["./packages/blockchain/src/*"],
       "@packages/scoutgame/*": ["./packages/scoutgame/src/*"],
       "@packages/testing/*": ["./packages/testing/src/*"],
+      "@packages/mixpanel/*": ["./packages/mixpanel/src/*"],
       "scripts/*": ["./scripts/*"],
       "@charmverse/core/prisma": ["node_modules/@charmverse/core/dist/cjs/prisma"],
       "@charmverse/core/prisma-client": ["node_modules/@charmverse/core/dist/cjs/prisma-client"],
