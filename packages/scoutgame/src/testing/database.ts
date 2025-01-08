@@ -96,7 +96,8 @@ export async function mockScout({
   farcasterId,
   deletedAt,
   telegramId,
-  wallets = []
+  wallets = [],
+  stats
 }: {
   wallets?: string[];
   createdAt?: Date;
@@ -117,6 +118,17 @@ export async function mockScout({
   farcasterId?: number;
   deletedAt?: Date;
   telegramId?: number;
+  stats?: {
+    allTime?: {
+      pointsEarnedAsScout?: number;
+      pointsEarnedAsBuilder?: number;
+    };
+    season?: {
+      nftsPurchased?: number;
+      pointsEarnedAsScout?: number;
+      pointsEarnedAsBuilder?: number;
+    };
+  };
 } = {}) {
   const scout = await prisma.scout.create({
     data: {
@@ -146,6 +158,19 @@ export async function mockScout({
   });
   if (builderId) {
     await mockNFTPurchaseEvent({ builderId, scoutId: scout.id, season, week: nftWeek });
+  }
+  if (stats) {
+    if (stats.allTime) {
+      await mockUserAllTimeStats({ userId: scout.id, ...stats.allTime });
+    }
+    if (stats.season) {
+      if (!season) {
+        throw new Error('Season is required to mock user season stats');
+      }
+      await prisma.userSeasonStats.create({
+        data: { userId: scout.id, ...stats.season, season }
+      });
+    }
   }
   return scout;
 }
