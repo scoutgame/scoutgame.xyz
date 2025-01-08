@@ -26,7 +26,7 @@ export const saveOnboardingDetailsAction = authActionClient
         onboardedAt: new Date()
       }
     });
-    if (parsedInput.email) {
+    if (parsedInput.sendMarketing) {
       await registerLoops(
         {
           email: parsedInput.email,
@@ -40,6 +40,12 @@ export const saveOnboardingDetailsAction = authActionClient
         email: parsedInput.email,
         sendMarketing: !!parsedInput.sendMarketing
       });
+    }
+    try {
+      // user must verify email before referral can be counted
+      await sendVerificationEmail({ userId });
+    } catch (error) {
+      log.error('Error sending verification email', { error, userId });
     }
 
     return { success: true };
