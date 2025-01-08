@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { baseUrl } from '@packages/utils/constants';
@@ -10,7 +11,7 @@ export class InvalidVerificationError extends Error {
   }
 }
 
-export async function createEmailVerification({ userId }: { userId: string }) {
+export async function sendVerificationEmail({ userId }: { userId: string }) {
   // Generate a 6-digit verification code
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const scout = await prisma.scout.findUniqueOrThrow({
@@ -75,7 +76,7 @@ export async function verifyEmail(code: string): Promise<{ result: 'already_veri
   try {
     await updateReferralUsers(verification.scoutId);
   } catch (error) {
-    log.error('Error updating user referrals after email verification ', { userId, error });
+    log.error('Error updating user referrals after email verification ', { userId: verification.scoutId, error });
   }
 
   return { result: 'verified' };

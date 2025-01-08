@@ -7,7 +7,7 @@ import { Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography
 import { updateUserEmailSettingsAction } from '@packages/users/updateUserEmailSettingsAction';
 import type { UpdateUserEmailSettingsFormValues } from '@packages/users/updateUserEmailSettingsSchema';
 import { updateUserEmailSettingsSchema } from '@packages/users/updateUserEmailSettingsSchema';
-import { verifyEmailAction } from '@packages/users/verifyEmailAction';
+import { sendVerificationEmailAction } from '@packages/users/verifyEmailAction';
 import { concatenateStringValues } from '@packages/utils/strings';
 import { useAction } from 'next-safe-action/hooks';
 import { useState, useCallback } from 'react';
@@ -20,7 +20,6 @@ import type { UserWithAccountsDetails } from '../../AccountsPage';
 
 export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: UserWithAccountsDetails }) {
   const [errors, setErrors] = useState<string[] | null>(null);
-  const [loading, setLoading] = useState(false);
   const {
     control,
     getValues,
@@ -34,6 +33,15 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
       email: user.email,
       sendTransactionEmails: user.sendTransactionEmails,
       sendMarketing: user.sendMarketing
+    }
+  });
+  const { execute: sendVerificationEmail, isExecuting: isSending } = useAction(sendVerificationEmailAction, {
+    async onSuccess() {
+      toast.success('Verification email sent! Please check your inbox.');
+    },
+    onError(error) {
+      toast.error('Failed to send verification email');
+      log.warn('Failed to send verification email', { error });
     }
   });
 
@@ -63,16 +71,7 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
   }
 
   async function handleVerifyEmail() {
-    setLoading(true);
-    try {
-      await verifyEmailAction();
-      toast.success('Verification email sent! Please check your inbox.');
-    } catch (error) {
-      toast.error('Failed to send verification email');
-      log.warn('Failed to send verification email', { error });
-    } finally {
-      setLoading(false);
-    }
+    await sendVerificationEmail();
   }
 
   return (
@@ -88,11 +87,11 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
               {user?.email && !verifiedEmail && (
                 <Chip
                   sx={{ ml: 2 }}
-                  label='Verify email'
+                  label={isSending ? 'Sending...' : 'Verify email'}
                   color='success'
                   variant='outlined'
                   onClick={handleVerifyEmail}
-                  disabled={loading}
+                  disabled={isSending}
                 />
               )}
             </Stack>
