@@ -8,7 +8,7 @@ import { deleteExternalProfiles } from './deleteExternalProfiles';
 
 const perBatch = 1000;
 
-const deletedAtLoobackHours = 2; // job runs once an hour, 2 hours gives a little overlap
+const deletedAtLookbackHours = 2; // job runs once an hour, 2 hours gives a little overlap
 
 async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
   { userId: string; profile: MixPanelUserProfile }[]
@@ -23,7 +23,7 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
       OR: [
         { deletedAt: null },
         // look for recently deleted users
-        { deletedAt: { gt: DateTime.now().minus({ hours: deletedAtLoobackHours }).toJSDate() } }
+        { deletedAt: { gt: DateTime.now().minus({ hours: deletedAtLookbackHours }).toJSDate() } }
       ]
     },
     include: {
