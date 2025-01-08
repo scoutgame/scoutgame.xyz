@@ -25,11 +25,6 @@ jobs:
         with:
           core_pkg_version: ${{ inputs.core_pkg_version }}
 
-      # - name: Build app
-      #   uses: ./.github/actions/build
-      #   with:
-      #     REACT_APP_APP_ENV: 'test'
-
   integration-test:
     name: Tests
     runs-on: ubuntu-latest
@@ -55,15 +50,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - test_name: 'Typecheck scoutgame'
-            test_command: 'npm run typecheck -w apps/scoutgame'
-          - test_name: 'Test @packages/scoutgame'
-            test_command: 'dotenv -e .env.test.local -- npm run test -w packages/scoutgame'
-          - test_name: 'Typecheck scoutgame telegram'
-            test_command: 'npm run typecheck -w apps/scoutgametelegram'
-          - test_name: 'Typecheck scoutgame cron'
+          - app_name: 'scoutgame'
+            test_command: |
+              npm run typecheck -w apps/scoutgame
+              dotenv -e .env.test.local -- npm run test -w packages/scoutgame
+          - app_name: 'scoutgametelegram'
+            test_command: |
+              npm run typecheck -w apps/scoutgametelegram
+              dotenv -e .env.test.local -- npm run test -w packages/scoutgametelegram
+          - app_name: 'scoutgamecron'
             test_command: 'npm run typecheck -w apps/scoutgamecron'
-          - test_name: 'Typecheck scoutgame admin'
+          - app_name: 'admin'
             test_command: 'npm run typecheck -w apps/admin'
 
     steps:
@@ -88,7 +85,8 @@ jobs:
       - name: Restore app from cache
         uses: ./.github/actions/build
         with:
+          app_name: ${{matrix.app_name}}
           REACT_APP_APP_ENV: 'test'
 
-      - name: Run ${{matrix.test_name}}
+      - name: Run tests for ${{matrix.app_name}}
         run: ${{matrix.test_command}}
