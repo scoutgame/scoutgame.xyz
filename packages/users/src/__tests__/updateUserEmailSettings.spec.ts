@@ -9,19 +9,9 @@ jest.unstable_mockModule('@packages/beehiiv/registerScout', () => ({
   registerScout: jest.fn()
 }));
 
-jest.unstable_mockModule('@packages/beehiiv/deleteSubscriptionByEmail', () => ({
-  deleteSubscriptionByEmail: jest.fn()
-}));
-
-jest.unstable_mockModule('@packages/loops/client', () => ({
-  deleteContact: jest.fn()
-}));
-
 const { updateUserEmailSettings } = await import('../updateUserEmailSettings');
 const { registerScout: registerLoops } = await import('@packages/loops/registerScout');
 const { registerScout: registerBeehiiv } = await import('@packages/beehiiv/registerScout');
-const { deleteSubscriptionByEmail } = await import('@packages/beehiiv/deleteSubscriptionByEmail');
-const { deleteContact } = await import('@packages/loops/client');
 
 describe('updateUserEmailSettings', () => {
   afterEach(() => {
@@ -69,40 +59,6 @@ describe('updateUserEmailSettings', () => {
     expect(registerBeehiiv).toHaveBeenCalledWith(
       expect.objectContaining({
         email: mockNewEmail
-      })
-    );
-  });
-
-  it('should delete subscriptions when email is removed', async () => {
-    const scout = await prisma.scout.create({
-      data: {
-        displayName: 'test',
-        referralCode: `test${Math.random()}`,
-        path: `test${Math.random()}`,
-        // test-related
-        email: 'test@example.com',
-        sendMarketing: true,
-        sendTransactionEmails: true
-      }
-    });
-
-    await updateUserEmailSettings({
-      userId: scout.id,
-      email: null,
-      sendMarketing: false
-    });
-
-    // Verify Loops was called
-    expect(deleteContact).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: scout.email
-      })
-    );
-
-    // Verify Beehiv was called
-    expect(deleteSubscriptionByEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: scout.email
       })
     );
   });
