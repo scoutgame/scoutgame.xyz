@@ -3,7 +3,7 @@
 import type { Theme } from '@mui/material';
 import { Stack, Tooltip, useMediaQuery } from '@mui/material';
 import { useState } from 'react';
-import { Area, AreaChart, ResponsiveContainer } from 'recharts';
+import { Area, AreaChart, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 import { Dialog } from '../../../Dialog';
 
@@ -23,16 +23,17 @@ export function BuilderCardActivity({
   const gemHeight = size === 'x-small' || size === 'small' ? 12.5 : size === 'medium' ? 14.5 : 16;
   return (
     <>
-      <AreaChart
-        width={150}
-        height={150}
-        data={last14DaysGems.map((gems, index) => ({
-          name: index,
-          value: gems
-        }))}
-      >
-        <Area type='monotone' dataKey='uv' stroke='#69DDFF' fill='#0580A4' />
-      </AreaChart>
+      <ResponsiveContainer width='100%' height={30}>
+        <AreaChart
+          data={last14DaysGems.map((gems, index) => ({
+            name: index,
+            value: gems
+          }))}
+        >
+          <ReferenceLine y={dailyAverageGems} stroke='red' />
+          <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
+        </AreaChart>
+      </ResponsiveContainer>
       <Tooltip title={<BuilderCardActivityTooltip />}>
         <Stack
           flexDirection='row'
