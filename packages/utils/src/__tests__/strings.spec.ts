@@ -1,4 +1,4 @@
-import { concatenateStringValues } from '../strings';
+import { concatenateStringValues, isValidEmail } from '../strings';
 
 describe('concatenateStringValues', () => {
   it('should concatenate all string values from the object into an array', () => {
@@ -66,5 +66,31 @@ describe('concatenateStringValues', () => {
 
     const result = concatenateStringValues(input);
     expect(result).toEqual(['test', 'example']);
+  });
+});
+
+describe('isValidEmail', () => {
+  it('should return true for a valid email', () => {
+    expect(isValidEmail('test@example.com')).toBe(true);
+  });
+
+  it('should return false for an invalid email', () => {
+    expect(isValidEmail('test@example')).toBe(false);
+  });
+
+  it('should return false for an empty string', () => {
+    expect(isValidEmail('')).toBe(false);
+  });
+
+  it('should return false for a string with no @', () => {
+    expect(isValidEmail('testexample.com')).toBe(false);
+  });
+
+  it('should return false for a string with no .', () => {
+    expect(isValidEmail('test@example')).toBe(false);
+  });
+
+  it('should return false for a string with a space', () => {
+    expect(isValidEmail('test@ example.com')).toBe(false);
   });
 });
