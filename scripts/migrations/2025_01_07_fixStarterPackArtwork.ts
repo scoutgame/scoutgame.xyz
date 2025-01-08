@@ -10,7 +10,6 @@ async function fixStarterPackArtwork() {
     where: {
       farcasterId: { in: starterPackBuilders.map((b) => b.fid) }
     },
-    take: 1,
     select: {
       avatar: true,
       id: true,
@@ -18,6 +17,7 @@ async function fixStarterPackArtwork() {
       path: true,
       builderNfts: {
         where: {
+          nftType: "starter_pack",
           season
         }
       }
@@ -42,6 +42,7 @@ async function fixStarterPackArtwork() {
         }
       });
 
+      console.log(`Fixed starter pack artwork for builder ${builder.displayName}`);
     } catch (error) {
       console.error(`Error fixing starter pack artwork for builder ${builder.displayName}`, error);
     }
