@@ -3,7 +3,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
 import { batchUpdateMixpanelUserProfiles } from '@packages/mixpanel/updateUserProfile';
 import type { MixPanelUserProfile } from '@packages/mixpanel/updateUserProfile';
-import { isWithinLastDays } from '@packages/utils/dates';
 
 const perBatch = 1000;
 
