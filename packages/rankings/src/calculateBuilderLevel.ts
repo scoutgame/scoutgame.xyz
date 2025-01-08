@@ -25,6 +25,9 @@ export async function calculateBuilderLevels({ season = getCurrentSeasonStart() 
         }
       }
     },
+    orderBy: {
+      createdAt: 'asc'
+    },
     select: {
       createdAt: true,
       value: true,
@@ -66,7 +69,7 @@ export async function calculateBuilderLevels({ season = getCurrentSeasonStart() 
 
     return {
       ...builder,
-      averageGemsPerWeek: builder.totalGems / allSeasonWeeks.length
+      averageGemsPerWeek: Math.floor(averageGemsPerWeek)
     };
   });
 

@@ -1,4 +1,3 @@
-import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import type { ISOWeek } from '@packages/dates/config';
@@ -22,43 +21,12 @@ type DeterministicRandomBuilderActivity = {
   gemReceiptInputs: GemReceiptInput[];
 };
 
-function seedBuilders({ season }: { season: ISOWeek }) {
+function seedBuilders({ season, amount = 200 }: { season: ISOWeek; amount?: number }) {
   const weeks = getAllISOWeeksFromSeasonStart({ season });
 
-  // Make sure we have the correct set of weeks
-  expect(weeks).toEqual([
-    '2025-W02',
-    '2025-W03',
-    '2025-W04',
-    '2025-W05',
-    '2025-W06',
-    '2025-W07',
-    '2025-W08',
-    '2025-W09',
-    '2025-W10',
-    '2025-W11'
-  ]);
-
-  /**
-   * Variables
-   * Different first week of activity
-   * Different gem receipts
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   */
-  // Variables
-  // Changing first week of activity
-
-  // Setup 200 builders using a deterministic uuid per builder index
+  // Setup X builders (default 200) using a deterministic uuid per builder index
   // Create mock builders with random gem distributions
-  const builders: DeterministicRandomBuilderActivity[] = Array.from({ length: 200 }, (_, index) => {
+  const builders: DeterministicRandomBuilderActivity[] = Array.from({ length: amount }, (_, index) => {
     // Use deterministic seed based on builder index, but with more variation
     const seed = (index * 17 + 31) % 997; // Using prime numbers for better distribution
 
@@ -108,7 +76,7 @@ function seedBuilders({ season }: { season: ISOWeek }) {
     };
   });
 
-  return builders;
+  return { builders, weeks };
 }
 
 describe('seedBuilders', () => {
@@ -120,15 +88,39 @@ describe('seedBuilders', () => {
     jest.useRealTimers();
   });
 
-  it('should generate builders with deterministic randomness', () => {
+  it('should generate builders with deterministic randomness, correct data and a default of 200 builders', () => {
     const season = '2025-W02';
 
     const currentDate = new Date('2025-03-12T00:00:00Z');
 
     jest.setSystemTime(currentDate);
 
-    const builders = seedBuilders({ season });
+    const { builders, weeks } = seedBuilders({ season });
     expect(builders).toHaveLength(200);
+
+    // Make sure we have the correct set of weeks
+    expect(weeks).toEqual([
+      '2025-W02',
+      '2025-W03',
+      '2025-W04',
+      '2025-W05',
+      '2025-W06',
+      '2025-W07',
+      '2025-W08',
+      '2025-W09',
+      '2025-W10',
+      '2025-W11'
+    ]);
+
+    // Verify total gems calculation for all builders
+    builders.forEach((builder) => {
+      const totalFromReceipts = builder.gemReceiptInputs.reduce((sum, receipt) => sum + receipt.value, 0);
+      const avgGemsPerWeek = builder.totalGems / builder.activeWeeks.length;
+      const totalFromAverage = avgGemsPerWeek * builder.activeWeeks.length;
+
+      expect(builder.totalGems).toBe(totalFromReceipts);
+      expect(Math.round(totalFromAverage)).toBe(builder.totalGems);
+    });
 
     expect(builders[0]).toMatchObject<DeterministicRandomBuilderActivity>({
       id: uuidFromNumber(0),
@@ -252,6 +244,14 @@ describe('seedBuilders', () => {
       ]
     });
   });
+
+  it('should generate a custom amount of builders', () => {
+    const season = '2025-W02';
+    const amount = 100;
+
+    const { builders } = seedBuilders({ season, amount });
+    expect(builders).toHaveLength(amount);
+  });
 });
 
 describe('calculateBuilderLevels', () => {
@@ -283,7 +283,7 @@ describe('calculateBuilderLevels', () => {
 
     jest.setSystemTime(currentDate);
 
-    const builders = seedBuilders({ season });
+    const { builders } = seedBuilders({ season });
 
     await prisma.scout.createMany({
       data: builders.map((builder) => ({
@@ -306,15 +306,26 @@ describe('calculateBuilderLevels', () => {
       }))
     });
 
-    for (const builder of builders) {
-      for (const gemReceipt of builder.gemReceiptInputs) {
+    for (let i = 0; i < builders.length; i++) {
+      const builder = builders[i];
+      for (let j = 0; j < builder.gemReceiptInputs.length; j++) {
+        const gemReceipt = builder.gemReceiptInputs[j];
+
+        if (builder.id === '8527a891-e224-4369-90ff-32ca212b45bc') {
+          prettyPrint({
+            gemReceipt
+          });
+        }
+
         await prisma.builderEvent.create({
           data: {
             season,
             week: gemReceipt.isoWeek,
             type: 'daily_commit',
+            createdAt: getDateFromISOWeek(gemReceipt.isoWeek).toJSDate(),
             gemsReceipt: {
               create: {
+                createdAt: getDateFromISOWeek(gemReceipt.isoWeek).toJSDate(),
                 type: 'daily_commit',
                 value: gemReceipt.value
               }
@@ -330,5 +341,32 @@ describe('calculateBuilderLevels', () => {
     }
 
     const levels = await calculateBuilderLevels({ season });
+
+    // Verify levels are assigned correctly based on percentiles
+    for (let i = 0; i < levels.length; i++) {
+      const builder = levels[i];
+      const { centile, level } = builder;
+      const matchingCutoff = decileTable.find((d) => centile >= d.cutoff);
+      expect(level).toBe(matchingCutoff?.level);
+    }
+
+    // Verify minimum percentile and level is 1
+    expect(Math.min(...levels.map((b) => b.centile))).toBeGreaterThanOrEqual(1);
+    expect(Math.min(...levels.map((b) => b.level))).toBe(1);
+
+    // Verify average gems per week calculation
+    for (let i = 0; i < levels.length; i++) {
+      const generatedBuilder = levels[i];
+      const matchingBuilderInput = builders.find((b) => b.id === generatedBuilder.builderId);
+
+      expect(generatedBuilder.averageGemsPerWeek).toBe(
+        Math.floor(generatedBuilder.totalGems / matchingBuilderInput!.activeWeeks.length)
+      );
+    }
+
+    // Verify ranking order follows average gems per week descending
+    for (let i = 1; i < levels.length; i++) {
+      expect(levels[i - 1].averageGemsPerWeek).toBeGreaterThanOrEqual(levels[i].averageGemsPerWeek);
+    }
   });
 });
