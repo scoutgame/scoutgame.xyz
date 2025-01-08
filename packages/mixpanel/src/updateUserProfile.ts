@@ -10,7 +10,6 @@ export type MixPanelUserProfile = {
   path: string;
   onboarded: boolean;
   deleted: boolean;
-  deletedAt: Date | null;
   'Agreed To TOS': boolean;
   'Enable Marketing': boolean;
   'Builder Status': BuilderStatus | null;

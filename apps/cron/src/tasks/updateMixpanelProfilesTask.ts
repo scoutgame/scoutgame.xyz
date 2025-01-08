@@ -30,7 +30,6 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
       $email: user.email,
       path: user.path!,
       deleted: !!user.deletedAt,
-      deletedAt: user.deletedAt,
       onboarded: !!user.onboardedAt,
       'Agreed To TOS': !!user.agreedToTermsAt,
       'Enable Marketing': user.sendMarketing,
