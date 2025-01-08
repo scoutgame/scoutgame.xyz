@@ -7,6 +7,7 @@ import { registerScout as registerBeehiiv } from '@packages/beehiiv/registerScou
 import { deleteContact as deleteLoopsContact } from '@packages/loops/client';
 import { registerScout as registerLoops } from '@packages/loops/registerScout';
 import { getPlatform } from '@packages/mixpanel/utils';
+import { isValidEmail } from '@packages/utils/strings';
 
 export async function updateUserEmailSettings({
   userId,
@@ -19,6 +20,15 @@ export async function updateUserEmailSettings({
   sendMarketing: boolean;
   sendTransactionEmails: boolean;
 }) {
+  if (typeof email !== 'string') {
+    throw new Error('Email is required');
+  }
+  if (!isValidEmail(email)) {
+    throw new Error('Email is invalid');
+  }
+
+  email = email.trim(); // just in case
+
   const original = await prisma.scout.findUniqueOrThrow({
     where: {
       id: userId

@@ -113,3 +113,8 @@ export function conditionalPlural({
   }
   return word;
 }
+
+// not a foolproof check but also should not result in false negatives
+export function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
