@@ -9,9 +9,14 @@ export async function createReferralEvent(referralCode: string, refereeId: strin
       referralCode
     },
     select: {
+      deletedAt: true,
       id: true
     }
   });
+
+  if (referrer.deletedAt) {
+    throw new Error('Referrer has been banned');
+  }
 
   const referrerId = referrer.id;
 
