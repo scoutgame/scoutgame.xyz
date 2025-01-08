@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { baseUrl } from '@packages/utils/constants';
 
 import { updateReferralUsers } from './referrals/updateReferralUsers';
@@ -70,6 +71,10 @@ export async function verifyEmail(code: string): Promise<{ result: 'already_veri
     data: {
       completedAt: new Date()
     }
+  });
+
+  await trackUserAction('verify_email', {
+    userId: verification.scoutId
   });
 
   // check if we should count a referral

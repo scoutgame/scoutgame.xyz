@@ -31,6 +31,23 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
         where: {
           type: 'referral'
         }
+      },
+      emailVerifications: {
+        where: {
+          completedAt: {
+            not: null
+          }
+        }
+      },
+      userSeasonStats: {
+        select: {
+          nftsPurchased: true
+        }
+      },
+      socialQuests: {
+        select: {
+          completedAt: true
+        }
       }
     }
   });
@@ -47,7 +64,10 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
       'Builder Status': user.builderStatus,
       createdAt: user.createdAt,
       onboardedAt: user.agreedToTermsAt,
-      referrals: user.events.filter((e) => e.type === 'referral').length
+      referrals: user.events.filter((e) => e.type === 'referral').length,
+      'Verified Email': !!user.emailVerifications.length,
+      'Purchased NFT': !!user.userSeasonStats.filter((stat) => stat.nftsPurchased).length,
+      'Completed Social Quest': user.socialQuests.length > 0
     }
   }));
 }

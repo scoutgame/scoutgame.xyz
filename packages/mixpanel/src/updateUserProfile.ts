@@ -14,6 +14,9 @@ export type MixPanelUserProfile = {
   'Enable Marketing': boolean;
   'Builder Status': BuilderStatus | null;
   referrals: number;
+  'Verified Email': boolean;
+  'Purchased NFT': boolean;
+  'Completed Social Quest': boolean;
 };
 
 export function updateMixpanelUserProfile(userId: string, profile: Partial<MixPanelUserProfile>) {
