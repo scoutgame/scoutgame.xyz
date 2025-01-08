@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/mailer';
+import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { isTruthy } from '@packages/utils/types';
 import { v4 as uuid } from 'uuid';
 

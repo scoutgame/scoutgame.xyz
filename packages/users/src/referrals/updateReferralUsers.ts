@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { sendEmailTemplate } from '@packages/mailer/mailer';
+import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { baseUrl } from '@packages/utils/constants';
 
@@ -9,27 +9,51 @@ import { rewardPoints } from '../constants';
 import { BasicUserInfoSelect } from '../queries';
 
 export async function updateReferralUsers(refereeId: string) {
-  const referralCodeEvent = await prisma.referralCodeEvent.findFirst({
+  const referralCodeEvents = await prisma.referralCodeEvent.findMany({
     where: {
-      refereeId,
-      completedAt: null
+      refereeId
     },
     include: {
       builderEvent: true
     }
   });
 
+  if (referralCodeEvents.some((e) => !!e.completedAt)) {
+    log.debug('Ignore referral because referee has already been referred', { userId: refereeId });
+    return;
+  }
+
+  const referralCodeEvent = referralCodeEvents[0];
+
   if (!referralCodeEvent) {
     // The user was not referred
-    return [];
+    return;
+  }
+
+  if (referralCodeEvents.length > 1) {
+    log.debug('Unexpected state: referee has multiple referral events', { userId: refereeId });
+  }
+
+  const referee = await prisma.scout.findUniqueOrThrow({
+    where: {
+      id: refereeId
+    },
+    include: {
+      emailVerifications: true
+    }
+  });
+
+  if (!referee.emailVerifications.some((e) => !!e.completedAt)) {
+    log.debug('Ignore referral because referee has not verified their email', { userId: refereeId });
+    return;
   }
 
   const referrerId = referralCodeEvent.builderEvent.builderId;
 
-  const txs = await prisma.$transaction(
+  const referrer = await prisma.$transaction(
     async (tx) => {
       // Update referrer
-      const referrer = await tx.scout.update({
+      const _referrer = await tx.scout.update({
         where: {
           id: referrerId
         },
@@ -38,7 +62,12 @@ export async function updateReferralUsers(refereeId: string) {
             increment: rewardPoints
           }
         },
-        select: BasicUserInfoSelect
+        select: {
+          id: true,
+          displayName: true,
+          path: true,
+          referralCode: true
+        }
       });
 
       const referrerPointsReceived = await tx.pointsReceipt.create({
@@ -60,7 +89,7 @@ export async function updateReferralUsers(refereeId: string) {
       });
 
       // Update referee
-      const referee = await tx.scout.update({
+      await tx.scout.update({
         where: {
           id: refereeId
         },
@@ -76,8 +105,7 @@ export async function updateReferralUsers(refereeId: string) {
               season: getCurrentSeasonStart()
             }
           }
-        },
-        select: BasicUserInfoSelect
+        }
       });
 
       await prisma.referralCodeEvent.update({
@@ -91,18 +119,16 @@ export async function updateReferralUsers(refereeId: string) {
 
       trackUserAction('referral_link_used', {
         userId: refereeId,
-        referralCode: referrer.referralCode,
-        referrerPath: referrer.path
+        referralCode: _referrer.referralCode,
+        referrerPath: _referrer.path
       });
 
-      return [referrer, referee] as const;
+      return _referrer;
     },
     {
       timeout: 10000
     }
   );
-
-  const [referrer, referee] = txs;
 
   try {
     await sendEmailTemplate({
@@ -119,6 +145,4 @@ export async function updateReferralUsers(refereeId: string) {
   } catch (error) {
     log.error('Error sending referral email', { error, userId: referrer.id });
   }
-
-  return txs;
 }
