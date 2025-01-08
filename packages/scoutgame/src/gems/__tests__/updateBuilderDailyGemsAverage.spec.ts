@@ -1,8 +1,6 @@
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { mockBuilder, mockGemsReceipt } from '@packages/scoutgame/testing/database';
+import { updateBuilderDailyGemsAverage } from '@packages/scoutgame/gems/updateBuilderDailyGemsAverage';
+import { mockBuilder, mockBuilderEvent, mockGemsReceipt } from '@packages/scoutgame/testing/database';
 import { DateTime } from 'luxon';
-
-import { updateBuilderDailyGemsAverage } from '../../tasks/updateBuilderDailyGemsAverage/updateBuilderDailyGemsAverage';
 
 it(`Should update the builder daily gems average considering only yesterday's gems receipts`, async () => {
   const yesterday = DateTime.now().setZone('utc').minus({ day: 1 }).startOf('day');
@@ -24,6 +22,13 @@ it(`Should update the builder daily gems average considering only yesterday's ge
     builderId: deletedBuilder.id,
     createdAt: yesterday.toJSDate(),
     type: 'third_pr_in_streak'
+  });
+
+  // This event will not be considered since it is not a daily_commit or merged_pull_request
+  await mockBuilderEvent({
+    builderId: builders[0].id,
+    eventType: 'misc_event',
+    createdAt: yesterday.toJSDate()
   });
 
   await Promise.all(
