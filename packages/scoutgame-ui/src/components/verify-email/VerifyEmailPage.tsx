@@ -13,13 +13,13 @@ export function VerifyEmailPage({ result }: { result: 'verified' | 'failed' | 'a
 
   useEffect(() => {
     if (result === 'verified') {
-      router.push('/');
       toast.success('Email verified!', toastOptions);
     } else if (result === 'failed') {
       toast.error('Failed to verify email', toastOptions);
     } else if (result === 'already_verified') {
       toast.info('Email already verified', toastOptions);
     }
+    router.push('/');
   }, [router, result]);
   return <div></div>;
 }
