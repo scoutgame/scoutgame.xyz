@@ -108,7 +108,7 @@ describe('getScouts', () => {
         }
       }
     });
-    expect((await getScouts({ season: mockSeason })).length).toBe(4);
+    const originalResult = await getScouts({ season: mockSeason });
     // soft-delete the user
     await prisma.scout.update({
       where: {
@@ -118,6 +118,21 @@ describe('getScouts', () => {
         deletedAt: new Date()
       }
     });
-    expect((await getScouts({ season: mockSeason })).length).toBe(3);
+    expect((await getScouts({ season: mockSeason })).length).toBe(originalResult.length - 1);
+  });
+
+  it('a scout from a different season should not be included', async () => {
+    const scout4 = await mockScout({
+      path: 'scout4',
+      season: '2023-01',
+      stats: {
+        season: {
+          pointsEarnedAsScout: 100,
+          nftsPurchased: 5
+        }
+      }
+    });
+    const results = await getScouts({ season: mockSeason });
+    expect(results.map((scout) => scout.path)).not.toContain(scout4.path);
   });
 });
