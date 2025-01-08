@@ -13,6 +13,7 @@ import { refreshShareImagesTask } from './tasks/refreshShareImages';
 import { resolveBalanceIssues } from './tasks/resolveBalanceIssues/resolveBalanceIssues';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
 import { updateAllBuilderCardActivities } from './tasks/updateBuilderCardActivity';
+import { updateBuilderDailyGemsAverage } from './tasks/updateBuilderDailyGemsAverage/updateBuilderDailyGemsAverage';
 import { updateMixpanelUserProfilesTask } from './tasks/updateMixpanelProfilesTask';
 import { updateTalentMoxieProfiles } from './tasks/updateTalentMoxieProfiles';
 
@@ -71,6 +72,8 @@ addTask('/resolve-balance-issues', resolveBalanceIssues);
 addTask('/refresh-nft-share-images', refreshShareImagesTask);
 
 addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
+
+addTask('/update-builder-daily-gems-average', (ctx) => updateBuilderDailyGemsAverage(DateTime.now()));
 
 // Standard health check used by Beanstalk
 router.get('/api/health', middleware.healthCheck);

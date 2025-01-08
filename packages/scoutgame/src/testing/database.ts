@@ -1,4 +1,11 @@
-import type { BuilderEvent, BuilderEventType, BuilderNftType, GithubRepo, Scout } from '@charmverse/core/prisma';
+import type {
+  BuilderEvent,
+  BuilderEventType,
+  BuilderNftType,
+  GemsReceiptType,
+  GithubRepo,
+  Scout
+} from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
@@ -23,6 +30,7 @@ export async function mockBuilder({
   agreedToTermsAt = new Date(),
   nftSeason = mockSeason,
   createNft = false,
+  deletedAt,
   referralCode = randomString(),
   farcasterId,
   farcasterName,
@@ -45,6 +53,7 @@ export async function mockBuilder({
       onboardedAt,
       agreedToTermsAt,
       farcasterId,
+      deletedAt,
       referralCode,
       farcasterName,
       wallets: wallets.length
@@ -510,6 +519,33 @@ export function mockUserAllTimeStats({
       userId,
       pointsEarnedAsBuilder,
       pointsEarnedAsScout
+    }
+  });
+}
+
+export function mockGemsReceipt({
+  builderId,
+  createdAt,
+  type
+}: {
+  type: GemsReceiptType;
+  createdAt: Date;
+  builderId: string;
+}) {
+  return prisma.builderEvent.create({
+    data: {
+      builderId,
+      createdAt,
+      season: mockSeason,
+      week: getCurrentWeek(),
+      type: type === 'daily_commit' ? 'daily_commit' : 'merged_pull_request',
+      gemsReceipt: {
+        create: {
+          type,
+          value: type === 'daily_commit' ? 1 : type === 'regular_pr' ? 10 : type === 'first_pr' ? 100 : 30,
+          createdAt
+        }
+      }
     }
   });
 }
