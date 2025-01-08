@@ -8,13 +8,15 @@ export function BuildersGallery({
   columns = 6,
   showHotIcon = false,
   size = 'medium',
-  markStarterCardPurchased = false
+  markStarterCardPurchased = false,
+  dailyAverageGems
 }: {
   builders: BuilderInfo[];
   columns?: number;
   showHotIcon?: boolean;
   size?: 'small' | 'medium' | 'large';
   markStarterCardPurchased?: boolean;
+  dailyAverageGems: number;
 }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -32,6 +34,7 @@ export function BuildersGallery({
                 </Typography>
               )}
               <BuilderCard
+                dailyAverageGems={dailyAverageGems}
                 builder={builder}
                 showPurchaseButton
                 showHotIcon={showHotIcon}

@@ -3,6 +3,7 @@
 import type { Theme } from '@mui/material';
 import { Stack, Tooltip, useMediaQuery } from '@mui/material';
 import { useState } from 'react';
+import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 
 import { Dialog } from '../../../Dialog';
 
@@ -10,8 +11,10 @@ import { BuilderCardActivityTooltip } from './BuilderCardActivityTooltip';
 
 export function BuilderCardActivity({
   size,
-  last14DaysGems
+  last14DaysGems,
+  dailyAverageGems
 }: {
+  dailyAverageGems: number;
   size: 'x-small' | 'small' | 'medium' | 'large';
   last14DaysGems: number[];
 }) {
@@ -20,6 +23,16 @@ export function BuilderCardActivity({
   const gemHeight = size === 'x-small' || size === 'small' ? 12.5 : size === 'medium' ? 14.5 : 16;
   return (
     <>
+      <AreaChart
+        width={150}
+        height={150}
+        data={last14DaysGems.map((gems, index) => ({
+          name: index,
+          value: gems
+        }))}
+      >
+        <Area type='monotone' dataKey='uv' stroke='#69DDFF' fill='#0580A4' />
+      </AreaChart>
       <Tooltip title={<BuilderCardActivityTooltip />}>
         <Stack
           flexDirection='row'
@@ -41,33 +54,7 @@ export function BuilderCardActivity({
               setIsDialogOpen(true);
             }
           }}
-        >
-          {last14DaysGems?.map((gem, index) => {
-            const height = gem === 0 ? gemHeight * 0.35 : gem <= 29 ? gemHeight * 0.65 : gemHeight;
-
-            return (
-              <Stack
-                key={`${index.toString()}-${gem}`}
-                sx={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100%'
-                }}
-              >
-                <Stack
-                  sx={{
-                    borderRadius: '50%',
-                    width: height,
-                    height,
-                    backgroundColor: 'text.secondary'
-                  }}
-                />
-              </Stack>
-            );
-          })}
-        </Stack>
+        ></Stack>
       </Tooltip>
       <Dialog
         open={isDialogOpen}

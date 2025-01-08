@@ -8,8 +8,10 @@ import { StarterPackCard } from './StarterPackCard';
 
 export function StarterPackCarousel({
   builders,
-  remainingStarterCards
+  remainingStarterCards,
+  dailyAverageGems
 }: {
+  dailyAverageGems: number;
   builders: StarterPackBuilder[];
   remainingStarterCards: number;
 }) {
@@ -36,7 +38,7 @@ export function StarterPackCarousel({
         }}
       >
         {builders.map((builder) => (
-          <StarterPackCard builder={builder} key={builder.id} />
+          <StarterPackCard dailyAverageGems={dailyAverageGems} builder={builder} key={builder.id} />
         ))}
       </Carousel>
       <StarterPackInfo remainingStarterCards={remainingStarterCards} />

@@ -4,6 +4,7 @@ import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderAct
 import { getBuilderNft } from '@packages/scoutgame/builders/getBuilderNft';
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
+import { getBuildersWeeklyGemsAverage } from '@packages/scoutgame/gems/getBuildersWeeklyGemsAverage';
 
 import type { BuilderProfileProps } from './PublicBuilderProfileContainer';
 import { PublicBuilderProfileContainer } from './PublicBuilderProfileContainer';
@@ -15,17 +16,20 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
     builderNft,
     { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 } = {},
     builderActivities = [],
-    { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {}
+    { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {},
+    { averageGems }
   ] = await Promise.all([
     getBuilderNft(builderId),
     getBuilderStats(builderId),
     getBuilderActivities({ builderId, limit: 200 }),
-    getBuilderScouts(builderId)
+    getBuilderScouts(builderId),
+    getBuildersWeeklyGemsAverage()
   ]);
 
   return (
     <PublicBuilderProfileContainer
       scouts={scouts}
+      dailyAverageGems={averageGems}
       builder={{
         ...builder,
         nftImageUrl: builderNft?.imageUrl,

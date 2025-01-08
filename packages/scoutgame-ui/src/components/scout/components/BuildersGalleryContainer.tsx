@@ -14,11 +14,13 @@ import { LoadingCards } from '../../common/Loading/LoadingCards';
 export function BuildersGalleryContainer({
   initialBuilders,
   showHotIcon,
-  initialCursor
+  initialCursor,
+  dailyAverageGems
 }: {
   initialCursor: CompositeCursor | null;
   initialBuilders: BuilderInfo[];
   showHotIcon: boolean;
+  dailyAverageGems: number;
 }) {
   const [error, setError] = useState<string | null>(null);
   const isDesktop = useMdScreen();
@@ -76,7 +78,13 @@ export function BuildersGalleryContainer({
 
   return (
     <>
-      <BuildersGallery builders={builders} showHotIcon={showHotIcon} size={isDesktop ? 'large' : 'small'} columns={3} />
+      <BuildersGallery
+        dailyAverageGems={dailyAverageGems}
+        builders={builders}
+        showHotIcon={showHotIcon}
+        size={isDesktop ? 'large' : 'small'}
+        columns={3}
+      />
       {nextCursor && <div ref={observerTarget} style={{ height: '50px', width: '100%' }} />}
       {isLoading && (
         <Box my={2}>

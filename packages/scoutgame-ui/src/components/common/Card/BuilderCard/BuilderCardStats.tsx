@@ -12,8 +12,10 @@ export function BuilderCardStats({
   nftsSold,
   rank,
   last14DaysGems,
-  size
+  size,
+  dailyAverageGems
 }: {
+  dailyAverageGems: number;
   displayName: string;
   builderPoints?: number;
   nftsSold?: number;
@@ -105,11 +107,11 @@ export function BuilderCardStats({
             }
           }}
         >
-          7 DAY ACTIVITY
+          14 DAY ACTIVITY
         </Typography>
         <Stack sx={{ backgroundColor: 'text.secondary', height: '1px', flex: 1 }} />
       </Stack>
-      <BuilderCardActivity size={size} last14DaysGems={last14DaysGems ?? []} />
+      <BuilderCardActivity size={size} last14DaysGems={last14DaysGems ?? []} dailyAverageGems={dailyAverageGems} />
     </Stack>
   );
 }
