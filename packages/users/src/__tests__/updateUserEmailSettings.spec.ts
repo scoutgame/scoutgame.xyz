@@ -106,4 +106,15 @@ describe('updateUserEmailSettings', () => {
       })
     );
   });
+
+  it('should throw an error if the email is invalid', async () => {
+    await expect(
+      updateUserEmailSettings({
+        userId: '1',
+        email: 'invalid-email',
+        sendMarketing: true,
+        sendTransactionEmails: true
+      })
+    ).rejects.toThrow('Email is invalid');
+  });
 });
