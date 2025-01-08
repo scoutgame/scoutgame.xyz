@@ -25,7 +25,6 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
   });
   return scouts.map((user) => ({
     userId: user.id,
-    $ip: '0', // don't set the user location. Set it only if the user chooses a location for himself
     profile: {
       $name: user.displayName,
       $email: user.email,
@@ -58,12 +57,13 @@ async function updateMixpanelUserProfiles({
 
   // Delete user profiles for users that are deleted in our system
   const usersToDelete = users.filter((user) => user.profile.deleted);
+
   await deleteMixpanelProfiles(usersToDelete.map((user) => ({ id: user.userId })))
     .catch((_error) => {
       log.error('Failed to delete user profiles in Mixpanel', { error: _error });
     })
-    .finally(() => {
-      log.info(`Deleted ${usersToDelete.length} users in Mixpanel`);
+    .then((data) => {
+      log.info(`Deleted ${usersToDelete.length} users in Mixpanel`, { data });
     });
 
   if (users.length > 0) {
