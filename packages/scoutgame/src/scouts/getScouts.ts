@@ -17,13 +17,14 @@ export type ScoutInfo = {
 export async function getScouts({
   limit = 200,
   sortBy = 'rank',
-  order = 'asc'
+  order = 'asc',
+  season = getCurrentSeasonStart()
 }: {
   limit?: number;
   sortBy?: ScoutsSortBy;
   order?: 'asc' | 'desc';
+  season?: string;
 }) {
-  const season = getCurrentSeasonStart();
   // First get all users sorted by points to establish ranks
   const allUsers = await prisma.userSeasonStats.findMany({
     where: {
@@ -111,7 +112,7 @@ export async function getScouts({
   } else if (sortBy === 'cards' || sortBy === 'builders') {
     const builders = await prisma.userSeasonStats.findMany({
       where: {
-        season: getCurrentSeasonStart(),
+        season,
         nftsPurchased: {
           not: 0
         },
