@@ -79,7 +79,7 @@ describe('getBuildersLeaderboard', () => {
       data: { gemsCollected: 7 }
     });
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek });
+    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(5);
 
@@ -123,7 +123,7 @@ describe('getBuildersLeaderboard', () => {
       })
     );
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek });
+    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(5);
 
@@ -168,7 +168,7 @@ describe('getBuildersLeaderboard', () => {
       })
     );
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek });
+    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(3);
     expect(topBuilders.map((b) => b.builder.id)).toEqual(
