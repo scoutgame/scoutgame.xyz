@@ -5,7 +5,7 @@ import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { BuilderCard } from '@packages/scoutgame-ui/components/common/Card/BuilderCard/BuilderCard';
 import Link from 'next/link';
 
-export function ScoutInfoContent({ builder }: { builder: BuilderInfo }) {
+export function ScoutInfoContent({ builder, dailyAverageGems }: { dailyAverageGems: number; builder: BuilderInfo }) {
   return (
     <>
       <Typography color='secondary' textAlign='center' width='100%' fontWeight={700} variant='h5'>
@@ -13,7 +13,7 @@ export function ScoutInfoContent({ builder }: { builder: BuilderInfo }) {
       </Typography>
       <Box>
         <Box my={2}>
-          <BuilderCard builder={builder} disableProfileUrl />
+          <BuilderCard builder={builder} disableProfileUrl dailyAverageGems={dailyAverageGems} />
         </Box>
         <Typography my={2}>
           You score points by collecting the NFTs of Builders. You can Scout your first 3 builders for 95% off their

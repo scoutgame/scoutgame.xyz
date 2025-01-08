@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
+import { getBuildersWeeklyGemsAverage } from '@packages/scoutgame/gems/getBuildersWeeklyGemsAverage';
 import { findScoutOrThrow } from '@packages/scoutgame/scouts/findScoutOrThrow';
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { getScoutStats } from '@packages/scoutgame/scouts/getScoutStats';
@@ -14,7 +15,8 @@ export async function PublicScoutProfile({ publicUser }: { publicUser: BasicUser
   const allPromises = [
     findScoutOrThrow(publicUser.id),
     getScoutStats(publicUser.id),
-    getScoutedBuilders({ scoutId: publicUser.id })
+    getScoutedBuilders({ scoutId: publicUser.id }),
+    getBuildersWeeklyGemsAverage()
   ] as const;
   const [error, data] = await safeAwaitSSRData(Promise.all(allPromises));
 
@@ -22,10 +24,11 @@ export async function PublicScoutProfile({ publicUser }: { publicUser: BasicUser
     return <ErrorSSRMessage />;
   }
 
-  const [scout, { allTimePoints, seasonPoints, nftsPurchased }, scoutedBuilders] = data;
+  const [scout, { allTimePoints, seasonPoints, nftsPurchased }, scoutedBuilders, { averageGems }] = data;
 
   return (
     <PublicScoutProfileContainer
+      dailyAverageGems={averageGems}
       scout={{
         ...scout,
         githubLogin: scout.githubUsers[0]?.login

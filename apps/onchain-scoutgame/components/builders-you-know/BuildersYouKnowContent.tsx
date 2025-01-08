@@ -8,10 +8,12 @@ import React from 'react';
 
 export function BuildersYouKnowContent({
   onClickContinue,
-  builders
+  builders,
+  dailyAverageGems
 }: {
   onClickContinue?: React.MouseEventHandler;
   builders: BuilderInfo[];
+  dailyAverageGems: number;
 }) {
   return (
     <Grid2 gap={2}>
@@ -21,7 +23,7 @@ export function BuildersYouKnowContent({
         </Typography>
       </Grid2>
 
-      <BuildersGallery size='small' builders={builders} />
+      <BuildersGallery size='small' builders={builders} dailyAverageGems={dailyAverageGems} />
 
       <Grid2 size={{ xs: 12 }}>
         <Button

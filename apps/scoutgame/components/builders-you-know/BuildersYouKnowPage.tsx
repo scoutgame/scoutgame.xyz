@@ -6,7 +6,13 @@ import { BuildersGalleryContainer } from '@packages/scoutgame-ui/components/scou
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-export function BuildersYouKnowPage({ builders }: { builders: BuilderInfo[] }) {
+export function BuildersYouKnowPage({
+  builders,
+  dailyAverageGems
+}: {
+  dailyAverageGems: number;
+  builders: BuilderInfo[];
+}) {
   return (
     <PageContainer>
       <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
@@ -21,7 +27,12 @@ export function BuildersYouKnowPage({ builders }: { builders: BuilderInfo[] }) {
         </Button>
       </Box>
       <Suspense fallback={<LoadingGallery />}>
-        <BuildersGalleryContainer initialCursor={null} initialBuilders={builders} showHotIcon={false} />
+        <BuildersGalleryContainer
+          dailyAverageGems={dailyAverageGems}
+          initialCursor={null}
+          initialBuilders={builders}
+          showHotIcon={false}
+        />
       </Suspense>
     </PageContainer>
   );

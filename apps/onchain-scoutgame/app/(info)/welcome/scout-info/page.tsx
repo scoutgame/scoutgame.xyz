@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getBuildersWeeklyGemsAverage } from '@packages/scoutgame/gems/getBuildersWeeklyGemsAverage';
 import { getBuildersByFid } from '@packages/scoutgame/social/getBuildersByFid';
 import { ScoutInfoPage } from '@packages/scoutgame-ui/components/welcome/scout-info/ScoutInfoPage';
 import type { Metadata } from 'next';
@@ -29,5 +30,7 @@ export default async function ScoutInfo() {
     redirect('/builders-you-know');
   }
 
-  return <ScoutInfoPage builder={starterPackBuilder.builders[0]} />;
+  const { averageGems } = await getBuildersWeeklyGemsAverage();
+
+  return <ScoutInfoPage builder={starterPackBuilder.builders[0]} dailyAverageGems={averageGems} />;
 }

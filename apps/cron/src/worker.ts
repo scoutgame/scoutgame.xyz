@@ -1,5 +1,6 @@
 import { log } from '@charmverse/core/log';
 import Router from '@koa/router';
+import { updateBuilderDailyGemsAverage } from '@packages/scoutgame/gems/updateBuilderDailyGemsAverage';
 import Koa from 'koa';
 import { DateTime } from 'luxon';
 
@@ -71,6 +72,8 @@ addTask('/resolve-balance-issues', resolveBalanceIssues);
 addTask('/refresh-nft-share-images', refreshShareImagesTask);
 
 addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
+
+addTask('/update-builder-daily-gems-average', () => updateBuilderDailyGemsAverage(DateTime.now()));
 
 // Standard health check used by Beanstalk
 router.get('/api/health', middleware.healthCheck);

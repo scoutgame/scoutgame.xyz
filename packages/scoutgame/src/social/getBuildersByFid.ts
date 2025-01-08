@@ -4,7 +4,7 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { uniqueValues } from '@packages/utils/array';
 
-import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysGems } from '../builders/utils/normalizeLast14DaysGems';
 
 export async function getBuildersByFid({
   fids,
@@ -60,7 +60,7 @@ export async function getBuildersByFid({
         },
         builderCardActivities: {
           select: {
-            last7Days: true
+            last14Days: true
           }
         },
         userWeeklyStats: {
@@ -101,7 +101,7 @@ export async function getBuildersByFid({
         nftsSold: scout.userSeasonStats[0]?.nftsSold ?? 0,
         builderStatus: scout.builderStatus!,
         farcasterId: scout.farcasterId,
-        last7DaysGems: normalizeLast7DaysGems(scout.builderCardActivities[0]),
+        last14DaysGems: normalizeLast14DaysGems(scout.builderCardActivities[0]),
         contractAddress: scout.builderNfts[0]?.contractAddress || '',
         nftType: scout.builderNfts[0]?.nftType || 'default'
       }));

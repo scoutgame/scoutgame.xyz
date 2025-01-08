@@ -11,7 +11,7 @@ export type DailyGems = {
   gemsCount: number;
 };
 
-export function mapGemReceiptsToLast7Days({
+export function mapGemReceiptsToLast14Days({
   events,
   currentDate
 }: {
@@ -24,9 +24,9 @@ export function mapGemReceiptsToLast7Days({
     dayGemsRecord[formattedDate] = (dayGemsRecord[formattedDate] ?? 0) + (event.gemsReceipt?.value ?? 0);
   });
 
-  const last7Days = Array.from({ length: 7 }, (_, i) => currentDate.minus({ days: 7 - i }).toFormat('yyyy-MM-dd'));
+  const last14Days = Array.from({ length: 14 }, (_, i) => currentDate.minus({ days: 14 - i }).toFormat('yyyy-MM-dd'));
 
-  return last7Days.map((day) => ({
+  return last14Days.map((day) => ({
     date: day,
     gemsCount: dayGemsRecord[day] ?? 0
   }));

@@ -25,6 +25,7 @@ export type BuilderProfileProps = {
     congratsImageUrl?: string;
     nftType: BuilderNftType;
   };
+  dailyAverageGems: number;
   builderActivities: BuilderActivity[];
 } & BuilderStats &
   BuilderScouts;
@@ -54,7 +55,8 @@ export function PublicBuilderProfileContainer({
   totalNftsSold,
   builderActivities,
   gemsCollected,
-  rank
+  rank,
+  dailyAverageGems
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
   return (
@@ -72,7 +74,13 @@ export function PublicBuilderProfileContainer({
               <BackButton />
               <Stack flexDirection='row' alignItems='center' gap={2}>
                 <Box minWidth='fit-content'>
-                  <BuilderCard builder={builder} hideDetails showPurchaseButton size='small' />
+                  <BuilderCard
+                    dailyAverageGems={dailyAverageGems}
+                    builder={builder}
+                    hideDetails
+                    showPurchaseButton
+                    size='small'
+                  />
                 </Box>
                 <Stack gap={1} pr={1}>
                   <UserProfile
@@ -113,7 +121,7 @@ export function PublicBuilderProfileContainer({
                     justifyContent: 'center'
                   }}
                 >
-                  <BuilderCard builder={builder} hideDetails showPurchaseButton />
+                  <BuilderCard builder={builder} hideDetails showPurchaseButton dailyAverageGems={dailyAverageGems} />
                   <PublicBuilderStats
                     seasonPoints={seasonPoints}
                     allTimePoints={allTimePoints}

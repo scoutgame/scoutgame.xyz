@@ -16,6 +16,7 @@ import { generateGithubRepos } from './generateGithubRepos';
 import { generateNftPurchaseEvents } from './generateNftPurchaseEvents';
 import { generateScout } from './generateScout';
 import { updateBuilderCardActivity } from '../../tasks/updateBuilderCardActivity/updateBuilderCardActivity';
+import { updateBuilderDailyGemsAverage } from '@packages/scoutgame/gems/updateBuilderDailyGemsAverage';
 
 export type BuilderInfo = {
   id: string;
@@ -85,7 +86,7 @@ export async function generateSeedData(
       builderNftId: builderNft?.id,
       nftPrice: builderNft?.currentPrice ? Number(builderNft.currentPrice) : undefined,
       assignedRepos,
-      githubUser
+      githubUser,
     };
 
     return { builderInfo, isScout };
@@ -165,6 +166,8 @@ export async function generateSeedData(
     );
 
     await updateBuilderCardActivity(date.minus({ days: 1 }));
+
+    await updateBuilderDailyGemsAverage(date)
 
     // Check if we are at the end of the week
     if (date.weekday === 7) {

@@ -6,12 +6,12 @@ import { InfoBackgroundImage } from '../../layout/InfoBackgroundImage';
 
 import { ScoutInfoContent } from './ScoutInfoContent';
 
-export function ScoutInfoPage({ builder }: { builder: BuilderInfo }) {
+export function ScoutInfoPage({ builder, dailyAverageGems }: { dailyAverageGems: number; builder: BuilderInfo }) {
   return (
     <SinglePageLayout>
       <InfoBackgroundImage />
       <SinglePageWrapper bgcolor='background.default' maxWidth='350px' height='initial'>
-        <ScoutInfoContent builder={builder} />
+        <ScoutInfoContent builder={builder} dailyAverageGems={dailyAverageGems} />
       </SinglePageWrapper>
     </SinglePageLayout>
   );

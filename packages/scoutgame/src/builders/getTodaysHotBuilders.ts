@@ -3,7 +3,7 @@ import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dat
 import { BasicUserInfoSelect } from '@packages/users/queries';
 
 import type { BuilderInfo } from './interfaces';
-import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysGems } from './utils/normalizeLast14DaysGems';
 
 const userSelect = (week: string, season: string) => ({
   ...BasicUserInfoSelect,
@@ -18,7 +18,7 @@ const userSelect = (week: string, season: string) => ({
   },
   builderCardActivities: {
     select: {
-      last7Days: true
+      last14Days: true
     }
   },
   userWeeklyStats: {
@@ -119,7 +119,7 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       nftsSold: builder.userSeasonStats[0]?.nftsSold || 0,
       builderStatus: builder.builderStatus!,
       rank: builder.userWeeklyStats[0]?.rank || -1,
-      last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+      last14DaysGems: normalizeLast14DaysGems(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default
     };
   });

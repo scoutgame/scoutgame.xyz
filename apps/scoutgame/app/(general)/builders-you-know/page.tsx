@@ -1,4 +1,5 @@
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
+import { getBuildersWeeklyGemsAverage } from '@packages/scoutgame/gems/getBuildersWeeklyGemsAverage';
 import { loadBuildersUserKnows } from '@packages/scoutgame/social/loadBuildersUserKnows';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -29,6 +30,13 @@ export default async function BuildersYouKnow() {
     redirect(redirectPath);
   }
 
+  const { averageGems } = await getBuildersWeeklyGemsAverage();
+
   // logic in middleware.ts ensures that user is logged in
-  return <BuildersYouKnowPage builders={data.buildersFollowingUser.concat(data.buildersUserFollows)} />;
+  return (
+    <BuildersYouKnowPage
+      dailyAverageGems={averageGems}
+      builders={data.buildersFollowingUser.concat(data.buildersUserFollows)}
+    />
+  );
 }

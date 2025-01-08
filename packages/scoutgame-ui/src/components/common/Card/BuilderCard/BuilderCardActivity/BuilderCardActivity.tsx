@@ -3,6 +3,7 @@
 import type { Theme } from '@mui/material';
 import { Stack, Tooltip, useMediaQuery } from '@mui/material';
 import { useState } from 'react';
+import { Area, AreaChart, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 import { Dialog } from '../../../Dialog';
 
@@ -10,16 +11,29 @@ import { BuilderCardActivityTooltip } from './BuilderCardActivityTooltip';
 
 export function BuilderCardActivity({
   size,
-  last7DaysGems
+  last14DaysGems,
+  dailyAverageGems
 }: {
+  dailyAverageGems: number;
   size: 'x-small' | 'small' | 'medium' | 'large';
-  last7DaysGems: number[];
+  last14DaysGems: number[];
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'), { noSsr: true });
   const gemHeight = size === 'x-small' || size === 'small' ? 12.5 : size === 'medium' ? 14.5 : 16;
   return (
     <>
+      <ResponsiveContainer width='100%' height={30}>
+        <AreaChart
+          data={last14DaysGems.map((gems, index) => ({
+            name: index,
+            value: gems
+          }))}
+        >
+          <ReferenceLine y={dailyAverageGems} stroke='red' />
+          <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
+        </AreaChart>
+      </ResponsiveContainer>
       <Tooltip title={<BuilderCardActivityTooltip />}>
         <Stack
           flexDirection='row'
@@ -41,33 +55,7 @@ export function BuilderCardActivity({
               setIsDialogOpen(true);
             }
           }}
-        >
-          {last7DaysGems?.map((gem, index) => {
-            const height = gem === 0 ? gemHeight * 0.35 : gem <= 29 ? gemHeight * 0.65 : gemHeight;
-
-            return (
-              <Stack
-                key={`${index.toString()}-${gem}`}
-                sx={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100%'
-                }}
-              >
-                <Stack
-                  sx={{
-                    borderRadius: '50%',
-                    width: height,
-                    height,
-                    backgroundColor: 'text.secondary'
-                  }}
-                />
-              </Stack>
-            );
-          })}
-        </Stack>
+        ></Stack>
       </Tooltip>
       <Dialog
         open={isDialogOpen}

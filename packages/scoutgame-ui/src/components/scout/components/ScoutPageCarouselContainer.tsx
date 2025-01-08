@@ -6,6 +6,7 @@ import { MAX_STARTER_PACK_PURCHASES } from '@packages/scoutgame/builderNfts/cons
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { getStarterPackBuilders } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { getTodaysHotBuilders } from '@packages/scoutgame/builders/getTodaysHotBuilders';
+import { getBuildersWeeklyGemsAverage } from '@packages/scoutgame/gems/getBuildersWeeklyGemsAverage';
 import { aggregateTokensPurchased } from '@packages/scoutgame/scouts/aggregateTokensPurchased';
 
 import { ScoutPageCarousel } from './ScoutPageCarousel';
@@ -20,6 +21,8 @@ export async function ScoutPageCarouselContainer() {
 
   const remainingStarterCards = MAX_STARTER_PACK_PURCHASES - purchases;
 
+  const [, { averageGems } = { averageGems: 0 }] = await safeAwaitSSRData(getBuildersWeeklyGemsAverage());
+
   if (remainingStarterCards > 0) {
     const [, remainingStarterPackBuilders = []] = scoutId
       ? await safeAwaitSSRData(getStarterPackBuilders({ userId: scoutId }))
@@ -32,6 +35,7 @@ export async function ScoutPageCarouselContainer() {
 
   return (
     <ScoutPageCarousel
+      dailyAverageGems={averageGems}
       builders={builders}
       starterPackBuilders={starterPackBuilders}
       remainingStarterCards={remainingStarterCards}

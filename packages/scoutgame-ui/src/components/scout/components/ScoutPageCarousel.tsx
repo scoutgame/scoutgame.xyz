@@ -12,8 +12,10 @@ export function ScoutPageCarousel({
   builders,
   starterPackBuilders,
   remainingStarterCards,
-  scoutId
+  scoutId,
+  dailyAverageGems
 }: {
+  dailyAverageGems: number;
   builders: BuilderInfo[];
   starterPackBuilders: StarterPackBuilder[];
   remainingStarterCards: number;
@@ -54,9 +56,13 @@ export function ScoutPageCarousel({
         {title}
       </Typography>
       {tab === 'starter_pack' && isStarterPackEnabled ? (
-        <StarterPackCarousel builders={starterPackBuilders} remainingStarterCards={remainingStarterCards} />
+        <StarterPackCarousel
+          dailyAverageGems={dailyAverageGems}
+          builders={starterPackBuilders}
+          remainingStarterCards={remainingStarterCards}
+        />
       ) : (
-        <BuildersCarousel builders={builders} showPromoCards />
+        <BuildersCarousel dailyAverageGems={dailyAverageGems} builders={builders} showPromoCards />
       )}
     </Box>
   );

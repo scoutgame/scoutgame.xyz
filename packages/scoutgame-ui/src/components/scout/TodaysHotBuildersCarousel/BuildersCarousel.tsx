@@ -14,10 +14,12 @@ const promoInsertIndex = 2;
 
 export function BuildersCarousel({
   builders,
-  showPromoCards = false
+  showPromoCards = false,
+  dailyAverageGems
 }: {
   builders: BuilderInfo[];
   showPromoCards?: boolean;
+  dailyAverageGems: number;
 }) {
   const theme = useTheme();
   const breakpointsValues = theme.breakpoints.values;
@@ -27,7 +29,14 @@ export function BuildersCarousel({
   const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'x-small';
 
   const builderCardsList = builders.map((builder) => (
-    <BuilderCard size={size} key={builder.id} builder={builder} showPurchaseButton showHotIcon />
+    <BuilderCard
+      dailyAverageGems={dailyAverageGems}
+      size={size}
+      key={builder.id}
+      builder={builder}
+      showPurchaseButton
+      showHotIcon
+    />
   ));
 
   const builderCards = showPromoCards

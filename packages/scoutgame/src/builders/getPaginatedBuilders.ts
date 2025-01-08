@@ -3,7 +3,7 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import type { BuilderInfo } from './interfaces';
-import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysGems } from './utils/normalizeLast14DaysGems';
 
 export type CompositeCursor = {
   userId: string;
@@ -80,7 +80,7 @@ export async function getPaginatedBuilders({
             },
             builderCardActivities: {
               select: {
-                last7Days: true
+                last14Days: true
               }
             },
             userAllTimeStats: {
@@ -115,7 +115,7 @@ export async function getPaginatedBuilders({
         scoutedBy: stat.user.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
         nftsSold: stat.user.userSeasonStats[0]?.nftsSold ?? 0,
         builderStatus: stat.user.builderStatus!,
-        last7DaysGems: normalizeLast7DaysGems(stat.user.builderCardActivities[0])
+        last14DaysGems: normalizeLast14DaysGems(stat.user.builderCardActivities[0])
       }))
     );
   const userId = builders[builders.length - 1]?.id;
