@@ -8,6 +8,8 @@ export const eventSchema = yup.object().shape({
   currentDomain: yup.string(),
   currentUrlPath: yup.string(),
   currentUrlSearch: yup.string(),
+  $referrer: yup.string().url(),
+  $referring_domain: yup.string(),
   $screen_height: yup.string(),
   $screen_width: yup.string()
 });

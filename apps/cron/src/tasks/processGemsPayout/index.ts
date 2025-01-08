@@ -8,7 +8,6 @@ import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
 import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
-import { sendPreseason2WelcomeEmails } from '../../emails/sendPreseason2WelcomeEmails';
 
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
@@ -64,42 +63,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     }
   }
 
-  // TODO: Enable for 2nd week of preseason 2
-  // const emailsSent = await sendGemsPayoutEmails({ week });
+  const emailsSent = await sendGemsPayoutEmails({ week });
 
-  scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent: 0 });
-
-  const currentWeek = getCurrentWeek();
-
-  const preseason2Start = seasons.find((d) => d.title === 'Season 2')?.start;
-  const preseason1Start = seasons.find((d) => d.title === 'Season 1')?.start;
-
-  if (currentWeek === preseason2Start && preseason1Start) {
-    await prisma.$transaction(async (tx) => {
-      await tx.scout.updateMany({
-        data: {
-          currentBalance: 0
-        }
-      });
-      await tx.pointsReceipt.updateMany({
-        where: {
-          season: preseason1Start
-        },
-        data: {
-          claimedAt: new Date()
-        }
-      });
-      await tx.scoutSocialQuest.deleteMany({
-        where: {
-          type: {
-            notIn: Object.entries(questsRecord)
-              .filter(([_, q]) => q.resettable)
-              .map(([type]) => type)
-          }
-        }
-      });
-    });
-
-    await sendPreseason2WelcomeEmails();
-  }
+  scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
 }
