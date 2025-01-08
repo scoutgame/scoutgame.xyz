@@ -1,6 +1,5 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export type BuilderSearchResult = {
   id: string;

@@ -1,8 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { Season } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-
-import type { Season } from '../dates/config';
-import { getCurrentSeasonStart } from '../dates/utils';
 
 import { getClaimablePoints } from './getClaimablePoints';
 

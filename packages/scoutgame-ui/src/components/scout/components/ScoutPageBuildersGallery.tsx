@@ -1,6 +1,6 @@
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getPaginatedBuilders } from '@packages/scoutgame/builders/getPaginatedBuilders';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/scoutgame/dates/utils';
-import { safeAwaitSSRData } from '@packages/scoutgame/utils/async';
 
 import { BuildersGalleryContainer } from './BuildersGalleryContainer';
 

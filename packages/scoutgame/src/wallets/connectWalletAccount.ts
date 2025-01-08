@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getUserProfile } from '../users/getUserProfile';
+import { getUserProfile } from '@packages/users/getUserProfile';
 
 export async function connectWalletAccount({ address, userId }: { address: string; userId: string }) {
   const existingWalletUser = await getUserProfile({ walletAddress: address });

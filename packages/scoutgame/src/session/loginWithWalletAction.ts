@@ -2,18 +2,17 @@
 
 import { log } from '@charmverse/core/log';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
+import { actionClient } from '@packages/nextjs/actions/actionClient';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
+import { type SessionUser } from '@packages/nextjs/session/interfaces';
+import { saveSession } from '@packages/nextjs/session/saveSession';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 import { cookies } from 'next/headers';
 
-import { actionClient } from '../actions/actionClient';
-import { getUserFromSession } from '../session/getUserFromSession';
-import { type SessionUser } from '../session/interfaces';
-import { findOrCreateWalletUser } from '../users/findOrCreateWalletUser';
 import { connectWalletAccountSchema } from '../wallets/connectWalletAccountSchema';
 import { verifyWalletSignature } from '../wallets/verifyWalletSignature';
-
-import { saveSession } from './saveSession';
 
 export const loginWithWalletAction = actionClient
   .metadata({ actionName: 'login_with_wallet' })

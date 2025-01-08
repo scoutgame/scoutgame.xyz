@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
-import { getLastWeek } from '@packages/scoutgame/dates/utils';
+import { getLastWeek } from '@packages/dates/utils';
 import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
 import { baseUrl } from '@packages/utils/constants';
 import puppeteer from 'puppeteer';

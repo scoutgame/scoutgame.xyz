@@ -2,9 +2,8 @@
 
 import { log } from '@charmverse/core/log';
 import { getPlatform, getUTMParamsFromSearch } from '@packages/mixpanel/utils';
+import { actionClient } from '@packages/nextjs/actions/actionClient';
 import { v4 as uuid } from 'uuid';
-
-import { actionClient } from '../actions/actionClient';
 
 import { eventSchema } from './trackEventActionSchema';
 import { trackUserEnhancedAction } from './trackUserEnhancedAction';

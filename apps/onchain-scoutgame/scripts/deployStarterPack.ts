@@ -5,7 +5,7 @@ import { starterPackBuilders } from '@packages/scoutgame/builderNfts/builderRegi
 import { builderContractReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractReadClient';
 import { getBuilderContractStarterPackMinterClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackMinterWriteClient';
 import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderStarterPackNFT';
 import { baseUrl } from '@packages/utils/constants';
 
@@ -29,7 +29,7 @@ async function deployStarterPack() {
   for (const builder of builders) {
     await registerBuilderStarterPackNFT({
       builderId: builder.id,
-      season: getCurrentSeasonStart(),
+      season: getCurrentSeasonStart()
     });
   }
 }

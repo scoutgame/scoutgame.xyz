@@ -1,9 +1,9 @@
 import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GemsReceiptType, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type { Season } from '@packages/dates/config';
+import { getWeekFromDate, getStartOfWeek, isToday } from '@packages/dates/utils';
 import type { Commit } from '@packages/github/getCommitsByUser';
-import type { Season } from '@packages/scoutgame/dates/config';
-import { getWeekFromDate, getStartOfWeek, isToday } from '@packages/scoutgame/dates/utils';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';

@@ -1,5 +1,5 @@
 import { Paper, Stack, Typography } from '@mui/material';
-import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import Image from 'next/image';
 
 export function BuilderWeeklyStats({ gemsCollected, rank }: { gemsCollected?: number; rank?: number | null }) {

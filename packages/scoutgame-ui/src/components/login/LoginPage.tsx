@@ -12,8 +12,6 @@ import { WalletLogin } from '../common/WalletLogin/WalletLogin';
 import { WarpcastLogin } from '../common/WarpcastLogin/WarpcastLogin';
 import { InfoBackgroundImage } from '../layout/InfoBackgroundImage';
 
-import { LaunchDate } from './LaunchDate';
-
 export function LoginPage() {
   const { trigger: triggerReload } = useGetUserTrigger();
   const router = useRouter();
@@ -56,7 +54,6 @@ export function LoginPage() {
         >
           Fantasy sports for onchain builders
         </Typography>
-        <LaunchDate />
         <Box display='flex' flexDirection='column' gap={2} width='100%'>
           <WalletLogin />
           <WarpcastLogin />

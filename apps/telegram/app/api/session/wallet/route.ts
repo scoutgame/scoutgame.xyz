@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getUserFromSession } from '@packages/scoutgame/session/getUserFromSession';
+import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { NextResponse } from 'next/server';
 import { isAddress } from 'viem';
 

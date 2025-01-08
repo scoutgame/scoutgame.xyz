@@ -3,7 +3,7 @@ import 'server-only';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { PurchaseProvider } from '@packages/scoutgame-ui/providers/PurchaseProvider';
 import { SnackbarProvider } from '@packages/scoutgame-ui/providers/SnackbarContext';
 import { UserProvider } from '@packages/scoutgame-ui/providers/UserProvider';

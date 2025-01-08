@@ -1,7 +1,7 @@
 import { Box, Grid2 as Grid } from '@mui/material';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
-import type { SessionUser } from '@packages/scoutgame/session/interfaces';
 import { DailyClaimGallery } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimGallery';
 import { QuestsList } from '@packages/scoutgame-ui/components/quests/QuestsList/QuestsList';
 

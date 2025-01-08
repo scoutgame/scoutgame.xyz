@@ -1,7 +1,6 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-
-import { getCurrentSeasonStart } from '../dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { getPointStatsFromHistory, type PointStats } from './getPointStatsFromHistory';
 import { setPointsEarnedStats } from './updatePointsEarned';

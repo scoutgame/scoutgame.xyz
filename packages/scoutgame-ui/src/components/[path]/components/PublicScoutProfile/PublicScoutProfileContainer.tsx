@@ -3,7 +3,7 @@
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { Box, Stack, Paper, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import type { BasicUserInfo } from '@packages/scoutgame/users/interfaces';
+import type { BasicUserInfo } from '@packages/users/interfaces';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';

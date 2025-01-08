@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/mailer';
-import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export async function sendEmailsToNoPurchaseScouts() {
   const nonPurchasingScouts = await prisma.scout.findMany({
@@ -16,7 +16,7 @@ export async function sendEmailsToNoPurchaseScouts() {
     },
     select: {
       id: true,
-      displayName: true,
+      displayName: true
     }
   });
 

@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getIronOptions } from '@packages/scoutgame/session/getIronOptions';
+import { getIronOptions } from '@packages/nextjs/session/getIronOptions';
 import { isDevEnv } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 
