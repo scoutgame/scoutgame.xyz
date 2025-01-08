@@ -99,7 +99,7 @@ describe('getScouts', () => {
 
   it('should filter out deleted users', async () => {
     const scout4 = await mockScout({
-      path: 'scout4',
+      path: `scout4${Math.random()}`,
       season: mockSeason,
       stats: {
         season: {
@@ -123,7 +123,7 @@ describe('getScouts', () => {
 
   it('a scout from a different season should not be included', async () => {
     const scout4 = await mockScout({
-      path: 'scout4',
+      path: `scout4${Math.random()}`,
       season: '2023-01',
       stats: {
         season: {
