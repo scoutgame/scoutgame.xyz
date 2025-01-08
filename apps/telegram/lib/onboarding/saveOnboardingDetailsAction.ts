@@ -13,9 +13,6 @@ export const saveOnboardingDetailsAction = authActionClient
   .schema(saveOnboardingDetailsSchema)
   .action(async ({ parsedInput, ctx }) => {
     const userId = ctx.session.scoutId;
-    if (!parsedInput.agreedToTOS) {
-      throw new Error('You need to accept the terms and conditions.');
-    }
 
     const scout = await prisma.scout.update({
       where: { id: userId },

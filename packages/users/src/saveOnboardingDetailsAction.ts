@@ -24,7 +24,7 @@ export const saveOnboardingDetailsAction = authActionClient
       }
     });
 
-    if (!isValidEmail(email)) {
+    if (!isValidEmail(parsedInput.email)) {
       throw new Error('Email is invalid');
     }
 
