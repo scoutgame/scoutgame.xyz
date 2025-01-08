@@ -2,6 +2,5 @@ import * as yup from 'yup';
 
 export const claimDailyRewardSchema = yup.object({
   isBonus: yup.boolean(),
-  dayOfWeek: yup.number().required(),
-  week: yup.string().required()
+  dayOfWeek: yup.number().required()
 });
