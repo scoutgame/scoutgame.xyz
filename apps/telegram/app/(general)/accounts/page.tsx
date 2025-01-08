@@ -29,6 +29,7 @@ export default async function Accounts() {
         email: true,
         sendTransactionEmails: true,
         sendMarketing: true,
+        emailVerifications: true,
         nftPurchaseEvents: {
           where: {
             builderNft: {
@@ -48,6 +49,10 @@ export default async function Accounts() {
     return notFound();
   }
 
+  const verifiedEmail = currentUserAccountsMetadata.emailVerifications.some(
+    (verification) => verification.email === currentUserAccountsMetadata.email && verification.completedAt
+  );
+
   return (
     <AccountsPage
       user={{
@@ -58,7 +63,8 @@ export default async function Accounts() {
         avatar: user.avatar as string,
         starterPackNftCount: currentUserAccountsMetadata.nftPurchaseEvents.length,
         sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails,
-        sendMarketing: currentUserAccountsMetadata.sendMarketing
+        sendMarketing: currentUserAccountsMetadata.sendMarketing,
+        verifiedEmail
       }}
     />
   );

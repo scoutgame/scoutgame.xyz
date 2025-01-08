@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { baseUrl } from '@packages/config';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { baseUrl } from '@packages/utils/constants';
 
 import { updateReferralUsers } from './referrals/updateReferralUsers';
 
@@ -22,10 +22,14 @@ export async function createEmailVerification({ userId }: { userId: string }) {
     }
   });
 
+  if (!scout.email) {
+    throw new Error('User has no email');
+  }
+
   await prisma.scoutEmailVerification.create({
     data: {
       code,
-      email: scout.email,
+      email: scout.email!,
       scoutId: userId
       // completedAt will be null until verified
     }
@@ -68,7 +72,11 @@ export async function verifyEmail(code: string): Promise<{ result: 'already_veri
   });
 
   // check if we should count a referral
-  await updateReferralUsers(verification.userId);
+  try {
+    await updateReferralUsers(verification.scoutId);
+  } catch (error) {
+    log.error('Error updating user referrals after email verification ', { userId, error });
+  }
 
   return { result: 'verified' };
 }

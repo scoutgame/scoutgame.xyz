@@ -10,6 +10,7 @@ import { UserProvider } from '@packages/scoutgame-ui/providers/UserProvider';
 import { headers } from 'next/headers';
 import { ViewTransitions } from 'next-view-transitions';
 import type { ReactNode } from 'react';
+import { Toaster } from 'sonner';
 
 import theme from '../theme/theme';
 
@@ -30,6 +31,7 @@ export function AppProviders({ children, user }: { children: ReactNode; user: Se
             <CssBaseline enableColorScheme />
             <SWRProvider>
               <LinkInterceptor />
+              <Toaster richColors />
               <UserProvider userSession={user}>
                 <SnackbarProvider>
                   <PurchaseProvider>{children}</PurchaseProvider>
