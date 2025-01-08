@@ -12,8 +12,8 @@ export class InvalidVerificationError extends Error {
 }
 
 export async function sendVerificationEmail({ userId }: { userId: string }) {
-  // Generate a 6-digit verification code
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  // Generate a 18-digit verification code
+  const code = Math.floor(100000000000000000 + Math.random() * 900000000000000000).toString();
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
       id: userId
