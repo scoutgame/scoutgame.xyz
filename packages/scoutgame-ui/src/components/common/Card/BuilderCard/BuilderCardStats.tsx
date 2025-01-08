@@ -11,14 +11,14 @@ export function BuilderCardStats({
   builderPoints,
   nftsSold,
   rank,
-  last7DaysGems,
+  last14DaysGems,
   size
 }: {
   displayName: string;
   builderPoints?: number;
   nftsSold?: number;
   rank?: number;
-  last7DaysGems?: number[];
+  last14DaysGems?: number[];
   size: 'x-small' | 'small' | 'medium' | 'large';
 }) {
   const mdFontSize = size === 'medium' || size === 'large' ? '14px' : '12px';
@@ -109,7 +109,7 @@ export function BuilderCardStats({
         </Typography>
         <Stack sx={{ backgroundColor: 'text.secondary', height: '1px', flex: 1 }} />
       </Stack>
-      <BuilderCardActivity size={size} last7DaysGems={last7DaysGems ?? []} />
+      <BuilderCardActivity size={size} last14DaysGems={last14DaysGems ?? []} />
     </Stack>
   );
 }

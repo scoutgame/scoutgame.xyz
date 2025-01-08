@@ -6,9 +6,9 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
-import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast7Days';
-import { mapGemReceiptsToLast7Days } from '../builders/mapGemReceiptsToLast7Days';
-import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
+import { mapGemReceiptsToLast14Days } from '../builders/mapGemReceiptsToLast14Days';
+import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast14Days';
+import { normalizeLast14DaysGems } from '../builders/utils/normalizeLast14DaysGems';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 
 async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
@@ -120,7 +120,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     price: builder.builderNfts[0].currentPrice ?? BigInt(0),
     rank: 0, // Would need to calculate this based on some criteria
     builderPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder ?? 0,
-    last7DaysGems: mapGemReceiptsToLast7Days({
+    last14DaysGems: mapGemReceiptsToLast14Days({
       events: builder.events as Required<BuilderEventWithGemsReceipt>[],
       currentDate: DateTime.now()
     }).map((gem) => gem.gemsCount)
@@ -185,7 +185,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
       },
       builderCardActivities: {
         select: {
-          last7Days: true
+          last14Days: true
         }
       },
       builderStatus: true,
@@ -229,7 +229,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           nftsSoldToScout: nftsSoldData.toScout,
           rank: builder.userWeeklyStats[0]?.rank ?? -1,
           price: nft.currentPrice ?? 0,
-          last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+          last14DaysGems: normalizeLast14DaysGems(builder.builderCardActivities[0]),
           nftType: nft.nftType,
           congratsImageUrl: nft.congratsImageUrl
         };

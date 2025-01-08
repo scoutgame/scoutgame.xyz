@@ -10,10 +10,10 @@ import { BuilderCardActivityTooltip } from './BuilderCardActivityTooltip';
 
 export function BuilderCardActivity({
   size,
-  last7DaysGems
+  last14DaysGems
 }: {
   size: 'x-small' | 'small' | 'medium' | 'large';
-  last7DaysGems: number[];
+  last14DaysGems: number[];
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'), { noSsr: true });
@@ -42,7 +42,7 @@ export function BuilderCardActivity({
             }
           }}
         >
-          {last7DaysGems?.map((gem, index) => {
+          {last14DaysGems?.map((gem, index) => {
             const height = gem === 0 ? gemHeight * 0.35 : gem <= 29 ? gemHeight * 0.65 : gemHeight;
 
             return (
