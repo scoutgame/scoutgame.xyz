@@ -48,11 +48,11 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
   });
 
   const { execute, isExecuting } = useAction(updateUserEmailSettingsAction, {
-    async onSuccess({ verificationEmailSent }) {
+    async onSuccess({ input, data }) {
       setErrors(null);
+      reset(input);
       revalidatePathAction();
-      reset();
-      if (verificationEmailSent) {
+      if (data.verificationEmailSent) {
         toast.success('Verification email sent! Please check your inbox.');
       }
     },
