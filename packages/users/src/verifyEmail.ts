@@ -47,6 +47,7 @@ export async function sendVerificationEmail({ userId }: { userId: string }) {
       verification_url: `${baseUrl}/verify-email?code=${code}`
     }
   });
+  log.info('Verification email sent', { userId });
 }
 
 export async function verifyEmail(code: string): Promise<{ result: 'already_verified' | 'verified' }> {

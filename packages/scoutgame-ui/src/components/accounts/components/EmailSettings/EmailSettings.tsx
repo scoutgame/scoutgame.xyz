@@ -2,8 +2,10 @@
 
 import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Check as CheckIcon } from '@mui/icons-material';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import { Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography, Chip } from '@mui/material';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { updateUserEmailSettingsAction } from '@packages/users/updateUserEmailSettingsAction';
 import type { UpdateUserEmailSettingsFormValues } from '@packages/users/updateUserEmailSettingsSchema';
 import { updateUserEmailSettingsSchema } from '@packages/users/updateUserEmailSettingsSchema';
@@ -46,9 +48,13 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
   });
 
   const { execute, isExecuting } = useAction(updateUserEmailSettingsAction, {
-    async onSuccess({ input }) {
+    async onSuccess({ verificationEmailSent }) {
       setErrors(null);
-      reset(input);
+      revalidatePathAction();
+      reset();
+      if (verificationEmailSent) {
+        toast.success('Verification email sent! Please check your inbox.');
+      }
     },
     onError(err) {
       const hasValidationErrors = err.error.validationErrors?.fieldErrors;
@@ -84,14 +90,23 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
                 <EmailOutlinedIcon />
                 <Typography variant='h6'>Email</Typography>
               </Stack>
-              {user?.email && !verifiedEmail && (
+              {user.email && !verifiedEmail && (
                 <Chip
                   sx={{ ml: 2 }}
                   label={isSending ? 'Sending...' : 'Verify email'}
                   color='success'
                   variant='outlined'
                   onClick={handleVerifyEmail}
-                  disabled={isSending}
+                  disabled={isSending || isDirty}
+                />
+              )}
+              {user.email && verifiedEmail && (
+                <Chip
+                  sx={{ ml: 2 }}
+                  label='Verified'
+                  color='success'
+                  variant='outlined'
+                  icon={<CheckIcon fontSize='small' />}
                 />
               )}
             </Stack>
