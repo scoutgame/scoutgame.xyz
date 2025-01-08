@@ -1,12 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import type { ISOWeek } from '@packages/scoutgame/dates/config';
-import {
-  getAllISOWeeksFromSeasonStart,
-  getCurrentSeasonStart,
-  getEndOfSeason,
-  getStartOfWeek,
-  getWeekFromDate
-} from '@packages/scoutgame/dates/utils';
+import type { ISOWeek } from '@packages/dates/config';
+import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
 
 type BuilderAggregateScore = {
   builderId: string;
@@ -15,18 +9,20 @@ type BuilderAggregateScore = {
 };
 
 export async function calculateBuilderLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek }) {
-  const seasonEnd = getEndOfSeason(season);
-
-  const seasonStart = getStartOfWeek(season);
-
   const allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
 
   // Fetch all builders with their GemReceipts
   const gemReceipts = await prisma.gemsReceipt.findMany({
     where: {
-      createdAt: {
-        gte: seasonStart.toISOTime(),
-        lte: seasonEnd.toISOTime()
+      event: {
+        season,
+        builder: {
+          builderNfts: {
+            some: {
+              season
+            }
+          }
+        }
       }
     },
     select: {
