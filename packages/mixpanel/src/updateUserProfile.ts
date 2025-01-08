@@ -47,7 +47,7 @@ export async function batchImportMixpanelEvent<T extends MixpanelEventName>(
   data: { event: T; properties: MixpanelEventMap[T] & { time: number; $insert_id: string } }[]
 ) {
   const apiKey = getApiKey();
-  const projectId = '1234';
+  const projectId = '1234'; // Take this from the mixpanel dashboard
 
   return POST(
     `https://api.mixpanel.com/import?strict=1&project_id=${projectId}`,

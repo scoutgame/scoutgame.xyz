@@ -57,8 +57,9 @@ async function updateMixpanelUserProfiles({
   // Update user profiles
   await batchUpdateMixpanelUserProfiles(users);
 
-  // Delete user profiles for users that are deleted in our system. To be faster, we only delete users that were deleted in the last 24h.
-  const usersToDelete = users.filter((user) => user.profile.deletedAt && isWithinLastDays(user.profile.deletedAt, 1));
+  // Delete user profiles for users that are deleted in our system
+  const usersToDelete = users.filter((user) => user.profile.deleted);
+
   await deleteMixpanelProfiles(usersToDelete.map((user) => ({ id: user.userId })))
     .catch((_error) => {
       log.error('Failed to delete user profiles in Mixpanel', { error: _error });

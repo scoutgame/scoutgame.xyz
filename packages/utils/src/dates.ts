@@ -30,10 +30,3 @@ export function timeUntilFuture(date?: number) {
 
   return { days, timeString, hours, minutes, seconds };
 }
-
-export function isWithinLastDays(date: Date, days: number): boolean {
-  const now = DateTime.now();
-  const sevenDaysAgo = now.minus({ days });
-  const dateToCheck = DateTime.fromJSDate(date);
-  return dateToCheck >= sevenDaysAgo && dateToCheck <= now;
-}
