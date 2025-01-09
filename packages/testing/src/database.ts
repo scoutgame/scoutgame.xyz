@@ -97,7 +97,8 @@ export async function mockScout({
   deletedAt,
   telegramId,
   wallets = [],
-  stats
+  stats,
+  verifiedEmail
 }: {
   wallets?: string[];
   createdAt?: Date;
@@ -129,7 +130,9 @@ export async function mockScout({
       pointsEarnedAsBuilder?: number;
     };
   };
+  verifiedEmail?: boolean;
 } = {}) {
+  email ||= randomString();
   const scout = await prisma.scout.create({
     data: {
       createdAt,
@@ -171,6 +174,16 @@ export async function mockScout({
         data: { userId: scout.id, ...stats.season, season }
       });
     }
+  }
+  if (verifiedEmail) {
+    await prisma.scoutEmailVerification.create({
+      data: {
+        email,
+        scoutId: scout.id,
+        completedAt: new Date(),
+        code: randomString()
+      }
+    });
   }
   return scout;
 }

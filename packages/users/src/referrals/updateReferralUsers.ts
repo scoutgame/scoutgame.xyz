@@ -6,9 +6,10 @@ import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { baseUrl } from '@packages/utils/constants';
 
 import { rewardPoints } from '../constants';
-import { BasicUserInfoSelect } from '../queries';
 
-export async function updateReferralUsers(refereeId: string) {
+type Result = 'already_referred' | 'not_verified' | 'not_referred' | 'success';
+
+export async function updateReferralUsers(refereeId: string): Promise<{ result: Result }> {
   const referralCodeEvents = await prisma.referralCodeEvent.findMany({
     where: {
       refereeId
@@ -20,14 +21,14 @@ export async function updateReferralUsers(refereeId: string) {
 
   if (referralCodeEvents.some((e) => !!e.completedAt)) {
     log.debug('Ignore referral because referee has already been referred', { userId: refereeId });
-    return;
+    return { result: 'already_referred' };
   }
 
   const referralCodeEvent = referralCodeEvents[0];
 
   if (!referralCodeEvent) {
     // The user was not referred
-    return;
+    return { result: 'not_referred' };
   }
 
   if (referralCodeEvents.length > 1) {
@@ -45,7 +46,7 @@ export async function updateReferralUsers(refereeId: string) {
 
   if (!referee.emailVerifications.some((e) => !!e.completedAt)) {
     log.debug('Ignore referral because referee has not verified their email', { userId: refereeId });
-    return;
+    return { result: 'not_verified' };
   }
 
   const referrerId = referralCodeEvent.builderEvent.builderId;
@@ -145,4 +146,6 @@ export async function updateReferralUsers(refereeId: string) {
   } catch (error) {
     log.error('Error sending referral email', { error, userId: referrer.id });
   }
+
+  return { result: 'success' };
 }
