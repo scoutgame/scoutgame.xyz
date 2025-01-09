@@ -132,7 +132,7 @@ export function getAllISOWeeksFromSeasonStart({ season }: { season: Season }): s
 
   let current = start;
   const weeks: string[] = [];
-  while (current <= end) {
+  while (current <= end && weeks.length < weeksPerSeason) {
     weeks.push(_formatWeek(current));
     current = current.plus({ weeks: 1 });
   }

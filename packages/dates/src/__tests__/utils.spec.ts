@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { DateTime } from 'luxon';
 
 import type { Season, SeasonConfig } from '../config';
@@ -7,7 +8,9 @@ import {
   getSeasonWeekFromISOWeek,
   validateISOWeek,
   getCurrentWeek,
-  getCurrentSeasonStart
+  getCurrentSeasonStart,
+  getAllISOWeeksFromSeasonStart,
+  getAllISOWeeksFromSeasonStartUntilSeasonEnd
 } from '../utils';
 
 describe('scoutgame date utils', () => {
@@ -116,5 +119,50 @@ describe('scoutgame date utils', () => {
       const currentWeek = '2023-W01';
       expect(() => getCurrentSeasonStart(currentWeek, seasons)).toThrow();
     });
+  });
+});
+
+describe('getAllWeeksFromSeasonStart', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('should return all weeks from the start of the season to the current week included', () => {
+    const season = '2025-W02';
+
+    // 10 days after the start of season 2, so we should get 2 weeks
+    jest.setSystemTime(new Date('2025-01-16T00:00:00.000Z'));
+
+    const weeks = getAllISOWeeksFromSeasonStart({ season });
+
+    expect(weeks).toEqual(['2025-W02', '2025-W03']);
+  });
+
+  it('should return all weeks from the start of the season, stopping at the end of the season if that season has passed', () => {
+    const season = '2024-W41';
+
+    // 10 days after the start of season 2
+    jest.setSystemTime(new Date('2025-01-20T00:00:00.000Z'));
+
+    const weeks = getAllISOWeeksFromSeasonStart({ season });
+    expect(weeks).toEqual([
+      '2024-W41',
+      '2024-W42',
+      '2024-W43',
+      '2024-W44',
+      '2024-W45',
+      '2024-W46',
+      '2024-W47',
+      '2024-W48',
+      '2024-W49',
+      '2024-W50',
+      '2024-W51',
+      '2024-W52',
+      '2025-W01'
+    ]);
   });
 });
