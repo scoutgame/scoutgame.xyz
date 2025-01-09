@@ -113,7 +113,7 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
               {!isDirty && user.email && verifiedEmail && (
                 <Chip label='Verified' color='success' variant='outlined' icon={<CheckIcon fontSize='small' />} />
               )}
-              {isDirty && <Chip label='Unverified' color='grey' variant='outlined' />}
+              {isDirty && <Chip label='Unverified' color={'grey' as any} variant='outlined' />}
             </Stack>
           </Stack>
 

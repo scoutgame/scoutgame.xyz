@@ -79,7 +79,7 @@ function WalletLoginButton() {
     } catch (error) {
       // examples: user cancels signature, user rejects signature
       log.warn('Error signing message', { error });
-      toast.warning(error.message);
+      toast.warning((error as Error).message);
     }
   };
 
