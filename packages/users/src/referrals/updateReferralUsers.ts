@@ -7,21 +7,49 @@ import { baseUrl } from '@packages/utils/constants';
 
 import { rewardPoints } from '../constants';
 
-type Result = 'already_referred' | 'not_verified' | 'not_referred' | 'success';
+type Result = 'already_referred' | 'already_referred_as_another_user' | 'not_verified' | 'not_referred' | 'success';
 
 export async function updateReferralUsers(refereeId: string): Promise<{ result: Result }> {
+  const email = await prisma.scout.findUniqueOrThrow({
+    where: {
+      id: refereeId
+    },
+    select: {
+      email: true
+    }
+  });
+  // find scouts with similar email
+  const similarEmailScouts = await prisma.scout.findMany({
+    where: {
+      email: {
+        mode: 'insensitive',
+        startsWith: email.email?.split('@')[0].split('+')[0],
+        endsWith: `@${email.email?.split('@')[1]}`
+      }
+    }
+  });
   const referralCodeEvents = await prisma.referralCodeEvent.findMany({
     where: {
-      refereeId
+      refereeId: {
+        in: [refereeId, ...similarEmailScouts.map((s) => s.id)]
+      }
     },
     include: {
       builderEvent: true
     }
   });
 
-  if (referralCodeEvents.some((e) => !!e.completedAt)) {
-    log.debug('Ignore referral because referee has already been referred', { userId: refereeId });
-    return { result: 'already_referred' };
+  const alreadyReferred = referralCodeEvents.find((e) => !!e.completedAt);
+
+  if (alreadyReferred) {
+    log.debug('Ignore referral because referee has already been referred', {
+      previousReferredUserId: alreadyReferred.refereeId,
+      userId: refereeId
+    });
+    if (alreadyReferred.refereeId === refereeId) {
+      return { result: 'already_referred' };
+    }
+    return { result: 'already_referred_as_another_user' };
   }
 
   const referralCodeEvent = referralCodeEvents[0];

@@ -73,4 +73,31 @@ describe('updateReferralUsers', () => {
     const result2 = await updateReferralUsers(referee.id);
     expect(result2.result).toBe('already_referred');
   });
+
+  it('should not give credit if referee has not been referred', async () => {
+    const referee = await mockScout({ verifiedEmail: true });
+
+    const result = await updateReferralUsers(referee.id);
+    expect(result.result).toBe('not_referred');
+  });
+
+  it('should not give credit if referee has an email similar to another referee', async () => {
+    const referrer = await mockScout();
+    const referee = await mockScout({ email: 'matt@gmail.com', verifiedEmail: true });
+    const referee2 = await mockScout({ email: 'matt+test@gmail.com', verifiedEmail: true });
+    const referee3 = await mockScout({ email: 'Matt@gmail.com', verifiedEmail: true });
+
+    await createReferralEvent(referrer.referralCode || '', referee.id);
+
+    const result = await updateReferralUsers(referee.id);
+    expect(result.result).toBe('success');
+
+    await createReferralEvent(referrer.referralCode || '', referee2.id);
+    const result2 = await updateReferralUsers(referee2.id);
+    expect(result2.result).toBe('already_referred_as_another_user');
+
+    await createReferralEvent(referrer.referralCode || '', referee3.id);
+    const result3 = await updateReferralUsers(referee3.id);
+    expect(result3.result).toBe('already_referred_as_another_user');
+  });
 });
