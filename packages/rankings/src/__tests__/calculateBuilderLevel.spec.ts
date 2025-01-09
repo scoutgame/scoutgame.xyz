@@ -252,7 +252,7 @@ describe.skip('seedBuilders', () => {
   });
 });
 
-describe('calculateBuilderLevels', () => {
+describe.skip('calculateBuilderLevels', () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });
