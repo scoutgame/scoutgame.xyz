@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { getDateFromISOWeek, getPreviousSeason } from '@packages/dates/utils';
-import { mockBuilder, mockBuilderNft } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 import type { BuilderAggregateScore } from '../calculateBuilderLevel';

@@ -31,7 +31,7 @@ export function AppProviders({ children, user }: { children: ReactNode; user: Se
             <CssBaseline enableColorScheme />
             <SWRProvider>
               <LinkInterceptor />
-              <Toaster richColors />
+              <Toaster theme='dark' richColors />
               <UserProvider userSession={user}>
                 <SnackbarProvider>
                   <PurchaseProvider>{children}</PurchaseProvider>
