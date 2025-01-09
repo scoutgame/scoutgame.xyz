@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { mockScout } from '@packages/scoutgame/testing/database';
+import { mockScout } from '@packages/testing/database';
 
 import { resolveBalanceIssues } from '../resolveBalanceIssues';
 

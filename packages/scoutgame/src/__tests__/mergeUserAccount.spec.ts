@@ -1,11 +1,17 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mergeUserAccount } from '@packages/scoutgame/mergeUserAccount';
+import {
+  mockBuilder,
+  mockBuilderNft,
+  mockGemPayoutEvents,
+  mockNFTPurchaseEvent,
+  mockScout
+} from '@packages/testing/database';
+import { randomIntFromInterval } from '@packages/testing/generators';
 import { v4 } from 'uuid';
 
 import { claimPoints } from '../points/claimPoints';
-import { mockBuilder, mockBuilderNft, mockGemPayoutEvents, mockNFTPurchaseEvent, mockScout } from '../testing/database';
-import { randomIntFromInterval } from '../testing/generators';
 
 describe('mergeUserAccount', () => {
   it('should throw an error if no account identities are provided', async () => {

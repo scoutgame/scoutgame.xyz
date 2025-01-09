@@ -1,12 +1,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
+import { randomLargeInt } from '@packages/testing/generators';
 import { generateRandomEthAddress } from '@packages/testing/random';
 import { referralBonusPoints } from '@packages/users/constants';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
-
-import { mockBuilder, mockScout, mockBuilderNft } from '../../testing/database';
-import { randomLargeInt } from '../../testing/generators';
 
 jest.unstable_mockModule('../clients/builderContractMinterWriteClient', () => ({
   getBuilderContractMinterClient: () => ({

@@ -1,8 +1,8 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { mockBuilder } from '@packages/testing/database';
 
-import { mockBuilder } from '../../testing/database';
 import { getCurrentWeekPointsAllocation } from '../getCurrentWeekPointsAllocation';
 
 const pointsPerActiveBuilder = 2500;

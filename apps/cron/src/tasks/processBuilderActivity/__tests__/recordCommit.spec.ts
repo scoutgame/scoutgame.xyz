@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { mockBuilder, mockBuilderNft, mockRepo, mockScout } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockBuilderNft, mockRepo, mockScout } from '@packages/testing/database';
 import { DateTime } from 'luxon';
 import { v4 } from 'uuid';
 

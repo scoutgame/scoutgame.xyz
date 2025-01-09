@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { mockScout } from '@packages/testing/database';
 
 import { rewardPoints } from '../../constants';
-import { mockScout } from '../../testing/database';
 import { createReferralEvent } from '../createReferralEvent';
 import { updateReferralUsers } from '../updateReferralUsers';
 

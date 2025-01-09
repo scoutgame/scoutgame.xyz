@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { mockScout } from '@packages/scoutgame/testing/database';
-import { randomIntFromInterval } from '@packages/scoutgame/testing/generators';
+import { mockScout } from '@packages/testing/database';
+import { randomIntFromInterval } from '@packages/testing/generators';
 
 import { expect, test } from './test';
 

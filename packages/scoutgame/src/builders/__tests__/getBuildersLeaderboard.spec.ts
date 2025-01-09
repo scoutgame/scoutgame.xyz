@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { mockBuilder } from '@packages/testing/database';
 import { v4 } from 'uuid';
 
-import { mockBuilder } from '../../testing/database';
 import { getBuildersLeaderboard } from '../getBuildersLeaderboard';
 
 describe('getBuildersLeaderboard', () => {
