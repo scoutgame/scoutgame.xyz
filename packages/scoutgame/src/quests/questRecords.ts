@@ -218,7 +218,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     link: '/accounts',
     tag: 'scout',
-    resettable: true
+    resettable: false
   },
   'link-telegram-account': {
     label: 'Link your account with Telegram',
@@ -226,6 +226,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     link: '/accounts',
     tag: 'scout',
-    resettable: true
+    resettable: false
   }
 };
