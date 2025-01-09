@@ -29,6 +29,7 @@
     "@packages/scoutgame": "^0.0.0",
     "@packages/scoutgame-router": "^1.0.0",
     "@packages/scoutgame-ui": "^0.0.0",
+    "@packages/users": "^0.0.0",
     "@packages/utils": "^1.0.0",
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@serwist/next": "^9.0.5",
