@@ -28,4 +28,13 @@ describe('createReferralUsers', () => {
 
     await expect(createReferralEvent(referralCode, scout.id)).rejects.toThrow('No Scout found');
   });
+
+  it('should not create a referral bonus event if the referrer has been banned', async () => {
+    const referrer = await mockScout({
+      deletedAt: new Date()
+    });
+    const referee = await mockScout();
+
+    await expect(createReferralEvent(referrer.referralCode, referee.id)).rejects.toThrow('Referrer has been banned');
+  });
 });

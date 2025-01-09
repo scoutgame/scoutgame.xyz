@@ -72,6 +72,7 @@ export type MixpanelEventMap = {
     retainedUserId: string;
     mergedIdentity: 'telegram' | 'farcaster' | 'wallet';
   };
+  verify_email: BaseEvent;
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

@@ -2,21 +2,25 @@
 
 import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Check as CheckIcon, Send as SendIcon } from '@mui/icons-material';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import { Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography, Chip } from '@mui/material';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { updateUserEmailSettingsAction } from '@packages/users/updateUserEmailSettingsAction';
 import type { UpdateUserEmailSettingsFormValues } from '@packages/users/updateUserEmailSettingsSchema';
 import { updateUserEmailSettingsSchema } from '@packages/users/updateUserEmailSettingsSchema';
+import { sendVerificationEmailAction } from '@packages/users/verifyEmailAction';
 import { concatenateStringValues } from '@packages/utils/strings';
 import { useAction } from 'next-safe-action/hooks';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { FormErrors } from '../../../common/FormErrors';
 import type { UserWithAccountsDetails } from '../../AccountsPage';
 
-export function EmailSettings({ user }: { user: UserWithAccountsDetails }) {
+export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: UserWithAccountsDetails }) {
   const [errors, setErrors] = useState<string[] | null>(null);
   const {
     control,
@@ -33,11 +37,24 @@ export function EmailSettings({ user }: { user: UserWithAccountsDetails }) {
       sendMarketing: user.sendMarketing
     }
   });
+  const { execute: sendVerificationEmail, isExecuting: isSending } = useAction(sendVerificationEmailAction, {
+    async onSuccess() {
+      toast.success('Verification email sent! Please check your inbox.');
+    },
+    onError(error) {
+      toast.error('Failed to send verification email');
+      log.warn('Failed to send verification email', { error });
+    }
+  });
 
   const { execute, isExecuting } = useAction(updateUserEmailSettingsAction, {
-    async onSuccess({ input }) {
+    async onSuccess({ input, data }) {
       setErrors(null);
       reset(input);
+      revalidatePathAction();
+      if (data?.verificationEmailSent) {
+        toast.success('Verification email sent! Please check your inbox.');
+      }
     },
     onError(err) {
       const hasValidationErrors = err.error.validationErrors?.fieldErrors;
@@ -59,32 +76,46 @@ export function EmailSettings({ user }: { user: UserWithAccountsDetails }) {
     log.warn('Invalid form submission', { fieldErrors, values: getValues() });
   }
 
+  async function handleVerifyEmail() {
+    await sendVerificationEmail();
+  }
+
   return (
     <Paper elevation={2} sx={{ p: 2 }}>
       <form noValidate onSubmit={handleSubmit(onSubmit, onInvalid)}>
-        <Stack gap={1}>
-          <Stack direction='row' gap={1} alignItems='center'>
-            <EmailOutlinedIcon />
-            <Typography variant='h6'>Email</Typography>
-          </Stack>
-
-          <Controller
-            control={control}
-            name='email'
-            disabled={isExecuting}
-            render={({ field, formState }) => (
-              <TextField
-                error={!!formState.errors.email}
-                {...field}
-                sx={{
-                  maxWidth: {
-                    xs: '100%',
-                    md: 250
-                  }
-                }}
+        <Stack gap={2}>
+          <Stack maxWidth={{ xs: '100%', md: 500 }} gap={2}>
+            <Stack direction='row' gap={1} alignItems='center'>
+              <EmailOutlinedIcon />
+              <Typography variant='h6'>Email</Typography>
+            </Stack>
+            <Stack alignItems={{ xs: 'flex-start', md: 'center' }} direction={{ xs: 'column', md: 'row' }} gap={2}>
+              <Controller
+                control={control}
+                name='email'
+                disabled={isExecuting}
+                render={({ field, formState }) => <TextField fullWidth error={!!formState.errors.email} {...field} />}
               />
-            )}
-          />
+              {!isDirty && user.email && !verifiedEmail && (
+                <Chip
+                  label={isSending ? 'Sending...' : 'Verify email'}
+                  color='primary'
+                  onClick={handleVerifyEmail}
+                  disabled={isSending}
+                  sx={{ px: 1 }}
+                  icon={
+                    <Box display='flex' alignItems='center'>
+                      <SendIcon fontSize='small' />
+                    </Box>
+                  }
+                />
+              )}
+              {!isDirty && user.email && verifiedEmail && (
+                <Chip label='Verified' color='success' variant='outlined' icon={<CheckIcon fontSize='small' />} />
+              )}
+              {isDirty && <Chip label='Unverified' color={'grey' as any} variant='outlined' />}
+            </Stack>
+          </Stack>
 
           <Stack gap={{ xs: 1, md: 0 }}>
             <Controller

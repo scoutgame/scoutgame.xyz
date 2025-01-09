@@ -9,12 +9,12 @@ export const updateUserEmailSettingsAction = authActionClient
   .metadata({ actionName: 'update-user-email-settings' })
   .schema(updateUserEmailSettingsSchema)
   .action(async ({ parsedInput, ctx }) => {
-    await updateUserEmailSettings({
+    const result = await updateUserEmailSettings({
       userId: ctx.session.scoutId,
       email: parsedInput.email,
       sendTransactionEmails: parsedInput.sendTransactionEmails,
       sendMarketing: parsedInput.sendMarketing
     });
 
-    return { success: true };
+    return { success: true, verificationEmailSent: result.verificationEmailSent };
   });

@@ -185,13 +185,4 @@ describe('recordNftMint', () => {
 
     expect(referrerAfterReferralBonus.currentBalance).toBe(referrerAfterReferral.currentBalance + referralBonusPoints);
   });
-
-  it('should not create a referral bonus event if the referrer has been banned', async () => {
-    const referrer = await mockScout({
-      deletedAt: new Date()
-    });
-    const referee = await mockScout();
-
-    await expect(createReferralEvent(referrer.referralCode, referee.id)).rejects.toThrow('Referrer has been banned');
-  });
 });

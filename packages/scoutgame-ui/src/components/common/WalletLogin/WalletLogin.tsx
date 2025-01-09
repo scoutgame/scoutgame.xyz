@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
+import { toast } from 'sonner';
 import { getAddress } from 'viem';
 import { useSignMessage, useAccount } from 'wagmi';
 
@@ -36,13 +37,7 @@ function WalletLoginButton() {
   const redirectUrl = redirectUrlEncoded ? decodeURIComponent(redirectUrlEncoded) : '/';
   const { refreshUser } = useUser();
   const router = useRouter();
-  const { signMessageAsync, error: signMessageError } = useSignMessage({
-    mutation: {
-      onError(error) {
-        log.error('Error on signing with wallet', { error });
-      }
-    }
-  });
+  const { signMessageAsync } = useSignMessage();
 
   const { executeAsync: revalidatePath } = useAction(revalidatePathAction);
 
@@ -65,7 +60,7 @@ function WalletLoginButton() {
     }
   });
 
-  const errorWalletMessage = signMessageError?.message || result.validationErrors?.fieldErrors.message;
+  const errorWalletMessage = result.validationErrors?.fieldErrors.message;
 
   const handleWalletConnect = async (_address: string) => {
     const preparedMessage: Partial<SiweMessage> = {
@@ -78,8 +73,14 @@ function WalletLoginButton() {
 
     const siweMessage = new SiweMessage(preparedMessage);
     const message = siweMessage.prepareMessage();
-    const signature = await signMessageAsync({ message });
-    await loginUser({ message, signature, inviteCode, referralCode });
+    try {
+      const signature = await signMessageAsync({ message });
+      await loginUser({ message, signature, inviteCode, referralCode });
+    } catch (error) {
+      // examples: user cancels signature, user rejects signature
+      log.warn('Error signing message', { error });
+      toast.warning((error as Error).message);
+    }
   };
 
   function onClick() {

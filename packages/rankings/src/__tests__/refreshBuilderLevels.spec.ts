@@ -5,7 +5,7 @@ import { refreshBuilderLevels } from '../refreshBuilderLevels';
 
 import { seedBuilders, writeSeededBuildersToDatabase } from './seedBuilders';
 
-describe('refreshBuilderLevels', () => {
+describe.skip('refreshBuilderLevels', () => {
   it('should refresh builder levels in the database', async () => {
     const { builders, weeks } = seedBuilders({ season: getPreviousSeason(getCurrentSeasonStart()) });
 

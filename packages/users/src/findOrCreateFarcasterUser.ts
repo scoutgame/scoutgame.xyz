@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
-import { uuidFromNumber } from '@packages/utils/uuid';
 import type { ConnectWaitlistTier } from '@packages/waitlist/scoring/constants';
 
 import { findOrCreateUser } from './findOrCreateUser';

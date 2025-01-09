@@ -1,13 +1,15 @@
 'use server';
 
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { registerScout as registerBeehiiv } from '@packages/beehiiv/registerScout';
 import { registerScout as registerLoops } from '@packages/loops/registerScout';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { sendVerificationEmail } from '@packages/users/verifyEmail';
+import { isValidEmail } from '@packages/utils/strings';
 
 import { generateUserPath } from './generateUserPath';
-import { updateReferralUsers } from './referrals/updateReferralUsers';
 import { saveOnboardingDetailsSchema } from './saveOnboardingDetailsSchema';
 
 export const saveOnboardingDetailsAction = authActionClient
@@ -23,8 +25,8 @@ export const saveOnboardingDetailsAction = authActionClient
       }
     });
 
-    if (!parsedInput.agreedToTOS) {
-      throw new Error('You need to accept the terms and conditions.');
+    if (!isValidEmail(parsedInput.email)) {
+      throw new Error('Email is invalid');
     }
 
     const path =
@@ -45,7 +47,8 @@ export const saveOnboardingDetailsAction = authActionClient
         bio: parsedInput.bio
       }
     });
-    if (parsedInput.email) {
+
+    if (parsedInput.sendMarketing) {
       await registerLoops(
         {
           email: parsedInput.email,
@@ -61,7 +64,12 @@ export const saveOnboardingDetailsAction = authActionClient
       });
     }
 
-    await updateReferralUsers(userId);
+    try {
+      // user must verify email before referral can be counted
+      await sendVerificationEmail({ userId });
+    } catch (error) {
+      log.error('Error sending verification email', { error, userId });
+    }
 
     return { success: true };
   });

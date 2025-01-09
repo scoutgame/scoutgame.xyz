@@ -53,11 +53,9 @@ jobs:
           - app_name: 'scoutgame'
             test_command: |
               npm run typecheck -w apps/scoutgame
-              dotenv -e .env.test.local -- npm run test -w packages/scoutgame
+              npx dotenv -e .env.test.local -- npm run test -w packages
           - app_name: 'scoutgametelegram'
-            test_command: |
-              npm run typecheck -w apps/scoutgametelegram
-              dotenv -e .env.test.local -- npm run test -w packages/scoutgametelegram
+            test_command: npm run typecheck -w apps/scoutgametelegram
           - app_name: 'scoutgamecron'
             test_command: 'npm run typecheck -w apps/scoutgamecron'
           - app_name: 'admin'
