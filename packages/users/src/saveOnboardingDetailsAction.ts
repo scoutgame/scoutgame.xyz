@@ -1,14 +1,15 @@
 'use server';
 
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { registerScout as registerBeehiiv } from '@packages/beehiiv/registerScout';
 import { registerScout as registerLoops } from '@packages/loops/registerScout';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { sendVerificationEmail } from '@packages/users/verifyEmail';
 import { isValidEmail } from '@packages/utils/strings';
 
 import { generateUserPath } from './generateUserPath';
-import { updateReferralUsers } from './referrals/updateReferralUsers';
 import { saveOnboardingDetailsSchema } from './saveOnboardingDetailsSchema';
 
 export const saveOnboardingDetailsAction = authActionClient
