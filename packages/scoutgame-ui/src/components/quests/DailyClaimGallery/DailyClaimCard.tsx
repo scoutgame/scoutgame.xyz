@@ -2,9 +2,9 @@
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Stack, Typography } from '@mui/material';
-import { getCurrentLocalWeek } from '@packages/dates/utils';
 import { claimDailyRewardAction } from '@packages/scoutgame/claims/claimDailyRewardAction';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
+import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DateTime } from 'luxon';
@@ -117,11 +117,14 @@ export function AnimatedClaimedIcon({ isClaimed }: { isClaimed: boolean }) {
 
 export function DailyClaimCard({
   dailyClaim,
-  hasClaimedStreak
+  hasClaimedStreak,
+  canClaimBonus
 }: {
   dailyClaim: DailyClaim;
   hasClaimedStreak: boolean;
+  canClaimBonus: boolean;
 }) {
+  const serverDate = getServerDate();
   const { refreshUser } = useUser();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const myConfetti = confetti.create(canvasRef.current || undefined, { resize: true });
@@ -134,17 +137,17 @@ export function DailyClaimCard({
     }
   });
 
-  const currentWeekDay = DateTime.fromJSDate(new Date()).weekday;
+  const currentWeekDay = serverDate.weekday;
   const isPastDay = currentWeekDay > dailyClaim.day;
   const isClaimToday = currentWeekDay === dailyClaim.day;
   const isClaimed = dailyClaim.claimed;
-  const canClaim = isClaimToday && !isClaimed && (!dailyClaim.isBonus || hasClaimedStreak);
+  const canClaim = isClaimToday && ((dailyClaim.isBonus && canClaimBonus) || !dailyClaim.isBonus) && !isClaimed;
 
   function getButtonLabel() {
-    if (isClaimToday && !isClaimed) {
-      return 'Claim';
-    } else if (dailyClaim.isBonus) {
+    if (dailyClaim.isBonus) {
       return hasClaimedStreak ? 'Bonus' : 'Streak broken :(';
+    } else if (canClaim) {
+      return 'Claim';
     } else {
       return WEEKDAYS[dailyClaim.day - 1];
     }
@@ -153,7 +156,7 @@ export function DailyClaimCard({
   function getVariant() {
     if (isPastDay || (dailyClaim.isBonus && !hasClaimedStreak)) {
       return 'disabled';
-    } else if (isClaimToday) {
+    } else if (canClaim) {
       return 'secondary';
     } else {
       return 'primary';
@@ -164,8 +167,7 @@ export function DailyClaimCard({
     if (canClaim) {
       await claimDailyReward({
         isBonus: dailyClaim.isBonus,
-        dayOfWeek: currentWeekDay,
-        week: getCurrentLocalWeek()
+        dayOfWeek: currentWeekDay
       });
       myConfetti({ origin: { x: 0.5, y: 1 }, particleCount: 150 });
     }
@@ -182,7 +184,7 @@ export function DailyClaimCard({
           ? 'background.light'
           : isPastDay || (dailyClaim.isBonus && !hasClaimedStreak)
             ? 'background.dark'
-            : isClaimToday
+            : canClaim
               ? 'secondary.main'
               : 'primary.dark',
         height: 90,
@@ -233,11 +235,7 @@ export function DailyClaimCard({
           />
         )}
       </Stack>
-      <Typography
-        variant='body2'
-        color={isClaimToday && !isClaimed ? 'secondary.dark' : 'text.primary'}
-        fontWeight={600}
-      >
+      <Typography variant='body2' color={canClaim ? 'secondary.dark' : 'text.primary'} fontWeight={600}>
         {buttonLabel}
       </Typography>
     </Stack>

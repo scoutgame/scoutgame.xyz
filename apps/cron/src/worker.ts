@@ -12,8 +12,8 @@ import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
 import { refreshShareImagesTask } from './tasks/refreshShareImages';
 import { resolveBalanceIssues } from './tasks/resolveBalanceIssues/resolveBalanceIssues';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
+import { syncExternalUserProfilesTask } from './tasks/syncExternalUserProfiles/syncExternalUserProfilesTask';
 import { updateAllBuilderCardActivities } from './tasks/updateBuilderCardActivity';
-import { updateMixpanelUserProfilesTask } from './tasks/updateMixpanelProfilesTask';
 import { updateTalentMoxieProfiles } from './tasks/updateTalentMoxieProfiles';
 
 const app = new Koa();
@@ -58,7 +58,7 @@ addTask('/process-gems-payout', processGemsPayout);
 
 addTask('/process-nft-mints', processNftMints);
 
-addTask('/update-mixpanel-user-profiles', updateMixpanelUserProfilesTask);
+addTask('/sync-external-user-profiles', syncExternalUserProfilesTask);
 
 addTask('/alert-low-wallet-gas-balance', alertLowWalletGasBalance);
 

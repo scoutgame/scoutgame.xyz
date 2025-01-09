@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getBuilderNftContractAddress } from '@packages/scoutgame/builderNfts/constants';
-import { mockBuilder, mockScout, mockBuilderNft } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
 
 import { expect, test } from './test';
 

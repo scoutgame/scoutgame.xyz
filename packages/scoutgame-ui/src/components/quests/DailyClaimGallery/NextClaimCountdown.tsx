@@ -1,16 +1,15 @@
 'use client';
 
 import { Stack, Typography } from '@mui/material';
+import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
 import { timeUntilFuture } from '@packages/utils/dates';
-import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 
 export function NextClaimCountdown() {
-  const currentDate = DateTime.now().toFormat('dd-MM-yyyy');
-  const nextDay = DateTime.fromFormat(currentDate, 'dd-MM-yyyy').plus({ days: 1 });
-  const [timeStr, setTimeStr] = useState(timeUntilFuture(nextDay.toMillis()));
-
+  const currentDate = getServerDate();
+  const nextDay = currentDate.plus({ days: 1 }).startOf('day');
   const nextDayMillis = nextDay.toMillis();
+  const [timeStr, setTimeStr] = useState(timeUntilFuture(nextDayMillis));
 
   useEffect(() => {
     const timeout = setInterval(() => {

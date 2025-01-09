@@ -22,5 +22,8 @@
     "@packages/utils": "^1.0.0",
     "csv-stringify": "^6.5.2",
     "react-icons": "^5.3.0"
+  },
+  "devDependencies": {
+    "@packages/testing": "^1.0.0"
   }
 }

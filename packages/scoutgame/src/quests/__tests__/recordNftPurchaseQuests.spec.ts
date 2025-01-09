@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/testing/database';
 
-import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '../../testing/database';
 import { recordNftPurchaseQuests } from '../recordNftPurchaseQuests';
 
 const season = getCurrentSeasonStart();

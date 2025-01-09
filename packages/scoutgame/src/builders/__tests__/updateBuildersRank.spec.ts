@@ -1,8 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
-import { mockBuilder, mockUserWeeklyStats } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockUserWeeklyStats } from '@packages/testing/database';
 
 const mockWeek = '2021-w21';
+const mockSeason = '2021-s1';
 
 describe('updateBuildersRank', () => {
   it('should update the rank of all builders with weekly stats', async () => {
@@ -13,7 +14,7 @@ describe('updateBuildersRank', () => {
       n -= 1;
     }
 
-    await updateBuildersRank({ week: mockWeek });
+    await updateBuildersRank({ week: mockWeek, season: mockSeason });
     const weeklyStats = await prisma.userWeeklyStats.findMany({
       where: {
         week: mockWeek

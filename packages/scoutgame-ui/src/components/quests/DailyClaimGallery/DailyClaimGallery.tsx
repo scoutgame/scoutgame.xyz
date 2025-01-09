@@ -1,5 +1,6 @@
 import { Grid2 as Grid, Skeleton, Stack, Typography } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
+import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
 import { DailyClaimCard } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimCard';
 import dynamic from 'next/dynamic';
 
@@ -27,7 +28,15 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
       <Grid container spacing={1} width='100%'>
         {dailyClaims.map((dailyClaim) => (
           <Grid size={dailyClaim.isBonus ? 8 : 4} key={`${dailyClaim.day}-${dailyClaim.isBonus}`}>
-            <DailyClaimCard dailyClaim={dailyClaim} hasClaimedStreak={isSequential} />
+            <DailyClaimCard
+              dailyClaim={dailyClaim}
+              hasClaimedStreak={isSequential}
+              canClaimBonus={
+                isSequential &&
+                !!dailyClaim.isBonus &&
+                dailyClaims.some((item) => item.day === 7 && !item.isBonus && item.claimed)
+              }
+            />
           </Grid>
         ))}
       </Grid>
@@ -36,7 +45,8 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
 }
 
 function isSequentialUpToToday(dailyClaims: DailyClaim[]) {
-  const today = new Date().getDay() || 7; // Sunday returns 0, so we convert it to 7
+  const serverDate = getServerDate();
+  const today = serverDate.weekday || 7; // Sunday returns 0, so we convert it to 7
 
   return dailyClaims
     .slice(0, today - 1)

@@ -4,7 +4,7 @@ import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import { Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography } from '@mui/material';
-import { updateUserEmailSettingsAction } from '@packages/users/updateUserEmailSettings';
+import { updateUserEmailSettingsAction } from '@packages/users/updateUserEmailSettingsAction';
 import type { UpdateUserEmailSettingsFormValues } from '@packages/users/updateUserEmailSettingsSchema';
 import { updateUserEmailSettingsSchema } from '@packages/users/updateUserEmailSettingsSchema';
 import { concatenateStringValues } from '@packages/utils/strings';

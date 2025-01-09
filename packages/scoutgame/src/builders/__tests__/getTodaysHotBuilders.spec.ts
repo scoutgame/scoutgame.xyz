@@ -1,8 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { getPreviousWeek } from '@packages/dates/utils';
-
-import { mockBuilder, mockUserWeeklyStats } from '../../testing/database';
+import { mockBuilder, mockUserWeeklyStats } from '@packages/testing/database';
 
 const mockSeason = `2020-W01${Math.random()}`;
 

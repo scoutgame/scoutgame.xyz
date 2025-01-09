@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { mockBuilder } from '@packages/testing/database';
 
-import { mockBuilder } from '../../testing/database';
 import { sendPointsForMiscEvent } from '../builderEvents/sendPointsForMiscEvent';
 
 describe('sendPoints', () => {

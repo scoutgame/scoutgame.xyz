@@ -70,6 +70,8 @@ export async function sendPointsForSocialQuest({
   if (tx) {
     return txHandler(tx);
   } else {
-    return prisma.$transaction(txHandler);
+    return prisma.$transaction(txHandler, {
+      timeout: 10000
+    });
   }
 }

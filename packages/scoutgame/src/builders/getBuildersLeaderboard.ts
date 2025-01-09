@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export type LeaderboardBuilder = {
   builder: {
@@ -12,11 +13,14 @@ export type LeaderboardBuilder = {
 
 export async function getBuildersLeaderboard({
   quantity,
-  week
+  week,
+  season
 }: {
   quantity?: number;
   week: string;
+  season?: string;
 }): Promise<LeaderboardBuilder[]> {
+  season ||= getCurrentSeasonStart(week);
   const userWeeklyStats = await prisma.userWeeklyStats.findMany({
     where: {
       week,
@@ -39,6 +43,7 @@ export async function getBuildersLeaderboard({
           displayName: true,
           events: {
             where: {
+              season,
               type: 'merged_pull_request'
             },
             orderBy: {

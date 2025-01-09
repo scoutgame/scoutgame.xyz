@@ -1,8 +1,8 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import type { MockBuilder } from '@packages/testing/database';
+import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { generateRandomEthAddress } from '@packages/testing/random';
 
-import type { MockBuilder } from '../../testing/database';
-import { mockBuilder, mockBuilderNft } from '../../testing/database';
 import type { TokenDistribution } from '../divideTokensBetweenBuilderAndHolders';
 import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenBuilderAndHolders';
 

@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { randomLargeInt } from '@packages/scoutgame/testing/generators';
+import { randomLargeInt } from '@packages/testing/generators';
 
 import { refreshUserScore } from '../refreshUserScore';
 

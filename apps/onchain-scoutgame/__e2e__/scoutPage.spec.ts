@@ -1,4 +1,4 @@
-import { mockBuilder, mockScout, mockUserWeeklyStats } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockScout, mockUserWeeklyStats } from '@packages/testing/database';
 
 import { expect, test } from './test';
 

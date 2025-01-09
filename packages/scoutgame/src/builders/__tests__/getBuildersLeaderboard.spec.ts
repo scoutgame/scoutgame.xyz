@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { mockBuilder } from '@packages/testing/database';
 import { v4 } from 'uuid';
 
-import { mockBuilder } from '../../testing/database';
 import { getBuildersLeaderboard } from '../getBuildersLeaderboard';
 
 describe('getBuildersLeaderboard', () => {
@@ -79,7 +79,7 @@ describe('getBuildersLeaderboard', () => {
       data: { gemsCollected: 7 }
     });
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek });
+    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(5);
 
@@ -123,7 +123,7 @@ describe('getBuildersLeaderboard', () => {
       })
     );
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek });
+    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(5);
 
@@ -168,7 +168,7 @@ describe('getBuildersLeaderboard', () => {
       })
     );
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek });
+    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(3);
     expect(topBuilders.map((b) => b.builder.id)).toEqual(

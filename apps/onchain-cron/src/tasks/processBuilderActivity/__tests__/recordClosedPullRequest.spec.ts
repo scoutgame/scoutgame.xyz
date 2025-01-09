@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { mockBuilder, mockBuilderNft, mockRepo, mockScout } from '@packages/scoutgame/testing/database';
-import { randomLargeInt, mockSeason } from '@packages/scoutgame/testing/generators';
+import { mockBuilder, mockBuilderNft, mockRepo, mockScout } from '@packages/testing/database';
+import { randomLargeInt, mockSeason } from '@packages/testing/generators';
 import { v4 } from 'uuid';
 
 import { mockPullRequest } from '@/testing/generators';

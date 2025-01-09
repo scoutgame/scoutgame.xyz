@@ -1,5 +1,6 @@
 import type { MixpanelEventName } from '@packages/mixpanel/interfaces';
 import { trackEventAction } from '@packages/scoutgame/mixpanel/trackEventAction';
+import { isValidURL } from '@packages/utils/url';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
@@ -8,6 +9,11 @@ export function useTrackEvent() {
 
   return useCallback(
     function trackEvent(event: MixpanelEventName, properties?: Record<string, string | number | boolean>) {
+      const initialReferrer = document.referrer;
+      const isReferrerValid = isValidURL(initialReferrer);
+      const referrer = isReferrerValid ? initialReferrer : undefined;
+      const referrerDomain = isReferrerValid ? new URL(initialReferrer).hostname : undefined;
+
       execute({
         event,
         currentPageTitle: document.title,
@@ -17,6 +23,8 @@ export function useTrackEvent() {
         // default event props in mixpanel
         $screen_width: String(window.screen.width),
         $screen_height: String(window.screen.height),
+        $referrer: referrer,
+        $referring_domain: referrerDomain,
         ...properties
       });
     },

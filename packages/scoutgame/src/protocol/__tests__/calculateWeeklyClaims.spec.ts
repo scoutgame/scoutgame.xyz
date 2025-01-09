@@ -1,9 +1,9 @@
 import { stringUtils } from '@charmverse/core/utilities';
 import { jest } from '@jest/globals';
+import { mockBuilderNft, mockBuilder, mockScout } from '@packages/testing/database';
 import { generateRandomEthAddress } from '@packages/testing/random';
 import { prettyPrint } from '@packages/utils/strings';
 
-import { mockBuilderNft, mockBuilder, mockScout } from '../../testing/database';
 import type { WeeklyClaimsCalculated } from '../calculateWeeklyClaims';
 import { getScoutProtocolAddress, scoutProtocolChainId } from '../constants';
 import { generateWeeklyClaims } from '../generateWeeklyClaims';
