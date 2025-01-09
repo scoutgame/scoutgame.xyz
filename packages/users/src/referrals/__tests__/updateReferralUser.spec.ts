@@ -2,6 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { mockScout } from '@packages/testing/database';
 
 import { rewardPoints } from '../../constants';
+import { createVerificationCode, verifyEmail } from '../../verifyEmail';
 import { createReferralEvent } from '../createReferralEvent';
 import { updateReferralUsers } from '../updateReferralUsers';
 
@@ -105,5 +106,22 @@ describe('updateReferralUsers', () => {
     await createReferralEvent(referrer.referralCode, referee4.id);
     const result4 = await updateReferralUsers(referee4.id);
     expect(result4.result).toBe('success');
+  });
+
+  it('should be triggered when a referee verifies their email', async () => {
+    const referrer = await mockScout();
+    const referee = await mockScout({ email: 'matt@gmail.com' });
+
+    await createReferralEvent(referrer.referralCode, referee.id);
+
+    const code = await createVerificationCode({ email: referee.email!, userId: referee.id });
+    await verifyEmail(code);
+
+    const event = await prisma.referralCodeEvent.findFirstOrThrow({
+      where: {
+        refereeId: referee.id
+      }
+    });
+    expect(event.completedAt).toBeTruthy();
   });
 });

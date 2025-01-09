@@ -1,62 +1,50 @@
-import { sendEmail } from '@charmverse/core/email';
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { mockScout } from '@packages/testing/database';
 
-import { createEmailVerification, verifyEmail, InvalidVerificationError } from '../verifyEmail';
-
-jest.mock('@charmverse/core/email', () => ({
-  sendEmail: jest.fn()
+jest.unstable_mockModule('@packages/mailer/sendEmailTemplate', () => ({
+  sendEmailTemplate: jest.fn()
 }));
 
-describe('email verification', () => {
+const { sendVerificationEmail, verifyEmail, InvalidVerificationError } = await import('../verifyEmail');
+const { sendEmailTemplate } = await import('@packages/mailer/sendEmailTemplate');
+
+describe('verifyEmail', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should create verification code and send email', async () => {
-    const scout = await prisma.scout.create({
-      data: {
-        displayName: 'test',
-        path: `test${Math.random()}`,
-        referralCode: `test${Math.random()}`
-      }
-    });
+    const scout = await mockScout();
 
-    const email = 'test@example.com';
-    const code = await createEmailVerification(scout.id, email);
+    await sendVerificationEmail({ userId: scout.id });
 
     // Verify code was created
     const verification = await prisma.scoutEmailVerification.findFirst({
-      where: { code }
+      where: { scoutId: scout.id }
     });
     expect(verification).toBeTruthy();
-    expect(verification?.email).toBe(email);
+    expect(verification?.code).toBeDefined();
+    expect(verification?.email).toBe(scout.email);
     expect(verification?.scoutId).toBe(scout.id);
     expect(verification?.completedAt).toBeNull();
 
     // Verify email was sent
-    expect(sendEmail).toHaveBeenCalledWith(
+    expect(sendEmailTemplate).toHaveBeenCalledWith(
       expect.objectContaining({
-        to: email,
-        subject: 'Verify your email'
+        userId: scout.id,
+        template: 'email verification'
       })
     );
   });
 
   it('should verify email with valid code', async () => {
-    const scout = await prisma.scout.create({
-      data: {
-        displayName: 'test',
-        path: `test${Math.random()}`,
-        referralCode: `test${Math.random()}`
-      }
-    });
+    const scout = await mockScout();
 
-    const email = 'test@example.com';
-    const code = await createEmailVerification(scout.id, email);
+    const code = await sendVerificationEmail({ userId: scout.id });
 
-    const updatedScout = await verifyEmail(code);
-    expect(updatedScout.email).toBe(email);
+    const { result } = await verifyEmail(code);
+    expect(result).toBe('verified');
 
     // Verify verification was marked as completed
     const verification = await prisma.scoutEmailVerification.findFirst({
@@ -65,27 +53,19 @@ describe('email verification', () => {
     expect(verification?.completedAt).toBeTruthy();
   });
 
-  it('should throw error for already completed verification', async () => {
-    const scout = await prisma.scout.create({
+  it('should handle already completed verification', async () => {
+    const scout = await mockScout();
+
+    const code = await sendVerificationEmail({ userId: scout.id });
+
+    await prisma.scoutEmailVerification.update({
+      where: { code },
       data: {
-        displayName: 'test',
-        path: `test${Math.random()}`,
-        referralCode: `test${Math.random()}`
+        completedAt: new Date()
       }
     });
 
-    const email = 'test@example.com';
-    const code = 'test-code';
-
-    await prisma.scoutEmailVerification.create({
-      data: {
-        code,
-        email,
-        scoutId: scout.id,
-        completedAt: new Date() // Already completed
-      }
-    });
-
-    await expect(verifyEmail(code)).rejects.toThrow(InvalidVerificationError);
+    const { result } = await verifyEmail(code);
+    expect(result).toBe('already_verified');
   });
 });

@@ -13,8 +13,6 @@ export class InvalidVerificationError extends Error {
 }
 
 export async function sendVerificationEmail({ userId }: { userId: string }) {
-  // Generate a 18-digit verification code
-  const code = Math.floor(100000000000000000 + Math.random() * 900000000000000000).toString();
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
       id: userId
@@ -28,14 +26,7 @@ export async function sendVerificationEmail({ userId }: { userId: string }) {
     throw new Error('User has no email');
   }
 
-  await prisma.scoutEmailVerification.create({
-    data: {
-      code,
-      email: scout.email!,
-      scoutId: userId
-      // completedAt will be null until verified
-    }
-  });
+  const code = await createVerificationCode({ email: scout.email, userId });
 
   // Send verification email
   await sendEmailTemplate({
@@ -47,7 +38,25 @@ export async function sendVerificationEmail({ userId }: { userId: string }) {
       verification_url: `${baseUrl}/verify-email?code=${code}`
     }
   });
+
   log.info('Verification email sent', { userId });
+
+  return code;
+}
+
+export async function createVerificationCode({ email, userId }: { email: string; userId: string }) {
+  // Generate a 18-digit verification code
+  const code = Math.floor(100000000000000000 + Math.random() * 900000000000000000).toString();
+
+  await prisma.scoutEmailVerification.create({
+    data: {
+      code,
+      email,
+      scoutId: userId
+      // completedAt will be null until verified
+    }
+  });
+  return code;
 }
 
 export async function verifyEmail(code: string): Promise<{ result: 'already_verified' | 'verified' }> {
