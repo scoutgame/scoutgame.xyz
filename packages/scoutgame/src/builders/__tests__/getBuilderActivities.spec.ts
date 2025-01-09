@@ -1,4 +1,4 @@
-import { mockBuilder, mockScout, mockBuilderNft } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
 
 import { getBuilderActivities } from '../getBuilderActivities';
 

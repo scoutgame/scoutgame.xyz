@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { mockRepo, mockGithubUser } from '@packages/scoutgame/testing/database';
+import { mockRepo, mockGithubUser } from '@packages/testing/database';
 
 import { mockCommit, mockPullRequest } from '@/testing/generators';
 

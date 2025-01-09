@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { mockBuilder } from '@packages/testing/database';
 
-import { mockBuilder } from '../../testing/database';
 import { completeQuests } from '../completeQuests';
 import { questsRecord } from '../questRecords';
 

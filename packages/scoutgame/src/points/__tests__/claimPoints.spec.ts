@@ -1,13 +1,13 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-
 import {
   mockBuilder,
   mockScout,
   mockGemPayoutEvent,
   mockBuilderNft,
   mockNFTPurchaseEvent
-} from '../../testing/database';
+} from '@packages/testing/database';
+
 import { claimPoints } from '../claimPoints';
 
 describe('claimPoints', () => {

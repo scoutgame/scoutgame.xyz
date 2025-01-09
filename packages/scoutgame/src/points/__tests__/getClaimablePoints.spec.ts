@@ -1,6 +1,6 @@
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { mockBuilder, mockGemPayoutEvent } from '@packages/testing/database';
 
-import { mockBuilder, mockGemPayoutEvent } from '../../testing/database';
 import { claimPoints } from '../claimPoints';
 import { getClaimablePoints } from '../getClaimablePoints';
 

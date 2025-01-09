@@ -3,8 +3,8 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { builderPointsShare, scoutPointsShare } from '@packages/scoutgame/builderNfts/constants';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
-import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/scoutgame/testing/database';
-import { mockSeason } from '@packages/scoutgame/testing/generators';
+import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/testing/database';
+import { mockSeason } from '@packages/testing/generators';
 
 import { processScoutPointsPayout } from '../processScoutPointsPayout';
 

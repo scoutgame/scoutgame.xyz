@@ -1,8 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { mockScout } from '@packages/testing/database';
 
-import { mockScout } from '../../testing/database';
 import type { ScoutsSortBy } from '../getScouts';
 import { getScouts } from '../getScouts';
 

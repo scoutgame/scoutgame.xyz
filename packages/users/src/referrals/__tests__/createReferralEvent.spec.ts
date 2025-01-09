@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { mockScout } from '@packages/testing/database';
 
-import { mockScout } from '../../testing/database';
 import { createReferralEvent } from '../createReferralEvent';
 
 describe('createReferralUsers', () => {

@@ -1,5 +1,5 @@
 import { getLastWeek } from '@packages/dates/utils';
-import { mockBuilder, mockBuilderEvent } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockBuilderEvent } from '@packages/testing/database';
 
 import { claimDailyReward } from '../claimDailyReward';
 import { getDailyClaims } from '../getDailyClaims';

@@ -1,4 +1,4 @@
-import { mockScout, mockBuilder } from '@packages/scoutgame/testing/database';
+import { mockScout, mockBuilder } from '@packages/testing/database';
 
 import { getUsers } from '../getUsers';
 

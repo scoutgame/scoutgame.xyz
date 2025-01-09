@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { mockBuilder } from '@packages/scoutgame/testing/database';
+import { mockBuilder } from '@packages/testing/database';
 
 jest.unstable_mockModule('../../builderNfts/builderRegistration/registerBuilderNFT', () => ({
   registerBuilderNFT: jest.fn()
