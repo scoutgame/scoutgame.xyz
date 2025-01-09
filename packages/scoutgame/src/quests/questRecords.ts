@@ -229,3 +229,11 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     resettable: false
   }
 };
+
+export const resettableQuestTypes = Object.entries(questsRecord)
+  .filter(([_, quest]) => quest.resettable)
+  .map(([type]) => type);
+
+export const nonResettableQuestTypes = Object.entries(questsRecord)
+  .filter(([_, quest]) => !quest.resettable)
+  .map(([type]) => type);

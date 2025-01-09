@@ -1,14 +1,12 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { questsRecord, type QuestInfo, type QuestType } from './questRecords';
+import { resettableQuestTypes, questsRecord, type QuestInfo, type QuestType } from './questRecords';
 
-export async function getQuests(userId: string): Promise<QuestInfo[]> {
-  const season = getCurrentSeasonStart();
+export async function getQuests(userId: string, season = getCurrentSeasonStart()): Promise<QuestInfo[]> {
   const socialQuests = await prisma.scoutSocialQuest.findMany({
     where: {
-      userId,
-      season
+      userId
     }
   });
 
@@ -41,10 +39,14 @@ export async function getQuests(userId: string): Promise<QuestInfo[]> {
       completedSteps = Math.min(uniqueCardPurchases, 5);
     }
 
+    const isCompleted = socialQuests.some((q) => q.type === type);
+    const isCompletedInCurrentSeason = socialQuests.some((q) => q.type === type && q.season === season);
+    const isResettable = resettableQuestTypes.includes(type);
+
     return {
       ...questsRecord[type],
       type,
-      completed: socialQuests.some((q) => q.type === type),
+      completed: isResettable ? isCompletedInCurrentSeason : isCompleted,
       completedSteps
     };
   });

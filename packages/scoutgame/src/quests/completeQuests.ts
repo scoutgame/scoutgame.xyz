@@ -5,15 +5,7 @@ import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { sendPointsForSocialQuest } from '../points/builderEvents/sendPointsForSocialQuest';
 
 import type { QuestType } from './questRecords';
-import { questsRecord } from './questRecords';
-
-const resettableQuestTypes = Object.entries(questsRecord)
-  .filter(([_, quest]) => quest.resettable)
-  .map(([type]) => type);
-
-const nonResettableQuestTypes = Object.entries(questsRecord)
-  .filter(([_, quest]) => !quest.resettable)
-  .map(([type]) => type);
+import { resettableQuestTypes, nonResettableQuestTypes, questsRecord } from './questRecords';
 
 export async function completeQuests(
   userId: string,
