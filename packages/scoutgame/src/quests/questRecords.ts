@@ -218,7 +218,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     link: '/accounts',
     tag: 'scout',
-    resettable: true
+    resettable: false
   },
   'link-telegram-account': {
     label: 'Link your account with Telegram',
@@ -226,6 +226,14 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     link: '/accounts',
     tag: 'scout',
-    resettable: true
+    resettable: false
   }
 };
+
+export const resettableQuestTypes = Object.entries(questsRecord)
+  .filter(([_, quest]) => quest.resettable)
+  .map(([type]) => type);
+
+export const nonResettableQuestTypes = Object.entries(questsRecord)
+  .filter(([_, quest]) => !quest.resettable)
+  .map(([type]) => type);

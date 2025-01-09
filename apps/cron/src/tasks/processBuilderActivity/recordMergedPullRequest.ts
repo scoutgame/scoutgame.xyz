@@ -278,7 +278,9 @@ export async function recordMergedPullRequest({
               questTypes.push('contribute-celo-repo');
             }
 
-            await completeQuests(githubUser.builderId, questTypes);
+            if (questTypes.length) {
+              await completeQuests(githubUser.builderId, questTypes);
+            }
           } catch (error) {
             log.error('Error completing quest for merged PR', { error, userId: githubUser.builderId, activityType });
           }
