@@ -17,7 +17,7 @@ import {
 import { FormErrors } from '@packages/scoutgame-ui/components/common/FormErrors';
 import { useIsMounted } from '@packages/scoutgame-ui/hooks/useIsMounted';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { concatenateStringValues } from '@packages/utils/strings';
+import { isValidEmail, concatenateStringValues } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
@@ -66,8 +66,17 @@ export function WelcomePage() {
   };
 
   function onInvalid(fieldErrors: FieldErrors) {
-    setErrors(['The form is invalid. Please check the fields and try again.']);
-    log.warn('Invalid form submission', { fieldErrors, values: getValues() });
+    const values = getValues();
+    if (fieldErrors.email) {
+      setErrors(['You must enter an email address']);
+    } else if (!isValidEmail(values.email)) {
+      setErrors(['You must enter a valid email address']);
+    } else if (fieldErrors.agreedToTOS) {
+      setErrors(['You must agree to the Terms of Service']);
+    } else {
+      setErrors(['The form is invalid. Please check the fields and try again.']);
+    }
+    log.warn('Invalid form submission', { fieldErrors, values });
   }
 
   const isMounted = useIsMounted();
