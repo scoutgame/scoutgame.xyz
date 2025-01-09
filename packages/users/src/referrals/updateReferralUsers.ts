@@ -10,24 +10,35 @@ import { rewardPoints } from '../constants';
 type Result = 'already_referred' | 'already_referred_as_another_user' | 'not_verified' | 'not_referred' | 'success';
 
 export async function updateReferralUsers(refereeId: string): Promise<{ result: Result }> {
-  const email = await prisma.scout.findUniqueOrThrow({
+  const referee = await prisma.scout.findUniqueOrThrow({
     where: {
       id: refereeId
     },
     select: {
-      email: true
+      email: true,
+      emailVerifications: true,
+      displayName: true,
+      path: true
     }
   });
   // find scouts with similar email
-  const similarEmailScouts = await prisma.scout.findMany({
+  const _similarEmailScouts = await prisma.scout.findMany({
     where: {
       email: {
         mode: 'insensitive',
-        startsWith: email.email?.split('@')[0].split('+')[0],
-        endsWith: `@${email.email?.split('@')[1]}`
+        startsWith: referee.email?.split('@')[0].split('+')[0],
+        endsWith: `@${referee.email?.split('@')[1]}`
       }
+    },
+    select: {
+      email: true,
+      id: true
     }
   });
+  // handle exceptions in the query logic above.
+  // For example: 'matteo@gmail.com' and 'matt+test@gmail.com' both start with 'matt'
+  const similarEmailScouts = _similarEmailScouts.filter((s) => isSimilarEmail(s.email!, referee.email!));
+
   const referralCodeEvents = await prisma.referralCodeEvent.findMany({
     where: {
       refereeId: {
@@ -62,15 +73,6 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
   if (referralCodeEvents.length > 1) {
     log.debug('Unexpected state: referee has multiple referral events', { userId: refereeId });
   }
-
-  const referee = await prisma.scout.findUniqueOrThrow({
-    where: {
-      id: refereeId
-    },
-    include: {
-      emailVerifications: true
-    }
-  });
 
   if (!referee.emailVerifications.some((e) => !!e.completedAt)) {
     log.debug('Ignore referral because referee has not verified their email', { userId: refereeId });
@@ -176,4 +178,8 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
   }
 
   return { result: 'success' };
+}
+
+function isSimilarEmail(email1: string, email2: string) {
+  return email1.split('@')[0].split('+')[0].toLowerCase() === email2.split('@')[0].split('+')[0].toLowerCase();
 }
