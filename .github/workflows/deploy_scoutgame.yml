@@ -124,8 +124,7 @@ jobs:
 
       - name: Run package tests
         run: |
-          npx dotenv -e .env.test.local -- npm run test -w packages/scoutgame
-          npx dotenv -e .env.test.local -- npm run test -w packages/users
+          npx dotenv -e .env.test.local -- npm run test -w packages
 
   test-scoutgame-e2e:
     name: Test e2e
