@@ -16,5 +16,8 @@
     "@packages/nextjs": "^0.0.0",
     "@packages/utils": "^1.0.0",
     "@packages/waitlist": "^0.0.0"
+  },
+  "devDependencies": {
+    "@packages/testing": "^1.0.0"
   }
 }

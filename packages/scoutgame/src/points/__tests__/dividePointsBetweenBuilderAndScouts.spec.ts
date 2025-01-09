@@ -1,7 +1,7 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import type { MockBuilder } from '@packages/testing/database';
+import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/testing/database';
 
-import type { MockBuilder } from '../../testing/database';
-import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '../../testing/database';
 import { dividePointsBetweenBuilderAndScouts } from '../dividePointsBetweenBuilderAndScouts';
 import type { PartialNftPurchaseEvent } from '../getWeeklyPointsPoolAndBuilders';
 

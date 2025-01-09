@@ -1,4 +1,4 @@
-import { mockBuilder } from '@packages/scoutgame/testing/database';
+import { mockBuilder } from '@packages/testing/database';
 
 import { expect, test } from './test';
 

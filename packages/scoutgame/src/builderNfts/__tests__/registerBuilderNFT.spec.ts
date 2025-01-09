@@ -1,9 +1,9 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
+import { randomLargeInt } from '@packages/testing/generators';
 
-import { mockBuilder, mockBuilderNft } from '../../testing/database';
-import { randomLargeInt } from '../../testing/generators';
 import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 
 jest.unstable_mockModule('../clients/builderContractMinterWriteClient', () => ({

@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { mockBuilder, mockScout, mockBuilderNft, mockNFTPurchaseEvent } from '@packages/scoutgame/testing/database';
+import { mockBuilder, mockScout, mockBuilderNft, mockNFTPurchaseEvent } from '@packages/testing/database';
 
 const mockSeason = '2023-W01';
 

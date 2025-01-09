@@ -1,6 +1,6 @@
 import { BuilderNftType } from '@charmverse/core/prisma-client';
+import { mockBuilder, mockScout, mockNFTPurchaseEvent, mockBuilderNft } from '@packages/testing/database';
 
-import { mockBuilder, mockScout, mockNFTPurchaseEvent, mockBuilderNft } from '../../testing/database';
 import { getAllNftOwners } from '../getAllNftOwners';
 
 describe('getAllNftOwners', () => {

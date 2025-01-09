@@ -1,5 +1,5 @@
 import type { Commit } from '@packages/github/getCommitsByUser';
-import { randomLargeInt } from '@packages/scoutgame/testing/generators';
+import { randomLargeInt } from '@packages/testing/generators';
 
 import type { PullRequest } from '../tasks/processBuilderActivity/github/getPullRequestsByUser';
 
