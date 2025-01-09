@@ -110,7 +110,7 @@ describe('updateReferralUsers', () => {
 
   it('should be triggered when a referee verifies their email', async () => {
     const referrer = await mockScout();
-    const referee = await mockScout({ email: 'matt@gmail.com' });
+    const referee = await mockScout();
 
     await createReferralEvent(referrer.referralCode, referee.id);
 
