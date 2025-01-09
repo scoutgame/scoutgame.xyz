@@ -1,5 +1,4 @@
 import { jest } from '@jest/globals';
-import { uuidFromNumber } from '@packages/utils/uuid';
 
 jest.unstable_mockModule('@packages/farcaster/getFarcasterUserById', () => ({
   getFarcasterUserById: jest.fn()

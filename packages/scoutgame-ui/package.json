@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "test": ""
+  },
   "exports": {
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
