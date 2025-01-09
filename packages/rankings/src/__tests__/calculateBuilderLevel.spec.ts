@@ -1,82 +1,80 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import type { ISOWeek } from '@packages/dates/config';
-import { getAllISOWeeksFromSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
-import { prettyPrint } from '@packages/utils/strings';
+import { getDateFromISOWeek, getPreviousSeason } from '@packages/dates/utils';
+import { mockBuilder, mockBuilderNft } from '@packages/scoutgame/testing/database';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
-import { calculateBuilderLevels } from '../calculateBuilderLevel';
+import type { BuilderAggregateScore } from '../calculateBuilderLevel';
+import { calculateBuilderLevels, decileTable } from '../calculateBuilderLevel';
 
-type GemReceiptInput = {
-  isoWeek: string;
-  value: number;
-  date: Date;
-};
+import type { DeterministicRandomBuilderActivity } from './seedBuilders';
+import { seedBuilders, writeSeededBuildersToDatabase } from './seedBuilders';
 
-type DeterministicRandomBuilderActivity = {
-  id: string;
-  totalGems: number;
-  firstActiveWeek: string;
-  activeWeeks: string[];
-  gemReceiptInputs: GemReceiptInput[];
-};
+// Validate date based on deterministic output of 200 builders
+function validateCalculations({
+  builders,
+  levels
+}: {
+  builders: DeterministicRandomBuilderActivity[];
+  levels: BuilderAggregateScore[];
+}) {
+  // Verify levels are assigned correctly based on percentiles
+  for (let i = 0; i < levels.length; i++) {
+    const builder = levels[i];
+    const { centile, level } = builder;
+    const matchingCutoff = decileTable.find((d) => centile >= d.cutoff);
+    expect(level).toBe(matchingCutoff?.level);
+  }
 
-function seedBuilders({ season, amount = 200 }: { season: ISOWeek; amount?: number }) {
-  const weeks = getAllISOWeeksFromSeasonStart({ season });
+  // Verify minimum percentile and level is 1
+  expect(Math.min(...levels.map((b) => b.centile))).toBeGreaterThanOrEqual(1);
+  expect(Math.min(...levels.map((b) => b.level))).toBe(1);
 
-  // Setup X builders (default 200) using a deterministic uuid per builder index
-  // Create mock builders with random gem distributions
-  const builders: DeterministicRandomBuilderActivity[] = Array.from({ length: amount }, (_, index) => {
-    // Use deterministic seed based on builder index, but with more variation
-    const seed = (index * 17 + 31) % 997; // Using prime numbers for better distribution
+  // Verify average gems per week calculation
+  for (let i = 0; i < levels.length; i++) {
+    const generatedBuilder = levels[i];
+    const matchingBuilderInput = builders.find((b) => b.id === generatedBuilder.builderId);
 
-    // Generate random total gems between 500-5000
-    const totalGems = Math.floor(((seed % 45) + 5) * 100);
+    expect(generatedBuilder.averageGemsPerWeek).toBe(
+      Math.floor(generatedBuilder.totalGems / matchingBuilderInput!.activeWeeks.length)
+    );
+  }
 
-    // Generate random start week between W02-W10
-    const firstWeekIndex = seed % weeks.length;
-    const firstActiveWeek = weeks[firstWeekIndex];
+  // Verify ranking order follows average gems per week descending
+  for (let i = 1; i < levels.length; i++) {
+    expect(levels[i - 1].averageGemsPerWeek).toBeGreaterThanOrEqual(levels[i].averageGemsPerWeek);
+  }
 
-    // Calculate active weeks from firstActiveWeek until last week
-    const activeWeeks = weeks.slice(weeks.indexOf(firstActiveWeek));
+  // Sample 3 random indexes to verify exact shape
+  const builder42 = levels[42];
+  const builder87 = levels[87];
+  const builder156 = levels[156];
 
-    // Distribute gems across active weeks
-    let gemsDistributed = 0;
-    const gemReceiptInputs: GemReceiptInput[] = activeWeeks.map((week, weekIndex) => {
-      // Use deterministic random distribution based on seed and week
-      const weekSeed = (seed * (weekIndex + 1) + 41) % 1009; // Different prime for variation
-
-      // Calculate remaining gems and weeks
-      const remainingWeeks = activeWeeks.length - weekIndex;
-      const gemsLeft = totalGems - gemsDistributed;
-
-      // For last week, use all remaining gems
-      if (weekIndex === activeWeeks.length - 1) {
-        const value = gemsLeft;
-        gemsDistributed += value;
-        return { isoWeek: week, value, date: getDateFromISOWeek(week).toJSDate() };
-      }
-
-      // Distribute gems based on remaining weeks
-      const portion = (weekSeed % 31) / (100 * remainingWeeks); // Scale portion by remaining weeks
-      const value = Math.floor(gemsLeft * portion);
-      gemsDistributed += value;
-
-      const date = getDateFromISOWeek(week);
-      date.plus({ days: 2 });
-      return { isoWeek: week, value, date: date.toJSDate() };
-    });
-
-    return {
-      id: uuidFromNumber(index),
-      totalGems,
-      firstActiveWeek,
-      activeWeeks,
-      gemReceiptInputs
-    };
+  expect(builder42).toMatchObject<BuilderAggregateScore>({
+    builderId: uuidFromNumber(69),
+    totalGems: 3200,
+    averageGemsPerWeek: 1066,
+    centile: 80,
+    level: 9,
+    firstActiveWeek: '2025-W09'
+  });
+  expect(builder87).toMatchObject<BuilderAggregateScore>({
+    builderId: uuidFromNumber(155),
+    totalGems: 4700,
+    averageGemsPerWeek: 587,
+    centile: 57,
+    level: 6,
+    firstActiveWeek: '2025-W04'
   });
 
-  return { builders, weeks };
+  expect(builder156).toMatchObject<BuilderAggregateScore>({
+    builderId: uuidFromNumber(47),
+    totalGems: 2500,
+    averageGemsPerWeek: 250,
+    centile: 23,
+    level: 3,
+    firstActiveWeek: '2025-W02'
+  });
 }
 
 describe('seedBuilders', () => {
@@ -84,7 +82,7 @@ describe('seedBuilders', () => {
     jest.useFakeTimers();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.useRealTimers();
   });
 
@@ -259,14 +257,20 @@ describe('calculateBuilderLevels', () => {
     jest.useFakeTimers();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.useRealTimers();
+
+    await prisma.scout.deleteMany({
+      where: {
+        id: {
+          in: Array.from({ length: 200 }, (_, index) => uuidFromNumber(index))
+        }
+      }
+    });
   });
 
-  it('should calculate builder levels correctly, splitting them into centiles converted to levels, and return builders from highest to lowest score', async () => {
-    const season = '2025-W02';
-
-    const decileTable = [
+  it('should be based on the correct deciles', () => {
+    expect(decileTable).toMatchObject([
       { cutoff: 90, level: 10 },
       { cutoff: 80, level: 9 },
       { cutoff: 70, level: 8 },
@@ -277,7 +281,11 @@ describe('calculateBuilderLevels', () => {
       { cutoff: 20, level: 3 },
       { cutoff: 10, level: 2 },
       { cutoff: 0, level: 1 }
-    ];
+    ]);
+  });
+
+  it('should calculate builder levels correctly, splitting them into centiles converted to levels, and return builders from highest to lowest score', async () => {
+    const season = '2025-W02';
 
     const currentDate = new Date('2025-03-12T00:00:00Z');
 
@@ -285,37 +293,70 @@ describe('calculateBuilderLevels', () => {
 
     const { builders } = seedBuilders({ season });
 
-    await prisma.scout.createMany({
-      data: builders.map((builder) => ({
-        id: builder.id,
-        displayName: `Builder ${builder.id}`,
-        path: `p-${builder.id}`,
-        referralCode: `r-${builder.id}`
-      }))
+    await writeSeededBuildersToDatabase({ builders, season });
+
+    const levels = await calculateBuilderLevels({ season });
+
+    validateCalculations({ builders, levels });
+  });
+
+  it('should exclude builders with 0 gems from the calculation', async () => {
+    const season = '2025-W02';
+
+    const currentDate = new Date('2025-03-12T00:00:00Z');
+
+    jest.setSystemTime(currentDate);
+
+    const { builders } = seedBuilders({ season });
+
+    await writeSeededBuildersToDatabase({ builders, season });
+
+    // Add 57 builders with no gems
+    await Promise.all(
+      Array.from({ length: 57 }, async (_, index) => {
+        const builder = await mockBuilder({});
+
+        await mockBuilderNft({
+          builderId: builder.id,
+          season
+        });
+      })
+    );
+
+    const levels = await calculateBuilderLevels({ season });
+
+    validateCalculations({
+      builders,
+      levels
+    });
+  });
+
+  it('should ignore builders without NFTs in the current season', async () => {
+    const season = '2025-W02';
+
+    const currentDate = new Date('2025-03-12T00:00:00Z');
+
+    jest.setSystemTime(currentDate);
+
+    const { builders } = seedBuilders({ season });
+
+    await writeSeededBuildersToDatabase({ builders, season });
+
+    const indexOffset = 500;
+
+    const { builders: ignoredBuilders } = seedBuilders({
+      season: getPreviousSeason(season),
+      amount: 57,
+      indexOffset
     });
 
-    await prisma.builderNft.createMany({
-      data: builders.map((builder, index) => ({
-        builderId: builder.id,
-        chainId: 10,
-        contractAddress: `0x${season}`,
-        tokenId: index + 1,
-        currentPrice: BigInt(20),
-        imageUrl: `https://example.com/image-${index}.png`,
-        season
-      }))
-    });
+    await writeSeededBuildersToDatabase({ builders: ignoredBuilders, season: getPreviousSeason(season) });
 
-    for (let i = 0; i < builders.length; i++) {
-      const builder = builders[i];
+    // Case where we didn't renew a builder for the current season, but we are still recording their activity
+    for (let i = 0; i < ignoredBuilders.length; i++) {
+      const builder = ignoredBuilders[i];
       for (let j = 0; j < builder.gemReceiptInputs.length; j++) {
         const gemReceipt = builder.gemReceiptInputs[j];
-
-        if (builder.id === '8527a891-e224-4369-90ff-32ca212b45bc') {
-          prettyPrint({
-            gemReceipt
-          });
-        }
 
         await prisma.builderEvent.create({
           data: {
@@ -342,31 +383,12 @@ describe('calculateBuilderLevels', () => {
 
     const levels = await calculateBuilderLevels({ season });
 
-    // Verify levels are assigned correctly based on percentiles
-    for (let i = 0; i < levels.length; i++) {
-      const builder = levels[i];
-      const { centile, level } = builder;
-      const matchingCutoff = decileTable.find((d) => centile >= d.cutoff);
-      expect(level).toBe(matchingCutoff?.level);
-    }
+    // Ignored builders should not show up
+    expect(levels.length).toBe(builders.length);
 
-    // Verify minimum percentile and level is 1
-    expect(Math.min(...levels.map((b) => b.centile))).toBeGreaterThanOrEqual(1);
-    expect(Math.min(...levels.map((b) => b.level))).toBe(1);
-
-    // Verify average gems per week calculation
-    for (let i = 0; i < levels.length; i++) {
-      const generatedBuilder = levels[i];
-      const matchingBuilderInput = builders.find((b) => b.id === generatedBuilder.builderId);
-
-      expect(generatedBuilder.averageGemsPerWeek).toBe(
-        Math.floor(generatedBuilder.totalGems / matchingBuilderInput!.activeWeeks.length)
-      );
-    }
-
-    // Verify ranking order follows average gems per week descending
-    for (let i = 1; i < levels.length; i++) {
-      expect(levels[i - 1].averageGemsPerWeek).toBeGreaterThanOrEqual(levels[i].averageGemsPerWeek);
-    }
+    validateCalculations({
+      builders,
+      levels
+    });
   });
 });

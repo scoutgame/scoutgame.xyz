@@ -2,13 +2,33 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
 
-type BuilderAggregateScore = {
+export type BuilderAggregateScore = {
   builderId: string;
   totalGems: number;
   firstActiveWeek: ISOWeek;
+  level: number;
+  centile: number;
+  averageGemsPerWeek: number;
 };
 
-export async function calculateBuilderLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek }) {
+export const decileTable = [
+  { cutoff: 90, level: 10 },
+  { cutoff: 80, level: 9 },
+  { cutoff: 70, level: 8 },
+  { cutoff: 60, level: 7 },
+  { cutoff: 50, level: 6 },
+  { cutoff: 40, level: 5 },
+  { cutoff: 30, level: 4 },
+  { cutoff: 20, level: 3 },
+  { cutoff: 10, level: 2 },
+  { cutoff: 0, level: 1 }
+];
+
+export async function calculateBuilderLevels({
+  season = getCurrentSeasonStart()
+}: {
+  season?: ISOWeek;
+}): Promise<BuilderAggregateScore[]> {
   const allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
 
   // Fetch all builders with their GemReceipts
@@ -47,7 +67,10 @@ export async function calculateBuilderLevels({ season = getCurrentSeasonStart() 
         acc[builderId] = {
           builderId,
           totalGems: 0,
-          firstActiveWeek: getWeekFromDate(receipt.createdAt)
+          firstActiveWeek: getWeekFromDate(receipt.createdAt),
+          centile: 0,
+          level: 0,
+          averageGemsPerWeek: 0
         };
       }
 
@@ -94,15 +117,3 @@ export async function calculateBuilderLevels({ season = getCurrentSeasonStart() 
 
   return buildersWithCentilesAndLevels;
 }
-
-// Example usage
-// rankBuilders()
-//   .then((result) => {
-//     console.log('Ranked builders:', result);
-//   })
-//   .catch((error) => {
-//     console.error('Error ranking builders:', error);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
