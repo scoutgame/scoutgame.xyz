@@ -118,7 +118,7 @@ export async function ScoutPage({
               }
             >
               {buildersLayout === 'table' && <ScoutPageTable tab='builders' order={builderOrder} sort={builderSort} />}
-              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery showHotIcon />}
+              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery />}
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>

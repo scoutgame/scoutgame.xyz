@@ -13,13 +13,13 @@ import { BuilderCardActivityTooltip } from './BuilderCardActivityTooltip';
 export function BuilderCardActivity({
   size,
   last14DaysRank,
-  estimatePayout,
+  estimatedPayout,
   weeksGems
 }: {
   weeksGems: number;
   size: 'x-small' | 'small' | 'medium' | 'large';
   last14DaysRank: number[];
-  estimatePayout: number;
+  estimatedPayout: number;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'), { noSsr: true });
@@ -112,7 +112,7 @@ export function BuilderCardActivity({
           </Typography>
           <Stack flexDirection='row' alignItems='center' gap={0.5} justifyContent='center'>
             <Typography fontWeight={600} variant='body2' color='green.main'>
-              {estimatePayout}
+              {estimatedPayout}
             </Typography>
             <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='scout game icon' />
           </Stack>

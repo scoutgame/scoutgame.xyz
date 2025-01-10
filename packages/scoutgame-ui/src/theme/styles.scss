@@ -41,6 +41,15 @@ body {
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Jura';
+  src: url('/fonts/Jura-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  line-height: 1;
+}
+
 @keyframes wiggle {
   0% {
     transform: rotate(0deg) scale(0.95);

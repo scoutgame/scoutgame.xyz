@@ -6,13 +6,11 @@ import { BuilderCard } from '../Card/BuilderCard/BuilderCard';
 export function BuildersGallery({
   builders,
   columns = 6,
-  showHotIcon = false,
   size = 'medium',
   markStarterCardPurchased = false
 }: {
   builders: BuilderInfo[];
   columns?: number;
-  showHotIcon?: boolean;
   size?: 'small' | 'medium' | 'large';
   markStarterCardPurchased?: boolean;
 }) {
@@ -34,7 +32,6 @@ export function BuildersGallery({
               <BuilderCard
                 builder={builder}
                 showPurchaseButton
-                showHotIcon={showHotIcon}
                 size={size}
                 markStarterCardPurchased={markStarterCardPurchased}
               />

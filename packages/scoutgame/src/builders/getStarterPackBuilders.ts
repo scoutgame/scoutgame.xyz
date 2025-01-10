@@ -4,7 +4,7 @@ import { getCurrentWeek, getCurrentSeason } from '@packages/dates/utils';
 import type { NftPurchaseEvent } from '@packages/mixpanel/interfaces';
 
 import type { BuilderInfo } from './interfaces';
-import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type StarterPackBuilder = BuilderInfo & { purchased: boolean };
 
@@ -61,7 +61,8 @@ export async function getStarterPackBuilders({
         },
         select: {
           pointsEarnedAsBuilder: true,
-          nftsSold: true
+          nftsSold: true,
+          level: true
         }
       },
       userWeeklyStats: {
@@ -86,7 +87,9 @@ export async function getStarterPackBuilders({
     points: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
     cards: builder.userSeasonStats[0]?.nftsSold || 0,
     builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
-    last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+    level: builder.userSeasonStats[0]?.level || 0,
+    estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
+    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     nftsSold: builder.userSeasonStats[0]?.nftsSold || 0,
     builderStatus: 'approved',
     nftImageUrl: builder.builderNfts[0]?.imageUrl || '',

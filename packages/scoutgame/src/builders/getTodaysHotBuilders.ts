@@ -3,7 +3,7 @@ import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dat
 import { BasicUserInfoSelect } from '@packages/users/queries';
 
 import type { BuilderInfo } from './interfaces';
-import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 const userSelect = (week: string, season: string) => ({
   ...BasicUserInfoSelect,
@@ -13,7 +13,8 @@ const userSelect = (week: string, season: string) => ({
     },
     select: {
       pointsEarnedAsBuilder: true,
-      nftsSold: true
+      nftsSold: true,
+      level: true
     }
   },
   builderCardActivities: {
@@ -38,7 +39,8 @@ const userSelect = (week: string, season: string) => ({
     select: {
       currentPrice: true,
       imageUrl: true,
-      congratsImageUrl: true
+      congratsImageUrl: true,
+      estimatedPayout: true
     }
   }
 });
@@ -119,7 +121,9 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       nftsSold: builder.userSeasonStats[0]?.nftsSold || 0,
       builderStatus: builder.builderStatus!,
       rank: builder.userWeeklyStats[0]?.rank || -1,
-      last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+      level: builder.userSeasonStats[0]?.level || 0,
+      estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
+      last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default
     };
   });

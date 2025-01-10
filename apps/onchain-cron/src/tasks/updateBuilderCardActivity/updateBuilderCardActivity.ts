@@ -47,15 +47,15 @@ export async function updateBuilderCardActivity(date: DateTime) {
 
       const last7Days = Array.from({ length: 7 }, (_, i) => date.minus({ days: 7 - i }).toFormat('yyyy-MM-dd'));
 
-      const last7DaysGems = last7Days.map((day) => ({
+      const last14DaysRank = last7Days.map((day) => ({
         date: day,
         gemsCount: dayGemsRecord[day] ?? 0
       }));
 
       await prisma.builderCardActivity.upsert({
         where: { builderId: builder.id },
-        update: { last7Days: last7DaysGems },
-        create: { builderId: builder.id, last7Days: last7DaysGems }
+        update: { last7Days: last14DaysRank },
+        create: { builderId: builder.id, last7Days: last14DaysRank }
       });
       updatedBuilders += 1;
       // log.debug(`Upserted builder card activity for builder`, {

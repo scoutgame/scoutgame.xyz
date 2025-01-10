@@ -14,7 +14,6 @@ export function BuilderCard({
   builder,
   showPurchaseButton = false,
   hideDetails = false,
-  showHotIcon = false,
   size = 'medium',
   disableProfileUrl = false,
   markStarterCardPurchased = false,
@@ -24,7 +23,6 @@ export function BuilderCard({
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
   hideDetails?: boolean;
   showPurchaseButton?: boolean;
-  showHotIcon?: boolean;
   disableProfileUrl?: boolean;
   markStarterCardPurchased?: boolean;
   type?: 'builder' | 'starter_pack';
@@ -43,7 +41,7 @@ export function BuilderCard({
       <BuilderCardNftDisplay
         nftImageUrl={builder.nftImageUrl}
         path={builder.path}
-        showHotIcon={showHotIcon}
+        level={builder.level}
         size={size}
         hideDetails={hideDetails}
         disableProfileUrl={disableProfileUrl}

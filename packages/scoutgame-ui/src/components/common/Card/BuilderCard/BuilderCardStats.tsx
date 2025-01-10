@@ -8,13 +8,13 @@ export function BuilderCardStats({
   last14DaysRank,
   size,
   weeksGems,
-  estimatePayout
+  estimatedPayout
 }: {
   weeksGems?: number;
   displayName: string;
   last14DaysRank?: number[];
   size: 'x-small' | 'small' | 'medium' | 'large';
-  estimatePayout?: number;
+  estimatedPayout?: number;
 }) {
   return (
     <Stack
@@ -43,7 +43,7 @@ export function BuilderCardStats({
       <BuilderCardActivity
         size={size}
         last14DaysRank={last14DaysRank ?? []}
-        estimatePayout={estimatePayout ?? 0}
+        estimatedPayout={estimatedPayout ?? 0}
         weeksGems={weeksGems ?? 0}
       />
       <BuilderCardName name={displayName} size={size} />

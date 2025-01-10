@@ -4,7 +4,7 @@ import { getPaginatedBuilders } from '@packages/scoutgame/builders/getPaginatedB
 
 import { BuildersGalleryContainer } from './BuildersGalleryContainer';
 
-export async function ScoutPageBuildersGallery({ showHotIcon }: { showHotIcon: boolean }) {
+export async function ScoutPageBuildersGallery() {
   const [error, data] = await safeAwaitSSRData(
     getPaginatedBuilders({
       limit: 10,
@@ -19,5 +19,5 @@ export async function ScoutPageBuildersGallery({ showHotIcon }: { showHotIcon: b
 
   const { builders, nextCursor } = data;
 
-  return <BuildersGalleryContainer initialCursor={nextCursor} initialBuilders={builders} showHotIcon={showHotIcon} />;
+  return <BuildersGalleryContainer initialCursor={nextCursor} initialBuilders={builders} />;
 }

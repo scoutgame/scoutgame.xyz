@@ -1,4 +1,4 @@
-import { CardActionArea, CardMedia, Typography, Box } from '@mui/material';
+import { CardActionArea, CardMedia, Typography, Box, Stack } from '@mui/material';
 import Link from 'next/link';
 
 // Maintain a 3:4 aspect ratio for the NFT display
@@ -25,14 +25,14 @@ export function BuilderCardNftDisplay({
   nftImageUrl,
   children,
   path,
-  showHotIcon = false,
+  level,
   size = 'medium',
   hideDetails = false,
   disableProfileUrl = false
 }: {
   path: string;
   nftImageUrl?: string | null;
-  showHotIcon?: boolean;
+  level?: number;
   children?: React.ReactNode;
   size?: 'x-small' | 'small' | 'medium' | 'large';
   hideDetails?: boolean;
@@ -59,17 +59,17 @@ export function BuilderCardNftDisplay({
           ) : (
             <CardMedia component='img' image='/images/no_nft_person.png' />
           )}
-          {showHotIcon ? (
-            <CardMedia
-              component='img'
-              image='/images/profile/icons/blue-fire-icon.svg'
-              alt='hot icon'
+          {Number.isInteger(level) ? (
+            <Stack
               sx={{
                 position: 'absolute',
-                width: 'initial',
+                width: {
+                  xs: 40,
+                  md: 50
+                },
                 height: {
-                  xs: 25,
-                  md: 30
+                  xs: 40,
+                  md: 50
                 },
                 top: {
                   xs: 7.5,
@@ -78,9 +78,21 @@ export function BuilderCardNftDisplay({
                 right: {
                   xs: 10,
                   md: 15
-                }
+                },
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'orange.main',
+                borderRadius: '50%',
+                border: '3.5px solid #000'
               }}
-            />
+            >
+              <Typography fontFamily='Jura' fontSize={10} color='black.main' lineHeight={1} mb={0.25}>
+                LEVEL
+              </Typography>
+              <Typography fontFamily='Jura' fontSize={20} color='black.main' lineHeight={1}>
+                {level}
+              </Typography>
+            </Stack>
           ) : null}
         </Box>
         <Box

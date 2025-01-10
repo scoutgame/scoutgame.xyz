@@ -15,8 +15,10 @@ export type BuilderMetrics = {
   nftsSold: number;
   price: bigint;
   rank: number;
+  level: number;
+  estimatedPayout: number;
   builderPoints: number;
-  last7DaysGems: number[];
+  last14DaysRank: number[];
 };
 
 export type BuilderInfo = BasicUserInfo &
@@ -29,4 +31,4 @@ export type BuilderInfo = BasicUserInfo &
     nftsSoldToScout?: number;
   };
 
-export type Last7DaysGems = { date: string; gemsCount: number }[];
+export type last14DaysRank = { date: string; rank: number }[];

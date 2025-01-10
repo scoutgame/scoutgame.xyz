@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 import type { BuilderInfo } from '../builders/interfaces';
 import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast7Days';
 import { mapGemReceiptsToLast7Days } from '../builders/mapGemReceiptsToLast7Days';
-import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 
 async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
@@ -85,7 +85,8 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
         },
         select: {
           nftsSold: true,
-          pointsEarnedAsBuilder: true
+          pointsEarnedAsBuilder: true,
+          level: true
         }
       },
       builderNfts: {
@@ -99,7 +100,8 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
           currentPrice: true,
           nftType: true,
           tokenId: true,
-          congratsImageUrl: true
+          congratsImageUrl: true,
+          estimatedPayout: true
         }
       }
     }
@@ -120,7 +122,9 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     price: builder.builderNfts[0].currentPrice ?? BigInt(0),
     rank: 0, // Would need to calculate this based on some criteria
     builderPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder ?? 0,
-    last7DaysGems: mapGemReceiptsToLast7Days({
+    level: builder.userSeasonStats[0]?.level ?? 0,
+    estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
+    last14DaysRank: mapGemReceiptsToLast7Days({
       events: builder.events as Required<BuilderEventWithGemsReceipt>[],
       currentDate: DateTime.now()
     }).map((gem) => gem.gemsCount)
@@ -167,7 +171,8 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
         },
         select: {
           nftsSold: true,
-          pointsEarnedAsBuilder: true
+          pointsEarnedAsBuilder: true,
+          level: true
         }
       },
       builderNfts: {
@@ -180,7 +185,8 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           currentPrice: true,
           nftType: true,
           nftSoldEvents: true,
-          congratsImageUrl: true
+          congratsImageUrl: true,
+          estimatedPayout: true
         }
       },
       builderCardActivities: {
@@ -229,9 +235,11 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           nftsSoldToScout: nftsSoldData.toScout,
           rank: builder.userWeeklyStats[0]?.rank ?? -1,
           price: nft.currentPrice ?? 0,
-          last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+          last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
           nftType: nft.nftType,
-          congratsImageUrl: nft.congratsImageUrl
+          congratsImageUrl: nft.congratsImageUrl,
+          estimatedPayout: nft.estimatedPayout ?? 0,
+          level: builder.userSeasonStats[0]?.level ?? 0
         };
 
         return nftData;
