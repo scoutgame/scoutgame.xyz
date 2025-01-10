@@ -186,6 +186,7 @@ describe('refreshEstimatedPayouts', () => {
     const builder2StarterPackPayout = starterPackNfts.find((nft) => nft.id === starterPack2.id);
     const builder3DefaultNftPayout = defaultNftsPayouts.find((nft) => nft.id === nft3.id);
 
+    // Builder 1 calculations
     const builder1DefaultNftHoldersCount = builder1DefaultNftPayout!.nftOwners.reduce(
       (acc, nftOwner) => acc + nftOwner.balance,
       0
@@ -198,40 +199,76 @@ describe('refreshEstimatedPayouts', () => {
 
     const builder1PointsAllocation = builder1Normalised!.normalisedPoints;
 
-    console.log('builder1PointsAllocation', builder1PointsAllocation);
-
-    // Scout 1 has 2 NFTs from builder 1 (100 points)
     expect(builder1DefaultNftHoldersCount).toBe(2);
     expect(builder1StarterPackHoldersCount).toBe(1);
 
-    const weightedHolders =
+    const builder1WeightedHolders =
       builder1DefaultNftHoldersCount * nftTypeMultipliers.default +
       builder1StarterPackHoldersCount * nftTypeMultipliers.starter_pack;
 
-    expect(weightedHolders).toBe(2 * nftTypeMultipliers.default + 1 * nftTypeMultipliers.starter_pack);
+    expect(builder1WeightedHolders).toBe(
+      builder1DefaultNftHoldersCount * nftTypeMultipliers.default +
+        builder1StarterPackHoldersCount * nftTypeMultipliers.starter_pack
+    );
 
     expect(Math.floor(builder1PointsAllocation)).toBe(2576);
     expect(Math.floor(builder1DefaultNftPayout!.estimatedPayout!)).toBe(
-      Math.floor(builder1PointsAllocation / (weightedHolders + nftTypeMultipliers.default))
+      Math.floor(builder1PointsAllocation / (builder1WeightedHolders + nftTypeMultipliers.default))
     );
 
     expect(Math.floor(builder1StarterPackPayout!.estimatedPayout!)).toBe(
-      Math.floor(builder1PointsAllocation / (weightedHolders + nftTypeMultipliers.starter_pack))
+      Math.floor(builder1PointsAllocation / (builder1WeightedHolders + nftTypeMultipliers.starter_pack))
     );
 
-    // Scout 2 has 1 NFT from builder 2 (200 points)
-    expect(builder2DefaultNftPayout?.estimatedPayout).toBe(200); // 200 points / 1 NFT = 200 per NFT
+    // Builder 2 calculations
+    const builder2DefaultNftHoldersCount = builder2DefaultNftPayout!.nftOwners.reduce(
+      (acc, nftOwner) => acc + nftOwner.balance,
+      0
+    );
 
-    // Scout 3 has 3 NFTs from builder 3 (150 points)
-    expect(builder3DefaultNftPayout?.estimatedPayout).toBe(50); // 150 points / 3 NFTs = 50 per NFT
+    const builder2StarterPackHoldersCount = builder2StarterPackPayout!.nftOwners.reduce(
+      (acc, nftOwner) => acc + nftOwner.balance,
+      0
+    );
 
-    // Verify starter pack NFT payouts
+    const builder2PointsAllocation = builder2Normalised!.normalisedPoints;
 
-    const starterPack1Updated = starterPackNfts.find((n) => n.id === starterPack1.id);
-    const starterPack2Updated = starterPackNfts.find((n) => n.id === starterPack2.id);
+    expect(builder2DefaultNftHoldersCount).toBe(1);
+    expect(builder2StarterPackHoldersCount).toBe(1);
 
-    // Starter packs should have 0 estimated payout
-    expect(starterPack1Updated?.estimatedPayout).toBe(0);
-    expect(starterPack2Updated?.estimatedPayout).toBe(0);
+    const builder2WeightedHolders =
+      builder2DefaultNftHoldersCount * nftTypeMultipliers.default +
+      builder2StarterPackHoldersCount * nftTypeMultipliers.starter_pack;
+
+    expect(builder2WeightedHolders).toBe(
+      builder2DefaultNftHoldersCount * nftTypeMultipliers.default +
+        builder2StarterPackHoldersCount * nftTypeMultipliers.starter_pack
+    );
+
+    expect(Math.floor(builder2DefaultNftPayout!.estimatedPayout!)).toBe(
+      Math.floor(builder2PointsAllocation / (builder2WeightedHolders + nftTypeMultipliers.default))
+    );
+
+    expect(Math.floor(builder2StarterPackPayout!.estimatedPayout!)).toBe(
+      Math.floor(builder2PointsAllocation / (builder2WeightedHolders + nftTypeMultipliers.starter_pack))
+    );
+
+    // Builder 3 calculations
+    const builder3DefaultNftHoldersCount = builder3DefaultNftPayout!.nftOwners.reduce(
+      (acc, nftOwner) => acc + nftOwner.balance,
+      0
+    );
+
+    const builder3PointsAllocation = builder3Normalised!.normalisedPoints;
+
+    expect(builder3DefaultNftHoldersCount).toBe(3);
+
+    const builder3WeightedHolders = builder3DefaultNftHoldersCount * nftTypeMultipliers.default;
+
+    expect(builder3WeightedHolders).toBe(builder3DefaultNftHoldersCount * nftTypeMultipliers.default);
+
+    expect(Math.floor(builder3DefaultNftPayout!.estimatedPayout!)).toBe(
+      Math.floor(builder3PointsAllocation / (builder3WeightedHolders + nftTypeMultipliers.default))
+    );
   });
 });
