@@ -7,7 +7,7 @@ import { calculateEarnableScoutPointsForRank } from '../points/calculatePoints';
 
 import type { PartialNftPurchaseEvent } from './getWeeklyPointsPoolAndBuilders';
 
-const nftTypeMultipliers: Record<BuilderNftType, number> = {
+export const nftTypeMultipliers: Record<BuilderNftType, number> = {
   starter_pack: 0.1,
   default: 1
 };

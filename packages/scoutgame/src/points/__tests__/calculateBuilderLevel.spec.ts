@@ -2,13 +2,12 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { getDateFromISOWeek, getPreviousSeason } from '@packages/dates/utils';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
+import type { DeterministicRandomBuilderActivity } from '@packages/testing/deterministicBuildersData';
+import { seedBuilders, writeSeededBuildersToDatabase } from '@packages/testing/deterministicBuildersData';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 import type { BuilderAggregateScore } from '../calculateBuilderLevel';
 import { calculateBuilderLevels, decileTable } from '../calculateBuilderLevel';
-
-import type { DeterministicRandomBuilderActivity } from './seedBuilders';
-import { seedBuilders, writeSeededBuildersToDatabase } from './seedBuilders';
 
 // Validate date based on deterministic output of 200 builders
 function validateCalculations({
