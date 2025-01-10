@@ -1,9 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
+import { seedBuilders, writeSeededBuildersToDatabase } from '@packages/testing/deterministicBuildersData';
 
 import { refreshBuilderLevels } from '../refreshBuilderLevels';
-
-import { seedBuilders, writeSeededBuildersToDatabase } from './seedBuilders';
 
 describe.skip('refreshBuilderLevels', () => {
   it('should refresh builder levels in the database', async () => {
