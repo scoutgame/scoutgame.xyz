@@ -18,7 +18,6 @@ export function SignInModalMessage({
   const router = useRouter();
 
   const handleClose = () => {
-    onClose();
     router.push(`/login?redirectUrl=${encodeURIComponent(path)}`);
   };
 

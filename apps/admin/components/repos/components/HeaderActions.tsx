@@ -102,6 +102,17 @@ export function HeaderActions() {
           </FileDownloadButton>
         </MenuItem>
         <MenuItem>
+          <FileDownloadButton
+            fullWidth
+            sx={{ justifyContent: 'flex-start' }}
+            size='small'
+            filename={`Top Connector Weekly Report (${lastWeek}).tsv`}
+            src='/api/partners/top-connector'
+          >
+            Optimism
+          </FileDownloadButton>
+        </MenuItem>
+        <MenuItem>
           <LoadingButton
             loading={isMutating}
             onClick={() => {
