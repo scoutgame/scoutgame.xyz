@@ -123,7 +123,8 @@ jobs:
         run: npm run scoutgame:test
 
       - name: Run package tests
-        run: npx dotenv -e .env.test.local -- npm run test -w packages/scoutgame
+        run: |
+          npx dotenv -e .env.test.local -- npm run test -w packages
 
   test-scoutgame-e2e:
     name: Test e2e

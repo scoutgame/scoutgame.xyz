@@ -5,5 +5,8 @@ export default {
   transform: {
     '^.+\\.(t|j)sx?$': '@swc/jest'
   },
+
+  testMatch: ['<rootDir>/src/**/*.spec.ts'],
+
   extensionsToTreatAsEsm: ['.ts', '.tsx']
 };

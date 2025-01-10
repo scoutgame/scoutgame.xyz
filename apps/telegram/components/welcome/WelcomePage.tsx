@@ -137,6 +137,11 @@ export function WelcomePage() {
                     autoFocus
                     aria-labelledby='form-email'
                     required
+                    helperText={
+                      <Typography variant='caption' color='grey'>
+                        Don't forget to verify your email to take full advantage of rewards
+                      </Typography>
+                    }
                     type='email'
                     error={!!error?.message}
                     {...field}

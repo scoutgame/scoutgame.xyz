@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/mailer';
+import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export async function sendBuilderStatusEmails() {

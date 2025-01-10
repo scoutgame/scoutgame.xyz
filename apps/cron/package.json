@@ -24,6 +24,7 @@
     "@packages/moxie": "^0.0.0",
     "@packages/scoutgame": "^0.0.0",
     "@packages/scoutgameattestations": "^0.0.0",
+    "@packages/users": "^0.0.0",
     "@packages/utils": "^1.0.0",
     "@packages/waitlist": "^0.0.0",
     "koa": "^2.15.3",

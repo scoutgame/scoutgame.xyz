@@ -123,7 +123,7 @@ jobs:
         run: npm run onchain-scoutgame:test
 
       - name: Run package tests
-        run: npx dotenv -e .env.test.local -- npm run test -w packages/scoutgame
+        run: npx dotenv -e .env.test.local -- npm run test -w packages
 
   test-onchain-scoutgame-e2e:
     name: Test e2e

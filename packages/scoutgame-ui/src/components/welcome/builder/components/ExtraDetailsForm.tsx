@@ -124,6 +124,11 @@ export function ExtraDetailsForm({ user }: { user: SessionUser }) {
                   required
                   type='email'
                   error={!!error?.message}
+                  helperText={
+                    <Typography variant='caption' color='grey'>
+                      Don't forget to verify your email to take full advantage of rewards
+                    </Typography>
+                  }
                   {...field}
                   sx={{ mb: 2 }}
                 />

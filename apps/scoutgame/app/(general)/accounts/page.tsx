@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Accounts() {
   const [, user] = await safeAwaitSSRData(getUserFromSession());
+
   if (!user) {
     return notFound();
   }
@@ -28,6 +29,7 @@ export default async function Accounts() {
         email: true,
         sendTransactionEmails: true,
         sendMarketing: true,
+        emailVerifications: true,
         nftPurchaseEvents: {
           where: {
             builderNft: {
@@ -47,6 +49,10 @@ export default async function Accounts() {
     return notFound();
   }
 
+  const verifiedEmail = currentUserAccountsMetadata.emailVerifications.some(
+    (verification) => verification.email === currentUserAccountsMetadata.email && verification.completedAt
+  );
+
   return (
     <AccountsPage
       user={{
@@ -57,7 +63,8 @@ export default async function Accounts() {
         telegramId: currentUserAccountsMetadata.telegramId,
         wallets: currentUserAccountsMetadata.wallets.map((wallet) => wallet.address),
         avatar: user.avatar as string,
-        starterPackNftCount: currentUserAccountsMetadata.nftPurchaseEvents.length
+        starterPackNftCount: currentUserAccountsMetadata.nftPurchaseEvents.length,
+        verifiedEmail
       }}
     />
   );

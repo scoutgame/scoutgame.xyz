@@ -17,6 +17,7 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   email: string;
   sendTransactionEmails: boolean;
   sendMarketing: boolean;
+  verifiedEmail: boolean;
 };
 
 const TelegramConnect = dynamic(() => import('./components/TelegramConnect').then((mod) => mod.TelegramConnect), {
