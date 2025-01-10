@@ -28,7 +28,7 @@ type ReadWriteWalletClient<
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
 
-export class ScoutProtocolBuilderNFTImplementationClient {
+export class ScoutGamePreSeason02NFTImplementationClient {
   private contractAddress: Address;
 
   private publicClient: PublicClient;
@@ -37,7 +37,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
   private chain: Chain;
 
-  public abi = [
+  public abi: Abi = [
     {
       inputs: [],
       name: 'ERC20Token',
@@ -146,25 +146,6 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       name: 'burn',
       outputs: [],
       stateMutability: 'nonpayable',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'uint256',
-          name: 'tokenId',
-          type: 'uint256'
-        }
-      ],
-      name: 'getBuilderAddressForToken',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address'
-        }
-      ],
-      stateMutability: 'view',
       type: 'function'
     },
     {
@@ -303,6 +284,29 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       type: 'function'
     },
     {
+      inputs: [
+        {
+          internalType: 'address',
+          name: 'account',
+          type: 'address'
+        },
+        {
+          internalType: 'uint256',
+          name: 'tokenId',
+          type: 'uint256'
+        },
+        {
+          internalType: 'uint256',
+          name: 'amount',
+          type: 'uint256'
+        }
+      ],
+      name: 'mintTo',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
       inputs: [],
       name: 'minter',
       outputs: [
@@ -367,11 +371,6 @@ export class ScoutProtocolBuilderNFTImplementationClient {
           internalType: 'string',
           name: 'builderId',
           type: 'string'
-        },
-        {
-          internalType: 'address',
-          name: 'account',
-          type: 'address'
         }
       ],
       name: 'registerBuilderToken',
@@ -536,7 +535,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
           type: 'bool'
         }
       ],
-      stateMutability: 'view',
+      stateMutability: 'pure',
       type: 'function'
     },
     {
@@ -619,24 +618,6 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     {
       inputs: [],
       name: 'unPause',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'uint256',
-          name: 'tokenId',
-          type: 'uint256'
-        },
-        {
-          internalType: 'address',
-          name: 'newAddress',
-          type: 'address'
-        }
-      ],
-      name: 'updateBuilderTokenAddress',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function'
@@ -861,7 +842,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       name: 'Unpaused',
       type: 'event'
     }
-  ] as const;
+  ];
 
   constructor({
     contractAddress,
@@ -1041,29 +1022,6 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async getBuilderAddressForToken(params: { args: { tokenId: bigint } }): Promise<Address> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'getBuilderAddressForToken',
-      args: [params.args.tokenId]
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'getBuilderAddressForToken',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as Address;
-  }
-
   async getBuilderIdForToken(params: { args: { tokenId: bigint } }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
@@ -1231,6 +1189,35 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
+  async mintTo(params: {
+    args: { account: Address; tokenId: bigint; amount: bigint };
+    value?: bigint;
+    gasPrice?: bigint;
+  }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'mintTo',
+      args: [params.args.account, params.args.tokenId, params.args.amount]
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+  }
+
   async minter(): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
@@ -1349,7 +1336,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
   }
 
   async registerBuilderToken(params: {
-    args: { builderId: string; account: Address };
+    args: { builderId: string };
     value?: bigint;
     gasPrice?: bigint;
   }): Promise<TransactionReceipt> {
@@ -1360,7 +1347,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'registerBuilderToken',
-      args: [params.args.builderId, params.args.account]
+      args: [params.args.builderId]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -1389,13 +1376,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'safeBatchTransferFrom',
-      args: [
-        params.args.from,
-        params.args.to,
-        params.args.tokenIds,
-        params.args.amounts,
-        params.args.data as `0x${string}`
-      ]
+      args: [params.args.from, params.args.to, params.args.tokenIds, params.args.amounts, params.args.data]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -1424,13 +1405,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'safeTransferFrom',
-      args: [
-        params.args.from,
-        params.args.to,
-        params.args.tokenId,
-        params.args.amount,
-        params.args.data as `0x${string}`
-      ]
+      args: [params.args.from, params.args.to, params.args.tokenId, params.args.amount, params.args.data]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -1596,7 +1571,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'supportsInterface',
-      args: [params.args.interfaceId as `0x${string}`]
+      args: [params.args.interfaceId]
     });
 
     const { data } = await this.publicClient.call({
@@ -1745,35 +1720,6 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       abi: this.abi,
       functionName: 'unPause',
       args: []
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async updateBuilderTokenAddress(params: {
-    args: { tokenId: bigint; newAddress: Address };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'updateBuilderTokenAddress',
-      args: [params.args.tokenId, params.args.newAddress]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {

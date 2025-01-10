@@ -1,11 +1,12 @@
 import env from '@beam-australia/react-env';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
-import { LockupWeeklyStreamCreatorClient } from '@packages/scoutgame/builderNfts/clients/LockupWeeklyStreamCreatorClient';
-import { ScoutProtocolBuilderNFTImplementationClient } from '@packages/scoutgame/builderNfts/clients/ScoutProtocolBuilderNFTImplementationClient';
-import { ScoutTokenERC20Client } from '@packages/scoutgame/builderNfts/clients/ScoutTokenERC20Client';
 import type { Address } from 'viem';
 import { baseSepolia } from 'viem/chains';
+
+import { LockupWeeklyStreamCreatorClient } from '../builderNfts/clients/protocol/wrappers/LockupWeeklyStreamCreatorClient';
+import { ScoutProtocolBuilderNFTImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutProtocolBuilderNFTImplementationClient';
+import { ScoutTokenERC20Client } from '../builderNfts/clients/protocol/wrappers/ScoutTokenERC20Client';
 
 export const sablierLockupContractAddress = process.env.SABLIER_LOCKUP_CONTRACT_ADDRESS as Address;
 

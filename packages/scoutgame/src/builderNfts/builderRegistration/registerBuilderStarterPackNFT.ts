@@ -5,8 +5,8 @@ import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 
 import { builderContractReadonlyApiClient } from '../clients/builderContractReadClient';
-import { getBuilderContractStarterPackMinterClient } from '../clients/builderContractStarterPackMinterWriteClient';
-import { builderContractStarterPackReadonlyApiClient } from '../clients/builderContractStarterPackReadClient';
+import { getBuilderContractStarterPackMinterClient } from '../clients/starterPack/wrappers/builderContractStarterPackMinterWriteClient';
+import { builderContractStarterPackReadonlyApiClient } from '../clients/starterPack/wrappers/builderContractStarterPackReadClient';
 import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
