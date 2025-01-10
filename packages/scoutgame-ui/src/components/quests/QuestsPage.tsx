@@ -1,10 +1,12 @@
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid2 as Grid, Skeleton } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 import { DailyClaimGallery } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimGallery';
 import { QuestsList } from '@packages/scoutgame-ui/components/quests/QuestsList/QuestsList';
+import { Suspense } from 'react';
 
+import { ConectorContainer } from './Connector/ConnectorContainer';
 import { FriendlyQuest } from './QuestsList/FriendlyQuest';
 
 export function QuestsPage({
@@ -29,6 +31,11 @@ export function QuestsPage({
         }}
       >
         <Box maxWidth='500px' margin='0 auto'>
+          <Box sx={{ px: 5 }}>
+            <Suspense fallback={<Skeleton height={100} width='100%' />}>
+              <ConectorContainer />
+            </Suspense>
+          </Box>
           <Box sx={{ px: 5 }}>
             <DailyClaimGallery dailyClaims={dailyClaims} />
           </Box>
