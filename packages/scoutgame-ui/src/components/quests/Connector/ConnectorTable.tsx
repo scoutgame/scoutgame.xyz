@@ -17,7 +17,7 @@ export function ConnectorTable({ topUsers = [] }: { topUsers: TopConnector[] }) 
           </TableRow>
         </StyledTableHead>
         <StyledTableBody sx={{ '& .MuiTableCell-root': { width: '33.33%' } }}>
-          {topUsers?.map((user, i) => (
+          {topUsers?.map((user) => (
             <TableRow key={user.builderId}>
               <TableCell align='left'>
                 <Stack component={Link} href={`/u/${user.path}`} alignItems='center' flexDirection='row' gap={1}>
@@ -27,7 +27,7 @@ export function ConnectorTable({ topUsers = [] }: { topUsers: TopConnector[] }) 
                   </Typography>
                 </Stack>
               </TableCell>
-              <TableCell align='center'>{i + 1}</TableCell>
+              <TableCell align='center'>{user.rank}</TableCell>
               <TableCell align='center'>{user.referralPoints}</TableCell>
             </TableRow>
           ))}

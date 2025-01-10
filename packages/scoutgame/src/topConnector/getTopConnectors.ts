@@ -8,6 +8,7 @@ export type TopConnector = {
   referralPoints: number;
   avatar?: string | null;
   displayName: string;
+  rank: number;
 };
 
 /**
@@ -131,5 +132,7 @@ function groupBuilderEvents(events: (PointsReceipt & { recipient?: PartialUser |
     return acc;
   }, {});
 
-  return Object.values(byBuilder).sort((a, b) => b.referralPoints - a.referralPoints);
+  return Object.values(byBuilder)
+    .sort((a, b) => b.referralPoints - a.referralPoints)
+    .map((b, i) => ({ ...b, rank: i + 1 }));
 }
