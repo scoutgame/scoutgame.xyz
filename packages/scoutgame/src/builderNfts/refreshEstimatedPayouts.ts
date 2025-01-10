@@ -57,9 +57,13 @@ export async function refreshEstimatedPayouts({
 
       const totalNftBalance = builderNftBalanceWeighted + starterPackNftBalanceWeighted;
 
-      const expectedPayoutForNextNftPurchase = normalisedPoints * nftTypeMultipliers.default;
+      const expectedPayoutForNextNftPurchase = Math.floor(
+        normalisedPoints / (totalNftBalance + nftTypeMultipliers.default)
+      );
 
-      const expectedPayoutForNextStarterPackPurchase = normalisedPoints * nftTypeMultipliers.starter_pack;
+      const expectedPayoutForNextStarterPackPurchase = Math.floor(
+        normalisedPoints / (totalNftBalance + nftTypeMultipliers.starter_pack)
+      );
 
       if (expectedPayoutForNextNftPurchase !== defaultNft.estimatedPayout) {
         await prisma.builderNft.update({

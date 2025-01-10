@@ -11,6 +11,9 @@ export type SeasonNfts = {
   starter_pack: BuilderNftWithOwners[];
 };
 
+/**
+ * Get all the NFTs for a specific season along with their owners. This is based on the scoutNFT table which is synced with onchain activity ie. mints, transfers and burns
+ */
 export async function getAllSeasonNftsWithOwners({ season }: { season: ISOWeek }): Promise<SeasonNfts> {
   const seasonBuilderNfts = await prisma.builderNft.findMany({
     where: {

@@ -4,6 +4,7 @@ import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/databa
 import { generateRandomEthAddress } from '@packages/testing/random';
 
 import { calculateEarnableScoutPointsForRank } from '../../points/calculatePoints';
+import { nftTypeMultipliers } from '../../points/dividePointsBetweenBuilderAndScouts';
 import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 import { getCurrentWeekPointsAllocation } from '../getCurrentWeekPointsAllocation';
 
@@ -151,9 +152,9 @@ describe('refreshEstimatedPayouts', () => {
 
     // TODO: Add assertions to verify estimated payouts
     // Call the function to refresh estimated payouts
-    const nfts = await refreshEstimatedPayouts({ week: season });
+    const nftPayouts = await refreshEstimatedPayouts({ week: season });
 
-    const { topWeeklyBuilders, weeklyAllocatedPoints, totalPoints, normalisationFactor } =
+    const { topWeeklyBuilders, weeklyAllocatedPoints, totalPoints, normalisationFactor, normalisedBuilders } =
       await getWeeklyPointsPoolAndBuilders({
         week: season
       });
@@ -162,45 +163,69 @@ describe('refreshEstimatedPayouts', () => {
 
     expect(totalPoints * normalisationFactor).toBe(7_500);
 
-    const builder1Rank = topWeeklyBuilders.find((b) => b.builder.id === builder1.id)!.rank;
-    expect(builder1Rank).toBe(1);
+    const builder1Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder1.id);
+    expect(builder1Normalised!.builder.rank).toBe(1);
 
-    const builder2Rank = topWeeklyBuilders.find((b) => b.builder.id === builder2.id)!.rank;
-    expect(builder2Rank).toBe(2);
+    const builder2Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder2.id);
+    expect(builder2Normalised!.builder.rank).toBe(2);
 
-    const builder3Rank = topWeeklyBuilders.find((b) => b.builder.id === builder3.id)!.rank;
-    expect(builder3Rank).toBe(3);
+    const builder3Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder3.id);
+    expect(builder3Normalised!.builder.rank).toBe(3);
 
     // Verify default NFT payouts
-    const defaultNfts = nfts.default;
-    expect(defaultNfts).toHaveLength(3);
+    const defaultNftsPayouts = nftPayouts.default;
+    expect(defaultNftsPayouts).toHaveLength(3);
+
+    const starterPackNfts = nftPayouts.starter_pack;
+    expect(starterPackNfts).toHaveLength(2);
 
     // Find each NFT and verify its estimated payout
-    const nft1Updated = defaultNfts.find((n) => n.id === nft1.id);
-    const nft2Updated = defaultNfts.find((n) => n.id === nft2.id);
-    const nft3Updated = defaultNfts.find((n) => n.id === nft3.id);
+    const builder1DefaultNftPayout = defaultNftsPayouts.find((nft) => nft.id === nft1.id);
+    const builder1StarterPackPayout = starterPackNfts.find((nft) => nft.id === starterPack1.id);
+    const builder2DefaultNftPayout = defaultNftsPayouts.find((nft) => nft.id === nft2.id);
+    const builder2StarterPackPayout = starterPackNfts.find((nft) => nft.id === starterPack2.id);
+    const builder3DefaultNftPayout = defaultNftsPayouts.find((nft) => nft.id === nft3.id);
 
-    // Scout 1 has 2 NFTs from builder 1 (100 points)
-    const nft1TotalPayout = Math.floor(
-      calculateEarnableScoutPointsForRank({
-        rank: 1,
-        weeklyAllocatedPoints
-      })
+    const builder1DefaultNftHoldersCount = builder1DefaultNftPayout!.nftOwners.reduce(
+      (acc, nftOwner) => acc + nftOwner.balance,
+      0
     );
 
-    expect(nft1TotalPayout).toBe(225);
+    const builder1StarterPackHoldersCount = builder1StarterPackPayout!.nftOwners.reduce(
+      (acc, nftOwner) => acc + nftOwner.balance,
+      0
+    );
 
-    expect(nft1Updated?.estimatedPayout).toBe(100);
+    const builder1PointsAllocation = builder1Normalised!.normalisedPoints;
+
+    console.log('builder1PointsAllocation', builder1PointsAllocation);
+
+    // Scout 1 has 2 NFTs from builder 1 (100 points)
+    expect(builder1DefaultNftHoldersCount).toBe(2);
+    expect(builder1StarterPackHoldersCount).toBe(1);
+
+    const weightedHolders =
+      builder1DefaultNftHoldersCount * nftTypeMultipliers.default +
+      builder1StarterPackHoldersCount * nftTypeMultipliers.starter_pack;
+
+    expect(weightedHolders).toBe(2 * nftTypeMultipliers.default + 1 * nftTypeMultipliers.starter_pack);
+
+    expect(Math.floor(builder1PointsAllocation)).toBe(2576);
+    expect(Math.floor(builder1DefaultNftPayout!.estimatedPayout!)).toBe(
+      Math.floor(builder1PointsAllocation / (weightedHolders + nftTypeMultipliers.default))
+    );
+
+    expect(Math.floor(builder1StarterPackPayout!.estimatedPayout!)).toBe(
+      Math.floor(builder1PointsAllocation / (weightedHolders + nftTypeMultipliers.starter_pack))
+    );
 
     // Scout 2 has 1 NFT from builder 2 (200 points)
-    expect(nft2Updated?.estimatedPayout).toBe(200); // 200 points / 1 NFT = 200 per NFT
+    expect(builder2DefaultNftPayout?.estimatedPayout).toBe(200); // 200 points / 1 NFT = 200 per NFT
 
     // Scout 3 has 3 NFTs from builder 3 (150 points)
-    expect(nft3Updated?.estimatedPayout).toBe(50); // 150 points / 3 NFTs = 50 per NFT
+    expect(builder3DefaultNftPayout?.estimatedPayout).toBe(50); // 150 points / 3 NFTs = 50 per NFT
 
     // Verify starter pack NFT payouts
-    const starterPackNfts = nfts.starter_pack;
-    expect(starterPackNfts).toHaveLength(2);
 
     const starterPack1Updated = starterPackNfts.find((n) => n.id === starterPack1.id);
     const starterPack2Updated = starterPackNfts.find((n) => n.id === starterPack2.id);
