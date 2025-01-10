@@ -37,7 +37,7 @@ export function trackUserEnhancedAction<T extends MixpanelEventName>(
     $referring_domain: referrerDomain,
     ip,
     // Custom event props
-    deviceType: reqUserAgent.device?.type
+    deviceType: reqUserAgent.device?.type === 'mobile' ? 'mobile' : 'desktop'
   } as const;
 
   return trackUserAction(eventName, { ...deviceProps, ...params }, utmParams);
