@@ -2,6 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { prettyPrint } from '@packages/utils/strings';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 async function query() {
+  const rece;
   const scout = await prisma.scout.count({
     where: { avatar: null }
     // include: {
