@@ -12,7 +12,9 @@ export function BuilderCardName({ name, size }: { name: string; size: 'x-small' 
   return (
     <Stack
       sx={{
-        width: '100%',
+        width: 'calc(100% + 2.5px)',
+        left: -0.75,
+        position: 'relative',
         background: 'linear-gradient(90deg, #A06CD5 0%, #FFAC81 50%, #A06CD5 100%)'
       }}
     >

@@ -3,6 +3,7 @@
 import type { BuilderNftType, BuilderStatus } from '@charmverse/core/prisma';
 import { Box, Paper, Stack, styled, Typography } from '@mui/material';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
+import type { BuilderCardStats } from '@packages/scoutgame/builders/getBuilderCardStats';
 import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import type { BasicUserInfo } from '@packages/users/interfaces';
@@ -24,7 +25,7 @@ export type BuilderProfileProps = {
     nftImageUrl?: string;
     congratsImageUrl?: string;
     nftType: BuilderNftType;
-  };
+  } & BuilderCardStats;
   builderActivities: BuilderActivity[];
 } & BuilderStats &
   BuilderScouts;
@@ -72,7 +73,7 @@ export function PublicBuilderProfileContainer({
               <BackButton />
               <Stack flexDirection='row' alignItems='center' gap={2}>
                 <Box minWidth='fit-content'>
-                  <BuilderCard builder={builder} hideDetails showPurchaseButton size='small' />
+                  <BuilderCard builder={builder} showPurchaseButton size='small' />
                 </Box>
                 <Stack gap={1} pr={1}>
                   <UserProfile
@@ -113,7 +114,7 @@ export function PublicBuilderProfileContainer({
                     justifyContent: 'center'
                   }}
                 >
-                  <BuilderCard builder={builder} hideDetails showPurchaseButton />
+                  <BuilderCard builder={builder} showPurchaseButton />
                   <PublicBuilderStats
                     seasonPoints={seasonPoints}
                     allTimePoints={allTimePoints}

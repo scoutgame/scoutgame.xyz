@@ -12,34 +12,12 @@ export function BuilderCardStats({
 }: {
   weeksGems?: number;
   displayName: string;
-  last14DaysRank?: number[];
+  last14DaysRank?: number[] | null;
   size: 'x-small' | 'small' | 'medium' | 'large';
-  estimatedPayout?: number;
+  estimatedPayout?: number | null;
 }) {
   return (
-    <Stack
-      pt={0.25}
-      sx={{
-        borderWidth: '1.5px 0px 1.5px 0px',
-        borderStyle: 'solid',
-        borderColor: '#A06CD5'
-      }}
-      height='100%'
-    >
-      <Typography
-        sx={{
-          pl: 0.25,
-          fontWeight: 500,
-          alignSelf: 'flex-start',
-          color: 'text.secondary',
-          fontSize: {
-            xs: '7.5px',
-            md: size === 'medium' || size === 'large' ? '10px' : '8px'
-          }
-        }}
-      >
-        14 DAY ACTIVITY
-      </Typography>
+    <Stack height='100%'>
       <BuilderCardActivity
         size={size}
         last14DaysRank={last14DaysRank ?? []}

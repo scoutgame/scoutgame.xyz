@@ -32,7 +32,7 @@ export function BuilderCardNftDisplay({
 }: {
   path: string;
   nftImageUrl?: string | null;
-  level?: number;
+  level?: number | null;
   children?: React.ReactNode;
   size?: 'x-small' | 'small' | 'medium' | 'large';
   hideDetails?: boolean;
@@ -76,8 +76,8 @@ export function BuilderCardNftDisplay({
                   md: 10
                 },
                 right: {
-                  xs: 10,
-                  md: 15
+                  xs: 7.5,
+                  md: 10
                 },
                 justifyContent: 'center',
                 alignItems: 'center',

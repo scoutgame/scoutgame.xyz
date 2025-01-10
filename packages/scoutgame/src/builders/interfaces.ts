@@ -15,10 +15,10 @@ export type BuilderMetrics = {
   nftsSold: number;
   price: bigint;
   rank: number;
-  level: number;
-  estimatedPayout: number;
+  level?: number | null;
+  estimatedPayout?: number | null;
+  last14DaysRank?: number[] | null;
   builderPoints: number;
-  last14DaysRank: number[];
 };
 
 export type BuilderInfo = BasicUserInfo &
