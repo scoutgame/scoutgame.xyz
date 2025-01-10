@@ -1,6 +1,6 @@
 'use client';
 
-import { Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 
 import { useDynamicFontSize } from '../../../../hooks/useDynamicFontSize';
 
@@ -10,15 +10,24 @@ export function BuilderCardName({ name, size }: { name: string; size: 'x-small' 
   const { fontSize, spanRef } = useDynamicFontSize(name, minFontSize, maxFontSize);
 
   return (
-    <Typography
-      ref={spanRef}
-      component='span'
+    <Stack
       sx={{
-        textAlign: 'center',
-        fontSize
+        width: '100%',
+        background: 'linear-gradient(90deg, #A06CD5 0%, #FFAC81 50%, #A06CD5 100%)'
       }}
     >
-      {name}
-    </Typography>
+      <Typography
+        ref={spanRef}
+        component='span'
+        sx={{
+          fontFamily: 'K2D',
+          textAlign: 'center',
+          fontSize,
+          color: 'black !important'
+        }}
+      >
+        {name}
+      </Typography>
+    </Stack>
   );
 }
