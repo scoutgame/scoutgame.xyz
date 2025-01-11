@@ -12,6 +12,7 @@ import { encodeFunctionData, getAddress } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
 import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from './constants';
+import { prepareTransactionExplanation } from './prepareTransactionEASExplanation';
 
 const balanceOfBatchAbi = {
   inputs: [
@@ -83,6 +84,7 @@ const transferrableNftBurnAbi = [
 ];
 
 export type ProposedBurnParams = {
+  revertedTransactionHash: string;
   holderAddress: Address;
   tokenId: number;
   amount: number;
@@ -130,6 +132,28 @@ export async function proposePreSeason02OrStarterPackBurnTransactions({
   const safeTransactionData: MetaTransactionData[] = [];
 
   log.info(`Building and validating ${burnTransactions.length} burn transactions`);
+
+  const transactionDescription = `This transaction reverts ${burnTransactions.length} mint transactions paid for in points that came from unfair gameplay via botting.
+  The transactions are\r\n
+  ${burnTransactions.map((tx) => `${tx.revertedTransactionHash.replace('0x', '')}`).join(',\r\n ')}`;
+
+  const easTransaction = prepareTransactionExplanation({ justificationText: transactionDescription });
+
+  // Validate EAS transaction
+  try {
+    await apiKit.estimateSafeTransaction(safeAddress, easTransaction);
+    safeTransactionData.push(easTransaction);
+    log.info('EAS explanation transaction validated successfully', {
+      safeTransactionData
+    });
+  } catch (error) {
+    log.error('Failed to validate EAS explanation transaction', {
+      error,
+      decodedInput: easTransaction.data,
+      justificationText: transactionDescription
+    });
+    throw new Error('Failed to validate EAS explanation transaction');
+  }
 
   // Create and validate transactions
   for (const burnTransaction of burnTransactions) {
