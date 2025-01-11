@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
 import { builderContractReadonlyApiClient } from './clients/builderContractReadClient';
-import { builderContractStarterPackReadonlyApiClient } from './clients/builderContractStarterPackReadClient';
+import { builderContractStarterPackReadonlyApiClient } from './clients/starterPack/wrappers/builderContractStarterPackReadClient';
 import { mintNFT } from './mintNFT';
 import { schema } from './purchaseWithPointsSchema';
 import { convertCostToPoints } from './utils';
