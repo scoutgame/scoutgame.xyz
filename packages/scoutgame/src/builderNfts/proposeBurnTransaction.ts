@@ -1,12 +1,12 @@
 import { log } from '@charmverse/core/log';
-import type { BuilderNftType } from '@charmverse/core/prisma-client';
+import { type BuilderNftType } from '@charmverse/core/prisma-client';
 import { getAlchemyBaseUrl } from '@packages/blockchain/getAlchemyBaseUrl';
 import { prefix0x } from '@packages/utils/prefix0x';
 import SafeApiKit from '@safe-global/api-kit';
 import Safe from '@safe-global/protocol-kit';
 import type { MetaTransactionData } from '@safe-global/types-kit';
 import { OperationType } from '@safe-global/types-kit';
-import type { Address, Chain } from 'viem';
+import type { Address } from 'viem';
 import { encodeFunctionData, getAddress } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
@@ -38,31 +38,33 @@ const starterPackBurnAbi = [
   }
 ];
 
-const transferrableNftBurnAbi = {
-  inputs: [
-    {
-      internalType: 'address',
-      name: 'account',
-      type: 'address'
-    },
-    {
-      internalType: 'uint256',
-      name: 'tokenId',
-      type: 'uint256'
-    },
-    {
-      internalType: 'uint256',
-      name: 'amount',
-      type: 'uint256'
-    }
-  ],
-  name: 'burn',
-  outputs: [],
-  stateMutability: 'nonpayable',
-  type: 'function'
-};
+const transferrableNftBurnAbi = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'account',
+        type: 'address'
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256'
+      }
+    ],
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  }
+];
 
-type BurnParams = {
+export type ProposedBurnParams = {
   holderAddress: Address;
   tokenId: number;
   amount: number;
@@ -77,19 +79,19 @@ const proposerPrivateKey = process.env.SAFE_PROPOSER_PRIVATE_KEY as `0x${string}
  * @docs https://docs.safe.global/sdk/api-kit/guides/propose-and-confirm-transactions
  */
 export async function proposePreSeason02OrStarterPackBurnTransactions({
-  chain,
+  chainId,
   burnTransactions,
   safeAddress
 }: {
-  chain: Chain;
-  burnTransactions: BurnParams[];
+  chainId: number;
+  burnTransactions: ProposedBurnParams[];
   safeAddress: Address;
 }) {
   const starterPackNftContractAddress = getBuilderNftStarterPackContractAddress();
   const preseason02NftContractAddress = getBuilderNftContractAddress('2025-W02');
 
   const protocolKitProposer = await Safe.init({
-    provider: getAlchemyBaseUrl(chain.id),
+    provider: getAlchemyBaseUrl(chainId),
     signer: proposerPrivateKey,
     safeAddress
   });
@@ -107,7 +109,7 @@ export async function proposePreSeason02OrStarterPackBurnTransactions({
     }
 
     const encodedBurnData = encodeFunctionData({
-      abi: [nftType === 'starter_pack' ? starterPackBurnAbi : transferrableNftBurnAbi],
+      abi: nftType === 'starter_pack' ? starterPackBurnAbi : transferrableNftBurnAbi,
       functionName: 'burn',
       args
     });
@@ -121,7 +123,10 @@ export async function proposePreSeason02OrStarterPackBurnTransactions({
   });
 
   const safeTransaction = await protocolKitProposer.createTransaction({
-    transactions: safeTransactionData
+    transactions: safeTransactionData,
+    options: {
+      nonce: 2
+    }
   });
 
   log.info('Generated safe transaction input data');
@@ -130,7 +135,7 @@ export async function proposePreSeason02OrStarterPackBurnTransactions({
   const signature = await protocolKitProposer.signHash(safeTxHash);
 
   const apiKit = new SafeApiKit({
-    chainId: BigInt(chain.id)
+    chainId: BigInt(chainId)
   });
 
   const proposerAddress = privateKeyToAccount(prefix0x(proposerPrivateKey)).address;
