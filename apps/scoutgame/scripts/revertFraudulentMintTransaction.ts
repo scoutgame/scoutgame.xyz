@@ -7,7 +7,7 @@ import type { ProposedBurnParams } from '@packages/scoutgame/builderNfts/propose
 import { proposePreSeason02OrStarterPackBurnTransactions } from '@packages/scoutgame/builderNfts/proposeBurnTransaction';
 import { prefix0x } from '@packages/utils/prefix0x';
 import { optimism } from 'viem/chains';
-
+import { getBuilderStarterPackScoutedEvents } from '@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents';
 const gnosisSafeAddress = process.env.SCOUTGAME_GNOSIS_SAFE_ADDRESS as `0x${string}`;
 
 export async function revertFraudulentMintTransactions({
@@ -85,15 +85,11 @@ export async function revertFraudulentMintTransactions({
   });
 
   const starterPackTransferSingleEvents = await getTransferSingleWithBatchMerged({
-    chainId,
     fromBlock: blockNumber,
+    toBlock: blockNumber,
     contractAddress: getBuilderNftStarterPackContractAddress('2025-W02')
   });
 
-
-
-
-  const publicClient = getPublicClient(chainId);
 
   const burnTransactions: ProposedBurnParams[] = [];
 
@@ -106,7 +102,7 @@ export async function revertFraudulentMintTransactions({
 
     const transferSingleEvents = builderNft.nftType === 'default' ? defaultNftTransferSingleEvents : starterPackTransferSingleEvents;
 
-    const transferSingleEvent = transferSingleEvents.find((event) => event.args.id === BigInt(nftPurchaseEvent.builderNft.tokenId));
+    const transferSingleEvent = transferSingleEvents.find((event) => event.transactionHash === txHash);
 
     if (!transferSingleEvent) {
       throw new Error(`No TransferSingle event found for transaction ${txHash}`);
@@ -124,6 +120,7 @@ export async function revertFraudulentMintTransactions({
       tokenId: Number(transferSingleEvent.args.id),
       amount: Number(transferSingleEvent.args.value),
       nftType: builderNft.nftType,
+      revertedTransactionHash: txHash,
       scoutId: builderNft.nftType === 'starter_pack' ? nftPurchaseEvent.scoutId : undefined
     });
   }
@@ -148,8 +145,11 @@ export async function revertFraudulentMintTransactions({
 
 revertFraudulentMintTransactions({
   transactionHashes: [
-    
+
   ],
   chainId: optimism.id,
   season: '2025-W02'
 });
+
+
+
