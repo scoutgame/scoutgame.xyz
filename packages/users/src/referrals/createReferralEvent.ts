@@ -18,16 +18,6 @@ export async function createReferralEvent(referralCode: string, refereeId: strin
     throw new Error('Referrer has been banned');
   }
 
-  const existingReferee = await prisma.referralCodeEvent.findFirst({
-    where: {
-      refereeId
-    }
-  });
-
-  if (existingReferee) {
-    throw new Error('Referee has already been referred');
-  }
-
   const referrerId = referrer.id;
 
   const eventType: BuilderEventType = 'referral';
