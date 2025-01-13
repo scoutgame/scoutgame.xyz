@@ -38,6 +38,9 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
       },
       value: {
         gt: 0
+      },
+      recipient: {
+        deletedAt: null
       }
     },
     include: {
