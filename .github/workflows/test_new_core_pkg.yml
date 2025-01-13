@@ -20,6 +20,7 @@ jobs:
         run: |
           echo $EVENT_CONTEXT
       - uses: actions/checkout@v4
+      # install the deps to set up the cache
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
@@ -50,16 +51,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - app_name: 'scoutgame'
+          - app_name: scoutgame
             test_command: |
               npm run typecheck -w apps/scoutgame
               npx dotenv -e .env.test.local -- npm run test -w packages
-          - app_name: 'scoutgametelegram'
-            test_command: npm run typecheck -w apps/scoutgametelegram
-          - app_name: 'scoutgamecron'
-            test_command: 'npm run typecheck -w apps/scoutgamecron'
-          - app_name: 'admin'
-            test_command: 'npm run typecheck -w apps/admin'
+          - app_name: scoutgametelegram
+            test_command: npm run typecheck -w apps/telegram
+          - app_name: scoutgamecron
+            test_command: npm run typecheck -w apps/cron
+          - app_name: admin
+            test_command: npm run typecheck -w apps/admin
 
     steps:
       - uses: actions/checkout@v4
@@ -80,8 +81,8 @@ jobs:
           aws-region: us-east-1
           mask-aws-account-id: 'no'
 
-      - name: Restore app from cache
-        uses: ./.github/actions/build
+      - name: Test the build
+        uses: ./.github/actions/build_app
         with:
           app_name: ${{matrix.app_name}}
           REACT_APP_APP_ENV: 'test'

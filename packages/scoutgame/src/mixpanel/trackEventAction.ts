@@ -29,7 +29,7 @@ export const trackEventAction = actionClient
       await ctx.session.save();
     }
 
-    const event = { userId, ...eventPayload };
+    const event = { ...eventPayload, userId };
 
     if (userId === ctx.session.anonymousUserId) {
       event.isAnonymous = true;

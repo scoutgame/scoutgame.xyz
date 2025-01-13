@@ -23,10 +23,6 @@ export function trackUserEnhancedAction<T extends MixpanelEventName>(
 
   const reqUserAgent = userAgent({ headers: headersList });
 
-  if (reqUserAgent.isBot) {
-    return;
-  }
-
   const ip = getIPFromRequest();
 
   const deviceProps = {
@@ -37,7 +33,8 @@ export function trackUserEnhancedAction<T extends MixpanelEventName>(
     $referring_domain: referrerDomain,
     ip,
     // Custom event props
-    deviceType: reqUserAgent.device?.type
+    deviceType: reqUserAgent.device?.type === 'mobile' ? 'mobile' : 'desktop',
+    isBot: reqUserAgent.isBot
   } as const;
 
   return trackUserAction(eventName, { ...deviceProps, ...params }, utmParams);
