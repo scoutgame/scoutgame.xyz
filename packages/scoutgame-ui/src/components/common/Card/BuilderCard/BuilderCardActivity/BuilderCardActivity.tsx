@@ -35,13 +35,14 @@ export function BuilderCardActivity({
         md: 0.25
       }}
     >
-      <Stack flex={1}>
-        <Stack>
+      <Stack width='fit-content'>
+        <Stack pr={0.5}>
           <Typography
             fontSize={{
               xs: 7,
               md: mdFontSize
             }}
+            textAlign='center'
             fontWeight={500}
             color='secondary'
           >
@@ -67,12 +68,13 @@ export function BuilderCardActivity({
           </Stack>
         </Stack>
         <Box sx={{ backgroundColor: 'primary.main', height: '1px', width: '100%', mb: 0.25 }} />
-        <Stack>
+        <Stack pr={0.5}>
           <Typography
             fontSize={{
               xs: 7,
               md: mdFontSize
             }}
+            textAlign='center'
             fontWeight={500}
             color='green.main'
           >
@@ -109,12 +111,12 @@ export function BuilderCardActivity({
           sx={{
             pl: 0.25,
             fontWeight: 500,
-            alignSelf: 'flex-start',
             color: 'text.secondary',
             fontSize: {
               xs: '6.5px',
               md: mdFontSize
-            }
+            },
+            textAlign: 'center'
           }}
         >
           14 DAY RANK
