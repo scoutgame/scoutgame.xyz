@@ -196,8 +196,8 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
                     value: Math.floor(Math.random() * 100)
                   }))}
                 >
-                  <ReferenceLine y={50} stroke='#FF00D0' />
                   <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
+                  <ReferenceLine y={50} stroke='#FF00D0' />
                 </AreaChart>
               </ResponsiveContainer>
             </TableCell>

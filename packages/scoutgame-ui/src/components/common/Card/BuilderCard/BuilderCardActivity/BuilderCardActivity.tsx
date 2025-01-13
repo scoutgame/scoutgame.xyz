@@ -119,18 +119,18 @@ export function BuilderCardActivity({
             textAlign: 'center'
           }}
         >
-          14 DAY RANK
+          14D Rank
         </Typography>
         <Stack width='calc(100% + 5px)' height='100%'>
-          <ResponsiveContainer height='100%' width='100%'>
+          <ResponsiveContainer>
             <AreaChart
               data={Array.from({ length: 14 }, (_, index) => ({
                 name: index,
                 value: Math.floor(Math.random() * 100)
               }))}
             >
-              <ReferenceLine y={50} stroke='#FF00D0' />
               <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
+              <ReferenceLine y={50} stroke='#FF00D0' />
             </AreaChart>
           </ResponsiveContainer>
         </Stack>
