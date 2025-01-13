@@ -37,4 +37,15 @@ describe('createReferralUsers', () => {
 
     await expect(createReferralEvent(referrer.referralCode, referee.id)).rejects.toThrow('Referrer has been banned');
   });
+
+  it('should not create a referral event if the referee was already referred', async () => {
+    const referral = await mockScout();
+    const referee = await mockScout();
+
+    await createReferralEvent(referral.referralCode || '', referee.id);
+
+    await expect(createReferralEvent(referral.referralCode || '', referee.id)).rejects.toThrow(
+      'Referee has already been referred'
+    );
+  });
 });
