@@ -48,7 +48,7 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
         alignItems: 'center',
         gap: 1,
         cursor: !quest.completed ? 'pointer' : 'default',
-        bgcolor: quest.completed ? 'background.light' : 'primary.main',
+        bgcolor: quest.completed ? 'background.light' : 'primary.dark',
         borderRadius: 1,
         p: 1.5,
         color: 'text.primary',

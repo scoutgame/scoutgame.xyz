@@ -18,7 +18,15 @@ import { DailyClaimGift } from '../../claim/components/common/DailyClaimGift';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-function AnimatedContent({ isClaimed, points }: { isClaimed: boolean; points: number }) {
+function AnimatedContent({
+  isClaimed,
+  points,
+  variant
+}: {
+  isClaimed: boolean;
+  points: number;
+  variant: 'disabled' | 'secondary' | 'primary';
+}) {
   return (
     <AnimatePresence mode='wait' initial={false}>
       {isClaimed ? (
@@ -40,7 +48,7 @@ function AnimatedContent({ isClaimed, points }: { isClaimed: boolean; points: nu
           <Typography fontWeight={600}>{points}</Typography>
           <Image src='/images/profile/scout-game-profile-icon.png' alt='Scout game icon' width={15} height={8.5} />
         </Stack>
-      ) : (
+      ) : variant !== 'disabled' ? (
         <Stack
           key='unclaimed'
           component={motion.div}
@@ -55,7 +63,7 @@ function AnimatedContent({ isClaimed, points }: { isClaimed: boolean; points: nu
         >
           <Image src='/images/quests/question-icon.png' alt='Quest icon' width={24} height={24} />
         </Stack>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 }
@@ -145,7 +153,7 @@ export function DailyClaimCard({
 
   function getButtonLabel() {
     if (dailyClaim.isBonus) {
-      return hasClaimedStreak ? 'Bonus' : 'Streak broken :(';
+      return hasClaimedStreak ? 'Bonus' : 'Streak broken';
     } else if (canClaim) {
       return 'Claim';
     } else {
@@ -222,7 +230,7 @@ export function DailyClaimCard({
       >
         <AnimatedGift isClaimed={isClaimed} isBonus={dailyClaim.isBonus} variant={variant} />
         <AnimatedClaimedIcon isClaimed={isClaimed} />
-        <AnimatedContent isClaimed={isClaimed} points={dailyClaim.points} />
+        <AnimatedContent isClaimed={isClaimed} points={dailyClaim.points} variant={variant} />
         {isClaimToday && (
           <Stack
             component='canvas'

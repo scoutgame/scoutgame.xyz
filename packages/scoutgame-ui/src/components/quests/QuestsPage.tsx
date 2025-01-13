@@ -30,7 +30,7 @@ export function QuestsPage({
           overflowY: 'auto'
         }}
       >
-        <Box maxWidth='500px' margin='0 auto'>
+        <Box maxWidth='600px' margin='0 auto'>
           <Box sx={{ px: 5 }}>
             <Suspense fallback={<Skeleton height={100} width='100%' />}>
               <ConectorContainer />
