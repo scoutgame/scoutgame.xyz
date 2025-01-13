@@ -2,40 +2,42 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
-import { normalizeLast14DaysRank } from '@packages/scoutgame/builders/utils/normalizeLast14DaysRank';
+import type { Last14DaysRank } from '@packages/scoutgame/builders/interfaces';
 import { DateTime } from 'luxon';
 
 export async function updateBuildersCardActivity(date: DateTime) {
   const weekDay = date.weekday;
-  const builderCardActivities = await prisma.builderCardActivity.findMany({
+  const builders = await prisma.scout.findMany({
+    where: {
+      builderStatus: {
+        in: ['approved', 'banned']
+      }
+    },
     select: {
-      builderId: true,
-      last7Days: true
+      builderCardActivities: true,
+      id: true
     }
   });
-  const builderCardActivitiesRecord: Record<string, { last14Days: number[]; builderId: string }> = {};
   const yesterdayDate = DateTime.now().minus({ days: 1 }).toFormat('yyyy-MM-dd');
-
-  for (const builderCardActivity of builderCardActivities) {
-    builderCardActivitiesRecord[builderCardActivity.builderId] = {
-      last14Days: normalizeLast14DaysRank(builderCardActivity),
-      builderId: builderCardActivity.builderId
-    };
-  }
-
   const lastWeek = getLastWeek();
   const buildersLeaderboard = await getBuildersLeaderboard({
     // If monday get the last week's leaderboard since it contains sunday's data
     week: weekDay === 1 ? lastWeek : getCurrentWeek()
   });
 
+  const buildersLeaderboardRecord: Record<string, { rank: number | null }> = {};
   for (const { builder, rank } of buildersLeaderboard) {
+    buildersLeaderboardRecord[builder.id] = { rank };
+  }
+
+  for (const builder of builders) {
     try {
+      const rank = buildersLeaderboardRecord[builder.id]?.rank ?? null;
       await prisma.builderCardActivity.upsert({
         where: { builderId: builder.id },
         update: {
           last7Days: [
-            ...builderCardActivitiesRecord[builder.id].last14Days,
+            ...((builder.builderCardActivities[0]?.last7Days as Last14DaysRank) ?? []),
             {
               date: yesterdayDate,
               rank
