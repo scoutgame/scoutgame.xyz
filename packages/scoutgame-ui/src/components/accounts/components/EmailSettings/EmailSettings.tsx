@@ -12,7 +12,7 @@ import { updateUserEmailSettingsSchema } from '@packages/users/updateUserEmailSe
 import { sendVerificationEmailAction } from '@packages/users/verifyEmailAction';
 import { concatenateStringValues } from '@packages/utils/strings';
 import { useAction } from 'next-safe-action/hooks';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
