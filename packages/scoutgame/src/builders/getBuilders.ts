@@ -431,7 +431,7 @@ export async function getBuilders({
         estimatedPayout: builder.builderNfts[0]?.estimatedPayout || null,
         nftsPurchasedByUser:
           builder.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null,
-        price: builder.builderNfts[0]?.currentPrice || 0n
+        price: (builder.builderNfts[0]?.currentPrice || 0) as bigint
       }))
       .sort((a, b) => {
         if (order === 'asc') {
