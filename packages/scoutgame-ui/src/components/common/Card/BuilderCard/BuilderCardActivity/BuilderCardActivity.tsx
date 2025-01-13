@@ -124,7 +124,7 @@ export function BuilderCardActivity({
             <AreaChart
               data={Array.from({ length: 14 }, (_, index) => ({
                 name: index,
-                value: index * 10
+                value: Math.floor(Math.random() * 100)
               }))}
             >
               <ReferenceLine y={50} stroke='#FF00D0' />

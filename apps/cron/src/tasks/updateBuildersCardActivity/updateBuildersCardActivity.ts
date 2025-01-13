@@ -40,7 +40,7 @@ export async function updateBuildersCardActivity(date: DateTime) {
               date: yesterdayDate,
               rank
             }
-          ]
+          ].slice(-14)
         },
         create: {
           builderId: builder.id,
