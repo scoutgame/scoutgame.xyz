@@ -163,7 +163,7 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
             <TableCell align='center' sx={{ display: 'table-cell' }}>
               {builder.level !== null ? <TableCellText color='orange.main'>{builder.level}</TableCellText> : '-'}
             </TableCell>
-            <TableCell sx={{ maxWidth: { xs: 125, md: 'initial' }, height: { xs: 25, md: 50 } }}>
+            <TableCell sx={{ width: 150, height: { xs: 35, md: 50 }, p: 0 }}>
               <ResponsiveContainer>
                 <AreaChart
                   data={Array.from({ length: 14 }, (_, index) => ({

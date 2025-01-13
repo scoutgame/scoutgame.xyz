@@ -1,5 +1,6 @@
 'use client';
 
+import InfoIcon from '@mui/icons-material/Info';
 import type { Theme } from '@mui/material';
 import { Box, Stack, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
@@ -93,57 +94,62 @@ export function BuilderCardActivity({
         </Stack>
       </Stack>
       <Box sx={{ backgroundColor: 'primary.main', height: '100%', width: '1px' }} />
-      <Tooltip title={<BuilderCardActivityTooltip />} style={{ height: '100%', width: '50%' }}>
-        <Stack
-          onClick={(e) => {
-            if (isMobile) {
-              e.preventDefault();
-              setIsDialogOpen(true);
+      <Stack
+        onClick={(e) => {
+          if (isMobile) {
+            e.preventDefault();
+            setIsDialogOpen(true);
+          }
+        }}
+        sx={{
+          flex: 1
+        }}
+      >
+        <Typography
+          sx={{
+            pl: 0.25,
+            fontWeight: 500,
+            alignSelf: 'flex-start',
+            color: 'text.secondary',
+            fontSize: {
+              xs: '6.5px',
+              md: mdFontSize
             }
           }}
-          sx={{
-            flex: 1
-          }}
         >
-          <Typography
-            sx={{
-              pl: 0.25,
-              fontWeight: 500,
-              alignSelf: 'flex-start',
-              color: 'text.secondary',
-              fontSize: {
-                xs: '6.5px',
-                md: mdFontSize
-              }
-            }}
-          >
-            14 DAY RANK
-          </Typography>
-          <Stack width='calc(100% + 5px)' height='100%'>
-            <ResponsiveContainer height='100%' width='100%'>
-              <AreaChart
-                data={Array.from({ length: 14 }, (_, index) => ({
-                  name: index,
-                  value: index * 10
-                }))}
-              >
-                <ReferenceLine y={50} stroke='#FF00D0' />
-                <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Stack>
-          <Dialog
-            open={isDialogOpen}
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-            onClose={() => setIsDialogOpen(false)}
-            title='Builder Activity Map'
-          >
-            <BuilderCardActivityTooltip />
-          </Dialog>
+          14 DAY RANK
+        </Typography>
+        <Stack width='calc(100% + 5px)' height='100%'>
+          <ResponsiveContainer height='100%' width='100%'>
+            <AreaChart
+              data={Array.from({ length: 14 }, (_, index) => ({
+                name: index,
+                value: index * 10
+              }))}
+            >
+              <ReferenceLine y={50} stroke='#FF00D0' />
+              <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
+            </AreaChart>
+          </ResponsiveContainer>
         </Stack>
-      </Tooltip>
+        <Dialog
+          open={isDialogOpen}
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+          onClose={() => setIsDialogOpen(false)}
+          title={
+            <Stack flexDirection='row' alignItems='center' gap={1}>
+              <InfoIcon color='secondary' />
+              <Typography color='secondary' variant='h5'>
+                Developer Data
+              </Typography>
+            </Stack>
+          }
+        >
+          <BuilderCardActivityTooltip />
+        </Dialog>
+      </Stack>
     </Stack>
   );
 }

@@ -129,7 +129,7 @@ export function BuilderCardNftDisplay({
             transform: 'translateX(-50%)',
             bottom: {
               xs: size === 'x-small' ? 13.5 : 12.5,
-              md: 10
+              md: 12.5
             }
           }}
         >
