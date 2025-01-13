@@ -76,7 +76,11 @@ export const mergeUserAccount = async ({
                 }
               },
               select: {
-                id: true
+                builderNft: {
+                  select: {
+                    builderId: true
+                  }
+                }
               }
             }
           }
@@ -110,7 +114,11 @@ export const mergeUserAccount = async ({
                 }
               },
               select: {
-                id: true
+                builderNft: {
+                  select: {
+                    builderId: true
+                  }
+                }
               }
             }
           }
@@ -119,8 +127,12 @@ export const mergeUserAccount = async ({
     })
   ]);
 
-  const retainedUserStarterPackNft = retainedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.length).length;
-  const mergedUserStarterPackNft = mergedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.length).length;
+  const retainedUserStarterPackNft = new Set(
+    retainedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
+  ).size;
+  const mergedUserStarterPackNft = new Set(
+    mergedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
+  ).size;
 
   if (retainedUserStarterPackNft + mergedUserStarterPackNft > 3) {
     throw new Error('Can not merge more than 3 starter pack NFTs');
