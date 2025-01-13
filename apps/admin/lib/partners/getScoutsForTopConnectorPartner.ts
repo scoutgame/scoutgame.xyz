@@ -1,10 +1,13 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { DateTime } from 'luxon';
 
-export async function getScoutsForTopConnectorPartner({ week }: { week: string }) {
+export async function getScoutsForTopConnectorPartner({ days }: { days: number }) {
   const events = await prisma.builderEvent.findMany({
     where: {
       type: 'top_connector',
-      week
+      createdAt: {
+        gte: DateTime.utc().minus({ days }).toJSDate() // How many days ago we want to get the data from
+      }
     },
     orderBy: {
       createdAt: 'asc'

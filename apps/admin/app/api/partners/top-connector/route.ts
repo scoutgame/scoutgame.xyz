@@ -6,8 +6,9 @@ import { getScoutsForTopConnectorPartner } from 'lib/partners/getScoutsForTopCon
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  const daysAgo = 14;
   const lastWeek = getLastWeek();
-  const rows = await getScoutsForTopConnectorPartner({ week: lastWeek });
+  const rows = await getScoutsForTopConnectorPartner({ days: daysAgo });
 
-  return respondWithTSV(rows, `partners-export_supersim_${lastWeek}.tsv`);
+  return respondWithTSV(rows, `partners-export_top_connectors_${lastWeek}.tsv`);
 }
