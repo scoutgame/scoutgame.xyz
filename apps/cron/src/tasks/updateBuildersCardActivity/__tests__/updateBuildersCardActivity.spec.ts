@@ -22,7 +22,7 @@ describe('updateBuildersCardActivity', () => {
     // Create builder card activity for builder 1 for last week to check if it stays the same
     await prisma.builderCardActivity.create({
       data: {
-        last7Days: [
+        last14Days: [
           {
             date: lastWeekSundayDate,
             rank: 1
@@ -77,7 +77,7 @@ describe('updateBuildersCardActivity', () => {
 
     await prisma.builderCardActivity.create({
       data: {
-        last7Days: [
+        last14Days: [
           {
             date: lastWeekSundayDate,
             rank: 1
