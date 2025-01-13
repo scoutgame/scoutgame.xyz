@@ -4,6 +4,7 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentWeek, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
 import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refreshEstimatedPayouts';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
+import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
 import type Koa from 'koa';
 
 import { processBuilderActivity } from './processBuilderActivity';
@@ -84,7 +85,7 @@ export async function processAllBuilderActivity(
 
   await updateBuildersRank({ week: getCurrentWeek() });
 
-  await refreshEstimatedPayouts({ week: getCurrentWeek() }).catch((error) => {
-    log.error('Error refreshing estimated payouts', { error });
-  });
+  await refreshBuilderLevels({ season: getCurrentSeasonStart() });
+
+  await refreshEstimatedPayouts({ week: getCurrentWeek() });
 }

@@ -152,7 +152,9 @@ describe('refreshEstimatedPayouts', () => {
 
     // TODO: Add assertions to verify estimated payouts
     // Call the function to refresh estimated payouts
-    const nftPayouts = await refreshEstimatedPayouts({ week: season });
+    await refreshEstimatedPayouts({ week: season });
+
+    const nftPayouts = await getAllSeasonNftsWithOwners({ season });
 
     const { topWeeklyBuilders, weeklyAllocatedPoints, totalPoints, normalisationFactor, normalisedBuilders } =
       await getWeeklyPointsPoolAndBuilders({
