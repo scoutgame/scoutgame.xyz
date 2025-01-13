@@ -18,7 +18,7 @@ import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { saveOnboardingDetailsAction } from '@packages/users/saveOnboardingDetailsAction';
 import type { SaveOnboardingDetailsFormValues } from '@packages/users/saveOnboardingDetailsSchema';
 import { saveOnboardingDetailsSchema } from '@packages/users/saveOnboardingDetailsSchema';
-import { concatenateStringValues } from '@packages/utils/strings';
+import { isValidEmail, concatenateStringValues } from '@packages/utils/strings';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
@@ -77,8 +77,17 @@ export function ExtraDetailsForm({ user }: { user: SessionUser }) {
   };
 
   function onInvalid(fieldErrors: FieldErrors) {
-    setErrors(['The form is invalid. Please check the fields and try again.']);
-    log.warn('Invalid form submission', { fieldErrors, values: getValues() });
+    const values = getValues();
+    if (fieldErrors.email) {
+      setErrors(['You must enter an email address']);
+    } else if (!isValidEmail(values.email)) {
+      setErrors(['You must enter a valid email address']);
+    } else if (fieldErrors.agreedToTOS) {
+      setErrors(['You must agree to the Terms of Service']);
+    } else {
+      setErrors(['The form is invalid. Please check the fields and try again.']);
+    }
+    log.warn('Invalid form submission', { fieldErrors, values });
   }
 
   const isMounted = useIsMounted();
