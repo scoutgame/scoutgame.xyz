@@ -31,4 +31,4 @@ export type BuilderInfo = BasicUserInfo &
     nftsSoldToScout?: number;
   };
 
-export type Last14DaysRank = { date: string; rank: number | null }[];
+export type Last14DaysRank = { date: string; rank: number | null; gems: number }[];

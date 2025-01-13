@@ -25,14 +25,15 @@ export async function updateBuildersCardActivity(date: DateTime) {
     week: weekDay === 1 ? lastWeek : getCurrentWeek()
   });
 
-  const buildersLeaderboardRecord: Record<string, { rank: number | null }> = {};
-  for (const { builder, rank } of buildersLeaderboard) {
-    buildersLeaderboardRecord[builder.id] = { rank };
+  const buildersLeaderboardRecord: Record<string, { rank: number | null; gemsCollected: number }> = {};
+  for (const { builder, rank, gemsCollected } of buildersLeaderboard) {
+    buildersLeaderboardRecord[builder.id] = { rank, gemsCollected };
   }
 
   for (const builder of builders) {
     try {
-      const rank = buildersLeaderboardRecord[builder.id]?.rank ?? null;
+      const builderLeaderboard = buildersLeaderboardRecord[builder.id];
+      const rank = builderLeaderboard?.rank ?? null;
       await prisma.builderCardActivity.upsert({
         where: { builderId: builder.id },
         update: {
@@ -40,7 +41,8 @@ export async function updateBuildersCardActivity(date: DateTime) {
             ...((builder.builderCardActivities[0]?.last14Days as Last14DaysRank) ?? []),
             {
               date: yesterdayDate,
-              rank
+              rank,
+              gems: builderLeaderboard.gemsCollected || 0
             }
           ].slice(-14)
         },
@@ -49,7 +51,8 @@ export async function updateBuildersCardActivity(date: DateTime) {
           last14Days: [
             {
               date: yesterdayDate,
-              rank
+              rank,
+              gems: builderLeaderboard.gemsCollected || 0
             }
           ]
         }
