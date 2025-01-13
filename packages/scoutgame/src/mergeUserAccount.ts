@@ -66,15 +66,19 @@ export const mergeUserAccount = async ({
         deletedAt: true,
         builderStatus: true,
         bio: true,
-        nftPurchaseEvents: {
-          where: {
-            builderNft: {
-              season: getCurrentSeasonStart(),
-              nftType: 'starter_pack'
-            }
-          },
+        wallets: {
           select: {
-            id: true
+            scoutedNfts: {
+              where: {
+                builderNft: {
+                  season: getCurrentSeasonStart(),
+                  nftType: 'starter_pack'
+                }
+              },
+              select: {
+                id: true
+              }
+            }
           }
         }
       }
@@ -97,26 +101,26 @@ export const mergeUserAccount = async ({
         path: true,
         wallets: {
           select: {
-            address: true
-          }
-        },
-        nftPurchaseEvents: {
-          where: {
-            builderNft: {
-              season: getCurrentSeasonStart(),
-              nftType: 'starter_pack'
+            address: true,
+            scoutedNfts: {
+              where: {
+                builderNft: {
+                  season: getCurrentSeasonStart(),
+                  nftType: 'starter_pack'
+                }
+              },
+              select: {
+                id: true
+              }
             }
-          },
-          select: {
-            id: true
           }
         }
       }
     })
   ]);
 
-  const retainedUserStarterPackNft = retainedUser.nftPurchaseEvents.length;
-  const mergedUserStarterPackNft = mergedUser.nftPurchaseEvents.length;
+  const retainedUserStarterPackNft = retainedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.length).length;
+  const mergedUserStarterPackNft = mergedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.length).length;
 
   if (retainedUserStarterPackNft + mergedUserStarterPackNft > 3) {
     throw new Error('Can not merge more than 3 starter pack NFTs');
@@ -290,15 +294,30 @@ export const mergeUserAccount = async ({
   await prisma
     .$transaction(
       async (tx) => {
-        const nftPurchaseEvents = await tx.nFTPurchaseEvent.findMany({
+        const nftsOwned = await tx.scoutNft.findMany({
           where: {
-            scoutId: retainedUserId,
+            scoutWallet: {
+              scoutId: retainedUserId
+            },
             builderNft: {
               season: getCurrentSeasonStart()
             }
           },
           select: {
-            tokensPurchased: true
+            balance: true
+          }
+        });
+
+        const nftsSold = await tx.scoutNft.findMany({
+          where: {
+            builderNft: {
+              season: getCurrentSeasonStart(),
+              builderId: retainedUserId
+            }
+          },
+          select: {
+            balance: true,
+            walletAddress: true
           }
         });
 
@@ -323,9 +342,9 @@ export const mergeUserAccount = async ({
             }
           },
           data: {
-            nftsSold: nftSoldEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
-            nftsPurchased: nftPurchaseEvents.reduce((acc, event) => acc + event.tokensPurchased, 0),
-            nftOwners: arrayUtils.uniqueValues(nftSoldEvents.map((event) => event.scoutId)).length
+            nftsSold: nftsSold.reduce((acc, nft) => acc + nft.balance, 0),
+            nftsPurchased: nftsOwned.reduce((acc, nft) => acc + nft.balance, 0),
+            nftOwners: arrayUtils.uniqueValues(nftsSold.map((nft) => nft.walletAddress)).length
           }
         });
       },
