@@ -9,10 +9,9 @@ import type { BuilderMetadata } from '@packages/scoutgame/builders/getBuilders';
 import Image from 'next/image';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
-import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
-
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { Avatar } from '../../../common/Avatar';
+import { BuilderCardRankGraph } from '../../../common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 
 import { CommonTableRow, tableRowSx } from './CommonTableRow';
 import { TableCellText } from './TableCellText';
