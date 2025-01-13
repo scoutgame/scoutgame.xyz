@@ -51,16 +51,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - app_name: 'scoutgame'
+          - app_name: scoutgame
             test_command: |
               npm run typecheck -w apps/scoutgame
               npx dotenv -e .env.test.local -- npm run test -w packages
-          - app_name: 'scoutgametelegram'
-            test_command: npm run typecheck -w apps/scoutgametelegram
-          - app_name: 'scoutgamecron'
-            test_command: 'npm run typecheck -w apps/scoutgamecron'
-          - app_name: 'admin'
-            test_command: 'npm run typecheck -w apps/admin'
+          - app_name: scoutgametelegram
+            test_command: npm run typecheck -w apps/telegram
+          - app_name: scoutgamecron
+            test_command: npm run typecheck -w apps/cron
+          - app_name: admin
+            test_command: npm run typecheck -w apps/admin
 
     steps:
       - uses: actions/checkout@v4
