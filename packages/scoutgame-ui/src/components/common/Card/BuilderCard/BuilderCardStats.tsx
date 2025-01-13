@@ -8,13 +8,15 @@ export function BuilderCardStats({
   last14DaysRank,
   size,
   gemsCollected,
-  estimatedPayout
+  estimatedPayout,
+  starterPack
 }: {
   gemsCollected?: number;
   displayName: string;
   last14DaysRank?: (number | null)[] | null;
   size: 'x-small' | 'small' | 'medium' | 'large';
   estimatedPayout?: number | null;
+  starterPack?: boolean;
 }) {
   return (
     <Stack height='100%'>
@@ -24,7 +26,7 @@ export function BuilderCardStats({
         estimatedPayout={estimatedPayout ?? 0}
         gemsCollected={gemsCollected ?? 0}
       />
-      <BuilderCardName name={displayName} size={size} />
+      <BuilderCardName name={displayName} size={size} starterPack={starterPack} />
     </Stack>
   );
 }

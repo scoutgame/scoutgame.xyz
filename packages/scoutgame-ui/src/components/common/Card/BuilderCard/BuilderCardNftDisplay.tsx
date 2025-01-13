@@ -28,8 +28,10 @@ export function BuilderCardNftDisplay({
   level,
   size = 'medium',
   hideDetails = false,
-  disableProfileUrl = false
+  disableProfileUrl = false,
+  starterPack
 }: {
+  starterPack?: boolean;
   path: string;
   nftImageUrl?: string | null;
   level?: number | null;
@@ -65,11 +67,11 @@ export function BuilderCardNftDisplay({
                 position: 'absolute',
                 width: {
                   xs: 40,
-                  md: 50
+                  md: size === 'small' ? 45 : 50
                 },
                 height: {
                   xs: 40,
-                  md: 50
+                  md: size === 'small' ? 45 : 50
                 },
                 top: {
                   xs: 7.5,
@@ -81,7 +83,7 @@ export function BuilderCardNftDisplay({
                 },
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'orange.main',
+                backgroundColor: starterPack ? 'yellow.main' : 'orange.main',
                 borderRadius: '50%',
                 border: '3.5px solid #000'
               }}
@@ -90,7 +92,7 @@ export function BuilderCardNftDisplay({
                 fontFamily='Jura'
                 fontSize={{
                   xs: 7.5,
-                  md: 10
+                  md: size === 'small' ? 7.5 : 10
                 }}
                 pt={{
                   xs: 0.5,
@@ -106,7 +108,7 @@ export function BuilderCardNftDisplay({
                 fontFamily='Jura'
                 fontSize={{
                   xs: 15,
-                  md: 20
+                  md: size === 'small' ? 17.5 : 20
                 }}
                 color='black.main'
                 lineHeight={1}
@@ -121,7 +123,7 @@ export function BuilderCardNftDisplay({
             height: hideDetails ? 'fit-content' : '33.33%',
             position: 'absolute',
             width: {
-              xs: size === 'x-small' ? 'calc(100% - 4px)' : 'calc(100% - 4.5px)',
+              xs: 'calc(100% - 6.5px)',
               md: 'calc(100% - 8px)'
             },
             left: '50%',
@@ -129,7 +131,7 @@ export function BuilderCardNftDisplay({
             transform: 'translateX(-50%)',
             bottom: {
               xs: size === 'x-small' ? 13.5 : 12.5,
-              md: 12.5
+              md: size === 'small' ? 17.5 : 12.5
             }
           }}
         >

@@ -24,7 +24,7 @@ export function BuilderCardActivity({
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'), { noSsr: true });
-  const mdFontSize = size === 'medium' || size === 'large' ? '8.5px' : '7px';
+  const mdFontSize = size === 'medium' || size === 'large' ? '8.5px' : '5px';
 
   return (
     <Stack

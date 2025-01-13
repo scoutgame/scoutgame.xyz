@@ -14,7 +14,6 @@ export type BuilderMetrics = {
   // scoutedBy: number;
   nftsSold: number;
   price: bigint;
-  rank: number;
   level?: number | null;
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[] | null;

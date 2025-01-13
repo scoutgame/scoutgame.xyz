@@ -119,7 +119,6 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     nftType: builder.builderNfts[0].nftType,
     congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
     price: builder.builderNfts[0].currentPrice ?? BigInt(0),
-    rank: 0, // Would need to calculate this based on some criteria
     builderPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder ?? 0,
     level: builder.userSeasonStats[0]?.level ?? 0,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
@@ -196,7 +195,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           week: getCurrentWeek()
         },
         select: {
-          rank: true
+          gemsCollected: true
         }
       }
     }
@@ -229,10 +228,10 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
           nftsSold: nftsSoldData.total,
           nftsSoldToScout: nftsSoldData.toScout,
-          rank: builder.userWeeklyStats[0]?.rank ?? -1,
           price: nft.currentPrice ?? 0,
           last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
           nftType: nft.nftType,
+          gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
           congratsImageUrl: nft.congratsImageUrl,
           estimatedPayout: nft.estimatedPayout ?? 0,
           level: builder.userSeasonStats[0]?.level ?? 0

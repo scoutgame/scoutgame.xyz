@@ -25,7 +25,7 @@ export function BuilderCard({
   showPurchaseButton?: boolean;
   disableProfileUrl?: boolean;
   markStarterCardPurchased?: boolean;
-  type?: 'builder' | 'starter_pack';
+  type?: 'default' | 'starter_pack';
 }) {
   return (
     <Card
@@ -45,11 +45,12 @@ export function BuilderCard({
         size={size}
         hideDetails={hideDetails}
         disableProfileUrl={disableProfileUrl}
+        starterPack={type === 'starter_pack'}
       >
         {builder.builderStatus === 'banned' ? (
           <Typography textAlign='center'>SUSPENDED</Typography>
         ) : hideDetails ? null : (
-          <BuilderCardStats {...builder} size={size} />
+          <BuilderCardStats {...builder} starterPack={type === 'starter_pack'} size={size} />
         )}
       </BuilderCardNftDisplay>
       {typeof builder.price !== 'undefined' && showPurchaseButton && (

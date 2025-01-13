@@ -75,7 +75,7 @@ export function PublicBuilderProfileContainer({
               <BackButton />
               <Stack flexDirection='row' alignItems='center' gap={2}>
                 <Box minWidth='fit-content'>
-                  <BuilderCard builder={builder} showPurchaseButton size='small' />
+                  <BuilderCard type={builder.nftType} builder={builder} showPurchaseButton size='small' />
                 </Box>
                 <Stack gap={1} pr={1}>
                   <UserProfile
@@ -116,7 +116,12 @@ export function PublicBuilderProfileContainer({
                     justifyContent: 'center'
                   }}
                 >
-                  <BuilderCard builder={builder} showPurchaseButton size={isLgScreen ? 'large' : 'medium'} />
+                  <BuilderCard
+                    type={builder.nftType}
+                    builder={builder}
+                    showPurchaseButton
+                    size={isLgScreen ? 'large' : 'medium'}
+                  />
                   <PublicBuilderStats
                     seasonPoints={seasonPoints}
                     allTimePoints={allTimePoints}

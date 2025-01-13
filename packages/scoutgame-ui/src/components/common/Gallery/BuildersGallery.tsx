@@ -33,6 +33,7 @@ export function BuildersGallery({
                 builder={builder}
                 showPurchaseButton
                 size={size}
+                type={builder.nftType}
                 markStarterCardPurchased={markStarterCardPurchased}
               />
             </Box>
