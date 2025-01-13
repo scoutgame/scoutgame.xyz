@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -7,6 +7,7 @@ export type BuilderCardStats = {
   level?: number | null;
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[];
+  gemsCollected?: number;
 };
 
 export async function getBuilderCardStats(builderId: string): Promise<BuilderCardStats> {
@@ -30,6 +31,14 @@ export async function getBuilderCardStats(builderId: string): Promise<BuilderCar
         select: {
           estimatedPayout: true
         }
+      },
+      userWeeklyStats: {
+        where: {
+          week: getCurrentWeek()
+        },
+        select: {
+          gemsCollected: true
+        }
       }
     }
   });
@@ -37,6 +46,7 @@ export async function getBuilderCardStats(builderId: string): Promise<BuilderCar
   return {
     level: builder.userSeasonStats[0]?.level,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout,
-    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0])
+    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
+    gemsCollected: builder.userWeeklyStats[0]?.gemsCollected
   };
 }

@@ -31,6 +31,7 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
       scouts={scouts}
       builder={{
         ...builder,
+        gemsCollected,
         last14DaysRank: last14DaysRank ?? [],
         level: level ?? 0,
         estimatedPayout: estimatedPayout ?? 0,

@@ -18,6 +18,7 @@ export type BuilderMetrics = {
   level?: number | null;
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[] | null;
+  gemsCollected?: number;
   builderPoints: number;
 };
 

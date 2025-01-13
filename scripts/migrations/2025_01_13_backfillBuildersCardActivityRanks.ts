@@ -5,7 +5,7 @@ import { getStartOfWeek } from 'packages/dates/src/utils';
 
 async function backfillBuildersCardActivityRanks() {
   const threeWeeksAgoDate = DateTime.now().setZone('UTC').minus({ weeks: 2 }).startOf('week').startOf('day').toJSDate();
-  const yesterdayDate = DateTime.now().setZone('UTC').endOf('day').toJSDate();
+  const yesterdayDate = DateTime.now().minus({ days: 1 }).setZone('UTC').endOf('day').toJSDate();
 
   const gemsReceipts = await prisma.gemsReceipt.findMany({
     where: {

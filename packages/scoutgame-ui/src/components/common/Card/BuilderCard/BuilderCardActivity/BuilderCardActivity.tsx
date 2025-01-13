@@ -15,9 +15,9 @@ export function BuilderCardActivity({
   size,
   last14DaysRank,
   estimatedPayout,
-  weeksGems
+  gemsCollected
 }: {
-  weeksGems: number;
+  gemsCollected: number;
   size: 'x-small' | 'small' | 'medium' | 'large';
   last14DaysRank: (number | null)[];
   estimatedPayout: number;
@@ -57,7 +57,7 @@ export function BuilderCardActivity({
               }}
               color='secondary'
             >
-              {weeksGems}
+              {gemsCollected}
             </Typography>
             <Image
               width={isMobile ? 12.5 : 15}

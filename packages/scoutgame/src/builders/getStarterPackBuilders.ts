@@ -73,7 +73,8 @@ export async function getStarterPackBuilders({
           week
         },
         select: {
-          rank: true
+          rank: true,
+          gemsCollected: true
         }
       }
     }
@@ -98,6 +99,7 @@ export async function getStarterPackBuilders({
     nftType: BuilderNftType.starter_pack,
     farcasterId: builder.farcasterId,
     congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl || '',
-    purchased: !!builder.builderNfts[0]?.nftSoldEvents?.length
+    purchased: !!builder.builderNfts[0]?.nftSoldEvents?.length,
+    gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0
   }));
 }

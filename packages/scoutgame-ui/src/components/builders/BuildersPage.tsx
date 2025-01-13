@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { Grid2 as Grid, Stack, Typography } from '@mui/material';
+import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { Suspense } from 'react';
 
 import { HeaderMessage } from '../common/Header/HeaderMessage';
@@ -65,7 +66,7 @@ export async function BuildersPage({
               <BuilderPageTable
                 tab='leaderboard'
                 week={week}
-                builderSort={builderSort}
+                builderSort={builderSort as BuildersSortBy}
                 builderOrder={builderOrder}
                 userId={userId}
               />
@@ -77,7 +78,7 @@ export async function BuildersPage({
               <BuilderPageTable
                 tab={tab}
                 week={week}
-                builderSort={builderSort}
+                builderSort={builderSort as BuildersSortBy}
                 builderOrder={builderOrder}
                 userId={userId}
               />

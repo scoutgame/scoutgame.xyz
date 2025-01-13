@@ -184,7 +184,7 @@ export function BuildersTable({
                 ml={1.5}
                 justifyContent='flex-end'
               >
-                <TableCellText fontSize={isMdScreen ? '16px' : '10.5px'}>{builder.weekGems}</TableCellText>
+                <TableCellText fontSize={isMdScreen ? '16px' : '10.5px'}>{builder.gemsCollected}</TableCellText>
                 <Image
                   width={isMdScreen ? 15 : 12.5}
                   height={isMdScreen ? 15 : 12.5}
