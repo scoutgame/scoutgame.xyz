@@ -124,10 +124,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     builderPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder ?? 0,
     level: builder.userSeasonStats[0]?.level ?? 0,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
-    last14DaysRank: mapGemReceiptsToLast7Days({
-      events: builder.events as Required<BuilderEventWithGemsReceipt>[],
-      currentDate: DateTime.now()
-    }).map((gem) => gem.gemsCount)
+    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0])
   }));
 }
 
@@ -191,7 +188,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
       },
       builderCardActivities: {
         select: {
-          last7Days: true
+          last14Days: true
         }
       },
       builderStatus: true,

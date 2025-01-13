@@ -90,7 +90,7 @@ export async function getBuilders({
             },
             builderCardActivities: {
               select: {
-                last7Days: true
+                last14Days: true
               }
             },
             events: {
@@ -202,7 +202,7 @@ export async function getBuilders({
             },
             builderCardActivities: {
               select: {
-                last7Days: true
+                last14Days: true
               }
             },
             events: {
@@ -299,7 +299,7 @@ export async function getBuilders({
             },
             builderCardActivities: {
               select: {
-                last7Days: true
+                last14Days: true
               }
             },
             events: {
@@ -398,7 +398,7 @@ export async function getBuilders({
         },
         builderCardActivities: {
           select: {
-            last7Days: true
+            last14Days: true
           }
         },
         userSeasonStats: {

@@ -61,7 +61,7 @@ export async function getBuildersByFid({
         },
         builderCardActivities: {
           select: {
-            last7Days: true
+            last14Days: true
           }
         },
         userWeeklyStats: {

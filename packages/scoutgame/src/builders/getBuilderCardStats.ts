@@ -20,7 +20,7 @@ export async function getBuilderCardStats(builderId: string): Promise<BuilderCar
       },
       builderCardActivities: {
         select: {
-          last7Days: true
+          last14Days: true
         }
       },
       builderNfts: {

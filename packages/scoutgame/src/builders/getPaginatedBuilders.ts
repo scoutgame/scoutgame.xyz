@@ -81,7 +81,7 @@ export async function getPaginatedBuilders({
             },
             builderCardActivities: {
               select: {
-                last7Days: true
+                last14Days: true
               }
             },
             userAllTimeStats: {

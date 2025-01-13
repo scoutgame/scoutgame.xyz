@@ -19,7 +19,7 @@ const userSelect = (week: string, season: string) => ({
   },
   builderCardActivities: {
     select: {
-      last7Days: true
+      last14Days: true
     }
   },
   userWeeklyStats: {

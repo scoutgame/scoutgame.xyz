@@ -36,8 +36,8 @@ export async function updateBuildersCardActivity(date: DateTime) {
       await prisma.builderCardActivity.upsert({
         where: { builderId: builder.id },
         update: {
-          last7Days: [
-            ...((builder.builderCardActivities[0]?.last7Days as Last14DaysRank) ?? []),
+          last14Days: [
+            ...((builder.builderCardActivities[0]?.last14Days as Last14DaysRank) ?? []),
             {
               date: yesterdayDate,
               rank
@@ -46,7 +46,7 @@ export async function updateBuildersCardActivity(date: DateTime) {
         },
         create: {
           builderId: builder.id,
-          last7Days: [
+          last14Days: [
             {
               date: yesterdayDate,
               rank
