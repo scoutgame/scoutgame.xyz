@@ -33,11 +33,11 @@ export async function getContractData(): Promise<BuilderNFTContractData> {
       aggregateNftSalesData({ nftType: 'default' })
     ]);
 
-  const balance = await new UsdcErc20ABIClient({
-    chain: optimism,
-    publicClient: getPublicClient(optimism.id),
-    contractAddress: usdcOptimismMainnetContractAddress
-  }).balanceOf({ args: { account: proceedsReceiver } });
+  // const balance = await new UsdcErc20ABIClient({
+  //   chain: optimism,
+  //   publicClient: getPublicClient(optimism.id),
+  //   contractAddress: usdcOptimismMainnetContractAddress
+  // }).balanceOf({ args: { account: proceedsReceiver } });
 
   return {
     currentAdmin: currentAdmin as Address,

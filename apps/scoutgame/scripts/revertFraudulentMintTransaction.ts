@@ -3,11 +3,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
-import type { ProposedBurnParams } from '@packages/scoutgame/builderNfts/proposeBurnTransaction';
-import { proposePreSeason02OrStarterPackBurnTransactions } from '@packages/scoutgame/builderNfts/proposeBurnTransaction';
+import type { ProposedBurnParams } from '@packages/safetransactions/proposeBurnTransaction';
+import { proposePreSeason02OrStarterPackBurnTransactions } from '@packages/safetransactions/proposeBurnTransaction';
 import { prefix0x } from '@packages/utils/prefix0x';
-import { optimism } from 'viem/chains';
-import { getBuilderStarterPackScoutedEvents } from '@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents';
 const gnosisSafeAddress = process.env.SCOUTGAME_GNOSIS_SAFE_ADDRESS as `0x${string}`;
 
 export async function revertFraudulentMintTransactions({
@@ -85,8 +83,8 @@ export async function revertFraudulentMintTransactions({
   });
 
   const starterPackTransferSingleEvents = await getTransferSingleWithBatchMerged({
+    chainId,
     fromBlock: blockNumber,
-    toBlock: blockNumber,
     contractAddress: getBuilderNftStarterPackContractAddress('2025-W02')
   });
 
@@ -140,16 +138,5 @@ export async function revertFraudulentMintTransactions({
 
   log.warn('Please delete the transactions from the database once they have been reverted.');
 }
-
-
-
-revertFraudulentMintTransactions({
-  transactionHashes: [
-
-  ],
-  chainId: optimism.id,
-  season: '2025-W02'
-});
-
 
 

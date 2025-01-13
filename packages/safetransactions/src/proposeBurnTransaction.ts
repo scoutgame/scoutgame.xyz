@@ -2,6 +2,10 @@ import { log } from '@charmverse/core/log';
 import { type BuilderNftType } from '@charmverse/core/prisma-client';
 import { getAlchemyBaseUrl } from '@packages/blockchain/getAlchemyBaseUrl';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import {
+  getBuilderNftContractAddress,
+  getBuilderNftStarterPackContractAddress
+} from '@packages/scoutgame/builderNfts/constants';
 import { prefix0x } from '@packages/utils/prefix0x';
 import { prettyPrint } from '@packages/utils/strings';
 import SafeApiKit from '@safe-global/api-kit';
@@ -12,7 +16,6 @@ import type { Address } from 'viem';
 import { encodeFunctionData, getAddress } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
-import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from './constants';
 import { prepareTransactionExplanation } from './prepareTransactionEASExplanation';
 
 const balanceOfBatchAbi = {
