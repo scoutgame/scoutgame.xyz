@@ -289,7 +289,7 @@ export async function recordNftMint(
     log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, scoutId });
   }
 
-  refreshEstimatedPayouts({
+  await refreshEstimatedPayouts({
     week: getCurrentWeek(),
     builderIdToRefresh: builderNft.builderId
   }).catch((error) => {

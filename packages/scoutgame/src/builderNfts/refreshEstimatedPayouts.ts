@@ -19,7 +19,7 @@ export async function refreshEstimatedPayouts({
 }: {
   week: ISOWeek;
   builderIdToRefresh?: string;
-}): Promise<SeasonNfts> {
+}): Promise<void> {
   const season = getCurrentSeasonStart(week);
 
   const { normalisedBuilders } = await getPointsCountForWeekWithNormalisation({
@@ -88,6 +88,4 @@ export async function refreshEstimatedPayouts({
       }
     }
   }
-
-  return getAllSeasonNftsWithOwners({ season });
 }
