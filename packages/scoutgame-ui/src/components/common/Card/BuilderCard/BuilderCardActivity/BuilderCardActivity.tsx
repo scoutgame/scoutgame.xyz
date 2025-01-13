@@ -5,11 +5,11 @@ import type { Theme } from '@mui/material';
 import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Area, AreaChart, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 import { Dialog } from '../../../Dialog';
 
 import { BuilderCardActivityTooltip } from './BuilderCardActivityTooltip';
+import { BuilderCardRankGraph } from './BuilderCardRankGraph';
 
 export function BuilderCardActivity({
   size,
@@ -122,17 +122,7 @@ export function BuilderCardActivity({
           14D Rank
         </Typography>
         <Stack width='calc(100% + 5px)' height='100%'>
-          <ResponsiveContainer>
-            <AreaChart
-              data={Array.from({ length: 14 }, (_, index) => ({
-                name: index,
-                value: Math.floor(Math.random() * 100)
-              }))}
-            >
-              <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
-              <ReferenceLine y={50} stroke='#FF00D0' />
-            </AreaChart>
-          </ResponsiveContainer>
+          <BuilderCardRankGraph last14DaysRank={last14DaysRank} />
         </Stack>
         <Dialog
           open={isDialogOpen}

@@ -8,7 +8,8 @@ import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata } from '@packages/scoutgame/builders/getBuilders';
 import Image from 'next/image';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Area, AreaChart, ReferenceLine, ResponsiveContainer } from 'recharts';
+
+import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { Avatar } from '../../../common/Avatar';
@@ -189,17 +190,7 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
               {builder.level !== null ? <TableCellText color='orange.main'>{builder.level}</TableCellText> : '-'}
             </TableCell>
             <TableCell sx={{ width: 150, height: { xs: 35, md: 50 }, p: 0 }}>
-              <ResponsiveContainer>
-                <AreaChart
-                  data={Array.from({ length: 14 }, (_, index) => ({
-                    name: index,
-                    value: Math.floor(Math.random() * 100)
-                  }))}
-                >
-                  <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
-                  <ReferenceLine y={50} stroke='#FF00D0' />
-                </AreaChart>
-              </ResponsiveContainer>
+              <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
             </TableCell>
             <TableCell align='right' width={150}>
               {builder.estimatedPayout !== null ? (
