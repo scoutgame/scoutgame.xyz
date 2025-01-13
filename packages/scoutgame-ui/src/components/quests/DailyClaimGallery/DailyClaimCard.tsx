@@ -7,7 +7,6 @@ import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
-import { DateTime } from 'luxon';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useRef } from 'react';
@@ -81,7 +80,7 @@ export function AnimatedGift({
     <AnimatePresence initial={false}>
       {!isClaimed && (
         <Stack sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-          {isBonus ? (
+          {isBonus && variant !== 'disabled' ? (
             <Stack direction='row' gap={0.5} alignItems='flex-end'>
               <DailyClaimGift variant={variant} size={44} />
               <DailyClaimGift variant={variant} size={70} />
