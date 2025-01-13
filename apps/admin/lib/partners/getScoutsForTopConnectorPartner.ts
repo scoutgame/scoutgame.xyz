@@ -1,35 +1,27 @@
-import { prisma } from '@charmverse/core/prisma-client';
+import { log } from '@charmverse/core/log';
+import type { TopConnector } from '@packages/scoutgame/topConnector/getTopConnectors';
+import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
 import { DateTime } from 'luxon';
 
 export async function getScoutsForTopConnectorPartner({ days }: { days: number }) {
-  const events = await prisma.builderEvent.findMany({
-    where: {
-      type: 'top_connector',
-      createdAt: {
-        gte: DateTime.utc().minus({ days }).toJSDate() // How many days ago we want to get the data from
-      }
-    },
-    orderBy: {
-      createdAt: 'asc'
-    },
-    select: {
-      createdAt: true,
-      description: true,
-      builder: {
-        select: {
-          path: true,
-          email: true,
-          displayName: true
-        }
-      }
-    }
-  });
+  const topConnectors: (TopConnector & { date: string })[] = [];
 
-  return events.map((event) => ({
-    'User Name': event.builder.displayName,
-    'Profile Link': `https://scoutgame.xyz/u/${event.builder.path}`,
-    Email: event.builder.email,
-    Date: event.createdAt.toDateString(),
-    Points: event.description
+  for (let day = 1; day <= days; day++) {
+    const date = DateTime.utc().minus({ days: day });
+    const topConnector = await getTopConnectorOfTheDay({ date });
+
+    if (topConnector) {
+      topConnectors.push({ ...topConnector, date: date.toJSDate().toDateString() });
+    } else {
+      log.info('No top connector found for the day', { day, date });
+    }
+  }
+
+  return topConnectors.map((connector) => ({
+    'User Name': connector.displayName,
+    'Profile Link': `https://scoutgame.xyz/u/${connector.path}`,
+    Email: connector.email,
+    Date: connector.date,
+    Points: connector.referralPoints
   }));
 }

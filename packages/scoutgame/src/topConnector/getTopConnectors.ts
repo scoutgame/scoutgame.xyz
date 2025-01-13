@@ -9,13 +9,16 @@ export type TopConnector = {
   avatar?: string | null;
   displayName: string;
   rank: number;
+  email?: string | null;
 };
 
 /**
  * Get top 5 connectors for today.
  *
  * If userId is in top 5 return the top 5 connectors.
+ *
  * If userId is not in top 5 return it in the last position so the user can see their position.
+ *
  * If the userId doesn't have any points return the top 5 connectors.
  *
  * @param userId - The user id to check if they are in the top 5.
@@ -42,7 +45,8 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
         select: {
           avatar: true,
           displayName: true,
-          path: true
+          path: true,
+          email: true
         }
       }
     }
@@ -64,19 +68,24 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
   }
 }
 
-export async function getTopConnectorToday() {
-  // Assuming the hour is 00:00:00 UTC time and we need the previous day
-  const startOfDay = DateTime.utc().startOf('day').minus({ day: 1 }).toJSDate();
+export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
+  const date = options?.date || DateTime.utc();
+  const startOfDay = date.toUTC().startOf('day').toJSDate();
+  const endOfDay = date.toUTC().endOf('day').toJSDate();
 
   const allBuilderEvents = await prisma.pointsReceipt.findMany({
     where: {
       createdAt: {
-        gte: startOfDay
+        gte: startOfDay,
+        lte: endOfDay
       },
       event: {
         type: {
           in: ['referral', 'referral_bonus']
         }
+      },
+      recipient: {
+        deletedAt: null
       },
       value: {
         gt: 0
@@ -87,7 +96,8 @@ export async function getTopConnectorToday() {
         select: {
           avatar: true,
           displayName: true,
-          path: true
+          path: true,
+          email: true
         }
       }
     }
@@ -98,7 +108,7 @@ export async function getTopConnectorToday() {
   return sortedByBuilder.at(0);
 }
 
-type PartialUser = Pick<Scout, 'avatar' | 'displayName' | 'path'>;
+type PartialUser = Pick<Scout, 'avatar' | 'displayName' | 'path' | 'email'>;
 
 /**
  *
@@ -125,7 +135,8 @@ function groupBuilderEvents(events: (PointsReceipt & { recipient?: PartialUser |
         referralPoints: value,
         avatar: event.recipient.avatar,
         displayName: event.recipient.displayName,
-        path: event.recipient.path
+        path: event.recipient.path,
+        email: event.recipient.email
       };
     }
 
