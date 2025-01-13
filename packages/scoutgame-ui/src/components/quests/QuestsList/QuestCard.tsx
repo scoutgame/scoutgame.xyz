@@ -2,7 +2,7 @@
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { Button, Chip, Stack, Typography } from '@mui/material';
+import { Box, Button, Chip, Stack, Typography } from '@mui/material';
 import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 import Image from 'next/image';
@@ -79,6 +79,7 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
                 </Typography>
               </>
             )}
+            <Chip size='small' label={quest.tag.charAt(0).toUpperCase() + quest.tag.slice(1)} sx={{ ml: 1 }} />
           </Stack>
           {quest.completedSteps !== null ? (
             <Stack flexDirection='row' gap={0.5} alignItems='center'>
@@ -105,8 +106,14 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
         </Stack>
       </Stack>
       <Stack direction='row' gap={0.5} alignItems='center'>
-        <Chip size='small' label={quest.tag.charAt(0).toUpperCase() + quest.tag.slice(1)} />
-        {quest.completed ? <CheckCircleIcon color='secondary' /> : <KeyboardArrowRightIcon />}
+        {quest.completed ? (
+          <CheckCircleIcon color='secondary' />
+        ) : (
+          <Box bgcolor='primary.main' borderRadius={1} pl={1} py={0.5} display='flex' alignItems='center'>
+            Start
+            <KeyboardArrowRightIcon />
+          </Box>
+        )}
       </Stack>
     </Button>
   );
