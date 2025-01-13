@@ -1,8 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
-import { randomLargeInt } from '@packages/testing/generators';
-import { generateRandomEthAddress } from '@packages/testing/random';
+import { randomLargeInt, randomWalletAddress } from '@packages/testing/generators';
 import { referralBonusPoints } from '@packages/users/constants';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
@@ -39,7 +38,7 @@ describe('recordNftMint', () => {
 
   it('should record a new NFT mint', async () => {
     const builder = await mockBuilder();
-    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const mockWallet = randomWalletAddress().toLowerCase();
     const scout = await mockScout({ wallets: [mockWallet] });
 
     const builderNft = await mockBuilderNft({ builderId: builder.id, season });
@@ -100,7 +99,7 @@ describe('recordNftMint', () => {
 
   it.skip('should skip mixpanel if this flag is provided', async () => {
     const builder = await mockBuilder();
-    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const mockWallet = randomWalletAddress().toLowerCase();
     const scout = await mockScout({ wallets: [mockWallet] });
     const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
@@ -121,7 +120,7 @@ describe('recordNftMint', () => {
 
   it('should skip price refresh if this flag is provided', async () => {
     const builder = await mockBuilder();
-    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const mockWallet = randomWalletAddress().toLowerCase();
     const scout = await mockScout({ wallets: [mockWallet] });
     const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
@@ -144,7 +143,7 @@ describe('recordNftMint', () => {
 
   it('should create a referral bonus event if the scout has a referral code', async () => {
     const referrer = await mockScout();
-    const mockWallet = generateRandomEthAddress().toLowerCase();
+    const mockWallet = randomWalletAddress().toLowerCase();
     const referee = await mockScout({ wallets: [mockWallet] });
 
     const builder = await mockBuilder();

@@ -1,7 +1,7 @@
 import { stringUtils } from '@charmverse/core/utilities';
 import { jest } from '@jest/globals';
 import { mockBuilderNft, mockBuilder, mockScout } from '@packages/testing/database';
-import { generateRandomEthAddress } from '@packages/testing/random';
+import { randomWalletAddress } from '@packages/testing/generators';
 import { prettyPrint } from '@packages/utils/strings';
 
 import type { WeeklyClaimsCalculated } from '../calculateWeeklyClaims';
@@ -17,7 +17,7 @@ const { getWeeklyPointsPoolAndBuilders } = await import('@packages/scoutgame/poi
 
 describe('calculateWeeklyClaims', () => {
   it('should generate the correct claims', async () => {
-    const builder1Wallet = generateRandomEthAddress().toLowerCase();
+    const builder1Wallet = randomWalletAddress().toLowerCase();
 
     const mockWeek = '2024-W42';
 
@@ -32,7 +32,7 @@ describe('calculateWeeklyClaims', () => {
       contractAddress: getScoutProtocolAddress()
     });
 
-    const builder2Wallet = generateRandomEthAddress().toLowerCase();
+    const builder2Wallet = randomWalletAddress().toLowerCase();
     const builder2 = await mockBuilder({
       wallets: [{ address: builder2Wallet }]
     });
@@ -44,7 +44,7 @@ describe('calculateWeeklyClaims', () => {
       contractAddress: getScoutProtocolAddress()
     });
 
-    const builder3Wallet = generateRandomEthAddress().toLowerCase();
+    const builder3Wallet = randomWalletAddress().toLowerCase();
     const builder3 = await mockBuilder({
       wallets: [{ address: builder3Wallet }]
     });
@@ -56,27 +56,27 @@ describe('calculateWeeklyClaims', () => {
       contractAddress: getScoutProtocolAddress()
     });
 
-    const scout1Wallet = generateRandomEthAddress().toLowerCase();
+    const scout1Wallet = randomWalletAddress().toLowerCase();
     const scout1 = await mockScout({
       wallets: [scout1Wallet]
     });
 
-    const scout2Wallet = generateRandomEthAddress().toLowerCase();
+    const scout2Wallet = randomWalletAddress().toLowerCase();
     const scout2 = await mockScout({
       wallets: [scout2Wallet]
     });
 
-    const scout3Wallet = generateRandomEthAddress().toLowerCase();
+    const scout3Wallet = randomWalletAddress().toLowerCase();
     const scout3 = await mockScout({
       wallets: [scout3Wallet]
     });
 
-    const scout4Wallet = generateRandomEthAddress().toLowerCase();
+    const scout4Wallet = randomWalletAddress().toLowerCase();
     const scout4 = await mockScout({
       wallets: [scout4Wallet]
     });
 
-    const scout5Wallet = generateRandomEthAddress().toLowerCase();
+    const scout5Wallet = randomWalletAddress().toLowerCase();
     const scout5 = await mockScout({
       wallets: [scout5Wallet]
     });
