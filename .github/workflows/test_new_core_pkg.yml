@@ -20,6 +20,7 @@ jobs:
         run: |
           echo $EVENT_CONTEXT
       - uses: actions/checkout@v4
+      # install the deps to set up the cache
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
@@ -80,8 +81,8 @@ jobs:
           aws-region: us-east-1
           mask-aws-account-id: 'no'
 
-      - name: Restore app from cache
-        uses: ./.github/actions/build
+      - name: Test the build
+        uses: ./.github/actions/build_app
         with:
           app_name: ${{matrix.app_name}}
           REACT_APP_APP_ENV: 'test'
