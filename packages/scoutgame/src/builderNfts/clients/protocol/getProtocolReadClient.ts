@@ -18,7 +18,6 @@ export function getProtocolImplementationReadonlyClient() {
   return new ScoutProtocolImplementationClient({
     chain: scoutProtocolChain,
     contractAddress: getScoutProtocolAddress(),
-    walletClient: getProtocolClaimsManagerWallet(),
     publicClient: getPublicClient(scoutProtocolChain.id)
   });
 }
