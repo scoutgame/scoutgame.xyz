@@ -14,7 +14,7 @@ export type BuilderMetadata = {
   level: number | null;
   weekGems: number;
   estimatedPayout: number | null;
-  last14Days: number[];
+  last14Days: (number | null)[];
   nftsPurchasedByUser: number | null;
 };
 
@@ -127,6 +127,7 @@ export async function getBuilders({
         last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
         weekGems: user.events.reduce((acc, event) => acc + (event.gemsReceipt?.value || 0), 0),
         estimatedPayout: user.builderNfts[0]?.estimatedPayout || null,
+        last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
         nftsPurchasedByUser:
           user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
       }))

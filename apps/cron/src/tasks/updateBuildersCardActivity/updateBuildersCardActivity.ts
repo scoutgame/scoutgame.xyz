@@ -19,7 +19,7 @@ export async function updateBuildersCardActivity(date: DateTime) {
     }
   });
   const yesterdayDate = DateTime.now().minus({ days: 1 }).toFormat('yyyy-MM-dd');
-  const lastWeek = getLastWeek();
+  const lastWeek = getLastWeek(date);
   const buildersLeaderboard = await getBuildersLeaderboard({
     // If monday get the last week's leaderboard since it contains sunday's data
     week: weekDay === 1 ? lastWeek : getCurrentWeek()

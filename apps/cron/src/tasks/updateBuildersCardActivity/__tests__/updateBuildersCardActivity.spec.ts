@@ -8,6 +8,7 @@ import { updateBuildersCardActivity } from '../updateBuildersCardActivity';
 
 beforeEach(async () => {
   await prisma.userWeeklyStats.deleteMany();
+  await prisma.builderCardActivity.deleteMany();
 });
 
 describe('updateBuildersCardActivity', () => {

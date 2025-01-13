@@ -6,7 +6,7 @@ import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 export type BuilderCardStats = {
   level?: number | null;
   estimatedPayout?: number | null;
-  last14DaysRank?: number[] | null;
+  last14DaysRank?: (number | null)[];
 };
 
 export async function getBuilderCardStats(builderId: string): Promise<BuilderCardStats> {

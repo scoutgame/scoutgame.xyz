@@ -6,8 +6,6 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
-import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast7Days';
-import { mapGemReceiptsToLast7Days } from '../builders/mapGemReceiptsToLast7Days';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 
@@ -89,6 +87,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
           level: true
         }
       },
+      builderCardActivities: true,
       builderNfts: {
         where: {
           season: getCurrentSeasonStart(),
