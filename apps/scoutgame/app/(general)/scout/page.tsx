@@ -15,7 +15,7 @@ export default async function Scout({
   const buildersLayout = (searchParams.buildersLayout as string) || 'table';
   const tab = (searchParams.tab as string) || 'scouts';
   const session = await getSession();
-  const userId = session?.user?.id;
+  const userId = session?.scoutId;
   return (
     <ScoutPage
       scoutSort={scoutSort}

@@ -1,9 +1,25 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { prettyPrint } from '@packages/utils/strings';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
+import { getCurrentSeasonStart } from 'packages/dates/src/utils';
 async function query() {
-  const scout = await prisma.builderCardActivity.findMany({
-    where: { builderId: '193565b3-bd15-4790-b84f-e7985a19597a' }
+  const scout = await prisma.scout.findMany({
+    where: { path: 'loocapro' },
+    select: {
+      builderNfts: {
+        where: {
+          season: getCurrentSeasonStart()
+        },
+        select: {
+          nftSoldEvents: {
+            select: {
+              scoutId: true,
+              tokensPurchased: true
+            }
+          }
+        }
+      }
+    }
     // include: {
     //   nftPurchaseEvents: {
     //     select: {

@@ -10,7 +10,7 @@ export default async function Builders({
   const tab = (searchParams.tab as string) || 'leaderboard';
   const week = searchParams.week as string | undefined;
   const session = await getSession();
-  const userId = session?.user?.id;
+  const userId = session?.scoutId;
 
   return <BuildersPage tab={tab} week={week && validateISOWeek(week) ? week : getCurrentWeek()} userId={userId} />;
 }

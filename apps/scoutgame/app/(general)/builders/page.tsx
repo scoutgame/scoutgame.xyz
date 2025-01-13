@@ -12,7 +12,7 @@ export default async function Builders({
   const builderSort = (searchParams.builderSort as string | undefined) || 'rank';
   const builderOrder = (searchParams.builderOrder as string | undefined) || 'asc';
   const session = await getSession();
-  const userId = session?.user?.id;
+  const userId = session?.scoutId;
 
   return (
     <BuildersPage
