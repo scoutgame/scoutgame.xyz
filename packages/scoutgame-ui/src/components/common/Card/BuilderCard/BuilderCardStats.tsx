@@ -12,7 +12,7 @@ export function BuilderCardStats({
 }: {
   weeksGems?: number;
   displayName: string;
-  last14DaysRank?: number[] | null;
+  last14DaysRank?: (number | null)[] | null;
   size: 'x-small' | 'small' | 'medium' | 'large';
   estimatedPayout?: number | null;
 }) {

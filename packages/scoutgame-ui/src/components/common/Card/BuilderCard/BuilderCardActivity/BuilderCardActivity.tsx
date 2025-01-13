@@ -19,7 +19,7 @@ export function BuilderCardActivity({
 }: {
   weeksGems: number;
   size: 'x-small' | 'small' | 'medium' | 'large';
-  last14DaysRank: number[];
+  last14DaysRank: (number | null)[];
   estimatedPayout: number;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
