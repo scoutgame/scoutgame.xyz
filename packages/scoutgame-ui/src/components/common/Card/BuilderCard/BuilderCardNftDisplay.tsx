@@ -86,10 +86,31 @@ export function BuilderCardNftDisplay({
                 border: '3.5px solid #000'
               }}
             >
-              <Typography fontFamily='Jura' fontSize={10} color='black.main' lineHeight={1} mb={0.25}>
+              <Typography
+                fontFamily='Jura'
+                fontSize={{
+                  xs: 7.5,
+                  md: 10
+                }}
+                pt={{
+                  xs: 0.5,
+                  md: 0
+                }}
+                color='black.main'
+                lineHeight={1}
+                mb={0.25}
+              >
                 LEVEL
               </Typography>
-              <Typography fontFamily='Jura' fontSize={20} color='black.main' lineHeight={1}>
+              <Typography
+                fontFamily='Jura'
+                fontSize={{
+                  xs: 15,
+                  md: 20
+                }}
+                color='black.main'
+                lineHeight={1}
+              >
                 {level}
               </Typography>
             </Stack>
@@ -99,11 +120,17 @@ export function BuilderCardNftDisplay({
           sx={{
             height: hideDetails ? 'fit-content' : '33.33%',
             position: 'absolute',
-            width: 'calc(100% - 8px)',
+            width: {
+              xs: size === 'x-small' ? 'calc(100% - 4px)' : 'calc(100% - 4.5px)',
+              md: 'calc(100% - 8px)'
+            },
             left: '50%',
             backgroundColor: hideDetails ? 'transparent' : '#000',
             transform: 'translateX(-50%)',
-            bottom: 7.5
+            bottom: {
+              xs: size === 'x-small' ? 13.5 : 12.5,
+              md: 10
+            }
           }}
         >
           {nftImageUrl ? null : (

@@ -31,9 +31,9 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
       scouts={scouts}
       builder={{
         ...builder,
-        last14DaysRank,
-        level,
-        estimatedPayout,
+        last14DaysRank: last14DaysRank ?? [],
+        level: level ?? 0,
+        estimatedPayout: estimatedPayout ?? 0,
         nftImageUrl: builderNft?.imageUrl,
         price: builderNft?.currentPrice ?? BigInt(0)
       }}

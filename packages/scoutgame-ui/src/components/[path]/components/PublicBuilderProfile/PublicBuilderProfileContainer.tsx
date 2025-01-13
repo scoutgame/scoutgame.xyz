@@ -8,7 +8,7 @@ import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScout
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
-import { useMdScreen } from '../../../../hooks/useMediaScreens';
+import { useLgScreen, useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
 import { BuilderCard } from '../../../common/Card/BuilderCard/BuilderCard';
 import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
@@ -58,6 +58,8 @@ export function PublicBuilderProfileContainer({
   rank
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
+  const isLgScreen = useLgScreen();
+
   return (
     <Box>
       <Stack
@@ -114,7 +116,7 @@ export function PublicBuilderProfileContainer({
                     justifyContent: 'center'
                   }}
                 >
-                  <BuilderCard builder={builder} showPurchaseButton />
+                  <BuilderCard builder={builder} showPurchaseButton size={isLgScreen ? 'large' : 'medium'} />
                   <PublicBuilderStats
                     seasonPoints={seasonPoints}
                     allTimePoints={allTimePoints}
