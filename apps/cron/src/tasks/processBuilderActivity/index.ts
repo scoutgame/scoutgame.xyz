@@ -84,7 +84,5 @@ export async function processAllBuilderActivity(
 
   await updateBuildersRank({ week: getCurrentWeek() });
 
-  await refreshEstimatedPayouts({ week: getCurrentWeek() }).catch((error) => {
-    log.error('Error refreshing estimated payouts', { error });
-  });
+  await refreshEstimatedPayouts({ week: getCurrentWeek() });
 }
