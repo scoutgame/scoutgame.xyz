@@ -2,10 +2,10 @@
 
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
-import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import type { BuilderMetadata } from '@packages/scoutgame/builders/getBuilders';
+import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import Image from 'next/image';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
@@ -25,7 +25,15 @@ function SortIcon({ columnName, order, sort }: { columnName: string; order: stri
   );
 }
 
-export function BuildersTable({ builders, order, sort }: { builders: BuilderMetadata[]; order: string; sort: string }) {
+export function BuildersTable({
+  builders,
+  order,
+  sort
+}: {
+  builders: BuilderMetadata[];
+  order: string;
+  sort: BuildersSortBy;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -186,22 +194,26 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
               </Stack>
             </TableCell>
             <TableCell align='center' sx={{ display: 'table-cell' }}>
-              {builder.level !== null ? <TableCellText color='orange.main'>{builder.level}</TableCellText> : '-'}
+              <TableCellText color='orange.main'>{builder.level}</TableCellText>
             </TableCell>
-            <TableCell sx={{ width: 150, height: { xs: 35, md: 50 }, p: 0 }}>
+            <TableCell
+              sx={{
+                width: 150,
+                height: { xs: 35, md: 50 },
+                p: {
+                  xs: 0
+                }
+              }}
+            >
               <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
             </TableCell>
             <TableCell align='right' width={150}>
-              {builder.estimatedPayout !== null ? (
-                <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
-                  <TableCellText color='green.main'>{builder.estimatedPayout}</TableCellText>
-                  {isMdScreen && (
-                    <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='green-icon' />
-                  )}
-                </Stack>
-              ) : (
-                '-'
-              )}
+              <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
+                <TableCellText color='green.main'>{builder.estimatedPayout}</TableCellText>
+                {isMdScreen && (
+                  <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='green-icon' />
+                )}
+              </Stack>
             </TableCell>
             <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>

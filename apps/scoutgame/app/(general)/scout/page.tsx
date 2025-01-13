@@ -9,7 +9,7 @@ export default async function Scout({
 }) {
   const scoutSort = (searchParams.scoutSort as string) || 'points';
   const builderSort = (searchParams.builderSort as BuildersSortBy) || 'week_gems';
-  const builderOrder = (searchParams.builderOrder as string) || 'asc';
+  const builderOrder = (searchParams.builderOrder as string) || 'desc';
   const scoutOrder = (searchParams.scoutOrder as string) || 'desc';
   const scoutTab = (searchParams.scoutTab as string) || 'scouts';
   const buildersLayout = (searchParams.buildersLayout as string) || 'table';

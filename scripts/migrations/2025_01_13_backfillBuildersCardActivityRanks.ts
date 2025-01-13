@@ -4,15 +4,15 @@ import { isToday } from 'packages/dates/src/utils';
 import { getStartOfWeek } from 'packages/dates/src/utils';
 
 async function backfillBuildersCardActivityRanks() {
-  const threeWeeksAgoDate = DateTime.now().minus({ weeks: 2 }).startOf('week').startOf('day').toJSDate();
-  const yesterdayDate = DateTime.now().minus({ days: 1 }).endOf('day').toJSDate();
+  const threeWeeksAgoDate = DateTime.now().setZone('UTC').minus({ weeks: 2 }).startOf('week').startOf('day').toJSDate();
+  const yesterdayDate = DateTime.now().setZone('UTC').minus({ days: 1 }).endOf('day').toJSDate();
 
   const gemsReceipts = await prisma.gemsReceipt.findMany({
     where: {
       createdAt: {
         gte: threeWeeksAgoDate,
         lte: yesterdayDate
-      }
+      },
     },
     select: {
       value: true,
@@ -30,7 +30,7 @@ async function backfillBuildersCardActivityRanks() {
     where: {
       builderStatus: {
         in: ['approved', 'banned']
-      }
+      },
     },
     select: {
       id: true
@@ -73,17 +73,9 @@ async function backfillBuildersCardActivityRanks() {
     gems: number
   }[]> = {}
 
-  const leaderboards: {
-    date: string,
-    builders: {
-      builderId: string
-      gems: number
-      rank: number
-    }[]
-  }[] = []
-
   for (const {week ,receipts} of sortedWeeks) {
     const weekStart = getStartOfWeek(week);
+    const weeklyBuilderGemsRecord: Record<string, number> = {}
 
     for (let day = 0; day < 7; day++) {
       const date = weekStart.plus({ days: day });
@@ -94,44 +86,23 @@ async function backfillBuildersCardActivityRanks() {
       }
 
       const todayGemsReceipts = receipts.filter(r => isToday(r.createdAt, date));
-      const builderDailyGemsRecord = todayGemsReceipts.reduce<Record<string, number>>((acc, r) => {
-        acc[r.builderId] = (acc[r.builderId] || 0) + r.value;
-        return acc;
-      }, {});
+      const dailyBuilderGemsRecord: Record<string, number> = {}
+      todayGemsReceipts.forEach(receipt => {
+        weeklyBuilderGemsRecord[receipt.builderId] = (weeklyBuilderGemsRecord[receipt.builderId] || 0) + receipt.value;
+        dailyBuilderGemsRecord[receipt.builderId] = (dailyBuilderGemsRecord[receipt.builderId] || 0) + receipt.value;
+      })
 
-      const builderGemsRecord: Record<string, number> = JSON.parse(JSON.stringify(builderDailyGemsRecord));
+      const sortedBuilderGemsRecord = Object.entries(weeklyBuilderGemsRecord).sort((a, b) => b[1] - a[1]);
 
-      if (day !== 0) {
-        const currentDay = leaderboards.length;
-        const previousDayLeaderboard = leaderboards[currentDay - 1];
-        previousDayLeaderboard.builders.forEach(builder => {
-          if (builderGemsRecord[builder.builderId]) {
-            builderGemsRecord[builder.builderId] += builder.gems;
-          } else {
-            builderGemsRecord[builder.builderId] = builder.gems;
-          }
-        })
-      }
-
-      const leaderboard = Object.entries(builderGemsRecord).sort((a, b) => b[1] - a[1]);
-      leaderboard.forEach(([builderId], rank) => {
+      sortedBuilderGemsRecord.forEach(([builderId], rank) => {
         builderRanksRecord[builderId] = [...(builderRanksRecord[builderId] || []), {
           date: formattedDate,
           rank: rank + 1,
-          gems: builderDailyGemsRecord[builderId]
+          gems: dailyBuilderGemsRecord[builderId] || 0
         }];
       })
 
-      leaderboards.push({
-        date: formattedDate,
-        builders: leaderboard.map(([builderId], rank) => ({
-          builderId,
-          rank: rank + 1,
-          gems: builderDailyGemsRecord[builderId]
-        }))
-      })
-
-      const nonContributingBuilders = builders.filter(b => !builderGemsRecord[b.id]);
+      const nonContributingBuilders = builders.filter(b => !weeklyBuilderGemsRecord[b.id]);
       nonContributingBuilders.forEach(builder => {
         builderRanksRecord[builder.id] = [...(builderRanksRecord[builder.id] || []), {
           date: formattedDate,
@@ -145,17 +116,13 @@ async function backfillBuildersCardActivityRanks() {
   for (const builder of builders) {
     const builderRanks = builderRanksRecord[builder.id];
     try {
-      await prisma.builderCardActivity.upsert({
+      await prisma.builderCardActivity.update({
         where: {
           builderId: builder.id
         },
-        update: {
+        data: {
           last14Days: builderRanks.slice(-14),
         },
-        create: {
-          builderId: builder.id,
-          last14Days: builderRanks.slice(-14),
-        }
       })
     } catch (error) {
       console.error(`Error upserting builder card activity for builder ${builder.id}:`, error);

@@ -2,8 +2,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { prettyPrint } from '@packages/utils/strings';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 async function query() {
-  const scout = await prisma.scout.count({
-    where: { avatar: null }
+  const scout = await prisma.builderCardActivity.findMany({
+    where: { builderId: '193565b3-bd15-4790-b84f-e7985a19597a' }
     // include: {
     //   nftPurchaseEvents: {
     //     select: {
