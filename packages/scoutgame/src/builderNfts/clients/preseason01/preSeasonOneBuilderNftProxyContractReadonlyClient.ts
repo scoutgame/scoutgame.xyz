@@ -6,7 +6,7 @@ import type { ClientConfig } from '../types';
 
 import { BuilderNFTSeasonOneUpgradeableClient } from './wrappers/BuilderNFTSeasonOneUpgradeable';
 
-export function getPreSeasonOneBuilderNftProxyContractReadonlyApiClient({
+export function getPreSeasonOneBuilderNftProxyContractReadonlyClient({
   chain = optimism,
   contractAddress = getBuilderNftContractAddress('2024-W41')
 }: ClientConfig) {

@@ -1,7 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
+import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/builderContractStarterPackReadClient';
 import { getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import type { Address } from 'viem';
+import { optimism } from 'viem/chains';
 
 import { aggregateNftSalesData, type NftSalesData } from './aggregateNftSalesData';
 
@@ -14,7 +15,10 @@ export type StarterPackNFTContractData = {
 
 export async function getStarterPackContractData(): Promise<StarterPackNFTContractData> {
   const [currentMinter, totalSupply, nftSalesData] = await Promise.all([
-    builderContractStarterPackReadonlyApiClient.getMinter(),
+    getBuilderNftStarterPackReadonlyClient({
+      chain: optimism,
+      contractAddress: getBuilderNftStarterPackContractAddress()
+    }).getMinter(),
     // TODO: call contract instead once we fix totalBuilderTokens?
     prisma.builderNft.count({ where: { nftType: 'starter_pack' } }).then((count) => BigInt(count)),
     // builderContractStarterPackReadonlyApiClient.totalBuilderTokens(),

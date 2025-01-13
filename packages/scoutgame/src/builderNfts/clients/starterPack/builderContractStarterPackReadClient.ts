@@ -1,13 +1,12 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
 
-import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../../constants';
+import { getBuilderNftStarterPackContractAddress } from '../../constants';
 import type { ClientConfig } from '../types';
 
 import { ScoutGameStarterPackNFTImplementationClient } from './wrappers/ScoutGameStarterPackNFTImplementation';
 
-export function getBuilderNftStarterPackReadonlyProxyClient({
+export function getBuilderNftStarterPackReadonlyClient({
   chain = optimism,
   contractAddress = getBuilderNftStarterPackContractAddress()
 }: ClientConfig) {

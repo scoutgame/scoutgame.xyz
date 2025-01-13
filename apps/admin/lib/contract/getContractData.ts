@@ -1,6 +1,6 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { builderContractReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractReadClient';
-import { builderProxyContractReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderProxyContractReadClient';
+import { getPreSeasonOneBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason01/preSeasonOneBuilderNftContractReadonlyClient';
+import { getPreSeasonOneBuilderNftProxyContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason01/preSeasonOneBuilderNftProxyContractReadonlyClient';
 import {
   getBuilderNftContractAddress,
   usdcOptimismMainnetContractAddress
@@ -23,6 +23,15 @@ export type BuilderNFTContractData = {
 };
 
 export async function getContractData(): Promise<BuilderNFTContractData> {
+  const builderContractReadonlyApiClient = getPreSeasonOneBuilderNftContractReadonlyClient({
+    chain: optimism,
+    contractAddress: getBuilderNftContractAddress('2024-W41')
+  });
+  const builderProxyContractReadonlyApiClient = getPreSeasonOneBuilderNftProxyContractReadonlyClient({
+    chain: optimism,
+    contractAddress: getBuilderNftContractAddress('2024-W41')
+  });
+
   const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
     await Promise.all([
       builderProxyContractReadonlyApiClient.admin(),
@@ -33,11 +42,11 @@ export async function getContractData(): Promise<BuilderNFTContractData> {
       aggregateNftSalesData({ nftType: 'default' })
     ]);
 
-  // const balance = await new UsdcErc20ABIClient({
-  //   chain: optimism,
-  //   publicClient: getPublicClient(optimism.id),
-  //   contractAddress: usdcOptimismMainnetContractAddress
-  // }).balanceOf({ args: { account: proceedsReceiver } });
+  const balance = await new UsdcErc20ABIClient({
+    chain: optimism,
+    publicClient: getPublicClient(optimism.id),
+    contractAddress: usdcOptimismMainnetContractAddress
+  }).balanceOf({ args: { account: proceedsReceiver } });
 
   return {
     currentAdmin: currentAdmin as Address,

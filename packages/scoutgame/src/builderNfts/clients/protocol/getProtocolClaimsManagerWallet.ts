@@ -1,8 +1,8 @@
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 
-import { scoutProtocolChainId } from '../constants';
+import { scoutProtocolChainId } from '../../../protocol/constants';
 
-export function getProxyClaimsManagerWallet() {
+export function getProtocolClaimsManagerWallet() {
   const scoutProtocolClaimsManagerKey = process.env.SCOUTPROTOCOL_CLAIMS_MANAGER_PRIVKEY as string;
 
   return getWalletClient({

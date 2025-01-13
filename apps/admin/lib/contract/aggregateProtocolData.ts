@@ -2,9 +2,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart } from '@packages/dates/utils';
 import {
-  protocolImplementationReadonlyApiClient,
-  protocolProxyReadonlyApiClient
-} from '@packages/scoutgame/protocol/clients/protocolReadClients';
+  getProtocolImplementationReadonlyClient,
+  getProtocolProxyReadonlyClient
+} from '@packages/scoutgame/builderNfts/clients/protocol/getProtocolReadClient';
 import { getScoutProtocolAddress } from '@packages/scoutgame/protocol/constants';
 import type { WeeklyClaimsTyped } from '@packages/scoutgame/protocol/generateWeeklyClaims';
 import {
@@ -39,6 +39,9 @@ export async function aggregateProtocolData({ userId }: { userId?: string }): Pr
   if (!getScoutProtocolAddress()) {
     throw new Error('REACT_APP_SCOUTPROTOCOL_CONTRACT_ADDRESS is not set');
   }
+
+  const protocolProxyReadonlyApiClient = getProtocolProxyReadonlyClient();
+  const protocolImplementationReadonlyApiClient = getProtocolImplementationReadonlyClient();
 
   const [implementation, admin, claimsManager] = await Promise.all([
     protocolProxyReadonlyApiClient.implementation(),

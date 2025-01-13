@@ -1,9 +1,6 @@
 import 'server-only';
 
-import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
-
 import { getContractData } from 'lib/contract/getContractData';
-import { getStarterPackContractData } from 'lib/contract/getStarterPackContractData';
 
 import { SeasonOneView } from './SeasonOneView';
 
