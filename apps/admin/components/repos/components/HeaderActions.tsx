@@ -109,7 +109,7 @@ export function HeaderActions() {
             filename={`Top Connector Weekly Report (${lastWeek}).tsv`}
             src='/api/partners/top-connector'
           >
-            Optimism
+            Top Connector
           </FileDownloadButton>
         </MenuItem>
         <MenuItem>
