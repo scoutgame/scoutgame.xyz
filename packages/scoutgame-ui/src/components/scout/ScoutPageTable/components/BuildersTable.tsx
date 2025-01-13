@@ -2,7 +2,7 @@
 
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
-import { Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata } from '@packages/scoutgame/builders/getBuilders';
@@ -66,12 +66,12 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
           <TableCell
             onClick={() => handleSort('week_gems')}
             sx={{
-              fontSize: { xs: '10px', md: 'initial' },
+              fontSize: { xs: '9px', md: 'initial' },
               cursor: 'pointer',
               py: 1
             }}
           >
-            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
+            <Stack direction='row' alignItems='center' ml={1.5} justifyContent='flex-end' lineHeight={1.5}>
               WEEK'S GEMS
               <SortIcon columnName='week_gems' order={order} sort={sort} />
             </Stack>
@@ -79,7 +79,7 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
           <TableCell
             onClick={() => handleSort('level')}
             sx={{
-              fontSize: { xs: '10px', md: 'initial' },
+              fontSize: { xs: '9px', md: 'initial' },
               cursor: 'pointer',
               py: 1
             }}
@@ -101,21 +101,31 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
           <TableCell
             onClick={() => handleSort('estimated_payout')}
             sx={{
-              fontSize: { xs: '10px', md: 'initial' },
+              fontSize: { xs: '9px', md: 'initial' },
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               py: 1
             }}
           >
             <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
-              EST. PAYOUT
+              <Stack
+                direction={{
+                  xs: 'column',
+                  md: 'row'
+                }}
+                alignItems='flex-start'
+                gap={0.5}
+              >
+                <Typography fontSize={{ xs: '10px', md: 'initial' }}>EST.</Typography>
+                <Typography fontSize={{ xs: '10px', md: 'initial' }}>PAYOUT</Typography>
+              </Stack>
               <SortIcon columnName='estimated_payout' order={order} sort={sort} />
             </Stack>
           </TableCell>
           <TableCell
             onClick={() => handleSort('price')}
             sx={{
-              fontSize: { xs: '10px', md: 'initial' },
+              fontSize: { xs: '9px', md: 'initial' },
               cursor: 'pointer',
               py: 1
             }}
@@ -131,8 +141,13 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
         {builders.map((builder) => (
           <TableRow key={builder.path} sx={tableRowSx} onClick={() => router.push(`/u/${builder.path}?tab=builder`)}>
             <TableCell>
-              <Stack alignItems='center' flexDirection='row' gap={1.5} maxWidth={{ xs: '85px', md: 'initial' }}>
-                <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'small'} />
+              <Stack
+                alignItems='center'
+                flexDirection='row'
+                gap={{ xs: 0.75, md: 1.5 }}
+                maxWidth={{ xs: '65px', md: 'initial' }}
+              >
+                <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
                 <Stack width='100%'>
                   {builder.nftsPurchasedByUser ? (
                     <Stack direction='row' alignItems='center' gap={0.5}>
@@ -143,11 +158,10 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
                     </Stack>
                   ) : null}
                   <TableCellText
-                    fontSize={isMdScreen ? '16px' : '12px'}
+                    fontSize={isMdScreen ? '16px' : '10.5px'}
                     overflow='hidden'
                     textOverflow='ellipsis'
                     noWrap
-                    pr={1.5}
                   >
                     {builder.displayName}
                   </TableCellText>
@@ -155,9 +169,20 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
               </Stack>
             </TableCell>
             <TableCell align='center'>
-              <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
-                <TableCellText>{builder.weekGems}</TableCellText>
-                <Image width={15} height={15} src='/images/profile/icons/hex-gem-icon.svg' alt='gem icon' />
+              <Stack
+                alignItems='center'
+                flexDirection='row'
+                gap={{ xs: 0.5, md: 1 }}
+                ml={1.5}
+                justifyContent='flex-end'
+              >
+                <TableCellText fontSize={isMdScreen ? '16px' : '10.5px'}>{builder.weekGems}</TableCellText>
+                <Image
+                  width={isMdScreen ? 15 : 12.5}
+                  height={isMdScreen ? 15 : 12.5}
+                  src='/images/profile/icons/hex-gem-icon.svg'
+                  alt='gem icon'
+                />
               </Stack>
             </TableCell>
             <TableCell align='center' sx={{ display: 'table-cell' }}>
@@ -176,11 +201,13 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
                 </AreaChart>
               </ResponsiveContainer>
             </TableCell>
-            <TableCell align='right'>
+            <TableCell align='right' width={150}>
               {builder.estimatedPayout !== null ? (
                 <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                   <TableCellText color='green.main'>{builder.estimatedPayout}</TableCellText>
-                  <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='green-icon' />
+                  {isMdScreen && (
+                    <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='green-icon' />
+                  )}
                 </Stack>
               ) : (
                 '-'
@@ -194,7 +221,9 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
                     ? Number(builder.price || 0)
                     : convertCostToPoints(builder.price || BigInt(0))}
                 </TableCellText>
-                <Image width={15} height={15} src='/images/profile/scout-game-blue-icon.svg' alt='scout game icon ' />
+                {isMdScreen && (
+                  <Image width={15} height={15} src='/images/profile/scout-game-blue-icon.svg' alt='scout game icon ' />
+                )}
               </Stack>
             </TableCell>
           </TableRow>

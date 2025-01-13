@@ -2,7 +2,7 @@
 
 import InfoIcon from '@mui/icons-material/Info';
 import type { Theme } from '@mui/material';
-import { Box, Stack, Tooltip, Typography, useMediaQuery } from '@mui/material';
+import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Area, AreaChart, ReferenceLine, ResponsiveContainer } from 'recharts';
