@@ -2,12 +2,17 @@ import { Area, AreaChart, ReferenceLine, ResponsiveContainer, YAxis } from 'rech
 
 export function BuilderCardRankGraph({ last14DaysRank }: { last14DaysRank: (number | null)[] }) {
   const isAllZero = last14DaysRank.every((rank) => rank === null || rank === 0);
+  const missingDays = 14 - last14DaysRank.length;
   return (
     <ResponsiveContainer width='100%' height='100%'>
       <AreaChart
-        data={last14DaysRank.map((rank) => ({
-          value: rank ? 100 - rank : 0
-        }))}
+        data={
+          missingDays === 0
+            ? last14DaysRank
+            : last14DaysRank.concat(Array.from({ length: missingDays }, () => null)).map((rank) => ({
+                value: rank ? 100 - rank : 0
+              }))
+        }
       >
         <YAxis domain={[0, 100]} hide />
         <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
