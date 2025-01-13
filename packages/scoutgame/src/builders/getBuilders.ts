@@ -2,23 +2,29 @@ import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
-export type BuildersSortBy = 'cards' | 'points' | 'price' | 'rank';
+import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
+
+export type BuildersSortBy = 'price' | 'level' | 'week_gems' | 'estimated_payout';
 
 export type BuilderMetadata = {
   path: string;
   avatar: string;
   displayName: string;
-  rank: number;
   price: bigint;
-  points: number;
-  cards: number;
+  level: number | null;
+  weekGems: number;
+  estimatedPayout: number | null;
+  last14Days: number[];
+  nftsPurchasedByUser: number | null;
 };
 
 export async function getBuilders({
   limit = 200,
-  sortBy = 'rank',
-  order = 'asc'
+  sortBy = 'week_gems',
+  order = 'asc',
+  userId
 }: {
+  userId?: string;
   limit?: number;
   sortBy?: BuildersSortBy;
   order?: 'asc' | 'desc';
@@ -27,10 +33,9 @@ export async function getBuilders({
 
   const season = getCurrentSeasonStart(week);
 
-  if (sortBy === 'rank') {
-    const builders = await prisma.userWeeklyStats.findMany({
+  if (sortBy === 'level') {
+    const usersSeasonStats = await prisma.userSeasonStats.findMany({
       where: {
-        week,
         user: {
           builderStatus: 'approved',
           deletedAt: null,
@@ -43,7 +48,7 @@ export async function getBuilders({
         season
       },
       orderBy: {
-        rank: order
+        level: order
       },
       take: limit,
       select: {
@@ -58,7 +63,21 @@ export async function getBuilders({
                 nftType: BuilderNftType.default
               },
               select: {
-                currentPrice: true
+                estimatedPayout: true,
+                currentPrice: true,
+                nftSoldEvents: userId
+                  ? {
+                      where: {
+                        builderEvent: {
+                          season
+                        },
+                        scoutId: userId
+                      },
+                      select: {
+                        tokensPurchased: true
+                      }
+                    }
+                  : undefined
               }
             },
             userSeasonStats: {
@@ -66,29 +85,71 @@ export async function getBuilders({
                 season
               },
               select: {
-                pointsEarnedAsBuilder: true,
-                nftsSold: true
+                level: true
+              }
+            },
+            builderCardActivities: {
+              select: {
+                last7Days: true
+              }
+            },
+            events: {
+              where: {
+                type: {
+                  in: ['daily_commit', 'merged_pull_request']
+                },
+                week,
+                gemsReceipt: {
+                  isNot: null
+                }
+              },
+              select: {
+                gemsReceipt: {
+                  select: {
+                    value: true
+                  }
+                }
               }
             }
           }
         },
-        rank: true
+        level: true
       }
     });
 
-    return builders.map((builder) => ({
-      path: builder.user.path,
-      avatar: builder.user.avatar as string,
-      displayName: builder.user.displayName,
-      rank: builder.rank || -1,
-      price: builder.user.builderNfts[0]?.currentPrice,
-      points: builder.user.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
-      cards: builder.user.userSeasonStats[0]?.nftsSold || 0
-    }));
-  } else if (sortBy === 'points') {
-    const builders = await prisma.userSeasonStats.findMany({
+    return usersSeasonStats
+      .map(({ user }) => ({
+        path: user.path,
+        avatar: user.avatar as string,
+        displayName: user.displayName,
+        price: user.builderNfts[0]?.currentPrice,
+        level: user.userSeasonStats[0]?.level || null,
+        last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
+        weekGems: user.events.reduce((acc, event) => acc + (event.gemsReceipt?.value || 0), 0),
+        estimatedPayout: user.builderNfts[0]?.estimatedPayout || null,
+        nftsPurchasedByUser:
+          user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
+      }))
+      .sort((a, b) => {
+        if (a.level === null) {
+          return 1;
+        }
+        if (b.level === null) {
+          return -1;
+        }
+
+        if (order === 'asc') {
+          return (a.level || 0) - (b.level || 0);
+        } else {
+          return (b.level || 0) - (a.level || 0);
+        }
+      });
+  } else if (sortBy === 'estimated_payout') {
+    const builderNfts = await prisma.builderNft.findMany({
       where: {
-        user: {
+        season,
+        nftType: BuilderNftType.default,
+        builder: {
           builderStatus: 'approved',
           deletedAt: null,
           builderNfts: {
@@ -96,15 +157,29 @@ export async function getBuilders({
               season
             }
           }
-        },
-        season
+        }
       },
       orderBy: {
-        pointsEarnedAsBuilder: order
+        estimatedPayout: order
       },
       take: limit,
       select: {
-        user: {
+        currentPrice: true,
+        estimatedPayout: true,
+        nftSoldEvents: userId
+          ? {
+              where: {
+                builderEvent: {
+                  season
+                },
+                scoutId: userId
+              },
+              select: {
+                tokensPurchased: true
+              }
+            }
+          : undefined,
+        builder: {
           select: {
             path: true,
             avatar: true,
@@ -117,33 +192,71 @@ export async function getBuilders({
                 rank: true
               }
             },
-            builderNfts: {
+            userSeasonStats: {
               where: {
-                season,
-                nftType: BuilderNftType.default
+                season
               },
               select: {
-                currentPrice: true
+                level: true
+              }
+            },
+            builderCardActivities: {
+              select: {
+                last7Days: true
+              }
+            },
+            events: {
+              where: {
+                type: {
+                  in: ['daily_commit', 'merged_pull_request']
+                },
+                week,
+                gemsReceipt: {
+                  isNot: null
+                }
+              },
+              select: {
+                gemsReceipt: {
+                  select: {
+                    value: true
+                  }
+                }
               }
             }
           }
-        },
-        nftsSold: true,
-        pointsEarnedAsBuilder: true
+        }
       }
     });
 
-    return builders.map((builder) => ({
-      path: builder.user.path,
-      avatar: builder.user.avatar as string,
-      displayName: builder.user.displayName,
-      rank: builder.user.userWeeklyStats[0]?.rank || -1,
-      price: builder.user.builderNfts[0]?.currentPrice,
-      points: builder.pointsEarnedAsBuilder || 0,
-      cards: builder.nftsSold || 0
-    }));
+    return builderNfts
+      .map(({ builder, nftSoldEvents, currentPrice, estimatedPayout }) => ({
+        path: builder.path,
+        avatar: builder.avatar as string,
+        displayName: builder.displayName,
+        rank: builder.userWeeklyStats[0]?.rank || -1,
+        price: currentPrice,
+        estimatedPayout: estimatedPayout || null,
+        weekGems: builder.events.reduce((acc, event) => acc + (event.gemsReceipt?.value || 0), 0),
+        last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
+        level: builder.userSeasonStats[0]?.level || null,
+        nftsPurchasedByUser: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
+      }))
+      .sort((a, b) => {
+        if (a.estimatedPayout === null) {
+          return 1;
+        }
+        if (b.estimatedPayout === null) {
+          return -1;
+        }
+
+        if (order === 'asc') {
+          return (a.estimatedPayout || 0) - (b.estimatedPayout || 0);
+        } else {
+          return (b.estimatedPayout || 0) - (a.estimatedPayout || 0);
+        }
+      });
   } else if (sortBy === 'price') {
-    const builders = await prisma.builderNft.findMany({
+    const builderNfts = await prisma.builderNft.findMany({
       where: {
         season,
         nftType: BuilderNftType.default,
@@ -157,35 +270,54 @@ export async function getBuilders({
       },
       take: limit,
       select: {
+        estimatedPayout: true,
+        nftSoldEvents: userId
+          ? {
+              where: {
+                builderEvent: {
+                  season
+                },
+                scoutId: userId
+              },
+              select: {
+                tokensPurchased: true
+              }
+            }
+          : undefined,
         builder: {
           select: {
             path: true,
             avatar: true,
             displayName: true,
-            userWeeklyStats: {
-              where: {
-                week
-              },
-              select: {
-                rank: true
-              }
-            },
             userSeasonStats: {
               where: {
                 season
               },
               select: {
-                pointsEarnedAsBuilder: true,
-                nftsSold: true
+                level: true
               }
             },
-            builderNfts: {
+            builderCardActivities: {
+              select: {
+                last7Days: true
+              }
+            },
+            events: {
               where: {
-                season,
-                nftType: BuilderNftType.default
+                type: {
+                  in: ['daily_commit', 'merged_pull_request']
+                },
+                week,
+                gemsReceipt: {
+                  isNot: null
+                }
               },
               select: {
-                currentPrice: true
+                gemsReceipt: {
+                  select: {
+                    value: true
+                  }
+                }
               }
             }
           }
@@ -194,69 +326,120 @@ export async function getBuilders({
       }
     });
 
-    return builders.map((builder) => ({
-      path: builder.builder.path,
-      avatar: builder.builder.avatar as string,
-      displayName: builder.builder.displayName,
-      rank: builder.builder.userWeeklyStats[0]?.rank || -1,
-      price: builder.currentPrice,
-      points: builder.builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
-      cards: builder.builder.userSeasonStats[0]?.nftsSold || 0
+    return builderNfts.map(({ builder, nftSoldEvents, currentPrice, estimatedPayout }) => ({
+      path: builder.path,
+      avatar: builder.avatar as string,
+      displayName: builder.displayName,
+      price: currentPrice,
+      weekGems: builder.events.reduce((acc, event) => acc + (event.gemsReceipt?.value || 0), 0),
+      last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
+      level: builder.userSeasonStats[0]?.level || null,
+      estimatedPayout: estimatedPayout || null,
+      nftsPurchasedByUser: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
     }));
-  } else if (sortBy === 'cards') {
-    const builders = await prisma.userSeasonStats.findMany({
+  } else if (sortBy === 'week_gems') {
+    const builderEvents = await prisma.builderEvent.findMany({
       where: {
-        user: {
+        type: {
+          in: ['daily_commit', 'merged_pull_request']
+        },
+        season,
+        week,
+        builder: {
           builderStatus: 'approved',
-          deletedAt: null,
-          builderNfts: {
-            some: {
-              season
-            }
-          }
+          deletedAt: null
         },
-        season
+        gemsReceipt: {
+          isNot: null
+        }
       },
-      orderBy: {
-        nftsSold: order
-      },
-      take: limit,
       select: {
-        user: {
+        builder: {
           select: {
-            path: true,
-            avatar: true,
-            displayName: true,
-            userWeeklyStats: {
-              where: {
-                week
-              },
-              select: {
-                rank: true
-              }
-            },
-            builderNfts: {
-              where: {
-                season,
-                nftType: BuilderNftType.default
-              }
-            }
+            id: true
           }
         },
-        pointsEarnedAsBuilder: true,
-        nftsSold: true
+        gemsReceipt: {
+          select: {
+            value: true
+          }
+        }
       }
     });
 
-    return builders.map((builder) => ({
-      path: builder.user.path,
-      avatar: builder.user.avatar as string,
-      displayName: builder.user.displayName,
-      rank: builder.user.userWeeklyStats[0]?.rank || -1,
-      price: builder.user.builderNfts[0]?.currentPrice,
-      points: builder.pointsEarnedAsBuilder || 0,
-      cards: builder.nftsSold || 0
-    }));
+    const builders = await prisma.scout.findMany({
+      select: {
+        id: true,
+        path: true,
+        avatar: true,
+        displayName: true,
+        builderNfts: {
+          where: {
+            season,
+            nftType: BuilderNftType.default
+          },
+          select: {
+            currentPrice: true,
+            estimatedPayout: true,
+            nftSoldEvents: userId
+              ? {
+                  where: {
+                    builderEvent: {
+                      season
+                    },
+                    scoutId: userId
+                  },
+                  select: {
+                    tokensPurchased: true
+                  }
+                }
+              : undefined
+          }
+        },
+        builderCardActivities: {
+          select: {
+            last7Days: true
+          }
+        },
+        userSeasonStats: {
+          where: {
+            season
+          },
+          select: {
+            level: true
+          }
+        }
+      }
+    });
+
+    const buildersWeekGemsRecord: Record<string, number> = {};
+
+    builderEvents.forEach((builderEvent) => {
+      buildersWeekGemsRecord[builderEvent.builder.id] =
+        (buildersWeekGemsRecord[builderEvent.builder.id] || 0) + (builderEvent.gemsReceipt?.value || 0);
+    });
+
+    return builders
+      .map((builder) => ({
+        path: builder.path,
+        avatar: builder.avatar as string,
+        displayName: builder.displayName,
+        weekGems: buildersWeekGemsRecord[builder.id] || 0,
+        last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
+        level: builder.userSeasonStats[0]?.level || null,
+        estimatedPayout: builder.builderNfts[0]?.estimatedPayout || null,
+        nftsPurchasedByUser:
+          builder.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null,
+        price: builder.builderNfts[0]?.currentPrice || 0n
+      }))
+      .sort((a, b) => {
+        if (order === 'asc') {
+          return a.weekGems - b.weekGems;
+        } else {
+          return b.weekGems - a.weekGems;
+        }
+      })
+      .slice(0, limit);
   }
 
   log.error(`Invalid sortBy provided: ${sortBy}`);

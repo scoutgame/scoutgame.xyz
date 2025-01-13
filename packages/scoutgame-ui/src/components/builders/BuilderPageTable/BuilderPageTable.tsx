@@ -13,12 +13,14 @@ export async function BuilderPageTable({
   tab,
   week,
   builderSort,
-  builderOrder
+  builderOrder,
+  userId
 }: {
   tab: string;
   week: string;
   builderSort?: string;
   builderOrder?: string;
+  userId?: string;
 }) {
   if (tab === 'activity') {
     const [, activities = []] = await safeAwaitSSRData(getBuilderActivities({ limit: 100 }));
@@ -32,7 +34,7 @@ export async function BuilderPageTable({
     }
     // empty state
     else {
-      return <ScoutPageTable tab='builders' sort={builderSort} order={builderOrder} />;
+      return <ScoutPageTable tab='builders' sort={builderSort} order={builderOrder} userId={userId} />;
     }
   }
   return null;

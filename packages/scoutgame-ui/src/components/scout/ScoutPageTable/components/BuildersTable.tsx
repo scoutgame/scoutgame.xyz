@@ -8,7 +8,9 @@ import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata } from '@packages/scoutgame/builders/getBuilders';
 import Image from 'next/image';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Area, AreaChart, ReferenceLine, ResponsiveContainer } from 'recharts';
 
+import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { Avatar } from '../../../common/Avatar';
 
 import { CommonTableRow, tableRowSx } from './CommonTableRow';
@@ -27,6 +29,7 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isMdScreen = useMdScreen();
 
   const platform = getPlatform();
 
@@ -58,10 +61,23 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
       >
         <CommonTableRow>
           <TableCell align='left' sx={{ fontSize: { xs: '10px', md: 'initial' }, py: 1 }}>
-            BUILDER
+            DEVELOPER
           </TableCell>
           <TableCell
-            onClick={() => handleSort('rank')}
+            onClick={() => handleSort('week_gems')}
+            sx={{
+              fontSize: { xs: '10px', md: 'initial' },
+              cursor: 'pointer',
+              py: 1
+            }}
+          >
+            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
+              WEEK'S GEMS
+              <SortIcon columnName='week_gems' order={order} sort={sort} />
+            </Stack>
+          </TableCell>
+          <TableCell
+            onClick={() => handleSort('level')}
             sx={{
               fontSize: { xs: '10px', md: 'initial' },
               cursor: 'pointer',
@@ -69,8 +85,31 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
             }}
           >
             <Stack direction='row' alignItems='center' justifyContent='center'>
-              RANK
-              <SortIcon columnName='rank' order={order} sort={sort} />
+              LEVEL
+              <SortIcon columnName='level' order={order} sort={sort} />
+            </Stack>
+          </TableCell>
+          <TableCell
+            sx={{
+              fontSize: { xs: '10px', md: 'initial' },
+              py: 1,
+              lineHeight: 1.5
+            }}
+          >
+            14D ACTIVITY
+          </TableCell>
+          <TableCell
+            onClick={() => handleSort('estimated_payout')}
+            sx={{
+              fontSize: { xs: '10px', md: 'initial' },
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              py: 1
+            }}
+          >
+            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
+              EST. PAYOUT
+              <SortIcon columnName='estimated_payout' order={order} sort={sort} />
             </Stack>
           </TableCell>
           <TableCell
@@ -86,49 +125,69 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
               <SortIcon columnName='price' order={order} sort={sort} />
             </Stack>
           </TableCell>
-          <TableCell
-            onClick={() => handleSort('points')}
-            sx={{
-              fontSize: { xs: '10px', md: 'initial' },
-              cursor: 'pointer',
-              py: 1
-            }}
-          >
-            <Stack direction='row' alignItems='center' justifyContent='flex-end'>
-              POINTS
-              <SortIcon columnName='points' order={order} sort={sort} />
-            </Stack>
-          </TableCell>
-          <TableCell
-            onClick={() => handleSort('cards')}
-            sx={{
-              fontSize: { xs: '10px', md: 'initial' },
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              py: 1
-            }}
-          >
-            <Stack direction='row' alignItems='center' justifyContent='center'>
-              CARDS
-              <SortIcon columnName='cards' order={order} sort={sort} />
-            </Stack>
-          </TableCell>
         </CommonTableRow>
       </TableHead>
       <TableBody>
         {builders.map((builder) => (
           <TableRow key={builder.path} sx={tableRowSx} onClick={() => router.push(`/u/${builder.path}?tab=builder`)}>
             <TableCell>
-              <Stack alignItems='center' flexDirection='row' gap={1} maxWidth={{ xs: '85px', md: 'initial' }}>
-                <Avatar src={builder.avatar} name={builder.displayName} size='small' />
-                <TableCellText noWrap>{builder.displayName}</TableCellText>
+              <Stack alignItems='center' flexDirection='row' gap={1.5} maxWidth={{ xs: '85px', md: 'initial' }}>
+                <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'small'} />
+                <Stack width='100%'>
+                  {builder.nftsPurchasedByUser ? (
+                    <Stack direction='row' alignItems='center' gap={0.5}>
+                      <TableCellText color='green.main' noWrap>
+                        {builder.nftsPurchasedByUser}
+                      </TableCellText>
+                      <Image width={15} height={15} src='/images/profile/icons/cards-green.svg' alt='green-icon' />
+                    </Stack>
+                  ) : null}
+                  <TableCellText
+                    fontSize={isMdScreen ? '16px' : '12px'}
+                    overflow='hidden'
+                    textOverflow='ellipsis'
+                    noWrap
+                    pr={1.5}
+                  >
+                    {builder.displayName}
+                  </TableCellText>
+                </Stack>
               </Stack>
             </TableCell>
             <TableCell align='center'>
-              <TableCellText>{builder.rank === -1 ? '-' : builder.rank}</TableCellText>
+              <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
+                <TableCellText>{builder.weekGems}</TableCellText>
+                <Image width={15} height={15} src='/images/profile/icons/hex-gem-icon.svg' alt='gem icon' />
+              </Stack>
+            </TableCell>
+            <TableCell align='center' sx={{ display: 'table-cell' }}>
+              {builder.level !== null ? <TableCellText color='orange.main'>{builder.level}</TableCellText> : '-'}
+            </TableCell>
+            <TableCell sx={{ maxWidth: { xs: 125, md: 'initial' }, height: { xs: 25, md: 50 } }}>
+              <ResponsiveContainer>
+                <AreaChart
+                  data={Array.from({ length: 14 }, (_, index) => ({
+                    name: index,
+                    value: index * 10
+                  }))}
+                >
+                  <ReferenceLine y={50} stroke='#FF00D0' />
+                  <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
+                </AreaChart>
+              </ResponsiveContainer>
+            </TableCell>
+            <TableCell align='right'>
+              {builder.estimatedPayout !== null ? (
+                <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
+                  <TableCellText color='green.main'>{builder.estimatedPayout}</TableCellText>
+                  <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='green-icon' />
+                </Stack>
+              ) : (
+                '-'
+              )}
             </TableCell>
             <TableCell align='center'>
-              <Stack alignItems='center' flexDirection='row' gap={1} justifyContent='flex-end'>
+              <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.secondary'>
                   {/* We need to migrate $SCOUT based NFT prices to numeric column. Until then, we are storing the price as the human friendly version */}
                   {platform === 'onchain_webapp'
@@ -137,15 +196,6 @@ export function BuildersTable({ builders, order, sort }: { builders: BuilderMeta
                 </TableCellText>
                 <Image width={15} height={15} src='/images/profile/scout-game-blue-icon.svg' alt='scout game icon ' />
               </Stack>
-            </TableCell>
-            <TableCell align='right' sx={{ display: 'table-cell' }}>
-              <Stack alignItems='center' flexDirection='row' gap={1} justifyContent='flex-end'>
-                <TableCellText color='orange.main'>{builder.points || 0}</TableCellText>
-                <Image width={15} height={15} src='/images/profile/scout-game-orange-icon.svg' alt='scout game icon ' />
-              </Stack>
-            </TableCell>
-            <TableCell align='center'>
-              <TableCellText color='orange.main'>{builder.cards || 0}</TableCellText>
             </TableCell>
           </TableRow>
         ))}

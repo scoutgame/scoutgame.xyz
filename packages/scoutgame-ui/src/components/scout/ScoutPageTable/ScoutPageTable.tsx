@@ -13,15 +13,17 @@ import { ScoutsTable } from './components/ScoutsTable';
 export async function ScoutPageTable({
   tab,
   order = 'asc',
-  sort = 'rank'
+  sort = 'rank',
+  userId
 }: {
+  userId?: string;
   tab: string;
   order?: string;
   sort?: string;
 }) {
   if (tab === 'builders') {
     const [, builders = []] = await safeAwaitSSRData(
-      getBuilders({ limit: 200, sortBy: sort as BuildersSortBy, order: order as 'asc' | 'desc' })
+      getBuilders({ limit: 200, sortBy: sort as BuildersSortBy, order: order as 'asc' | 'desc', userId })
     );
     return <BuildersTable builders={builders} order={order} sort={sort} />;
   } else if (tab === 'scouts') {
