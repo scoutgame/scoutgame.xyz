@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { StyledTableBody, StyledTableHead } from '../../claim/components/common/StyledTable';
 import { Avatar } from '../../common/Avatar';
 
-export function ConnectorTable({ topUsers = [] }: { topUsers: TopConnector[] }) {
+export function ConnectorTable({ topConnectors = [] }: { topConnectors: TopConnector[] }) {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -17,7 +17,7 @@ export function ConnectorTable({ topUsers = [] }: { topUsers: TopConnector[] }) 
           </TableRow>
         </StyledTableHead>
         <StyledTableBody sx={{ '& .MuiTableCell-root': { width: '33.33%' } }}>
-          {topUsers?.map((user) => (
+          {topConnectors?.map((user) => (
             <TableRow key={user.builderId}>
               <TableCell align='left'>
                 <Stack component={Link} href={`/u/${user.path}`} alignItems='center' flexDirection='row' gap={1}>

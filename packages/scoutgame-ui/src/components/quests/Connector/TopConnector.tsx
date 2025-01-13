@@ -4,7 +4,7 @@ import type { TopConnector } from '@packages/scoutgame/topConnector/getTopConnec
 import { ConnectorTable } from './ConnectorTable';
 import { Info } from './Info';
 
-export function Connector({ topUsers }: { topUsers: TopConnector[] }) {
+export function Connector({ topConnectors }: { topConnectors: TopConnector[] }) {
   return (
     <Stack justifyContent='center' alignItems='center' gap={2} my={2}>
       <Typography variant='h4' color='secondary' fontWeight={600} zIndex={1}>
@@ -14,7 +14,7 @@ export function Connector({ topUsers }: { topUsers: TopConnector[] }) {
       <Typography variant='subtitle1' fontWeight={600} zIndex={1}>
         Today's Top 5
       </Typography>
-      <ConnectorTable topUsers={topUsers} />
+      <ConnectorTable topConnectors={topConnectors} />
     </Stack>
   );
 }
