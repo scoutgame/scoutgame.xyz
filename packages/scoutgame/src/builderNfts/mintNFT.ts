@@ -7,7 +7,7 @@ import { optimism } from 'viem/chains';
 
 import { getPreSeasonOneBuilderNftContractMinterClient } from './clients/preseason01/getPreSeasonOneBuilderNftContractMinterClient';
 import { getPreSeasonTwoBuilderNftContractMinterClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
-import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/builderContractStarterPackMinterWriteClient';
+import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
 import {
   builderNftChain,
   getBuilderNftContractAddress,
