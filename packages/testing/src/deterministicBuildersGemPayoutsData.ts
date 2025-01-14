@@ -29,7 +29,8 @@ export function seedBuildersGemPayouts({
   builders: DeterministicRandomBuilderGemsPayoutActivity[];
   weeks: ISOWeek[];
 } {
-  const weeks = getAllISOWeeksFromSeasonStart({ season });
+  const allWeeks = getAllISOWeeksFromSeasonStart({ season });
+  const weeks = allWeeks.slice(0, -1);
 
   // Setup X builders (default 200) using a deterministic uuid per builder index
   // Create mock builders with random gem distributions
