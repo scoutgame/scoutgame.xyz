@@ -6,8 +6,8 @@ import {
   getStarterPackTransferSingleEvents,
   getTransferSingleEvents
 } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
-import { builderContractReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractReadClient';
-import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
+import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
@@ -113,13 +113,13 @@ export async function findAndIndexMissingPurchases({
       }
 
       const price = await (nftType === BuilderNftType.starter_pack
-        ? builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({
+        ? getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
             args: {
               amount: BigInt(missingTx.args.value)
             },
             blockNumber: missingTx.blockNumber
           })
-        : builderContractReadonlyApiClient.getTokenPurchasePrice({
+        : getPreSeasonTwoBuilderNftContractReadonlyClient().getTokenPurchasePrice({
             args: { tokenId: BigInt(key), amount: BigInt(missingTx.args.value) },
             blockNumber: missingTx.blockNumber
           }));

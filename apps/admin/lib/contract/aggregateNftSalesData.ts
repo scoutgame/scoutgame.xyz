@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
 
 export type NftSalesData = {
   totalNftsSold: number;
@@ -9,16 +10,19 @@ export type NftSalesData = {
 };
 
 export async function aggregateNftSalesData({
-  nftType
+  nftType,
+  season
 }: {
   nftType: 'default' | 'starter_pack';
+  season: ISOWeek;
 }): Promise<NftSalesData> {
   const nftsPaidWithPoints = await prisma.nFTPurchaseEvent
     .aggregate({
       where: {
         paidInPoints: true,
         builderNft: {
-          nftType
+          nftType,
+          season
         }
       },
       _sum: {
@@ -34,7 +38,8 @@ export async function aggregateNftSalesData({
           not: true
         },
         builderNft: {
-          nftType
+          nftType,
+          season
         }
       },
       _sum: {
@@ -47,7 +52,8 @@ export async function aggregateNftSalesData({
     .findMany({
       where: {
         builderNft: {
-          nftType
+          nftType,
+          season
         }
       },
       distinct: ['scoutId'],

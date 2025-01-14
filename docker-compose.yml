@@ -53,7 +53,7 @@ services:
       [
         'sh',
         '-c',
-        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/onchain-scoutgame/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/onchain-scoutgame --keepAliveTimeout 70000'
+        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/scoutgame/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/scoutgame --keepAliveTimeout 70000'
       ]
     profiles:
       - prd-onchain-scoutgame
@@ -67,7 +67,7 @@ services:
       [
         'sh',
         '-c',
-        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/onchain-scoutgame/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start  apps/onchain-scoutgame --keepAliveTimeout 70000'
+        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/scoutgame/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start  apps/scoutgame --keepAliveTimeout 70000'
       ]
     environment:
       - REACT_APP_APP_ENV=staging

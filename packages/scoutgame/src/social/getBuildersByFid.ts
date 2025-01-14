@@ -78,13 +78,7 @@ export async function getBuildersByFid({
             season
           },
           select: {
-            nftsSold: true,
             level: true
-          }
-        },
-        userAllTimeStats: {
-          select: {
-            pointsEarnedAsBuilder: true
           }
         }
       }
@@ -96,11 +90,9 @@ export async function getBuildersByFid({
         congratsImageUrl: scout.builderNfts[0]?.congratsImageUrl,
         path: scout.path,
         displayName: scout.displayName,
-        builderPoints: scout.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
         price: scout.builderNfts?.[0]?.currentPrice ?? 0,
         scoutedBy: scout.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
         rank: scout.userWeeklyStats[0]?.rank ?? -1,
-        nftsSold: scout.userSeasonStats[0]?.nftsSold ?? 0,
         builderStatus: scout.builderStatus!,
         farcasterId: scout.farcasterId,
         level: scout.userSeasonStats[0]?.level ?? 0,
