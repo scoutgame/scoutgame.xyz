@@ -1,10 +1,8 @@
-import type { BuilderNft } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getCurrentSeason } from '@packages/dates/utils';
-import type { NftPurchaseEvent } from '@packages/mixpanel/interfaces';
 
 import type { BuilderInfo } from './interfaces';
-import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type StarterPackBuilder = BuilderInfo & { purchased: boolean };
 
@@ -41,9 +39,10 @@ export async function getStarterPackBuilders({
           season,
           nftType: BuilderNftType.starter_pack
         },
-        include: userId
-          ? {
-              nftSoldEvents: {
+        select: {
+          currentPrice: true,
+          nftSoldEvents: userId
+            ? {
                 where: {
                   scoutId: userId
                 },
@@ -51,8 +50,11 @@ export async function getStarterPackBuilders({
                   id: true
                 }
               }
-            }
-          : undefined
+            : undefined,
+          estimatedPayout: true,
+          imageUrl: true,
+          congratsImageUrl: true
+        }
       },
       builderCardActivities: true,
       userSeasonStats: {
@@ -61,7 +63,8 @@ export async function getStarterPackBuilders({
         },
         select: {
           pointsEarnedAsBuilder: true,
-          nftsSold: true
+          nftsSold: true,
+          level: true
         }
       },
       userWeeklyStats: {
@@ -70,7 +73,8 @@ export async function getStarterPackBuilders({
           week
         },
         select: {
-          rank: true
+          rank: true,
+          gemsCollected: true
         }
       }
     }
@@ -86,13 +90,16 @@ export async function getStarterPackBuilders({
     points: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
     cards: builder.userSeasonStats[0]?.nftsSold || 0,
     builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
-    last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+    level: builder.userSeasonStats[0]?.level || 0,
+    estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
+    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     nftsSold: builder.userSeasonStats[0]?.nftsSold || 0,
     builderStatus: 'approved',
     nftImageUrl: builder.builderNfts[0]?.imageUrl || '',
     nftType: BuilderNftType.starter_pack,
     farcasterId: builder.farcasterId,
     congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl || '',
-    purchased: !!(builder.builderNfts[0] as BuilderNft & { nftSoldEvents?: NftPurchaseEvent[] })?.nftSoldEvents?.length
+    purchased: !!builder.builderNfts[0]?.nftSoldEvents?.length,
+    gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0
   }));
 }

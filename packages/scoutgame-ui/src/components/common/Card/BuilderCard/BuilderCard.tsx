@@ -14,7 +14,6 @@ export function BuilderCard({
   builder,
   showPurchaseButton = false,
   hideDetails = false,
-  showHotIcon = false,
   size = 'medium',
   disableProfileUrl = false,
   markStarterCardPurchased = false,
@@ -24,10 +23,9 @@ export function BuilderCard({
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
   hideDetails?: boolean;
   showPurchaseButton?: boolean;
-  showHotIcon?: boolean;
   disableProfileUrl?: boolean;
   markStarterCardPurchased?: boolean;
-  type?: 'builder' | 'starter_pack';
+  type?: 'default' | 'starter_pack';
 }) {
   return (
     <Card
@@ -43,15 +41,16 @@ export function BuilderCard({
       <BuilderCardNftDisplay
         nftImageUrl={builder.nftImageUrl}
         path={builder.path}
-        showHotIcon={showHotIcon}
+        level={builder.level}
         size={size}
         hideDetails={hideDetails}
         disableProfileUrl={disableProfileUrl}
+        starterPack={type === 'starter_pack'}
       >
         {builder.builderStatus === 'banned' ? (
           <Typography textAlign='center'>SUSPENDED</Typography>
         ) : hideDetails ? null : (
-          <BuilderCardStats {...builder} size={size} />
+          <BuilderCardStats {...builder} starterPack={type === 'starter_pack'} size={size} />
         )}
       </BuilderCardNftDisplay>
       {typeof builder.price !== 'undefined' && showPurchaseButton && (

@@ -27,11 +27,11 @@ const NFTPurchaseDialog = dynamic(
 export function ScoutButton({
   builder,
   markStarterCardPurchased = false,
-  type = 'builder'
+  type = 'default'
 }: {
   builder: NFTPurchaseProps['builder'] & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
-  type?: 'builder' | 'starter_pack';
+  type?: 'default' | 'starter_pack';
 }) {
   const theme = useTheme();
   const trackEvent = useTrackEvent();

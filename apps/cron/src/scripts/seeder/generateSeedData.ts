@@ -15,7 +15,7 @@ import { generateBuilderEvents } from './generateBuilderEvents';
 import { generateGithubRepos } from './generateGithubRepos';
 import { generateNftPurchaseEvents } from './generateNftPurchaseEvents';
 import { generateScout } from './generateScout';
-import { updateBuilderCardActivity } from '../../tasks/updateBuilderCardActivity/updateBuilderCardActivity';
+import { updateBuildersCardActivity } from '../../tasks/updateBuildersCardActivity/updateBuildersCardActivity';
 
 export type BuilderInfo = {
   id: string;
@@ -164,7 +164,7 @@ export async function generateSeedData(
       })
     );
 
-    await updateBuilderCardActivity(date.minus({ days: 1 }));
+    await updateBuildersCardActivity(date.minus({ days: 1 }));
 
     // Check if we are at the end of the week
     if (date.weekday === 7) {

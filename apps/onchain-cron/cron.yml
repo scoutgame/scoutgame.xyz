@@ -2,8 +2,8 @@ version: 1
 cron:
   - name: 'process-builder-activity'
     url: '/process-builder-activity'
-    # every 20 minutes
-    schedule: '*/20 * * * *'
+    # Every day at midnight
+    schedule: '0 0 * * *'
 
   - name: 'issue-gems-onchain'
     url: '/issue-gems-onchain'
