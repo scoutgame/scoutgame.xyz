@@ -6,13 +6,13 @@ export function BuilderCardRankGraph({ last14DaysRank }: { last14DaysRank: (numb
   return (
     <ResponsiveContainer width='100%' height='100%'>
       <AreaChart
-        data={
-          missingDays === 0
+        data={[
+          ...(missingDays === 0
             ? last14DaysRank
-            : last14DaysRank.concat(Array.from({ length: missingDays }, () => null)).map((rank) => ({
-                value: rank ? 100 - rank : 0
-              }))
-        }
+            : last14DaysRank.concat(Array.from({ length: missingDays }, () => null)))
+        ].map((rank) => ({
+          value: rank ? 100 - rank : 0
+        }))}
       >
         <YAxis domain={[0, 100]} hide />
         <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />

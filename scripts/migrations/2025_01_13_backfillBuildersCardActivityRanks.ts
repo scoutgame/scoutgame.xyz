@@ -5,7 +5,8 @@ import { getStartOfWeek } from 'packages/dates/src/utils';
 
 async function backfillBuildersCardActivityRanks() {
   const threeWeeksAgoDate = DateTime.now().setZone('UTC').minus({ weeks: 2 }).startOf('week').startOf('day').toJSDate();
-  const yesterdayDate = DateTime.now().minus({ days: 1 }).setZone('UTC').endOf('day').toJSDate();
+  const yesterdayDate = DateTime.now().setZone('UTC').minus({ days: 1 }).endOf('day').toJSDate();
+  const todayDateFormatted = DateTime.now().setZone('UTC').startOf('day').toFormat('yyyy-MM-dd');
 
   const gemsReceipts = await prisma.gemsReceipt.findMany({
     where: {
@@ -89,11 +90,11 @@ async function backfillBuildersCardActivityRanks() {
     }> = {}
 
     for (let day = 0; day < 7; day++) {
-      const date = weekStart.plus({ days: day });
+      const date = weekStart.setZone('UTC').plus({ days: day }).startOf('day');
       const formattedDate = date.toFormat('yyyy-MM-dd');
-
-      if (date > DateTime.now()) {
-        continue;
+      
+      if (formattedDate === todayDateFormatted) {
+        break
       }
 
       const todayGemsReceipts = receipts.filter(r => isToday(r.createdAt, date));
@@ -147,11 +148,15 @@ async function backfillBuildersCardActivityRanks() {
   for (const builder of builders) {
     const builderRanks = builderRanksRecord[builder.id];
     try {
-      await prisma.builderCardActivity.update({
+      await prisma.builderCardActivity.upsert({
         where: {
           builderId: builder.id
         },
-        data: {
+        update: {
+          last14Days: builderRanks.slice(-14),
+        },
+        create: {
+          builderId: builder.id,
           last14Days: builderRanks.slice(-14),
         },
       })
