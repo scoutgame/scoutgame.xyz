@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getDateFromISOWeek, getWeekStartEnd } from '@packages/dates/utils';
+import { optimism } from 'viem/chains';
 
 export async function getLastBlockOfWeek({ week, chainId }: { week: string; chainId: number }): Promise<number> {
   // Step 1: Parse the ISO week (e.g., '2024-W50') and calculate the end of the week (Sunday 23:59:59 UTC)

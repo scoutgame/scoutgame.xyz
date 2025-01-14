@@ -6,6 +6,7 @@ import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scout
 import { getPreSeasonTwoBuilderNftProxyContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftProxyContractReadonlyClient';
 import {
   getBuilderNftContractAddress,
+  lastBlockOfPreSeason01,
   usdcOptimismMainnetContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
@@ -31,6 +32,19 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
     contractAddress: getBuilderNftContractAddress(season)
   });
 
+  const usdcClient = new UsdcErc20ABIClient({
+    chain: optimism,
+    publicClient: getPublicClient(optimism.id),
+    contractAddress: usdcOptimismMainnetContractAddress
+  });
+
+  const scoutgameDotEth = '0x93326D53d1E8EBf0af1Ff1B233c46C67c96e4d8D';
+
+  const preseason01Sales = await usdcClient.balanceOf({
+    args: { account: scoutgameDotEth },
+    blockNumber: BigInt(lastBlockOfPreSeason01)
+  });
+
   if (season === '2024-W41') {
     const builderProxyContractReadonlyApiClient = getPreSeasonOneBuilderNftProxyContractReadonlyClient({
       chain: optimism,
@@ -47,12 +61,6 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
         aggregateNftSalesData({ nftType: 'default', season })
       ]);
 
-    const balance = await new UsdcErc20ABIClient({
-      chain: optimism,
-      publicClient: getPublicClient(optimism.id),
-      contractAddress: usdcOptimismMainnetContractAddress
-    }).balanceOf({ args: { account: proceedsReceiver } });
-
     return {
       currentAdmin: currentAdmin as Address,
       currentMinter: currentMinter as Address,
@@ -60,7 +68,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
       contractAddress: getBuilderNftContractAddress(season),
-      receiverUsdcBalance: Number(balance / BigInt(1e6)),
+      receiverUsdcBalance: Number(preseason01Sales / BigInt(1e6)),
       nftSalesData
     };
   } else if (season === '2025-W02') {
@@ -74,6 +82,8 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       contractAddress: getBuilderNftContractAddress(season)
     });
 
+    const currentUsdcBalance = await usdcClient.balanceOf({ args: { account: scoutgameDotEth } });
+
     const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
       await Promise.all([
         builderProxyContractReadonlyApiClient.admin(),
@@ -84,12 +94,6 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
         aggregateNftSalesData({ nftType: 'default', season })
       ]);
 
-    const balance = await new UsdcErc20ABIClient({
-      chain: optimism,
-      publicClient: getPublicClient(optimism.id),
-      contractAddress: usdcOptimismMainnetContractAddress
-    }).balanceOf({ args: { account: proceedsReceiver } });
-
     return {
       currentAdmin: currentAdmin as Address,
       currentMinter: currentMinter as Address,
@@ -97,7 +101,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
       contractAddress: getBuilderNftContractAddress(season),
-      receiverUsdcBalance: Number(balance / BigInt(1e6)),
+      receiverUsdcBalance: Number((currentUsdcBalance - preseason01Sales) / BigInt(1e6)),
       nftSalesData
     };
   } else {
