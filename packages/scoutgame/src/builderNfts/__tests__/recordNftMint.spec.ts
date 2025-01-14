@@ -7,20 +7,20 @@ import { referralBonusPoints } from '@packages/users/constants';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 
-jest.unstable_mockModule('../clients/builderContractMinterWriteClient', () => ({
-  getBuilderContractMinterClient: () => ({
+jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
+  getPreSeasonTwoBuilderNftContractMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
   })
 }));
 
-jest.unstable_mockModule('../clients/builderContractReadClient', () => ({
-  builderContractReadonlyApiClient: {
+jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient', () => ({
+  getPreSeasonTwoBuilderNftContractReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
-  }
+  })
 }));
 
 jest.unstable_mockModule('../refreshBuilderNftPrice', () => ({
