@@ -98,6 +98,7 @@ export async function mockBuilder({
 export type MockBuilder = Awaited<ReturnType<typeof mockBuilder>>;
 
 export async function mockScout({
+  id,
   createdAt,
   path = `user-${uuid()}`,
   displayName = 'Test Scout',
@@ -120,6 +121,7 @@ export async function mockScout({
   stats,
   verifiedEmail
 }: {
+  id?: string;
   wallets?: string[];
   createdAt?: Date;
   avatar?: string;
@@ -155,6 +157,7 @@ export async function mockScout({
   email ||= randomString();
   const scout = await prisma.scout.create({
     data: {
+      id,
       createdAt,
       path,
       agreedToTermsAt,
