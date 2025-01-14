@@ -6,10 +6,12 @@ import type { ClientConfig } from '../types';
 
 import { BuilderNFTSeasonOneImplementation01Client } from './wrappers/BuilderNFTSeasonOneImplementation01';
 
-export function getPreSeasonOneBuilderNftContractReadonlyClient({
-  chain = optimism,
-  contractAddress = getBuilderNftContractAddress('2024-W41')
-}: ClientConfig) {
+export function getPreSeasonOneBuilderNftContractReadonlyClient(
+  { chain = optimism, contractAddress = getBuilderNftContractAddress('2024-W41') }: ClientConfig = {
+    chain: optimism,
+    contractAddress: getBuilderNftContractAddress('2024-W41')
+  }
+) {
   return new BuilderNFTSeasonOneImplementation01Client({
     chain,
     contractAddress,

@@ -4,9 +4,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 
-import { builderContractReadonlyApiClient } from '../clients/builderContractReadClient';
-import { getBuilderContractStarterPackMinterClient } from '../clients/starterPack/wrappers/builderContractStarterPackMinterWriteClient';
-import { builderContractStarterPackReadonlyApiClient } from '../clients/starterPack/wrappers/builderContractStarterPackReadClient';
+import { getBuilderNftContractStarterPackMinterClient } from '../clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
+import { getBuilderNftStarterPackReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
@@ -65,7 +64,7 @@ export async function registerBuilderStarterPackNFT({
   }
 
   // Read the tokenId from the existing builder NFT Contract so that they match
-  const tokenId = await builderContractReadonlyApiClient.getTokenIdForBuilder({
+  const tokenId = await getBuilderNftStarterPackReadonlyClient().getTokenIdForBuilder({
     args: { builderId }
   });
 
@@ -73,7 +72,7 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Builder NFT not found');
   }
 
-  const existingStarterPackTokenId = await builderContractStarterPackReadonlyApiClient
+  const existingStarterPackTokenId = await getBuilderNftStarterPackReadonlyClient()
     .getTokenIdForBuilder({
       args: { builderId }
     })
@@ -83,7 +82,7 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Builder NFT already registered on starter pack contract but with a different tokenId');
   } else if (!existingStarterPackTokenId) {
     // Register the builder token on the starter pack contract so that it can be minted
-    await getBuilderContractStarterPackMinterClient().registerBuilderToken({
+    await getBuilderNftContractStarterPackMinterClient().registerBuilderToken({
       args: { builderId, builderTokenId: tokenId }
     });
   }

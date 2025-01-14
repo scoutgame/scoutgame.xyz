@@ -14,7 +14,7 @@ export function getProtocolProxyReadonlyClient() {
   });
 }
 
-export function getProtocolImplementationReadonlyClient() {
+export function getProtocolReadonlyClient() {
   return new ScoutProtocolImplementationClient({
     chain: scoutProtocolChain,
     contractAddress: getScoutProtocolAddress(),

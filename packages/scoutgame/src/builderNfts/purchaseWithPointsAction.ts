@@ -4,11 +4,13 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
+import { optimism } from 'viem/chains';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
-import { builderContractReadonlyApiClient } from './clients/builderContractReadClient';
-import { builderContractStarterPackReadonlyApiClient } from './clients/starterPack/wrappers/builderContractStarterPackReadClient';
+import { getPreSeasonTwoBuilderNftContractReadonlyClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftStarterPackReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
+import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from './constants';
 import { mintNFT } from './mintNFT';
 import { schema } from './purchaseWithPointsSchema';
 import { convertCostToPoints } from './utils';
@@ -48,10 +50,16 @@ export const purchaseWithPointsAction = authActionClient
     }
 
     const currentPrice = await (parsedInput.nftType === 'starter_pack'
-      ? builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({
+      ? getBuilderNftStarterPackReadonlyClient({
+          chain: optimism,
+          contractAddress: getBuilderNftStarterPackContractAddress(getCurrentSeasonStart())
+        }).getTokenPurchasePrice({
           args: { amount: BigInt(parsedInput.amount) }
         })
-      : builderContractReadonlyApiClient.getTokenPurchasePrice({
+      : getPreSeasonTwoBuilderNftContractReadonlyClient({
+          chain: optimism,
+          contractAddress: getBuilderNftContractAddress(getCurrentSeasonStart())
+        }).getTokenPurchasePrice({
           args: { tokenId: BigInt(builderNft.tokenId), amount: BigInt(parsedInput.amount) }
         }));
 

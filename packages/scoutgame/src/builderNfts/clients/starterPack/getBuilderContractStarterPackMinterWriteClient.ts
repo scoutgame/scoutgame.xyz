@@ -7,10 +7,12 @@ import type { ClientConfig } from '../types';
 import { ScoutGameStarterPackNFTImplementationClient } from './wrappers/ScoutGameStarterPackNFTImplementation';
 
 // lazily create the client to avoid exceptions if the environment is not configured
-export function getBuilderNftContractStarterPackMinterClient({
-  chain = optimism,
-  contractAddress = getBuilderNftStarterPackContractAddress()
-}: ClientConfig) {
+export function getBuilderNftContractStarterPackMinterClient(
+  { chain = optimism, contractAddress = getBuilderNftStarterPackContractAddress() }: ClientConfig = {
+    chain: optimism,
+    contractAddress: getBuilderNftStarterPackContractAddress()
+  }
+) {
   if (!contractAddress) {
     throw new Error('Builder contract starter pack address not set');
   }

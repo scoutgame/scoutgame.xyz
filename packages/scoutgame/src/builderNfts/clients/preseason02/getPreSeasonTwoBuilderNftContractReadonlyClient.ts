@@ -6,10 +6,12 @@ import type { ClientConfig } from '../types';
 
 import { ScoutGamePreSeason02NFTImplementationClient } from './wrappers/ScoutGamePreSeason02NFTImplementation';
 
-export function getPreSeasonTwoBuilderNftContractReadonlyClient({
-  chain = optimism,
-  contractAddress = getBuilderNftContractAddress('2025-W02')
-}: ClientConfig) {
+export function getPreSeasonTwoBuilderNftContractReadonlyClient(
+  { chain = optimism, contractAddress = getBuilderNftContractAddress('2025-W02') }: ClientConfig = {
+    chain: optimism,
+    contractAddress: getBuilderNftContractAddress('2025-W02')
+  }
+) {
   return new ScoutGamePreSeason02NFTImplementationClient({
     chain,
     contractAddress,

@@ -7,7 +7,7 @@ import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPack
 
 import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
-const builderScoutedAbi = {
+export const builderScoutedAbi = {
   anonymous: false,
   inputs: [
     { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },

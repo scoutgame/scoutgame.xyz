@@ -4,7 +4,7 @@ import { getProtocolClaimsManagerWallet } from './getProtocolClaimsManagerWallet
 import { ScoutProtocolImplementationClient } from './wrappers/ScoutProtocolImplementation';
 import { ScoutProtocolProxyClient } from './wrappers/ScoutProtocolProxy';
 
-export function protocolProxyWriteClient() {
+export function getProtocolProxyWriteClient() {
   return new ScoutProtocolProxyClient({
     chain: scoutProtocolChain,
     contractAddress: getScoutProtocolAddress(),
@@ -12,7 +12,7 @@ export function protocolProxyWriteClient() {
   });
 }
 
-export function protocolImplementationWriteClient() {
+export function getProtocolWriteClient() {
   return new ScoutProtocolImplementationClient({
     chain: scoutProtocolChain,
     contractAddress: getScoutProtocolAddress(),

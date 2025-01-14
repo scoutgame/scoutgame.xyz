@@ -1,6 +1,6 @@
 import { log } from "@charmverse/core/log";
 import { prisma } from "@charmverse/core/prisma-client";
-import { builderContractReadonlyApiClient } from "@packages/scoutgame/builderNfts/clients/builderContractReadClient";
+import { getPreSeasonTwoBuilderNftContractReadonlyClient } from "@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient";
 import path from "node:path";
 import fs from "node:fs"
 import { validatePreseason01orStarterPackMint } from "@packages/scoutgame/builderNfts/validatePreseason01orStarterPackMint";
@@ -47,7 +47,7 @@ async function checkSavedVsOnchainSupply() {
 
     const totalSold = nft.nftSoldEvents.reduce((acc, val) => acc + val.tokensPurchased, 0);
 
-    const actual = await builderContractReadonlyApiClient.totalSupply({args: {tokenId: BigInt(tokenId)}});
+    const actual = await getPreSeasonTwoBuilderNftContractReadonlyClient().totalSupply({args: {tokenId: BigInt(tokenId)}});
 
     if (Number(actual) !== totalSold) {
       log.error(`Token ${tokenId} // ${nft.builder.path} error: Onchain supply ${actual} vs saved ${totalSold}`);
