@@ -12,13 +12,11 @@ export type PointMetrics = {
  */
 export type BuilderMetrics = {
   // scoutedBy: number;
-  nftsSold: number;
   price: bigint;
   level?: number | null;
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[] | null;
   gemsCollected?: number;
-  builderPoints: number;
 };
 
 export type BuilderInfo = BasicUserInfo &

@@ -62,8 +62,6 @@ export async function getStarterPackBuilders({
           season
         },
         select: {
-          pointsEarnedAsBuilder: true,
-          nftsSold: true,
           level: true
         }
       },
@@ -87,13 +85,9 @@ export async function getStarterPackBuilders({
     displayName: builder.displayName,
     rank: builder.userWeeklyStats[0]?.rank || -1,
     price: builder.builderNfts[0]?.currentPrice,
-    points: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
-    cards: builder.userSeasonStats[0]?.nftsSold || 0,
-    builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
     level: builder.userSeasonStats[0]?.level || 0,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
-    nftsSold: builder.userSeasonStats[0]?.nftsSold || 0,
     builderStatus: 'approved',
     nftImageUrl: builder.builderNfts[0]?.imageUrl || '',
     nftType: BuilderNftType.starter_pack,

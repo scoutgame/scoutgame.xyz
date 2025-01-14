@@ -12,8 +12,6 @@ const userSelect = (week: string, season: string) => ({
       season
     },
     select: {
-      pointsEarnedAsBuilder: true,
-      nftsSold: true,
       level: true
     }
   },
@@ -27,8 +25,7 @@ const userSelect = (week: string, season: string) => ({
       week
     },
     select: {
-      gemsCollected: true,
-      rank: true
+      gemsCollected: true
     }
   },
   builderNfts: {
@@ -114,17 +111,15 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       id: builder.id,
       path: builder.path,
       displayName: builder.displayName,
-      builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
       price: builder.builderNfts[0]?.currentPrice ?? 0,
       nftImageUrl: builder.builderNfts[0]?.imageUrl,
       congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl,
-      nftsSold: builder.userSeasonStats[0]?.nftsSold || 0,
       builderStatus: builder.builderStatus!,
-      rank: builder.userWeeklyStats[0]?.rank || -1,
       level: builder.userSeasonStats[0]?.level || 0,
       estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
-      nftType: BuilderNftType.default
+      nftType: BuilderNftType.default,
+      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0
     };
   });
 }

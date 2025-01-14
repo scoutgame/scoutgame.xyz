@@ -1,7 +1,7 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { parseEventLogs } from 'viem';
 
-import { builderContractReadonlyApiClient } from './clients/builderContractReadClient';
+import { builderScoutedAbi } from './accounting/getBuilderScoutedEvents';
 
 type MintValidation = {
   scoutId: string;
@@ -21,13 +21,13 @@ export async function validatePreseason01orStarterPackMint({
   });
 
   const builderScoutedEvent = parseEventLogs({
-    abi: builderContractReadonlyApiClient.abi,
+    abi: [builderScoutedAbi],
     logs: onchainEvent.logs,
     eventName: ['BuilderScouted']
   })[0];
 
   const transferSingleEvent = parseEventLogs({
-    abi: builderContractReadonlyApiClient.abi,
+    abi: [builderScoutedAbi],
     logs: onchainEvent.logs,
     eventName: ['BuilderScouted']
   })[0];

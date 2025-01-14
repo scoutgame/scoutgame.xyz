@@ -6,27 +6,29 @@ import { randomLargeInt } from '@packages/testing/generators';
 
 import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 
-jest.unstable_mockModule('../clients/builderContractMinterWriteClient', () => ({
-  getBuilderContractMinterClient: () => ({
+jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
+  getPreSeasonTwoBuilderNftContractMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
   })
 }));
 
-jest.unstable_mockModule('../clients/builderContractReadClient', () => ({
-  builderContractReadonlyApiClient: {
+jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient', () => ({
+  getPreSeasonTwoBuilderNftContractReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
-  }
+  })
 }));
 
 jest.unstable_mockModule('../builderRegistration/createBuilderNft', () => ({
   createBuilderNft: jest.fn()
 }));
 
-const { getBuilderContractMinterClient } = await import('../clients/builderContractMinterWriteClient');
+const { getPreSeasonTwoBuilderNftContractMinterClient } = await import(
+  '../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient'
+);
 
 const { registerBuilderNFT } = await import('../builderRegistration/registerBuilderNFT');
 
@@ -85,6 +87,6 @@ describe('registerBuilderNFT', () => {
     });
 
     expect(result?.id).toEqual(existingNft.id);
-    expect(getBuilderContractMinterClient().registerBuilderToken).not.toHaveBeenCalled();
+    expect(getPreSeasonTwoBuilderNftContractMinterClient().registerBuilderToken).not.toHaveBeenCalled();
   });
 });

@@ -15,7 +15,7 @@ export function BuilderCardRankGraph({ last14DaysRank }: { last14DaysRank: (numb
         }))}
       >
         <YAxis domain={[0, 100]} hide />
-        <Area type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
+        <Area isAnimationActive={false} type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' />
         {!isAllZero && <ReferenceLine y={50} stroke='#FF00D0' />}
       </AreaChart>
     </ResponsiveContainer>

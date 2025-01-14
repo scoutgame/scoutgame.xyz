@@ -3,16 +3,11 @@
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
-import { getChainById } from '@packages/blockchain/chains';
 import { getPlatform } from '@packages/mixpanel/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
+import { getProtocolReadonlyClient } from '@packages/scoutgame/builderNfts/clients/protocol/getProtocolReadonlyClient';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
-import { ScoutProtocolImplementationClient } from '@packages/scoutgame/protocol/clients/ScoutProtocolImplementationClient';
-import {
-  getScoutProtocolAddress,
-  scoutProtocolChain,
-  scoutProtocolChainId
-} from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
@@ -79,11 +74,7 @@ export function PointsClaimScreen({
 
     const extendedClient = walletClient.extend(publicActions);
 
-    const protocolClient = new ScoutProtocolImplementationClient({
-      chain: scoutProtocolChain,
-      walletClient: extendedClient,
-      contractAddress: getScoutProtocolAddress()
-    });
+    const protocolClient = getProtocolReadonlyClient();
 
     const tx = await protocolClient.multiClaim({
       args: {

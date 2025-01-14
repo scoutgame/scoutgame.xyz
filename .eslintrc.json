@@ -93,7 +93,8 @@
           "./packages/users/",
           "./packages/utils/",
           "./packages/waitlist/",
-          "./packages/telegram/"
+          "./packages/telegram/",
+          "./packages/safetransactions/"
         ]
       }
     ],

@@ -15,6 +15,9 @@ export async function getBuilderCardStats(builderId: string): Promise<BuilderCar
     where: { id: builderId },
     select: {
       userSeasonStats: {
+        where: {
+          season: getCurrentSeasonStart()
+        },
         select: {
           level: true
         }

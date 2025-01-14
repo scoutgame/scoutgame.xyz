@@ -82,8 +82,6 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
           season: getCurrentSeasonStart()
         },
         select: {
-          nftsSold: true,
-          pointsEarnedAsBuilder: true,
           level: true
         }
       },
@@ -108,7 +106,6 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
 
   return builders.map((builder) => ({
     ...builder,
-    nftsSold: builder.userSeasonStats?.[0]?.nftsSold ?? 0,
     nftsSoldToScout: scoutedBuilderNfts.reduce((acc, nft) => {
       if (nft.builderNft.tokenId === builder.builderNfts[0]?.tokenId) {
         acc += nft.balance;
@@ -119,7 +116,6 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     nftType: builder.builderNfts[0].nftType,
     congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
     price: builder.builderNfts[0].currentPrice ?? BigInt(0),
-    builderPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder ?? 0,
     level: builder.userSeasonStats[0]?.level ?? 0,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0])
@@ -165,8 +161,6 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           season: getCurrentSeasonStart()
         },
         select: {
-          nftsSold: true,
-          pointsEarnedAsBuilder: true,
           level: true
         }
       },
@@ -225,8 +219,6 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           path: builder.path,
           displayName: builder.displayName,
           builderStatus: builder.builderStatus!,
-          builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
-          nftsSold: nftsSoldData.total,
           nftsSoldToScout: nftsSoldData.toScout,
           price: nft.currentPrice ?? 0,
           last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),

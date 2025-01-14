@@ -1,11 +1,12 @@
 import env from '@beam-australia/react-env';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
-import { LockupWeeklyStreamCreatorClient } from '@packages/scoutgame/builderNfts/clients/LockupWeeklyStreamCreatorClient';
-import { ScoutProtocolBuilderNFTImplementationClient } from '@packages/scoutgame/builderNfts/clients/ScoutProtocolBuilderNFTImplementationClient';
-import { ScoutTokenERC20Client } from '@packages/scoutgame/builderNfts/clients/ScoutTokenERC20Client';
 import type { Address } from 'viem';
 import { baseSepolia } from 'viem/chains';
+
+import { LockupWeeklyStreamCreatorClient } from '../builderNfts/clients/protocol/wrappers/LockupWeeklyStreamCreatorClient';
+import { ScoutProtocolBuilderNFTImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutProtocolBuilderNFTImplementation';
+import { ScoutTokenERC20ImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutTokenERC20Implementation';
 
 export const sablierLockupContractAddress = process.env.SABLIER_LOCKUP_CONTRACT_ADDRESS as Address;
 
@@ -83,10 +84,10 @@ export function getScoutTokenERC20Contract() {
     throw new Error('REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS is not set');
   }
 
-  const tokenContract = new ScoutTokenERC20Client({
+  const tokenContract = new ScoutTokenERC20ImplementationClient({
     chain: scoutProtocolChain,
     contractAddress,
-    walletClient: getScoutAdminWalletClient()
+    publicClient: getPublicClient(scoutProtocolChainId)
   });
 
   return tokenContract;

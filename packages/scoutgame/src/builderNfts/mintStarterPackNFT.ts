@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { Address } from 'viem';
 
-import { getBuilderContractMinterClient } from './clients/builderContractMinterWriteClient';
+import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
 import { recordNftMint } from './recordNftMint';
 
 export type MintNFTParams = {
@@ -19,12 +20,12 @@ export async function mintNFT(params: MintNFTParams) {
       id: builderNftId
     }
   });
-  const apiClient = getBuilderContractMinterClient();
+  const apiClient = getBuilderNftContractStarterPackMinterClient();
 
   // Proceed with minting
   const txResult = await apiClient.mintTo({
     args: {
-      account: recipientAddress,
+      account: recipientAddress as Address,
       tokenId: BigInt(builderNft.tokenId),
       amount: BigInt(amount),
       scout: scoutId
