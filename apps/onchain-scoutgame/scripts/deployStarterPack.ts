@@ -1,13 +1,7 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { registerBuilderNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderNFT';
-import { starterPackBuilders } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
-import { builderContractReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractReadClient';
-import { getBuilderContractStarterPackMinterClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackMinterWriteClient';
-import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderStarterPackNFT';
-import { baseUrl } from '@packages/utils/constants';
+import { starterPackBuilders } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
 
 async function deployStarterPack() {
   const builders = await prisma.scout.findMany({
