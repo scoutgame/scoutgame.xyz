@@ -4,30 +4,30 @@ import { WagmiProvider } from '@packages/scoutgame-ui/providers/WagmiProvider';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 
+import { PreSeasonContractDashboard } from './PreSeason/PreSeasonContractDashboard';
 import { ProtocolContract } from './ProtocolContract';
-import { SeasonOne } from './SeasonOne';
-import { StarterPack } from './StarterPack';
 
-export function ContractDashboard({ currentTab = 'seasonOne' }: { currentTab?: string }) {
+export function ContractDashboard({ currentTab = 'preseason1' }: { currentTab?: string }) {
   return (
     <Container maxWidth='xl'>
       <Tabs value={currentTab}>
         <Tab
           component={Link}
-          value='seasonOne'
-          label='Season One'
+          value='preseason'
+          label='PreSeason 01'
           href={{
-            query: { tab: 'seasonOne' }
+            query: { tab: 'preseason1' }
           }}
         />
         <Tab
           component={Link}
-          value='starterPack'
-          label='Starter Pack'
+          value='preseason1-starter'
+          label='PreSeason 02'
           href={{
-            query: { tab: 'starterPack' }
+            query: { tab: 'preseason2' }
           }}
         />
+
         <Tab
           component={Link}
           value='protocol'
@@ -38,8 +38,13 @@ export function ContractDashboard({ currentTab = 'seasonOne' }: { currentTab?: s
         />
       </Tabs>
       <Box mt={2}>
-        {currentTab === 'seasonOne' && <SeasonOne />}
-        {currentTab === 'starterPack' && <StarterPack />}
+        {currentTab === 'preseason1-builder' && (
+          <PreSeasonContractDashboard preseasonNumber='01' currentTab={currentTab} season='2024-W41' />
+        )}
+        {currentTab === 'preseason1-builder' && (
+          <PreSeasonContractDashboard preseasonNumber='02' currentTab={currentTab} season='2025-W02' />
+        )}
+
         {currentTab === 'protocol' && (
           <WagmiProvider
             walletConnectProjectId={env('WALLET_CONNECT_PROJECTID')}

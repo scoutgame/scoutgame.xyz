@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { ISOWeek } from '@packages/dates/config';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/builderContractStarterPackReadClient';
 import { getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import type { Address } from 'viem';
@@ -13,22 +14,22 @@ export type StarterPackNFTContractData = {
   nftSalesData: NftSalesData;
 };
 
-export async function getStarterPackContractData(): Promise<StarterPackNFTContractData> {
+export async function getStarterPackContractData({ season }: { season: ISOWeek }): Promise<StarterPackNFTContractData> {
   const [currentMinter, totalSupply, nftSalesData] = await Promise.all([
     getBuilderNftStarterPackReadonlyClient({
       chain: optimism,
-      contractAddress: getBuilderNftStarterPackContractAddress()
+      contractAddress: getBuilderNftStarterPackContractAddress(season)
     }).getMinter(),
     // TODO: call contract instead once we fix totalBuilderTokens?
-    prisma.builderNft.count({ where: { nftType: 'starter_pack' } }).then((count) => BigInt(count)),
+    prisma.builderNft.count({ where: { nftType: 'starter_pack', season } }).then((count) => BigInt(count)),
     // builderContractStarterPackReadonlyApiClient.totalBuilderTokens(),
-    aggregateNftSalesData({ nftType: 'starter_pack' })
+    aggregateNftSalesData({ nftType: 'starter_pack', season })
   ]);
 
   return {
     totalSupply,
     currentMinter: currentMinter as Address,
-    contractAddress: getBuilderNftStarterPackContractAddress(),
+    contractAddress: getBuilderNftStarterPackContractAddress(season),
     nftSalesData
   };
 }

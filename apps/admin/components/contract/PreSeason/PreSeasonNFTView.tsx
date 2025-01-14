@@ -2,7 +2,7 @@ import { Box, Divider, Grid2, IconButton, Typography } from '@mui/material';
 import Link from 'next/link';
 import { MdLaunch } from 'react-icons/md';
 
-import type { BuilderNFTContractData } from 'lib/contract/getContractData';
+import type { PreSeasonNFTContractData } from 'lib/contract/getPreSeasonContractData';
 
 function ContractLink({
   address,
@@ -45,7 +45,7 @@ function GridDivider() {
   );
 }
 
-export function SeasonOneView(data: BuilderNFTContractData) {
+export function PreSeasonNFTView(data: PreSeasonNFTContractData) {
   const itemSizeTwoColumnMd = { xs: 12, md: 6 };
   const itemSizeThreeColumnMd = { xs: 12, md: 4 };
 
