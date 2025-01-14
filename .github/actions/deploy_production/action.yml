@@ -5,6 +5,9 @@ inputs:
   app_name:
     description: 'The name of the app'
     required: true
+  app_config_override:
+    description: 'Override the path to the app config for onchain apps'
+    required: false
   stack:
     description: 'The name of the CDK stack'
     required: true
@@ -30,9 +33,9 @@ runs:
       shell: bash
       # Note: "2>/dev/null || :" is a bash idiom that means "if the previous command fails, do nothing"
       run: |
-        cp apps/${{ inputs.app_name }}/.env.ebstalk .env.ebstalk
-        cp -r apps/${{ inputs.app_name }}/.ebextensions .ebextensions
-        cp apps/${{ inputs.app_name }}/cron.yml cron.yaml 2>/dev/null || :
+        cp apps/${{ inputs.app_config_override || inputs.app_name }}/.env.ebstalk .env.ebstalk
+        cp -r apps/${{ inputs.app_config_override || inputs.app_name }}/.ebextensions .ebextensions
+        cp apps/${{ inputs.app_config_override || inputs.app_name }}/cron.yml cron.yaml 2>/dev/null || :
 
     - name: Set the docker compose env variables
       uses: mikefarah/yq@master
