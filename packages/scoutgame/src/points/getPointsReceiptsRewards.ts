@@ -125,10 +125,7 @@ export async function getPointsReceiptsRewards({
 
   const devSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 0);
   const preSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 1);
-  const seasonPointsReceipts = pointsReceipts.filter(
-    (pr) =>
-      seasonStarts.indexOf(pr.event.season as Season) === 2 || seasonStarts.indexOf(pr.event.season as Season) === 3
-  );
+  const seasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 3);
 
   const devSeasonTotalPoints = devSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
   const preSeasonTotalPoints = preSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
@@ -211,9 +208,6 @@ export async function getPointsReceiptsRewards({
       }
       if (a.week === b.week) {
         return b.points - a.points;
-      }
-      if (a.season !== b.season) {
-        return DateTime.fromISO(b.season).toMillis() - DateTime.fromISO(a.season).toMillis();
       }
       return b.week - a.week;
     });
