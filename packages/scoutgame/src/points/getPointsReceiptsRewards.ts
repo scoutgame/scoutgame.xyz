@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { seasonStarts } from '@packages/dates/config';
+import { devSeasonStart, preSeasonStart, seasonStarts } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
@@ -122,9 +122,9 @@ export async function getPointsReceiptsRewards({
 
   const bonusPartners: Set<string> = new Set();
 
-  const devSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 0);
-  const preSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 1);
-  const seasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 3);
+  const devSeasonPointsReceipts = pointsReceipts.filter((pr) => pr.event.season === devSeasonStart);
+  const preSeasonPointsReceipts = pointsReceipts.filter((pr) => pr.event.season === preSeasonStart);
+  const seasonPointsReceipts = pointsReceipts.filter((pr) => pr.event.season === season);
 
   const devSeasonTotalPoints = devSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
   const preSeasonTotalPoints = preSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);

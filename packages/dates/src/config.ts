@@ -35,6 +35,10 @@ export const seasons = [
 
 export const seasonStarts = seasons.map((s) => s.start);
 
+export const devSeasonStart = seasons[0].start;
+
+export const preSeasonStart = seasons[1].start;
+
 export type Season = (typeof seasons)[number]['start'];
 
 export const streakWindow = 7 * 24 * 60 * 60 * 1000;
