@@ -70,29 +70,29 @@ export function ProtocolContractView(data: ProtocolData) {
 
   // const { sendTransactionAsync } = useSendTransaction();
 
-  const { data: walletClient } = useWalletClient();
+  // const { data: walletClient } = useWalletClient();
 
-  async function claimTokens(claimData: ProtocolData['merkleRoots'][number]) {
-    if (!claimData.testClaim || !walletClient) {
-      return;
-    }
+  // async function claimTokens(claimData: ProtocolData['merkleRoots'][number]) {
+  //   if (!claimData.testClaim || !walletClient) {
+  //     return;
+  //   }
 
-    const client = new ScoutProtocolImplementationClient({
-      contractAddress: data.proxy,
-      walletClient: walletClient as any,
-      chain: scoutGameAttestationChain
-    });
+  //   const client = new ScoutProtocolImplementationClient({
+  //     contractAddress: data.proxy,
+  //     walletClient: walletClient as any,
+  //     chain: scoutGameAttestationChain
+  //   });
 
-    await client.claim({
-      args: {
-        claimData: {
-          week: claimData.week,
-          amount: BigInt(claimData.testClaim.claim.amount),
-          proofs: claimData.testClaim.proofs
-        }
-      }
-    });
-  }
+  //   await client.claim({
+  //     args: {
+  //       claimData: {
+  //         week: claimData.week,
+  //         amount: BigInt(claimData.testClaim.claim.amount),
+  //         proofs: claimData.testClaim.proofs
+  //       }
+  //     }
+  //   });
+  // }
 
   return (
     <Grid2 container spacing={2}>
@@ -129,12 +129,12 @@ export function ProtocolContractView(data: ProtocolData) {
               <Typography>Awaiting publication</Typography>
             ))}
 
-          {root.testClaim && (
+          {/* {root.testClaim && (
             <Button onClick={() => claimTokens(root)}>
               Claim {root.testClaim.claim.amount} $SCOUT with {root.testClaim.claim.address.slice(0, 5)}..
               {root.testClaim.claim.address.slice(root.testClaim.claim.address.length - 3)}
             </Button>
-          )}
+          )} */}
         </Grid2>
       ))}
       <GridDivider />

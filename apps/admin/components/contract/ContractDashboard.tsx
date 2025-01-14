@@ -1,9 +1,8 @@
-import { Tabs, Tab, Box, Container } from '@mui/material';
+import env from '@beam-australia/react-env';
+import { Box, Container, Tab, Tabs } from '@mui/material';
+import { WagmiProvider } from '@packages/scoutgame-ui/providers/WagmiProvider';
+import { headers } from 'next/headers';
 import Link from 'next/link';
-
-import { WagmiProvider } from 'components/providers/wagmi/WagmiProvider';
-import type { BuilderNFTContractData } from 'lib/contract/getContractData';
-import type { StarterPackNFTContractData } from 'lib/contract/getStarterPackContractData';
 
 import { ProtocolContract } from './ProtocolContract';
 import { SeasonOne } from './SeasonOne';
@@ -42,7 +41,10 @@ export function ContractDashboard({ currentTab = 'seasonOne' }: { currentTab?: s
         {currentTab === 'seasonOne' && <SeasonOne />}
         {currentTab === 'starterPack' && <StarterPack />}
         {currentTab === 'protocol' && (
-          <WagmiProvider>
+          <WagmiProvider
+            walletConnectProjectId={env('WALLET_CONNECT_PROJECTID')}
+            cookie={headers().get('cookie') ?? ''}
+          >
             <ProtocolContract />
           </WagmiProvider>
         )}
