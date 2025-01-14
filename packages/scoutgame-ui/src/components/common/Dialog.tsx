@@ -6,14 +6,16 @@ import type { ReactNode } from 'react';
 // based on MUI Dialog, reduces some boilerplate
 export function Dialog({
   children,
+  title,
   ...props
-}: Omit<DialogProps, 'children' | 'onClose'> & {
+}: Omit<DialogProps, 'children' | 'onClose' | 'title'> & {
   children: ReactNode;
   onClose?: () => void;
+  title?: string | ReactNode;
 }) {
   return (
     <MuiDialog {...props}>
-      {props.title && <DialogTitle color='secondary'>{props.title}</DialogTitle>}
+      {title && <DialogTitle color='secondary'>{title}</DialogTitle>}
       {props.onClose && <CloseButton onClick={props.onClose} />}
       <DialogContent sx={{ pt: 0 }}>{children}</DialogContent>
     </MuiDialog>

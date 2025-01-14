@@ -33,8 +33,8 @@ cron:
 
   - name: 'update-builder-card-activity'
     url: '/update-builder-card-activity'
-    # Every hour
-    schedule: '0 * * * *'
+    # Every day at midnight
+    schedule: '0 0 * * *'
 
   - name: 'resolve-balance-issues'
     url: '/resolve-balance-issues'

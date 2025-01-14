@@ -40,7 +40,7 @@ export function LeaderboardTable({ data, week }: { data: LeaderBoardRow[]; week:
       >
         <CommonTableRow>
           <TableCell align='center'>RANK</TableCell>
-          <TableCell>BUILDER</TableCell>
+          <TableCell>DEVELOPER</TableCell>
           <TableCell>
             <WeekTableHead week={week} />
           </TableCell>

@@ -1,4 +1,4 @@
 import { DateTime } from 'luxon';
-import { updateBuilderCardActivity } from '../tasks/updateBuilderCardActivity/updateBuilderCardActivity';
+import { updateBuildersCardActivity } from '../tasks/updateBuildersCardActivity/updateBuildersCardActivity';
 
-updateBuilderCardActivity(DateTime.utc())
+updateBuildersCardActivity(DateTime.utc())
