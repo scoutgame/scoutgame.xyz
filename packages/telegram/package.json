@@ -8,5 +8,9 @@
   },
   "exports": {
     "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@packages/utils": "^1.0.0",
+    "telegramify-markdown": "^1.2.2"
   }
 }

@@ -80,6 +80,7 @@
           "../..",
           "./apps/scoutgame/",
           "./apps/telegram/",
+          "./apps/scout-agents/",
           "./apps/admin/",
           "./apps/cron/",
           "./packages/github/",
@@ -91,7 +92,8 @@
           "./packages/testing/",
           "./packages/users/",
           "./packages/utils/",
-          "./packages/waitlist/"
+          "./packages/waitlist/",
+          "./packages/telegram/"
         ]
       }
     ],

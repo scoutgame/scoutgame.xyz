@@ -15,7 +15,7 @@ package_name=$(to_kebab_case "$package_name")
 # Create directory structure
 # Check if package directory already exists
 if [ -d "packages/$package_name" ]; then
-    echo "Package 'packages/$package_name' already exists. Exiting..."
+    echo "Package 'packages/$package_name' already exists. Exiting"
     exit 0
 fi
 
@@ -70,6 +70,9 @@ cd "packages/$package_name"
 npx eslint --fix .
 cd ../..
 
+echo -e "Refreshing dependencies..."
+
+npm install
 
 echo "Package $package_name has been generated successfully!"
 

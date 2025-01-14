@@ -54,7 +54,8 @@
     "admin:remote": "dotenv -e .env.production -- npm start -w=apps/admin",
     "admin:build": "npm run build -w=apps/admin",
     "admin:test": "dotenv -e .env.test.local -- npm test -w apps/admin",
-    "generate:package": "chmod +x ./scripts/generatePackage.sh && ./scripts/generatePackage.sh"
+    "generate:package": "chmod +x ./scripts/generatePackage.sh && ./scripts/generatePackage.sh",
+    "scout:agents": "dotenv -e .env.local -- npm run start -w=apps/scout-agents"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
