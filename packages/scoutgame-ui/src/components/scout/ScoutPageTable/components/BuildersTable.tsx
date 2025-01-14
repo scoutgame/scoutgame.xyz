@@ -104,7 +104,7 @@ export function BuildersTable({
               lineHeight: 1.5
             }}
           >
-            14D ACTIVITY
+            14D RANK
           </TableCell>
           <TableCell
             onClick={() => handleSort('estimated_payout')}

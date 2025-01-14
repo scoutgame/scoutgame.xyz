@@ -119,7 +119,7 @@ export function BuilderCardActivity({
             textAlign: 'center'
           }}
         >
-          14D Rank
+          14D RANK
         </Typography>
         <Stack width='calc(100% + 5px)' height='100%'>
           <BuilderCardRankGraph last14DaysRank={last14DaysRank} />
