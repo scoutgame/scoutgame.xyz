@@ -7,42 +7,36 @@ import Link from 'next/link';
 import { PreSeasonContractDashboard } from './PreSeason/PreSeasonContractDashboard';
 import { ProtocolContract } from './ProtocolContract';
 
-export function ContractDashboard({ currentTab = 'preseason1' }: { currentTab?: string }) {
+interface ContractDashboardProps {
+  currentTab?: string;
+}
+
+export function ContractDashboard({ currentTab = 'preseason02-builder' }: ContractDashboardProps) {
   return (
     <Container maxWidth='xl'>
-      <Tabs value={currentTab}>
-        <Tab
-          component={Link}
-          value='preseason'
-          label='PreSeason 01'
-          href={{
-            query: { tab: 'preseason1' }
-          }}
-        />
-        <Tab
-          component={Link}
-          value='preseason1-starter'
-          label='PreSeason 02'
-          href={{
-            query: { tab: 'preseason2' }
-          }}
-        />
-
-        <Tab
-          component={Link}
-          value='protocol'
-          label='Protocol (Testnet)'
-          href={{
-            query: { tab: 'protocol' }
-          }}
-        />
+      {/* Outer-level tabs */}
+      <Tabs
+        value={
+          currentTab.startsWith('preseason01')
+            ? 'preseason01'
+            : currentTab.startsWith('preseason02')
+              ? 'preseason02'
+              : currentTab
+        }
+      >
+        <Tab component={Link} value='preseason01' label='PreSeason 01' href={{ query: { tab: 'preseason01' } }} />
+        <Tab component={Link} value='preseason02' label='PreSeason 02' href={{ query: { tab: 'preseason02' } }} />
+        <Tab component={Link} value='protocol' label='Protocol (Testnet)' href={{ query: { tab: 'protocol' } }} />
       </Tabs>
+
       <Box mt={2}>
-        {currentTab === 'preseason1-builder' && (
-          <PreSeasonContractDashboard preseasonNumber='01' currentTab={currentTab} season='2024-W41' />
+        {/* Outer-level switch */}
+        {currentTab.startsWith('preseason01') && (
+          <PreSeasonContractDashboard currentTab={currentTab} preseasonNumber='01' season='2024-W41' />
         )}
-        {currentTab === 'preseason1-builder' && (
-          <PreSeasonContractDashboard preseasonNumber='02' currentTab={currentTab} season='2025-W02' />
+
+        {currentTab.startsWith('preseason02') && (
+          <PreSeasonContractDashboard currentTab={currentTab} preseasonNumber='02' season='2025-W02' />
         )}
 
         {currentTab === 'protocol' && (
