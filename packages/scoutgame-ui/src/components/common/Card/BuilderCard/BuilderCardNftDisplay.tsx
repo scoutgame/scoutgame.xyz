@@ -1,4 +1,4 @@
-import { CardActionArea, CardMedia, Typography, Box } from '@mui/material';
+import { CardActionArea, CardMedia, Typography, Box, Stack } from '@mui/material';
 import Link from 'next/link';
 
 // Maintain a 3:4 aspect ratio for the NFT display
@@ -25,14 +25,16 @@ export function BuilderCardNftDisplay({
   nftImageUrl,
   children,
   path,
-  showHotIcon = false,
+  level,
   size = 'medium',
   hideDetails = false,
-  disableProfileUrl = false
+  disableProfileUrl = false,
+  starterPack
 }: {
+  starterPack?: boolean;
   path: string;
   nftImageUrl?: string | null;
-  showHotIcon?: boolean;
+  level?: number | null;
   children?: React.ReactNode;
   size?: 'x-small' | 'small' | 'medium' | 'large';
   hideDetails?: boolean;
@@ -59,39 +61,78 @@ export function BuilderCardNftDisplay({
           ) : (
             <CardMedia component='img' image='/images/no_nft_person.png' />
           )}
-          {showHotIcon ? (
-            <CardMedia
-              component='img'
-              image='/images/profile/icons/blue-fire-icon.svg'
-              alt='hot icon'
+          {Number.isInteger(level) ? (
+            <Stack
               sx={{
                 position: 'absolute',
-                width: 'initial',
+                width: {
+                  xs: 40,
+                  md: size === 'small' ? 45 : 50
+                },
                 height: {
-                  xs: 25,
-                  md: 30
+                  xs: 40,
+                  md: size === 'small' ? 45 : 50
                 },
                 top: {
                   xs: 7.5,
                   md: 10
                 },
                 right: {
-                  xs: 10,
-                  md: 15
-                }
+                  xs: 7.5,
+                  md: 10
+                },
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: starterPack ? 'yellow.main' : 'orange.main',
+                borderRadius: '50%',
+                border: '3.5px solid #000'
               }}
-            />
+            >
+              <Typography
+                fontFamily='Jura'
+                fontSize={{
+                  xs: 7.5,
+                  md: size === 'small' ? 7.5 : 10
+                }}
+                pt={{
+                  xs: 0.5,
+                  md: 0
+                }}
+                color='black.main'
+                lineHeight={1}
+                mb={0.25}
+              >
+                LEVEL
+              </Typography>
+              <Typography
+                fontFamily='Jura'
+                fontSize={{
+                  xs: 15,
+                  md: size === 'small' ? 17.5 : 20
+                }}
+                color='black.main'
+                lineHeight={1}
+              >
+                {level}
+              </Typography>
+            </Stack>
           ) : null}
         </Box>
         <Box
           sx={{
             height: hideDetails ? 'fit-content' : '33.33%',
             position: 'absolute',
-            width: 'calc(100% - 8px)',
+            width: {
+              xs: 'calc(100% - 6.5px)',
+              md: 'calc(100% - 8px)'
+            },
             left: '50%',
             backgroundColor: hideDetails ? 'transparent' : '#000',
             transform: 'translateX(-50%)',
-            bottom: 3.5
+            bottom: {
+              xs: size === 'x-small' ? 13.5 : 12.5,
+              md: size === 'small' ? 17.5 : 12.5
+            }
           }}
         >
           {nftImageUrl ? null : (

@@ -13,7 +13,8 @@ export function BuilderStats({
   builderPoints,
   totalScouts,
   totalNftsSold,
-  currentNftPrice
+  currentNftPrice,
+  starterPack
 }: {
   nftImageUrl?: string | null;
   path: string;
@@ -21,6 +22,7 @@ export function BuilderStats({
   totalScouts?: number;
   totalNftsSold?: number;
   currentNftPrice?: number | bigint;
+  starterPack?: boolean;
 }) {
   const isDesktop = useMdScreen();
 
@@ -36,7 +38,13 @@ export function BuilderStats({
       }}
     >
       <Stack justifyContent='center'>
-        <BuilderCardNftDisplay hideDetails nftImageUrl={nftImageUrl} path={path} size={isDesktop ? 'large' : 'small'} />
+        <BuilderCardNftDisplay
+          starterPack={starterPack}
+          hideDetails
+          nftImageUrl={nftImageUrl}
+          path={path}
+          size={isDesktop ? 'large' : 'small'}
+        />
       </Stack>
       <Stack justifyContent='space-between' gap={2}>
         <Stack justifyContent='center' gap={0.5}>

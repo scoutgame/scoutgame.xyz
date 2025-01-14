@@ -37,6 +37,7 @@
     "puppeteer": "^23.8.0",
     "qrcode": "^1.5.4",
     "react-dom": "18",
+    "recharts": "^2.15.0",
     "siwe": "^2.3.2",
     "sonner": "^1.7.1",
     "swiper": "^11.1.15"

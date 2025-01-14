@@ -140,10 +140,10 @@ export function getAllISOWeeksFromSeasonStart({ season }: { season: Season }): s
   return weeks;
 }
 
-export function getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }: { season: Season }): string[] {
+export function getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }: { season: Season }): ISOWeek[] {
   const start = getStartOfWeek(season);
   let current = start;
-  const weeks: string[] = [];
+  const weeks: ISOWeek[] = [];
 
   for (let i = 0; i < weeksPerSeason; i++) {
     weeks.push(_formatWeek(current));

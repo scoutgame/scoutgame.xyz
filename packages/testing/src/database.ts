@@ -26,7 +26,8 @@ export async function mockBuilder({
   referralCode = randomString(),
   farcasterId,
   farcasterName,
-  wallets = [{ address: randomWalletAddress() }]
+  wallets = [{ address: randomWalletAddress() }],
+  weeklyStats = []
 }: Partial<
   Scout & {
     githubUserId?: number;
@@ -34,10 +35,18 @@ export async function mockBuilder({
     createNft?: boolean;
     nftSeason?: string;
     wallets?: { address: string }[];
+  } & {
+    weeklyStats?: {
+      week: string;
+      season: string;
+      gemsCollected: number;
+      rank?: number;
+    }[];
   }
 > = {}) {
   const result = await prisma.scout.create({
     data: {
+      id,
       createdAt,
       path,
       displayName,
@@ -61,7 +70,18 @@ export async function mockBuilder({
           id: githubUserId,
           login: githubUserLogin
         }
-      }
+      },
+      userWeeklyStats: weeklyStats.length
+        ? {
+            createMany: {
+              data: weeklyStats.map(({ gemsCollected, season, week }) => ({
+                gemsCollected,
+                season,
+                week
+              }))
+            }
+          }
+        : undefined
     },
     include: {
       githubUsers: true
@@ -78,6 +98,7 @@ export async function mockBuilder({
 export type MockBuilder = Awaited<ReturnType<typeof mockBuilder>>;
 
 export async function mockScout({
+  id,
   createdAt,
   path = `user-${uuid()}`,
   displayName = 'Test Scout',
@@ -100,6 +121,7 @@ export async function mockScout({
   stats,
   verifiedEmail
 }: {
+  id?: string;
   wallets?: string[];
   createdAt?: Date;
   avatar?: string;
@@ -135,6 +157,7 @@ export async function mockScout({
   email ||= randomString();
   const scout = await prisma.scout.create({
     data: {
+      id,
       createdAt,
       path,
       agreedToTermsAt,
