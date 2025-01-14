@@ -4,7 +4,7 @@ import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getWeekFromDate }
 
 export type BuilderAggregateScore = {
   builderId: string;
-  totalGems: number;
+  totalPoints: number;
   firstActiveWeek: ISOWeek;
   level: number;
   centile: number;
@@ -32,9 +32,12 @@ export async function calculateBuilderLevels({
   const allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
 
   // Fetch all builders with their GemReceipts
-  const gemReceipts = await prisma.gemsReceipt.findMany({
+  const gemPayouts = await prisma.gemsPayoutEvent.findMany({
     where: {
-      event: {
+      points: {
+        gt: 0
+      },
+      builderEvent: {
         season,
         builder: {
           builderNfts: {
@@ -50,31 +53,31 @@ export async function calculateBuilderLevels({
     },
     select: {
       createdAt: true,
-      value: true,
-      event: {
-        select: {
-          builderId: true
-        }
-      }
+      points: true,
+      builderId: true
     }
   });
 
-  const builderScores = gemReceipts.reduce(
+  const builderScores = gemPayouts.reduce(
     (acc, receipt) => {
-      const builderId = receipt.event.builderId;
+      const builderId = receipt.builderId;
+
+      // Ignore empty gem payouts
+      if (!receipt.points) {
+        return acc;
+      }
 
       if (!acc[builderId]) {
         acc[builderId] = {
           builderId,
-          totalGems: 0,
+          totalPoints: 0,
           firstActiveWeek: getWeekFromDate(receipt.createdAt),
           centile: 0,
           level: 0,
           averageGemsPerWeek: 0
         };
       }
-
-      acc[builderId].totalGems += receipt.value;
+      acc[builderId].totalPoints += receipt.points;
       return acc;
     },
     {} as Record<string, BuilderAggregateScore>
@@ -85,10 +88,13 @@ export async function calculateBuilderLevels({
     const firstActiveWeekIndex = allSeasonWeeks.indexOf(builder.firstActiveWeek);
 
     // Get number of weeks builder has been active (from first week to end of season)
-    const activeWeeks = allSeasonWeeks.slice(firstActiveWeekIndex).length;
+    const _activeWeeks = allSeasonWeeks.slice(firstActiveWeekIndex).length;
+
+    // For the data to be just, we should not include the current week
+    const activeWeeks = Math.max(1, _activeWeeks - 1);
 
     // Calculate average based on active weeks instead of full season
-    const averageGemsPerWeek = builder.totalGems / activeWeeks;
+    const averageGemsPerWeek = builder.totalPoints / activeWeeks;
 
     return {
       ...builder,
