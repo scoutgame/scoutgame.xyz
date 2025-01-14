@@ -11,7 +11,7 @@ export type GemPayoutInput = {
 
 export type DeterministicRandomBuilderGemsPayoutActivity = {
   id: string;
-  totalGems: number;
+  totalPoints: number;
   firstActiveWeek: string;
   activeWeeks: string[];
   gemPayoutInputs: GemPayoutInput[];
@@ -40,7 +40,7 @@ export function seedBuildersGemPayouts({
     const seed = (baseIndex * 17 + 31) % 997; // Using prime numbers for better distribution
 
     // Generate random total gems between 500-5000
-    const totalGems = Math.floor(((seed % 45) + 5) * 100);
+    const totalPoints = Math.floor(((seed % 45) + 5) * 100);
 
     // Generate random start week between W02-W10
     const firstWeekIndex = seed % weeks.length;
@@ -57,7 +57,7 @@ export function seedBuildersGemPayouts({
 
       // Calculate remaining gems and weeks
       const remainingWeeks = activeWeeks.length - weekIndex;
-      const gemsLeft = totalGems - gemsDistributed;
+      const gemsLeft = totalPoints - gemsDistributed;
 
       // For last week, use all remaining gems
       if (weekIndex === activeWeeks.length - 1) {
@@ -78,7 +78,7 @@ export function seedBuildersGemPayouts({
 
     return {
       id: uuidFromNumber(baseIndex),
-      totalGems,
+      totalPoints,
       firstActiveWeek,
       activeWeeks,
       gemPayoutInputs
@@ -88,7 +88,7 @@ export function seedBuildersGemPayouts({
   return { builders, weeks };
 }
 
-export async function writeSeededBuildersToDatabase({
+export async function writeSeededBuildersGemPayoutsToDatabase({
   builders,
   season
 }: {
