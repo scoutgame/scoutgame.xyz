@@ -73,11 +73,10 @@ function SoldNftsRewardRow({ soldNftsReward }: { soldNftsReward: SoldNftsPointsR
 }
 
 function SeasonRewardRow({ seasonReward }: { seasonReward: SeasonPointsReceiptsReward }) {
-  const seasonTitle = seasons.find((season) => season.start === seasonReward.season)?.title;
   return (
     <TableRow>
       <TableCell align='left'>
-        <Typography>{seasonTitle}</Typography>
+        <Typography>{seasonReward.title}</Typography>
       </TableCell>
       <TableCell align='center'>
         <Typography>-</Typography>
