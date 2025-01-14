@@ -807,7 +807,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     }
   }
 
-  async balanceOf(params: { args: { account: Address; id: bigint } }): Promise<bigint> {
+  async balanceOf(params: { args: { account: Address; id: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOf',
@@ -816,7 +816,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -830,7 +831,10 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as bigint;
   }
 
-  async balanceOfBatch(params: { args: { accounts: Address[]; ids: bigint[] } }): Promise<bigint[]> {
+  async balanceOfBatch(params: {
+    args: { accounts: Address[]; ids: bigint[] };
+    blockNumber?: bigint;
+  }): Promise<bigint[]> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOfBatch',
@@ -839,7 +843,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -853,7 +858,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as bigint[];
   }
 
-  async balanceOfScout(params: { args: { scout: string; tokenId: bigint } }): Promise<bigint> {
+  async balanceOfScout(params: { args: { scout: string; tokenId: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOfScout',
@@ -862,7 +867,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -905,7 +911,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async getBuilderIdForToken(params: { args: { tokenId: bigint } }): Promise<string> {
+  async getBuilderIdForToken(params: { args: { tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getBuilderIdForToken',
@@ -914,7 +920,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -928,7 +935,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as string;
   }
 
-  async getERC20Contract(): Promise<Address> {
+  async getERC20Contract(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getERC20Contract',
@@ -937,7 +944,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -951,7 +959,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as Address;
   }
 
-  async getMinter(): Promise<Address> {
+  async getMinter(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getMinter',
@@ -960,7 +968,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -974,7 +983,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as Address;
   }
 
-  async getPriceIncrement(): Promise<bigint> {
+  async getPriceIncrement(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getPriceIncrement',
@@ -983,7 +992,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -997,7 +1007,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as bigint;
   }
 
-  async getProceedsReceiver(): Promise<Address> {
+  async getProceedsReceiver(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getProceedsReceiver',
@@ -1006,7 +1016,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1020,7 +1031,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as Address;
   }
 
-  async getTokenIdForBuilder(params: { args: { builderId: string } }): Promise<bigint> {
+  async getTokenIdForBuilder(params: { args: { builderId: string }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getTokenIdForBuilder',
@@ -1029,7 +1040,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1043,7 +1055,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as bigint;
   }
 
-  async getTokenPurchasePrice(params: { args: { amount: bigint } }): Promise<bigint> {
+  async getTokenPurchasePrice(params: { args: { amount: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getTokenPurchasePrice',
@@ -1052,7 +1064,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1066,7 +1079,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as bigint;
   }
 
-  async getUriPrefix(): Promise<string> {
+  async getUriPrefix(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getUriPrefix',
@@ -1075,7 +1088,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1089,7 +1103,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as string;
   }
 
-  async getUriSuffix(): Promise<string> {
+  async getUriSuffix(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getUriSuffix',
@@ -1098,7 +1112,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1112,7 +1127,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as string;
   }
 
-  async isValidUUID(params: { args: { uuid: string } }): Promise<boolean> {
+  async isValidUUID(params: { args: { uuid: string }; blockNumber?: bigint }): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isValidUUID',
@@ -1121,7 +1136,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1165,7 +1181,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
   }
 
   async mintTo(params: {
-    args: { account: Address; tokenId: bigint; amount: bigint; scout?: string };
+    args: { account: Address; tokenId: bigint; amount: bigint; scout: string };
     value?: bigint;
     gasPrice?: bigint;
   }): Promise<TransactionReceipt> {
@@ -1173,40 +1189,10 @@ export class ScoutGameStarterPackNFTImplementationClient {
       throw new Error('Wallet client is required for write operations.');
     }
 
-    const args = [params.args.account, params.args.tokenId, params.args.amount] as any[];
-
-    if (params.args.scout) {
-      args.push(params.args.scout);
-    }
-
-    const mintToWithoutScoutIdAbi = {
-      inputs: [
-        {
-          internalType: 'address',
-          name: 'account',
-          type: 'address'
-        },
-        {
-          internalType: 'uint256',
-          name: 'tokenId',
-          type: 'uint256'
-        },
-        {
-          internalType: 'uint256',
-          name: 'amount',
-          type: 'uint256'
-        }
-      ],
-      name: 'mintTo',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
-    };
-
     const txData = encodeFunctionData({
-      abi: params.args.scout ? this.abi : [mintToWithoutScoutIdAbi],
+      abi: this.abi,
       functionName: 'mintTo',
-      args
+      args: [params.args.account, params.args.tokenId, params.args.amount, params.args.scout]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
@@ -1223,7 +1209,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async name(): Promise<string> {
+  async name(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'name',
@@ -1232,7 +1218,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1449,7 +1436,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async supportsInterface(params: { args: { interfaceId: string } }): Promise<boolean> {
+  async supportsInterface(params: { args: { interfaceId: string }; blockNumber?: bigint }): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'supportsInterface',
@@ -1458,7 +1445,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1472,7 +1460,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as boolean;
   }
 
-  async symbol(): Promise<string> {
+  async symbol(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'symbol',
@@ -1481,7 +1469,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1495,7 +1484,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as string;
   }
 
-  async tokenURI(params: { args: { _tokenId: bigint } }): Promise<string> {
+  async tokenURI(params: { args: { _tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'tokenURI',
@@ -1504,7 +1493,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1518,7 +1508,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as string;
   }
 
-  async totalBuilderTokens(): Promise<bigint> {
+  async totalBuilderTokens(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalBuilderTokens',
@@ -1527,7 +1517,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1541,7 +1532,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as bigint;
   }
 
-  async totalMinted(params: { args: { scout: string } }): Promise<bigint> {
+  async totalMinted(params: { args: { scout: string }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalMinted',
@@ -1550,7 +1541,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1564,7 +1556,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return result as bigint;
   }
 
-  async totalSupply(params: { args: { tokenId: bigint } }): Promise<bigint> {
+  async totalSupply(params: { args: { tokenId: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalSupply',
@@ -1573,7 +1565,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1645,7 +1638,7 @@ export class ScoutGameStarterPackNFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async uri(params: { args: { _tokenId: bigint } }): Promise<string> {
+  async uri(params: { args: { _tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'uri',
@@ -1654,7 +1647,8 @@ export class ScoutGameStarterPackNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type

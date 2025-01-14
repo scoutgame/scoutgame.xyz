@@ -878,7 +878,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     }
   }
 
-  async ERC20Token(): Promise<Address> {
+  async ERC20Token(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'ERC20Token',
@@ -887,7 +887,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -901,7 +902,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as Address;
   }
 
-  async acceptUpgrade(): Promise<Address> {
+  async acceptUpgrade(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'acceptUpgrade',
@@ -910,7 +911,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -924,7 +926,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as Address;
   }
 
-  async admin(): Promise<Address> {
+  async admin(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'admin',
@@ -933,7 +935,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -947,7 +950,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as Address;
   }
 
-  async balanceOf(params: { args: { account: Address; tokenId: bigint } }): Promise<bigint> {
+  async balanceOf(params: { args: { account: Address; tokenId: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOf',
@@ -956,7 +959,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -970,7 +974,10 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as bigint;
   }
 
-  async balanceOfBatch(params: { args: { accounts: Address[]; tokenIds: bigint[] } }): Promise<bigint[]> {
+  async balanceOfBatch(params: {
+    args: { accounts: Address[]; tokenIds: bigint[] };
+    blockNumber?: bigint;
+  }): Promise<bigint[]> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOfBatch',
@@ -979,7 +986,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1022,7 +1030,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async getBuilderIdForToken(params: { args: { tokenId: bigint } }): Promise<string> {
+  async getBuilderIdForToken(params: { args: { tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getBuilderIdForToken',
@@ -1031,7 +1039,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1045,7 +1054,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as string;
   }
 
-  async getPriceIncrement(): Promise<bigint> {
+  async getPriceIncrement(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getPriceIncrement',
@@ -1054,7 +1063,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1068,7 +1078,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as bigint;
   }
 
-  async getTokenIdForBuilder(params: { args: { builderId: string } }): Promise<bigint> {
+  async getTokenIdForBuilder(params: { args: { builderId: string }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getTokenIdForBuilder',
@@ -1077,7 +1087,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1091,7 +1102,10 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as bigint;
   }
 
-  async getTokenPurchasePrice(params: { args: { tokenId: bigint; amount: bigint } }): Promise<bigint> {
+  async getTokenPurchasePrice(params: {
+    args: { tokenId: bigint; amount: bigint };
+    blockNumber?: bigint;
+  }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getTokenPurchasePrice',
@@ -1100,7 +1114,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1114,7 +1129,10 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as bigint;
   }
 
-  async isApprovedForAll(params: { args: { account: Address; operator: Address } }): Promise<boolean> {
+  async isApprovedForAll(params: {
+    args: { account: Address; operator: Address };
+    blockNumber?: bigint;
+  }): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isApprovedForAll',
@@ -1123,7 +1141,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1137,7 +1156,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as boolean;
   }
 
-  async isPaused(): Promise<boolean> {
+  async isPaused(params: { blockNumber?: bigint } = {}): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isPaused',
@@ -1146,7 +1165,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1218,7 +1238,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async minter(): Promise<Address> {
+  async minter(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'minter',
@@ -1227,7 +1247,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1241,7 +1262,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as Address;
   }
 
-  async name(): Promise<string> {
+  async name(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'name',
@@ -1250,7 +1271,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1289,7 +1311,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async pauser(): Promise<Address> {
+  async pauser(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'pauser',
@@ -1298,7 +1320,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1312,7 +1335,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as Address;
   }
 
-  async proceedsReceiver(): Promise<Address> {
+  async proceedsReceiver(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'proceedsReceiver',
@@ -1321,7 +1344,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1567,7 +1591,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async supportsInterface(params: { args: { interfaceId: string } }): Promise<boolean> {
+  async supportsInterface(params: { args: { interfaceId: string }; blockNumber?: bigint }): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'supportsInterface',
@@ -1576,7 +1600,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1590,7 +1615,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as boolean;
   }
 
-  async symbol(): Promise<string> {
+  async symbol(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'symbol',
@@ -1599,7 +1624,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1613,7 +1639,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as string;
   }
 
-  async tokenURI(params: { args: { _tokenId: bigint } }): Promise<string> {
+  async tokenURI(params: { args: { _tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'tokenURI',
@@ -1622,7 +1648,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1636,7 +1663,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as string;
   }
 
-  async totalBuilderTokens(): Promise<bigint> {
+  async totalBuilderTokens(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalBuilderTokens',
@@ -1645,7 +1672,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1659,7 +1687,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return result as bigint;
   }
 
-  async totalSupply(params: { args: { tokenId: bigint } }): Promise<bigint> {
+  async totalSupply(params: { args: { tokenId: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalSupply',
@@ -1668,7 +1696,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1765,7 +1794,7 @@ export class ScoutGamePreSeason02NFTImplementationClient {
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 
-  async uri(params: { args: { _tokenId: bigint } }): Promise<string> {
+  async uri(params: { args: { _tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'uri',
@@ -1774,7 +1803,8 @@ export class ScoutGamePreSeason02NFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
