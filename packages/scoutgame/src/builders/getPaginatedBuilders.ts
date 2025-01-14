@@ -3,7 +3,7 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import type { BuilderInfo } from './interfaces';
-import { normalizeLast7DaysGems } from './utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type CompositeCursor = {
   userId: string;
@@ -73,6 +73,7 @@ export async function getPaginatedBuilders({
                 imageUrl: true,
                 nftType: true,
                 congratsImageUrl: true,
+                estimatedPayout: true,
                 nftSoldEvents: {
                   distinct: 'scoutId'
                 }
@@ -80,7 +81,7 @@ export async function getPaginatedBuilders({
             },
             builderCardActivities: {
               select: {
-                last7Days: true
+                last14Days: true
               }
             },
             userAllTimeStats: {
@@ -93,6 +94,7 @@ export async function getPaginatedBuilders({
                 season
               },
               select: {
+                level: true,
                 nftsSold: true
               }
             }
@@ -115,7 +117,9 @@ export async function getPaginatedBuilders({
         scoutedBy: stat.user.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
         nftsSold: stat.user.userSeasonStats[0]?.nftsSold ?? 0,
         builderStatus: stat.user.builderStatus!,
-        last7DaysGems: normalizeLast7DaysGems(stat.user.builderCardActivities[0])
+        level: stat.user.userSeasonStats[0]?.level ?? 0,
+        last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
+        estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0
       }))
     );
   const userId = builders[builders.length - 1]?.id;

@@ -27,7 +27,7 @@ export function BuildersCarousel({
   const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'x-small';
 
   const builderCardsList = builders.map((builder) => (
-    <BuilderCard size={size} key={builder.id} builder={builder} showPurchaseButton showHotIcon />
+    <BuilderCard size={size} type={builder.nftType} key={builder.id} builder={builder} showPurchaseButton />
   ));
 
   const builderCards = showPromoCards

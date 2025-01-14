@@ -13,7 +13,7 @@ import { refreshShareImagesTask } from './tasks/refreshShareImages';
 import { resolveBalanceIssues } from './tasks/resolveBalanceIssues/resolveBalanceIssues';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
 import { syncExternalUserProfilesTask } from './tasks/syncExternalUserProfiles/syncExternalUserProfilesTask';
-import { updateAllBuilderCardActivities } from './tasks/updateBuilderCardActivity';
+import { updateAllBuildersCardActivities } from './tasks/updateBuildersCardActivity';
 import { updateTalentMoxieProfiles } from './tasks/updateTalentMoxieProfiles';
 
 const app = new Koa();
@@ -62,7 +62,7 @@ addTask('/sync-external-user-profiles', syncExternalUserProfilesTask);
 
 addTask('/alert-low-wallet-gas-balance', alertLowWalletGasBalance);
 
-addTask('/update-builder-card-activity', updateAllBuilderCardActivities);
+addTask('/update-builder-card-activity', updateAllBuildersCardActivities);
 
 addTask('/resync-nft-purchases', resolveMissingPurchasesTask);
 

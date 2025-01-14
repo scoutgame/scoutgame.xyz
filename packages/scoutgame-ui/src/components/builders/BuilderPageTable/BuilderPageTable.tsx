@@ -2,6 +2,7 @@ import 'server-only';
 
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderActivities';
+import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { getLeaderboard } from '@packages/scoutgame/builders/getLeaderboard';
 
 import { ScoutPageTable } from '../../scout/ScoutPageTable/ScoutPageTable';
@@ -13,12 +14,14 @@ export async function BuilderPageTable({
   tab,
   week,
   builderSort,
-  builderOrder
+  builderOrder,
+  userId
 }: {
   tab: string;
   week: string;
-  builderSort?: string;
+  builderSort?: BuildersSortBy;
   builderOrder?: string;
+  userId?: string;
 }) {
   if (tab === 'activity') {
     const [, activities = []] = await safeAwaitSSRData(getBuilderActivities({ limit: 100 }));
@@ -32,7 +35,7 @@ export async function BuilderPageTable({
     }
     // empty state
     else {
-      return <ScoutPageTable tab='builders' sort={builderSort} order={builderOrder} />;
+      return <ScoutPageTable tab='builders' sort={builderSort} order={builderOrder} userId={userId} />;
     }
   }
   return null;

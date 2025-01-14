@@ -78,6 +78,9 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
         },
         green: {
           main: '#85FF9E'
+        },
+        yellow: {
+          main: '#fcff6c'
         }
       }
     }

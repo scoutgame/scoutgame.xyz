@@ -73,7 +73,10 @@ describe('processBuilderActivity', () => {
     const builderEvents = await prisma.builderEvent.count({
       where: {
         builderId: builder.id,
-        season: mockSeason
+        season: mockSeason,
+        githubEvent: {
+          isNot: null
+        }
       }
     });
 
@@ -121,7 +124,10 @@ describe('processBuilderActivity', () => {
     const builderEvents = await prisma.builderEvent.count({
       where: {
         builderId: builder.id,
-        season: mockSeason
+        season: mockSeason,
+        githubEvent: {
+          isNot: null
+        }
       }
     });
 

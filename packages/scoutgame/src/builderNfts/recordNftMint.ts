@@ -14,6 +14,7 @@ import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
+import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
@@ -279,14 +280,23 @@ export async function recordNftMint(
       }
     });
   } catch (error) {
-    log.error('Error sending builder card scouted email', { error, userId: builderNft.builderId });
+    log.error('Error sending builder card scouted email', { error, builderId: builderNft.builderId, userId: scoutId });
   }
 
   try {
     await createReferralBonusEvent(scoutId);
   } catch (error) {
-    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, scoutId });
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
   }
+
+  const week = getCurrentWeek();
+
+  await refreshEstimatedPayouts({
+    week,
+    builderIdToRefresh: builderNft.builderId
+  }).catch((error) => {
+    log.error('Error refreshing estimated payouts', { error, builderId: builderNft.builderId, userId: scoutId, week });
+  });
 
   return {
     builderNft,
