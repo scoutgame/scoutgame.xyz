@@ -11,7 +11,7 @@ interface ContractDashboardProps {
   currentTab?: string;
 }
 
-export function ContractDashboard({ currentTab = 'preseason02-builder' }: ContractDashboardProps) {
+export function ContractDashboard({ currentTab = 'preseason02' }: ContractDashboardProps) {
   return (
     <Container maxWidth='xl'>
       {/* Outer-level tabs */}

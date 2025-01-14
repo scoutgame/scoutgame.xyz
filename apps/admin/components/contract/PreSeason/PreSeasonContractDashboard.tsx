@@ -5,7 +5,7 @@ import { PreSeasonNFT } from './PreSeasonNFT';
 import { StarterPack } from './StarterPack';
 
 export function PreSeasonContractDashboard({
-  currentTab = 'preseason01-builder',
+  currentTab = 'preseason01',
   preseasonNumber,
   season
 }: {
@@ -18,10 +18,12 @@ export function PreSeasonContractDashboard({
       <Tabs value={currentTab}>
         <Tab
           component={Link}
-          value={`preseason${preseasonNumber}-builder`}
+          value={`preseason${preseasonNumber}`}
           label={`PreSeason ${preseasonNumber} Builder NFT`}
           href={{
-            query: { tab: `preseason${preseasonNumber}-builder` }
+            query: {
+              tab: `preseason${preseasonNumber}`
+            }
           }}
         />
         <Tab
@@ -34,7 +36,7 @@ export function PreSeasonContractDashboard({
         />
       </Tabs>
       <Box mt={2}>
-        {currentTab === `preseason${preseasonNumber}-builder` && <PreSeasonNFT season={season} />}
+        {currentTab === `preseason${preseasonNumber}` && <PreSeasonNFT season={season} />}
         {currentTab === `preseason${preseasonNumber}-starter` && <StarterPack season={season} />}
       </Box>
     </Container>
