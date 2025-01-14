@@ -3,10 +3,11 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address, TransactionReceipt } from 'viem';
+import { optimism } from 'viem/chains';
 
-import { getBuilderContractMinterClient } from './clients/builderContractMinterWriteClient';
-import { getBuilderContractStarterPackMinterClient } from './clients/builderContractStarterPackMinterWriteClient';
-import { BuilderNFTPreSeason02ImplementationClient } from './clients/BuilderNFTPreSeason02ImplementationClient';
+import { getPreSeasonOneBuilderNftContractMinterClient } from './clients/preseason01/getPreSeasonOneBuilderNftContractMinterClient';
+import { getPreSeasonTwoBuilderNftContractMinterClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
+import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
 import {
   builderNftChain,
   getBuilderNftContractAddress,
@@ -41,7 +42,7 @@ export async function mintNFT(params: MintNFTParams) {
   let txResult: TransactionReceipt | null = null;
 
   if (nftType === 'starter_pack') {
-    const apiClient = getBuilderContractStarterPackMinterClient({
+    const apiClient = getBuilderNftContractStarterPackMinterClient({
       chain: builderNftChain,
       contractAddress: getBuilderNftStarterPackContractAddress(season)
     });
@@ -56,8 +57,8 @@ export async function mintNFT(params: MintNFTParams) {
       }
     });
   } else if (season === '2024-W41') {
-    const apiClient = getBuilderContractMinterClient({
-      chain: builderNftChain,
+    const apiClient = getPreSeasonOneBuilderNftContractMinterClient({
+      chain: optimism,
       contractAddress: getBuilderNftContractAddress(season)
     });
 
@@ -70,10 +71,9 @@ export async function mintNFT(params: MintNFTParams) {
       }
     });
   } else {
-    const apiClient = new BuilderNFTPreSeason02ImplementationClient({
+    const apiClient = getPreSeasonTwoBuilderNftContractMinterClient({
       chain: builderNftChain,
-      contractAddress: getBuilderNftContractAddress(season),
-      walletClient: getScoutGameNftMinterWallet()
+      contractAddress: getBuilderNftContractAddress(season)
     });
 
     txResult = await apiClient.mintTo({

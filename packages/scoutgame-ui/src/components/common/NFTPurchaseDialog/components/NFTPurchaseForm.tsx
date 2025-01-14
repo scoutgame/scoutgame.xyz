@@ -22,13 +22,13 @@ import {
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getPlatform } from '@packages/mixpanel/utils';
-import { builderContractStarterPackReadonlyApiClient } from '@packages/scoutgame/builderNfts/clients/builderContractStarterPackReadClient';
-import { BuilderNFTSeasonOneImplementation01Client } from '@packages/scoutgame/builderNfts/clients/builderNFTSeasonOneClient';
-import { ScoutProtocolBuilderNFTImplementationClient } from '@packages/scoutgame/builderNfts/clients/ScoutProtocolBuilderNFTImplementationClient';
+import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import {
   builderNftChain,
   getBuilderNftContractAddress,
   getBuilderNftContractAddressForNftType,
+  getBuilderNftStarterPackContractAddress,
   treasuryAddress,
   usdcOptimismMainnetContractAddress,
   useTestnets
@@ -42,7 +42,8 @@ import {
   scoutProtocolBuilderNftContractAddress,
   scoutProtocolChain,
   scoutTokenErc20ContractAddress,
-  scoutTokenDecimals
+  scoutTokenDecimals,
+  getScoutProtocolBuilderNFTContract
 } from '@packages/scoutgame/protocol/constants';
 import type { MinimalUserInfo } from '@packages/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
@@ -119,10 +120,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { switchChainAsync } = useSwitchChain();
   const { data: nftStats } = useGetBuilderNftStats({ builderId });
 
-  const builderContractReadonlyApiClient = new BuilderNFTSeasonOneImplementation01Client({
+  const builderContractReadonlyApiClient = getPreSeasonTwoBuilderNftContractReadonlyClient({
     chain: builderNftChain,
-    contractAddress: getBuilderNftContractAddress(),
-    publicClient: getPublicClient(builderNftChain.id)
+    contractAddress: getBuilderNftContractAddress()
   });
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(
@@ -180,13 +180,14 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
       const _price =
         platform === 'onchain_webapp'
-          ? await new ScoutProtocolBuilderNFTImplementationClient({
-              chain: scoutProtocolChain,
-              contractAddress: scoutProtocolBuilderNftContractAddress(),
-              publicClient: getPublicClient(scoutProtocolChain.id)
-            }).getTokenPurchasePrice({ args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) } })
+          ? await getScoutProtocolBuilderNFTContract().getTokenPurchasePrice({
+              args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
+            })
           : builder.nftType === 'starter_pack'
-            ? await builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({
+            ? await getBuilderNftStarterPackReadonlyClient({
+                chain: builderNftChain,
+                contractAddress: getBuilderNftStarterPackContractAddress()
+              }).getTokenPurchasePrice({
                 args: { amount: BigInt(amount) }
               })
             : await builderContractReadonlyApiClient.getTokenPurchasePrice({
@@ -202,16 +203,14 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     let _builderTokenId: bigint | undefined;
     try {
       setIsFetchingPrice(true);
-      _builderTokenId =
-        platform === 'onchain_webapp'
-          ? await new ScoutProtocolBuilderNFTImplementationClient({
-              chain: scoutProtocolChain,
-              contractAddress: scoutProtocolBuilderNftContractAddress(),
-              publicClient: getPublicClient(scoutProtocolChain.id)
+      _builderTokenId = await (platform === 'onchain_webapp'
+        ? getScoutProtocolBuilderNFTContract().getTokenIdForBuilder({ args: { builderId } })
+        : builder.nftType === 'starter_pack'
+          ? getBuilderNftStarterPackReadonlyClient({
+              chain: builderNftChain,
+              contractAddress: getBuilderNftStarterPackContractAddress()
             }).getTokenIdForBuilder({ args: { builderId } })
-          : builder.nftType === 'starter_pack'
-            ? await builderContractStarterPackReadonlyApiClient.getTokenIdForBuilder({ args: { builderId } })
-            : await builderContractReadonlyApiClient.getTokenIdForBuilder({ args: { builderId } });
+          : builderContractReadonlyApiClient.getTokenIdForBuilder({ args: { builderId } }));
 
       setBuilderTokenId(_builderTokenId);
 

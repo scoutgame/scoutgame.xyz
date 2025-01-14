@@ -7,8 +7,9 @@ import { weeksPerSeason } from '@packages/dates/config';
 import { getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
 import { type Address } from 'viem';
 
+import { getProtocolWriteClient } from '../builderNfts/clients/protocol/getProtocolWriteClient';
+
 import type { WeeklyClaimsCalculated } from './calculateWeeklyClaims';
-import { protocolImplementationWriteClient } from './clients/protocolWriteClients';
 import { getSablierLockupContract, sablierStreamId } from './constants';
 
 type ClaimsBody = {
@@ -62,7 +63,7 @@ export async function generateWeeklyClaims({
     leaves: claims
   };
 
-  await protocolImplementationWriteClient().setWeeklyMerkleRoot({
+  await getProtocolWriteClient().setWeeklyMerkleRoot({
     args: {
       weeklyRoot: {
         isoWeek: week,

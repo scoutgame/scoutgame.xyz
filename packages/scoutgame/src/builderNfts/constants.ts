@@ -113,6 +113,12 @@ export function isStarterPackContract(contractAddress: string): boolean {
   return false;
 }
 
+/**
+ * Sunday night on January 6th 2025
+ * https://optimism.blockscout.com/block/0x89dc6ef947a3ae010ac3605e47b37826291b90781cadd294c04281a3032f6896
+ */
+export const lastBlockOfPreSeason01 = 130_261_411;
+
 // const serverClient = getWalletClient({ chainId: builderNftChain.id, privateKey: builderSmartContractMinterKey });
 
 // const apiClient = new BuilderNFTSeasonOneClient({

@@ -1,48 +1,49 @@
-import { Tabs, Tab, Box, Container } from '@mui/material';
+import env from '@beam-australia/react-env';
+import { Box, Container, Tab, Tabs } from '@mui/material';
+import { WagmiProvider } from '@packages/scoutgame-ui/providers/WagmiProvider';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 
-import { WagmiProvider } from 'components/providers/wagmi/WagmiProvider';
-import type { BuilderNFTContractData } from 'lib/contract/getContractData';
-import type { StarterPackNFTContractData } from 'lib/contract/getStarterPackContractData';
-
+import { PreSeasonContractDashboard } from './PreSeason/PreSeasonContractDashboard';
 import { ProtocolContract } from './ProtocolContract';
-import { SeasonOne } from './SeasonOne';
-import { StarterPack } from './StarterPack';
 
-export function ContractDashboard({ currentTab = 'seasonOne' }: { currentTab?: string }) {
+interface ContractDashboardProps {
+  currentTab?: string;
+}
+
+export function ContractDashboard({ currentTab = 'preseason02' }: ContractDashboardProps) {
   return (
     <Container maxWidth='xl'>
-      <Tabs value={currentTab}>
-        <Tab
-          component={Link}
-          value='seasonOne'
-          label='Season One'
-          href={{
-            query: { tab: 'seasonOne' }
-          }}
-        />
-        <Tab
-          component={Link}
-          value='starterPack'
-          label='Starter Pack'
-          href={{
-            query: { tab: 'starterPack' }
-          }}
-        />
-        <Tab
-          component={Link}
-          value='protocol'
-          label='Protocol (Testnet)'
-          href={{
-            query: { tab: 'protocol' }
-          }}
-        />
+      {/* Outer-level tabs */}
+      <Tabs
+        value={
+          currentTab.startsWith('preseason01')
+            ? 'preseason01'
+            : currentTab.startsWith('preseason02')
+              ? 'preseason02'
+              : currentTab
+        }
+      >
+        <Tab component={Link} value='preseason01' label='PreSeason 01' href={{ query: { tab: 'preseason01' } }} />
+        <Tab component={Link} value='preseason02' label='PreSeason 02' href={{ query: { tab: 'preseason02' } }} />
+        <Tab component={Link} value='protocol' label='Protocol (Testnet)' href={{ query: { tab: 'protocol' } }} />
       </Tabs>
+
       <Box mt={2}>
-        {currentTab === 'seasonOne' && <SeasonOne />}
-        {currentTab === 'starterPack' && <StarterPack />}
+        {/* Outer-level switch */}
+        {currentTab.startsWith('preseason01') && (
+          <PreSeasonContractDashboard currentTab={currentTab} preseasonNumber='01' season='2024-W41' />
+        )}
+
+        {currentTab.startsWith('preseason02') && (
+          <PreSeasonContractDashboard currentTab={currentTab} preseasonNumber='02' season='2025-W02' />
+        )}
+
         {currentTab === 'protocol' && (
-          <WagmiProvider>
+          <WagmiProvider
+            walletConnectProjectId={env('WALLET_CONNECT_PROJECTID')}
+            cookie={headers().get('cookie') ?? ''}
+          >
             <ProtocolContract />
           </WagmiProvider>
         )}

@@ -412,7 +412,7 @@ export class UsdcErc20ABIClient {
     return result as bigint;
   }
 
-  async balanceOf(params: { args: { account: string } }): Promise<bigint> {
+  async balanceOf(params: { args: { account: string }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOf',
@@ -421,7 +421,8 @@ export class UsdcErc20ABIClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type

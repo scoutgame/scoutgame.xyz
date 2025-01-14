@@ -4,7 +4,7 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address, Chain } from 'viem';
 
-import { getBuilderContractMinterClient } from '../clients/builderContractMinterWriteClient';
+import { getPreSeasonTwoBuilderNftContractMinterClient } from '../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
 import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
@@ -33,7 +33,7 @@ export async function registerBuilderNFT({
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
 
-  const contractClient = getBuilderContractMinterClient({ chain, contractAddress });
+  const minterClient = getPreSeasonTwoBuilderNftContractMinterClient({ chain, contractAddress });
 
   const existingBuilderNft = await prisma.builderNft.findFirst({
     where: {
@@ -67,12 +67,12 @@ export async function registerBuilderNFT({
     throw new InvalidInputError('Scout profile does not have a github user');
   }
 
-  let tokenId = await contractClient.getTokenIdForBuilder({ args: { builderId } }).catch(() => null);
+  let tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } }).catch(() => null);
 
   if (!tokenId) {
     log.info(`Registering builder token for builder`, { userId: builderId });
-    await contractClient.registerBuilderToken({ args: { builderId } });
-    tokenId = await contractClient.getTokenIdForBuilder({ args: { builderId } });
+    await minterClient.registerBuilderToken({ args: { builderId } });
+    tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } });
   }
 
   const builderNft = await createBuilderNft({
