@@ -45,14 +45,14 @@ export function seedBuildersGemPayouts({
 
     // Generate random start week between W02-W10
     const firstWeekIndex = seed % weeks.length;
-    const firstActiveWeek = weeks[firstWeekIndex];
+    let firstActiveWeek = weeks[firstWeekIndex];
 
     // Calculate active weeks from firstActiveWeek until last week
-    const activeWeeks = weeks.slice(weeks.indexOf(firstActiveWeek));
+    let activeWeeks = weeks.slice(weeks.indexOf(firstActiveWeek));
 
     // Distribute gems across active weeks
     let gemsDistributed = 0;
-    const gemPayoutInputs: GemPayoutInput[] = activeWeeks.map((week, weekIndex) => {
+    let gemPayoutInputs: GemPayoutInput[] = activeWeeks.map((week, weekIndex) => {
       // Use deterministic random distribution based on seed and week
       const weekSeed = (seed * (weekIndex + 1) + 41) % 1009; // Different prime for variation
 
@@ -76,6 +76,19 @@ export function seedBuildersGemPayouts({
       date.plus({ days: 2 });
       return { isoWeek: week, value, date: date.toJSDate() };
     });
+
+    // Filter out gem payouts with 0 points and get first non-zero payout week
+    const firstNonZeroPayout = gemPayoutInputs.find((payout) => payout.value > 0);
+
+    if (firstNonZeroPayout) {
+      // Update firstActiveWeek and activeWeeks to start from first non-zero payout
+      const firstActiveWeekIndex = activeWeeks.indexOf(firstNonZeroPayout.isoWeek);
+      firstActiveWeek = activeWeeks[firstActiveWeekIndex];
+      activeWeeks = activeWeeks.slice(firstActiveWeekIndex);
+
+      // Filter gemPayoutInputs to only include weeks from first non-zero payout
+      gemPayoutInputs = gemPayoutInputs.slice(firstActiveWeekIndex);
+    }
 
     return {
       id: uuidFromNumber(baseIndex),
@@ -130,7 +143,7 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
           createdAt: getDateFromISOWeek(gemPayout.isoWeek).toJSDate(),
           gemsPayoutEvent: {
             create: {
-              createdAt: getDateFromISOWeek(gemPayout.isoWeek).toJSDate(),
+              createdAt: getDateFromISOWeek(gemPayout.isoWeek).plus({ days: 2 }).toJSDate(),
               gems: gemPayout.value,
               points: gemPayout.value,
               season,
