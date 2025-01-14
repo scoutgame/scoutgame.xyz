@@ -51,7 +51,7 @@
     "telegram:start:test": "npm run start:test -w=apps/telegram",
     "telegram:start:test:ci": "npm run start:test:ci -w=apps/telegram",
     "admin": "npx react-env --path .env.local --dest ./apps/admin/public -- npm start -w=apps/admin",
-    "admin:remote": "dotenv -e .env.production -- npm start -w=apps/admin",
+    "admin:remote": "npx react-env --path .env.production --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:build": "npm run build -w=apps/admin",
     "admin:test": "dotenv -e .env.test.local -- npm test -w apps/admin"
   },

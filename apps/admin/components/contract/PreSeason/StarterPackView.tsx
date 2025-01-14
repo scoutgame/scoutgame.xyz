@@ -62,6 +62,13 @@ export function StarterPackView(data: StarterPackNFTContractData) {
           subtitle='Season-long contract holding the data about the minted NFTs, which delegates minting to an implementation contract.'
         />
       </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
+        <ContractLink
+          address={data.currentImplementation}
+          title='Current Implementation'
+          subtitle='This contract is called by the proxy and handles the minting logic. We upgrade to a new implementation multiple times over the season.'
+        />
+      </Grid2>
       <GridDivider />
       <Grid2 size={12}>
         <SectionTitle title='Data' />
@@ -106,9 +113,23 @@ export function StarterPackView(data: StarterPackNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          address={data.admin}
+          title='Admin'
+          subtitle='Admin wallet can upgrade the contract, update the wallet that receives proceeds from NFT sales, modify pricing, register builders and mint tokens.'
+        />
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
+        <ContractLink
           address={data.currentMinter}
           title='Minter'
           subtitle='Minter wallet can register new builder nfts and mint tokens to any address.'
+        />
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
+        <ContractLink
+          address={data.proceedsReceiver}
+          title='Proceeds Receiver'
+          subtitle='This is the wallet address that receives funds paid to mint builder NFTs.'
         />
       </Grid2>
     </Grid2>

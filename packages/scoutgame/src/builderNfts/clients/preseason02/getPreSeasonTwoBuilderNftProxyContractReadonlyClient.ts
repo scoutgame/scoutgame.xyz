@@ -4,13 +4,13 @@ import { optimism } from 'viem/chains';
 import { getBuilderNftContractAddress } from '../../constants';
 import type { ClientConfig } from '../types';
 
-import { ScoutGamePreSeason02NFTImplementationClient } from './wrappers/ScoutGamePreSeason02NFTImplementation';
+import { ScoutGamePreSeason02NFTUpgradeableClient } from './wrappers/ScoutGamePreSeason02NFTUpgradeable';
 
-export function getPreSeasonTwoBuilderNftProxyContractReadonlyApiClient({
+export function getPreSeasonTwoBuilderNftProxyContractReadonlyClient({
   chain = optimism,
   contractAddress = getBuilderNftContractAddress('2025-W02')
 }: ClientConfig) {
-  return new ScoutGamePreSeason02NFTImplementationClient({
+  return new ScoutGamePreSeason02NFTUpgradeableClient({
     chain,
     contractAddress,
     publicClient: getPublicClient(chain.id)
