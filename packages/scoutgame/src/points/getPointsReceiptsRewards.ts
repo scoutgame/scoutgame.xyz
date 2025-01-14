@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { seasons, seasonStarts } from '@packages/dates/config';
+import { seasons } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
@@ -61,7 +61,7 @@ export async function getPointsReceiptsRewards({
       event: {
         season: {
           // Can only claim points for this season and previous seasons
-          in: isClaimed ? seasonStarts : eligibleSeasons
+          in: isClaimed ? seasons.map((s) => s.start) : eligibleSeasons
         }
       },
       value: {
