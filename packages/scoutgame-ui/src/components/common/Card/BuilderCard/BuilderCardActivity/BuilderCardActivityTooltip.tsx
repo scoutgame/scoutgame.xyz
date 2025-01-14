@@ -20,7 +20,7 @@ export function BuilderCardActivityTooltip() {
       </Stack>
 
       <Stack>
-        <Typography fontWeight='bold'>14D ACTIVITY</Typography>
+        <Typography fontWeight='bold'>14D RANK</Typography>
         <Typography>
           Gem earnings over the past 14 days relative to benchmark. Benchmark is the average number of Gems earned daily
           by all active developers.
