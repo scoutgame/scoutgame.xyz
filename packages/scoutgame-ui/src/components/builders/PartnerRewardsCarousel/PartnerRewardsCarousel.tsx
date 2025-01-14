@@ -10,7 +10,6 @@ import { Carousel } from '../../common/Carousel/Carousel';
 const partnerInfos = [
   { logo: 'talent.jpg', name: 'talent', infoPath: 'talent-protocol' },
   { logo: 'celo.png', name: 'celo', infoPath: 'celo' },
-  { logo: 'op.png', name: 'op-supersim', infoPath: 'op-supersim' },
   { logo: 'game7.png', name: 'game7', infoPath: 'game7' },
   { logo: 'lit.png', name: 'lit', infoPath: 'lit' }
 ];
