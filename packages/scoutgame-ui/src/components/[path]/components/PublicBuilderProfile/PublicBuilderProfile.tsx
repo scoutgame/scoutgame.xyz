@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderActivities';
+import { getBuilderCardStats } from '@packages/scoutgame/builders/getBuilderCardStats';
 import { getBuilderNft } from '@packages/scoutgame/builders/getBuilderNft';
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
@@ -15,12 +16,14 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
     builderNft,
     { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 } = {},
     builderActivities = [],
-    { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {}
+    { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {},
+    { level, estimatedPayout, last14DaysRank } = {}
   ] = await Promise.all([
     getBuilderNft(builderId),
     getBuilderStats(builderId),
     getBuilderActivities({ builderId, limit: 200 }),
-    getBuilderScouts(builderId)
+    getBuilderScouts(builderId),
+    getBuilderCardStats(builderId)
   ]);
 
   return (
@@ -28,6 +31,10 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
       scouts={scouts}
       builder={{
         ...builder,
+        gemsCollected,
+        last14DaysRank: last14DaysRank ?? [],
+        level: level ?? 0,
+        estimatedPayout: estimatedPayout ?? 0,
         nftImageUrl: builderNft?.imageUrl,
         price: builderNft?.currentPrice ?? BigInt(0)
       }}

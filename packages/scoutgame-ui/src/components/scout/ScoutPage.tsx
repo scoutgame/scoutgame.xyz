@@ -3,6 +3,7 @@ import 'server-only';
 import AppsIcon from '@mui/icons-material/Apps';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Box, Grid2 as Grid, Stack, Typography } from '@mui/material';
+import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { isTruthy } from '@packages/utils/types';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -36,15 +37,17 @@ export async function ScoutPage({
   builderOrder,
   scoutTab,
   buildersLayout,
-  tab
+  tab,
+  userId
 }: {
   scoutSort: string;
-  builderSort: string;
+  builderSort: BuildersSortBy;
   scoutOrder: string;
   builderOrder: string;
   scoutTab: string;
   buildersLayout: string;
   tab: string;
+  userId?: string;
 }) {
   const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder })
     .filter(([, value]) => isTruthy(value))
@@ -117,8 +120,10 @@ export async function ScoutPage({
                 ) : null
               }
             >
-              {buildersLayout === 'table' && <ScoutPageTable tab='builders' order={builderOrder} sort={builderSort} />}
-              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery showHotIcon />}
+              {buildersLayout === 'table' && (
+                <ScoutPageTable tab='builders' order={builderOrder} sort={builderSort} userId={userId} />
+              )}
+              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery />}
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -136,6 +141,7 @@ export async function ScoutPage({
                 tab={tab}
                 order={tab === 'builders' ? builderOrder : scoutOrder}
                 sort={tab === 'builders' ? builderSort : scoutSort}
+                userId={userId}
               />
             </Suspense>
           </Stack>
@@ -155,7 +161,7 @@ export async function ScoutPage({
             <InfoModal sx={{ position: 'absolute', right: 10, top: 3.5 }} />
           </Box>
           <Suspense fallback={<LoadingTable />}>
-            <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} />
+            <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} userId={userId} />
           </Suspense>
         </Grid>
       </Grid>

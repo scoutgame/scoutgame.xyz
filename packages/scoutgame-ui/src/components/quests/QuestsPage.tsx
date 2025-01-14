@@ -2,19 +2,23 @@ import { Box, Grid2 as Grid } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
+import type { TopConnector } from '@packages/scoutgame/topConnector/getTopConnectors';
 import { DailyClaimGallery } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimGallery';
 import { QuestsList } from '@packages/scoutgame-ui/components/quests/QuestsList/QuestsList';
 
+import { Connector } from './Connector/TopConnector';
 import { FriendlyQuest } from './QuestsList/FriendlyQuest';
 
 export function QuestsPage({
   dailyClaims,
   quests,
-  friends
+  friends,
+  topConnectors
 }: {
   dailyClaims: DailyClaim[];
   quests: QuestInfo[];
   friends: SessionUser[];
+  topConnectors: TopConnector[];
 }) {
   return (
     <Grid container data-test='quest-page' overflow='hidden'>
@@ -28,12 +32,12 @@ export function QuestsPage({
           overflowY: 'auto'
         }}
       >
-        <Box maxWidth='500px' margin='0 auto'>
+        <Box maxWidth='600px' margin='0 auto'>
           <Box sx={{ px: 5 }}>
             <DailyClaimGallery dailyClaims={dailyClaims} />
           </Box>
           <Box sx={{ px: 1, mb: 2 }}>
-            <QuestsList quests={quests} friends={friends} />
+            <QuestsList quests={quests} friends={friends} topConnectors={topConnectors} />
           </Box>
         </Box>
       </Grid>
@@ -51,6 +55,7 @@ export function QuestsPage({
           px: 1
         }}
       >
+        <Connector topConnectors={topConnectors} />
         <FriendlyQuest friends={friends} title='Friendly Quest' />
       </Grid>
     </Grid>

@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { Grid2 as Grid, Stack, Typography } from '@mui/material';
+import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { Suspense } from 'react';
 
 import { HeaderMessage } from '../common/Header/HeaderMessage';
@@ -20,12 +21,14 @@ export async function BuildersPage({
   week,
   tab,
   builderSort,
-  builderOrder
+  builderOrder,
+  userId
 }: {
   week: string;
   tab: string;
   builderSort?: string;
   builderOrder?: string;
+  userId?: string;
 }) {
   return (
     <>
@@ -60,13 +63,25 @@ export async function BuildersPage({
               Leaderboard
             </Typography>
             <Suspense key='leaderboard' fallback={<LoadingTable />}>
-              <BuilderPageTable tab='leaderboard' week={week} builderSort={builderSort} builderOrder={builderOrder} />
+              <BuilderPageTable
+                tab='leaderboard'
+                week={week}
+                builderSort={builderSort as BuildersSortBy}
+                builderOrder={builderOrder}
+                userId={userId}
+              />
             </Suspense>
           </Stack>
           <Stack display={{ xs: 'block', md: 'none' }}>
             <TabsMenu value={tab} tabs={mobileTabOptions} queryKey='tab' />
             <Suspense key={tab} fallback={<LoadingTable />}>
-              <BuilderPageTable tab={tab} week={week} builderSort={builderSort} builderOrder={builderOrder} />
+              <BuilderPageTable
+                tab={tab}
+                week={week}
+                builderSort={builderSort as BuildersSortBy}
+                builderOrder={builderOrder}
+                userId={userId}
+              />
             </Suspense>
           </Stack>
         </Grid>
@@ -79,7 +94,7 @@ export async function BuildersPage({
               Recent Activity
             </Typography>
             <Suspense key='activity' fallback={<LoadingTable />}>
-              <BuilderPageTable tab='activity' week={week} />
+              <BuilderPageTable tab='activity' week={week} userId={userId} />
             </Suspense>
           </Stack>
         </Grid>

@@ -1,14 +1,24 @@
 import { Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
+import type { TopConnector } from '@packages/scoutgame/topConnector/getTopConnectors';
 
 import { Hidden } from '../../common/Hidden';
+import { Connector } from '../Connector/TopConnector';
 
 import { FriendlyQuest } from './FriendlyQuest';
 import { QuestAccordion } from './QuestAccordion';
 import { QuestCard } from './QuestCard';
 
-export function QuestsList({ quests, friends }: { quests: QuestInfo[]; friends: SessionUser[] }) {
+export function QuestsList({
+  quests,
+  friends,
+  topConnectors
+}: {
+  quests: QuestInfo[];
+  friends: SessionUser[];
+  topConnectors: TopConnector[];
+}) {
   const inviteFriendsQuest = quests.find((quest) => quest.type === 'invite-friend');
 
   const isFarcasterConnectQuestCompleted = quests.find((quest) => quest.type === 'link-farcaster-account')?.completed;
@@ -24,6 +34,7 @@ export function QuestsList({ quests, friends }: { quests: QuestInfo[]; friends: 
           {inviteFriendsQuest && (
             <QuestAccordion quest={inviteFriendsQuest}>
               <FriendlyQuest friends={friends} />
+              {topConnectors.length > 0 && <Connector topConnectors={topConnectors} />}
             </QuestAccordion>
           )}
         </Hidden>

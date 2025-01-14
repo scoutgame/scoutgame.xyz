@@ -6,9 +6,7 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
-import type { BuilderEventWithGemsReceipt } from '../builders/mapGemReceiptsToLast7Days';
-import { mapGemReceiptsToLast7Days } from '../builders/mapGemReceiptsToLast7Days';
-import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 
 async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
@@ -85,9 +83,11 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
         },
         select: {
           nftsSold: true,
-          pointsEarnedAsBuilder: true
+          pointsEarnedAsBuilder: true,
+          level: true
         }
       },
+      builderCardActivities: true,
       builderNfts: {
         where: {
           season: getCurrentSeasonStart(),
@@ -99,7 +99,8 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
           currentPrice: true,
           nftType: true,
           tokenId: true,
-          congratsImageUrl: true
+          congratsImageUrl: true,
+          estimatedPayout: true
         }
       }
     }
@@ -118,12 +119,10 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     nftType: builder.builderNfts[0].nftType,
     congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
     price: builder.builderNfts[0].currentPrice ?? BigInt(0),
-    rank: 0, // Would need to calculate this based on some criteria
     builderPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder ?? 0,
-    last7DaysGems: mapGemReceiptsToLast7Days({
-      events: builder.events as Required<BuilderEventWithGemsReceipt>[],
-      currentDate: DateTime.now()
-    }).map((gem) => gem.gemsCount)
+    level: builder.userSeasonStats[0]?.level ?? 0,
+    estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
+    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0])
   }));
 }
 
@@ -167,7 +166,8 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
         },
         select: {
           nftsSold: true,
-          pointsEarnedAsBuilder: true
+          pointsEarnedAsBuilder: true,
+          level: true
         }
       },
       builderNfts: {
@@ -180,12 +180,13 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           currentPrice: true,
           nftType: true,
           nftSoldEvents: true,
-          congratsImageUrl: true
+          congratsImageUrl: true,
+          estimatedPayout: true
         }
       },
       builderCardActivities: {
         select: {
-          last7Days: true
+          last14Days: true
         }
       },
       builderStatus: true,
@@ -194,7 +195,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           week: getCurrentWeek()
         },
         select: {
-          rank: true
+          gemsCollected: true
         }
       }
     }
@@ -227,11 +228,13 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           builderPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
           nftsSold: nftsSoldData.total,
           nftsSoldToScout: nftsSoldData.toScout,
-          rank: builder.userWeeklyStats[0]?.rank ?? -1,
           price: nft.currentPrice ?? 0,
-          last7DaysGems: normalizeLast7DaysGems(builder.builderCardActivities[0]),
+          last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
           nftType: nft.nftType,
-          congratsImageUrl: nft.congratsImageUrl
+          gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
+          congratsImageUrl: nft.congratsImageUrl,
+          estimatedPayout: nft.estimatedPayout ?? 0,
+          level: builder.userSeasonStats[0]?.level ?? 0
         };
 
         return nftData;
