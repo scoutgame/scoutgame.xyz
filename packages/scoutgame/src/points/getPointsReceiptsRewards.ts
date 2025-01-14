@@ -2,6 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { seasonStarts } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { DateTime } from 'luxon';
 
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
 
@@ -124,7 +125,10 @@ export async function getPointsReceiptsRewards({
 
   const devSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 0);
   const preSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 1);
-  const seasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 2);
+  const seasonPointsReceipts = pointsReceipts.filter(
+    (pr) =>
+      seasonStarts.indexOf(pr.event.season as Season) === 2 || seasonStarts.indexOf(pr.event.season as Season) === 3
+  );
 
   const devSeasonTotalPoints = devSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
   const preSeasonTotalPoints = preSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
@@ -207,6 +211,9 @@ export async function getPointsReceiptsRewards({
       }
       if (a.week === b.week) {
         return b.points - a.points;
+      }
+      if (a.season !== b.season) {
+        return DateTime.fromISO(b.season).toMillis() - DateTime.fromISO(a.season).toMillis();
       }
       return b.week - a.week;
     });
