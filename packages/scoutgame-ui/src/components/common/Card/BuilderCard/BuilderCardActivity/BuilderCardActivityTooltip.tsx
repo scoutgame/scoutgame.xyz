@@ -14,8 +14,8 @@ export function BuilderCardActivityTooltip() {
       <Stack>
         <Typography fontWeight='bold'>LEVEL</Typography>
         <Typography>
-          Represents the percentile of the Developer's weekly Scout Point average relative to the point average of all
-          active developers. The top 10% of Developers are Level 10.
+          Represents the decile of the Developer's weekly valid github contributions amongst active developers. The top
+          10% of Developers are Level 10.
         </Typography>
       </Stack>
 
