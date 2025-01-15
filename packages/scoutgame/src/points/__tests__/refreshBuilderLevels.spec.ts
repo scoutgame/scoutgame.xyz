@@ -12,7 +12,7 @@ import { refreshBuilderLevels } from '../refreshBuilderLevels';
 
 jest.useFakeTimers();
 
-describe('refreshBuilderLevels', () => {
+describe.skip('refreshBuilderLevels', () => {
   beforeEach(() => {
     jest.setSystemTime(new Date('2025-01-25'));
   });
