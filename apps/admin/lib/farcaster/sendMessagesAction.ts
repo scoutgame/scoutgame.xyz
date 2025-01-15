@@ -29,16 +29,14 @@ type SendMessagesResponse = SuccessResponse | InvalidInputResponse | APIErrorRes
 // Keep tokens secure on server
 const FARCASTER_ACCOUNTS = {
   chris: {
-    name: '@ccarella',
     apiToken: process.env.WARPCAST_API_KEY_CHRIS
   },
   scout: {
-    name: '@scoutgamexyz',
     apiToken: process.env.WARPCAST_API_KEY_SCOUT
   }
 } as const;
 
-type AccountId = keyof typeof FARCASTER_ACCOUNTS;
+export type AccountId = keyof typeof FARCASTER_ACCOUNTS;
 
 export const sendMessagesAction = authActionClient
   .metadata({ actionName: 'delete_repo' })
@@ -90,7 +88,7 @@ export const sendMessagesAction = authActionClient
           message,
           apiToken: account.apiToken
         });
-        log.info(`Sent message to ${recipientFid}`, { recipientFid, result });
+        log.info(`Sent message to ${recipient}`, { recipientFid, result });
         sentRecipients.push(recipient);
       } catch (error) {
         log.error(`Error sending message to ${recipientFid}`, {

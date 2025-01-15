@@ -22,7 +22,12 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { useSearchUsers } from 'hooks/api/users';
 import { useDebouncedValue } from 'hooks/useDebouncedValue';
-import type { SuccessResponse, APIErrorResponse, InvalidInputResponse } from 'lib/farcaster/sendMessagesAction';
+import type {
+  AccountId,
+  SuccessResponse,
+  APIErrorResponse,
+  InvalidInputResponse
+} from 'lib/farcaster/sendMessagesAction';
 import { sendMessagesAction } from 'lib/farcaster/sendMessagesAction';
 import type { SortField, SortOrder } from 'lib/users/getUsers';
 
@@ -34,30 +39,41 @@ type FarcasterFormInputs = {
 
 // Only expose account IDs and names to the client
 const FARCASTER_ACCOUNTS = [
-  { id: 'chris', name: "Chris's Account" },
-  { id: 'scout', name: "Scout's Account" }
+  { id: 'chris', name: '@ccarella' },
+  { id: 'scout', name: '@scoutgamexyz' }
 ] as const;
 
-export function FarcasterDashboard() {
+function getRecipients(value: string) {
+  return value
+    .split(/[\s,]+/)
+    .map((recipient) => recipient.trim())
+    .filter(Boolean);
+}
+
+export function FarcasterDashboard({ defaultAccount }: { defaultAccount?: AccountId }) {
   const {
     register,
     reset,
     control,
     handleSubmit,
-    formState: { errors }
+    watch,
+    formState: { errors, isValid }
   } = useForm<FarcasterFormInputs>({
     defaultValues: {
-      accountId: FARCASTER_ACCOUNTS[0]?.id // Set default account
+      accountId: defaultAccount,
+      recipients: ''
     }
   });
 
   const { executeAsync: sendMessages, hasErrored, isExecuting: isSending, result } = useAction(sendMessagesAction);
 
+  const recipientsValue = watch('recipients');
+  const recipientsCount = useMemo(() => {
+    return getRecipients(recipientsValue).length;
+  }, [recipientsValue]);
+
   const onSubmit = async (data: FarcasterFormInputs) => {
-    const recipients = data.recipients
-      .split(/[\s,]+/)
-      .map((recipient) => recipient.trim())
-      .filter(Boolean);
+    const recipients = getRecipients(data.recipients);
 
     log.info('Sending message to:', recipients);
 
@@ -102,6 +118,7 @@ export function FarcasterDashboard() {
                 label='Message Content'
                 multiline
                 autoFocus
+                required
                 rows={4}
                 fullWidth
                 placeholder='Enter the message you want to send...'
@@ -114,6 +131,7 @@ export function FarcasterDashboard() {
                 <TextField
                   label='Recipients'
                   multiline
+                  required
                   rows={4}
                   fullWidth
                   placeholder='Enter Farcaster usernames (comma or space separated)'
@@ -152,6 +170,7 @@ export function FarcasterDashboard() {
                   </LoadingButton>
                   <LoadingButton
                     loading={isSending}
+                    disabled={!isValid}
                     type='submit'
                     color='primary'
                     sx={{
@@ -162,7 +181,7 @@ export function FarcasterDashboard() {
                       }
                     }}
                   >
-                    Send Messages
+                    Send {recipientsCount || ''} Message{recipientsCount && recipientsCount > 1 ? 's' : ''}
                   </LoadingButton>
                 </Box>
               </Box>
