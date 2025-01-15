@@ -1,11 +1,24 @@
 'use client';
 
+import { log } from '@charmverse/core/log';
 import { Add as AddIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { CircularProgress, Container, Paper, Stack, TextField, Box, Typography } from '@mui/material';
+import {
+  CircularProgress,
+  Container,
+  Paper,
+  Stack,
+  TextField,
+  Box,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
 import { useAction } from 'next-safe-action/hooks';
 import React, { useState, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import { useSearchUsers } from 'hooks/api/users';
 import { useDebouncedValue } from 'hooks/useDebouncedValue';
@@ -16,26 +29,45 @@ import type { SortField, SortOrder } from 'lib/users/getUsers';
 type FarcasterFormInputs = {
   messageContent: string;
   recipients: string;
+  accountId: string;
 };
+
+// Only expose account IDs and names to the client
+const FARCASTER_ACCOUNTS = [
+  { id: 'chris', name: "Chris's Account" },
+  { id: 'scout', name: "Scout's Account" }
+] as const;
 
 export function FarcasterDashboard() {
   const {
     register,
     reset,
+    control,
     handleSubmit,
     formState: { errors }
-  } = useForm<FarcasterFormInputs>();
+  } = useForm<FarcasterFormInputs>({
+    defaultValues: {
+      accountId: FARCASTER_ACCOUNTS[0]?.id // Set default account
+    }
+  });
 
   const { executeAsync: sendMessages, hasErrored, isExecuting: isSending, result } = useAction(sendMessagesAction);
 
   const onSubmit = async (data: FarcasterFormInputs) => {
-    // Handle form submission
     const recipients = data.recipients
       .split(/[\s,]+/)
       .map((recipient) => recipient.trim())
       .filter(Boolean);
-    await sendMessages({ message: data.messageContent, recipients });
+
+    log.info('Sending message to:', recipients);
+
+    await sendMessages({
+      message: data.messageContent,
+      recipients,
+      accountId: data.accountId as (typeof FARCASTER_ACCOUNTS)[number]['id']
+    });
   };
+
   return (
     <Container maxWidth='xl'>
       <Stack spacing={3} sx={{ width: { xs: '100%', lg: '50%' } }}>
@@ -43,11 +75,29 @@ export function FarcasterDashboard() {
 
         <Paper sx={{ p: 3 }}>
           <Typography variant='subtitle1' gutterBottom>
-            Send a message from Chris's Farcaster account
+            Send messages from a Farcaster account
           </Typography>
           <br />
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
+              {/* Account Selector */}
+              <Controller
+                name='accountId'
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth>
+                    <InputLabel>Send from Account</InputLabel>
+                    <Select {...field} label='Send from Account'>
+                      {FARCASTER_ACCOUNTS.map((account) => (
+                        <MenuItem key={account.id} value={account.id}>
+                          {account.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              />
+
               <TextField
                 label='Message Content'
                 multiline
@@ -77,12 +127,12 @@ export function FarcasterDashboard() {
                 <Box>
                   {isAPIErrorResponse(result.data) && (
                     <Typography variant='subtitle1' color='error'>
-                      Error sending messages: {result.data.error}
+                      Error sending messages: {result.data!.error}
                     </Typography>
                   )}
                   {isInvalidInputResponse(result.data) && (
                     <Typography variant='subtitle1' color='error'>
-                      Message not sent. Some recipients were invalid: {result.data.invalidRecipients.join(', ')}
+                      Message not sent. Some recipients were invalid: {result.data!.invalidRecipients.join(', ')}
                     </Typography>
                   )}
                   {hasErrored && (
