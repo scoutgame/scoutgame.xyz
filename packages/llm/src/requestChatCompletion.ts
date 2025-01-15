@@ -1,10 +1,8 @@
-import { InvalidInputError, SystemError } from '@charmverse/core/errors';
-import { POST } from '@packages/utils/http';
-import { prettyPrint } from '@packages/utils/strings';
+import { InvalidInputError } from '@charmverse/core/errors';
 import OpenAI from 'openai';
 
 import type { LLMModel } from './constants';
-import { CHAT_GPT_BASE_URL, LLMModelsList } from './constants';
+import { LLMModelsList } from './constants';
 import { llmLogger } from './logger';
 import type { ChatCompletionResponse, ChatMessage, ToolDefinition } from './types';
 
@@ -65,8 +63,6 @@ export async function requestChatCompletion({
     }))
   });
 
-  llmLogger.info('Agent requested a tool call', { toolCalls: response.choices[0].message.tool_calls });
-
   function parseToolCallArguments(argsString: string) {
     try {
       return JSON.parse(argsString);
@@ -76,12 +72,16 @@ export async function requestChatCompletion({
     }
   }
 
-  return {
-    ...response,
-    message: response.choices[0].message.content,
-    tool_calls: response.choices[0].message.tool_calls?.map((toolCall) => ({
+  if (response.choices[0].message.tool_calls) {
+    llmLogger.info('Agent requested a tool call', { toolCalls: response.choices[0].message.tool_calls });
+    (response as ChatCompletionResponse).tool_calls = response.choices[0].message.tool_calls?.map((toolCall) => ({
       name: toolCall.function.name,
       arguments: parseToolCallArguments(toolCall.function.arguments)
-    }))
+    }));
+  }
+
+  return {
+    ...response,
+    message: response.choices[0].message.content
   } as ChatCompletionResponse;
 }

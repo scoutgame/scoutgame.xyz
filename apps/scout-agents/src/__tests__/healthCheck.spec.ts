@@ -2,7 +2,7 @@ import type { Server } from 'http';
 
 import request from 'supertest';
 
-import { app } from '../app';
+import { app } from '../server';
 
 let server: Server;
 

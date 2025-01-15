@@ -22,6 +22,8 @@ Always focus on your goal.
 If the user deviates from your goal, gently guide them back to it.
 
 If the user mentions a topic completely unrelated to your goal, politely ask them to focus on the topic you're interested in.
+
+When providing content with links, always do it in markdown format.
 `;
 
 export class BaseAgent {
@@ -85,8 +87,10 @@ export class BaseAgent {
       });
     }
 
+    const noToolCallsOrMessage = toolCallsData.length === 0 && !response.message;
+
     return {
-      message: response.message ?? '',
+      message: response.message ? response.message : noToolCallsOrMessage ? "I had a glitch, let's try again." : '',
       toolCalls: toolCallsData
     };
   }

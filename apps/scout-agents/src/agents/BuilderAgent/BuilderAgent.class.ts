@@ -20,7 +20,12 @@ If their interests aren't clear from their message, ask specifically about:
 - What types of projects interest them (DeFi, NFTs, etc)
 - Their development experience level
 
-Always maintain a supportive tone while staying focused on finding them suitable projects.`;
+Always maintain a supportive tone while staying focused on finding them suitable projects.
+
+When sharing a project, always include the link as well.
+
+Never suggest generic projects. Only refer to projects that you have found in your search, and for which you have a link.
+`;
 
 export class BuilderAgent extends BaseAgent {
   constructor() {

@@ -76,7 +76,8 @@ async function telegramHandler(ctx: Koa.Context) {
       message: dispatchedAgentResponse.result.text,
       sender: MessageSender.agent,
       conversationTelegramId: BigInt(message.chat.id),
-      messageTelegramId: BigInt(dispatchedAgentResponse.result.message_id)
+      messageTelegramId: BigInt(dispatchedAgentResponse.result.message_id),
+      toolCalls: response.toolCalls
     });
   } catch (err) {
     log.error('Error handling telegram message', { err });

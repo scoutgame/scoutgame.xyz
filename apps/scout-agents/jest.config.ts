@@ -5,7 +5,12 @@ export default {
   globalTeardown: '<rootDir>/jest.teardown-init.js',
 
   transform: {
-    '^.+\\.(t|j)sx?$': ['@swc/jest']
+    '^.+\\.(t|j)sx?$': [
+      '@swc/jest',
+      {
+        jsc: { baseUrl: '.', paths: compilerOptions.paths }
+      }
+    ]
   },
 
   extensionsToTreatAsEsm: ['.ts', '.tsx']

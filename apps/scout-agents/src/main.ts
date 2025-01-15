@@ -3,7 +3,7 @@ import { setBotCommands } from '@packages/telegram/setBotCommands';
 import { setTelegramBotWebhook } from '@packages/telegram/setTelegramBotWebhook';
 
 import { SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from './agents/constants';
-import { app } from './app';
+import { app } from './server';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;

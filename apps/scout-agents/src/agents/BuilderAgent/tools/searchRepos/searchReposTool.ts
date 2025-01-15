@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 import type { ToolDefinitionWithFunction } from '@packages/llm/types';
 
@@ -25,7 +26,9 @@ export function searchRepositories({
   limit?: number;
 }) {
   // Load repositories from JSON file
-  const repositories: Repository[] = JSON.parse(readFileSync(new URL('./repos.json', import.meta.url), 'utf-8'));
+  const repositories: Repository[] = JSON.parse(
+    readFileSync(path.resolve('src/agents/BuilderAgent/tools/searchRepos/repos.json'), 'utf-8')
+  );
 
   const queryWords = query.toLowerCase().split(/\s+/); // Split query into words
 
@@ -83,7 +86,17 @@ export function searchRepositories({
   const sortedResults = scoredResults
     .filter((result) => result.score > 0) // Only include relevant matches
     .sort((a, b) => b.score - a.score) // Sort by relevance score
-    .map((result) => result.repo); // Return sorted repositories
+    .map((result) => {
+      // Truncate long descriptions and readmes to reasonable lengths
+      const repo = { ...result.repo };
+      if (repo.description && repo.description.length > 300) {
+        repo.description = `${repo.description.slice(0, 300)}...`;
+      }
+      if (repo.readme && repo.readme.length > 1000) {
+        repo.readme = `${repo.readme.slice(0, 1000)}...`;
+      }
+      return repo;
+    }); // Return sorted repositories with truncated content
 
   // Return the top N results based on the limit parameter
   return sortedResults.slice(0, limit);
