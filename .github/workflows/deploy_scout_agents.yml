@@ -155,7 +155,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         with:
-          ecr_registry: scoutagents
+          ecr_registry: scout-agents
 
   upload-static-assets:
     name: Upload assets in production
