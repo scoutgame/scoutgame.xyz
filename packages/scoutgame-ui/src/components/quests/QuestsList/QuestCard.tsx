@@ -66,20 +66,27 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
               {quest.label}
             </Typography>
           </Stack>
-          <Stack direction='row' gap={0.5} alignItems='center'>
-            <Typography variant='body2' fontWeight={500}>
-              +{quest.points}
-            </Typography>
-            <Image src='/images/profile/scout-game-profile-icon.png' alt='Scoutgame icon' width={18.5} height={12} />
-            {quest.rewards && (
-              <>
-                <span>+</span>
-                <Typography variant='body2' textAlign='left'>
-                  {quest.rewards}
-                </Typography>
-              </>
-            )}
-            <Chip size='small' label={quest.tag.charAt(0).toUpperCase() + quest.tag.slice(1)} sx={{ ml: 1 }} />
+          <Stack direction='row' gap={1} alignItems='center'>
+            <Stack direction='row' gap={0.5} alignItems='center'>
+              <Typography variant='body2' fontWeight={500}>
+                +{quest.points}
+              </Typography>
+              <Image src='/images/profile/scout-game-profile-icon.png' alt='Scoutgame icon' width={18.5} height={12} />
+              {quest.rewards && (
+                <>
+                  <span>+</span>
+                  <Typography
+                    component='span'
+                    variant='body2'
+                    textAlign='left'
+                    sx={{ maxInlineSize: { xs: '6ch', md: 'none' } }}
+                  >
+                    {quest.rewards}
+                  </Typography>
+                </>
+              )}
+            </Stack>
+            <Chip size='small' label={quest.tag.charAt(0).toUpperCase() + quest.tag.slice(1)} />
           </Stack>
           {quest.completedSteps !== null ? (
             <Stack flexDirection='row' gap={0.5} alignItems='center'>
@@ -87,8 +94,8 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
                 {quest.completedSteps}
               </Typography>
               <Stack flexDirection='row' gap={0.5} alignItems='center' position='relative' width={150}>
-                <div
-                  style={{
+                <Box
+                  sx={{
                     width: `${(quest.completedSteps / (quest.totalSteps || 1)) * 100}%`,
                     height: 14,
                     backgroundColor: 'white',
@@ -96,7 +103,7 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
                     left: 0
                   }}
                 />
-                <div style={{ width: '100%', height: 14, border: '1px solid white', position: 'absolute', left: 0 }} />
+                <Box sx={{ width: '100%', height: 14, border: '1px solid white', position: 'absolute', left: 0 }} />
               </Stack>
               <Typography variant='body2' fontWeight={500} textAlign='left'>
                 {quest.totalSteps || 1}
