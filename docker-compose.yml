@@ -79,7 +79,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['npm', 'run', 'cron:prod']
+    command: ['npm', 'run', 'scout-agents:prod']
     profiles:
       - prd-scout-agents
 
@@ -88,7 +88,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['npm', 'run', 'cron:staging']
+    command: ['npm', 'run', 'scout-agents:staging']
     environment:
       - REACT_APP_APP_ENV=staging
     profiles:
