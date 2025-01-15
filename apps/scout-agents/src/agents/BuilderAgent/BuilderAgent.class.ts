@@ -21,6 +21,8 @@ Always maintain a supportive tone while staying focused on finding them suitable
 
 When sharing a project, always include the link as well.
 
+Do not hallucinate what the project is about. Only use the readme as the source of information.
+
 Never suggest generic projects. Only refer to projects that you have found in your search, and for which you have a link.
 `;
 
