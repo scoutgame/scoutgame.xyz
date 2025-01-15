@@ -7,20 +7,15 @@ import { setTelegramTyping } from '@packages/telegram/setTelegramTyping';
 import type { IncomingTelegramMessage } from '@packages/telegram/types';
 import type Koa from 'koa';
 import KoaRouter from 'koa-router';
-import { BuilderAgent } from 'src/agents/BuilderAgent/BuilderAgent.class';
-import { AGENT_TELEGRAM_SECRET, SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from 'src/agents/constants';
+
+import { BuilderAgent } from '../../agents/BuilderAgent/BuilderAgent.class';
+import { AGENT_TELEGRAM_SECRET, SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from '../../agents/constants';
 
 const CONTEXT_SIZE_MESSAGES = 6;
 
+export const TELEGRAM_API_PATH = `/api/builder-agent/telegram${AGENT_TELEGRAM_SECRET}`;
+
 async function telegramHandler(ctx: Koa.Context) {
-  const secret = ctx.request.query.api_key as string;
-
-  if (secret !== AGENT_TELEGRAM_SECRET) {
-    ctx.status = 401;
-    ctx.body = 'Unauthorized';
-    return;
-  }
-
   try {
     const { message } = ctx.request.body as IncomingTelegramMessage;
 
@@ -98,5 +93,5 @@ async function telegramHandler(ctx: Koa.Context) {
 }
 
 export const builderAgentTelegramRouter = new KoaRouter({
-  prefix: '/api/builder-agent/telegram'
+  prefix: TELEGRAM_API_PATH
 }).post('/', telegramHandler);

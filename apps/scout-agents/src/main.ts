@@ -3,6 +3,7 @@ import { setBotCommands } from '@packages/telegram/setBotCommands';
 import { setTelegramBotWebhook } from '@packages/telegram/setTelegramBotWebhook';
 
 import { SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from './agents/constants';
+import { TELEGRAM_API_PATH } from './api/builder-agent/telegram';
 import { app } from './server';
 
 const host = process.env.HOST ?? 'localhost';
@@ -16,7 +17,7 @@ async function setupTelegramWebhook() {
   try {
     await setTelegramBotWebhook({
       token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
-      endpoint: `${process.env.DOMAIN}/api/builder-agent/telegram?api_key=${process.env.AGENT_TELEGRAM_SECRET}`
+      endpoint: `${process.env.DOMAIN}${TELEGRAM_API_PATH}`
     });
     await setBotCommands({
       token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
