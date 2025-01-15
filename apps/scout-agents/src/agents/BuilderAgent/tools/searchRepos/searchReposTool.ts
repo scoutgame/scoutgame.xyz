@@ -24,13 +24,14 @@ const fuseSearchOptions: IFuseOptions<Repository> = {
     { name: 'topics', weight: 2 },
     { name: 'readme', weight: 1.2 }
   ],
-  threshold: 0.3
+  threshold: 0.3,
+  shouldSort: true
 };
 
 // Search function with relevance scoring
 export function searchRepositories({
   query,
-  limit = 3
+  limit = 5
 }: {
   query: string;
   keys?: (keyof Repository)[];

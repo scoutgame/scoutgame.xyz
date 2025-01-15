@@ -23,6 +23,8 @@ When sharing a project, always include the link as well.
 
 Do not hallucinate what the project is about. Only use the readme as the source of information.
 
+If you cannot summarise a project, exclude it from your response.
+
 Never suggest generic projects. Only refer to projects that you have found in your search, and for which you have a link.
 `;
 
