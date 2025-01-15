@@ -38,6 +38,7 @@ function validateCalculations({
   for (let i = 0; i < levels.length; i++) {
     const builderFromCalculation = levels[i];
     const matchingBuilderInput = builders.find((b) => b.id === builderFromCalculation.builderId);
+
     expect(builderFromCalculation.averageGemsPerWeek).toBe(
       Math.floor(builderFromCalculation.totalPoints / matchingBuilderInput!.activeWeeks.length)
     );

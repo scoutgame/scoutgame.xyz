@@ -1,6 +1,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
+import {
+  getAllISOWeeksFromSeasonStart,
+  getCurrentSeasonStart,
+  getCurrentWeek,
+  getWeekFromDate
+} from '@packages/dates/utils';
 
 export type BuilderAggregateScore = {
   builderId: string;
@@ -29,7 +34,13 @@ export async function calculateBuilderLevels({
 }: {
   season?: ISOWeek;
 }): Promise<BuilderAggregateScore[]> {
-  const allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
+  let allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
+
+  // Filter out current week if season is the current season
+  if (season === getCurrentSeasonStart()) {
+    const currentWeek = getCurrentWeek();
+    allSeasonWeeks = allSeasonWeeks.filter((week) => week !== currentWeek);
+  }
 
   // Fetch all builders with their GemReceipts
   const gemPayouts = await prisma.gemsPayoutEvent.findMany({
@@ -39,6 +50,9 @@ export async function calculateBuilderLevels({
       },
       builderEvent: {
         season,
+        week: {
+          in: allSeasonWeeks
+        },
         builder: {
           builderNfts: {
             some: {
@@ -88,10 +102,7 @@ export async function calculateBuilderLevels({
     const firstActiveWeekIndex = allSeasonWeeks.indexOf(builder.firstActiveWeek);
 
     // Get number of weeks builder has been active (from first week to end of season)
-    const _activeWeeks = allSeasonWeeks.slice(firstActiveWeekIndex).length;
-
-    // For the data to be just, we should not include the current week
-    const activeWeeks = Math.max(1, _activeWeeks - 1);
+    const activeWeeks = allSeasonWeeks.slice(firstActiveWeekIndex).length;
 
     // Calculate average based on active weeks instead of full season
     const averageGemsPerWeek = builder.totalPoints / activeWeeks;
