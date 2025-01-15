@@ -1,39 +1,59 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
-import { seedBuilders, writeSeededBuildersToDatabase } from '@packages/testing/deterministicBuildersData';
+import { jest } from '@jest/globals';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
+import {
+  seedBuildersGemPayouts,
+  writeSeededBuildersGemPayoutsToDatabase
+} from '@packages/testing/deterministicBuildersGemPayoutsData';
 
 import { refreshBuilderLevels } from '../refreshBuilderLevels';
 
-describe.skip('refreshBuilderLevels', () => {
-  it('should refresh builder levels in the database', async () => {
-    const { builders, weeks } = seedBuilders({ season: getPreviousSeason(getCurrentSeasonStart()) });
+jest.useFakeTimers();
 
-    await writeSeededBuildersToDatabase({ builders, season: getPreviousSeason(getCurrentSeasonStart()) });
+describe('refreshBuilderLevels', () => {
+  beforeEach(() => {
+    jest.setSystemTime(new Date('2025-01-25'));
+  });
+
+  it('should refresh builder levels in the database', async () => {
+    const season = '2024-W41';
+
+    const { builders } = seedBuildersGemPayouts({
+      season,
+      amount: 200
+    });
+
+    await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
+
+    const builder0 = builders[0];
+    const builder27 = builders[27];
+    const builder170 = builders[170];
 
     // Trigger the function we are testing
-    await refreshBuilderLevels({ season: weeks[0] });
+    await refreshBuilderLevels({ season });
 
     const [builder1, builder2, builder3] = await Promise.all([
       prisma.userSeasonStats.findFirstOrThrow({
         where: {
-          userId: builders[0].id
+          userId: builder0.id
         }
       }),
       prisma.userSeasonStats.findFirstOrThrow({
         where: {
-          userId: builders[27].id
+          userId: builder27.id
         }
       }),
       prisma.userSeasonStats.findFirstOrThrow({
         where: {
-          userId: builders[170].id
+          userId: builder170.id
         }
       })
     ]);
 
     // These numbers were obtained by checking the seed data results once, then ensuring they don't change
-    expect(builder1.level).toBe(7);
-    expect(builder2.level).toBe(8);
+    expect(builder1.level).toBe(8);
+    expect(builder2.level).toBe(10);
     expect(builder3.level).toBe(5);
   });
 });

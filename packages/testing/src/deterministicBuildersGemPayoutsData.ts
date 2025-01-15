@@ -122,7 +122,7 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
     data: builders.map((builder, index) => ({
       builderId: builder.id,
       chainId: 10,
-      contractAddress: `0x${season}`,
+      contractAddress: `0x${season}-${Math.floor(Math.random() * 1000000)}`,
       tokenId: index + 1,
       currentPrice: BigInt(20),
       imageUrl: `https://example.com/image-${index}.png`,
@@ -139,7 +139,7 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
         data: {
           season,
           week: gemPayout.isoWeek,
-          type: 'daily_commit',
+          type: 'gems_payout',
           createdAt: getDateFromISOWeek(gemPayout.isoWeek).toJSDate(),
           gemsPayoutEvent: {
             create: {
