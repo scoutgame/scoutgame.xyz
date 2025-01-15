@@ -33,11 +33,16 @@ app.listen(port, host, () => {
   log.info(`[ ready ] http://${host}:${port}`);
 });
 
-try {
-  await setTelegramBotWebhook({
-    token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
-    endpoint: `${process.env.DOMAIN}/api/builder-agent/telegram?api_key=${process.env.AGENT_TELEGRAM_SECRET}`
-  });
-} catch (error) {
-  log.error('Error setting telegram bot webhook', { error });
+async function setupTelegramWebhook() {
+  try {
+    await setTelegramBotWebhook({
+      token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
+      endpoint: `${process.env.DOMAIN}/api/builder-agent/telegram?api_key=${process.env.AGENT_TELEGRAM_SECRET}`
+    });
+    log.info('Telegram bot webhook set');
+  } catch (error) {
+    log.error('Error setting telegram bot webhook', { error });
+  }
 }
+
+setupTelegramWebhook();

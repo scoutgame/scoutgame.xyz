@@ -5,6 +5,27 @@ import telegramFormatter from 'telegramify-markdown';
 import { getTelegramBaseUrl } from './auth';
 import type { BotToken } from './auth';
 
+type SendTelegramMessageResult = {
+  ok: boolean;
+  result: {
+    message_id: number;
+    from: {
+      id: number;
+      is_bot: boolean;
+      first_name: string;
+      username: string;
+    };
+    chat: {
+      id: number;
+      first_name: string;
+      username: string;
+      type: string;
+    };
+    date: number;
+    text: string;
+  };
+};
+
 export async function sendTelegramChatMessage({
   chatId,
   text,
@@ -18,7 +39,7 @@ export async function sendTelegramChatMessage({
   url?: string;
   parseMode?: 'MarkdownV2';
   retrying?: boolean;
-} & BotToken) {
+} & BotToken): Promise<SendTelegramMessageResult> {
   try {
     const response = await POST(
       `${getTelegramBaseUrl({ token })}/sendMessage`,
@@ -39,7 +60,7 @@ export async function sendTelegramChatMessage({
       }
     );
 
-    return response;
+    return response as SendTelegramMessageResult;
   } catch (err: any) {
     log.error('Error sending message Telegram');
     log.error(JSON.stringify({ err, text }, null, 2));

@@ -1,22 +1,14 @@
 import { llmLogger } from '@packages/llm/logger';
 import { requestChatCompletion } from '@packages/llm/requestChatCompletion';
-import type { ChatMessage, ToolDefinition } from '@packages/llm/types';
+import type { ChatMessage, ToolCallOutput, ToolDefinitionWithFunction } from '@packages/llm/types';
 
-export type ToolDefinitionWithFunction = ToolDefinition & { function: (args: any) => Promise<any> };
-
-type AgentConstructorParams = {
+export type AgentConstructorParams = {
   systemPrompt: string;
   tools?: ToolDefinitionWithFunction[];
   openAiApiKey: string;
 };
 
-type ToolCallOutput = {
-  tool: string;
-  input: any;
-  output: any;
-};
-
-type AgentResponse = {
+export type AgentResponse = {
   message: string;
   toolCalls?: ToolCallOutput[];
 };
@@ -37,8 +29,9 @@ export class BaseAgent {
   async handleMessage({ message, history }: { message: string; history: ChatMessage[] }): Promise<AgentResponse> {
     let response = await requestChatCompletion({
       prompt: message,
+      history,
       systemPrompt: this.systemPrompt,
-      tools: this.tools,
+      tools: this.tools?.map(({ functionImplementation, ...tool }) => tool),
       openAiApiKey: this.openAiApiKey
     });
 
@@ -54,7 +47,7 @@ export class BaseAgent {
           }
 
           try {
-            const result = await tool.function(toolCall.arguments);
+            const result = await tool.functionImplementation(toolCall.arguments);
             return {
               tool: toolCall.name,
               input: toolCall.arguments,

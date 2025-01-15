@@ -62,3 +62,11 @@ export type ToolDefinition<K extends string = string> = {
   parameters: Record<K, ChatResponseSchemaItem>;
   required: K[];
 };
+
+export type ToolDefinitionWithFunction = ToolDefinition & { functionImplementation: (args: any) => Promise<any> };
+
+export type ToolCallOutput = {
+  tool: string;
+  input: any;
+  output: any;
+};
