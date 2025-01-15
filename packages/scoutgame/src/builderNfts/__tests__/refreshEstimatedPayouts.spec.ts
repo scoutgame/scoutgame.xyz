@@ -1,7 +1,7 @@
 import { BuilderEventType, BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
-import { generateRandomEthAddress } from '@packages/testing/random';
+import { randomWalletAddress } from '@packages/testing/generators';
 
 import { calculateEarnableScoutPointsForRank } from '../../points/calculatePoints';
 import { nftTypeMultipliers } from '../../points/dividePointsBetweenBuilderAndScouts';
@@ -111,9 +111,9 @@ describe('refreshEstimatedPayouts', () => {
     });
 
     // Create scouts with NFTs
-    const scout1Wallet = generateRandomEthAddress();
-    const scout2Wallet = generateRandomEthAddress();
-    const scout3Wallet = generateRandomEthAddress();
+    const scout1Wallet = randomWalletAddress();
+    const scout2Wallet = randomWalletAddress();
+    const scout3Wallet = randomWalletAddress();
 
     const scout1 = await mockScout({ wallets: [scout1Wallet] });
     const scout2 = await mockScout({ wallets: [scout2Wallet] });

@@ -11,7 +11,13 @@ export type BuilderReward = {
   cardsHeld: number;
 };
 
-export async function getSeasonBuilderRewards({ userId }: { userId: string }): Promise<BuilderReward[]> {
+export async function getSeasonBuilderRewards({
+  userId,
+  season = getCurrentSeasonStart()
+}: {
+  userId: string;
+  season?: string;
+}): Promise<BuilderReward[]> {
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
       id: userId
@@ -20,10 +26,11 @@ export async function getSeasonBuilderRewards({ userId }: { userId: string }): P
       nftPurchaseEvents: {
         where: {
           builderNft: {
-            season: getCurrentSeasonStart()
+            season
           }
         },
         select: {
+          createdAt: true,
           builderNft: {
             select: {
               builderId: true
@@ -39,6 +46,7 @@ export async function getSeasonBuilderRewards({ userId }: { userId: string }): P
           }
         },
         select: {
+          createdAt: true,
           value: true,
           event: {
             select: {
@@ -57,19 +65,14 @@ export async function getSeasonBuilderRewards({ userId }: { userId: string }): P
     }
   });
 
-  const builderTokensRecord: Record<string, number> = {};
-
-  scout.nftPurchaseEvents.forEach((event) => {
-    const builderId = event.builderNft.builderId;
-    builderTokensRecord[builderId] = (builderTokensRecord[builderId] || 0) + event.tokensPurchased;
-  });
-
   const builderRewardsRecord: Record<string, BuilderReward> = {};
 
   scout.pointsReceived.forEach((receipt) => {
     const builder = receipt.event.builder;
     const builderId = builder.id;
-    const cardsHeld = builderTokensRecord[builderId] || 0;
+    const cardsHeld = scout.nftPurchaseEvents
+      .filter((event) => event.createdAt < receipt.createdAt)
+      .reduce((acc, event) => acc + event.tokensPurchased, 0);
     if (cardsHeld) {
       if (!builderRewardsRecord[builderId]) {
         builderRewardsRecord[builderId] = {
@@ -95,6 +98,7 @@ export async function getWeeklyBuilderRewards({
   userId: string;
   week: string;
 }): Promise<BuilderReward[]> {
+  const season = getCurrentSeasonStart(week);
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
       id: userId
@@ -108,7 +112,7 @@ export async function getWeeklyBuilderRewards({
             }
           },
           builderNft: {
-            season: getCurrentSeasonStart()
+            season
           }
         },
         select: {
