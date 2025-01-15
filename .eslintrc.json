@@ -94,7 +94,8 @@
           "./packages/utils/",
           "./packages/waitlist/",
           "./packages/telegram/",
-          "./packages/safetransactions/"
+          "./packages/safetransactions/",
+          "./packages/llm/"
         ]
       }
     ],
