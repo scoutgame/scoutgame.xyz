@@ -8,8 +8,6 @@ import { calculateBuilderLevels } from './calculateBuilderLevel';
 export async function refreshBuilderLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek }) {
   const levels = await calculateBuilderLevels({ season });
 
-  log.info(`Refreshing builder levels for season ${season} with ${levels.length} builders`);
-
   for (const level of levels) {
     await prisma.userSeasonStats.upsert({
       where: {
@@ -28,7 +26,6 @@ export async function refreshBuilderLevels({ season = getCurrentSeasonStart() }:
       }
     });
   }
-  log.info(`Refreshed builder levels for season ${season} with ${levels.length} ranked builders`);
 
   const levelZeroBuilders = await prisma.userSeasonStats.updateMany({
     where: {
@@ -42,5 +39,7 @@ export async function refreshBuilderLevels({ season = getCurrentSeasonStart() }:
     }
   });
 
-  log.info(`Refreshed builder levels for season ${season} with ${levelZeroBuilders.count} unranked builders`);
+  log.info(
+    `Refreshed builder levels for season ${season}. Ranked ${levels.length} builders and zeroed out ${levelZeroBuilders.count} unranked builders`
+  );
 }

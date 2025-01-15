@@ -24,22 +24,17 @@ export const decileTable = [
   { cutoff: 0, level: 1 }
 ];
 
-export async function calculateBuilderLevels(
-  {
-    season = getCurrentSeasonStart()
-  }: {
-    season?: ISOWeek;
-  } = {
-    season: getCurrentSeasonStart()
-  }
-): Promise<BuilderAggregateScore[]> {
+export async function calculateBuilderLevels({
+  season = getCurrentSeasonStart()
+}: {
+  season?: ISOWeek;
+} = {}): Promise<BuilderAggregateScore[]> {
   let allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
 
   // Filter out current week if season is the current season. We only want the historical data
   if (season === getCurrentSeasonStart()) {
     const currentWeek = getCurrentWeek();
-    const weekIndex = allSeasonWeeks.indexOf(currentWeek);
-    allSeasonWeeks = allSeasonWeeks.slice(0, weekIndex);
+    allSeasonWeeks = allSeasonWeeks.filter((week) => week < currentWeek);
   }
 
   // Fetch all builders with their GemReceipts
