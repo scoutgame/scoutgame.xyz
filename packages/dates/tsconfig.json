@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "declarationMap": true,
+    "declaration": true,
     "outDir": "dist",
     "rootDir": "src",
     // composite is useful for referenced packages. see https://www.typescriptlang.org/docs/handbook/project-references.html#composite

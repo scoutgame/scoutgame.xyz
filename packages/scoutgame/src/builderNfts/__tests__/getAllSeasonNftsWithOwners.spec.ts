@@ -1,6 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
-import { generateRandomEthAddress } from '@packages/testing/random';
+import { randomWalletAddress } from '@packages/testing/generators';
 
 import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 
@@ -24,7 +24,7 @@ describe('getAllSeasonNftsWithOwners', () => {
       nftType: BuilderNftType.default
     });
 
-    const scoutWallet = generateRandomEthAddress();
+    const scoutWallet = randomWalletAddress();
 
     const scout = await mockScout({ wallets: [scoutWallet] });
 
