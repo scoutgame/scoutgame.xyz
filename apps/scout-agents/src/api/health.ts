@@ -3,7 +3,8 @@ import Router from 'koa-router';
 
 async function healthCheck(ctx: Koa.Context) {
   ctx.body = {
-    status: 'ok'
+    status: 'ok',
+    uptime: `${Math.floor(process.uptime()).toLocaleString()} seconds`
   };
   ctx.status = 200;
 }
