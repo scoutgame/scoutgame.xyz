@@ -14,16 +14,16 @@ export function BuilderCardActivityTooltip() {
       <Stack>
         <Typography fontWeight='bold'>LEVEL</Typography>
         <Typography>
-          Represents the decile of the Developer's weekly valid github contributions amongst active developers. The top
-          10% of Developers are Level 10.
+          Represents the percentile of the Developer's weekly Scout Point average relative to the point average of all
+          active developers. The top 10% of Developers are Level 10.
         </Typography>
       </Stack>
 
       <Stack>
         <Typography fontWeight='bold'>14D RANK</Typography>
         <Typography>
-          Gem earnings over the past 14 days relative to benchmark. Benchmark is the average number of Gems earned daily
-          by all active developers.
+          Developer's rank, if in the Top 100, at the close of each day. Vertical axis max is rank 1 and min is rank
+          100. Benchmark is set at rank = 50.
         </Typography>
       </Stack>
 
