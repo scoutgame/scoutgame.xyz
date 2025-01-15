@@ -1,11 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import {
-  getAllISOWeeksFromSeasonStart,
-  getCurrentSeasonStart,
-  getCurrentWeek,
-  getWeekFromDate
-} from '@packages/dates/utils';
+import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 export type BuilderAggregateScore = {
   builderId: string;
@@ -29,17 +24,22 @@ export const decileTable = [
   { cutoff: 0, level: 1 }
 ];
 
-export async function calculateBuilderLevels({
-  season = getCurrentSeasonStart()
-}: {
-  season?: ISOWeek;
-}): Promise<BuilderAggregateScore[]> {
+export async function calculateBuilderLevels(
+  {
+    season = getCurrentSeasonStart()
+  }: {
+    season?: ISOWeek;
+  } = {
+    season: getCurrentSeasonStart()
+  }
+): Promise<BuilderAggregateScore[]> {
   let allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
 
-  // Filter out current week if season is the current season
+  // Filter out current week if season is the current season. We only want the historical data
   if (season === getCurrentSeasonStart()) {
     const currentWeek = getCurrentWeek();
-    allSeasonWeeks = allSeasonWeeks.filter((week) => week !== currentWeek);
+    const weekIndex = allSeasonWeeks.indexOf(currentWeek);
+    allSeasonWeeks = allSeasonWeeks.slice(0, weekIndex);
   }
 
   // Fetch all builders with their GemReceipts
@@ -53,6 +53,7 @@ export async function calculateBuilderLevels({
         week: {
           in: allSeasonWeeks
         },
+        type: 'gems_payout',
         builder: {
           builderNfts: {
             some: {
@@ -68,7 +69,13 @@ export async function calculateBuilderLevels({
     select: {
       createdAt: true,
       points: true,
-      builderId: true
+      week: true,
+      builderId: true,
+      builder: {
+        select: {
+          path: true
+        }
+      }
     }
   });
 
@@ -85,7 +92,7 @@ export async function calculateBuilderLevels({
         acc[builderId] = {
           builderId,
           totalPoints: 0,
-          firstActiveWeek: getWeekFromDate(receipt.createdAt),
+          firstActiveWeek: receipt.week,
           centile: 0,
           level: 0,
           averageGemsPerWeek: 0

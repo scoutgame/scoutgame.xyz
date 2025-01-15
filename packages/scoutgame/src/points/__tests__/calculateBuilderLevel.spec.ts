@@ -1,16 +1,19 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getDateFromISOWeek, getPreviousSeason } from '@packages/dates/utils';
+import { getCurrentWeek, getDateFromISOWeek, getPreviousSeason } from '@packages/dates/utils';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import type { DeterministicRandomBuilderGemsPayoutActivity } from '@packages/testing/deterministicBuildersGemPayoutsData';
 import {
   seedBuildersGemPayouts,
   writeSeededBuildersGemPayoutsToDatabase
 } from '@packages/testing/deterministicBuildersGemPayoutsData';
+import { prettyPrint } from '@packages/utils/strings';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 import type { BuilderAggregateScore } from '../calculateBuilderLevel';
 import { calculateBuilderLevels, decileTable } from '../calculateBuilderLevel';
+
+const season = '2025-W02';
 
 // Validate date based on deterministic output of 200 builders
 function validateCalculations({
@@ -56,34 +59,39 @@ function validateCalculations({
 
   expect(builder42).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 3800,
-    averageGemsPerWeek: 1266,
+    totalPoints: 2500,
+    averageGemsPerWeek: 2500,
     centile: 80,
     level: 9,
-    firstActiveWeek: '2025-W08'
+    firstActiveWeek: '2025-W04'
   });
   expect(builder87).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 4300,
-    averageGemsPerWeek: 614,
+    totalPoints: 3000,
+    averageGemsPerWeek: 1500,
     centile: 57,
     level: 6,
-    firstActiveWeek: '2025-W04'
+    firstActiveWeek: '2025-W03'
   });
 
   expect(builder156).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 1000,
-    averageGemsPerWeek: 250,
+    totalPoints: 2000,
+    averageGemsPerWeek: 666,
     centile: 23,
     level: 3,
-    firstActiveWeek: '2025-W07'
+    firstActiveWeek: '2025-W02'
   });
 }
 
 describe('calculateBuilderLevels', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+
+    // Use 2025-W05 as the current season so we have 3 weeks of data from W-02 to W-04
+    jest.setSystemTime(new Date('2025-01-29T00:00:00Z'));
+
+    expect(getCurrentWeek()).toBe('2025-W05');
   });
 
   afterEach(async () => {
@@ -114,12 +122,6 @@ describe('calculateBuilderLevels', () => {
   });
 
   it('should calculate builder levels correctly, splitting them into centiles converted to levels, and return builders from highest to lowest score', async () => {
-    const season = '2025-W02';
-
-    const currentDate = new Date('2025-03-12T00:00:00Z');
-
-    jest.setSystemTime(currentDate);
-
     const { builders } = seedBuildersGemPayouts({ season });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
@@ -130,12 +132,6 @@ describe('calculateBuilderLevels', () => {
   });
 
   it('should exclude builders with 0 gems from the calculation', async () => {
-    const season = '2025-W02';
-
-    const currentDate = new Date('2025-03-12T00:00:00Z');
-
-    jest.setSystemTime(currentDate);
-
     const { builders } = seedBuildersGemPayouts({ season });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
@@ -161,12 +157,6 @@ describe('calculateBuilderLevels', () => {
   });
 
   it('should ignore builders without NFTs in the current season', async () => {
-    const season = '2025-W02';
-
-    const currentDate = new Date('2025-03-12T00:00:00Z');
-
-    jest.setSystemTime(currentDate);
-
     const { builders } = seedBuildersGemPayouts({ season });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });

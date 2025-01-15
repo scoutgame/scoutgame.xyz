@@ -139,7 +139,7 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
         data: {
           season,
           week: gemPayout.isoWeek,
-          type: 'daily_commit',
+          type: 'gems_payout',
           createdAt: getDateFromISOWeek(gemPayout.isoWeek).toJSDate(),
           gemsPayoutEvent: {
             create: {
