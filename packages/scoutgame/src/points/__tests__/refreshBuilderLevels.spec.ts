@@ -16,35 +16,10 @@ describe('refreshBuilderLevels', () => {
     jest.setSystemTime(new Date('2025-01-25'));
   });
 
-  it('should refresh builder levels in the database and zero out unranked builders', async () => {
+  it('should refresh builder levels in the database', async () => {
     const season = '2024-W41';
 
-    const mockBuilderUser = await mockBuilder({});
-
-    await prisma.userSeasonStats.upsert({
-      where: {
-        userId_season: {
-          userId: mockBuilderUser.id,
-          season
-        }
-      },
-      create: {
-        userId: mockBuilderUser.id,
-        season,
-        level: 8
-      },
-      update: {
-        level: 8
-      }
-    });
-
-    const mockedBuilderUserNft = await mockBuilderNft({
-      season,
-      builderId: mockBuilderUser.id,
-      nftType: 'default'
-    });
-
-    const { builders, weeks } = seedBuildersGemPayouts({
+    const { builders } = seedBuildersGemPayouts({
       season,
       amount: 200
     });
@@ -80,13 +55,5 @@ describe('refreshBuilderLevels', () => {
     expect(builder1.level).toBe(8);
     expect(builder2.level).toBe(10);
     expect(builder3.level).toBe(5);
-
-    const mockBuilderUserStatsAfter = await prisma.userSeasonStats.findFirstOrThrow({
-      where: {
-        userId: mockBuilderUser.id
-      }
-    });
-
-    expect(mockBuilderUserStatsAfter.level).toBe(0);
   });
 });

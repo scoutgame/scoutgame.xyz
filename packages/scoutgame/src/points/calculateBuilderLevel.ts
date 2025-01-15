@@ -37,7 +37,7 @@ export async function calculateBuilderLevels({
     allSeasonWeeks = allSeasonWeeks.filter((week) => week < currentWeek);
   }
 
-  // Fetch all builders with their GemReceipts
+  // Fetch all builders with their gem payouts
   const gemPayouts = await prisma.gemsPayoutEvent.findMany({
     where: {
       points: {
@@ -45,9 +45,6 @@ export async function calculateBuilderLevels({
       },
       builderEvent: {
         season,
-        week: {
-          in: allSeasonWeeks
-        },
         type: 'gems_payout',
         builder: {
           builderNfts: {
@@ -75,11 +72,11 @@ export async function calculateBuilderLevels({
   });
 
   const builderScores = gemPayouts.reduce(
-    (acc, receipt) => {
-      const builderId = receipt.builderId;
+    (acc, gemsPayout) => {
+      const builderId = gemsPayout.builderId;
 
       // Ignore empty gem payouts
-      if (!receipt.points) {
+      if (!gemsPayout.points) {
         return acc;
       }
 
@@ -87,13 +84,13 @@ export async function calculateBuilderLevels({
         acc[builderId] = {
           builderId,
           totalPoints: 0,
-          firstActiveWeek: receipt.week,
+          firstActiveWeek: gemsPayout.week,
           centile: 0,
           level: 0,
           averageGemsPerWeek: 0
         };
       }
-      acc[builderId].totalPoints += receipt.points;
+      acc[builderId].totalPoints += gemsPayout.points;
       return acc;
     },
     {} as Record<string, BuilderAggregateScore>
