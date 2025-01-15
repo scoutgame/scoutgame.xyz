@@ -3,18 +3,43 @@ import { MessageSender } from '@charmverse/core/prisma-client';
 import { getTelegramChatHistory } from '@packages/telegram/getTelegramChatHistory';
 import { persistTelegramMessage } from '@packages/telegram/persistTelegramMessage';
 import { sendTelegramChatMessage } from '@packages/telegram/sendTelegramChatMessage';
+import { setTelegramTyping } from '@packages/telegram/setTelegramTyping';
 import type { IncomingTelegramMessage } from '@packages/telegram/types';
-import { prettyPrint } from '@packages/utils/strings';
 import type Koa from 'koa';
 import KoaRouter from 'koa-router';
-import { BuilderAgent } from 'src/agents/BuilderAgent.class';
-import { SCOUT_AGENT_BUILDER_OPENAI_API_KEY, SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from 'src/agents/constants';
+import { BuilderAgent } from 'src/agents/BuilderAgent/BuilderAgent.class';
+import { SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from 'src/agents/constants';
 
 const CONTEXT_SIZE_MESSAGES = 6;
 
 async function telegramHandler(ctx: Koa.Context) {
   try {
     const { message } = ctx.request.body as IncomingTelegramMessage;
+
+    if (message.entities?.[0].type === 'bot_command') {
+      const command = message.text.split(' ')[0];
+
+      if (command === '/build') {
+        await sendTelegramChatMessage({
+          token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
+          chatId: message.chat.id,
+          text: `Go to Scout Game to join as a developer`,
+          url: 'https://t.me/ScoutGameXYZBot/start'
+        });
+      } else {
+        await sendTelegramChatMessage({
+          token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
+          chatId: message.chat.id,
+          text: `Unknown command: ${command}`
+        });
+      }
+
+      ctx.status = 200;
+
+      return;
+    }
+
+    await setTelegramTyping({ chatId: message.chat.id, token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN });
 
     const chatHistory = await getTelegramChatHistory({
       telegramChatId: message.chat.id,
@@ -28,11 +53,7 @@ async function telegramHandler(ctx: Koa.Context) {
       messageTelegramId: BigInt(message.message_id)
     });
 
-    const builderAgent = new BuilderAgent({ openAiApiKey: SCOUT_AGENT_BUILDER_OPENAI_API_KEY });
-
-    prettyPrint({
-      chatHistory
-    });
+    const builderAgent = new BuilderAgent();
 
     const response = await builderAgent.handleMessage({
       message: message.text,

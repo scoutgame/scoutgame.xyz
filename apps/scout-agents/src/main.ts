@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import cors from '@koa/cors'; // CORS middleware
+import { setBotCommands } from '@packages/telegram/setBotCommands';
 import { setTelegramBotWebhook } from '@packages/telegram/setTelegramBotWebhook';
 import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
@@ -38,6 +39,17 @@ async function setupTelegramWebhook() {
     await setTelegramBotWebhook({
       token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
       endpoint: `${process.env.DOMAIN}/api/builder-agent/telegram?api_key=${process.env.AGENT_TELEGRAM_SECRET}`
+    });
+    await setBotCommands({
+      token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
+      configuration: {
+        commands: [
+          {
+            command: '/build',
+            description: 'Join Scout Game as a developer'
+          }
+        ]
+      }
     });
     log.info('Telegram bot webhook set');
   } catch (error) {

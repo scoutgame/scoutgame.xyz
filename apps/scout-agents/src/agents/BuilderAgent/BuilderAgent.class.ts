@@ -1,5 +1,6 @@
-import type { AgentConstructorParams } from './BaseAgent.class';
-import { BaseAgent } from './BaseAgent.class';
+import { BaseAgent } from '../BaseAgent.class';
+
+const SCOUT_AGENT_BUILDER_OPENAI_API_KEY = process.env.SCOUT_AGENT_BUILDER_OPENAI_API_KEY as string;
 
 const BUILDER_AGENT_PROMPT = `You are a friendly and helpful builder agent that helps developers find work they enjoy.
 
@@ -21,7 +22,7 @@ Always maintain a supportive and encouraging tone. Help developers articulate th
 If you notice gaps in important information, politely ask for clarification. The goal is to build a clear picture of what kind of work would be most engaging for them.`;
 
 export class BuilderAgent extends BaseAgent {
-  constructor({ openAiApiKey }: Pick<AgentConstructorParams, 'openAiApiKey'>) {
-    super({ openAiApiKey, systemPrompt: BUILDER_AGENT_PROMPT });
+  constructor() {
+    super({ openAiApiKey: SCOUT_AGENT_BUILDER_OPENAI_API_KEY, systemPrompt: BUILDER_AGENT_PROMPT });
   }
 }
