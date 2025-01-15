@@ -12,6 +12,7 @@ type QuestRecord = {
 
 export type QuestType =
   | 'follow-x-account'
+  | 'join-telegram-channel'
   | 'share-x-telegram'
   | 'invite-friend'
   | 'scout-starter-card'
@@ -23,6 +24,7 @@ export type QuestType =
   | 'scout-moxie-builder'
   | 'share-weekly-claim'
   | 'share-scout-profile'
+  | 'verify-email'
   | 'score-first-commit'
   | 'score-first-pr'
   | 'score-streak'
@@ -45,6 +47,13 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     points: 10,
     label: 'Follow @scoutgamexyz',
     link: 'https://x.com/@scoutgamexyz',
+    tag: 'scout',
+    resettable: false
+  },
+  'join-telegram-channel': {
+    points: 10,
+    label: 'Join our Telegram channel',
+    link: 'https://t.me/+J0dl4_uswBY2NTkx',
     tag: 'scout',
     resettable: false
   },
@@ -141,6 +150,14 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     tag: 'scout',
     resettable: true
+  },
+  'verify-email': {
+    label: 'Verify your email',
+    points: 10,
+    link: '/accounts',
+    internal: true,
+    tag: 'scout',
+    resettable: false
   },
   'score-first-commit': {
     label: 'Score Your First Commit',
