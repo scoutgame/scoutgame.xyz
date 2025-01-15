@@ -13,6 +13,17 @@ export type AgentResponse = {
   toolCalls?: ToolCallOutput[];
 };
 
+const basePrompt = `
+
+==========
+
+Always focus on your goal.
+
+If the user deviates from your goal, gently guide them back to it.
+
+If the user mentions a topic completely unrelated to your goal, politely ask them to focus on the topic you're interested in.
+`;
+
 export class BaseAgent {
   private systemPrompt: string;
 
@@ -21,7 +32,7 @@ export class BaseAgent {
   private openAiApiKey: string;
 
   constructor({ systemPrompt, tools, openAiApiKey }: AgentConstructorParams) {
-    this.systemPrompt = systemPrompt;
+    this.systemPrompt = `${basePrompt}\n\n${systemPrompt}`;
     this.tools = tools;
     this.openAiApiKey = openAiApiKey;
   }

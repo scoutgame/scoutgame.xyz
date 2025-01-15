@@ -65,6 +65,8 @@ export async function requestChatCompletion({
     }))
   });
 
+  prettyPrint({ toolCalls: response.choices[0].message.tool_calls });
+
   function parseToolCallArguments(argsString: string) {
     try {
       return JSON.parse(argsString);

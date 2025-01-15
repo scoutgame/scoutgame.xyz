@@ -66,7 +66,8 @@ async function telegramHandler(ctx: Koa.Context) {
     const dispatchedAgentResponse = await sendTelegramChatMessage({
       token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
       chatId: message.chat.id,
-      text: response.message
+      text: response.message,
+      parseMode: 'MarkdownV2'
     });
 
     await persistTelegramMessage({

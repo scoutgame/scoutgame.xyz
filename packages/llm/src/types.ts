@@ -63,7 +63,7 @@ export type ToolDefinition<K extends string = string> = {
   required: K[];
 };
 
-export type ToolDefinitionWithFunction = ToolDefinition & { functionImplementation: (args: any) => Promise<any> };
+export type ToolDefinitionWithFunction = ToolDefinition & { functionImplementation: (args: any) => Promise<any> | any };
 
 export type ToolCallOutput = {
   tool: string;
