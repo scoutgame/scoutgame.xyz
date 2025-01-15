@@ -39,7 +39,7 @@ type FarcasterFormInputs = {
 
 // Only expose account IDs and names to the client
 const FARCASTER_ACCOUNTS = [
-  { id: 'chris', name: '@ccarella' },
+  { id: 'chris', name: '@noun839.eth' },
   { id: 'scout', name: '@scoutgamexyz' }
 ] as const;
 

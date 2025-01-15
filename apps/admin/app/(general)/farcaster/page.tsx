@@ -6,6 +6,6 @@ export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   const user = await getUserFromSession();
-  const isChris = user?.farcasterName === 'ccarella';
+  const isChris = user?.farcasterId === 472;
   return <FarcasterDashboard defaultAccount={isChris ? 'chris' : 'scout'} />;
 }
