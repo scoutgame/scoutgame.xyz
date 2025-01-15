@@ -2,7 +2,6 @@ import cors from '@koa/cors'; // CORS middleware
 import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
 
-// import { chatRouter } from './api/chat';
 import { builderAgentTelegramRouter } from './api/builder-agent/telegram';
 import { healthCheckRouter } from './api/health';
 import { globalApiErrorHandler } from './middleware';

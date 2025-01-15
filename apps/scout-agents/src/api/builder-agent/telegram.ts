@@ -8,15 +8,23 @@ import type { IncomingTelegramMessage } from '@packages/telegram/types';
 import type Koa from 'koa';
 import KoaRouter from 'koa-router';
 import { BuilderAgent } from 'src/agents/BuilderAgent/BuilderAgent.class';
-import { SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from 'src/agents/constants';
+import { AGENT_TELEGRAM_SECRET, SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN } from 'src/agents/constants';
 
 const CONTEXT_SIZE_MESSAGES = 6;
 
 async function telegramHandler(ctx: Koa.Context) {
+  const secret = ctx.request.query.api_key as string;
+
+  if (secret !== AGENT_TELEGRAM_SECRET) {
+    ctx.status = 401;
+    ctx.body = 'Unauthorized';
+    return;
+  }
+
   try {
     const { message } = ctx.request.body as IncomingTelegramMessage;
 
-    if (message.entities?.[0].type === 'bot_command') {
+    if (message.entities?.[0]?.type === 'bot_command') {
       const command = message.text.split(' ')[0];
 
       if (command !== '/start') {
