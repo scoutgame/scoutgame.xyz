@@ -15,7 +15,7 @@ export function SuccessView({
 }) {
   const isMd = useMdScreen();
 
-  const { refreshUser } = useUser();
+  const { refreshUser, user } = useUser();
 
   const { execute, isExecuting } = useAction(completeQuestAction, {
     onSuccess: () => {
@@ -24,7 +24,12 @@ export function SuccessView({
   });
 
   const handleShare = (platform: 'x' | 'telegram' | 'warpcast') => {
-    const shareUrl = getShareMessage({ builderName: builder.displayName, builderPath: builder.path, platform });
+    const shareUrl = getShareMessage({
+      builderName: builder.displayName,
+      builderPath: builder.path,
+      platform,
+      referralCode: user ? user.referralCode : undefined
+    });
     window.open(shareUrl, '_blank');
     if (!isExecuting) {
       execute({ questType: 'scout-share-builder' });
@@ -92,17 +97,19 @@ export function SuccessView({
 function getShareMessage({
   builderName,
   builderPath,
-  platform
+  platform,
+  referralCode
 }: {
   builderName: string;
   builderPath: string;
   platform: 'x' | 'telegram' | 'warpcast';
+  referralCode?: string;
 }) {
   const embedUrl = `${window.location.origin}/u/${builderPath}`;
   const shareMessage = `I scouted ${builderName} on Scout Game!`;
 
   const urls = {
-    x: `https://x.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`,
+    x: `https://x.com/intent/tweet?text=${encodeURIComponent(`${shareMessage}\nI'm playing @scoutgamexyz. Join me! ${referralCode ? `https://scoutgame.xyz/login?ref=${referralCode}` : ''}`)}`,
     telegram: `https://t.me/share/url?url=${encodeURIComponent(embedUrl)}&text=${encodeURIComponent(shareMessage)}`,
     warpcast: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareMessage)}&embeds[]=${encodeURIComponent(
       embedUrl
