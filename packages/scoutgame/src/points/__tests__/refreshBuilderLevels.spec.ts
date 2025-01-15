@@ -1,24 +1,23 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent } from '@packages/testing/database';
+import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import {
   seedBuildersGemPayouts,
   writeSeededBuildersGemPayoutsToDatabase
 } from '@packages/testing/deterministicBuildersGemPayoutsData';
-import { prettyPrint } from '@packages/utils/strings';
 
 import { refreshBuilderLevels } from '../refreshBuilderLevels';
 
 jest.useFakeTimers();
 
-describe.skip('refreshBuilderLevels', () => {
+describe('refreshBuilderLevels', () => {
   beforeEach(() => {
     jest.setSystemTime(new Date('2025-01-25'));
   });
 
   it('should refresh builder levels in the database and zero out unranked builders', async () => {
-    const season = getCurrentSeasonStart();
+    const season = '2024-W41';
 
     const mockBuilderUser = await mockBuilder({});
 
@@ -56,8 +55,6 @@ describe.skip('refreshBuilderLevels', () => {
     const builder27 = builders[27];
     const builder170 = builders[170];
 
-    prettyPrint({ builder0, builder27, builder170 });
-
     // Trigger the function we are testing
     await refreshBuilderLevels({ season });
 
@@ -80,9 +77,9 @@ describe.skip('refreshBuilderLevels', () => {
     ]);
 
     // These numbers were obtained by checking the seed data results once, then ensuring they don't change
-    expect(builder1.level).toBe(9);
-    expect(builder2.level).toBe(7);
-    expect(builder3.level).toBe(9);
+    expect(builder1.level).toBe(8);
+    expect(builder2.level).toBe(10);
+    expect(builder3.level).toBe(5);
 
     const mockBuilderUserStatsAfter = await prisma.userSeasonStats.findFirstOrThrow({
       where: {

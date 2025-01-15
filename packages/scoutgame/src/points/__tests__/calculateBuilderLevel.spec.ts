@@ -7,7 +7,7 @@ import {
   seedBuildersGemPayouts,
   writeSeededBuildersGemPayoutsToDatabase
 } from '@packages/testing/deterministicBuildersGemPayoutsData';
-import { prettyPrint } from '@packages/utils/strings';
+import { randomWalletAddress } from '@packages/testing/generators';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 import type { BuilderAggregateScore } from '../calculateBuilderLevel';
@@ -59,19 +59,19 @@ function validateCalculations({
 
   expect(builder42).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 2500,
-    averageGemsPerWeek: 2500,
+    totalPoints: 4800,
+    averageGemsPerWeek: 2400,
     centile: 80,
     level: 9,
-    firstActiveWeek: '2025-W04'
+    firstActiveWeek: '2025-W03'
   });
   expect(builder87).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 3000,
-    averageGemsPerWeek: 1500,
+    totalPoints: 1600,
+    averageGemsPerWeek: 1600,
     centile: 57,
     level: 6,
-    firstActiveWeek: '2025-W03'
+    firstActiveWeek: '2025-W04'
   });
 
   expect(builder156).toMatchObject<BuilderAggregateScore>({
@@ -84,7 +84,14 @@ function validateCalculations({
   });
 }
 
-describe.skip('calculateBuilderLevels', () => {
+const mockContractAddress = randomWalletAddress();
+
+/**
+ * We use this offset for the deterministic random generator to keep deterministic data but avoid collisions between tests
+ */
+const indexOffset = 12344;
+
+describe('calculateBuilderLevels', () => {
   beforeEach(() => {
     jest.useFakeTimers();
 
@@ -100,7 +107,7 @@ describe.skip('calculateBuilderLevels', () => {
     await prisma.scout.deleteMany({
       where: {
         id: {
-          in: Array.from({ length: 200 }, (_, index) => uuidFromNumber(index))
+          in: Array.from({ length: 300 }, (_, index) => uuidFromNumber(index + indexOffset))
         }
       }
     });
@@ -122,7 +129,7 @@ describe.skip('calculateBuilderLevels', () => {
   });
 
   it('should calculate builder levels correctly, splitting them into centiles converted to levels, and return builders from highest to lowest score', async () => {
-    const { builders } = seedBuildersGemPayouts({ season });
+    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
@@ -132,7 +139,7 @@ describe.skip('calculateBuilderLevels', () => {
   });
 
   it('should exclude builders with 0 gems from the calculation', async () => {
-    const { builders } = seedBuildersGemPayouts({ season });
+    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
@@ -157,16 +164,14 @@ describe.skip('calculateBuilderLevels', () => {
   });
 
   it('should ignore builders without NFTs in the current season', async () => {
-    const { builders } = seedBuildersGemPayouts({ season });
+    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
-
-    const indexOffset = 500;
 
     const { builders: ignoredBuilders } = seedBuildersGemPayouts({
       season: getPreviousSeason(season),
       amount: 57,
-      indexOffset
+      indexOffset: indexOffset * 2
     });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders: ignoredBuilders, season: getPreviousSeason(season) });
@@ -181,7 +186,7 @@ describe.skip('calculateBuilderLevels', () => {
           data: {
             season,
             week: gemReceipt.isoWeek,
-            type: 'daily_commit',
+            type: 'gems_payout',
             createdAt: getDateFromISOWeek(gemReceipt.isoWeek).toJSDate(),
             gemsReceipt: {
               create: {
