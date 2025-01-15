@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { seasonStarts } from '@packages/dates/config';
+import { seasons } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
@@ -30,6 +30,7 @@ export type LeaderboardRankPointsReceiptReward = PointsReceiptRewardBase & {
 export type SeasonPointsReceiptsReward = {
   points: number;
   season: string;
+  title: string;
   type: 'season';
 };
 
@@ -60,7 +61,7 @@ export async function getPointsReceiptsRewards({
       event: {
         season: {
           // Can only claim points for this season and previous seasons
-          in: isClaimed ? seasonStarts : claimableSeasons
+          in: isClaimed ? seasons.map((s) => s.start) : claimableSeasons
         }
       },
       value: {
@@ -122,14 +123,29 @@ export async function getPointsReceiptsRewards({
 
   const bonusPartners: Set<string> = new Set();
 
-  const devSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 0);
-  const preSeasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 1);
-  const seasonPointsReceipts = pointsReceipts.filter((pr) => seasonStarts.indexOf(pr.event.season as Season) === 2);
+  const pointsBySeason = pointsReceipts.reduce(
+    (acc, receipt) => {
+      const s = receipt.event.season as Season;
+      acc[s] = (acc[s] ?? 0) + receipt.value;
+      return acc;
+    },
+    {} as Record<Season, number>
+  );
 
-  const devSeasonTotalPoints = devSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
-  const preSeasonTotalPoints = preSeasonPointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
+  const previousSeasons: SeasonPointsReceiptsReward[] = seasons
+    .slice()
+    .sort()
+    .filter((s) => s.start < season)
+    .map((s) => ({
+      points: pointsBySeason[s.start],
+      type: 'season',
+      title: s.title,
+      season: s.start
+    }));
 
-  for (const receipt of seasonPointsReceipts) {
+  const currentSeasonReceipts = pointsReceipts.filter((pr) => pr.event.season === season);
+
+  for (const receipt of currentSeasonReceipts) {
     const points = receipt.value;
     const week = receipt.event.week;
     const weeklyRank = weeklyRankRecord[week];
@@ -185,32 +201,16 @@ export async function getPointsReceiptsRewards({
     }
   }
 
-  return [
-    {
-      points: devSeasonTotalPoints,
-      type: 'season',
-      season: seasonStarts[0]
-    } as SeasonPointsReceiptsReward,
-    {
-      points: preSeasonTotalPoints,
-      type: 'season',
-      season: seasonStarts[1]
-    } as SeasonPointsReceiptsReward,
+  const currentSeasonRewards = [
     ...Object.values(builderRewards),
     ...Object.values(soldNftRewards),
     ...Object.values(leaderboardRankRewards)
-  ]
-    .filter((reward) => reward.points)
-    .sort((a, b) => {
-      if (a.type === 'season' && b.type === 'season') {
-        return b.season.localeCompare(a.season);
-      }
-      if (a.type === 'season' || b.type === 'season') {
-        return -1;
-      }
-      if (a.week === b.week) {
-        return b.points - a.points;
-      }
-      return b.week - a.week;
-    });
+  ].sort((a, b) => {
+    if (a.week === b.week) {
+      return b.points - a.points;
+    }
+    return b.week - a.week;
+  });
+
+  return [...currentSeasonRewards, ...previousSeasons.reverse()].filter((reward) => reward.points);
 }
