@@ -43,8 +43,10 @@ async function telegramHandler(ctx: Koa.Context) {
 
     await setTelegramTyping({ chatId: message.chat.id, token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN });
 
+    // Ensure only recent messages show. This way, if the user leaves and comes back, their new chat isn't polluted with old messages
     const chatHistory = await getTelegramChatHistory({
       telegramChatId: message.chat.id,
+      maxAgeInMinutes: 15,
       limit: CONTEXT_SIZE_MESSAGES
     });
 

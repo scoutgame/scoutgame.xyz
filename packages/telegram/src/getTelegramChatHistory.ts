@@ -6,9 +6,11 @@ import { prisma } from '@charmverse/core/prisma-client';
  */
 export async function getTelegramChatHistory({
   telegramChatId,
+  maxAgeInMinutes,
   limit
 }: {
   telegramChatId: string | number;
+  maxAgeInMinutes?: number;
   limit?: number;
 }) {
   if (!telegramChatId) {
@@ -29,7 +31,10 @@ export async function getTelegramChatHistory({
 
   const history = await prisma.agentTelegramMessage.findMany({
     where: {
-      conversationTelegramId: Number(telegramChatId)
+      conversationTelegramId: Number(telegramChatId),
+      createdAt: {
+        gte: maxAgeInMinutes ? new Date(Date.now() - maxAgeInMinutes * 60 * 1000) : undefined
+      }
     },
     orderBy: {
       createdAt: 'asc'
