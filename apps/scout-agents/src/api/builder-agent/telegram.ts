@@ -19,24 +19,26 @@ async function telegramHandler(ctx: Koa.Context) {
     if (message.entities?.[0].type === 'bot_command') {
       const command = message.text.split(' ')[0];
 
-      if (command === '/build') {
-        await sendTelegramChatMessage({
-          token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
-          chatId: message.chat.id,
-          text: `Go to Scout Game to join as a developer`,
-          url: 'https://t.me/ScoutGameXYZBot/start'
-        });
-      } else {
-        await sendTelegramChatMessage({
-          token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
-          chatId: message.chat.id,
-          text: `Unknown command: ${command}`
-        });
+      if (command !== '/start') {
+        if (command === '/build') {
+          await sendTelegramChatMessage({
+            token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
+            chatId: message.chat.id,
+            text: `Go to Scout Game to join as a developer`,
+            url: 'https://t.me/ScoutGameXYZBot/start'
+          });
+        } else {
+          await sendTelegramChatMessage({
+            token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
+            chatId: message.chat.id,
+            text: `Unknown command: ${command}`
+          });
+        }
+
+        ctx.status = 200;
+
+        return;
       }
-
-      ctx.status = 200;
-
-      return;
     }
 
     await setTelegramTyping({ chatId: message.chat.id, token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN });

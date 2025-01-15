@@ -65,7 +65,7 @@ export async function requestChatCompletion({
     }))
   });
 
-  prettyPrint({ toolCalls: response.choices[0].message.tool_calls });
+  llmLogger.info('Agent requested a tool call', { toolCalls: response.choices[0].message.tool_calls });
 
   function parseToolCallArguments(argsString: string) {
     try {

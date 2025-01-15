@@ -18,7 +18,7 @@ type Repository = {
 export function searchRepositories({
   query,
   keys = ['description', 'topics', 'readme', 'name'],
-  limit = 10
+  limit = 3
 }: {
   query: string;
   keys?: (keyof Repository)[];
