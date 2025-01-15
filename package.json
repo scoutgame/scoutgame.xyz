@@ -55,7 +55,10 @@
     "admin:build": "npm run build -w=apps/admin",
     "admin:test": "dotenv -e .env.test.local -- npm test -w apps/admin",
     "generate:package": "chmod +x ./scripts/generatePackage.sh && ./scripts/generatePackage.sh",
-    "scout-agents": "dotenv -e .env.local -- npm run start -w=apps/scout-agents"
+    "scout-agents": "dotenv -e .env.local -- npm run start -w=apps/scout-agents",
+    "scout-agents:staging": "npm run start:prod:node18 -w apps/scout-agents",
+    "scout-agents:prod": "npm run start:prod:node18 -w apps/scout-agents",
+    "scout-agents:test": "dotenv -e .env.test.local -- npm test -w apps/scout-agents"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
