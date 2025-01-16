@@ -63,6 +63,7 @@ export const mergeUserAccount = async ({
         farcasterId: true,
         farcasterName: true,
         telegramId: true,
+        telegramName: true,
         deletedAt: true,
         builderStatus: true,
         bio: true,
@@ -101,6 +102,7 @@ export const mergeUserAccount = async ({
         email: true,
         farcasterId: true,
         telegramId: true,
+        telegramName: true,
         deletedAt: true,
         path: true,
         wallets: {
@@ -173,6 +175,7 @@ export const mergeUserAccount = async ({
         farcasterId: retainedUser.farcasterId || mergedUser.farcasterId,
         farcasterName: retainedUser.farcasterName || mergedUser.farcasterName,
         telegramId: retainedUser.telegramId || mergedUser.telegramId,
+        telegramName: retainedUser.telegramName || mergedUser.telegramName,
         bio: retainedUser.bio || mergedUser.bio,
         walletENS: retainedUser.walletENS || mergedUser.walletENS
       };
@@ -186,6 +189,7 @@ export const mergeUserAccount = async ({
           farcasterId: null,
           farcasterName: null,
           telegramId: null,
+          telegramName: null,
           deletedAt: new Date(),
           // Update the path so that the user is harder to find
           path: `${mergedUser.path}-${v4()}`,
