@@ -36,7 +36,8 @@ export async function sendVerificationEmail({ userId }: { userId: string }) {
     template: 'email verification',
     templateVariables: {
       verification_url: `${baseUrl}/verify-email?code=${code}`
-    }
+    },
+    overrideUserSendingPreference: true
   });
 
   log.info('Verification email sent', { userId });
