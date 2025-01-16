@@ -2,7 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { ISOWeek, Season } from '@packages/dates/config';
+import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';

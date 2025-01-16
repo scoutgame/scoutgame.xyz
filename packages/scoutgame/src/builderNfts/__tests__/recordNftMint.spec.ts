@@ -5,6 +5,7 @@ import { randomLargeInt, randomWalletAddress } from '@packages/testing/generator
 import { referralBonusPoints } from '@packages/users/constants';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
+import { v4 } from 'uuid';
 
 jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
   getPreSeasonTwoBuilderNftContractMinterClient: () => ({
@@ -145,6 +146,15 @@ describe('recordNftMint', () => {
     const referrer = await mockScout();
     const mockWallet = randomWalletAddress().toLowerCase();
     const referee = await mockScout({ wallets: [mockWallet] });
+
+    await prisma.scoutEmailVerification.create({
+      data: {
+        scoutId: referee.id,
+        completedAt: new Date(),
+        email: 'test@test.com',
+        code: v4()
+      }
+    });
 
     const builder = await mockBuilder();
     const builderNft = await mockBuilderNft({ builderId: builder.id, season });
