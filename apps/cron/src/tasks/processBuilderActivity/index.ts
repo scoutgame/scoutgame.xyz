@@ -8,6 +8,7 @@ import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderL
 import type Koa from 'koa';
 
 import { processBuilderActivity } from './processBuilderActivity';
+import { reviewBuildersStatus } from './reviewBuildersStatus';
 
 type ProcessPullRequestsOptions = {
   createdAfter?: Date;
@@ -88,4 +89,6 @@ export async function processAllBuilderActivity(
   await refreshBuilderLevels({ season: getCurrentSeasonStart() });
 
   await refreshEstimatedPayouts({ week: getCurrentWeek() });
+
+  await reviewBuildersStatus();
 }
