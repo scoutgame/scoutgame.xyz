@@ -125,7 +125,7 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
                 <FormControlLabel
                   disabled={isExecuting}
                   control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Disable all Scout Game email notifications (activity and pending actions)'
+                  label='Enable Scout Game email notifications (activity and pending actions)'
                 />
               )}
             />
