@@ -6,14 +6,14 @@ import type { SessionUser } from './interfaces';
 
 export async function getUserFromSession(cookieOptions?: SessionOptions['cookieOptions']): Promise<SessionUser | null> {
   const session = await getSession(cookieOptions);
-  return getUser(session.scoutId);
+  return getUser(session.adminId || session.scoutId);
 }
 
 export async function getCachedUserFromSession(
   cookieOptions?: SessionOptions['cookieOptions']
 ): Promise<SessionUser | null> {
   const session = await getSession(cookieOptions);
-  const cached = cacheGetUser(session.scoutId);
+  const cached = cacheGetUser(session.adminId || session.scoutId);
 
   return cached;
 }

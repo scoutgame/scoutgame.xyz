@@ -24,16 +24,39 @@ export type APIErrorResponse = {
   error: string;
 };
 
+type SendMessagesResponse = SuccessResponse | InvalidInputResponse | APIErrorResponse;
+
+// Keep tokens secure on server
+const FARCASTER_ACCOUNTS = {
+  chris: {
+    apiToken: process.env.WARPCAST_API_KEY_CHRIS
+  },
+  scout: {
+    apiToken: process.env.WARPCAST_API_KEY_SCOUT
+  }
+} as const;
+
+export type AccountId = keyof typeof FARCASTER_ACCOUNTS;
+
 export const sendMessagesAction = authActionClient
   .metadata({ actionName: 'delete_repo' })
   .schema(
     yup.object({
       recipients: yup.array().of(yup.string().required()).required(),
-      message: yup.string().required()
+      message: yup.string().required(),
+      accountId: yup
+        .string()
+        .oneOf(Object.keys(FARCASTER_ACCOUNTS) as AccountId[])
+        .required()
     })
   )
-  .action(async ({ ctx, parsedInput }) => {
-    const { recipients, message } = parsedInput;
+  .action(async ({ ctx, parsedInput }): Promise<SendMessagesResponse> => {
+    const { recipients, message, accountId } = parsedInput;
+
+    const account = FARCASTER_ACCOUNTS[accountId as AccountId];
+    if (!account?.apiToken) {
+      throw new Error('Invalid account selected');
+    }
 
     const invalidRecipients: string[] = [];
     const recipientFids: [string, number][] = [];
@@ -53,15 +76,19 @@ export const sendMessagesAction = authActionClient
       }
     }
     if (invalidRecipients.length > 0) {
-      return { type: 'invalid_input', invalidRecipients };
+      return { type: 'invalid_input', invalidRecipients } as InvalidInputResponse;
     }
     const sentRecipients: string[] = [];
     const unsentRecipients: string[] = [];
     let sendingError: string | undefined;
     for (const [recipient, recipientFid] of recipientFids) {
       try {
-        const result = await sendDirectCast({ recipientFid, message });
-        log.info(`Sent message to ${recipientFid}`, { recipientFid, result });
+        const result = await sendDirectCast({
+          recipientFid,
+          message,
+          apiToken: account.apiToken
+        });
+        log.info(`Sent message to ${recipient}`, { recipientFid, result });
         sentRecipients.push(recipient);
       } catch (error) {
         log.error(`Error sending message to ${recipientFid}`, {
@@ -80,9 +107,9 @@ export const sendMessagesAction = authActionClient
         sentRecipients,
         unsentRecipients,
         error: sendingError
-      };
+      } as APIErrorResponse;
     }
-    return { sent: sentRecipients.length, type: 'success' };
+    return { sent: sentRecipients.length, type: 'success' } as SuccessResponse;
   });
 
 async function getFarcasterFid(recipient: string) {
