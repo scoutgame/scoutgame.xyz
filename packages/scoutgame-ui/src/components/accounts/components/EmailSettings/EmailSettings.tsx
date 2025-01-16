@@ -4,6 +4,7 @@ import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Check as CheckIcon, Send as SendIcon } from '@mui/icons-material';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import { LoadingButton } from '@mui/lab';
 import { Box, Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography, Chip } from '@mui/material';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { updateUserEmailSettingsAction } from '@packages/users/updateUserEmailSettingsAction';
@@ -140,15 +141,16 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
               )}
             />
           </Stack>
-          <Button
+          <LoadingButton
             variant='contained'
             color='primary'
             type='submit'
+            loading={isExecuting}
             disabled={isExecuting || !isDirty}
             sx={{ width: 'fit-content' }}
           >
-            Save
-          </Button>
+            Save{verifiedEmail ? '' : ' and verify'}
+          </LoadingButton>
           <FormErrors errors={errors} />
         </Stack>
       </form>
