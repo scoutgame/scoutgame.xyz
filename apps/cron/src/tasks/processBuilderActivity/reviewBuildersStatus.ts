@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 import { DateTime } from 'luxon';
 
 import { getBuilderActivity } from './getBuilderActivity';
@@ -31,14 +32,8 @@ export async function reviewBuildersStatus() {
 
       // If the builder has activity in the last 28 days approve it
       if (commits.length > 0 || pullRequests.length > 0) {
-        await prisma.scout.update({
-          where: {
-            id: builder.id
-          },
-          data: {
-            builderStatus: 'approved'
-          }
-        });
+        await approveBuilder({ builderId: builder.id });
+
         // If the builder has no activity in the last 28 days reject it
       } else if (builder.createdAt < last28Days) {
         await prisma.scout.update({
