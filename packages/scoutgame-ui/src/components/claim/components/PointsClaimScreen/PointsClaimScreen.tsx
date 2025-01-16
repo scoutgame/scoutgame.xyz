@@ -222,7 +222,7 @@ export function PointsClaimScreen({
             <Stack width='100%'>
               <PointsClaimSocialShare
                 isBuilder={repos.length > 0}
-                totalUnclaimedPoints={totalUnclaimedPoints}
+                totalUnclaimedPoints={result.data.claimedPoints}
                 builders={builders}
                 userPath={user.path}
                 week={result.data.week}
