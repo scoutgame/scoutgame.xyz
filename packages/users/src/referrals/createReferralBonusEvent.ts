@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
@@ -20,14 +21,38 @@ export async function createReferralBonusEvent(refereeId: string) {
     }
   });
 
+  if (referralCodeEvent?.bonusBuilderEvent) {
+    log.info('Referral bonus event already exists', {
+      referralCodeEventId: referralCodeEvent.id
+    });
+    return { result: 'already_referred' };
+  }
+
   const referrerId = referralCodeEvent?.builderEvent?.builderId;
 
   if (!referrerId) {
-    throw new Error('Referrer not found');
+    log.info('Referrer not found. Skipping referral bonus event', {
+      refereeId,
+      referralCodeEventId: referralCodeEvent?.id
+    });
+    return { result: 'referrer_not_found' };
   }
 
-  if (referralCodeEvent?.bonusBuilderEvent) {
-    throw new Error('Referral bonus event already exists');
+  const refereeEmailVerifications = await prisma.scoutEmailVerification.count({
+    where: {
+      scoutId: refereeId,
+      completedAt: {
+        not: null
+      }
+    }
+  });
+
+  if (refereeEmailVerifications === 0) {
+    log.info('Referee email not verified. Skipping referral bonus event', {
+      refereeId,
+      referrerId
+    });
+    return { result: 'referee_not_verified' };
   }
 
   await prisma.$transaction(async (tx) => {
@@ -78,4 +103,6 @@ export async function createReferralBonusEvent(refereeId: string) {
       referrerId
     });
   });
+
+  return { result: 'referral_bonus_created' };
 }
