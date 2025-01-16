@@ -15,7 +15,12 @@ export async function createReferralBonusEvent(refereeId: string) {
       bonusBuilderEvent: true,
       builderEvent: {
         select: {
-          builderId: true
+          builderId: true,
+          builder: {
+            select: {
+              deletedAt: true
+            }
+          }
         }
       }
     }
@@ -36,6 +41,16 @@ export async function createReferralBonusEvent(refereeId: string) {
       referralCodeEventId: referralCodeEvent?.id
     });
     return { result: 'referrer_not_found' };
+  }
+
+  const isReferrerDeleted = referralCodeEvent?.builderEvent?.builder.deletedAt !== null;
+
+  if (isReferrerDeleted) {
+    log.info('Referrer deleted. Skipping referral bonus event', {
+      refereeId,
+      referrerId
+    });
+    return { result: 'referrer_deleted' };
   }
 
   const refereeEmailVerifications = await prisma.scoutEmailVerification.count({

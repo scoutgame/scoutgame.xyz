@@ -28,6 +28,21 @@ describe('createReferralBonusEvent', () => {
     expect(result.result).toBe('already_referred');
   });
 
+  it('should not create a referral bonus event if the referrer is deleted', async () => {
+    const referrer = await mockScout();
+    const referee = await mockScout();
+    await createReferralEvent(referrer.referralCode, referee.id);
+    await updateReferralUsers(referee.id);
+
+    await prisma.scout.update({
+      where: { id: referrer.id },
+      data: { deletedAt: new Date() }
+    });
+
+    const result = await createReferralBonusEvent(referee.id);
+    expect(result.result).toBe('referrer_deleted');
+  });
+
   it('should not create a referral bonus event if the referee has not verified their email', async () => {
     const referrer = await mockScout();
     const referee = await mockScout();
