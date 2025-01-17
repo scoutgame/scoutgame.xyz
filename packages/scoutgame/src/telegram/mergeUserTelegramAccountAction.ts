@@ -21,7 +21,6 @@ export const mergeUserTelegramAccountAction = authActionClient
 
     const scoutId = ctx.session.scoutId;
     const { authData, selectedProfile } = parsedInput;
-
     const decryptedId = decrypt(authData.id, TELEGRAM_API_HASH);
     const telegramId = Number(decryptedId);
     if (!telegramId) {
