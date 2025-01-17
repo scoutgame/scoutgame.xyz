@@ -32,9 +32,6 @@ export function InfoPageFooter() {
             <MuiLink href='https://x.com/scoutgamexyz' target='_blank'>
               <XIcon sx={{ color: 'text.primary', width: 20, height: 20 }} />
             </MuiLink>
-            <MuiLink href='https://www.youtube.com/@scoutgamexyz' target='_blank'>
-              <YouTubeIcon sx={{ color: 'text.primary' }} />
-            </MuiLink>
             <MuiLink href='https://t.me/scoutgameportal' target='_blank'>
               <TelegramIcon sx={{ color: 'text.primary' }} />
             </MuiLink>
@@ -44,6 +41,9 @@ export function InfoPageFooter() {
                   <path d='M14.5187 0.738892L12.9414 6.66285L11.3589 0.738892H7.71707L6.11941 6.70649L4.52698 0.738892H0.379089L4.23341 13.8367H7.8119L9.52304 7.75459L11.2341 13.8367H14.8203L18.6662 0.738892H14.5187Z' />
                 </svg>
               </SvgIcon>
+            </MuiLink>
+            <MuiLink href='https://www.youtube.com/@scoutgamexyz' target='_blank'>
+              <YouTubeIcon sx={{ color: 'text.primary' }} />
             </MuiLink>
           </Stack>
         </Stack>
