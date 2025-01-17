@@ -1,10 +1,10 @@
 import { log } from '@charmverse/core/log';
 import { MessageSender } from '@charmverse/core/prisma-client';
 import { getTelegramChatHistory } from '@packages/telegram/getTelegramChatHistory';
+import type { IncomingTelegramMessage } from '@packages/telegram/interfaces';
 import { persistTelegramMessage } from '@packages/telegram/persistTelegramMessage';
 import { sendTelegramChatMessage } from '@packages/telegram/sendTelegramChatMessage';
 import { setTelegramTyping } from '@packages/telegram/setTelegramTyping';
-import type { IncomingTelegramMessage } from '@packages/telegram/types';
 import type Koa from 'koa';
 import KoaRouter from 'koa-router';
 

@@ -1,6 +1,6 @@
+import type { ChatMessage, ToolCallOutput, ToolDefinitionWithFunction } from '@packages/llm/interfaces';
 import { llmLogger } from '@packages/llm/logger';
 import { requestChatCompletion } from '@packages/llm/requestChatCompletion';
-import type { ChatMessage, ToolCallOutput, ToolDefinitionWithFunction } from '@packages/llm/types';
 
 export type AgentConstructorParams = {
   systemPrompt: string;

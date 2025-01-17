@@ -1,8 +1,6 @@
 import type { AgentTelegramMessage } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { ToolCallOutput } from '@packages/llm/types';
-
-import type { IncomingTelegramMessage } from './types';
+import type { ToolCallOutput } from '@packages/llm/interfaces';
 
 export async function persistTelegramMessage({
   message,

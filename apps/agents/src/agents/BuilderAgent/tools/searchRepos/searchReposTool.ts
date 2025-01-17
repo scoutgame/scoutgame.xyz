@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import type { ToolDefinitionWithFunction } from '@packages/llm/types';
+import type { ToolDefinitionWithFunction } from '@packages/llm/interfaces';
 import type { IFuseOptions } from 'fuse.js';
 import Fuse from 'fuse.js';
 
