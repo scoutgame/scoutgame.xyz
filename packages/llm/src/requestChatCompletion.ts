@@ -3,8 +3,8 @@ import OpenAI from 'openai';
 
 import type { LLMModel } from './constants';
 import { LLMModelsList } from './constants';
+import type { ChatCompletionResponse, ChatMessage, ToolDefinition } from './interfaces';
 import { llmLogger } from './logger';
-import type { ChatCompletionResponse, ChatMessage, ToolDefinition } from './types';
 
 /**
  * @model - Defaults to gpt-4o-mini

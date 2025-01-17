@@ -41,7 +41,7 @@ export async function sendTelegramChatMessage({
   retrying?: boolean;
 } & BotToken): Promise<SendTelegramMessageResult> {
   try {
-    const response = await POST(
+    const response = await POST<SendTelegramMessageResult>(
       `${getTelegramBaseUrl({ token })}/sendMessage`,
       {
         chat_id: chatId,
@@ -60,7 +60,7 @@ export async function sendTelegramChatMessage({
       }
     );
 
-    return response as SendTelegramMessageResult;
+    return response;
   } catch (err: any) {
     log.error('Error sending message Telegram');
     log.error(JSON.stringify({ err, text }, null, 2));

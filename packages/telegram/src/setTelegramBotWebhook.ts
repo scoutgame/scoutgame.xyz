@@ -7,7 +7,7 @@ import type { BotToken } from './auth';
  * Set the webhook for a telegram bot
  */
 export async function setTelegramBotWebhook({ token, endpoint }: BotToken & { endpoint: string }) {
-  const url = `${getTelegramBaseUrl({ token })}/setWebhook?url=${encodeURIComponent(endpoint)}`;
+  const url = `${getTelegramBaseUrl({ token })}/setWebhook`;
 
   await POST(url, undefined, {
     query: {

@@ -40,11 +40,11 @@ EOL
 cat > "packages/$package_name/package.json" << EOL
 {
   "name": "@packages/$package_name",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "main": "./index.ts",
   "scripts": {
-    "test": "npx jest"
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts --maxWorkers=2"
   },
   "exports": {
     "./*": "./src/*.ts"
@@ -72,7 +72,7 @@ cd ../..
 
 echo -e "Refreshing dependencies..."
 
-npm install
+npm install "@packages/$package_name"
 
 echo "Package $package_name has been generated successfully!"
 

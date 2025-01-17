@@ -6,8 +6,8 @@
   "scripts": {
     "build": "npx tsx esbuild.config.ts",
     "start": "npx tsx watch src/main.ts",
-    "start:prod": "node --import dd-trace/register.js ./dist/main.js",
-    "start:prod:node18": "node --loader dd-trace/loader-hook.mjs ./dist/main.js",
+    "start:prod": "node ./dist/main.js",
+    "start:prod:node18": "node ./dist/main.js",
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts --verbose",
     "typecheck": "../../node_modules/typescript/bin/tsc --project ./tsconfig.json  --noEmit",
     "seed": "tsx src/scripts/generateSeedData.ts"
@@ -15,26 +15,15 @@
   "dependencies": {
     "@koa/cors": "^5.0.0",
     "@koa/router": "^13.1.0",
-    "@octokit/plugin-paginate-rest": "^11.3.5",
-    "@octokit/plugin-throttling": "^9.3.1",
     "@packages/dates": "^0.0.0",
-    "@packages/farcaster": "^0.0.0",
-    "@packages/github": "^0.0.0",
     "@packages/llm": "^0.0.1",
-    "@packages/mailer": "^0.0.0",
-    "@packages/mixpanel": "^0.0.0",
-    "@packages/moxie": "^0.0.0",
     "@packages/scoutgame": "^0.0.0",
-    "@packages/scoutgameattestations": "^0.0.0",
     "@packages/telegram": "^0.0.1",
-    "@packages/users": "^0.0.0",
     "@packages/utils": "^1.0.0",
-    "@packages/waitlist": "^0.0.0",
     "fuse.js": "^7.0.0",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
-    "koa-router": "^13.0.1",
-    "web-push": "^3.6.7"
+    "koa-router": "^13.0.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.0.1",
