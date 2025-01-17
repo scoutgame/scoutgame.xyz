@@ -79,6 +79,43 @@ async function checkBotUsers(userIds: string[]) {
   console.log('Bots to delete', notYetDeleted, 'of', userIds.length);
 }
 
+// get purchases from Deleted users
+async function retrieveNftPurchasesFromDeletedUsers() {
+  const purchases = await prisma.nFTPurchaseEvent.findMany({
+    where: {
+      paidInPoints: true,
+      builderNft: {
+        season: '2025-W02'
+      },
+      scout: {
+        deletedAt: {
+          gt: new Date('2024-12-01')
+        }
+      }
+    },
+    orderBy: {
+      scout: {
+        displayName: 'asc'
+      }
+    },
+    include: {
+      scout: true,
+      builderNft: {
+        include: {
+          builder: true
+        }
+      }
+    }
+  });
+  console.log(purchases.length);
+  const columns = 'scout,scout id,builder, builder id,tokenAmount,nft type,txHash';
+  const rows = purchases.map(
+    (p) =>
+      `${p.scout.displayName},${p.scout.id},${p.builderNft.builder.displayName},${p.builderNft.builder.id},${p.tokensPurchased},${p.builderNft.nftType},${p.txHash}`
+  );
+  await writeFile('purchases.csv', [columns, ...rows].join('\n'));
+}
+
 (async () => {
   // const { toDelete } = await checkBotEmail('hsaaouswwc@gmail.com');
   // // // await deleteUsers(toDelete);
@@ -121,63 +158,23 @@ async function checkBotUsers(userIds: string[]) {
   // });
   // console.log('to remove', deleted.length);
   // console.log('mixpanel', await deleteMixpanelProfiles(deleted));
-
-  // const { toDelete } = await checkReferer('dd34cd6e-a45d-46d6-9001-e6b896c237d7');
-  // console.log(toDelete.length);
-  // const referrers = await prisma.scout.findMany({
-  //   where: {
-  //     id: {
-  //       in: toDelete
-  //     },
-  //     events: {
-  //       some: {
-  //         type: 'referral'
-  //       }
-  //     }
-  //   }
-  // });
-
-  // console.log(referrers.map((r) => r.id));
-
-  // for (const referrer of referrers) {
-  //   const { toDelete } = await checkReferer(referrer.id);
-  //   await deleteUsers(toDelete);
-  // }
-
-  // await checkReferer('308d2e73-ba9b-48e0-a40e-a96a9b901db3');
-
-  // get deletd users that bought an nft
-  const purchases = await prisma.nFTPurchaseEvent.findMany({
+  const { toDelete } = await checkReferer('dd34cd6e-a45d-46d6-9001-e6b896c237d7');
+  const referrers = await prisma.scout.findMany({
     where: {
-      paidInPoints: true,
-      builderNft: {
-        season: '2025-W02'
+      id: {
+        in: toDelete
       },
-      scout: {
-        deletedAt: {
-          gt: new Date('2024-12-01')
-        }
-      }
-    },
-    orderBy: {
-      scout: {
-        displayName: 'asc'
-      }
-    },
-    include: {
-      scout: true,
-      builderNft: {
-        include: {
-          builder: true
+      events: {
+        some: {
+          type: 'referral'
         }
       }
     }
   });
-  console.log(purchases.length);
-  const columns = 'scout,scout id,builder, builder id,tokenAmount,nft type,txHash';
-  const rows = purchases.map(
-    (p) =>
-      `${p.scout.displayName},${p.scout.id},${p.builderNft.builder.displayName},${p.builderNft.builder.id},${p.tokensPurchased},${p.builderNft.nftType},${p.txHash}`
-  );
-  await writeFile('purchases.csv', [columns, ...rows].join('\n'));
+  console.log(referrers.map((r) => r.id));
+  for (const referrer of referrers) {
+    const { toDelete } = await checkReferer(referrer.id);
+    //await deleteUsers(toDelete);
+  }
+  // await checkReferer('308d2e73-ba9b-48e0-a40e-a96a9b901db3');
 })();
