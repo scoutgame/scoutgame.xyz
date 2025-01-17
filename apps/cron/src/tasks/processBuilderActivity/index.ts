@@ -22,6 +22,8 @@ export async function processAllBuilderActivity(
     season = getCurrentSeasonStart()
   }: ProcessPullRequestsOptions = {}
 ) {
+  await reviewBuildersStatus();
+
   const builders = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
@@ -89,6 +91,4 @@ export async function processAllBuilderActivity(
   await refreshBuilderLevels({ season: getCurrentSeasonStart() });
 
   await refreshEstimatedPayouts({ week: getCurrentWeek() });
-
-  await reviewBuildersStatus();
 }

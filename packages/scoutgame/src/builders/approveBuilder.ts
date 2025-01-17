@@ -56,6 +56,8 @@ export async function approveBuilder({
     }
   });
 
+  log.info('Builder approved', { builderId, season });
+
   try {
     await sendEmailTemplate({
       userId: scout.id,
