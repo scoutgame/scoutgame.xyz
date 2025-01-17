@@ -21,6 +21,7 @@ export default async function Accounts() {
       },
       select: {
         telegramId: true,
+        telegramName: true,
         email: true,
         sendTransactionEmails: true,
         sendMarketing: true,
@@ -57,6 +58,7 @@ export default async function Accounts() {
     <AccountsPage
       user={{
         ...user,
+        telegramName: currentUserAccountsMetadata.telegramName || null,
         email: currentUserAccountsMetadata.email as string,
         sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails,
         sendMarketing: currentUserAccountsMetadata.sendMarketing,
