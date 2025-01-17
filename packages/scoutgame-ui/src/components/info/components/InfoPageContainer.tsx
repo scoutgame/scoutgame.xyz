@@ -43,7 +43,6 @@ export function InfoPageContainer({
         <SidebarInfoDrawer />
       </Stack>
       {children}
-      <InfoPageFooter />
     </Stack>
   );
 }
