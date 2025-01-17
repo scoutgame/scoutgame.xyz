@@ -16,6 +16,7 @@ const links = [
   { href: '/info/points', text: 'Scout Points' },
   { href: '/info/weekly-rewards', text: 'Weekly Builder Ranking & Rewards' },
   { href: '/info/builder-nfts', text: 'Builder NFTs' },
+  { href: '/info/contribution-guide', text: 'Contribution Guide' },
   { href: '/info/spam-policy', text: 'Spam Policy' }
 ];
 

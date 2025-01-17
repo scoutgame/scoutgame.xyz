@@ -6,6 +6,8 @@ export const whitelistedFids: number[] = [
   472, 4339, 1212, 318061, 10921, 828888,
   // matt
   4356,
+  // ilias
+  3144,
   // drea
   814997
 ];
