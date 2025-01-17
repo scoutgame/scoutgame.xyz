@@ -3,9 +3,9 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: 'scoutgame',
-    name: 'Scout Game - Onchain builder network',
+    name: 'Scout Game - Onchain developer network',
     short_name: 'Scout Game',
-    description: 'Fantasy sports for onchain builders',
+    description: 'Fantasy sports with onchain developers',
     start_url: '/',
     display: 'standalone',
     background_color: '#191919',

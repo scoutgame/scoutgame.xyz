@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: 'scoutgame',
-    name: 'Scout Game - Onchain builder network',
+    name: 'Scout Game - Onchain developer network',
     short_name: 'Scout Game',
     description: 'Onchain network for connecting web3 developers, projects, organizations',
     start_url: '/',
