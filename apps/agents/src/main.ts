@@ -15,9 +15,13 @@ app.listen(port, host, () => {
 
 async function setupTelegramWebhook() {
   try {
+    const fullWebhook = `${process.env.DOMAIN}${TELEGRAM_API_PATH}`;
+
+    log.info(`Setting telegram bot webhook: ${fullWebhook.slice(0, -10)}****`);
+
     await setTelegramBotWebhook({
       token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
-      endpoint: `${process.env.DOMAIN}${TELEGRAM_API_PATH}`
+      endpoint: fullWebhook
     });
     await setBotCommands({
       token: SCOUT_AGENT_BUILDER_TELEGRAM_BOT_TOKEN,
