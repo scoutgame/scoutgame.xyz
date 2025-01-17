@@ -4,7 +4,7 @@ import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents
 import { getCurrentSeasonStart } from 'packages/dates/src/utils';
 async function query() {
   const scout = await prisma.scout.findMany({
-    where: { path: 'loocapro' },
+    where: { path: '' },
     select: {
       builderNfts: {
         where: {
