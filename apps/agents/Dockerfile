@@ -15,10 +15,10 @@ COPY --parents apps/*/package.json          \
   packages/*/package.json                   \
   node_modules                              \
   package.json                              \
-  apps/scout-agents/node_modules            \
-  apps/scout-agents/package.json            \
-  apps/scout-agents/scout-agents.yml        \
-  apps/scout-agents/src/agents/BuilderAgent/tools/searchRepos/repos.json \
+  apps/agents/node_modules            \
+  apps/agents/package.json            \
+  apps/agents/agents.yml        \
+  apps/agents/src/agents/BuilderAgent/tools/searchRepos/repos.json \
   .
 
 # Copy compiled code
