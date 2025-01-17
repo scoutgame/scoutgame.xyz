@@ -1,6 +1,8 @@
 import { CardActionArea, CardMedia, Typography, Box, Stack } from '@mui/material';
 import Link from 'next/link';
 
+import { BuilderCardLevel } from './BuilderCardLevel';
+
 // Maintain a 3:4 aspect ratio for the NFT display
 export const nftDisplaySize = {
   'x-small': {
@@ -61,62 +63,7 @@ export function BuilderCardNftDisplay({
           ) : (
             <CardMedia component='img' image='/images/no_nft_person.png' />
           )}
-          {Number.isInteger(level) ? (
-            <Stack
-              sx={{
-                position: 'absolute',
-                width: {
-                  xs: 40,
-                  md: size === 'small' ? 45 : 50
-                },
-                height: {
-                  xs: 40,
-                  md: size === 'small' ? 45 : 50
-                },
-                top: {
-                  xs: 7.5,
-                  md: 10
-                },
-                right: {
-                  xs: 7.5,
-                  md: 10
-                },
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: starterPack ? 'yellow.main' : 'orange.main',
-                borderRadius: '50%',
-                border: '3.5px solid #000'
-              }}
-            >
-              <Typography
-                fontFamily='Jura'
-                fontSize={{
-                  xs: 7.5,
-                  md: size === 'small' ? 7.5 : 10
-                }}
-                pt={{
-                  xs: 0.5,
-                  md: 0
-                }}
-                color='black.main'
-                lineHeight={1}
-                mb={0.25}
-              >
-                LEVEL
-              </Typography>
-              <Typography
-                fontFamily='Jura'
-                fontSize={{
-                  xs: 15,
-                  md: size === 'small' ? 17.5 : 20
-                }}
-                color='black.main'
-                lineHeight={1}
-              >
-                {level}
-              </Typography>
-            </Stack>
-          ) : null}
+          <BuilderCardLevel level={level} size={size} starterPack={starterPack} />
         </Box>
         <Box
           sx={{
