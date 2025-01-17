@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
+import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 export type BuilderAggregateScore = {
   builderId: string;
@@ -28,10 +28,16 @@ export async function calculateBuilderLevels({
   season = getCurrentSeasonStart()
 }: {
   season?: ISOWeek;
-}): Promise<BuilderAggregateScore[]> {
-  const allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
+} = {}): Promise<BuilderAggregateScore[]> {
+  let allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
 
-  // Fetch all builders with their GemReceipts
+  // Filter out current week if season is the current season. We only want the historical data
+  if (season === getCurrentSeasonStart()) {
+    const currentWeek = getCurrentWeek();
+    allSeasonWeeks = allSeasonWeeks.filter((week) => week < currentWeek);
+  }
+
+  // Fetch all builders with their gem payouts
   const gemPayouts = await prisma.gemsPayoutEvent.findMany({
     where: {
       points: {
@@ -39,6 +45,7 @@ export async function calculateBuilderLevels({
       },
       builderEvent: {
         season,
+        type: 'gems_payout',
         builder: {
           builderNfts: {
             some: {
@@ -54,16 +61,22 @@ export async function calculateBuilderLevels({
     select: {
       createdAt: true,
       points: true,
-      builderId: true
+      week: true,
+      builderId: true,
+      builder: {
+        select: {
+          path: true
+        }
+      }
     }
   });
 
   const builderScores = gemPayouts.reduce(
-    (acc, receipt) => {
-      const builderId = receipt.builderId;
+    (acc, gemsPayout) => {
+      const builderId = gemsPayout.builderId;
 
       // Ignore empty gem payouts
-      if (!receipt.points) {
+      if (!gemsPayout.points) {
         return acc;
       }
 
@@ -71,13 +84,13 @@ export async function calculateBuilderLevels({
         acc[builderId] = {
           builderId,
           totalPoints: 0,
-          firstActiveWeek: getWeekFromDate(receipt.createdAt),
+          firstActiveWeek: gemsPayout.week,
           centile: 0,
           level: 0,
           averageGemsPerWeek: 0
         };
       }
-      acc[builderId].totalPoints += receipt.points;
+      acc[builderId].totalPoints += gemsPayout.points;
       return acc;
     },
     {} as Record<string, BuilderAggregateScore>
@@ -88,10 +101,7 @@ export async function calculateBuilderLevels({
     const firstActiveWeekIndex = allSeasonWeeks.indexOf(builder.firstActiveWeek);
 
     // Get number of weeks builder has been active (from first week to end of season)
-    const _activeWeeks = allSeasonWeeks.slice(firstActiveWeekIndex).length;
-
-    // For the data to be just, we should not include the current week
-    const activeWeeks = Math.max(1, _activeWeeks - 1);
+    const activeWeeks = allSeasonWeeks.slice(firstActiveWeekIndex).length;
 
     // Calculate average based on active weeks instead of full season
     const averageGemsPerWeek = builder.totalPoints / activeWeeks;

@@ -1,3 +1,4 @@
+import EmailIcon from '@mui/icons-material/Email';
 import XIcon from '@mui/icons-material/X';
 import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import Image from 'next/image';
@@ -20,6 +21,7 @@ const BuilderDogIcon = (
 
 export const QuestIcon: Record<QuestType, ReactNode> = {
   'follow-x-account': <XIcon fontSize='large' />,
+  'join-telegram-channel': <img src='/images/logos/telegram.png' alt='Telegram' width={32.5} height={32.5} />,
   'share-x-telegram': <XIcon fontSize='large' />,
   'invite-friend': ScoutBinocularsIcon,
   'scout-starter-card': ScoutBinocularsIcon,
@@ -29,6 +31,7 @@ export const QuestIcon: Record<QuestType, ReactNode> = {
   'scout-share-builder': ScoutBinocularsIcon,
   'share-weekly-claim': ScoutBinocularsIcon,
   'share-scout-profile': ScoutBinocularsIcon,
+  'verify-email': <EmailIcon fontSize='large' />,
   // 'link-farcaster-telegram-account': ScoutBinocularsIcon,
   'scout-moxie-builder': (
     <div

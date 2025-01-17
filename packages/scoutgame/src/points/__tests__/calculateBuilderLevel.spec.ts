@@ -1,16 +1,19 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getDateFromISOWeek, getPreviousSeason } from '@packages/dates/utils';
+import { getCurrentWeek, getDateFromISOWeek, getPreviousSeason } from '@packages/dates/utils';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import type { DeterministicRandomBuilderGemsPayoutActivity } from '@packages/testing/deterministicBuildersGemPayoutsData';
 import {
   seedBuildersGemPayouts,
   writeSeededBuildersGemPayoutsToDatabase
 } from '@packages/testing/deterministicBuildersGemPayoutsData';
+import { randomWalletAddress } from '@packages/testing/generators';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 import type { BuilderAggregateScore } from '../calculateBuilderLevel';
 import { calculateBuilderLevels, decileTable } from '../calculateBuilderLevel';
+
+const season = '2025-W02';
 
 // Validate date based on deterministic output of 200 builders
 function validateCalculations({
@@ -38,6 +41,7 @@ function validateCalculations({
   for (let i = 0; i < levels.length; i++) {
     const builderFromCalculation = levels[i];
     const matchingBuilderInput = builders.find((b) => b.id === builderFromCalculation.builderId);
+
     expect(builderFromCalculation.averageGemsPerWeek).toBe(
       Math.floor(builderFromCalculation.totalPoints / matchingBuilderInput!.activeWeeks.length)
     );
@@ -55,16 +59,16 @@ function validateCalculations({
 
   expect(builder42).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 3800,
-    averageGemsPerWeek: 1266,
+    totalPoints: 4800,
+    averageGemsPerWeek: 2400,
     centile: 80,
     level: 9,
-    firstActiveWeek: '2025-W08'
+    firstActiveWeek: '2025-W03'
   });
   expect(builder87).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 4300,
-    averageGemsPerWeek: 614,
+    totalPoints: 1600,
+    averageGemsPerWeek: 1600,
     centile: 57,
     level: 6,
     firstActiveWeek: '2025-W04'
@@ -72,17 +76,29 @@ function validateCalculations({
 
   expect(builder156).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
-    totalPoints: 1000,
-    averageGemsPerWeek: 250,
+    totalPoints: 2000,
+    averageGemsPerWeek: 666,
     centile: 23,
     level: 3,
-    firstActiveWeek: '2025-W07'
+    firstActiveWeek: '2025-W02'
   });
 }
+
+const mockContractAddress = randomWalletAddress();
+
+/**
+ * We use this offset for the deterministic random generator to keep deterministic data but avoid collisions between tests
+ */
+const indexOffset = 12344;
 
 describe('calculateBuilderLevels', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+
+    // Use 2025-W05 as the current season so we have 3 weeks of data from W-02 to W-04
+    jest.setSystemTime(new Date('2025-01-29T00:00:00Z'));
+
+    expect(getCurrentWeek()).toBe('2025-W05');
   });
 
   afterEach(async () => {
@@ -91,7 +107,7 @@ describe('calculateBuilderLevels', () => {
     await prisma.scout.deleteMany({
       where: {
         id: {
-          in: Array.from({ length: 200 }, (_, index) => uuidFromNumber(index))
+          in: Array.from({ length: 300 }, (_, index) => uuidFromNumber(index + indexOffset))
         }
       }
     });
@@ -113,13 +129,7 @@ describe('calculateBuilderLevels', () => {
   });
 
   it('should calculate builder levels correctly, splitting them into centiles converted to levels, and return builders from highest to lowest score', async () => {
-    const season = '2025-W02';
-
-    const currentDate = new Date('2025-03-12T00:00:00Z');
-
-    jest.setSystemTime(currentDate);
-
-    const { builders } = seedBuildersGemPayouts({ season });
+    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
@@ -129,13 +139,7 @@ describe('calculateBuilderLevels', () => {
   });
 
   it('should exclude builders with 0 gems from the calculation', async () => {
-    const season = '2025-W02';
-
-    const currentDate = new Date('2025-03-12T00:00:00Z');
-
-    jest.setSystemTime(currentDate);
-
-    const { builders } = seedBuildersGemPayouts({ season });
+    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
@@ -160,22 +164,14 @@ describe('calculateBuilderLevels', () => {
   });
 
   it('should ignore builders without NFTs in the current season', async () => {
-    const season = '2025-W02';
-
-    const currentDate = new Date('2025-03-12T00:00:00Z');
-
-    jest.setSystemTime(currentDate);
-
-    const { builders } = seedBuildersGemPayouts({ season });
+    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
-
-    const indexOffset = 500;
 
     const { builders: ignoredBuilders } = seedBuildersGemPayouts({
       season: getPreviousSeason(season),
       amount: 57,
-      indexOffset
+      indexOffset: indexOffset * 2
     });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders: ignoredBuilders, season: getPreviousSeason(season) });
@@ -190,7 +186,7 @@ describe('calculateBuilderLevels', () => {
           data: {
             season,
             week: gemReceipt.isoWeek,
-            type: 'daily_commit',
+            type: 'gems_payout',
             createdAt: getDateFromISOWeek(gemReceipt.isoWeek).toJSDate(),
             gemsReceipt: {
               create: {

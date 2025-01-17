@@ -2,6 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export async function getScoutStats(scoutId: string) {
+  const season = getCurrentSeasonStart();
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
       id: scoutId
@@ -9,7 +10,7 @@ export async function getScoutStats(scoutId: string) {
     select: {
       userSeasonStats: {
         where: {
-          season: getCurrentSeasonStart()
+          season
         },
         select: {
           pointsEarnedAsScout: true,
@@ -21,17 +22,20 @@ export async function getScoutStats(scoutId: string) {
           pointsEarnedAsScout: true
         }
       },
-      nftPurchaseEvents: {
-        where: {
-          scoutId,
-          builderNft: {
-            season: getCurrentSeasonStart()
-          }
-        },
+      wallets: {
         select: {
-          builderNft: {
+          scoutedNfts: {
+            where: {
+              builderNft: {
+                season
+              }
+            },
             select: {
-              builderId: true
+              builderNft: {
+                select: {
+                  builderId: true
+                }
+              }
             }
           }
         }
@@ -43,6 +47,8 @@ export async function getScoutStats(scoutId: string) {
     allTimePoints: scout.userAllTimeStats[0]?.pointsEarnedAsScout,
     seasonPoints: scout.userSeasonStats[0]?.pointsEarnedAsScout,
     nftsPurchased: scout.userSeasonStats[0]?.nftsPurchased,
-    buildersScouted: Array.from(new Set(scout.nftPurchaseEvents.map((event) => event.builderNft.builderId))).length
+    buildersScouted: new Set(
+      scout.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
+    ).size
   };
 }

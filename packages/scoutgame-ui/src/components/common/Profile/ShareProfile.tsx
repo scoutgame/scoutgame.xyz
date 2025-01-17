@@ -73,7 +73,10 @@ export function ShareProfile({ userPath }: { userPath: string }) {
             <Typography variant='body2'>Warpcast</Typography>
           </MenuItem>
         </Link>
-        <Link href={`https://x.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`} target='_blank'>
+        <Link
+          href={`https://x.com/intent/tweet?text=${encodeURIComponent(`${shareMessage}\nI'm playing @scoutgamexyz. Join me! ${user?.referralCode ? `https://scoutgame.xyz/login?ref=${user.referralCode}` : ''}`)}`}
+          target='_blank'
+        >
           <MenuItem onClick={handleCloseShareMenu}>
             <Image src='/images/logos/x.png' width={20} height={20} alt='x logo' style={{ marginRight: 8 }} />
             <Typography variant='body2'>X</Typography>

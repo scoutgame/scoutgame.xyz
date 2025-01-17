@@ -50,8 +50,8 @@ export async function getPointsReceiptsRewards({
   season?: string;
 }): Promise<PointsReceiptReward[]> {
   const previousSeason = getPreviousSeason(season);
-  const eligibleSeasons = [previousSeason, season].filter(Boolean);
-  if (eligibleSeasons.length === 0) {
+  const claimableSeasons = [previousSeason, season].filter(Boolean);
+  if (claimableSeasons.length === 0) {
     throw new Error(`No seasons found to claim points: ${season}`);
   }
   const pointsReceipts = await prisma.pointsReceipt.findMany({
@@ -61,7 +61,7 @@ export async function getPointsReceiptsRewards({
       event: {
         season: {
           // Can only claim points for this season and previous seasons
-          in: isClaimed ? seasons.map((s) => s.start) : eligibleSeasons
+          in: isClaimed ? seasons.map((s) => s.start) : claimableSeasons
         }
       },
       value: {
@@ -155,6 +155,7 @@ export async function getPointsReceiptsRewards({
     });
 
     if (receipt.event.type === 'nft_purchase' && receipt.event.nftPurchaseEvent) {
+      // points received from selling NFTs
       if (!soldNftRewards[week]) {
         soldNftRewards[week] = {
           points: 0,
@@ -167,6 +168,7 @@ export async function getPointsReceiptsRewards({
       soldNftRewards[week].points += receipt.value;
       soldNftRewards[week].quantity += receipt.event.nftPurchaseEvent.tokensPurchased;
     } else if (receipt.event.type === 'gems_payout') {
+      // points received as a scout
       if (receipt.event.builderId !== receipt.recipientId) {
         if (!builderRewards[week]) {
           builderRewards[week] = {
@@ -184,6 +186,7 @@ export async function getPointsReceiptsRewards({
           bonusPartners.add(bonusPartner);
         }
       } else if (weeklyRank) {
+        // points received as a builder
         if (!leaderboardRankRewards[week]) {
           leaderboardRankRewards[week] = {
             points: 0,

@@ -36,7 +36,7 @@ export async function safeAwaitSSRData<T>(promise: Promise<T>) {
       const loggedInfo = {
         error: errorAsSystemError,
         stack: err.stack,
-        userId: session.scoutId,
+        userId: session.adminId || session.scoutId,
         url: fullUrl,
         ssr: true // Flag to identify that this error was thrown during SSR and can be looked up in DD
       };

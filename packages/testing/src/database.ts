@@ -4,7 +4,7 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
 
-import { randomLargeInt, mockSeason } from './generators';
+import { randomLargeInt, mockSeason, randomWalletAddress } from './generators';
 
 type RepoAddress = {
   repoOwner?: string;
@@ -26,7 +26,7 @@ export async function mockBuilder({
   referralCode = randomString(),
   farcasterId,
   farcasterName,
-  wallets = [],
+  wallets = [{ address: randomWalletAddress() }],
   weeklyStats = []
 }: Partial<
   Scout & {
@@ -117,7 +117,7 @@ export async function mockScout({
   farcasterId,
   deletedAt,
   telegramId,
-  wallets = [],
+  wallets = [randomWalletAddress()],
   stats,
   verifiedEmail
 }: {
@@ -175,13 +175,14 @@ export async function mockScout({
       telegramId,
       wallets: {
         createMany: {
-          data: wallets.map((wallet) => ({
-            address: wallet
+          data: wallets.map((address) => ({
+            address
           }))
         }
       }
     }
   });
+
   if (builderId) {
     await mockNFTPurchaseEvent({ builderId, scoutId: scout.id, season, week: nftWeek });
   }
@@ -477,6 +478,44 @@ export async function mockNFTPurchaseEvent({
       }
     },
     include: { nftPurchaseEvent: true }
+  });
+}
+
+export async function mockScoutedNft({
+  builderNftId,
+  builderId,
+  scoutId,
+  balance = 1,
+  season,
+  nftType
+}: {
+  builderNftId?: string;
+  builderId?: string;
+  scoutId: string;
+  balance?: number;
+  nftType?: BuilderNftType;
+  season?: string;
+}) {
+  if (!builderNftId && !builderId) {
+    throw new Error('Either builderNftId or builderId must be provided');
+  }
+  const builderNft = await prisma.builderNft.findFirstOrThrow({
+    where: builderNftId
+      ? { id: builderNftId }
+      : {
+          builderId,
+          season,
+          nftType: nftType ?? 'default'
+        }
+  });
+  const wallet = await prisma.scoutWallet.findFirstOrThrow({ where: { scoutId } });
+
+  return prisma.scoutNft.create({
+    data: {
+      builderNftId: builderNft.id,
+      walletAddress: wallet.address,
+      balance
+    }
   });
 }
 

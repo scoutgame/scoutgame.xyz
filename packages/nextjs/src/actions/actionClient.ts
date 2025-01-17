@@ -40,7 +40,7 @@ export const actionClient = actionClientBase
   });
 
 export const authActionClient = actionClient.use(async ({ next, ctx }) => {
-  const scoutId = ctx.session.scoutId;
+  const scoutId = ctx.session.adminId || ctx.session.scoutId;
 
   if (!scoutId) {
     throw new UnauthorisedActionError('You are not logged in. Please try to login');

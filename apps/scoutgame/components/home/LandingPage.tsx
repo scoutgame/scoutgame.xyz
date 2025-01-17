@@ -208,14 +208,14 @@ function HowToPlaySection() {
         >
           <Step
             stepNumber='Step 1'
-            title='Discover Builders & Projects'
-            description='Anyone can play Scout Game. Discover and back talented developers working on impactful open source projects. Get to know the players who are moving the onchain ecosystem forward.'
+            title='Discover Developers and Projects'
+            description='Jump into the Scout Game and find out who is building cool, open-source stuff. Get to know the movers and shakers of the onchain world and win with them.'
             iconSrc='/images/home/scout-icon.svg'
           />
           <Step
             stepNumber='Step 2'
-            title='Collect Builder Cards'
-            description='Scout promising developers by collecting seasonal Builder NFT Cards. Earn Scout Points based on their contributions and activity—your insights help highlight the best talent.'
+            title='Collect Developer Cards'
+            description='Spot talented developers and snag their exclusive NFT Developers Cards. Your picks help highlight the best talent out there!'
             iconSrc='/images/home/card-icon.svg'
             additionalContent={
               <Stack alignItems='center'>
@@ -256,13 +256,13 @@ function HowToPlaySection() {
           <Step
             stepNumber='Step 3'
             title='Compete & Win'
-            description='Compete with other Scouts in weekly challenges to climb the leaderboard and win. Scout talent, earn rewards, and prove you’re the best in the game!'
+            description='Compete against other Scouts in weekly challenges. Scout talent, earn rewards, and prove you’re the best in the game!'
             iconSrc='/images/home/trophy-icon.svg'
           />
           <Step
             stepNumber='Step 4'
             title='Earn Rewards'
-            description='Collect Scout Points weekly based on the success of your scouted Builders. Win additional prizes like $Moxie or OP from our partners. Supporting innovation has never been so rewarding.'
+            description='Collect Scout Points from the Developers you’ve scouted and score bonus prizes like $Moxie or $OP from our awesome partners. Supporting innovation has never been this exciting or this rewarding!'
             iconSrc='/images/home/quests-icon.svg'
           />
         </Container>

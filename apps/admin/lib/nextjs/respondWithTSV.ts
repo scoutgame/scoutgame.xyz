@@ -1,7 +1,11 @@
 import { stringify } from 'csv-stringify/sync';
 
 export async function respondWithTSV(rows: any[], filename: string) {
-  const exportString = stringify(rows, { header: true, columns: rows[0] ? Object.keys(rows[0]) : ['No Results'] });
+  const exportString = stringify(rows, {
+    delimiter: '\t',
+    header: true,
+    columns: rows[0] ? Object.keys(rows[0]) : ['No Results']
+  });
 
   return new Response(exportString, {
     status: 200,

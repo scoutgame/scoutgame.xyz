@@ -7,6 +7,8 @@ import { BuildersYouKnowPage } from 'components/builders-you-know/BuildersYouKno
 
 export const dynamic = 'force-dynamic';
 
+const startingPagePath = '/scout';
+
 export const metadata: Metadata = {
   other: {
     robots: 'noindex'
@@ -17,16 +19,14 @@ export const metadata: Metadata = {
 export default async function BuildersYouKnow() {
   const user = await getUserFromSession();
 
-  const redirectPath = '/scout';
-
   if (!user?.farcasterId) {
-    redirect(redirectPath);
+    redirect(startingPagePath);
   }
 
   const data = await loadBuildersUserKnows({ fid: user.farcasterId });
 
   if (!data || (data.buildersFollowingUser.length === 0 && data.buildersUserFollows.length === 0)) {
-    redirect(redirectPath);
+    redirect(startingPagePath);
   }
 
   // logic in middleware.ts ensures that user is logged in
