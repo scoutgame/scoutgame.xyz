@@ -8,6 +8,7 @@ export type SessionData = {
   anonymousUserId?: string;
   utmParams?: UTMParams;
   scoutId?: string; // for ScoutGame, users in the scout database
+  adminId?: string; // users in the admin webapp. should override scoutId
 };
 
 export type RequestContext = {
