@@ -146,7 +146,7 @@ function HeroSection({
                 md: 'left'
               }}
             >
-              Fantasy Sports for <br /> Onchain Builders
+              Fantasy Sports for <br /> Onchain Developers
             </Typography>
             <Hidden mdUp>
               <Typography variant='h6' textAlign='center'>
