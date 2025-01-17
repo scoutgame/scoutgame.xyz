@@ -44,7 +44,7 @@ cat > "packages/$package_name/package.json" << EOL
   "private": true,
   "main": "./index.ts",
   "scripts": {
-    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts --maxWorkers=2"
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts --maxWorkers=2 --passWithNoTests"
   },
   "exports": {
     "./*": "./src/*.ts"
