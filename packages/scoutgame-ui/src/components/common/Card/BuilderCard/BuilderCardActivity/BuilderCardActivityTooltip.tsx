@@ -1,64 +1,46 @@
 import { Stack, Typography } from '@mui/material';
 
-import { GemsIcon } from '../../../Icons';
-
 export function BuilderCardActivityTooltip() {
   return (
-    <Stack flexDirection='column' gap={0.5} py={1} width='fit-content'>
-      <Stack flexDirection='row' gap={2} justifyContent='space-between' alignItems='center'>
-        <Stack width={50} alignItems='center'>
-          <Stack
-            sx={{
-              width: 20,
-              height: 20,
-              borderRadius: '50%',
-              backgroundColor: 'text.secondary'
-            }}
-          />
-        </Stack>
-        <Stack flexDirection='row' gap={0.5} flex={1} alignItems='center'>
-          <Typography>= Scored 30+ </Typography>
-          <GemsIcon size={16} />
-        </Stack>
+    <Stack flexDirection='column' gap={2.5} width='fit-content'>
+      <Stack>
+        <Typography fontWeight='bold'>WEEK’S GEMS</Typography>
+        <Typography>
+          Number of Gems earned by contributing to approved projects for the current week. Developers are ranked by
+          number of Gems earned at the end of each week. Higher rank leads to more Scout Points.
+        </Typography>
       </Stack>
-      <Stack flexDirection='row' gap={2} justifyContent='space-between' alignItems='center'>
-        <Stack width={50} alignItems='center'>
-          <Stack
-            sx={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              backgroundColor: 'text.secondary'
-            }}
-          />
-        </Stack>
-        <Stack flexDirection='row' gap={0.5} flex={1} alignItems='center'>
-          <Typography>= Scored 1 to 29 </Typography>
-          <GemsIcon size={16} />
-        </Stack>
+
+      <Stack>
+        <Typography fontWeight='bold'>LEVEL</Typography>
+        <Typography>
+          Represents the percentile of the Developer's weekly Scout Point average relative to the point average of all
+          active developers. The top 10% of Developers are Level 10.
+        </Typography>
       </Stack>
-      <Stack flexDirection='row' gap={2} justifyContent='space-between' alignItems='center'>
-        <Stack width={50} alignItems='center'>
-          <Stack
-            sx={{
-              width: 5,
-              height: 5,
-              borderRadius: '50%',
-              backgroundColor: 'text.secondary'
-            }}
-          />
-        </Stack>
-        <Stack flexDirection='row' gap={0.5} flex={1} alignItems='center'>
-          <Typography>= No activity </Typography>
-        </Stack>
+
+      <Stack>
+        <Typography fontWeight='bold'>14D RANK</Typography>
+        <Typography>
+          Developer's rank, if in the Top 100, at the close of each day. Vertical axis max is rank 1 and min is rank
+          100. Benchmark is set at rank = 50.
+        </Typography>
       </Stack>
-      <Stack flexDirection='row' gap={2} justifyContent='space-between' alignItems='center'>
-        <Stack width={50} alignItems='center'>
-          <Typography color='text.secondary'>Empty</Typography>
-        </Stack>
-        <Stack flexDirection='row' gap={0.5} flex={1} alignItems='center'>
-          <Typography>= No data </Typography>
-        </Stack>
+
+      <Stack>
+        <Typography fontWeight='bold'>PAYOUT</Typography>
+        <Typography>
+          Estimated weekly Scout Points rewarded to a Scout holding ONE of the Developer's regular cards.
+        </Typography>
+      </Stack>
+
+      <Stack>
+        <Typography fontWeight='bold'>PRICE</Typography>
+        <Typography>
+          The current cost of the Developer’s Card in Scout Points. Purchase the Developer’s Card to scout the Developer
+          and earn Scout Points as they move up the leader board. Builder cards may also be purchased with USDC or ETH
+          on Optimism, Base, Arbitrum, and Zora.
+        </Typography>
       </Stack>
     </Stack>
   );

@@ -1,10 +1,21 @@
+import { randomBytes } from 'node:crypto';
+
 import type { Season } from '@packages/dates/config';
 import { getLastWeek, getCurrentWeek } from '@packages/dates/utils';
+import type { Address } from 'viem';
+import { keccak256 } from 'viem/utils';
 
 export const randomLargeInt = () => Math.floor(Math.random() * 1000000000) + 1000000000;
 
 export function randomIntFromInterval(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+export function randomWalletAddress(): Address {
+  const privateKey = randomBytes(32); // Generate 32 random bytes
+  const publicKey = keccak256(privateKey).slice(2); // Keccak-256 hash and remove '0x'
+  const address = `0x${publicKey.slice(-40)}` as Address; // Take the last 40 characters (20 bytes) for the address
+  return address;
 }
 
 // provide a basic season for testing that doesn't rely on the hard-coded "current season"

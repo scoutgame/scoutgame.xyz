@@ -41,15 +41,23 @@ export async function getUserProfile({
       hasMoxieProfile: true,
       id: true,
       path: true,
-      nftPurchaseEvents: {
-        where: {
-          builderNft: {
-            season: getCurrentSeasonStart(),
-            nftType: 'starter_pack'
-          }
-        },
+      wallets: {
         select: {
-          id: true
+          scoutedNfts: {
+            where: {
+              builderNft: {
+                season: getCurrentSeasonStart(),
+                nftType: 'starter_pack'
+              }
+            },
+            select: {
+              builderNft: {
+                select: {
+                  builderId: true
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -70,6 +78,8 @@ export async function getUserProfile({
     id: user.id,
     path: user.path,
     builderStatus: user.builderStatus,
-    starterPackNftCount: user.nftPurchaseEvents.length
+    starterPackNftCount: new Set(
+      user.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
+    ).size
   };
 }

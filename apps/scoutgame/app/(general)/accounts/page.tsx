@@ -21,24 +21,25 @@ export default async function Accounts() {
       },
       select: {
         telegramId: true,
-        wallets: {
-          select: {
-            address: true
-          }
-        },
+        telegramName: true,
         email: true,
         sendTransactionEmails: true,
         sendMarketing: true,
         emailVerifications: true,
-        nftPurchaseEvents: {
-          where: {
-            builderNft: {
-              season: getCurrentSeasonStart(),
-              nftType: 'starter_pack'
-            }
-          },
+        wallets: {
           select: {
-            id: true
+            address: true,
+            scoutedNfts: {
+              where: {
+                builderNft: {
+                  season: getCurrentSeasonStart(),
+                  nftType: 'starter_pack'
+                }
+              },
+              select: {
+                id: true
+              }
+            }
           }
         }
       }
@@ -61,9 +62,12 @@ export default async function Accounts() {
         sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails,
         sendMarketing: currentUserAccountsMetadata.sendMarketing,
         telegramId: currentUserAccountsMetadata.telegramId,
+        telegramName: currentUserAccountsMetadata.telegramName || null,
         wallets: currentUserAccountsMetadata.wallets.map((wallet) => wallet.address),
         avatar: user.avatar as string,
-        starterPackNftCount: currentUserAccountsMetadata.nftPurchaseEvents.length,
+        starterPackNftCount: currentUserAccountsMetadata.wallets
+          .flatMap((wallet) => wallet.scoutedNfts.length)
+          .reduce((acc, curr) => acc + curr, 0),
         verifiedEmail
       }}
     />

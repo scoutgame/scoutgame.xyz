@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
-import { builderContractReadonlyApiClient } from '../clients/builderContractReadClient';
+import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 
 export async function createBuilderNft({
@@ -26,7 +26,7 @@ export async function createBuilderNft({
   chainId?: number;
   contractAddress?: string;
 }) {
-  const currentPrice = await builderContractReadonlyApiClient.getTokenPurchasePrice({
+  const currentPrice = await getPreSeasonTwoBuilderNftContractReadonlyClient().getTokenPurchasePrice({
     args: { tokenId, amount: BigInt(1) }
   });
 

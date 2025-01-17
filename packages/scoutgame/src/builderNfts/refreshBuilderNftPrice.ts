@@ -5,8 +5,7 @@ import { stringUtils } from '@charmverse/core/utilities';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
-import { getBuilderContractMinterClient } from './clients/builderContractMinterWriteClient';
-import { builderContractReadonlyApiClient } from './clients/builderContractReadClient';
+import { getPreSeasonTwoBuilderNftContractReadonlyClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 
 export async function refreshBuilderNftPrice({
   builderId,
@@ -20,11 +19,11 @@ export async function refreshBuilderNftPrice({
       throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
     }
 
-    const contractClient = getBuilderContractMinterClient();
+    const contractClient = getPreSeasonTwoBuilderNftContractReadonlyClient();
 
     const tokenId = await contractClient.getTokenIdForBuilder({ args: { builderId } });
 
-    const currentPrice = await builderContractReadonlyApiClient.getTokenPurchasePrice({
+    const currentPrice = await contractClient.getTokenPurchasePrice({
       args: { tokenId, amount: BigInt(1) }
     });
     const existingNft = await prisma.builderNft.findFirstOrThrow({

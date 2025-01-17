@@ -1,10 +1,25 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { prettyPrint } from '@packages/utils/strings';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
+import { getCurrentSeasonStart } from 'packages/dates/src/utils';
 async function query() {
-  const rece;
-  const scout = await prisma.scout.count({
-    where: { avatar: null }
+  const scout = await prisma.scout.findMany({
+    where: { path: '' },
+    select: {
+      builderNfts: {
+        where: {
+          season: getCurrentSeasonStart()
+        },
+        select: {
+          nftSoldEvents: {
+            select: {
+              scoutId: true,
+              tokensPurchased: true
+            }
+          }
+        }
+      }
+    }
     // include: {
     //   nftPurchaseEvents: {
     //     select: {

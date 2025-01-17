@@ -1,5 +1,7 @@
-import { CardActionArea, CardMedia, Typography, Box } from '@mui/material';
+import { CardActionArea, CardMedia, Typography, Box, Stack } from '@mui/material';
 import Link from 'next/link';
+
+import { BuilderCardLevel } from './BuilderCardLevel';
 
 // Maintain a 3:4 aspect ratio for the NFT display
 export const nftDisplaySize = {
@@ -25,14 +27,16 @@ export function BuilderCardNftDisplay({
   nftImageUrl,
   children,
   path,
-  showHotIcon = false,
+  level,
   size = 'medium',
   hideDetails = false,
-  disableProfileUrl = false
+  disableProfileUrl = false,
+  starterPack
 }: {
+  starterPack?: boolean;
   path: string;
   nftImageUrl?: string | null;
-  showHotIcon?: boolean;
+  level?: number | null;
   children?: React.ReactNode;
   size?: 'x-small' | 'small' | 'medium' | 'large';
   hideDetails?: boolean;
@@ -59,39 +63,23 @@ export function BuilderCardNftDisplay({
           ) : (
             <CardMedia component='img' image='/images/no_nft_person.png' />
           )}
-          {showHotIcon ? (
-            <CardMedia
-              component='img'
-              image='/images/profile/icons/blue-fire-icon.svg'
-              alt='hot icon'
-              sx={{
-                position: 'absolute',
-                width: 'initial',
-                height: {
-                  xs: 25,
-                  md: 30
-                },
-                top: {
-                  xs: 7.5,
-                  md: 10
-                },
-                right: {
-                  xs: 10,
-                  md: 15
-                }
-              }}
-            />
-          ) : null}
+          <BuilderCardLevel level={level} size={size} starterPack={starterPack} />
         </Box>
         <Box
           sx={{
             height: hideDetails ? 'fit-content' : '33.33%',
             position: 'absolute',
-            width: 'calc(100% - 8px)',
+            width: {
+              xs: 'calc(100% - 6.5px)',
+              md: 'calc(100% - 8px)'
+            },
             left: '50%',
             backgroundColor: hideDetails ? 'transparent' : '#000',
             transform: 'translateX(-50%)',
-            bottom: 3.5
+            bottom: {
+              xs: size === 'x-small' ? 13.5 : 12.5,
+              md: size === 'small' ? 17.5 : 12.5
+            }
           }}
         >
           {nftImageUrl ? null : (

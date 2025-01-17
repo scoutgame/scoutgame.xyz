@@ -1,20 +1,22 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { findOrCreateFarcasterUser } from '@packages/users/findOrCreateFarcasterUser';
 import { isProdEnv } from '@packages/utils/constants';
 
-const whitelistedIds: number[] = [
+export const whitelistedFids: number[] = [
   472, 4339, 1212, 318061, 10921, 828888,
   // matt
   4356,
+  // ilias
+  3144,
   // drea
   814997
 ];
 export async function getAdminUser({ fid }: { fid: number }) {
-  const user = await prisma.scout.findFirstOrThrow({ where: { farcasterId: fid }, select: { id: true } });
-  if (!isProdEnv) {
-    return user;
+  if (!whitelistedFids.includes(fid)) {
+    return null;
   }
-  if (whitelistedIds.includes(fid)) {
-    return user;
-  }
-  return null;
+
+  const user = await findOrCreateFarcasterUser({ fid });
+
+  return user;
 }

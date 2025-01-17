@@ -2,7 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { ISOWeek, Season } from '@packages/dates/config';
+import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
@@ -14,6 +14,7 @@ import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
+import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
@@ -279,14 +280,23 @@ export async function recordNftMint(
       }
     });
   } catch (error) {
-    log.error('Error sending builder card scouted email', { error, userId: builderNft.builderId });
+    log.error('Error sending builder card scouted email', { error, builderId: builderNft.builderId, userId: scoutId });
   }
 
   try {
     await createReferralBonusEvent(scoutId);
   } catch (error) {
-    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, scoutId });
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
   }
+
+  const week = getCurrentWeek();
+
+  await refreshEstimatedPayouts({
+    week,
+    builderIdToRefresh: builderNft.builderId
+  }).catch((error) => {
+    log.error('Error refreshing estimated payouts', { error, builderId: builderNft.builderId, userId: scoutId, week });
+  });
 
   return {
     builderNft,

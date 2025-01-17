@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Paper, Stack, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import { connectTelegramAccountAction } from '@packages/scoutgame/telegram/connectTelegramAccountAction';
 import { generateTelegramQrCodeAction } from '@packages/scoutgame/telegram/generateTelegramQrCodeAction';
 import { mergeUserTelegramAccountAction } from '@packages/scoutgame/telegram/mergeUserTelegramAccountAction';
@@ -105,7 +105,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
             <Typography variant='h6'>Telegram</Typography>
           </Stack>
           {user.telegramId ? (
-            <Typography variant='body1'>{user.telegramId}</Typography>
+            <Typography variant='body1'>Connected as {user.telegramName || user.telegramId}</Typography>
           ) : (
             <>
               <LoadingButton

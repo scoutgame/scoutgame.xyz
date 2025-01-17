@@ -17,7 +17,7 @@ type ShareMessageProps = {
 
 export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'>) {
   const isMd = useMdScreen();
-  const { refreshUser } = useUser();
+  const { refreshUser, user } = useUser();
 
   const { execute, isExecuting } = useAction(completeQuestAction, {
     onSuccess: () => {
@@ -26,7 +26,7 @@ export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'
   });
 
   const handleShare = (platform: 'x' | 'telegram' | 'warpcast') => {
-    const shareUrl = getShareMessage({ ...props, platform });
+    const shareUrl = getShareMessage({ ...props, platform, referralCode: user?.referralCode });
     window.open(shareUrl, '_blank');
     if (!isExecuting) {
       execute({ questType: 'share-weekly-claim' });
@@ -65,14 +65,22 @@ export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'
   );
 }
 
-function getShareMessage({ totalUnclaimedPoints, isBuilder, platform, userPath, builders, week }: ShareMessageProps) {
+function getShareMessage({
+  totalUnclaimedPoints,
+  referralCode,
+  isBuilder,
+  platform,
+  userPath,
+  builders,
+  week
+}: ShareMessageProps & { referralCode?: string }) {
   const imageUrl = `${window.location.origin}/points-claim/${userPath}?week=${week}`;
   let shareMessage = isBuilder
     ? `I scored ${totalUnclaimedPoints} Scout Points this week as a Top Builder!`
     : `I scored ${totalUnclaimedPoints} Scout Points this week as a Top Scout!`;
   // Twitter discounts tweets with links
   if (platform === 'x') {
-    shareMessage += `\n\nJoin me on @scoutgamexyz\n\n`;
+    shareMessage += `\n\nI'm playing @scoutgamexyz.\n\n`;
   } else if (isBuilder) {
     shareMessage += ` Discover my work and scout me to see what I'm building next!\nMy profile: https://scoutgame.xyz/u/${userPath}\n\n`;
   } else {
@@ -85,7 +93,7 @@ function getShareMessage({ totalUnclaimedPoints, isBuilder, platform, userPath, 
     shareMessage += ` Big shoutout to my top Builders: ${buildersFormatted}. Who will be next?\nMy profile: https://scoutgame.xyz/u/${userPath}\n\n`;
   }
   const urls = {
-    x: `https://x.com/intent/tweet?text=${encodeURIComponent(shareMessage)}`,
+    x: `https://x.com/intent/tweet?text=${encodeURIComponent(`${shareMessage}\nJoin me! ${referralCode ? `https://scoutgame.xyz/login?ref=${referralCode}` : ''}`)}`,
     telegram: `https://t.me/share/url?url=${encodeURIComponent(imageUrl)}&text=${encodeURIComponent(shareMessage)}`,
     warpcast: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareMessage)}&embeds[]=${encodeURIComponent(
       imageUrl

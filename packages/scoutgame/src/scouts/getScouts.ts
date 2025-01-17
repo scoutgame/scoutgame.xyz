@@ -74,15 +74,17 @@ export async function getScouts({
             path: true,
             avatar: true,
             displayName: true,
-            nftPurchaseEvents: {
-              distinct: ['builderNftId'],
-              where: {
-                builderEvent: {
-                  season
-                }
-              },
+            wallets: {
               select: {
-                id: true
+                scoutedNfts: {
+                  select: {
+                    builderNft: {
+                      select: {
+                        builderId: true
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -100,7 +102,9 @@ export async function getScouts({
         rank: rankMap.get(scout.user.id) || 0,
         points: scout.pointsEarnedAsScout || 0,
         cards: scout.nftsPurchased || 0,
-        builders: scout.user.nftPurchaseEvents.length
+        builders: new Set(
+          scout.user.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
+        ).size
       }))
       .sort((a, b) => {
         if (sortBy === 'points') {

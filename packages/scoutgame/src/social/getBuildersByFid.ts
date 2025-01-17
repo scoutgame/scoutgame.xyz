@@ -4,7 +4,7 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { uniqueValues } from '@packages/utils/array';
 
-import { normalizeLast7DaysGems } from '../builders/utils/normalizeLast7DaysGems';
+import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 
 export async function getBuildersByFid({
   fids,
@@ -55,12 +55,13 @@ export async function getBuildersByFid({
             nftSoldEvents: {
               distinct: 'scoutId'
             },
-            nftType: true
+            nftType: true,
+            estimatedPayout: true
           }
         },
         builderCardActivities: {
           select: {
-            last7Days: true
+            last14Days: true
           }
         },
         userWeeklyStats: {
@@ -77,12 +78,7 @@ export async function getBuildersByFid({
             season
           },
           select: {
-            nftsSold: true
-          }
-        },
-        userAllTimeStats: {
-          select: {
-            pointsEarnedAsBuilder: true
+            level: true
           }
         }
       }
@@ -94,14 +90,14 @@ export async function getBuildersByFid({
         congratsImageUrl: scout.builderNfts[0]?.congratsImageUrl,
         path: scout.path,
         displayName: scout.displayName,
-        builderPoints: scout.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
         price: scout.builderNfts?.[0]?.currentPrice ?? 0,
         scoutedBy: scout.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
         rank: scout.userWeeklyStats[0]?.rank ?? -1,
-        nftsSold: scout.userSeasonStats[0]?.nftsSold ?? 0,
         builderStatus: scout.builderStatus!,
         farcasterId: scout.farcasterId,
-        last7DaysGems: normalizeLast7DaysGems(scout.builderCardActivities[0]),
+        level: scout.userSeasonStats[0]?.level ?? 0,
+        estimatedPayout: scout.builderNfts[0]?.estimatedPayout ?? 0,
+        last14DaysRank: normalizeLast14DaysRank(scout.builderCardActivities[0]),
         contractAddress: scout.builderNfts[0]?.contractAddress || '',
         nftType: scout.builderNfts[0]?.nftType || 'default'
       }));

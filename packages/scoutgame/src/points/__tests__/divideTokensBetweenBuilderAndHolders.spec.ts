@@ -1,7 +1,7 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import type { MockBuilder } from '@packages/testing/database';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
-import { generateRandomEthAddress } from '@packages/testing/random';
+import { randomWalletAddress } from '@packages/testing/generators';
 
 import type { TokenDistribution } from '../divideTokensBetweenBuilderAndHolders';
 import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenBuilderAndHolders';
@@ -17,8 +17,8 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
   const weeklyAllocatedTokens = 100_000;
   const normalisationFactor = 0.8;
 
-  const userAddress1 = generateRandomEthAddress();
-  const userAddress2 = generateRandomEthAddress();
+  const userAddress1 = randomWalletAddress();
+  const userAddress2 = randomWalletAddress();
 
   beforeAll(async () => {
     builder = await mockBuilder();

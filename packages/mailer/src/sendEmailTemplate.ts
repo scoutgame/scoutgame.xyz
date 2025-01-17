@@ -12,7 +12,8 @@ export async function sendEmailTemplate({
   templateVariables,
   senderAddress,
   template,
-  userId
+  userId,
+  overrideUserSendingPreference
 }: {
   userId: string;
   client?: IMailgunClient | null;
@@ -20,6 +21,8 @@ export async function sendEmailTemplate({
   templateVariables?: Record<string, string | number>;
   senderAddress: string;
   template: string;
+  // send email even if user has opted out of emails
+  overrideUserSendingPreference?: boolean;
 }) {
   client = client ?? mailgunClient;
 
@@ -45,12 +48,12 @@ export async function sendEmailTemplate({
   });
 
   if (!user.email) {
-    log.debug('User does not have an email, not sending email', { userId });
+    log.debug('User does not have an email, not sending email', { userId, template });
     return;
   }
 
-  if (!user.sendTransactionEmails) {
-    log.debug('User does not want to receive any emails, not sending email', { userId });
+  if (!user.sendTransactionEmails && !overrideUserSendingPreference) {
+    log.debug('User does not want to receive any emails, not sending email', { userId, template });
     return;
   }
 

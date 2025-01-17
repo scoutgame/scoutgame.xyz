@@ -4,7 +4,7 @@ import type { Address } from 'viem';
 
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from '../artwork/uploadStarterPackArtwork';
-import { builderContractStarterPackReadonlyApiClient } from '../clients/builderContractStarterPackReadClient';
+import { getBuilderNftStarterPackReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 export async function createBuilderNftStarterPack({
@@ -27,7 +27,7 @@ export async function createBuilderNftStarterPack({
   chainId?: number;
   contractAddress?: Address;
 }) {
-  const currentPrice = await builderContractStarterPackReadonlyApiClient.getTokenPurchasePrice({
+  const currentPrice = await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
     args: { amount: BigInt(1) }
   });
 

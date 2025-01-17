@@ -78,6 +78,9 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
         },
         green: {
           main: '#85FF9E'
+        },
+        yellow: {
+          main: '#fcff6c'
         }
       }
     }
@@ -195,11 +198,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
     MuiButton: {
       defaultProps: {
         variant: 'contained',
-        disableElevation: true,
-        sx: {
-          paddingLeft: 2,
-          paddingRight: 2
-        }
+        disableElevation: true
       },
       variants: [
         {
@@ -247,9 +246,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
           fontSize: '1rem',
           textTransform: 'none',
           paddingTop: 3,
-          paddingBottom: 3,
-          paddingRight: 3,
-          paddingLeft: 3
+          paddingBottom: 3
         }
       }
     },

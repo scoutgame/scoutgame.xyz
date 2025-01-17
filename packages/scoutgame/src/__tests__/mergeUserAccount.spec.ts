@@ -6,7 +6,8 @@ import {
   mockBuilderNft,
   mockGemPayoutEvents,
   mockNFTPurchaseEvent,
-  mockScout
+  mockScout,
+  mockScoutedNft
 } from '@packages/testing/database';
 import { randomIntFromInterval } from '@packages/testing/generators';
 import { v4 } from 'uuid';
@@ -71,14 +72,14 @@ describe('mergeUserAccount', () => {
     });
     await Promise.all([
       ...Array.from({ length: 3 }).map((_, index) =>
-        mockNFTPurchaseEvent({
+        mockScoutedNft({
           builderId: builders[index].id,
           nftType: 'starter_pack',
           scoutId: primaryUser.id,
           season: getCurrentSeasonStart()
         })
       ),
-      mockNFTPurchaseEvent({
+      mockScoutedNft({
         builderId: builders[2].id,
         nftType: 'starter_pack',
         scoutId: secondaryUser.id,
@@ -126,7 +127,8 @@ describe('mergeUserAccount', () => {
     });
     const secondaryUser = await mockBuilder({
       farcasterId: randomIntFromInterval(1, 1000000),
-      farcasterName: 'Merged User'
+      farcasterName: 'Merged User',
+      wallets: []
     });
 
     const { retainedUserId, mergedUserId } = await mergeUserAccount({
@@ -173,7 +175,7 @@ describe('mergeUserAccount', () => {
       mockBuilder()
     ]);
 
-    await Promise.all([
+    const [builderNft1, builderNft2] = await Promise.all([
       mockBuilderNft({
         builderId: builder1.id,
         nftType: 'default',
@@ -187,6 +189,29 @@ describe('mergeUserAccount', () => {
     ]);
 
     await Promise.all([
+      // Purchase builder 2 nft using scout 1
+      mockScoutedNft({
+        builderNftId: builderNft2.id,
+        scoutId: scout1.id,
+        balance: 2
+      }),
+      // Purchase builder 1 nft using scout 1
+      mockScoutedNft({
+        builderNftId: builderNft1.id,
+        scoutId: scout1.id
+      }),
+      // Purchase builder 2 nft using builder 1
+      mockScoutedNft({
+        builderNftId: builderNft2.id,
+        scoutId: builder1.id,
+        balance: 2
+      }),
+      // Purchase builder 1 nft using scout 2
+      mockScoutedNft({
+        builderNftId: builderNft1.id,
+        scoutId: scout2.id,
+        balance: 3
+      }),
       // Purchase builder 2 nft using scout 1
       mockNFTPurchaseEvent({
         builderId: builder2.id,

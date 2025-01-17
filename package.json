@@ -50,8 +50,8 @@
     "telegram:e2e:ci": "npx dotenv -e .env.test.local -- npm run test:e2e -w=apps/telegram",
     "telegram:start:test": "npm run start:test -w=apps/telegram",
     "telegram:start:test:ci": "npm run start:test:ci -w=apps/telegram",
-    "admin": "dotenv -e .env.local -- npm start -w=apps/admin",
-    "admin:remote": "dotenv -e .env.production -- npm start -w=apps/admin",
+    "admin": "npx react-env --path .env.local --dest ./apps/admin/public -- npm start -w=apps/admin",
+    "admin:remote": "npx react-env --path .env.production --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:build": "npm run build -w=apps/admin",
     "admin:test": "dotenv -e .env.test.local -- npm test -w apps/admin"
   },
@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.104.3",
+    "@charmverse/core": "^0.107.1",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",

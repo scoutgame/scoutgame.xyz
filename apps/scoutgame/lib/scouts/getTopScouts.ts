@@ -29,16 +29,20 @@ export async function getTopScouts({ limit }: { limit: number }): Promise<TopSco
           path: true,
           displayName: true,
           avatar: true,
-          nftPurchaseEvents: {
-            where: {
-              builderNft: {
-                season: getCurrentSeasonStart()
-              }
-            },
+          wallets: {
             select: {
-              builderNft: {
+              scoutedNfts: {
+                where: {
+                  builderNft: {
+                    season: getCurrentSeasonStart()
+                  }
+                },
                 select: {
-                  builderId: true
+                  builderNft: {
+                    select: {
+                      builderId: true
+                    }
+                  }
                 }
               }
             }
@@ -62,9 +66,9 @@ export async function getTopScouts({ limit }: { limit: number }): Promise<TopSco
   });
   return topScouts
     .map((scout) => {
-      const buildersScouted = Array.from(
-        new Set(scout.user.nftPurchaseEvents.map((event) => event.builderNft.builderId))
-      ).length;
+      const buildersScouted = new Set(
+        scout.user.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
+      ).size;
       const nftsHeld = scout.user.userSeasonStats[0]?.nftsPurchased || 0;
       const allTimePoints = scout.user.userAllTimeStats[0]?.pointsEarnedAsScout || 0;
       const seasonPoints = scout.pointsEarnedAsScout;
