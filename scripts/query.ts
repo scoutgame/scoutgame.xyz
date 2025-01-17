@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { prettyPrint } from '@packages/utils/strings';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
-import { getCurrentSeasonStart } from 'packages/dates/src/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 async function query() {
   const scout = await prisma.scout.findMany({
     where: { path: 'loocapro' },
