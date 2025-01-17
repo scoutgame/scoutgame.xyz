@@ -51,6 +51,7 @@ export async function findOrCreateUser({
   path: string;
   farcasterName?: string;
   tierOverride?: ConnectWaitlistTier;
+  telegramName?: string;
 }): Promise<FindOrCreateUserResult> {
   if (!farcasterId && !telegramId && !walletAddresses?.length) {
     throw new InvalidInputError('Missing required fields for user creation');
