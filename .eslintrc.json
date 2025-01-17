@@ -80,7 +80,7 @@
           "../..",
           "./apps/scoutgame/",
           "./apps/telegram/",
-          "./apps/scout-agents/",
+          "./apps/agents/",
           "./apps/admin/",
           "./apps/cron/",
           "./packages/github/",
