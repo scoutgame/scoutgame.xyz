@@ -79,6 +79,12 @@ export async function deleteContact(payload: { email: string }) {
   await rateLimiter();
   return POST<{ success: boolean }>(`${apiBaseUrl}/contacts/delete`, payload, {
     headers
+  }).catch((err) => {
+    if (err.status === 404) {
+      // no contact found
+    } else {
+      throw err;
+    }
   });
 }
 

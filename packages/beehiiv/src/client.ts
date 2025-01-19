@@ -37,13 +37,9 @@ export async function findSubscriptions(query: Partial<BeehiivSubscription>) {
 // ref: https://developers.beehiiv.com/api-reference/subscriptions/delete
 export async function deleteSubscription({ id }: { id: string }) {
   _validateConfig();
-  return DELETE(
-    `${apiBaseUrl}/publications/${publicationId}/subscriptions/${id}`,
-    {},
-    {
-      headers
-    }
-  );
+  return DELETE(`${apiBaseUrl}/publications/${publicationId}/subscriptions/${id}`, {
+    headers
+  });
 }
 
 // ref: https://developers.beehiiv.com/api-reference/subscriptions/put
