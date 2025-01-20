@@ -122,6 +122,7 @@ export async function recordNftMint(
             paidInPoints: paidWithPoints,
             txHash: mintTxHash?.toLowerCase(),
             builderNftId,
+            walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
             scoutId,
             activities: {
               create: {
