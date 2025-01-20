@@ -14,7 +14,7 @@ export function AboutPage() {
 function Document() {
   return (
     <InfoCard>
-      <Typography>Here's your new mission: Become a Scout and hunt for the next big onchain builders.</Typography>
+      <Typography>Here's your new mission: Become a Scout and hunt for the next big onchain developers.</Typography>
       <Typography>
         Your role? Spot them early and help them rise to the top. As they climb to success, you rake in rewards for
         backing the right talent.
@@ -24,7 +24,7 @@ function Document() {
       </Typography>
       <Typography>
         The Scout Game is designed to reward individuals for identifying and supporting emerging developer talent within
-        onchain ecosystems. As a Scout, your goal is to recognize promising builders early in their journey and help
+        onchain ecosystems. As a Scout, your goal is to recognize promising developers early in their journey and help
         them gain visibility. In return, you earn rewards based on their success.
       </Typography>
     </InfoCard>

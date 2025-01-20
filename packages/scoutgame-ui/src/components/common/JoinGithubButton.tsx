@@ -2,7 +2,6 @@
 
 import { Box, Button, Typography } from '@mui/material';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React from 'react';
 
 export function JoinGithubButton({ text = 'Connect & Sign up' }: { text?: string }) {
   const params = useSearchParams();
@@ -10,6 +9,7 @@ export function JoinGithubButton({ text = 'Connect & Sign up' }: { text?: string
   const pathname = usePathname();
   const isProfilePage = pathname.includes('profile');
   const href = '/api/connect-github/get-link';
+
   return (
     <>
       <Button
@@ -20,7 +20,6 @@ export function JoinGithubButton({ text = 'Connect & Sign up' }: { text?: string
       >
         {text}
       </Button>
-
       {connectError && (
         <Box>
           <Typography color='error'>{connectError}</Typography>

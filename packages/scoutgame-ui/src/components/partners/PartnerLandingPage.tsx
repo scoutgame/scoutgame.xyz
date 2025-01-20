@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import { InfoPageFooter } from '../info/components/InfoPageFooter';
+
 function ContainerStack({ children, ...props }: { children: React.ReactNode } & StackProps) {
   return (
     <Stack
@@ -144,7 +146,7 @@ function HeroSection({
                 md: 'left'
               }}
             >
-              Fantasy Sports for <br /> Onchain Builders
+              Fantasy Sports for <br /> Onchain Developers
             </Typography>
             <Hidden mdUp>
               <Typography variant='h6' textAlign='center'>
@@ -353,6 +355,7 @@ export function PartnerLandingPage({
           partnerRewardsText={partnerRewardsText}
         />
         <FooterSection partnerUtmCampaign={partnerUtmCampaign} />
+        <InfoPageFooter />
       </Stack>
     </Stack>
   );
