@@ -1,12 +1,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { sleep } from 'telegram/Helpers';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { nftTypeMultipliers } from '../points/dividePointsBetweenBuilderAndScouts';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
 
-import type { BuilderNftWithOwners, SeasonNfts } from './getAllSeasonNftsWithOwners';
+import type { BuilderNftWithOwners } from './getAllSeasonNftsWithOwners';
 import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';
 
 /**
