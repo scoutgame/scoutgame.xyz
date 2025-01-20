@@ -8,6 +8,7 @@ import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderL
 import type Koa from 'koa';
 
 import { processBuilderActivity } from './processBuilderActivity';
+import { reviewBuildersStatus } from './reviewBuildersStatus';
 
 type ProcessPullRequestsOptions = {
   createdAfter?: Date;
@@ -21,6 +22,8 @@ export async function processAllBuilderActivity(
     season = getCurrentSeasonStart()
   }: ProcessPullRequestsOptions = {}
 ) {
+  await reviewBuildersStatus();
+
   const builders = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
