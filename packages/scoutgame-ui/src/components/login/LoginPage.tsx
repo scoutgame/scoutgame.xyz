@@ -52,7 +52,7 @@ export function LoginPage() {
             px: 1
           }}
         >
-          Fantasy sports for onchain builders
+          Fantasy sports with onchain developers
         </Typography>
         <Box display='flex' flexDirection='column' gap={2} width='100%'>
           <WalletLogin />

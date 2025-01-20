@@ -1,6 +1,7 @@
 import type { StackProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { InfoPageFooter } from '@packages/scoutgame-ui/components/info/components/InfoPageFooter';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -143,7 +144,7 @@ function HeroSection() {
                 md: 'left'
               }}
             >
-              Fantasy Sports for <br /> Onchain Builders
+              Fantasy Sports for <br /> Onchain Developers
             </Typography>
             <Hidden mdUp>
               <Typography variant='h6' textAlign='center'>
@@ -331,6 +332,14 @@ export function LandingPage() {
         <HeroSection />
         <HowToPlaySection />
         <FooterSection />
+        <Stack
+          zIndex={{
+            xs: 0,
+            md: 1
+          }}
+        >
+          <InfoPageFooter />
+        </Stack>
       </Stack>
     </Stack>
   );
