@@ -22,12 +22,6 @@
       }
     ],
     "paths": {
-      "apiClient/*": ["./apiClient/*"],
-      "components/*": ["./components/*"],
-      "hooks/*": ["./hooks/*"],
-      "lib/*": ["./lib/*"],
-      "public/*": ["./public/*"],
-      "theme/*": ["./theme/*"],
       "@charmverse/core/prisma": ["../../node_modules/@charmverse/core/dist/cjs/prisma"],
       "@charmverse/core/prisma-client": ["../../node_modules/@charmverse/core/dist/cjs/prisma-client"],
       "@charmverse/core/log": ["../../node_modules/@charmverse/core/dist/cjs/lib/log"],
