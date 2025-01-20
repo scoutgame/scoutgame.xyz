@@ -42,26 +42,33 @@ export async function getWeeklyPointsPoolAndBuilders({ week }: { week: string })
 
 async function getNftPurchaseEvents({ week }: { week: string }): Promise<PartialNftPurchaseEvent[]> {
   const season = getCurrentSeasonStart(week);
-  return prisma.nFTPurchaseEvent.findMany({
-    where: {
-      builderEvent: {
-        week: {
-          lte: week
+  return prisma.nFTPurchaseEvent
+    .findMany({
+      where: {
+        senderWalletAddress: null,
+        builderEvent: {
+          week: {
+            lte: week
+          }
+        },
+        builderNft: {
+          season
         }
       },
-      builderNft: {
-        season
-      }
-    },
-    select: {
-      scoutId: true,
-      tokensPurchased: true,
-      builderNft: {
-        select: {
-          builderId: true,
-          nftType: true
+      select: {
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        },
+        tokensPurchased: true,
+        builderNft: {
+          select: {
+            builderId: true,
+            nftType: true
+          }
         }
       }
-    }
-  });
+    })
+    .then((data) => data.map((record) => ({ ...record, scoutId: record.scoutWallet?.scoutId })));
 }

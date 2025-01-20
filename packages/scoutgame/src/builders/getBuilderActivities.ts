@@ -1,5 +1,6 @@
 import type { GemsReceiptType, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
@@ -59,11 +60,19 @@ export async function getBuilderActivities({
       createdAt: true,
       type: true,
       nftPurchaseEvent: {
+        where: {
+          // Only return mints
+          senderWalletAddress: null
+        },
         select: {
-          scout: {
+          scoutWallet: {
             select: {
-              path: true,
-              displayName: true
+              scout: {
+                select: {
+                  path: true,
+                  displayName: true
+                }
+              }
             }
           },
           tokensPurchased: true
@@ -99,8 +108,8 @@ export async function getBuilderActivities({
           createdAt: event.createdAt,
           type: 'nft_purchase' as const,
           scout: {
-            path: event.nftPurchaseEvent.scout.path,
-            displayName: event.nftPurchaseEvent.scout.displayName
+            path: event.nftPurchaseEvent.scoutWallet.scout.path,
+            displayName: event.nftPurchaseEvent.scoutWallet.scout?.displayName
           }
         };
       } else if (
