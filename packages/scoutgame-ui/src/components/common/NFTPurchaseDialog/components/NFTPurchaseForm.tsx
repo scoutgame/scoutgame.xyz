@@ -257,7 +257,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const contractAddress =
     platform === 'onchain_webapp'
       ? scoutProtocolBuilderNftContractAddress()
-      : getBuilderNftContractAddressForNftType(builder.nftType);
+      : getBuilderNftContractAddressForNftType({ nftType: builder.nftType });
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address: address as Address,
@@ -331,7 +331,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           contractAddress:
             platform === 'onchain_webapp'
               ? scoutProtocolBuilderNftContractAddress()
-              : getBuilderNftContractAddressForNftType(builder.nftType),
+              : getBuilderNftContractAddressForNftType({ nftType: builder.nftType }),
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,
           builderTokenId: Number(builderTokenId),

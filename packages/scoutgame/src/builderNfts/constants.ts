@@ -57,8 +57,16 @@ export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCur
  */
 export const MAX_STARTER_PACK_PURCHASES = 3;
 
-export function getBuilderNftContractAddressForNftType(nftType: BuilderNftType): Address {
-  return nftType === 'starter_pack' ? getBuilderNftStarterPackContractAddress() : getBuilderNftContractAddress();
+export function getBuilderNftContractAddressForNftType({
+  nftType,
+  season
+}: {
+  nftType: BuilderNftType;
+  season?: ISOWeek;
+}): Address {
+  return nftType === 'starter_pack'
+    ? getBuilderNftStarterPackContractAddress(season)
+    : getBuilderNftContractAddress(season);
 }
 
 // USDC Contract we use for payments

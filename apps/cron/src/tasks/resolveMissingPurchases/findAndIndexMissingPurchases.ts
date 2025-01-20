@@ -1,4 +1,5 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
+import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
@@ -8,7 +9,9 @@ import {
 } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
+import { getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
+import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
@@ -23,6 +26,8 @@ export async function findAndIndexMissingPurchases({
   nftType: BuilderNftType;
   season?: ISOWeek;
 }) {
+  const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
+
   const transferSingleEvents = await (nftType === BuilderNftType.starter_pack
     ? getStarterPackTransferSingleEvents({ fromBlock: startBlockNumberForReindexing })
     : getTransferSingleEvents({ fromBlock: startBlockNumberForReindexing }));
@@ -94,8 +99,17 @@ export async function findAndIndexMissingPurchases({
     for (const missingTx of groupedByTokenId[key as any].records) {
       scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
 
-      if (missingTx.args.to === '0x0000000000000000000000000000000000000000') {
-        scoutgameMintsLogger.error('Skipping burn tx', missingTx.transactionHash, 'tokenId', key);
+      // Null to means this is a burn, which impacts the total supply. Not null from means this is a transfer from an existing wallet
+      if (missingTx.args.to === NULL_EVM_ADDRESS || missingTx.args.from !== NULL_EVM_ADDRESS) {
+        scoutgameMintsLogger.info('Detected secondary market transfer', missingTx.transactionHash, 'tokenId', key);
+        await recordNftTransfer({
+          amount: Number(missingTx.args.value),
+          contractAddress,
+          from: missingTx.args.from,
+          to: missingTx.args.to,
+          tokenId: Number(missingTx.args.id),
+          txHash: missingTx.transactionHash
+        });
         // eslint-disable-next-line no-continue
         continue;
       } else if (missingTx.args.from !== '0x0000000000000000000000000000000000000000') {
