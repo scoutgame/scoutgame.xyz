@@ -112,10 +112,6 @@ export async function findAndIndexMissingPurchases({
         });
         // eslint-disable-next-line no-continue
         continue;
-      } else if (missingTx.args.from !== '0x0000000000000000000000000000000000000000') {
-        scoutgameMintsLogger.error('Skipping transfer tx', missingTx.transactionHash, 'tokenId', key);
-        // eslint-disable-next-line no-continue
-        continue;
       }
 
       const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
