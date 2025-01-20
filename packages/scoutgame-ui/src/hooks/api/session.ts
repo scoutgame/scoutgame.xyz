@@ -1,6 +1,7 @@
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
+import type { WebAppInitData } from '@twa-dev/types';
 
-import { useGETImmutable, useGETtrigger } from '../helpers';
+import { useGETImmutable, useGETtrigger, usePOST } from '../helpers';
 
 export function useGetUser() {
   return useGETImmutable<SessionUser | null>('/api/session/user');
@@ -23,4 +24,8 @@ export function useGetClaimablePoints() {
       refreshInterval: 30000
     }
   );
+}
+
+export function useInitTelegramUser() {
+  return usePOST<{ initData: string }, WebAppInitData>('/api/session/telegram-user');
 }

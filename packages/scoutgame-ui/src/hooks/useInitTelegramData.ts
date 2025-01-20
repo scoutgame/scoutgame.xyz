@@ -1,20 +1,21 @@
 import { log } from '@charmverse/core/log';
+import { getPlatform } from '@packages/mixpanel/platform';
+import { useInitTelegramUser } from '@packages/scoutgame-ui/hooks/api/session';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import WebApp from '@twa-dev/sdk';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { useInitTelegramUser } from './api/session';
-
 export function useInitTelegramData() {
-  const initData = typeof window !== 'undefined' ? WebApp.initData : null;
+  const platform = getPlatform();
+  const initData = typeof window !== 'undefined' && platform === 'telegram' ? WebApp.initData : null;
   const { trigger, isMutating } = useInitTelegramUser();
   const { refreshUser, isLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
     // Load the Telegram Web App SDK
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && platform === 'telegram') {
       WebApp.ready();
     }
   }, []);

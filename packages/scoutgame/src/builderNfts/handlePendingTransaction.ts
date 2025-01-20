@@ -9,7 +9,7 @@ import {
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import {

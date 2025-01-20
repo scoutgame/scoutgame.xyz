@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, List, ListItem, ListItemAvatar, Stack, Typography } from '@mui/material';
+import { getPlatform } from '@packages/mixpanel/platform';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Link from 'next/link';
@@ -8,7 +9,10 @@ import React from 'react';
 
 export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React.MouseEventHandler }) {
   const isMdScreen = useMdScreen();
+  const platform = getPlatform();
   const iconSize = isMdScreen ? 24 : 18;
+  const url = platform === 'telegram' ? '/quests' : '/builders-you-know';
+
   return (
     <>
       <Typography color='secondary' textAlign='center' width='100%' fontWeight={700} variant='h5'>
@@ -80,7 +84,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React
         LinkComponent={Link}
         variant='contained'
         onClick={onClickContinue}
-        href='/builders-you-know'
+        href={url}
         data-test='continue-button'
         sx={{ margin: '0 auto', display: 'flex', width: 'fit-content' }}
       >

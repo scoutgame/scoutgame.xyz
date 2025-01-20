@@ -1,11 +1,9 @@
 import { Box, Typography } from '@mui/material';
-import { InfoBackgroundImage } from '@packages/scoutgame-ui/components/layout/InfoBackgroundImage';
 import Image from 'next/image';
 
 export default async function Home() {
   return (
     <Box component='main' bgcolor='background.default' p={{ md: 3 }} height='100%' minHeight='100dvh'>
-      <InfoBackgroundImage />
       <Box
         position='relative'
         height='100%'
