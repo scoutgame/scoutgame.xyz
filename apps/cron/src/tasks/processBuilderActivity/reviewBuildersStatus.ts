@@ -46,7 +46,7 @@ export async function reviewBuildersStatus() {
           }
         });
 
-        log.info('Builder rejected', { builderId: builder.id });
+        log.info('Builder rejected', { userId: builder.id });
       }
     }
   }
