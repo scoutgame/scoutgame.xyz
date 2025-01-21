@@ -6,7 +6,7 @@ import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
 
-const baseUrl = process.env.DOMAIN as string;
+const baseUrl = process.env.DOMAIN || 'https://scoutgame.xyz';
 
 export async function approveBuilder({
   builderId,
@@ -15,10 +15,6 @@ export async function approveBuilder({
   builderId: string;
   season?: Season;
 }) {
-  if (!baseUrl) {
-    throw new Error('DOMAIN is not set');
-  }
-
   // make sure scout exists
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
