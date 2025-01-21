@@ -26,31 +26,25 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
       senderWalletAddress: null
     },
     select: {
-      scoutWallet: {
-        select: {
-          scout: {
-            select: BasicUserInfoSelect
-          }
-        }
+      scout: {
+        select: BasicUserInfoSelect
       },
       tokensPurchased: true
     }
   });
 
-  const uniqueScoutIds = Array.from(
-    new Set(nftPurchaseEvents.map((event) => event.scoutWallet?.scout.id).filter(isTruthy))
-  );
+  const uniqueScoutIds = Array.from(new Set(nftPurchaseEvents.map((event) => event.scout.id).filter(isTruthy)));
   const scoutsRecord: Record<string, ScoutInfo> = {};
 
   nftPurchaseEvents.forEach((event) => {
-    const existingScout = scoutsRecord[event.scoutWallet?.scout.id];
+    const existingScout = scoutsRecord[event.scout.id];
     if (!existingScout) {
-      scoutsRecord[event.scoutWallet?.scout.id] = {
-        ...event.scoutWallet?.scout,
+      scoutsRecord[event.scout.id] = {
+        ...event.scout,
         nfts: 0
       };
     }
-    scoutsRecord[event.scoutWallet?.scout.id].nfts += event.tokensPurchased;
+    scoutsRecord[event.scout.id].nfts += event.tokensPurchased;
   });
 
   const totalNftsSold = Object.values(scoutsRecord).reduce((acc, scout) => acc + scout.nfts, 0);

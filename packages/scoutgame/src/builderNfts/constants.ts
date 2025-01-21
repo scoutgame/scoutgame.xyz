@@ -1,7 +1,7 @@
 import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma';
-import type { ISOWeek } from '@packages/dates/config';
+import type { ISOWeek, Season } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
@@ -43,7 +43,7 @@ export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonS
   return address?.toLowerCase() as Address;
 }
 
-export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
+export function getBuilderNftStarterPackContractAddress(season: ISOWeek): Address {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
@@ -62,7 +62,7 @@ export function getBuilderNftContractAddressForNftType({
   season
 }: {
   nftType: BuilderNftType;
-  season?: ISOWeek;
+  season: ISOWeek;
 }): Address {
   return nftType === 'starter_pack'
     ? getBuilderNftStarterPackContractAddress(season)

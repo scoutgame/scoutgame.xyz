@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getWeekFromDate } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
@@ -10,6 +11,8 @@ type RecordNftTransferParams = {
   amount: number;
   contractAddress: Address;
   txHash: string;
+  sentAt: Date;
+  scoutId: string;
 };
 
 export async function recordNftTransfer({
@@ -18,7 +21,9 @@ export async function recordNftTransfer({
   from,
   to,
   tokenId,
-  txHash
+  txHash,
+  sentAt,
+  scoutId
 }: RecordNftTransferParams): Promise<void> {
   const matchingNft = await prisma.builderNft.findFirstOrThrow({
     where: {
@@ -27,6 +32,63 @@ export async function recordNftTransfer({
         equals: contractAddress,
         mode: 'insensitive'
       }
+    }
+  });
+
+  const existingNftPurchaseEvent = await prisma.nFTPurchaseEvent.findFirst({
+    where: {
+      builderNftId: matchingNft.id,
+      txHash,
+      tokensPurchased: amount,
+      senderWalletAddress: {
+        equals: from.toLowerCase(),
+        mode: 'insensitive'
+      },
+      walletAddress: {
+        equals: to.toLowerCase(),
+        mode: 'insensitive'
+      }
+    }
+  });
+
+  if (existingNftPurchaseEvent) {
+    return;
+  }
+
+  await prisma.builderEvent.create({
+    data: {
+      type: 'nft_purchase',
+      season: matchingNft.season,
+      week: getWeekFromDate(sentAt),
+      builder: {
+        connect: {
+          id: matchingNft.builderId
+        }
+      },
+      nftPurchaseEvent: {
+        create: {
+          pointsValue: 0,
+          createdAt: sentAt,
+          tokensPurchased: amount,
+          paidInPoints: false,
+          txHash: txHash?.toLowerCase(),
+          builderNftId: matchingNft.id,
+          walletAddress: to.toLowerCase() as `0x${string}`,
+          senderWalletAddress: from.toLowerCase(),
+          scoutId,
+          activities: {
+            create: {
+              recipientType: 'builder',
+              type: 'nft_purchase',
+              userId: matchingNft.builderId,
+              createdAt: sentAt
+            }
+          }
+        }
+      }
+    },
+    select: {
+      nftPurchaseEvent: true
     }
   });
 
@@ -44,35 +106,4 @@ export async function recordNftTransfer({
       nftType: 'default'
     })
   ]);
-
-  const existingNftPurchaseEvent = await prisma.nFTPurchaseEvent.findFirst({
-    where: {
-      builderNftId: matchingNft.id,
-      txHash,
-      senderWalletAddress: {
-        equals: from.toLowerCase(),
-        mode: 'insensitive'
-      },
-      walletAddress: {
-        equals: to.toLowerCase(),
-        mode: 'insensitive'
-      }
-    }
-  });
-
-  if (existingNftPurchaseEvent) {
-    return;
-  }
-
-  await prisma.nFTPurchaseEvent.create({
-    data: {
-      // An NFT transferred in the secondary market does not generate points
-      pointsValue: 0,
-      tokensPurchased: amount,
-      txHash,
-      senderWalletAddress: from.toLowerCase(),
-      walletAddress: to.toLowerCase(),
-      builderNftId: matchingNft.id
-    }
-  });
 }

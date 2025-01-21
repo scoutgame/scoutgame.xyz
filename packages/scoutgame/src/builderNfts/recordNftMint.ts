@@ -104,6 +104,7 @@ export async function recordNftMint(
       }
     });
     const uniqueOwners = Array.from(new Set(owners.map((owner) => owner.scoutId).concat(scoutId))).length;
+
     const builderEvent = await tx.builderEvent.create({
       data: {
         type: 'nft_purchase',

@@ -31,9 +31,9 @@ export type TransferSingleEvent = {
 export function getTransferSingleEvents({
   fromBlock,
   toBlock,
-  contractAddress = getBuilderNftContractAddress(),
-  chainId = builderNftChain.id
-}: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
+  contractAddress,
+  chainId
+}: BlockRange & { contractAddress: Address; chainId: number }): Promise<TransferSingleEvent[]> {
   return getPublicClient(chainId)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
@@ -53,7 +53,7 @@ export function getStarterPackTransferSingleEvents({
   fromBlock,
   toBlock,
   season
-}: BlockRange & { season?: ISOWeek }): Promise<TransferSingleEvent[]> {
+}: BlockRange & { season: ISOWeek }): Promise<TransferSingleEvent[]> {
   return getPublicClient(builderNftChain.id)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),

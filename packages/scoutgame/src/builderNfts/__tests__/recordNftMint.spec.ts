@@ -1,3 +1,4 @@
+import type { BuilderEvent, NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
@@ -45,12 +46,13 @@ describe('recordNftMint', () => {
     const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
     const amount = 10;
+    const mintTxHash = `0x123${Math.random().toString().replace('.', '')}`;
 
     await recordNftMint({
       builderNftId: builderNft.id,
       season,
       amount,
-      mintTxHash: `0x123${Math.random().toString()}`,
+      mintTxHash,
       pointsValue: 100,
       recipientAddress: mockWallet,
       scoutId: scout.id,
@@ -62,12 +64,41 @@ describe('recordNftMint', () => {
         nftPurchaseEvent: {
           builderNftId: builderNft.id
         }
+      },
+      include: {
+        nftPurchaseEvent: true
       }
     });
 
-    expect(builderEvent.type).toBe('nft_purchase');
-    expect(builderEvent.builderId).toBe(builder.id);
-    expect(builderEvent.season).toBe(builderNft.season);
+    expect(builderEvent).toMatchObject<BuilderEvent & { nftPurchaseEvent: NFTPurchaseEvent }>({
+      bonusPartner: null,
+      createdAt: expect.any(Date),
+      builderId: builder.id,
+      dailyClaimEventId: null,
+      dailyClaimStreakEventId: null,
+      description: null,
+      gemsPayoutEventId: null,
+      githubEventId: null,
+      id: expect.any(String),
+      nftPurchaseEventId: expect.any(String),
+      scoutSocialQuestId: null,
+      type: 'nft_purchase',
+      season: builderNft.season,
+      week: expect.any(String),
+      weeklyClaimId: null,
+      nftPurchaseEvent: {
+        builderNftId: builderNft.id,
+        createdAt: expect.any(Date),
+        id: expect.any(String),
+        paidInPoints: true,
+        pointsValue: 100,
+        scoutId: expect.any(String),
+        tokensPurchased: amount,
+        txHash: mintTxHash,
+        walletAddress: mockWallet,
+        senderWalletAddress: null
+      }
+    });
 
     const builderStats = await prisma.userSeasonStats.findUniqueOrThrow({
       where: {

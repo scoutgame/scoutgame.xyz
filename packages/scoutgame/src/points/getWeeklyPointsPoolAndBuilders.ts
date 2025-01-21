@@ -56,11 +56,7 @@ async function getNftPurchaseEvents({ week }: { week: string }): Promise<Partial
         }
       },
       select: {
-        scoutWallet: {
-          select: {
-            scoutId: true
-          }
-        },
+        scoutId: true,
         tokensPurchased: true,
         builderNft: {
           select: {
@@ -70,5 +66,5 @@ async function getNftPurchaseEvents({ week }: { week: string }): Promise<Partial
         }
       }
     })
-    .then((data) => data.map((record) => ({ ...record, scoutId: record.scoutWallet?.scoutId })));
+    .then((data) => data.map((record) => ({ ...record, scoutId: record.scoutId })));
 }
