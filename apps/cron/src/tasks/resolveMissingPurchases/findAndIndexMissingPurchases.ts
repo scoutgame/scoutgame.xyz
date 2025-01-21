@@ -1,15 +1,13 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
-import {
-  getStarterPackTransferSingleEvents,
-  getTransferSingleEvents
-} from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import { getTransferSingleEvents } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import { getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
+import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
@@ -28,10 +26,11 @@ export async function findAndIndexMissingPurchases({
 }) {
   const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
 
-  const transferSingleEvents = await (nftType === BuilderNftType.starter_pack
-    ? getStarterPackTransferSingleEvents({ fromBlock: startBlockNumberForReindexing })
-    : getTransferSingleEvents({ fromBlock: startBlockNumberForReindexing }));
-
+  const transferSingleEvents = await getTransferSingleEvents({
+    fromBlock: startBlockNumberForReindexing,
+    contractAddress,
+    chainId: builderNftChain.id
+  });
   const transferSingleEventsMapped = transferSingleEvents.reduce(
     (acc, val) => {
       acc[val.transactionHash] = val;
@@ -99,8 +98,14 @@ export async function findAndIndexMissingPurchases({
     for (const missingTx of groupedByTokenId[key as any].records) {
       scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
 
+      const recipientScoutId = await findOrCreateWalletUser({ wallet: missingTx.args.to }).then((scout) => scout.id);
+
       // Null to means this is a burn, which impacts the total supply. Not null from means this is a transfer from an existing wallet
       if (missingTx.args.to === NULL_EVM_ADDRESS || missingTx.args.from !== NULL_EVM_ADDRESS) {
+        const blockTimestamp = await getPublicClient(builderNftChain.id).getBlock({
+          blockNumber: missingTx.blockNumber
+        });
+
         scoutgameMintsLogger.info('Detected secondary market transfer', missingTx.transactionHash, 'tokenId', key);
         await recordNftTransfer({
           amount: Number(missingTx.args.value),
@@ -108,7 +113,9 @@ export async function findAndIndexMissingPurchases({
           from: missingTx.args.from,
           to: missingTx.args.to,
           tokenId: Number(missingTx.args.id),
-          txHash: missingTx.transactionHash
+          txHash: missingTx.transactionHash,
+          scoutId: recipientScoutId,
+          sentAt: new Date(Number(blockTimestamp.timestamp) * 1000)
         });
         // eslint-disable-next-line no-continue
         continue;

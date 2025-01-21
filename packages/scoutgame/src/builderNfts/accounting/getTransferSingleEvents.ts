@@ -48,23 +48,3 @@ export function getTransferSingleEvents({
       })
     );
 }
-
-export function getStarterPackTransferSingleEvents({
-  fromBlock,
-  toBlock,
-  season
-}: BlockRange & { season: ISOWeek }): Promise<TransferSingleEvent[]> {
-  return getPublicClient(builderNftChain.id)
-    .getLogs({
-      ...convertBlockRange({ fromBlock, toBlock }),
-      address: getBuilderNftStarterPackContractAddress(season),
-      event: transferSingleAbi
-    })
-    .then((logs) =>
-      parseEventLogs({
-        abi: [transferSingleAbi],
-        logs,
-        eventName: 'TransferSingle'
-      })
-    );
-}

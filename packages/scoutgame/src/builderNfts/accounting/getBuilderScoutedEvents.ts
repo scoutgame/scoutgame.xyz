@@ -1,8 +1,8 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { ISOWeek } from '@packages/dates/config';
+import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../constants';
+import { builderNftChain } from '../constants';
 
 import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
@@ -46,33 +46,13 @@ function ignoreEvent(ev: BuilderScoutedEvent) {
 export function getBuilderScoutedEvents({
   fromBlock,
   toBlock,
-  season,
+  contractAddress,
   chainId = builderNftChain.id
-}: BlockRange & { season: ISOWeek; chainId?: number }): Promise<BuilderScoutedEvent[]> {
+}: BlockRange & { contractAddress: Address; chainId?: number }): Promise<BuilderScoutedEvent[]> {
   return getPublicClient(chainId)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
-      address: getBuilderNftContractAddress(season),
-      event: builderScoutedAbi
-    })
-    .then((logs) =>
-      parseEventLogs({
-        abi: [builderScoutedAbi],
-        logs,
-        eventName: 'BuilderScouted'
-      }).filter((ev) => !ignoreEvent(ev))
-    );
-}
-
-export function getBuilderStarterPackScoutedEvents({
-  fromBlock,
-  toBlock,
-  season
-}: BlockRange & { season: ISOWeek }): Promise<BuilderScoutedEvent[]> {
-  return getPublicClient(builderNftChain.id)
-    .getLogs({
-      ...convertBlockRange({ fromBlock, toBlock }),
-      address: getBuilderNftStarterPackContractAddress(season),
+      address: contractAddress,
       event: builderScoutedAbi
     })
     .then((logs) =>

@@ -43,9 +43,19 @@ export async function getBuilderActivities({
         builderStatus: 'approved',
         deletedAt: null
       },
-      type: {
-        in: ['nft_purchase', 'merged_pull_request', 'daily_commit']
-      }
+      OR: [
+        {
+          type: {
+            in: ['merged_pull_request', 'daily_commit']
+          }
+        },
+        {
+          type: 'nft_purchase',
+          nftPurchaseEvent: {
+            senderWalletAddress: null
+          }
+        }
+      ]
     },
     orderBy: {
       createdAt: 'desc'
@@ -60,19 +70,11 @@ export async function getBuilderActivities({
       createdAt: true,
       type: true,
       nftPurchaseEvent: {
-        where: {
-          // Only return mints
-          senderWalletAddress: null
-        },
         select: {
-          scoutWallet: {
+          scout: {
             select: {
-              scout: {
-                select: {
-                  path: true,
-                  displayName: true
-                }
-              }
+              path: true,
+              displayName: true
             }
           },
           tokensPurchased: true
@@ -108,8 +110,8 @@ export async function getBuilderActivities({
           createdAt: event.createdAt,
           type: 'nft_purchase' as const,
           scout: {
-            path: event.nftPurchaseEvent.scoutWallet.scout.path,
-            displayName: event.nftPurchaseEvent.scoutWallet.scout?.displayName
+            path: event.nftPurchaseEvent.scout.path,
+            displayName: event.nftPurchaseEvent.scout.displayName
           }
         };
       } else if (

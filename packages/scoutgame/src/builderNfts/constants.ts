@@ -30,7 +30,7 @@ const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9f
 const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
 export const realOptimismMainnetBuildersContract = '0x743ec903fe6d05e73b19a6db807271bb66100e83';
 
-export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
+export function getBuilderNftContractAddress(season: ISOWeek): Address {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
