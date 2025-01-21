@@ -7,7 +7,13 @@ import { baseUrl } from '@packages/utils/constants';
 
 import { rewardPoints } from '../constants';
 
-type Result = 'already_referred' | 'already_referred_as_another_user' | 'not_verified' | 'not_referred' | 'success';
+type Result =
+  | 'already_referred'
+  | 'already_referred_as_another_user'
+  | 'not_verified'
+  | 'not_referred'
+  | 'no_nft_purchase'
+  | 'success';
 
 export async function updateReferralUsers(refereeId: string): Promise<{ result: Result }> {
   const referee = await prisma.scout.findUniqueOrThrow({
@@ -18,9 +24,23 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
       email: true,
       emailVerifications: true,
       displayName: true,
-      path: true
+      path: true,
+      nftPurchaseEvents: {
+        where: {
+          builderNft: {
+            nftType: 'default'
+          }
+        },
+        take: 1
+      }
     }
   });
+
+  if (referee.nftPurchaseEvents.length === 0) {
+    log.debug('Ignore referral because referee has not purchased any NFTs', { userId: refereeId });
+    return { result: 'no_nft_purchase' };
+  }
+
   // find scouts with similar email
   const _similarEmailScouts = await prisma.scout.findMany({
     where: {
