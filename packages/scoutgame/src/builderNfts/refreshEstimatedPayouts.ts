@@ -58,12 +58,16 @@ export async function refreshEstimatedPayouts({
 
       const totalNftBalance = builderNftBalanceWeighted + starterPackNftBalanceWeighted;
 
+      // Simulate balance with next purchase
+      const weightedBalanceWithNextPurchase = totalNftBalance + nftTypeMultipliers.default;
+      const weightedBalanceWithNextStarterPackPurchase = totalNftBalance + nftTypeMultipliers.starter_pack;
+
       const expectedPayoutForNextNftPurchase = Math.floor(
-        normalisedPoints / (totalNftBalance + nftTypeMultipliers.default)
+        normalisedPoints * (nftTypeMultipliers.default / weightedBalanceWithNextPurchase)
       );
 
       const expectedPayoutForNextStarterPackPurchase = Math.floor(
-        normalisedPoints / (totalNftBalance + nftTypeMultipliers.starter_pack)
+        normalisedPoints * (nftTypeMultipliers.starter_pack / weightedBalanceWithNextStarterPackPurchase)
       );
 
       if (expectedPayoutForNextNftPurchase !== defaultNft.estimatedPayout) {
