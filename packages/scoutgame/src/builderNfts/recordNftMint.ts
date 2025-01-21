@@ -7,6 +7,7 @@ import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
 import { baseUrl } from '@packages/utils/constants';
+import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
@@ -15,6 +16,7 @@ import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 import { builderTokenDecimals } from './constants';
 import type { MintNFTParams } from './mintNFT';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
+import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
@@ -63,6 +65,7 @@ export async function recordNftMint(
       season: true,
       tokenId: true,
       builderId: true,
+      contractAddress: true,
       imageUrl: true,
       builder: {
         select: {
@@ -202,25 +205,6 @@ export async function recordNftMint(
       });
     }
 
-    await tx.scoutNft.upsert({
-      where: {
-        builderNftId_walletAddress: {
-          builderNftId,
-          walletAddress: recipientAddress.toLowerCase() as `0x${string}`
-        }
-      },
-      create: {
-        builderNftId,
-        walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
-        balance: amount
-      },
-      update: {
-        balance: {
-          increment: amount
-        }
-      }
-    });
-
     return builderEvent.nftPurchaseEvent;
   });
 
@@ -298,6 +282,13 @@ export async function recordNftMint(
     builderIdToRefresh: builderNft.builderId
   }).catch((error) => {
     log.error('Error refreshing estimated payouts', { error, builderId: builderNft.builderId, userId: scoutId, week });
+  });
+
+  await refreshScoutNftBalance({
+    contractAddress: builderNft.contractAddress as Address,
+    nftType: builderNft.nftType,
+    tokenId: builderNft.tokenId,
+    wallet: recipientAddress.toLowerCase() as `0x${string}`
   });
 
   return {
