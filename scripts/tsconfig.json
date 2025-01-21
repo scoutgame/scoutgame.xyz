@@ -1,13 +1,4 @@
 {
-  "ts-node": {
-    "compilerOptions": {
-      "jsx": "react-jsx",
-      "module": "node16",
-      "jsxImportSource": ""
-    },
-    "require": ["tsconfig-paths/register"],
-    "transpileOnly": true
-  },
   "compilerOptions": {
     "importHelpers": true,
     "baseUrl": ".",
@@ -27,16 +18,6 @@
     "incremental": true,
     "isolatedModules": true,
     "paths": {
-      "@packages/charmeditor/*": ["./packages/charmeditor/src/*"],
-      "@packages/utils/*": ["./packages/utils/src/*"],
-      "@packages/github/*": ["./packages/github/src/*"],
-      "@packages/farcaster/*": ["./packages/farcaster/src/*"],
-      "@packages/aws/*": ["./packages/aws/src/*"],
-      "@packages/blockchain/*": ["./packages/blockchain/src/*"],
-      "@packages/scoutgame/*": ["./packages/scoutgame/src/*"],
-      "@packages/testing/*": ["./packages/testing/src/*"],
-      "@packages/mixpanel/*": ["./packages/mixpanel/src/*"],
-      "scripts/*": ["./scripts/*"],
       "@charmverse/core/prisma": ["node_modules/@charmverse/core/dist/cjs/prisma"],
       "@charmverse/core/prisma-client": ["node_modules/@charmverse/core/dist/cjs/prisma-client"],
       "@charmverse/core/shared": ["node_modules/@charmverse/core/dist/cjs/shared"],
@@ -54,6 +35,5 @@
       "@charmverse/core/errors": ["node_modules/@charmverse/core/dist/cjs/errors"]
     }
   },
-  "exclude": ["node_modules", "apps", "packages"],
   "include": ["**/*.ts", "**/*.tsx"]
 }
