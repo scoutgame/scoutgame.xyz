@@ -46,7 +46,8 @@ export async function recordNftMint(
 
   const existingTx = await prisma.nFTPurchaseEvent.findFirst({
     where: {
-      txHash: mintTxHash
+      txHash: mintTxHash,
+      senderWalletAddress: null
     }
   });
 
