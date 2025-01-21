@@ -9,7 +9,7 @@ export type TopConnector = {
   avatar?: string | null;
   displayName: string;
   rank: number;
-  email?: string | null;
+  address: string;
 };
 
 /**
@@ -48,8 +48,7 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
         select: {
           avatar: true,
           displayName: true,
-          path: true,
-          email: true
+          path: true
         }
       }
     }
@@ -100,7 +99,15 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
           avatar: true,
           displayName: true,
           path: true,
-          email: true
+          wallets: {
+            orderBy: {
+              createdAt: 'asc'
+            },
+            select: {
+              address: true
+            },
+            take: 1
+          }
         }
       }
     }
@@ -111,7 +118,7 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
   return sortedByBuilder.at(0);
 }
 
-type PartialUser = Pick<Scout, 'avatar' | 'displayName' | 'path' | 'email'>;
+type PartialUser = Pick<Scout, 'avatar' | 'displayName' | 'path'> & { wallets?: { address: string }[] };
 
 /**
  *
@@ -121,7 +128,7 @@ type PartialUser = Pick<Scout, 'avatar' | 'displayName' | 'path' | 'email'>;
  */
 function groupBuilderEvents(events: (PointsReceipt & { recipient?: PartialUser | null })[]) {
   const byBuilder = events.reduce<{
-    [id: string]: PartialUser & { builderId: string; referralPoints: number };
+    [id: string]: Omit<PartialUser, 'wallets'> & { builderId: string; referralPoints: number; address: string };
   }>((acc, event) => {
     if (!event.recipientId || !event.recipient) {
       return acc;
@@ -139,7 +146,7 @@ function groupBuilderEvents(events: (PointsReceipt & { recipient?: PartialUser |
         avatar: event.recipient.avatar,
         displayName: event.recipient.displayName,
         path: event.recipient.path,
-        email: event.recipient.email
+        address: event.recipient.wallets?.[0]?.address as string
       };
     }
 
