@@ -32,6 +32,31 @@ Crack and Stack
 0x8C5720982b54874F53F2514BbD2382ADce98a0ca
 0x78adDA11Bfc437DeC4a39318FF7e52Cf00DC062c
 
+
+
+A "trusted user" represents an address linked to an account the meets a certain threshold of reputation. Currently, there are several teams in the Optimism ecosystem building reputation models in a privacy-preserving way. This metric aggregates reputation data from multiple platforms (Farcaster, Passport, EigenTrust by Karma3Labs), and the Optimist NFT collection. In order to be consider a trusted user, an address must meet at least two of the following requirements as of 2024-05-21: have a Farcaster ID of 20939, have a Passport score of 20 points or higher, have a Karma3Labs EigenTrust GlobalRank in the top 42,000 of Farcaster users, hold an Optimist NFT in their wallet, or qualified for at least two (out of four) Optimism airdrops.
+
+OpenRank Trusted Users
+Definition: The count of addresses in the badgeholder web of trust (derived from EigenTrust/OpenRank on Farcaster) who have interacted with the project over the RF4 scope.
+
+Power User Addresses
+Definition: The count of ‘power users’ who have interacted with the project over the RF4 scope (Oct 2023 – Jun 2024).
+
+Recurring Addresses
+Definition: The count of addresses that have interacted with the project during at least 3 distinct months in the RF4 scope.
+
+Total Transactions
+Definition: The total count of successful transactions involving the project over the RF4 scope (Oct 2023 – Jun 2024).
+
+Trusted Optimism Users’ Share of Total Interactions
+Definition: The ratio (percentage) of trusted transactions relative to all project transactions over the RF4 scope.
+
+Trusted Recurring Users
+Definition: The count of trusted users who have interacted with the project over at least 3 distinct months in the RF4 scope.
+
+Users Onboarded
+Definition: The count of trusted users new to the Superchain (i.e., “onboarded”) over the RF4 scope, who have also interacted with the project.
+
 */
 
 async function getContractInteractions(
