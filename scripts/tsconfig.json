@@ -1,13 +1,4 @@
 {
-  "ts-node": {
-    "compilerOptions": {
-      "jsx": "react-jsx",
-      "module": "node16",
-      "jsxImportSource": ""
-    },
-    "require": ["tsconfig-paths/register"],
-    "transpileOnly": true
-  },
   "compilerOptions": {
     "importHelpers": true,
     "baseUrl": ".",
