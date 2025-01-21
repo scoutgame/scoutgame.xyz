@@ -9,9 +9,7 @@ import React from 'react';
 
 export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React.MouseEventHandler }) {
   const isMdScreen = useMdScreen();
-  const platform = getPlatform();
   const iconSize = isMdScreen ? 24 : 18;
-  const url = platform === 'telegram' ? '/quests' : '/builders-you-know';
 
   return (
     <>
@@ -84,7 +82,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React
         LinkComponent={Link}
         variant='contained'
         onClick={onClickContinue}
-        href={url}
+        href='/builders-you-know'
         data-test='continue-button'
         sx={{ margin: '0 auto', display: 'flex', width: 'fit-content' }}
       >

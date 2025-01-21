@@ -3,13 +3,13 @@ import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   const platform = getPlatform();
-  const isTelegram = platform === 'telegram';
+  const disallowRobots = platform === 'telegram';
 
   return {
     rules: {
       userAgent: '*',
-      allow: isTelegram ? undefined : '/',
-      disallow: isTelegram ? '/' : undefined
+      allow: disallowRobots ? undefined : '/',
+      disallow: disallowRobots ? '/' : undefined
     }
   };
 }
