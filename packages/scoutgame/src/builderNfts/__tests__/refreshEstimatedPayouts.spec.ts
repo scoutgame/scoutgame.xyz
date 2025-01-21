@@ -12,7 +12,7 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
 }));
 
 describe('refreshEstimatedPayouts', () => {
-  it('should refresh the estimated payouts for a season', async () => {
+  it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {
     const { refreshEstimatedPayouts } = await import('../refreshEstimatedPayouts');
     const { getWeeklyPointsPoolAndBuilders } = await import('../../points/getWeeklyPointsPoolAndBuilders');
 
@@ -46,6 +46,10 @@ describe('refreshEstimatedPayouts', () => {
       ]
     });
 
+    const builderWithoutRank = await mockBuilder({
+      weeklyStats: []
+    });
+
     // Create regular NFTs for each builder
     const nft1 = await mockBuilderNft({
       builderId: builder1.id,
@@ -63,6 +67,13 @@ describe('refreshEstimatedPayouts', () => {
       builderId: builder3.id,
       season,
       nftType: BuilderNftType.default
+    });
+
+    const nft4 = await mockBuilderNft({
+      builderId: builderWithoutRank.id,
+      season,
+      nftType: BuilderNftType.default,
+      estimatedPayout: 100
     });
 
     // Create starter pack NFTs for 2 builders
@@ -175,7 +186,7 @@ describe('refreshEstimatedPayouts', () => {
 
     // Verify default NFT payouts
     const defaultNftsPayouts = nftPayouts.default;
-    expect(defaultNftsPayouts).toHaveLength(3);
+    expect(defaultNftsPayouts).toHaveLength(4);
 
     const starterPackNfts = nftPayouts.starter_pack;
     expect(starterPackNfts).toHaveLength(2);
@@ -306,5 +317,13 @@ describe('refreshEstimatedPayouts', () => {
     expect(expectedBuilder3NftPayout).toBe(484);
 
     expect(Math.floor(builder3DefaultNftPayout!.estimatedPayout!)).toBe(expectedBuilder3NftPayout);
+
+    const nft4AfterRefresh = await prisma.builderNft.findUniqueOrThrow({
+      where: {
+        id: nft4.id
+      }
+    });
+
+    expect(nft4AfterRefresh.estimatedPayout).toBe(0);
   });
 });

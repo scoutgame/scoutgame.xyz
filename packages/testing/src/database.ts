@@ -527,7 +527,8 @@ export async function mockBuilderNft({
   owners = [],
   season = mockSeason,
   currentPrice = 100,
-  nftType
+  nftType,
+  estimatedPayout
 }: {
   builderId: string;
   chainId?: number;
@@ -537,6 +538,7 @@ export async function mockBuilderNft({
   season?: string;
   tokenId?: number;
   nftType?: BuilderNftType;
+  estimatedPayout?: number;
 }) {
   const nft = await prisma.builderNft.create({
     data: {
@@ -557,7 +559,8 @@ export async function mockBuilderNft({
             tokensPurchased: 1
           }))
         }
-      }
+      },
+      estimatedPayout
     }
   });
   for (const owner of owners) {

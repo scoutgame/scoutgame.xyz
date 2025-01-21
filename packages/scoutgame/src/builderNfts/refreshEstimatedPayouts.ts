@@ -46,6 +46,19 @@ export async function refreshEstimatedPayouts({
     {} as Record<string, BuilderNftWithOwners>
   );
 
+  // Zero out the estimated payouts for builders who don't rank
+  await prisma.builderNft.updateMany({
+    where: {
+      season,
+      builderId: {
+        notIn: normalisedBuilders.map((b) => b.builder.builder.id)
+      }
+    },
+    data: {
+      estimatedPayout: 0
+    }
+  });
+
   for (const { builder, normalisedPoints } of normalisedBuilders) {
     if (!builderIdToRefresh || builderIdToRefresh === builder.builder.id) {
       const defaultNft = seasonBuilderNfts[builder.builder.id];
