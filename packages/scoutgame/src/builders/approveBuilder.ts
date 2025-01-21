@@ -6,8 +6,6 @@ import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
 
-const baseUrl = process.env.DOMAIN as string;
-
 export async function approveBuilder({
   builderId,
   season = getCurrentSeasonStart()
@@ -15,10 +13,6 @@ export async function approveBuilder({
   builderId: string;
   season?: Season;
 }) {
-  if (!baseUrl) {
-    throw new Error('DOMAIN is not set');
-  }
-
   // make sure scout exists
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
@@ -66,7 +60,7 @@ export async function approveBuilder({
       templateVariables: {
         builder_name: scout.displayName,
         builder_card_image: scout.builderNfts[0].imageUrl,
-        builder_profile_link: `${baseUrl}/u/${scout.path}`
+        builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
       },
       senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
     });
