@@ -8,7 +8,7 @@ import { getBuilderActivity } from './getBuilderActivity';
 /**
  * Review builders status and update it if they had activity in the last 28 days in our repos
  */
-export async function reviewBuildersStatus() {
+export async function reviewAppliedBuilders() {
   const last28Days = DateTime.utc().minus({ days: 28 }).toJSDate();
 
   const builders = await prisma.scout.findMany({
