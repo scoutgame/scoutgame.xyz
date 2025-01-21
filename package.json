@@ -1,6 +1,7 @@
 {
   "name": "scout-game",
   "version": "0.0.0",
+  "type": "module",
   "browserslist": [
     "defaults"
   ],
