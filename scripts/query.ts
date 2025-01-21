@@ -3,51 +3,46 @@ import { prettyPrint } from '@packages/utils/strings';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 async function query() {
-  const scout = await prisma.scout.findMany({
-    where: { path: '' },
-    select: {
-      builderNfts: {
-        where: {
-          season: getCurrentSeasonStart()
-        },
+  const scout = await prisma.scout.findFirst({
+    where: { displayName: 'Mike.Gre.sol' },
+    // select: {
+    //   builderNfts: {
+    //     where: {
+    //       season: getCurrentSeasonStart()
+    //     },
+    //     select: {
+    //       nftSoldEvents: {
+    //         select: {
+    //           scoutId: true,
+    //           tokensPurchased: true
+    //         }
+    //       }
+    //     }
+    //   }
+    // },
+    include: {
+      nftPurchaseEvents: {
         select: {
-          nftSoldEvents: {
+          txHash: true,
+          createdAt: true,
+          pointsValue: true,
+          tokensPurchased: true,
+          walletAddress: true,
+          builderNft: {
             select: {
-              scoutId: true,
-              tokensPurchased: true
+              builder: {
+                select: {
+                  displayName: true,
+                  path: true
+                }
+              }
             }
           }
         }
       }
     }
-    // include: {
-    //   nftPurchaseEvents: {
-    //     select: {
-    //       pointsValue: true,
-    //       tokensPurchased: true,
-    //       builderNFT: {
-    //         select: {
-    //           builder: {
-    //             select: {
-    //               displayName: true,
-    //               path: true
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   });
   prettyPrint(scout);
-  // await sendPointsForMiscEvent({
-  //   builderId: scout!.id,
-  //   points: 50,
-  //   claimed: true,
-  //   description: 'Refund for suspended builders: futreall and mdqst',
-  //   hideFromNotifications: true,
-  //   earnedAs: 'scout'
-  // });
 }
 
 query();
