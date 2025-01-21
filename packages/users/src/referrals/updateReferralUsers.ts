@@ -25,10 +25,14 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
       emailVerifications: true,
       displayName: true,
       path: true,
-      nftPurchaseEvents: {
+      wallets: {
         where: {
-          builderNft: {
-            nftType: 'default'
+          scoutedNfts: {
+            some: {
+              builderNft: {
+                nftType: 'default'
+              }
+            }
           }
         },
         take: 1
@@ -36,7 +40,7 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
     }
   });
 
-  if (referee.nftPurchaseEvents.length === 0) {
+  if (referee.wallets.length === 0) {
     log.debug('Ignore referral because referee has not purchased any NFTs', { userId: refereeId });
     return { result: 'no_nft_purchase' };
   }
