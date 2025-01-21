@@ -5,6 +5,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { nftTypeMultipliers } from '../points/dividePointsBetweenBuilderAndScouts';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
 
+import { scoutPointsShare } from './constants';
 import type { BuilderNftWithOwners } from './getAllSeasonNftsWithOwners';
 import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';
 
@@ -63,11 +64,13 @@ export async function refreshEstimatedPayouts({
       const weightedBalanceWithNextStarterPackPurchase = totalNftBalance + nftTypeMultipliers.starter_pack;
 
       const expectedPayoutForNextNftPurchase = Math.floor(
-        normalisedPoints * (nftTypeMultipliers.default / weightedBalanceWithNextPurchase)
+        scoutPointsShare * normalisedPoints * (nftTypeMultipliers.default / weightedBalanceWithNextPurchase)
       );
 
       const expectedPayoutForNextStarterPackPurchase = Math.floor(
-        normalisedPoints * (nftTypeMultipliers.starter_pack / weightedBalanceWithNextStarterPackPurchase)
+        scoutPointsShare *
+          normalisedPoints *
+          (nftTypeMultipliers.starter_pack / weightedBalanceWithNextStarterPackPurchase)
       );
 
       if (expectedPayoutForNextNftPurchase !== defaultNft.estimatedPayout) {
