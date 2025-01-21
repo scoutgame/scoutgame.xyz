@@ -8,6 +8,7 @@ type QuestRecord = {
   totalSteps?: number;
   tag: string;
   resettable: boolean;
+  verifiable: boolean; // whether we can verify the quest completion
 };
 
 export type QuestType =
@@ -48,14 +49,16 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Follow @scoutgamexyz',
     link: 'https://x.com/@scoutgamexyz',
     tag: 'scout',
-    resettable: false
+    resettable: false,
+    verifiable: false
   },
   'join-telegram-channel': {
     points: 10,
     label: 'Join our Telegram channel',
     link: 'https://t.me/+J0dl4_uswBY2NTkx',
     tag: 'scout',
-    resettable: false
+    resettable: false,
+    verifiable: false
   },
   'share-x-telegram': {
     points: 10,
@@ -64,14 +67,16 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
       "I'm playing @scoutgamexyz on Telegram! 🕹️ Come join me, play in the channel, and discover top builders while earning points and rewards. Let’s scout together! 👉 https://t.me/+J0dl4_uswBY2NTkx #PlayAndEarn"
     )}`,
     tag: 'scout',
-    resettable: false
+    resettable: false,
+    verifiable: false
   },
   'invite-friend': {
     points: 50,
     link: '/quests',
     label: 'Refer a Friend',
     tag: 'scout',
-    resettable: false
+    resettable: false,
+    verifiable: true
   },
   'scout-starter-card': {
     points: 5,
@@ -79,7 +84,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/builders',
     internal: true,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'scout-3-starter-cards': {
     label: 'Scout All 3 Starter Cards',
@@ -88,7 +94,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     totalSteps: 3,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'scout-full-season-card': {
     label: 'Scout a Full Season Card',
@@ -96,7 +103,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/builders',
     internal: true,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'enter-op-new-scout-competition': {
     label: 'Enter the OP New Scout Competition',
@@ -106,7 +114,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/partner-rewards/optimism',
     internal: true,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'scout-5-builders': {
     label: 'Scout 5 Builders',
@@ -115,7 +124,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     totalSteps: 5,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'scout-share-builder': {
     label: 'Scout & Share a Builder',
@@ -123,7 +133,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/builders',
     internal: true,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'scout-moxie-builder': {
     label: 'Scout a Moxie Builder',
@@ -133,7 +144,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/partner-rewards/moxie',
     internal: true,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'share-weekly-claim': {
     label: 'Share a Weekly Claim',
@@ -141,7 +153,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/claim',
     internal: true,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: false
   },
   'share-scout-profile': {
     label: 'Share your Scout profile',
@@ -149,7 +162,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/profile?tab=scout-build',
     internal: true,
     tag: 'scout',
-    resettable: true
+    resettable: true,
+    verifiable: false
   },
   'verify-email': {
     label: 'Verify your email',
@@ -157,7 +171,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/accounts',
     internal: true,
     tag: 'scout',
-    resettable: false
+    resettable: false,
+    verifiable: true
   },
   'score-first-commit': {
     label: 'Score Your First Commit',
@@ -165,7 +180,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/builders',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'score-first-pr': {
     label: 'Score Your First PR',
@@ -173,7 +189,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/builders',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'score-streak': {
     label: 'Score a Streak',
@@ -181,7 +198,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/builders',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'first-repo-contribution': {
     label: 'First Contribution to a Repo',
@@ -189,7 +207,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/builders',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'share-builder-profile': {
     label: 'Share a Builder Profile',
@@ -197,7 +216,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/profile?tab=scout-build',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: false
   },
   'contribute-celo-repo': {
     label: 'Fix a Celo Issue',
@@ -207,7 +227,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/partner-rewards/celo',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'contribute-game7-repo': {
     label: 'Contribute to a Game7 Repo',
@@ -217,7 +238,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/partner-rewards/game7',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'contribute-lit-repo': {
     label: 'Merge a PR in the Lit Protocol Repo',
@@ -227,7 +249,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/info/partner-rewards/lit',
     internal: true,
     tag: 'builder',
-    resettable: true
+    resettable: true,
+    verifiable: true
   },
   'link-farcaster-account': {
     label: 'Link your account with Farcaster',
@@ -235,7 +258,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     link: '/accounts',
     tag: 'scout',
-    resettable: false
+    resettable: false,
+    verifiable: true
   },
   'link-telegram-account': {
     label: 'Link your account with Telegram',
@@ -243,7 +267,8 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     internal: true,
     link: '/accounts',
     tag: 'scout',
-    resettable: false
+    resettable: false,
+    verifiable: true
   }
 };
 
