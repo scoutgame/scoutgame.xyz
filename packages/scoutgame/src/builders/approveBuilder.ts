@@ -6,6 +6,8 @@ import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
 
+const baseUrl = process.env.DOMAIN || 'https://scoutgame.xyz';
+
 export async function approveBuilder({
   builderId,
   season = getCurrentSeasonStart()
@@ -60,7 +62,7 @@ export async function approveBuilder({
       templateVariables: {
         builder_name: scout.displayName,
         builder_card_image: scout.builderNfts[0].imageUrl,
-        builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
+        builder_profile_link: `${baseUrl}/u/${scout.path}`
       },
       senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
     });
