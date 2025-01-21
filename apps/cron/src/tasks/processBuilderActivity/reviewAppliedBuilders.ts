@@ -8,7 +8,7 @@ import { getBuilderActivity } from './getBuilderActivity';
 /**
  * Review builders status and update it if they had activity in the last 28 days in our repos
  */
-export async function reviewBuildersStatus() {
+export async function reviewAppliedBuilders() {
   const last28Days = DateTime.utc().minus({ days: 28 }).toJSDate();
 
   const builders = await prisma.scout.findMany({
@@ -34,7 +34,11 @@ export async function reviewBuildersStatus() {
       // If the builder has activity in the last 28 days approve it
       if (commits.length > 0 || pullRequests.length > 0) {
         await approveBuilder({ builderId: builder.id });
-
+        log.info('Builder approved due to activity', {
+          commits: commits.map((c) => `${c.repository.full_name} - ${c.sha}`),
+          pullRequests: pullRequests.map((pr) => `${pr.repository.nameWithOwner} - PR# ${pr.number}`),
+          userId: builder.id
+        });
         // If the builder has no activity in the last 28 days reject it
       } else if (builder.createdAt < last28Days) {
         await prisma.scout.update({
@@ -46,7 +50,7 @@ export async function reviewBuildersStatus() {
           }
         });
 
-        log.info('Builder rejected', { userId: builder.id });
+        log.info('Builder rejected after 28 days of no activity', { userId: builder.id });
       }
     }
   }

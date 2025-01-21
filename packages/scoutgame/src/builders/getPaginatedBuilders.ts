@@ -89,6 +89,14 @@ export async function getPaginatedBuilders({
                 pointsEarnedAsBuilder: true
               }
             },
+            userWeeklyStats: {
+              where: {
+                week
+              },
+              select: {
+                gemsCollected: true
+              }
+            },
             userSeasonStats: {
               where: {
                 season
@@ -119,7 +127,8 @@ export async function getPaginatedBuilders({
         builderStatus: stat.user.builderStatus!,
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
-        estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0
+        estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0,
+        gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0
       }))
     );
   const userId = builders[builders.length - 1]?.id;
