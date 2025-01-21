@@ -31,23 +31,28 @@ export async function getQuests(userId: string, season = getCurrentSeasonStart()
 
   const uniqueCardPurchases = new Set(nftPurchaseEvents.map((event) => event.builderNftId)).size;
 
-  return (Object.keys(questsRecord) as QuestType[]).map((type) => {
-    let completedSteps: null | number = null;
-    if (type === 'scout-3-starter-cards') {
-      completedSteps = Math.min(starterPackCardPurchases.length, 3);
-    } else if (type === 'scout-5-builders') {
-      completedSteps = Math.min(uniqueCardPurchases, 5);
-    }
+  return (
+    (Object.keys(questsRecord) as QuestType[])
+      .map((type) => {
+        let completedSteps: null | number = null;
+        if (type === 'scout-3-starter-cards') {
+          completedSteps = Math.min(starterPackCardPurchases.length, 3);
+        } else if (type === 'scout-5-builders') {
+          completedSteps = Math.min(uniqueCardPurchases, 5);
+        }
 
-    const isCompleted = socialQuests.some((q) => q.type === type);
-    const isCompletedInCurrentSeason = socialQuests.some((q) => q.type === type && q.season === season);
-    const isResettable = resettableQuestTypes.includes(type);
+        const isCompleted = socialQuests.some((q) => q.type === type);
+        const isCompletedInCurrentSeason = socialQuests.some((q) => q.type === type && q.season === season);
+        const isResettable = resettableQuestTypes.includes(type);
 
-    return {
-      ...questsRecord[type],
-      type,
-      completed: isResettable ? isCompletedInCurrentSeason : isCompleted,
-      completedSteps
-    };
-  });
+        return {
+          ...questsRecord[type],
+          type,
+          completed: isResettable ? isCompletedInCurrentSeason : isCompleted,
+          completedSteps
+        };
+      })
+      // for now, hide unverifiable quests
+      .filter((quest) => quest.verifiable || quest.completed)
+  );
 }

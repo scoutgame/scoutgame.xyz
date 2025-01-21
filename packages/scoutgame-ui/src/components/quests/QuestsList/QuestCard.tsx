@@ -23,7 +23,7 @@ export function QuestCard({ quest }: { quest: QuestInfo }) {
   });
 
   const handleClick = async () => {
-    if (!quest.internal && !quest.completed && !isExecuting) {
+    if (!quest.verifiable && !quest.completed && !isExecuting) {
       execute({ questType: quest.type });
     }
     const link = quest.link;
