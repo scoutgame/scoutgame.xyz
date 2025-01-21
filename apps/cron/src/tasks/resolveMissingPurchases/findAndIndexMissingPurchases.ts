@@ -3,6 +3,7 @@ import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { retrieveRevertedMintTransactionAttestations } from '@packages/safetransactions/retrieveRevertedMintTransactionAttestations';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleEvents } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
@@ -13,7 +14,6 @@ import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTran
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
-
 // Deploy date for new version of contract Jan 03 2025
 const startBlockNumberForReindexing = 130_157_497;
 
@@ -26,11 +26,19 @@ export async function findAndIndexMissingPurchases({
 }) {
   const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
 
+  const transactionInfoAttestations = await retrieveRevertedMintTransactionAttestations();
+
   const transferSingleEvents = await getTransferSingleEvents({
     fromBlock: startBlockNumberForReindexing,
     contractAddress,
     chainId: builderNftChain.id
-  });
+  }).then((events) =>
+    events.filter(
+      // Ignore an event if we burned the corresponding NFT
+      (event) =>
+        !transactionInfoAttestations.some((attestation) => attestation.transactionHashesMap[event.transactionHash])
+    )
+  );
   const transferSingleEventsMapped = transferSingleEvents.reduce(
     (acc, val) => {
       acc[val.transactionHash] = val;
@@ -172,5 +180,3 @@ export async function findAndIndexMissingPurchases({
     }
   }
 }
-
-// findAndIndexMissingPurchases({ nftType: BuilderNftType.default }).then(console.log);
