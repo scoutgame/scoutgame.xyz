@@ -15,6 +15,7 @@ import { Toaster } from 'sonner';
 import theme from '../theme/theme';
 
 import { LinkInterceptor } from './LinkInterceptor';
+import { ModalProvider } from './ModalProviders';
 import { SWRProvider } from './SwrProvider';
 import { WagmiProvider } from './WagmiProvider';
 
@@ -33,9 +34,11 @@ export function AppProviders({ children, user }: { children: ReactNode; user: Se
               <LinkInterceptor />
               <Toaster theme='dark' richColors />
               <UserProvider userSession={user}>
-                <SnackbarProvider>
-                  <PurchaseProvider>{children}</PurchaseProvider>
-                </SnackbarProvider>
+                <ModalProvider>
+                  <SnackbarProvider>
+                    <PurchaseProvider>{children}</PurchaseProvider>
+                  </SnackbarProvider>
+                </ModalProvider>
               </UserProvider>
             </SWRProvider>
           </ThemeProvider>

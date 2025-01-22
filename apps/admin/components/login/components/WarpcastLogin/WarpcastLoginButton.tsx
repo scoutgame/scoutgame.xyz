@@ -8,7 +8,7 @@ import { Box, Typography } from '@mui/material';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { usePopupState } from 'material-ui-popup-state/hooks';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
@@ -20,6 +20,9 @@ import { WarpcastIcon } from './WarpcastIcon';
 export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
   const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-login' });
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrlEncoded = searchParams.get('redirectUrl');
+  const redirectUrl = redirectUrlEncoded ? decodeURIComponent(redirectUrlEncoded) : undefined;
 
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
 
@@ -30,7 +33,7 @@ export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
     result
   } = useAction(loginAction, {
     onSuccess: async ({ data }) => {
-      const nextPage = '/';
+      const nextPage = redirectUrl || '/scout';
 
       if (!data?.success) {
         return;

@@ -1,5 +1,6 @@
 import { getCurrentWeek, validateISOWeek } from '@packages/dates/utils';
-import { getSession } from '@packages/nextjs/session/getSession';
+import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { BuildersPage } from '@packages/scoutgame-ui/components/builders/BuildersPage';
 
 export default async function Builders({
@@ -11,8 +12,7 @@ export default async function Builders({
   const week = searchParams.week as string | undefined;
   const builderSort = (searchParams.builderSort as string | undefined) || 'rank';
   const builderOrder = (searchParams.builderOrder as string | undefined) || 'asc';
-  const session = await getSession();
-  const userId = session?.scoutId;
+  const [, user] = await safeAwaitSSRData(getUserFromSession());
 
   return (
     <BuildersPage
@@ -20,7 +20,7 @@ export default async function Builders({
       week={week && validateISOWeek(week) ? week : getCurrentWeek()}
       builderSort={builderSort}
       builderOrder={builderOrder}
-      userId={userId}
+      user={user}
     />
   );
 }
