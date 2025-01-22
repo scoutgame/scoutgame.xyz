@@ -81,8 +81,8 @@ export async function findAndIndexMissingPurchases({
     })
     .then(
       (transactions) =>
-        new Set(
-          transactions.map((tx) =>
+        new Map(
+          transactions.map((tx) => [
             uniqueKey({
               args: {
                 from: (tx.senderWalletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
@@ -93,8 +93,9 @@ export async function findAndIndexMissingPurchases({
               },
               transactionHash: prefix0x(tx.txHash),
               logIndex: tx.txLogIndex as number
-            })
-          )
+            }),
+            tx
+          ])
         )
     );
 
