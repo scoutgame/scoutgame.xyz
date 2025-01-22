@@ -102,7 +102,11 @@ export async function getUsers({
           : { builderStatus },
     include: {
       githubUsers: true,
-      userSeasonStats: true,
+      userSeasonStats: {
+        where: {
+          season: getCurrentSeasonStart()
+        }
+      },
       wallets: true
     }
   });
@@ -110,7 +114,7 @@ export async function getUsers({
   return users.map(({ githubUsers, userSeasonStats, wallets, ...user }) => ({
     ...user,
     githubLogin: githubUsers[0]?.login || null,
-    nftsPurchased: userSeasonStats.find(({ season }) => season === getCurrentSeasonStart())?.nftsPurchased || 0,
+    nftsPurchased: userSeasonStats[0]?.nftsPurchased || 0,
     wallets: wallets.map((wallet) => wallet.address)
   }));
 }
