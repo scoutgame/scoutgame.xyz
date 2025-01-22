@@ -31,7 +31,9 @@ type Props = {
 export async function BuildersPage({ week, tab, builderSort, builderOrder, user }: Props) {
   return (
     <>
-      <BuildersGlobal />
+      <Suspense>
+        <BuildersGlobal />
+      </Suspense>
       <HeaderMessage />
       <Grid
         container

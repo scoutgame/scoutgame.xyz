@@ -10,7 +10,7 @@ import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWit
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { publicActions } from 'viem';
 import { useSwitchChain, useWalletClient } from 'wagmi';
 
@@ -157,10 +157,13 @@ export function PointsClaimScreen({
                 <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
               </Stack>
             </Stack>
+
             <Box width={{ xs: 'fit-content', md: '100%' }}>
               {onchainClaimData ? (
                 connectedAddress !== onchainClaimData.address.toLowerCase() ? (
-                  <WalletLogin />
+                  <Suspense>
+                    <WalletLogin />
+                  </Suspense>
                 ) : (
                   <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
                 )

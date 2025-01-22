@@ -1,5 +1,6 @@
 import { Button, Divider, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
+import { Suspense } from 'react';
 
 import { Dialog } from '../../common/Dialog';
 import { JoinGithubButton } from '../../common/JoinGithubButton';
@@ -77,7 +78,9 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
             : 'Sign up / Sign in to apply.'}
         </Typography>
         {signedIn ? (
-          <JoinGithubButton text='Apply' />
+          <Suspense>
+            <JoinGithubButton text='Apply' />
+          </Suspense>
         ) : (
           <Button
             variant='contained'
