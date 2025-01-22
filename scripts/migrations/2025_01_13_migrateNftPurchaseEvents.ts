@@ -1,7 +1,8 @@
 import { NFTPurchaseEvent, prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getRevertedMintTransactionAttestations } from '@packages/safetransactions/getRevertedMintTransactionAttestations';
-import { getTransferSingleEvents, TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import {  TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { optimism } from 'viem/chains';
@@ -10,8 +11,6 @@ async function migrateNftPurchaseEvents() {
 
   const ignoredTxAttestations = await getRevertedMintTransactionAttestations();
 
-  // Handle Season 01 ------------
-  const preseason01 = '2024-W41'
   async function handleTransferSingleEvent({onchainEvent, purchaseEvent}: {onchainEvent: TransferSingleEvent, purchaseEvent: NFTPurchaseEvent}) {
 
     // Don't reindex reverted mint transactions
@@ -37,16 +36,21 @@ async function migrateNftPurchaseEvents() {
       data: {
         // Remove the scout relationship and use wallets instead
         walletAddress: recipientWallet,
-        senderWalletAddress: senderWallet
+        senderWalletAddress: senderWallet,
+        txLogIndex: onchainEvent.logIndex
       }
     })
   }
+
+
+  // Handle Season 01 ------------
+  const preseason01 = '2024-W41'
 
   // Season 01 - Builder NFT starter packs
 
   const preseason01BuilderNftContractAddress = getBuilderNftContractAddress(preseason01);
 
-  const transferSingles = await getTransferSingleEvents({
+  const transferSingles = await getTransferSingleWithBatchMerged({
     chainId: optimism.id,
     contractAddress: preseason01BuilderNftContractAddress
   });
@@ -81,7 +85,7 @@ async function migrateNftPurchaseEvents() {
   // Season 01 - Starter Pack NFTs
   const starterPackContractAddress = getBuilderNftStarterPackContractAddress(preseason01);
 
-  const starterPackTransferSingles = await getTransferSingleEvents({
+  const starterPackTransferSingles = await getTransferSingleWithBatchMerged({
     chainId: optimism.id,
     contractAddress: starterPackContractAddress
   });
@@ -116,7 +120,7 @@ async function migrateNftPurchaseEvents() {
   const preseason02 = '2025-W02'
   const preseason02BuilderNftContractAddress = getBuilderNftContractAddress(preseason02);
 
-  const preseason02TransferSingles = await getTransferSingleEvents({
+  const preseason02TransferSingles = await getTransferSingleWithBatchMerged({
     chainId: optimism.id,
     contractAddress: preseason02BuilderNftContractAddress
   });
@@ -151,7 +155,7 @@ async function migrateNftPurchaseEvents() {
   // Season 02 - Starter Pack NFTs
   const preseason02StarterPackContractAddress = getBuilderNftStarterPackContractAddress(preseason02);
 
-  const preseason02StarterPackTransferSingles = await getTransferSingleEvents({
+  const preseason02StarterPackTransferSingles = await getTransferSingleWithBatchMerged({
     chainId: optimism.id,
     contractAddress: preseason02StarterPackContractAddress
   });
