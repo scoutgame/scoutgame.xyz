@@ -6,10 +6,7 @@ import type { ClientConfig } from '../types';
 
 import { ScoutGameStarterPackNFTUpgradeableClient } from './wrappers/ScoutGameStarterPackNFTUpgradeable';
 
-export function getBuilderNftStarterPackProxyReadonlyClient({
-  chain = optimism,
-  contractAddress = getBuilderNftStarterPackContractAddress()
-}: ClientConfig) {
+export function getBuilderNftStarterPackProxyReadonlyClient({ chain, contractAddress }: Required<ClientConfig>) {
   if (!contractAddress) {
     throw new Error('Builder contract starter pack address not set');
   }

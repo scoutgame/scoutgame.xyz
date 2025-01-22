@@ -1,8 +1,7 @@
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
-import { getWalletClient } from '@packages/blockchain/getWalletClient';
+import { transactionInfoAttestationSchemaUid } from '@packages/scoutgameattestations/constants';
 import { OperationType } from '@safe-global/types-kit';
 import { encodeFunctionData } from 'viem';
-import { optimism } from 'viem/chains';
 
 const EAS_ABI = [
   {
@@ -103,7 +102,7 @@ export function prepareTransactionExplanation({ justificationText }: { justifica
   // Prepare the arguments for the EAS .attest(...) call:
   const easCallArgs = [
     {
-      schema: '0x90a9d88d59bf8a6ff8371f9570111ae634caa46c016f7205a94f40a1c70fa4e9',
+      schema: transactionInfoAttestationSchemaUid,
       data: {
         recipient: NULL_EVM_ADDRESS,
         expirationTime: BigInt(0),

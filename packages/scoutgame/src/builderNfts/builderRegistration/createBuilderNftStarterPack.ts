@@ -15,7 +15,7 @@ export async function createBuilderNftStarterPack({
   path,
   season = getCurrentSeasonStart(),
   chainId = builderNftChain.id,
-  contractAddress = getBuilderNftStarterPackContractAddress()
+  contractAddress
 }: {
   displayName: string;
   path: string;
@@ -27,6 +27,8 @@ export async function createBuilderNftStarterPack({
   chainId?: number;
   contractAddress?: Address;
 }) {
+  contractAddress = contractAddress ?? getBuilderNftStarterPackContractAddress(season);
+
   const currentPrice = await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
     args: { amount: BigInt(1) }
   });
