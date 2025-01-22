@@ -1,6 +1,8 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { isTruthy } from '@packages/utils/types';
 import { uniq } from 'lodash';
 
 import { airstackRequest } from './airstackRequest';
@@ -85,19 +87,34 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
   const moxiePartnerRewardEventUserFids = moxiePartnerRewardEvents.map((e) => e.user.farcasterId);
   const scoutMoxieAmounts: Record<string, MoxieBonusRow> = {};
 
+  const scoutIds = new Set(
+    builders
+      .flatMap((b) => b.builderNfts.flatMap((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId)))
+      .filter(isTruthy)
+  );
+
+  log.debug(`Processing ${scoutIds.size} scouts from ${builders.length} builders on Moxie`);
+
+  // retrieve balances from Moxie API
+  const scoutBalances = await Promise.all(
+    Array.from(scoutIds).map(async (scoutFid) => {
+      const balances = await getMoxieFanTokenAmounts({ scoutFid });
+      return { scoutFid, balances };
+    })
+  );
+
   await Promise.all(
     builders.map(async (builder) => {
       const builderFid = builder.farcasterId as number;
-      const scoutsFids = builder.builderNfts
-        .map((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId))
-        .flat()
-        .filter((scoutFid) => scoutFid) as number[];
+      const scoutsFids = uniq(
+        builder.builderNfts
+          .map((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId))
+          .flat()
+          .filter((scoutFid) => scoutFid)
+      ) as number[];
 
-      for (const scoutFid of uniq(scoutsFids)) {
-        const fanTokenAmount = await getMoxieFanTokenAmount({
-          builderFid,
-          scoutFid
-        });
+      for (const scoutFid of scoutsFids) {
+        const fanTokenAmount = scoutBalances.find((record) => record.scoutFid === scoutFid)?.balances[builderFid];
         if (fanTokenAmount) {
           const scout = await prisma.scout.findUnique({
             where: {
@@ -137,38 +154,33 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
   return Object.values(scoutMoxieAmounts);
 }
 
-async function getMoxieFanTokenAmount({
-  builderFid,
-  scoutFid
-}: {
-  builderFid: number;
-  scoutFid: number;
-}): Promise<number> {
+// source: https://docs.airstack.xyz/airstack-docs-and-faqs/moxie/moxie-fan-token-balances#check-if-certain-user-hold-certain-fan-token
+async function getMoxieFanTokenAmounts({ scoutFid }: { scoutFid: number }): Promise<Record<string, number>> {
   const query = `
     query GetPortfolioInfo {
       MoxieUserPortfolios(
         input: {
           filter: {
-            fid: {_eq: "${scoutFid}"},
-            fanTokenSymbol: {
-              # Fan Token to check, symbol will be based on types:
-              # - User: fid:<FID>
-              # - Channel: cid:<CHANNEL-ID>
-              # - Network: id:farcaster
-              _eq: "fid:${builderFid}"
-            }
+            fid: {_eq: "${scoutFid}"}
           }
         }
       ) {
         MoxieUserPortfolio {
           amount: totalUnlockedAmount
+          fanTokenSymbol
         }
       }
     }
   `;
   const data = await airstackRequest<{
-    data: { MoxieUserPortfolios: { MoxieUserPortfolio: { amount: number }[] | null } };
+    data: { MoxieUserPortfolios: { MoxieUserPortfolio: { amount: number; fanTokenSymbol: string }[] | null } };
   }>(query);
-  const amount = data.data.MoxieUserPortfolios.MoxieUserPortfolio?.[0]?.amount || 0;
-  return amount;
+  return (data.data.MoxieUserPortfolios.MoxieUserPortfolio || []).reduce<Record<string, number>>((acc, curr) => {
+    // fanTokenSymbol examples: "fid:2600",  "cid:mfers"
+    const symbolParts = curr.fanTokenSymbol.split(':');
+    if (symbolParts[0] === 'fid') {
+      acc[symbolParts[1]] = curr.amount;
+    }
+    return acc;
+  }, {});
 }

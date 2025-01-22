@@ -2,19 +2,16 @@ import 'server-only';
 
 import { Box, Typography } from '@mui/material';
 import Image from 'next/image';
-import { Suspense } from 'react';
 
 import { JoinGithubButton } from '../../common/JoinGithubButton';
 import { SinglePageLayout } from '../../common/Layout';
 import { SinglePageWrapper } from '../../common/SinglePageWrapper';
-import { InfoBackgroundImage } from '../../layout/InfoBackgroundImage';
 
 import { SkipBuilderStepButton } from './components/SkipBuilderStepButton';
 
 export function BuilderPage() {
   return (
     <SinglePageLayout>
-      <InfoBackgroundImage />
       <SinglePageWrapper bgcolor='background.default'>
         <Box display='flex' flexDirection='column' alignItems='center' my={0} justifyContent='space-evenly' gap={2}>
           <Image
@@ -43,12 +40,10 @@ export function BuilderPage() {
           <Image src='/images/github-logo.png' width={120} height={30} alt='github' />
           <Typography>Connect to GitHub to sign up and verify your code contributions.</Typography>
           <Box width='100%'>
-            <Suspense>
-              <Box display='flex' flexDirection='column' gap={2}>
-                <JoinGithubButton />
-                <SkipBuilderStepButton />
-              </Box>
-            </Suspense>
+            <Box display='flex' flexDirection='column' gap={2}>
+              <JoinGithubButton />
+              <SkipBuilderStepButton />
+            </Box>
           </Box>
         </Box>
       </SinglePageWrapper>
