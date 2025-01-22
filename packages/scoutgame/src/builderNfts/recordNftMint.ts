@@ -15,6 +15,7 @@ import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
+import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
 import type { MintNFTParams } from './mintNFT';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
@@ -23,6 +24,7 @@ export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
     createdAt?: Date;
     mintTxHash: string;
+    mintTxLogIndex: number;
     skipMixpanel?: boolean;
     skipPriceRefresh?: boolean;
   }
@@ -34,6 +36,7 @@ export async function recordNftMint(
     paidWithPoints,
     recipientAddress,
     scoutId,
+    mintTxLogIndex,
     pointsValue,
     createdAt,
     mintTxHash,
@@ -45,11 +48,13 @@ export async function recordNftMint(
     throw new InvalidInputError(`Mint transaction hash is required`);
   }
 
-  const existingTx = await prisma.nFTPurchaseEvent.findFirst({
-    where: {
-      txHash: mintTxHash,
-      senderWalletAddress: null
-    }
+  const existingTx = await getMatchingNFTPurchaseEvent({
+    builderNftId,
+    txHash: mintTxHash,
+    txLogIndex: mintTxLogIndex,
+    senderWalletAddress: null,
+    walletAddress: recipientAddress,
+    tokensPurchased: amount
   });
 
   if (existingTx) {
@@ -129,6 +134,7 @@ export async function recordNftMint(
             txHash: mintTxHash?.toLowerCase(),
             builderNftId,
             walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
+            txLogIndex: mintTxLogIndex,
             scoutId,
             activities: {
               create: {

@@ -163,7 +163,8 @@ export async function handlePendingTransaction({
               ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
               : convertCostToPoints(pendingTx.targetAmountReceived),
           recipientAddress: pendingTx.senderAddress,
-          scoutId: pendingTx.userId
+          scoutId: pendingTx.userId,
+          mintTxLogIndex: validatedMint.txLogIndex
         });
       }
     }

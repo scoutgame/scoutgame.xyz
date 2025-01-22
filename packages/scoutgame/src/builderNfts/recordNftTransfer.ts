@@ -8,6 +8,7 @@ import type { Address } from 'viem';
 
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
 import { builderNftChain } from './constants';
+import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 type RecordNftTransferParams = {
@@ -42,28 +43,13 @@ export async function recordNftTransfer({
     return;
   }
 
-  const existingNftPurchaseEvent = await prisma.nFTPurchaseEvent.findFirst({
-    where: {
-      // Checking this is same NFT
-      builderNftId: matchingNft.id,
-      tokensPurchased: Number(transferSingleEvent.args.value),
-      // Checking for same tx and position inside tx (one transaction can have multiple events)
-      txHash,
-      txLogIndex: logIndex,
-      // Checking for to and from
-      senderWalletAddress: fromWallet
-        ? {
-            equals: fromWallet,
-            mode: 'insensitive'
-          }
-        : null,
-      walletAddress: toWallet
-        ? {
-            equals: toWallet,
-            mode: 'insensitive'
-          }
-        : null
-    }
+  const existingNftPurchaseEvent = await getMatchingNFTPurchaseEvent({
+    builderNftId: matchingNft.id,
+    tokensPurchased: Number(transferSingleEvent.args.value),
+    txHash,
+    txLogIndex: logIndex,
+    senderWalletAddress: fromWallet,
+    walletAddress: toWallet
   });
 
   if (existingNftPurchaseEvent) {
