@@ -20,7 +20,8 @@ jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContra
   getPreSeasonTwoBuilderNftContractReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
-    getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
+    getTokenPurchasePrice: () => Promise.resolve(randomLargeInt()),
+    balanceOf: () => Promise.resolve(randomLargeInt())
   })
 }));
 
