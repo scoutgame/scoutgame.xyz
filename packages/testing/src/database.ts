@@ -452,6 +452,10 @@ export async function mockNFTPurchaseEvent({
     }
   });
 
+  const scoutWallet = await prisma.scoutWallet
+    .findFirst({ where: { scoutId } })
+    .then((wallet) => wallet ?? prisma.scoutWallet.create({ data: { scoutId, address: randomWalletAddress() } }));
+
   return prisma.builderEvent.create({
     data: {
       builder: {
@@ -465,7 +469,8 @@ export async function mockNFTPurchaseEvent({
       nftPurchaseEvent: {
         create: {
           builderNftId: builderNft.id,
-          scoutId,
+          walletAddress: scoutWallet.address,
+          txLogIndex: 0,
           pointsValue: points,
           txHash: `0x${Math.random().toString(16).substring(2)}`,
           tokensPurchased
@@ -543,6 +548,42 @@ export async function mockBuilderNft({
   nftType?: BuilderNftType;
   estimatedPayout?: number;
 }) {
+  const ownerWallets =
+    typeof owners[0] === 'string'
+      ? await Promise.all(
+          owners.map(async (owner) => {
+            const scoutId = owner as string;
+            const existingWallet = await prisma.scoutWallet.findFirst({
+              where: { scoutId }
+            });
+            if (existingWallet) {
+              return existingWallet;
+            }
+            return prisma.scoutWallet.create({
+              data: {
+                scoutId,
+                address: randomWalletAddress()
+              }
+            });
+          })
+        )
+      : await Promise.all(
+          (owners as { id: string }[]).map(async (owner) => {
+            const existingWallet = await prisma.scoutWallet.findFirst({
+              where: { scoutId: owner.id }
+            });
+            if (existingWallet) {
+              return existingWallet;
+            }
+            return prisma.scoutWallet.create({
+              data: {
+                scoutId: owner.id,
+                address: randomWalletAddress()
+              }
+            });
+          })
+        );
+
   const nft = await prisma.builderNft.create({
     data: {
       builderId,
@@ -555,11 +596,12 @@ export async function mockBuilderNft({
       nftType: nftType ?? 'default',
       nftSoldEvents: {
         createMany: {
-          data: owners.map((owner) => ({
-            scoutId: typeof owner === 'string' ? owner : owner.id,
+          data: owners.map((owner, index) => ({
+            walletAddress: ownerWallets[index].address,
             pointsValue: 10,
             txHash: `0x${Math.random().toString(16).substring(2)}`,
-            tokensPurchased: 1
+            tokensPurchased: 1,
+            txLogIndex: 0
           }))
         }
       },

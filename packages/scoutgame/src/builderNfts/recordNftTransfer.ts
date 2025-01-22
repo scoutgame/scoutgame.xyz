@@ -91,7 +91,6 @@ export async function recordNftTransfer({
           walletAddress: toWallet,
           senderWalletAddress: fromWallet,
           txLogIndex: logIndex,
-          scoutId,
           activities: {
             create: {
               recipientType: 'builder',

@@ -132,7 +132,9 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
       builderNft: {
         season: getCurrentSeasonStart()
       },
-      scoutId
+      scoutWallet: {
+        scoutId
+      }
     },
     select: {
       tokensPurchased: true,
@@ -173,7 +175,21 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           imageUrl: true,
           currentPrice: true,
           nftType: true,
-          nftSoldEvents: true,
+          nftSoldEvents: {
+            where: {
+              senderWalletAddress: null,
+              walletAddress: {
+                not: null
+              }
+            },
+            include: {
+              scoutWallet: {
+                select: {
+                  scoutId: true
+                }
+              }
+            }
+          },
           congratsImageUrl: true,
           estimatedPayout: true
         }
@@ -201,7 +217,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
         const nftsSoldData = nft.nftSoldEvents.reduce(
           (acc, event) => {
             acc.total += event.tokensPurchased;
-            if (event.scoutId === scoutId) {
+            if (event.scoutWallet?.scoutId === scoutId) {
               acc.toScout += event.tokensPurchased;
             }
             return acc;

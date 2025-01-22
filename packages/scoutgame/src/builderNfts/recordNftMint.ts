@@ -5,6 +5,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { baseUrl } from '@packages/utils/constants';
@@ -21,7 +22,7 @@ import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 export async function recordNftMint(
-  params: Omit<MintNFTParams, 'nftType'> & {
+  params: Omit<MintNFTParams, 'nftType' | 'scoutId'> & {
     createdAt?: Date;
     mintTxHash: string;
     mintTxLogIndex: number;
@@ -35,7 +36,6 @@ export async function recordNftMint(
     builderNftId,
     paidWithPoints,
     recipientAddress,
-    scoutId,
     mintTxLogIndex,
     pointsValue,
     createdAt,
@@ -47,6 +47,10 @@ export async function recordNftMint(
   if (!mintTxHash.trim().startsWith('0x')) {
     throw new InvalidInputError(`Mint transaction hash is required`);
   }
+
+  const { id: scoutId } = await findOrCreateWalletUser({
+    wallet: recipientAddress
+  });
 
   const existingTx = await getMatchingNFTPurchaseEvent({
     builderNftId,
@@ -107,13 +111,20 @@ export async function recordNftMint(
   const nftPurchaseEvent = await prisma.$transaction(async (tx) => {
     const owners = await tx.nFTPurchaseEvent.findMany({
       where: {
-        builderNftId
+        builderNftId,
+        walletAddress: {
+          not: null
+        }
       },
       select: {
-        scoutId: true
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        }
       }
     });
-    const uniqueOwners = Array.from(new Set(owners.map((owner) => owner.scoutId).concat(scoutId))).length;
+    const uniqueOwners = Array.from(new Set(owners.map((owner) => owner.scoutWallet!.scoutId).concat(scoutId))).length;
 
     const builderEvent = await tx.builderEvent.create({
       data: {
@@ -135,7 +146,6 @@ export async function recordNftMint(
             builderNftId,
             walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
             txLogIndex: mintTxLogIndex,
-            scoutId,
             activities: {
               create: {
                 recipientType: 'builder',
