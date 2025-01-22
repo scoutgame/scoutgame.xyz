@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getWeekFromDate } from '@packages/dates/utils';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import type { Address } from 'viem';
 
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
@@ -36,17 +37,20 @@ export async function recordNftTransfer({
     }
   });
 
+  const fromWallet = from !== NULL_EVM_ADDRESS ? from.toLowerCase() : null;
+  const toWallet = to !== NULL_EVM_ADDRESS ? to.toLowerCase() : null;
+
   const existingNftPurchaseEvent = await prisma.nFTPurchaseEvent.findFirst({
     where: {
       builderNftId: matchingNft.id,
       txHash,
       tokensPurchased: amount,
       senderWalletAddress: {
-        equals: from.toLowerCase(),
+        equals: fromWallet,
         mode: 'insensitive'
       },
       walletAddress: {
-        equals: to.toLowerCase(),
+        equals: toWallet,
         mode: 'insensitive'
       }
     }
@@ -54,6 +58,14 @@ export async function recordNftTransfer({
 
   if (existingNftPurchaseEvent) {
     return;
+  }
+
+  if (fromWallet) {
+    await findOrCreateWalletUser({ wallet: fromWallet });
+  }
+
+  if (toWallet) {
+    await findOrCreateWalletUser({ wallet: toWallet });
   }
 
   await prisma.builderEvent.create({
@@ -74,8 +86,8 @@ export async function recordNftTransfer({
           paidInPoints: false,
           txHash: txHash?.toLowerCase(),
           builderNftId: matchingNft.id,
-          walletAddress: to !== NULL_EVM_ADDRESS ? to.toLowerCase() : null,
-          senderWalletAddress: from !== NULL_EVM_ADDRESS ? from.toLowerCase() : null,
+          walletAddress: toWallet,
+          senderWalletAddress: fromWallet,
           scoutId,
           activities: {
             create: {
@@ -93,18 +105,21 @@ export async function recordNftTransfer({
     }
   });
 
-  await Promise.all([
-    refreshScoutNftBalance({
-      wallet: from,
+  if (fromWallet) {
+    await refreshScoutNftBalance({
+      wallet: fromWallet as Address,
       tokenId,
       contractAddress,
       nftType: 'default'
-    }),
-    refreshScoutNftBalance({
-      wallet: to,
+    });
+  }
+
+  if (toWallet) {
+    await refreshScoutNftBalance({
+      wallet: toWallet as Address,
       tokenId,
       contractAddress,
       nftType: 'default'
-    })
-  ]);
+    });
+  }
 }

@@ -1,4 +1,5 @@
 import { log } from '@charmverse/core/log';
+import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getENSDetails, getENSName } from '@packages/blockchain/getENSName';
 import { getFarcasterUsersByAddresses } from '@packages/farcaster/getFarcasterUsersByAddresses';
 import { getAddress } from 'viem';
@@ -18,6 +19,10 @@ export async function findOrCreateWalletUser({
   newUserId?: string;
   referralCode?: string | null;
 }): Promise<FindOrCreateUserResult> {
+  if (wallet === NULL_EVM_ADDRESS) {
+    throw new Error('Cannot create a user for the null wallet address 0x00...00');
+  }
+
   const ens = await getENSName(wallet).catch((error) => {
     log.warn('Could not retrieve ENS while creating a user', { error, wallet });
     return null;
