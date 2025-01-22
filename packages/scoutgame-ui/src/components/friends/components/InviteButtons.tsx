@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Button, IconButton, Link, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { telegramBotName } from '@packages/scoutgame/constants';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';

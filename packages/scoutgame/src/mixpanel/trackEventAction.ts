@@ -1,7 +1,8 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
-import { getPlatform, getUTMParamsFromSearch } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
+import { getUTMParamsFromSearch } from '@packages/mixpanel/utils';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import { v4 as uuid } from 'uuid';
 
