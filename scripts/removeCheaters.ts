@@ -4,6 +4,7 @@ import { registerScout } from '@packages/beehiiv/registerScout';
 import { writeFile } from 'fs/promises';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 async function checkReferer(referrerId: string) {
   const { referrer, toDelete } = await getData(referrerId);
@@ -80,16 +81,16 @@ async function checkBotUsers(userIds: string[]) {
 }
 
 // get purchases from Deleted users
-async function retrieveNftPurchasesFromDeletedUsers() {
+async function retrieveNftPurchasesFromDeletedUsers(filename: string) {
   const purchases = await prisma.nFTPurchaseEvent.findMany({
     where: {
       paidInPoints: true,
       builderNft: {
-        season: '2025-W02'
+        season: getCurrentSeasonStart()
       },
       scout: {
         deletedAt: {
-          gt: new Date('2024-12-01')
+          gt: new Date('2025-01-10')
         }
       }
     },
@@ -107,74 +108,32 @@ async function retrieveNftPurchasesFromDeletedUsers() {
       }
     }
   });
-  console.log(purchases.length);
-  const columns = 'scout,scout id,builder, builder id,tokenAmount,nft type,txHash';
+  console.log('Found', purchases.length, 'transactions to delete');
+  const columns = 'scout,scout id,deleted,deleted at,builder, builder id,tokenAmount,nft type,txHash';
   const rows = purchases.map(
     (p) =>
-      `${p.scout.displayName},${p.scout.id},${p.builderNft.builder.displayName},${p.builderNft.builder.id},${p.tokensPurchased},${p.builderNft.nftType},${p.txHash}`
+      `${p.scout.displayName},${p.scout.id},${p.scout.deletedAt?.toISOString()},${p.scout.deletedAt?.toDateString()},${p.builderNft.builder.displayName},${p.builderNft.builder.id},${p.tokensPurchased},${p.builderNft.nftType},${p.txHash}`
   );
-  await writeFile('purchases.csv', [columns, ...rows].join('\n'));
+  await writeFile(filename, [columns, ...rows].join('\n'));
+  console.log('Saved to', filename);
 }
 
 (async () => {
   // const { toDelete } = await checkBotEmail('hsaaouswwc@gmail.com');
-  // // // await deleteUsers(toDelete);
-  // return;
-  // const users = await prisma.scout.findMany({
+  // const { toDelete } = await checkReferer('dd34cd6e-a45d-46d6-9001-e6b896c237d7');
+  // const referrers = await prisma.scout.findMany({
   //   where: {
   //     id: {
-  //       in: [
-  //         // 'dd34cd6e-a45d-46d6-9001-e6b896c237d7',
-  //         // 'ed002060-c649-4dbe-a545-d5b8a2ac20de',
-  //         // 'a8c8a76d-d5e7-466e-a143-6bcf7a6c1e6e',
-  //         // '6d79ecc4-95a5-4433-ae21-8259104af10b',
-  //         // '308d2e73-ba9b-48e0-a40e-a96a9b901db3',
-  //         // 'd7da8ed0-d47f-4574-bccd-60d578b773e3',
-  //         // 'fee94ac2-bf9d-46ad-ac27-9596f0d33148',
-  //         // '7dd5b942-928d-41c3-b575-b1550f562273',
-  //         '26dcf09e-2a65-400b-a0a9-0ff4d9d1b96a'
-  //       ]
-  //     }
-  //   },
-  //   select: {
-  //     wallets: {
-  //       select: {
-  //         address: true
+  //       in: toDelete
+  //     },
+  //     events: {
+  //       some: {
+  //         type: 'referral'
   //       }
   //     }
   //   }
   // });
-  // console.log(users.map((user) => user.wallets.map((wallet) => wallet.address).join('\n')));
-  // const deleted = await prisma.scout.findMany({
-  //   where: {
-  //     id: 'fb5082f4-b86d-4a9d-ada7-21105ae426ef',
-  //     deletedAt: {
-  //       gt: new Date('2025-01-08')
-  //     }
-  //   },
-  //   select: {
-  //     id: true
-  //   }
-  // });
-  // console.log('to remove', deleted.length);
-  // console.log('mixpanel', await deleteMixpanelProfiles(deleted));
-  const { toDelete } = await checkReferer('dd34cd6e-a45d-46d6-9001-e6b896c237d7');
-  const referrers = await prisma.scout.findMany({
-    where: {
-      id: {
-        in: toDelete
-      },
-      events: {
-        some: {
-          type: 'referral'
-        }
-      }
-    }
-  });
-  console.log(referrers.map((r) => r.id));
-  for (const referrer of referrers) {
-    const { toDelete } = await checkReferer(referrer.id);
-    //await deleteUsers(toDelete);
-  }
-  // await checkReferer('308d2e73-ba9b-48e0-a40e-a96a9b901db3');
+  // console.log(referrers.map((r) => r.id));
+
+  await retrieveNftPurchasesFromDeletedUsers('transactions.csv');
 })();

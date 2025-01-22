@@ -1,5 +1,6 @@
 import type { BuilderStatus, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { validate } from 'uuid';
 
 export type ScoutGameUser = Pick<
@@ -109,7 +110,7 @@ export async function getUsers({
   return users.map(({ githubUsers, userSeasonStats, wallets, ...user }) => ({
     ...user,
     githubLogin: githubUsers[0]?.login || null,
-    nftsPurchased: userSeasonStats.find(({ season }) => season === '2024-W41')?.nftsPurchased || 0,
+    nftsPurchased: userSeasonStats.find(({ season }) => season === getCurrentSeasonStart())?.nftsPurchased || 0,
     wallets: wallets.map((wallet) => wallet.address)
   }));
 }
