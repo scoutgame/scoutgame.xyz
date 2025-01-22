@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-async function removeWallet(address: string) {
+async function deleteWallet(address: string) {
   const wallet = await prisma.scoutWallet.findFirstOrThrow({
     where: {
       address: address.toLowerCase()
@@ -12,7 +12,7 @@ async function removeWallet(address: string) {
       tokensSent: true
     }
   });
-  console.log('user wallet', wallet);
+  console.log('Found wallet:', wallet);
   const scout = await prisma.scout.findFirstOrThrow({
     where: {
       id: wallet.scoutId
@@ -21,7 +21,7 @@ async function removeWallet(address: string) {
       wallets: true
     }
   });
-  console.log('scout', scout);
+  console.log('Found scout:', scout);
   if (
     wallet.purchaseEvents.length > 0 ||
     wallet.scoutedNfts.length > 0 ||
@@ -43,23 +43,7 @@ async function removeWallet(address: string) {
       }
     })
   );
-  // try {
-  //   const updatedScout = await prisma.scout.update({
-  //     where: {
-  //       id: scoutId
-  //     },
-  //     data: {
-  //       scoutWallet: null
-  //     }
-  //   });
-
-  //   console.log(`Successfully removed wallet for scout ${scoutId}`);
-  //   return updatedScout;
-  // } catch (error) {
-  //   console.error(`Failed to remove wallet for scout ${scoutId}:`, error);
-  //   throw error;
-  // }
 }
 
 // Example usage:
-removeWallet('0x1920e6d5aad018c75047de4e737919eeeeca7f67').catch(console.error);
+// deleteWallet('0x1920e6d5aad018c75047de4e737919eeeeca7f67').catch(console.error);
