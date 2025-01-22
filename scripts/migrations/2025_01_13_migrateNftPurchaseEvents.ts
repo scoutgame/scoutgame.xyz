@@ -134,4 +134,4 @@ async function migrateNftPurchaseEvents() {
 }
 
 
-migrateNftPurchaseEvents().then(console.log).catch(console.error);
+// migrateNftPurchaseEvents().then(console.log).catch(console.error);
