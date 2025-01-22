@@ -16,7 +16,7 @@ type EASAttestationResponse = {
   }[];
 };
 
-export async function retrieveRevertedMintTransactionAttestations() {
+export async function getRevertedMintTransactionAttestations() {
   const EASSCAN_GRAPHQL_URL = 'https://optimism.easscan.org/graphql';
 
   const query = `

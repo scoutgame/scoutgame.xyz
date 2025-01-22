@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getWeekFromDate } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
@@ -73,8 +74,8 @@ export async function recordNftTransfer({
           paidInPoints: false,
           txHash: txHash?.toLowerCase(),
           builderNftId: matchingNft.id,
-          walletAddress: to.toLowerCase() as `0x${string}`,
-          senderWalletAddress: from.toLowerCase(),
+          walletAddress: to !== NULL_EVM_ADDRESS ? to.toLowerCase() : null,
+          senderWalletAddress: from !== NULL_EVM_ADDRESS ? from.toLowerCase() : null,
           scoutId,
           activities: {
             create: {

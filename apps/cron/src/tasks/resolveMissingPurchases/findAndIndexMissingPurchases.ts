@@ -3,7 +3,7 @@ import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { retrieveRevertedMintTransactionAttestations } from '@packages/safetransactions/retrieveRevertedMintTransactionAttestations';
+import { getRevertedMintTransactionAttestations } from '@packages/safetransactions/getRevertedMintTransactionAttestations';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleEvents } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
@@ -26,7 +26,7 @@ export async function findAndIndexMissingPurchases({
 }) {
   const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
 
-  const transactionInfoAttestations = await retrieveRevertedMintTransactionAttestations();
+  const transactionInfoAttestations = await getRevertedMintTransactionAttestations();
 
   const transferSingleEvents = await getTransferSingleEvents({
     fromBlock: startBlockNumberForReindexing,
@@ -106,6 +106,14 @@ export async function findAndIndexMissingPurchases({
     for (const missingTx of groupedByTokenId[key as any].records) {
       scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
 
+      const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
+
+      if (!matchingNft) {
+        scoutgameMintsLogger.error(`NFT with tokenId ${key} not found`);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
       const recipientScoutId = await findOrCreateWalletUser({ wallet: missingTx.args.to }).then((scout) => scout.id);
 
       // Null to means this is a burn, which impacts the total supply. Not null from means this is a transfer from an existing wallet
@@ -125,14 +133,6 @@ export async function findAndIndexMissingPurchases({
           scoutId: recipientScoutId,
           sentAt: new Date(Number(blockTimestamp.timestamp) * 1000)
         });
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-
-      const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
-
-      if (!matchingNft) {
-        scoutgameMintsLogger.error(`NFT with tokenId ${key} not found`);
         // eslint-disable-next-line no-continue
         continue;
       }

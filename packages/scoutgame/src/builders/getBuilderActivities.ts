@@ -1,6 +1,5 @@
 import type { GemsReceiptType, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
@@ -52,6 +51,7 @@ export async function getBuilderActivities({
         {
           type: 'nft_purchase',
           nftPurchaseEvent: {
+            // Corresponds to a mint
             senderWalletAddress: null
           }
         }

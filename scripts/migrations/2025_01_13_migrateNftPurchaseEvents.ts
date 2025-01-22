@@ -1,22 +1,36 @@
 import { NFTPurchaseEvent, prisma } from '@charmverse/core/prisma-client';
 import { BuilderScoutedEvent, getBuilderScoutedEvents } from '@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents';
-import { getStarterPackTransferSingleEvents, getTransferSingleEvents, TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import {  getTransferSingleEvents, TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { optimism } from 'viem/chains';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { Address } from 'viem';
+import {getRevertedMintTransactionAttestations} from '@packages/safetransactions/getRevertedMintTransactionAttestations'
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 
 async function migrateNftPurchaseEvents() {
 
+  const ignoredTxAttestations = await getRevertedMintTransactionAttestations();
+
   // Handle Season 01 ------------
   const preseason01 = '2024-W41'
   async function handleTransferSingleEvent({onchainEvent, purchaseEvent}: {onchainEvent: TransferSingleEvent, purchaseEvent: NFTPurchaseEvent}) {
-    const recipientWallet = onchainEvent.args.to;
 
-    const scoutWallet = await findOrCreateWalletUser({
+    // Don't reindex reverted mint transactions
+    if (ignoredTxAttestations.some(attestation => attestation.transactionHashesMap[onchainEvent.transactionHash])) {
+      return;
+    }
+
+    const senderWallet = onchainEvent.args.from !== NULL_EVM_ADDRESS ? onchainEvent.args.from : null;
+    const recipientWallet = onchainEvent.args.to !== NULL_EVM_ADDRESS ? onchainEvent.args.to : null;
+
+    const recipientWalletUser = recipientWallet ? await findOrCreateWalletUser({
       wallet: recipientWallet
-    })
+    }) : null;
+
+    const senderWalletUser = senderWallet ? await findOrCreateWalletUser({
+      wallet: senderWallet
+    }) : null;
 
     await prisma.nFTPurchaseEvent.update({
       where: {
@@ -24,9 +38,8 @@ async function migrateNftPurchaseEvents() {
       },
       data: {
         // Remove the scout relationship and use wallets instead
-        scoutId: null,
-        walletAddress: onchainEvent.args.to !== NULL_EVM_ADDRESS ? onchainEvent.args.to : null,
-        senderWalletAddress: onchainEvent.args.from !== NULL_EVM_ADDRESS ? onchainEvent.args.from : null
+        walletAddress: recipientWallet,
+        senderWalletAddress: senderWallet
       }
     })
   }
@@ -70,8 +83,9 @@ async function migrateNftPurchaseEvents() {
   // Season 01 - Starter Pack NFTs
   const starterPackContractAddress = getBuilderNftStarterPackContractAddress(preseason01);
 
-  const starterPackTransferSingles = await getStarterPackTransferSingleEvents({
-    season: preseason01
+  const starterPackTransferSingles = await getTransferSingleEvents({
+    chainId: optimism.id,
+    contractAddress: starterPackContractAddress
   });
 
   const starterPackPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
@@ -139,8 +153,9 @@ async function migrateNftPurchaseEvents() {
   // Season 02 - Starter Pack NFTs
   const preseason02StarterPackContractAddress = getBuilderNftStarterPackContractAddress(preseason02);
 
-  const preseason02StarterPackTransferSingles = await getStarterPackTransferSingleEvents({
-    season: preseason02
+  const preseason02StarterPackTransferSingles = await getTransferSingleEvents({
+    chainId: optimism.id,
+    contractAddress: preseason02StarterPackContractAddress
   });
 
   const preseason02StarterPackPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
