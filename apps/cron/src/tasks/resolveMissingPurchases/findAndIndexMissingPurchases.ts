@@ -9,6 +9,7 @@ import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNft
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
+import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
@@ -31,10 +32,6 @@ export async function findAndIndexMissingPurchases({
 
   const transactionInfoAttestations = await getRevertedMintTransactionAttestations();
 
-  function uniqueKey(event: Pick<TransferSingleEvent, 'args' | 'transactionHash' | 'logIndex'>) {
-    return `${event.args.id}-${event.args.value}-${event.args.from}-${event.args.to}-${event.transactionHash}-${event.logIndex}`;
-  }
-
   const transferSingleEvents = await getTransferSingleWithBatchMerged({
     fromBlock: startBlockNumber,
     contractAddress,
@@ -48,7 +45,7 @@ export async function findAndIndexMissingPurchases({
   );
   const transferSingleEventsMapped = transferSingleEvents.reduce(
     (acc, val) => {
-      acc[uniqueKey(val)] = val;
+      acc[uniqueNftPurchaseEventKey(val)] = val;
 
       return acc;
     },
@@ -83,7 +80,7 @@ export async function findAndIndexMissingPurchases({
       (transactions) =>
         new Map(
           transactions.map((tx) => [
-            uniqueKey({
+            uniqueNftPurchaseEventKey({
               args: {
                 from: (tx.senderWalletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
                 to: (tx.walletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
@@ -100,7 +97,7 @@ export async function findAndIndexMissingPurchases({
     );
 
   for (const event of transferSingleEvents) {
-    if (!uniqueStoredTransactions.has(uniqueKey(event))) {
+    if (!uniqueStoredTransactions.has(uniqueNftPurchaseEventKey(event))) {
       missingEvents.push(event);
     }
   }
