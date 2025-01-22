@@ -16,6 +16,8 @@ export const completeQuestAction = authActionClient
     })
   )
   .action(async ({ parsedInput, ctx }) => {
+    log.warn('completeQuestAction called', { parsedInput, userId: ctx.session.scoutId });
+    return;
     const quest = questsRecord[parsedInput.questType];
     if (!quest) {
       throw new Error('Quest not found');

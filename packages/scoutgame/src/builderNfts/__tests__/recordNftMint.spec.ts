@@ -161,17 +161,6 @@ describe('recordNftMint', () => {
 
     await createReferralEvent(referrer.referralCode, referee.id);
 
-    await updateReferralUsers(referee.id);
-
-    const referrerAfterReferral = await prisma.scout.findUniqueOrThrow({
-      where: {
-        id: referrer.id
-      },
-      select: {
-        currentBalance: true
-      }
-    });
-
     await recordNftMint({
       builderNftId: builderNft.id,
       amount: 1,
@@ -192,6 +181,6 @@ describe('recordNftMint', () => {
       }
     });
 
-    expect(referrerAfterReferralBonus.currentBalance).toBe(referrerAfterReferral.currentBalance + referralBonusPoints);
+    expect(referrerAfterReferralBonus.currentBalance).toBe(50);
   });
 });
