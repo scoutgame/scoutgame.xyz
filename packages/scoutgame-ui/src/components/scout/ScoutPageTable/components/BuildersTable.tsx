@@ -157,10 +157,10 @@ export function BuildersTable({
               >
                 <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
                 <Stack width='100%'>
-                  {builder.nftsPurchasedByUser ? (
+                  {builder.nftsSoldToScout ? (
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <TableCellText color='green.main' noWrap>
-                        {builder.nftsPurchasedByUser}
+                        {builder.nftsSoldToScout}
                       </TableCellText>
                       <Image width={15} height={15} src='/images/profile/icons/cards-green.svg' alt='green-icon' />
                     </Stack>

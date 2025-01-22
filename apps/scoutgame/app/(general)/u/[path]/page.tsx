@@ -1,3 +1,4 @@
+import { getSession } from '@packages/nextjs/session/getSession';
 import { PublicProfilePage } from '@packages/scoutgame-ui/components/[path]/PublicProfilePage';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import { getUserByPathCached } from '@packages/users/getUserByPathCached';
@@ -39,6 +40,8 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 export default async function Profile({ params, searchParams }: Props) {
   const user = await getUserByPathCached(params.path);
   const tab = searchParams.tab || (user?.builderStatus === 'approved' ? 'builder' : 'scout');
+  const session = await getSession();
+  const scoutId = session?.scoutId;
 
   if (!user || typeof tab !== 'string') {
     return notFound();
@@ -48,7 +51,7 @@ export default async function Profile({ params, searchParams }: Props) {
     <>
       <FarcasterMetadata user={user} />
       <PageContainer>
-        <PublicProfilePage user={user} tab={tab} />
+        <PublicProfilePage scoutId={scoutId} user={user} tab={tab} />
       </PageContainer>
     </>
   );

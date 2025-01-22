@@ -4,6 +4,8 @@ import type { Metadata, ResolvingMetadata } from 'next';
 import type { ResolvedOpenGraph } from 'next/dist/lib/metadata/types/opengraph-types';
 import { notFound } from 'next/navigation';
 
+import { getSession } from 'lib/session/getSession';
+
 export const dynamic = 'force-dynamic';
 
 type Props = {
@@ -35,11 +37,13 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
 export default async function Profile({ params, searchParams }: Props) {
   const user = await getUserByPathCached(params.path);
+  const session = await getSession();
+  const scoutId = session?.scoutId;
   const tab = searchParams.tab || (user?.builderStatus === 'approved' ? 'builder' : 'scout');
 
   if (!user || typeof tab !== 'string') {
     return notFound();
   }
 
-  return <PublicProfilePage user={user} tab={tab} />;
+  return <PublicProfilePage scoutId={scoutId} user={user} tab={tab} />;
 }

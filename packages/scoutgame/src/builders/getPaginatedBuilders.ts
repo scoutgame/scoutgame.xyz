@@ -13,11 +13,13 @@ export type CompositeCursor = {
 export async function getPaginatedBuilders({
   limit,
   week,
-  cursor
+  cursor,
+  scoutId
 }: {
   limit: number;
   week: ISOWeek;
   cursor: CompositeCursor | null;
+  scoutId?: string;
 }): Promise<{ builders: BuilderInfo[]; nextCursor: CompositeCursor | null }> {
   const season = getCurrentSeasonStart(week);
 
@@ -74,9 +76,19 @@ export async function getPaginatedBuilders({
                 nftType: true,
                 congratsImageUrl: true,
                 estimatedPayout: true,
-                nftSoldEvents: {
-                  distinct: 'scoutId'
-                }
+                nftSoldEvents: scoutId
+                  ? {
+                      where: {
+                        builderEvent: {
+                          season
+                        },
+                        scoutId
+                      },
+                      select: {
+                        tokensPurchased: true
+                      }
+                    }
+                  : undefined
               }
             },
             builderCardActivities: {
@@ -122,13 +134,14 @@ export async function getPaginatedBuilders({
         displayName: stat.user.displayName,
         builderPoints: stat.user.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
         price: stat.user.builderNfts?.[0]?.currentPrice ?? 0,
-        scoutedBy: stat.user.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
-        nftsSold: stat.user.userSeasonStats[0]?.nftsSold ?? 0,
         builderStatus: stat.user.builderStatus!,
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
         estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0,
-        gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0
+        gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
+        nftsSoldToScout:
+          stat.user.builderNfts?.[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) ||
+          undefined
       }))
     );
   const userId = builders[builders.length - 1]?.id;
