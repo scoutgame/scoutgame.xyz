@@ -1,12 +1,6 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
-import { optimism } from 'viem/chains';
-
-import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
