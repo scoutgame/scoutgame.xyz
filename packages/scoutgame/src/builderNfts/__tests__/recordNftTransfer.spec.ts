@@ -1,12 +1,9 @@
-import type { BuilderEvent, NFTPurchaseEvent, ScoutNft, ScoutWallet } from '@charmverse/core/prisma-client';
+import type { BuilderEvent, NFTPurchaseEvent, ScoutNft } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { jest } from '@jest/globals';
-import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
+import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
 import { randomLargeInt, randomWalletAddress } from '@packages/testing/generators';
-import { referralBonusPoints } from '@packages/users/constants';
-import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
-import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
-import { v4 } from 'uuid';
 import type { Address } from 'viem';
 
 jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
@@ -68,13 +65,19 @@ describe('recordNftTransfer', () => {
 
     await recordNftTransfer({
       contractAddress: builderNft.contractAddress as Address,
-      amount,
-      txHash: transferTxHash,
-      from: mockSenderWallet,
-      to: mockRecipientWallet,
-      sentAt: new Date(),
-      scoutId: scout.id,
-      tokenId: builderNft.tokenId
+      transferSingleEvent: {
+        eventName: 'TransferSingle',
+        args: {
+          id: BigInt(builderNft.tokenId),
+          value: BigInt(amount),
+          from: mockSenderWallet,
+          to: mockRecipientWallet,
+          operator: mockSenderWallet
+        },
+        transactionHash: transferTxHash as `0x${string}`,
+        logIndex: 5,
+        blockNumber: BigInt(1)
+      }
     });
 
     const builderEvent = await prisma.builderEvent.findFirstOrThrow({
@@ -114,7 +117,8 @@ describe('recordNftTransfer', () => {
         tokensPurchased: amount,
         txHash: transferTxHash,
         walletAddress: mockRecipientWallet,
-        senderWalletAddress: mockSenderWallet
+        senderWalletAddress: mockSenderWallet,
+        txLogIndex: 5
       }
     });
 
@@ -142,5 +146,45 @@ describe('recordNftTransfer', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     });
+  });
+
+  // We are skipping these for now since the scoutID is still mandatory on the NFTPurchaseEvent table
+  it('should skip burn transactions', async () => {
+    const randomWallet = randomWalletAddress().toLowerCase() as Address;
+
+    const builder = await mockBuilder({ wallets: [{ address: randomWallet }] });
+
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
+
+    const scoutWallet = randomWalletAddress().toLowerCase() as Address;
+
+    const scout = await mockScout({ wallets: [scoutWallet] });
+
+    const transferTxHash = `0x123${Math.random().toString().replace('.', '')}`;
+
+    await recordNftTransfer({
+      contractAddress: builderNft.contractAddress as Address,
+      transferSingleEvent: {
+        eventName: 'TransferSingle',
+        args: {
+          id: BigInt(builderNft.tokenId),
+          value: BigInt(0),
+          from: scoutWallet,
+          to: NULL_EVM_ADDRESS,
+          operator: randomWallet
+        },
+        transactionHash: transferTxHash as `0x${string}`,
+        logIndex: 5,
+        blockNumber: BigInt(1)
+      }
+    });
+
+    const dbTransfer = await prisma.nFTPurchaseEvent.findFirst({
+      where: {
+        txHash: transferTxHash
+      }
+    });
+
+    expect(dbTransfer).toBeNull();
   });
 });

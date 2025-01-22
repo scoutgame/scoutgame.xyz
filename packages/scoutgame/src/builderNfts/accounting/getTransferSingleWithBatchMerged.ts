@@ -13,6 +13,7 @@ type TransferBatchEvent = {
   args: { operator: Address; from: Address; to: Address; ids: bigint[]; values: bigint[] };
   transactionHash: `0x${string}`;
   blockNumber: bigint;
+  logIndex: number;
 };
 
 const transferBatchAbi = {
@@ -60,7 +61,8 @@ function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSin
       value: batchEvent.args.values[index]
     },
     transactionHash: batchEvent.transactionHash,
-    blockNumber: batchEvent.blockNumber
+    blockNumber: batchEvent.blockNumber,
+    logIndex: batchEvent.logIndex
   }));
 }
 

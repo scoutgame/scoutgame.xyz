@@ -63,7 +63,7 @@ export async function getRevertedMintTransactionAttestations() {
 
     return {
       uid: attestation.id,
-      transactionHashesMap: (parsedTransactionHashes?.map((hash) => prefix0x(hash)) ?? []).reduce(
+      transactionHashesMap: (parsedTransactionHashes?.map((hash) => prefix0x(hash).toLowerCase()) ?? []).reduce(
         (acc, val) => {
           acc[val] = val;
 

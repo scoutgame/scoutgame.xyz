@@ -1,12 +1,10 @@
 import { NFTPurchaseEvent, prisma } from '@charmverse/core/prisma-client';
-import { BuilderScoutedEvent, getBuilderScoutedEvents } from '@packages/scoutgame/builderNfts/accounting/getBuilderScoutedEvents';
-import {  getTransferSingleEvents, TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
-import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
-import { optimism } from 'viem/chains';
-import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
-import { Address } from 'viem';
-import {getRevertedMintTransactionAttestations} from '@packages/safetransactions/getRevertedMintTransactionAttestations'
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { getRevertedMintTransactionAttestations } from '@packages/safetransactions/getRevertedMintTransactionAttestations';
+import { getTransferSingleEvents, TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
+import { optimism } from 'viem/chains';
 
 async function migrateNftPurchaseEvents() {
 
@@ -17,7 +15,7 @@ async function migrateNftPurchaseEvents() {
   async function handleTransferSingleEvent({onchainEvent, purchaseEvent}: {onchainEvent: TransferSingleEvent, purchaseEvent: NFTPurchaseEvent}) {
 
     // Don't reindex reverted mint transactions
-    if (ignoredTxAttestations.some(attestation => attestation.transactionHashesMap[onchainEvent.transactionHash])) {
+    if (ignoredTxAttestations.some(attestation => attestation.transactionHashesMap[onchainEvent.transactionHash.toLowerCase()])) {
       return;
     }
 

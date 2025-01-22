@@ -1,35 +1,27 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWeekFromDate } from '@packages/dates/utils';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import type { Address } from 'viem';
 
+import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
+import { builderNftChain } from './constants';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 type RecordNftTransferParams = {
-  from: Address;
-  to: Address;
-  tokenId: number;
-  amount: number;
+  transferSingleEvent: TransferSingleEvent;
   contractAddress: Address;
-  txHash: string;
-  sentAt: Date;
-  scoutId: string;
 };
 
 export async function recordNftTransfer({
   contractAddress,
-  amount,
-  from,
-  to,
-  tokenId,
-  txHash,
-  sentAt,
-  scoutId
+  transferSingleEvent
 }: RecordNftTransferParams): Promise<void> {
   const matchingNft = await prisma.builderNft.findFirstOrThrow({
     where: {
-      tokenId,
+      tokenId: Number(transferSingleEvent.args.id),
       contractAddress: {
         equals: contractAddress,
         mode: 'insensitive'
@@ -37,22 +29,40 @@ export async function recordNftTransfer({
     }
   });
 
+  const { from, to } = transferSingleEvent.args;
+
+  const txHash = transferSingleEvent.transactionHash;
+  const logIndex = transferSingleEvent.logIndex;
+
   const fromWallet = from !== NULL_EVM_ADDRESS ? from.toLowerCase() : null;
   const toWallet = to !== NULL_EVM_ADDRESS ? to.toLowerCase() : null;
 
+  if (!toWallet) {
+    log.warn('Skipping burn transaction', { transferSingleEvent });
+    return;
+  }
+
   const existingNftPurchaseEvent = await prisma.nFTPurchaseEvent.findFirst({
     where: {
+      // Checking this is same NFT
       builderNftId: matchingNft.id,
+      tokensPurchased: Number(transferSingleEvent.args.value),
+      // Checking for same tx and position inside tx (one transaction can have multiple events)
       txHash,
-      tokensPurchased: amount,
-      senderWalletAddress: {
-        equals: fromWallet,
-        mode: 'insensitive'
-      },
-      walletAddress: {
-        equals: toWallet,
-        mode: 'insensitive'
-      }
+      txLogIndex: logIndex,
+      // Checking for to and from
+      senderWalletAddress: fromWallet
+        ? {
+            equals: fromWallet,
+            mode: 'insensitive'
+          }
+        : null,
+      walletAddress: toWallet
+        ? {
+            equals: toWallet,
+            mode: 'insensitive'
+          }
+        : null
     }
   });
 
@@ -60,13 +70,19 @@ export async function recordNftTransfer({
     return;
   }
 
+  const scoutId: string = await findOrCreateWalletUser({ wallet: toWallet }).then((user) => user.id);
+
   if (fromWallet) {
     await findOrCreateWalletUser({ wallet: fromWallet });
   }
 
-  if (toWallet) {
-    await findOrCreateWalletUser({ wallet: toWallet });
-  }
+  const _sentAt = await getPublicClient(builderNftChain.id)
+    .getBlock({
+      blockNumber: transferSingleEvent.blockNumber
+    })
+    .then((block) => Number(block.timestamp) * 1000);
+
+  const sentAt = new Date(_sentAt);
 
   await prisma.builderEvent.create({
     data: {
@@ -82,12 +98,13 @@ export async function recordNftTransfer({
         create: {
           pointsValue: 0,
           createdAt: sentAt,
-          tokensPurchased: amount,
+          tokensPurchased: Number(transferSingleEvent.args.value),
           paidInPoints: false,
           txHash: txHash?.toLowerCase(),
           builderNftId: matchingNft.id,
           walletAddress: toWallet,
           senderWalletAddress: fromWallet,
+          txLogIndex: logIndex,
           scoutId,
           activities: {
             create: {
@@ -108,7 +125,7 @@ export async function recordNftTransfer({
   if (fromWallet) {
     await refreshScoutNftBalance({
       wallet: fromWallet as Address,
-      tokenId,
+      tokenId: Number(transferSingleEvent.args.id),
       contractAddress,
       nftType: 'default'
     });
@@ -117,7 +134,7 @@ export async function recordNftTransfer({
   if (toWallet) {
     await refreshScoutNftBalance({
       wallet: toWallet as Address,
-      tokenId,
+      tokenId: Number(transferSingleEvent.args.id),
       contractAddress,
       nftType: 'default'
     });

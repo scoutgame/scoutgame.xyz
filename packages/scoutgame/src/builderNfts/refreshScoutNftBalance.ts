@@ -1,6 +1,5 @@
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
 
@@ -45,13 +44,6 @@ export async function refreshScoutNftBalance({
           tokenId: BigInt(tokenId)
         }
       }));
-
-  prettyPrint({
-    balance,
-    wallet,
-    tokenId,
-    contractAddress
-  });
 
   await prisma.scoutNft.upsert({
     where: {
