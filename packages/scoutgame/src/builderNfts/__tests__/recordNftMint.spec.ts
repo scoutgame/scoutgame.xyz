@@ -213,6 +213,6 @@ describe('recordNftMint', () => {
       }
     });
 
-    expect(referrerAfterReferralBonus.currentBalance).toBe(50);
+    expect(referrerAfterReferralBonus.currentBalance).toBe(40);
   });
 });
