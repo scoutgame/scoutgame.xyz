@@ -61,6 +61,10 @@ export async function sendPointsForDailyClaim({
         currentBalance: {
           increment: points
         }
+      },
+      // dont return all fields to avoid errors during migration
+      select: {
+        id: true
       }
     });
   }

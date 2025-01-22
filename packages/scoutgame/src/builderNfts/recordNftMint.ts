@@ -6,6 +6,7 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
+import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { baseUrl } from '@packages/utils/constants';
 import type { Address } from 'viem';
 
@@ -271,6 +272,8 @@ export async function recordNftMint(
   }
 
   try {
+    // check if we should count a referral
+    await updateReferralUsers(scoutId);
     await createReferralBonusEvent(scoutId);
   } catch (error) {
     log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
