@@ -1,6 +1,6 @@
 'use client';
 
-import { Stack, Typography } from '@mui/material';
+import { Stack, Tooltip, Typography } from '@mui/material';
 import Image from 'next/image';
 
 import { useDynamicFontSize } from '../../../../hooks/useDynamicFontSize';
@@ -62,23 +62,25 @@ export function BuilderCardName({
         </Typography>
       </Stack>
       {nftsSoldToScout ? (
-        <Stack flexDirection='row' alignItems='center' height='100%' gap={0.35}>
-          <Typography
-            sx={{
-              fontFamily: 'K2D',
-              color: 'black !important',
-              fontSize
-            }}
-          >
-            {nftsSoldToScout}
-          </Typography>
-          <Image
-            width={isMdScreen ? 12.5 : 10}
-            height={isMdScreen ? 12.5 : 10}
-            src='/images/profile/icons/cards-black.svg'
-            alt='green-icon'
-          />
-        </Stack>
+        <Tooltip title='# of cards you hold'>
+          <Stack flexDirection='row' alignItems='center' height='100%' gap={0.35}>
+            <Typography
+              sx={{
+                fontFamily: 'K2D',
+                color: 'black !important',
+                fontSize
+              }}
+            >
+              {nftsSoldToScout}
+            </Typography>
+            <Image
+              width={isMdScreen ? 12.5 : 10}
+              height={isMdScreen ? 12.5 : 10}
+              src='/images/profile/icons/cards-black.svg'
+              alt='green-icon'
+            />
+          </Stack>
+        </Tooltip>
       ) : null}
     </Stack>
   );
