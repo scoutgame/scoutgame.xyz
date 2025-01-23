@@ -2,12 +2,20 @@ import fs from 'fs';
 import path from 'node:path';
 
 import { log } from '@charmverse/core/log';
+import { tokenize } from '@packages/llm/tokenize';
 import { GET, POST } from '@packages/utils/http';
 import { prettyPrint } from '@packages/utils/strings';
+
+import { parseFileTreeFromGitingest } from './parseFileTreeFromGitingest';
 
 function normaliseRepoNameAndOwner({ repoOwner, repoName }: { repoOwner: string; repoName: string }) {
   return `${repoOwner}_${repoName}`;
 }
+
+/**
+ * We are using the DeepSeek Chat model which has max 64k tokens, so we leave some buffer
+ */
+const MAX_TOKENS = 60_000;
 
 export async function enrichRepoData({ repoOwner, repoName }: { repoOwner: string; repoName: string }) {
   const repoId = normaliseRepoNameAndOwner({ repoOwner, repoName });
@@ -54,6 +62,10 @@ export async function enrichRepoData({ repoOwner, repoName }: { repoOwner: strin
     const downloadResponse = await GET<ArrayBuffer>(downloadUrl, { responseType: 'arraybuffer' });
     fs.writeFileSync(ingestedFileTxtPath, String(downloadResponse));
   }
+
+  const rawData = fs.readFileSync(ingestedFileTxtPath, 'utf-8');
+
+  const fileTree = parseFileTreeFromGitingest(rawData);
 
   // fs.writeFileSync(downloadFilePath, downloadResponse.data);
 
