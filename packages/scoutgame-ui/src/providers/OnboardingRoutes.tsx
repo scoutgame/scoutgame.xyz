@@ -22,9 +22,6 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
   const pathname = usePathname();
   const { user } = useUser();
 
-  // Get the current step from URL or default to 'welcome'
-  // const currentStep = (searchParams.get('step') as OnboardingStep) || 'welcome';
-
   /**
    * Define the next route based on current step
    *
