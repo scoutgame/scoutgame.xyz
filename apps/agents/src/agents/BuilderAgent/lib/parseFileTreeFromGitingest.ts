@@ -1,11 +1,11 @@
-type FileNode = {
+export type GithubFileNode = {
   name: string;
   content?: string;
-  children?: FileNode[];
+  children?: GithubFileNode[];
 };
 
-export function parseFileTreeFromGitingest(input: string): FileNode {
-  const root: FileNode = { name: 'root', children: [] };
+export function parseFileTreeFromGitingest(input: string): GithubFileNode {
+  const root: GithubFileNode = { name: 'root', children: [] };
 
   // Split the input by file delimiters
   const fileSections = input.split('================================================\nFile: ').slice(1);
