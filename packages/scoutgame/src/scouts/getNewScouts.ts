@@ -120,33 +120,37 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
   return prisma.scout.findMany({
     where: {
       deletedAt: null,
-      nftPurchaseEvents: {
+      wallets: {
         every: {
-          OR: [
-            {
-              // every nft purchase event must have been purchased this week or later
-              builderEvent: {
-                week: {
-                  gte: week
+          purchaseEvents: {
+            every: {
+              OR: [
+                {
+                  // every nft purchase event must have been purchased this week or later
+                  builderEvent: {
+                    week: {
+                      gte: week
+                    },
+                    season
+                  }
                 },
+                {
+                  // every nft purchase event must have been purchased this week or later
+                  builderEvent: {
+                    season: {
+                      not: season
+                    }
+                  }
+                }
+              ]
+            },
+            // at least one NFT was purchased this week
+            some: {
+              builderEvent: {
+                week,
                 season
               }
-            },
-            {
-              // every nft purchase event must have been purchased this week or later
-              builderEvent: {
-                season: {
-                  not: season
-                }
-              }
             }
-          ]
-        },
-        // at least one NFT was purchased this week
-        some: {
-          builderEvent: {
-            week,
-            season
           }
         }
       }

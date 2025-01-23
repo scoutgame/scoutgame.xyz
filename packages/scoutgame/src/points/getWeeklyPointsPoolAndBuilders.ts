@@ -45,6 +45,9 @@ async function getNftPurchaseEvents({ week }: { week: string }): Promise<Partial
   return prisma.nFTPurchaseEvent
     .findMany({
       where: {
+        walletAddress: {
+          not: null
+        },
         senderWalletAddress: null,
         builderEvent: {
           week: {
@@ -56,7 +59,11 @@ async function getNftPurchaseEvents({ week }: { week: string }): Promise<Partial
         }
       },
       select: {
-        scoutId: true,
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        },
         tokensPurchased: true,
         builderNft: {
           select: {
@@ -66,5 +73,5 @@ async function getNftPurchaseEvents({ week }: { week: string }): Promise<Partial
         }
       }
     })
-    .then((data) => data.map((record) => ({ ...record, scoutId: record.scoutId })));
+    .then((data) => data.map((record) => ({ ...record, scoutId: record.scoutWallet!.scoutId })));
 }

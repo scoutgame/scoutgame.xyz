@@ -195,15 +195,6 @@ export const mergeUserAccount = async ({
         }
       });
 
-      await tx.nFTPurchaseEvent.updateMany({
-        where: {
-          scoutId: mergedUserId
-        },
-        data: {
-          scoutId: retainedUserId
-        }
-      });
-
       await tx.scoutGameActivity.updateMany({
         where: {
           userId: mergedUserId
@@ -288,19 +279,6 @@ export const mergeUserAccount = async ({
           select: {
             balance: true,
             walletAddress: true
-          }
-        });
-
-        const nftSoldEvents = await tx.nFTPurchaseEvent.findMany({
-          where: {
-            builderNft: {
-              season: getCurrentSeasonStart(),
-              builderId: retainedUserId
-            }
-          },
-          select: {
-            tokensPurchased: true,
-            scoutId: true
           }
         });
 
