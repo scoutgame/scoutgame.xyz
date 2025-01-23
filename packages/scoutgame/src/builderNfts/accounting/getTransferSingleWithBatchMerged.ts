@@ -16,7 +16,7 @@ type TransferBatchEvent = {
   logIndex: number;
 };
 
-const transferBatchAbi = {
+export const transferBatchAbi = {
   anonymous: false,
   inputs: [
     { indexed: true, internalType: 'address', name: 'operator', type: 'address' },

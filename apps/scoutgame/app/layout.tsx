@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 
 import '@packages/scoutgame-ui/theme/styles.scss';
 
-const ClientGlobals = dynamic(() => import('components/common/ClientGlobals').then((comp) => comp.ClientGlobals), {
+const ClientGlobals = dynamic(() => import('../components/common/ClientGlobals').then((comp) => comp.ClientGlobals), {
   ssr: false
 });
 

@@ -30,19 +30,11 @@ export async function findAndIndexMissingPurchases({
 
   const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
 
-  const transactionInfoAttestations = await getRevertedMintTransactionAttestations();
-
   const transferSingleEvents = await getTransferSingleWithBatchMerged({
     fromBlock: startBlockNumber,
     contractAddress,
     chainId: builderNftChain.id
-  }).then((events) =>
-    events.filter(
-      // Ignore an event if we burned the corresponding NFT
-      (event) =>
-        !transactionInfoAttestations.some((attestation) => attestation.transactionHashesMap[event.transactionHash])
-    )
-  );
+  });
   const transferSingleEventsMapped = transferSingleEvents.reduce(
     (acc, val) => {
       acc[uniqueNftPurchaseEventKey(val)] = val;
