@@ -42,9 +42,20 @@ export async function getBuilderActivities({
         builderStatus: 'approved',
         deletedAt: null
       },
-      type: {
-        in: ['nft_purchase', 'merged_pull_request', 'daily_commit']
-      }
+      OR: [
+        {
+          type: {
+            in: ['merged_pull_request', 'daily_commit']
+          }
+        },
+        {
+          type: 'nft_purchase',
+          nftPurchaseEvent: {
+            // Corresponds to a mint
+            senderWalletAddress: null
+          }
+        }
+      ]
     },
     orderBy: {
       createdAt: 'desc'

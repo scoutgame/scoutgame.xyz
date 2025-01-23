@@ -100,6 +100,7 @@ export async function recordClosedPullRequest({
 
     const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
       where: {
+        senderWalletAddress: null,
         builderNft: {
           season,
           builderId: builder.id

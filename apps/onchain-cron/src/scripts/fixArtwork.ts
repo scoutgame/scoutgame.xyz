@@ -26,7 +26,7 @@ async function refreshArtworks() {
     skip: 124
   });
 
-  console.log('Contract ', getBuilderNftContractAddress());
+  console.log('Contract ', getBuilderNftContractAddress(getCurrentSeasonStart()));
 
   const totalNfts = builderNfts.length;
 

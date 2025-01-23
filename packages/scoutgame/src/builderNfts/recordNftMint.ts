@@ -8,19 +8,23 @@ import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { baseUrl } from '@packages/utils/constants';
+import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
+import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
 import type { MintNFTParams } from './mintNFT';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
+import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType'> & {
     createdAt?: Date;
     mintTxHash: string;
+    mintTxLogIndex: number;
     skipMixpanel?: boolean;
     skipPriceRefresh?: boolean;
   }
@@ -32,6 +36,7 @@ export async function recordNftMint(
     paidWithPoints,
     recipientAddress,
     scoutId,
+    mintTxLogIndex,
     pointsValue,
     createdAt,
     mintTxHash,
@@ -43,10 +48,13 @@ export async function recordNftMint(
     throw new InvalidInputError(`Mint transaction hash is required`);
   }
 
-  const existingTx = await prisma.nFTPurchaseEvent.findFirst({
-    where: {
-      txHash: mintTxHash
-    }
+  const existingTx = await getMatchingNFTPurchaseEvent({
+    builderNftId,
+    txHash: mintTxHash,
+    txLogIndex: mintTxLogIndex,
+    senderWalletAddress: null,
+    walletAddress: recipientAddress,
+    tokensPurchased: amount
   });
 
   if (existingTx) {
@@ -64,6 +72,7 @@ export async function recordNftMint(
       season: true,
       tokenId: true,
       builderId: true,
+      contractAddress: true,
       imageUrl: true,
       builder: {
         select: {
@@ -105,6 +114,7 @@ export async function recordNftMint(
       }
     });
     const uniqueOwners = Array.from(new Set(owners.map((owner) => owner.scoutId).concat(scoutId))).length;
+
     const builderEvent = await tx.builderEvent.create({
       data: {
         type: 'nft_purchase',
@@ -123,6 +133,8 @@ export async function recordNftMint(
             paidInPoints: paidWithPoints,
             txHash: mintTxHash?.toLowerCase(),
             builderNftId,
+            walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
+            txLogIndex: mintTxLogIndex,
             scoutId,
             activities: {
               create: {
@@ -200,25 +212,6 @@ export async function recordNftMint(
         }
       });
     }
-
-    await tx.scoutNft.upsert({
-      where: {
-        builderNftId_walletAddress: {
-          builderNftId,
-          walletAddress: recipientAddress.toLowerCase() as `0x${string}`
-        }
-      },
-      create: {
-        builderNftId,
-        walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
-        balance: amount
-      },
-      update: {
-        balance: {
-          increment: amount
-        }
-      }
-    });
 
     return builderEvent.nftPurchaseEvent;
   });
@@ -299,6 +292,13 @@ export async function recordNftMint(
     builderIdToRefresh: builderNft.builderId
   }).catch((error) => {
     log.error('Error refreshing estimated payouts', { error, builderId: builderNft.builderId, userId: scoutId, week });
+  });
+
+  await refreshScoutNftBalance({
+    contractAddress: builderNft.contractAddress as Address,
+    nftType: builderNft.nftType,
+    tokenId: builderNft.tokenId,
+    wallet: recipientAddress.toLowerCase() as `0x${string}`
   });
 
   return {

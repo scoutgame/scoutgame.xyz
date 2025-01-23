@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import {
@@ -102,6 +102,8 @@ export function NFTPurchaseForm(props: NFTPurchaseProps) {
 export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const platform = getPlatform();
 
+  const season = getCurrentSeasonStart();
+
   const { user, refreshUser } = useUser();
   const builderId = builder.id;
   const initialQuantities = [1, 11, 111];
@@ -122,7 +124,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const builderContractReadonlyApiClient = getPreSeasonTwoBuilderNftContractReadonlyClient({
     chain: builderNftChain,
-    contractAddress: getBuilderNftContractAddress()
+    contractAddress: getBuilderNftContractAddress(season)
   });
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(
@@ -186,7 +188,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           : builder.nftType === 'starter_pack'
             ? await getBuilderNftStarterPackReadonlyClient({
                 chain: builderNftChain,
-                contractAddress: getBuilderNftStarterPackContractAddress()
+                contractAddress: getBuilderNftStarterPackContractAddress(season)
               }).getTokenPurchasePrice({
                 args: { amount: BigInt(amount) }
               })
@@ -208,7 +210,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         : builder.nftType === 'starter_pack'
           ? getBuilderNftStarterPackReadonlyClient({
               chain: builderNftChain,
-              contractAddress: getBuilderNftStarterPackContractAddress()
+              contractAddress: getBuilderNftStarterPackContractAddress(season)
             }).getTokenIdForBuilder({ args: { builderId } })
           : builderContractReadonlyApiClient.getTokenIdForBuilder({ args: { builderId } }));
 
@@ -257,7 +259,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const contractAddress =
     platform === 'onchain_webapp'
       ? scoutProtocolBuilderNftContractAddress()
-      : getBuilderNftContractAddressForNftType(builder.nftType);
+      : getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season });
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address: address as Address,
@@ -331,7 +333,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           contractAddress:
             platform === 'onchain_webapp'
               ? scoutProtocolBuilderNftContractAddress()
-              : getBuilderNftContractAddressForNftType(builder.nftType),
+              : getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }),
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,
           builderTokenId: Number(builderTokenId),
