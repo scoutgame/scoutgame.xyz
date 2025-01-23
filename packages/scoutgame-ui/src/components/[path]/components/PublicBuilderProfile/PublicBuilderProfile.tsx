@@ -9,7 +9,13 @@ import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import type { BuilderProfileProps } from './PublicBuilderProfileContainer';
 import { PublicBuilderProfileContainer } from './PublicBuilderProfileContainer';
 
-export async function PublicBuilderProfile({ builder }: { builder: BuilderProfileProps['builder'] }) {
+export async function PublicBuilderProfile({
+  builder,
+  scoutId
+}: {
+  builder: BuilderProfileProps['builder'];
+  scoutId?: string;
+}) {
   const builderId = builder.id;
 
   const [
@@ -17,13 +23,13 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
     { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 } = {},
     builderActivities = [],
     { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {},
-    { level, estimatedPayout, last14DaysRank } = {}
+    { level, estimatedPayout, last14DaysRank, nftsSoldToScout } = {}
   ] = await Promise.all([
     getBuilderNft(builderId),
     getBuilderStats(builderId),
     getBuilderActivities({ builderId, limit: 200 }),
     getBuilderScouts(builderId),
-    getBuilderCardStats(builderId)
+    getBuilderCardStats({ builderId, scoutId })
   ]);
 
   return (
@@ -32,6 +38,7 @@ export async function PublicBuilderProfile({ builder }: { builder: BuilderProfil
       builder={{
         ...builder,
         gemsCollected,
+        nftsSoldToScout,
         last14DaysRank: last14DaysRank ?? [],
         level: level ?? 0,
         estimatedPayout: estimatedPayout ?? 0,
