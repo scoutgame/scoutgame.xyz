@@ -9,6 +9,6 @@ export async function updateAllBuildersCardActivities(
   { date = DateTime.now() }: { date?: DateTime } = {}
 ) {
   log.info('Updating builder card activities');
-  const updatedBuilders = await updateBuildersCardActivity(date.minus({ days: 1 }));
+  const updatedBuilders = await updateBuildersCardActivity(date);
   log.info(`Updated ${updatedBuilders} builder card activities`);
 }
