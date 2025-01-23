@@ -7,7 +7,11 @@ import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accoun
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
+import {
+  builderNftChain,
+  getBuilderNftContractAddressForNftType,
+  validMintNftPurchaseEvent
+} from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
@@ -47,6 +51,7 @@ export async function findAndIndexMissingPurchases({
   const uniqueStoredTransactions = await prisma.nFTPurchaseEvent
     .findMany({
       where: {
+        ...validMintNftPurchaseEvent,
         builderNft: {
           contractAddress,
           season

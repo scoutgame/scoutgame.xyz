@@ -2,7 +2,7 @@ import type { BuilderNftType } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { weeklyRewardableBuilders } from '../builderNfts/constants';
+import { validMintNftPurchaseEvent, weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
 
@@ -45,10 +45,7 @@ async function getNftPurchaseEvents({ week }: { week: string }): Promise<Partial
   return prisma.nFTPurchaseEvent
     .findMany({
       where: {
-        walletAddress: {
-          not: null
-        },
-        senderWalletAddress: null,
+        ...validMintNftPurchaseEvent,
         builderEvent: {
           week: {
             lte: week

@@ -4,6 +4,8 @@ import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+
 export type ScoutInfo = BasicUserInfo & {
   displayName: string;
   nfts: number;
@@ -22,11 +24,7 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
         builderId,
         season: getCurrentSeasonStart()
       },
-      // Only return mints
-      senderWalletAddress: null,
-      walletAddress: {
-        not: null
-      }
+      ...validMintNftPurchaseEvent
     },
     select: {
       scoutWallet: {

@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
 
 export type NftStats = {
@@ -19,10 +20,7 @@ export async function getBuilderNftStats({
   const [nftPurchaseEvents, builderStrikes] = await Promise.all([
     prisma.nFTPurchaseEvent.findMany({
       where: {
-        senderWalletAddress: null,
-        walletAddress: {
-          not: null
-        },
+        ...validMintNftPurchaseEvent,
         builderEvent: {
           week: {
             lte: week

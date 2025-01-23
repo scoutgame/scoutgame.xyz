@@ -5,6 +5,7 @@ import { getPlatform } from '@packages/mixpanel/platform';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { DateTime } from 'luxon';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
@@ -176,12 +177,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           currentPrice: true,
           nftType: true,
           nftSoldEvents: {
-            where: {
-              senderWalletAddress: null,
-              walletAddress: {
-                not: null
-              }
-            },
+            where: validMintNftPurchaseEvent,
             include: {
               scoutWallet: {
                 select: {

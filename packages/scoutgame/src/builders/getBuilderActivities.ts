@@ -4,6 +4,7 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
 import type { BonusPartner } from '../bonus';
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 
 export type BuilderActivityType = 'nft_purchase' | 'merged_pull_request';
 
@@ -50,13 +51,7 @@ export async function getBuilderActivities({
         },
         {
           type: 'nft_purchase',
-          nftPurchaseEvent: {
-            // Corresponds to a mint
-            senderWalletAddress: null,
-            walletAddress: {
-              not: null
-            }
-          }
+          nftPurchaseEvent: validMintNftPurchaseEvent
         }
       ]
     },

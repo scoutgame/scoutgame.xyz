@@ -4,6 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getWeekFromDate, getStartOfWeek, isToday } from '@packages/dates/utils';
 import type { Commit } from '@packages/github/getCommitsByUser';
+import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
@@ -136,19 +137,23 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
           // It's a new event, we can record notification
           const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
             where: {
-              senderWalletAddress: null,
+              ...validMintNftPurchaseEvent,
               builderNft: {
                 season,
                 builderId: githubUser.builderId
               }
             },
             select: {
-              scoutId: true
+              scoutWallet: {
+                select: {
+                  scoutId: true
+                }
+              }
             }
           });
 
           const uniqueScoutIds = Array.from(
-            new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutId).filter(isTruthy))
+            new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutWallet!.scoutId).filter(isTruthy))
           );
 
           await tx.builderEvent.create({

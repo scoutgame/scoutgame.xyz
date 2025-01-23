@@ -2,6 +2,8 @@ import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type BuildersSortBy = 'price' | 'level' | 'week_gems' | 'estimated_payout';
@@ -81,9 +83,7 @@ export async function getBuilders({
                       }
                     }
                   : {
-                      where: {
-                        senderWalletAddress: null
-                      }
+                      where: validMintNftPurchaseEvent
                     }
               }
             },
@@ -165,9 +165,7 @@ export async function getBuilders({
               }
             }
           : {
-              where: {
-                senderWalletAddress: null
-              }
+              where: validMintNftPurchaseEvent
             },
         builder: {
           select: {
@@ -243,9 +241,7 @@ export async function getBuilders({
               }
             }
           : {
-              where: {
-                senderWalletAddress: null
-              }
+              where: validMintNftPurchaseEvent
             },
         builder: {
           select: {
@@ -336,9 +332,7 @@ export async function getBuilders({
                       }
                     }
                   : {
-                      where: {
-                        senderWalletAddress: null
-                      }
+                      where: validMintNftPurchaseEvent
                     }
               }
             },
