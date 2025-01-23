@@ -23,20 +23,24 @@ export async function getSeasonBuilderRewards({
       id: userId
     },
     select: {
-      nftPurchaseEvents: {
-        where: {
-          builderNft: {
-            season
-          }
-        },
+      wallets: {
         select: {
-          createdAt: true,
-          builderNft: {
+          purchaseEvents: {
+            where: {
+              builderNft: {
+                season
+              }
+            },
             select: {
-              builderId: true
+              createdAt: true,
+              builderNft: {
+                select: {
+                  builderId: true
+                }
+              },
+              tokensPurchased: true
             }
-          },
-          tokensPurchased: true
+          }
         }
       },
       pointsReceived: {
@@ -70,7 +74,8 @@ export async function getSeasonBuilderRewards({
   scout.pointsReceived.forEach((receipt) => {
     const builder = receipt.event.builder;
     const builderId = builder.id;
-    const cardsHeld = scout.nftPurchaseEvents
+    const cardsHeld = scout.wallets
+      .flatMap((wallet) => wallet.purchaseEvents)
       .filter((event) => event.createdAt < receipt.createdAt)
       .reduce((acc, event) => acc + event.tokensPurchased, 0);
     if (cardsHeld) {
@@ -104,24 +109,28 @@ export async function getWeeklyBuilderRewards({
       id: userId
     },
     select: {
-      nftPurchaseEvents: {
-        where: {
-          builderEvent: {
-            week: {
-              lte: week
-            }
-          },
-          builderNft: {
-            season
-          }
-        },
-        select: {
-          builderNft: {
+      wallets: {
+        include: {
+          purchaseEvents: {
+            where: {
+              builderEvent: {
+                week: {
+                  lte: week
+                }
+              },
+              builderNft: {
+                season
+              }
+            },
             select: {
-              builderId: true
+              builderNft: {
+                select: {
+                  builderId: true
+                }
+              },
+              tokensPurchased: true
             }
-          },
-          tokensPurchased: true
+          }
         }
       },
       pointsReceived: {
@@ -160,10 +169,12 @@ export async function getWeeklyBuilderRewards({
 
   const builderTokensRecord: Record<string, number> = {};
 
-  scout.nftPurchaseEvents.forEach((event) => {
-    const builderId = event.builderNft.builderId;
-    builderTokensRecord[builderId] = (builderTokensRecord[builderId] || 0) + event.tokensPurchased;
-  });
+  scout.wallets
+    .flatMap((wallet) => wallet.purchaseEvents)
+    .forEach((event) => {
+      const builderId = event.builderNft.builderId;
+      builderTokensRecord[builderId] = (builderTokensRecord[builderId] || 0) + event.tokensPurchased;
+    });
 
   return scout.pointsReceived
     .map((receipt) => {

@@ -71,13 +71,20 @@ export async function getBuilders({
                         builderEvent: {
                           season
                         },
-                        scoutId: userId
+                        scoutWallet: {
+                          scoutId: userId
+                        },
+                        senderWalletAddress: null
                       },
                       select: {
                         tokensPurchased: true
                       }
                     }
-                  : undefined
+                  : {
+                      where: {
+                        senderWalletAddress: null
+                      }
+                    }
               }
             },
             userSeasonStats: {
@@ -148,13 +155,20 @@ export async function getBuilders({
                 builderEvent: {
                   season
                 },
-                scoutId: userId
+                scoutWallet: {
+                  scoutId: userId
+                },
+                senderWalletAddress: null
               },
               select: {
                 tokensPurchased: true
               }
             }
-          : undefined,
+          : {
+              where: {
+                senderWalletAddress: null
+              }
+            },
         builder: {
           select: {
             path: true,
@@ -219,13 +233,20 @@ export async function getBuilders({
                 builderEvent: {
                   season
                 },
-                scoutId: userId
+                scoutWallet: {
+                  scoutId: userId
+                },
+                senderWalletAddress: null
               },
               select: {
                 tokensPurchased: true
               }
             }
-          : undefined,
+          : {
+              where: {
+                senderWalletAddress: null
+              }
+            },
         builder: {
           select: {
             path: true,
@@ -305,13 +326,20 @@ export async function getBuilders({
                         builderEvent: {
                           season
                         },
-                        scoutId: userId
+                        scoutWallet: {
+                          scoutId: userId
+                        },
+                        senderWalletAddress: null
                       },
                       select: {
                         tokensPurchased: true
                       }
                     }
-                  : undefined
+                  : {
+                      where: {
+                        senderWalletAddress: null
+                      }
+                    }
               }
             },
             builderCardActivities: {

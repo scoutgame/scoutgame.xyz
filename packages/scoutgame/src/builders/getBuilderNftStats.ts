@@ -20,6 +20,9 @@ export async function getBuilderNftStats({
     prisma.nFTPurchaseEvent.findMany({
       where: {
         senderWalletAddress: null,
+        walletAddress: {
+          not: null
+        },
         builderEvent: {
           week: {
             lte: week
@@ -31,7 +34,11 @@ export async function getBuilderNftStats({
         }
       },
       select: {
-        scoutId: true,
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        },
         tokensPurchased: true,
         builderNft: {
           select: {
@@ -49,7 +56,10 @@ export async function getBuilderNftStats({
   ]);
   const { nftSupply } = dividePointsBetweenBuilderAndScouts({
     builderId,
-    nftPurchaseEvents,
+    nftPurchaseEvents: nftPurchaseEvents.map((event) => ({
+      ...event,
+      scoutId: event.scoutWallet!.scoutId
+    })),
     rank: 1, // rank doesnt actually matter here
     weeklyAllocatedPoints: 100,
     normalisationFactor: 1
