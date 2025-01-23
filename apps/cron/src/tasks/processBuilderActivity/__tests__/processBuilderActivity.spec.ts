@@ -92,7 +92,7 @@ describe('processBuilderActivity', () => {
     expect(builderStats!.gemsCollected).toBe(101);
   });
 
-  it('should not record a commit if a PR was recorded for the same sha', async () => {
+  it('will record a commit even if a PR was recorded for the same sha', async () => {
     const repo = await mockRepo();
     const builder = await mockBuilder();
 
@@ -131,7 +131,7 @@ describe('processBuilderActivity', () => {
       }
     });
 
-    expect(builderEvents).toEqual(1);
+    expect(builderEvents).toEqual(2);
 
     const builderStats = await prisma.userWeeklyStats.findFirst({
       where: {
@@ -140,6 +140,6 @@ describe('processBuilderActivity', () => {
     });
     expect(builderStats).toBeDefined();
     expect(builderStats!.season).toBe(mockSeason);
-    expect(builderStats!.gemsCollected).toBe(100);
+    expect(builderStats!.gemsCollected).toBe(101);
   });
 });
