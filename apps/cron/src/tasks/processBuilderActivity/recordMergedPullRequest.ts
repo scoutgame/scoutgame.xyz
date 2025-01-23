@@ -169,8 +169,16 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
-      const weeklyBuilderEvents = previousGitEvents.filter((e) => e.builderEvent).length;
-      const threeDayPrStreak = weeklyBuilderEvents % 3 === 2;
+      const previousDaysWithPr = new Set(
+        previousGitEvents
+          .filter((e) => e.builderEvent)
+          .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
+          .filter(isTruthy)
+      );
+
+      const thisPrDate = builderEventDate.toISOString().split('T')[0];
+      const isFirstPrInDay = !previousDaysWithPr.has(thisPrDate);
+      const threeDayPrStreak = isFirstPrInDay && previousDaysWithPr.size % 3 === 2;
       const gemReceiptType: GemsReceiptType =
         isFirstMergedPullRequest && !hasFirstMergedPullRequestAlreadyThisWeek
           ? 'first_pr'
