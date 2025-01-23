@@ -2,18 +2,9 @@ import type { StackProps } from '@mui/material';
 import { Container, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
-import { InfoCard } from '../common/DocumentPageContainer/components/InfoCard';
 import { Hidden } from '../common/Hidden';
 
 import { InfoPageContainer } from './components/InfoPageContainer';
-
-export function InfoPage() {
-  return (
-    <InfoPageContainer data-test='info-page' image='/images/info/info_banner.png' title='How to Play'>
-      <Document />
-    </InfoPageContainer>
-  );
-}
 
 function ContainerStack({ children, ...props }: { children: React.ReactNode } & StackProps) {
   return (
@@ -103,7 +94,7 @@ export function InfoPageContent() {
     <Container
       maxWidth='lg'
       sx={{
-        p: 0
+        px: '0px !important'
       }}
     >
       <Step
@@ -169,6 +160,10 @@ export function InfoPageContent() {
   );
 }
 
-function Document() {
-  return <InfoPageContent />;
+export function InfoPage() {
+  return (
+    <InfoPageContainer data-test='info-page' image='/images/info/info_banner.png' title='How to Play'>
+      <InfoPageContent />
+    </InfoPageContainer>
+  );
 }
