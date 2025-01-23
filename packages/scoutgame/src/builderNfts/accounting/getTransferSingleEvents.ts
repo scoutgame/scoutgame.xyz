@@ -2,8 +2,6 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../constants';
-
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
 
@@ -24,35 +22,20 @@ export type TransferSingleEvent = {
   eventName: 'TransferSingle';
   args: { operator: Address; from: Address; to: Address; id: bigint; value: bigint };
   transactionHash: `0x${string}`;
+  logIndex: number;
   blockNumber: bigint;
 };
 
 export function getTransferSingleEvents({
   fromBlock,
   toBlock,
-  contractAddress = getBuilderNftContractAddress(),
-  chainId = builderNftChain.id
-}: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
+  contractAddress,
+  chainId
+}: BlockRange & { contractAddress: Address; chainId: number }): Promise<TransferSingleEvent[]> {
   return getPublicClient(chainId)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
       address: contractAddress,
-      event: transferSingleAbi
-    })
-    .then((logs) =>
-      parseEventLogs({
-        abi: [transferSingleAbi],
-        logs,
-        eventName: 'TransferSingle'
-      })
-    );
-}
-
-export function getStarterPackTransferSingleEvents({ fromBlock, toBlock }: BlockRange): Promise<TransferSingleEvent[]> {
-  return getPublicClient(builderNftChain.id)
-    .getLogs({
-      ...convertBlockRange({ fromBlock, toBlock }),
-      address: getBuilderNftStarterPackContractAddress(),
       event: transferSingleAbi
     })
     .then((logs) =>

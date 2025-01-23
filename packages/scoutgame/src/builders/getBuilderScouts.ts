@@ -21,7 +21,9 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
       builderEvent: {
         builderId,
         season: getCurrentSeasonStart()
-      }
+      },
+      // Only return mints
+      senderWalletAddress: null
     },
     select: {
       scout: {

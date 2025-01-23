@@ -13,9 +13,10 @@ type TransferBatchEvent = {
   args: { operator: Address; from: Address; to: Address; ids: bigint[]; values: bigint[] };
   transactionHash: `0x${string}`;
   blockNumber: bigint;
+  logIndex: number;
 };
 
-const transferBatchAbi = {
+export const transferBatchAbi = {
   anonymous: false,
   inputs: [
     { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
@@ -31,9 +32,9 @@ const transferBatchAbi = {
 function getTransferBatchEvents({
   fromBlock,
   toBlock,
-  contractAddress = getBuilderNftContractAddress(),
+  contractAddress,
   chainId = builderNftChain.id
-}: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<TransferBatchEvent[]> {
+}: BlockRange & { contractAddress: Address; chainId?: number }): Promise<TransferBatchEvent[]> {
   return getPublicClient(chainId)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
@@ -60,16 +61,17 @@ function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSin
       value: batchEvent.args.values[index]
     },
     transactionHash: batchEvent.transactionHash,
-    blockNumber: batchEvent.blockNumber
+    blockNumber: batchEvent.blockNumber,
+    logIndex: batchEvent.logIndex
   }));
 }
 
 export async function getTransferSingleWithBatchMerged({
   fromBlock,
   toBlock,
-  contractAddress = getBuilderNftContractAddress(),
+  contractAddress,
   chainId = builderNftChain.id
-}: BlockRange & { contractAddress?: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
+}: BlockRange & { contractAddress: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
   const [singleEvents, batchEvents] = await Promise.all([
     getTransferSingleEvents({ fromBlock, toBlock, contractAddress, chainId }),
     getTransferBatchEvents({ fromBlock, toBlock, contractAddress, chainId })

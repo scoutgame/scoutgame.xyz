@@ -120,9 +120,6 @@ export function InfoPageFooter() {
           <MuiLink href='/info/partner-rewards/optimism'>
             <Typography>Optimism</Typography>
           </MuiLink>
-          <MuiLink href='/info/partner-rewards/op-supersim'>
-            <Typography>OP Supersim</Typography>
-          </MuiLink>
         </Stack>
       </Container>
     </Stack>

@@ -14,7 +14,7 @@ export async function createBuilderNft({
   path,
   season,
   chainId = builderNftChain.id,
-  contractAddress = getBuilderNftContractAddress()
+  contractAddress
 }: {
   displayName: string;
   path: string;
@@ -26,6 +26,8 @@ export async function createBuilderNft({
   chainId?: number;
   contractAddress?: string;
 }) {
+  contractAddress = contractAddress ?? getBuilderNftContractAddress(season);
+
   const currentPrice = await getPreSeasonTwoBuilderNftContractReadonlyClient().getTokenPurchasePrice({
     args: { tokenId, amount: BigInt(1) }
   });

@@ -2,9 +2,10 @@ import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import type { Address, TransactionReceipt } from 'viem';
+import { parseEventLogs, type Address, type TransactionReceipt } from 'viem';
 import { optimism } from 'viem/chains';
 
+import { transferSingleAbi } from './accounting/getTransferSingleEvents';
 import { getPreSeasonOneBuilderNftContractMinterClient } from './clients/preseason01/getPreSeasonOneBuilderNftContractMinterClient';
 import { getPreSeasonTwoBuilderNftContractMinterClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
 import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
@@ -14,7 +15,6 @@ import {
   getBuilderNftStarterPackContractAddress,
   isPreseason01Contract
 } from './constants';
-import { getScoutGameNftMinterWallet } from './getScoutGameNftMinterWallet';
 import { recordNftMint } from './recordNftMint';
 
 export type MintNFTParams = {
@@ -85,7 +85,15 @@ export async function mintNFT(params: MintNFTParams) {
     });
   }
 
-  await recordNftMint({ ...params, mintTxHash: txResult.transactionHash });
+  const parsedLogs = parseEventLogs({
+    abi: [transferSingleAbi],
+    logs: txResult.logs,
+    eventName: ['TransferSingle']
+  });
+
+  const mintTxLogIndex = parsedLogs[0].logIndex;
+
+  await recordNftMint({ ...params, mintTxHash: txResult.transactionHash, mintTxLogIndex });
 
   // Proceed with minting
 }

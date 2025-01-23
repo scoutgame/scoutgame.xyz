@@ -1,3 +1,5 @@
+import { log } from '@charmverse/core/log';
+
 import { airstackRequest } from './airstackRequest';
 
 type MoxieFanToken = {
@@ -40,6 +42,10 @@ export async function getMoxieFanToken(farcasterId: number): Promise<MoxieFanTok
       }
     }
   `;
-  const data = await airstackRequest<any>(query);
-  return data.data.MoxieFanTokens.MoxieFanToken?.[0] || null;
+  const response = await airstackRequest<any>(query);
+  if (response.errors?.length) {
+    log.warn('Errors fetching Moxie fan token balances', { farcasterId, errors: response.errors });
+    throw new Error(`Errors fetching Moxie fan token balances: ${response.errors[0].message}`);
+  }
+  return response.data.MoxieFanTokens.MoxieFanToken?.[0] || null;
 }
