@@ -80,29 +80,21 @@ function makeCompact(content: string): string {
     .trim(); // Trim the start and end of the content
 }
 
-export async function enrichRepoData({
-  repoOwner,
-  repoName,
-  forceReprocessing
-}: {
-  repoOwner: string;
-  repoName: string;
-  forceReprocessing?: boolean;
-}) {
+function getEnrichedFilePath(repoOwner: string, repoName: string) {
   const repoId = normaliseRepoNameAndOwner({ repoOwner, repoName });
-
   const enrichedDir = path.resolve('apps/agents/src/agents/BuilderAgent/lib/enriched');
 
   if (!fs.existsSync(enrichedDir)) {
     fs.mkdirSync(enrichedDir, { recursive: true });
   }
 
-  const enrichedFilePath = path.resolve(enrichedDir, `${repoId}.json`);
+  return path.resolve(enrichedDir, `${repoId}.json`);
+}
 
-  // Check if repo data already exists
-  if (fs.existsSync(enrichedFilePath) && !forceReprocessing) {
-    return JSON.parse(fs.readFileSync(enrichedFilePath, 'utf-8'));
-  }
+export async function enrichRepoData({ repoOwner, repoName }: { repoOwner: string; repoName: string }) {
+  const repoId = normaliseRepoNameAndOwner({ repoOwner, repoName });
+  const enrichedDir = path.resolve('apps/agents/src/agents/BuilderAgent/lib/enriched');
+  const enrichedFilePath = getEnrichedFilePath(repoOwner, repoName);
 
   // Step 1: POST request to gitingest
   const ingestedFileTxtPath = path.join(enrichedDir, `${repoId}.txt`);
@@ -297,10 +289,25 @@ export async function enrichRepoData({
   return parsedResult;
 }
 
-async function processRepo(repoOwner: string, repoName: string) {
+async function processRepo({
+  repoOwner,
+  repoName,
+  forceReprocessing
+}: {
+  repoOwner: string;
+  repoName: string;
+  forceReprocessing?: boolean;
+}) {
+  const enrichedFilePath = getEnrichedFilePath(repoOwner, repoName);
+
+  // Check if repo data already exists
+  if (fs.existsSync(enrichedFilePath) && !forceReprocessing) {
+    return JSON.parse(fs.readFileSync(enrichedFilePath, 'utf-8'));
+  }
+
   const [firstSummary, secondSummary] = await Promise.all([
-    enrichRepoData({ repoOwner, repoName, forceReprocessing: true }),
-    enrichRepoData({ repoOwner, repoName, forceReprocessing: true })
+    enrichRepoData({ repoOwner, repoName }),
+    enrichRepoData({ repoOwner, repoName })
   ]);
 
   const finalSummary = await POST<DeepseekResponse>(
@@ -360,7 +367,7 @@ Expected output format is JSON object with the following fields:
 
 // Fix the github file filtering to ignore config, aws and other files that dont provide value
 
-processRepo('scoutgame', 'scoutgame.xyz')
+processRepo({ repoOwner: 'scoutgame', repoName: 'scoutgame.xyz' })
   .then((result) => {
     log.info('result', result);
   })
