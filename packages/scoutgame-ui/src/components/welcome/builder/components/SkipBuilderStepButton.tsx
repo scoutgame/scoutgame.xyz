@@ -12,7 +12,8 @@ export function SkipBuilderStepButton() {
   const { getNextRoute } = useOnboardingRoutes();
   const { executeAsync, isExecuting } = useAction(saveOnboardedAction, {
     onSuccess: () => {
-      router.push(getNextRoute());
+      // Trick here to get the next route to be the How it works page
+      router.push(getNextRoute('3'));
     }
   });
 

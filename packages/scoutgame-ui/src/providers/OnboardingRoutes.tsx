@@ -9,7 +9,7 @@ import { useUser } from './UserProvider';
 type OnboardingStep = '1' | '2' | '3' | '4';
 
 interface OnboardingRoutesContextType {
-  getNextRoute: () => string;
+  getNextRoute: (overwriteStep?: OnboardingStep) => string;
 }
 
 const OnboardingRoutesContext = createContext<OnboardingRoutesContextType | undefined>(undefined);
@@ -30,68 +30,71 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
    *
    * This method keeps the search params in the url
    */
-  const getNextRoute = useCallback((): string => {
-    const baseRoute = '/welcome';
+  const getNextRoute = useCallback(
+    (overwriteStep?: OnboardingStep): string => {
+      const baseRoute = '/welcome';
 
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const step = (urlParams.get('step') as OnboardingStep) || '1';
-    const type = (urlParams.get('type') as 'scout' | 'builder' | undefined) || 'scout';
-    const redirectUrlEncoded = urlParams.get('redirectUrl') as string | undefined;
-    const redirectUrl = redirectUrlEncoded
-      ? decodeURIComponent(redirectUrlEncoded)
-      : type === 'builder'
-        ? '/builders'
-        : '/scout';
-    const profileRedirect = urlParams.get('profile-redirect') as 'true' | 'false' | undefined;
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const step = overwriteStep || (urlParams.get('step') as OnboardingStep) || '1';
+      const type = (urlParams.get('type') as 'scout' | 'builder' | undefined) || 'scout';
+      const redirectUrlEncoded = urlParams.get('redirectUrl') as string | undefined;
+      const redirectUrl = redirectUrlEncoded
+        ? decodeURIComponent(redirectUrlEncoded)
+        : type === 'builder'
+          ? '/builders'
+          : '/scout';
+      const profileRedirect = urlParams.get('profile-redirect') as 'true' | 'false' | undefined;
 
-    if (pathname.includes('builder-registration-callback')) {
-      urlParams.set('step', '3');
-      return `${baseRoute}?${urlParams.toString()}`;
-    }
+      if (pathname.includes('builder-registration-callback')) {
+        urlParams.set('step', '3');
+        return `${baseRoute}?${urlParams.toString()}`;
+      }
 
-    switch (step) {
-      // Welcome with extra details
-      case '1': {
-        if (type === 'builder') {
-          urlParams.set('step', '2');
-          return `${baseRoute}?${urlParams.toString()}`;
-        } else if (user?.builderStatus) {
-          urlParams.set('step', '3');
-          return `${baseRoute}?${urlParams.toString()}`;
-        } else {
-          urlParams.set('step', '4');
-          return `${baseRoute}?${urlParams.toString()}`;
+      switch (step) {
+        // Welcome with extra details
+        case '1': {
+          if (type === 'builder') {
+            urlParams.set('step', '2');
+            return `${baseRoute}?${urlParams.toString()}`;
+          } else if (user?.builderStatus) {
+            urlParams.set('step', '3');
+            return `${baseRoute}?${urlParams.toString()}`;
+          } else {
+            urlParams.set('step', '4');
+            return `${baseRoute}?${urlParams.toString()}`;
+          }
         }
-      }
-      // Builder page
-      case '2': {
-        return '/api/connect-github/get-link';
-      }
-      // Spam policy
-      case '3': {
-        if (profileRedirect === 'true') {
-          return '/profile';
-        } else if (user?.builderStatus) {
+        // Builder page
+        case '2': {
+          return '/api/connect-github/get-link';
+        }
+        // Spam policy
+        case '3': {
+          if (profileRedirect === 'true') {
+            return '/profile';
+          } else if (user?.builderStatus) {
+            return redirectUrl;
+          } else {
+            urlParams.set('step', '4');
+            return `${baseRoute}?${urlParams.toString()}`;
+          }
+        }
+        // How it works
+        case '4':
+          if (user?.farcasterId) {
+            urlParams.set('step', '5');
+            return `${baseRoute}?${urlParams.toString()}`;
+          } else {
+            return redirectUrl;
+          }
+
+        default:
           return redirectUrl;
-        } else {
-          urlParams.set('step', '4');
-          return `${baseRoute}?${urlParams.toString()}`;
-        }
       }
-      // How it works
-      case '4':
-        if (user?.farcasterId) {
-          urlParams.set('step', '5');
-          return `${baseRoute}?${urlParams.toString()}`;
-        } else {
-          return redirectUrl;
-        }
-
-      default:
-        return redirectUrl;
-    }
-  }, [pathname, user?.builderStatus, user?.farcasterId]);
+    },
+    [pathname, user?.builderStatus, user?.farcasterId]
+  );
 
   const value = useMemo(
     () => ({
