@@ -105,7 +105,8 @@ describe('processScoutPointsPayout', () => {
       ({ nftPurchaseEvent }) =>
         ({
           ...nftPurchaseEvent,
-          builderNft
+          builderNft,
+          scoutId: nftPurchaseEvent!.scoutWallet!.scoutId
         }) as PartialNftPurchaseEvent
     );
 
@@ -221,7 +222,8 @@ describe('processScoutPointsPayout', () => {
       ({ nftPurchaseEvent }) =>
         ({
           ...nftPurchaseEvent,
-          builderNft
+          builderNft,
+          scoutId: nftPurchaseEvent!.scoutWallet!.scoutId
         }) as PartialNftPurchaseEvent
     );
 

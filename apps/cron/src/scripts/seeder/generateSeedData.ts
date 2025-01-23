@@ -177,7 +177,8 @@ export async function generateSeedData(
           }
         },
         include: {
-          builderNft: true
+          builderNft: true,
+          scoutWallet: true
         }
       });
       for (const { builder, gemsCollected, rank } of topWeeklyBuilders) {
@@ -189,7 +190,10 @@ export async function generateSeedData(
             week,
             season: getCurrentSeasonStart(),
             createdAt: date.toJSDate(),
-            nftPurchaseEvents,
+            nftPurchaseEvents: nftPurchaseEvents.map((ev) => ({
+              ...ev,
+              scoutId: ev.scoutWallet!.scoutId,
+            })),
             // We started with 100k points per week
             weeklyAllocatedPoints: 1e5
           });
