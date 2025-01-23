@@ -1,4 +1,6 @@
 import { log } from '@charmverse/core/log';
+import { prisma } from '@charmverse/core/prisma-client';
+import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { uuidFromNumber } from '@packages/utils/uuid';
 import type { WebAppInitData } from '@twa-dev/types';
 
@@ -21,7 +23,8 @@ export async function findOrCreateTelegramUser(
     telegramId: telegramUser.id,
     avatar: telegramUser.photo_url,
     displayName,
-    path: await generateUserPath(telegramUser.username || displayName)
+    path: await generateUserPath(telegramUser.username || displayName),
+    telegramName: displayName
   });
 
   const startParam = telegramUser.start_param;
@@ -33,7 +36,17 @@ export async function findOrCreateTelegramUser(
       // There can be a case where the referrer is not found. Maybe someone will try to guess referral codes to get rewards.
       log.warn('Error creating referral event.', { error, startParam: telegramUser.start_param, referrerId: user.id });
     });
+  } else if (!user?.isNew) {
+    // If the user is not new, we need to update the telegramName manually
+    await prisma.scout.update({
+      where: { id: user.id },
+      data: { telegramName: displayName }
+    });
   }
+
+  await completeQuests(user.id, ['link-telegram-account']).catch((error) => {
+    log.error('Error completing quest: link-telegram-account', { error, userId: user.id });
+  });
 
   return user;
 }

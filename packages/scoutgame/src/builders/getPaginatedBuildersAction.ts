@@ -20,12 +20,15 @@ export const getPaginatedBuildersAction = actionClient
         .nullable()
     })
   )
-  .action<{ builders: BuilderInfo[]; nextCursor: CompositeCursor | null }>(async ({ parsedInput }) => {
+  .action<{ builders: BuilderInfo[]; nextCursor: CompositeCursor | null }>(async ({ parsedInput, ctx }) => {
+    const scoutId = ctx.session.adminId || ctx.session.scoutId;
+
     const { cursor } = parsedInput;
     const { builders, nextCursor } = await getPaginatedBuilders({
       limit: 30, // 6 rows per page
       week: getCurrentWeek(),
-      cursor
+      cursor,
+      scoutId
     });
 
     return { builders, nextCursor };

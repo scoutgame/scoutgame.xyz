@@ -7,6 +7,8 @@ type MintValidation = {
   scoutId: string;
   tokenId: number;
   tokensMinted: number;
+  txHash: string;
+  txLogIndex: number;
 };
 
 export async function validatePreseason01orStarterPackMint({
@@ -39,6 +41,8 @@ export async function validatePreseason01orStarterPackMint({
   return {
     scoutId: builderScoutedEvent.args.scout,
     tokenId: Number(builderScoutedEvent.args.tokenId),
-    tokensMinted: Number(builderScoutedEvent.args.amount)
+    tokensMinted: Number(builderScoutedEvent.args.amount),
+    txHash,
+    txLogIndex: transferSingleEvent.logIndex
   };
 }

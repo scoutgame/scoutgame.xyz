@@ -6,14 +6,14 @@ import type { ReactNode } from 'react';
 
 import '@packages/scoutgame-ui/theme/styles.scss';
 
-const ClientGlobals = dynamic(() => import('components/common/ClientGlobals').then((comp) => comp.ClientGlobals), {
+const ClientGlobals = dynamic(() => import('../components/common/ClientGlobals').then((comp) => comp.ClientGlobals), {
   ssr: false
 });
 
 const appName = 'Scout Game';
 const appTitle = 'Scout. Build. Win.';
 const appTitleTemplate = '%s - Scout Game';
-const appDescription = 'Fantasy sports for onchain builders';
+const appDescription = 'Fantasy sports with onchain developers';
 
 export const metadata: Metadata = {
   applicationName: appName,

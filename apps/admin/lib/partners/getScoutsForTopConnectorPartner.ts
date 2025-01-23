@@ -20,7 +20,7 @@ export async function getScoutsForTopConnectorPartner({ days }: { days: number }
   return topConnectors.map((connector) => ({
     'User Name': connector.displayName,
     'Profile Link': `https://scoutgame.xyz/u/${connector.path}`,
-    Email: connector.email,
+    address: connector.address,
     Date: connector.date,
     Points: connector.referralPoints
   }));

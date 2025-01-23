@@ -9,7 +9,6 @@ import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import Link from 'next/link';
-import { Suspense } from 'react';
 
 import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
 import { JoinGithubButton } from '../../../common/JoinGithubButton';
@@ -51,9 +50,7 @@ export async function BuilderProfile({
     return (
       <Stack gap={2} alignItems='center'>
         <Typography>Connect your GitHub account to apply as a Builder.</Typography>
-        <Suspense>
-          <JoinGithubButton />
-        </Suspense>
+        <JoinGithubButton />
       </Stack>
     );
   }
@@ -80,11 +77,8 @@ export async function BuilderProfile({
     return (
       <Stack gap={2} alignItems='center'>
         <Typography>
-          Your Builder account was not approved. Submit an appeal for review{' '}
-          <Typography color='secondary' component='span'>
-            <Link href={appealUrl}>here</Link>
-          </Typography>{' '}
-          if you think this was a mistake.
+          Your Builder account was not approved. Connect your GitHub account again if you think this was a mistake.
+          <JoinGithubButton />
         </Typography>
       </Stack>
     );

@@ -1,4 +1,4 @@
-import { prisma } from '@charmverse/core/prisma-client';
+import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -8,15 +8,23 @@ export type BuilderCardStats = {
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[];
   gemsCollected?: number;
+  nftsSoldToScout?: number;
 };
 
-export async function getBuilderCardStats(builderId: string): Promise<BuilderCardStats> {
+export async function getBuilderCardStats({
+  builderId,
+  scoutId
+}: {
+  builderId: string;
+  scoutId?: string;
+}): Promise<BuilderCardStats> {
+  const season = getCurrentSeasonStart();
   const builder = await prisma.scout.findUniqueOrThrow({
     where: { id: builderId },
     select: {
       userSeasonStats: {
         where: {
-          season: getCurrentSeasonStart()
+          season
         },
         select: {
           level: true
@@ -29,10 +37,24 @@ export async function getBuilderCardStats(builderId: string): Promise<BuilderCar
       },
       builderNfts: {
         where: {
-          season: getCurrentSeasonStart()
+          season,
+          nftType: BuilderNftType.default
         },
         select: {
-          estimatedPayout: true
+          estimatedPayout: true,
+          nftSoldEvents: scoutId
+            ? {
+                where: {
+                  builderEvent: {
+                    season
+                  },
+                  scoutId
+                },
+                select: {
+                  tokensPurchased: true
+                }
+              }
+            : undefined
         }
       },
       userWeeklyStats: {
@@ -50,6 +72,10 @@ export async function getBuilderCardStats(builderId: string): Promise<BuilderCar
     level: builder.userSeasonStats[0]?.level,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
-    gemsCollected: builder.userWeeklyStats[0]?.gemsCollected
+    gemsCollected: builder.userWeeklyStats[0]?.gemsCollected,
+    nftsSoldToScout: builder.builderNfts[0]?.nftSoldEvents?.reduce(
+      (acc, event) => acc + (event.tokensPurchased || 0),
+      0
+    )
   };
 }

@@ -1,12 +1,12 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { sleep } from 'telegram/Helpers';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { nftTypeMultipliers } from '../points/dividePointsBetweenBuilderAndScouts';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
 
-import type { BuilderNftWithOwners, SeasonNfts } from './getAllSeasonNftsWithOwners';
+import { scoutPointsShare } from './constants';
+import type { BuilderNftWithOwners } from './getAllSeasonNftsWithOwners';
 import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';
 
 /**
@@ -46,6 +46,19 @@ export async function refreshEstimatedPayouts({
     {} as Record<string, BuilderNftWithOwners>
   );
 
+  // Zero out the estimated payouts for builders who don't rank
+  await prisma.builderNft.updateMany({
+    where: {
+      season,
+      builderId: {
+        notIn: normalisedBuilders.map((b) => b.builder.builder.id)
+      }
+    },
+    data: {
+      estimatedPayout: 0
+    }
+  });
+
   for (const { builder, normalisedPoints } of normalisedBuilders) {
     if (!builderIdToRefresh || builderIdToRefresh === builder.builder.id) {
       const defaultNft = seasonBuilderNfts[builder.builder.id];
@@ -59,12 +72,18 @@ export async function refreshEstimatedPayouts({
 
       const totalNftBalance = builderNftBalanceWeighted + starterPackNftBalanceWeighted;
 
+      // Simulate balance with next purchase
+      const weightedBalanceWithNextPurchase = totalNftBalance + nftTypeMultipliers.default;
+      const weightedBalanceWithNextStarterPackPurchase = totalNftBalance + nftTypeMultipliers.starter_pack;
+
       const expectedPayoutForNextNftPurchase = Math.floor(
-        normalisedPoints / (totalNftBalance + nftTypeMultipliers.default)
+        scoutPointsShare * normalisedPoints * (nftTypeMultipliers.default / weightedBalanceWithNextPurchase)
       );
 
       const expectedPayoutForNextStarterPackPurchase = Math.floor(
-        normalisedPoints / (totalNftBalance + nftTypeMultipliers.starter_pack)
+        scoutPointsShare *
+          normalisedPoints *
+          (nftTypeMultipliers.starter_pack / weightedBalanceWithNextStarterPackPurchase)
       );
 
       if (expectedPayoutForNextNftPurchase !== defaultNft.estimatedPayout) {

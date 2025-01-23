@@ -10,7 +10,6 @@ import { useEffect } from 'react';
 import { SinglePageLayout } from '../common/Layout';
 import { WalletLogin } from '../common/WalletLogin/WalletLogin';
 import { WarpcastLogin } from '../common/WarpcastLogin/WarpcastLogin';
-import { InfoBackgroundImage } from '../layout/InfoBackgroundImage';
 
 export function LoginPage() {
   const { trigger: triggerReload } = useGetUserTrigger();
@@ -28,37 +27,34 @@ export function LoginPage() {
   }, []);
 
   return (
-    <>
-      <InfoBackgroundImage />
-      <SinglePageLayout position='relative' zIndex={2} data-test='login-page'>
-        <Image
-          src='/images/scout-game-logo-square.png'
-          width={300}
-          height={150}
-          sizes='100vw'
-          style={{
-            width: '100%',
-            maxWidth: '300px',
-            height: 'auto'
-          }}
-          alt='ScoutGame'
-        />
-        <Typography
-          variant='h5'
-          sx={{
-            mb: 4,
-            fontWeight: 700,
-            backgroundColor: 'black',
-            px: 1
-          }}
-        >
-          Fantasy sports for onchain builders
-        </Typography>
-        <Box display='flex' flexDirection='column' gap={2} width='100%'>
-          <WalletLogin />
-          <WarpcastLogin />
-        </Box>
-      </SinglePageLayout>
-    </>
+    <SinglePageLayout position='relative' zIndex={2} data-test='login-page'>
+      <Image
+        src='/images/scout-game-logo-square.png'
+        width={300}
+        height={150}
+        sizes='100vw'
+        style={{
+          width: '100%',
+          maxWidth: '300px',
+          height: 'auto'
+        }}
+        alt='ScoutGame'
+      />
+      <Typography
+        variant='h5'
+        sx={{
+          mb: 4,
+          fontWeight: 700,
+          backgroundColor: 'black',
+          px: 1
+        }}
+      >
+        Fantasy sports with onchain developers
+      </Typography>
+      <Box display='flex' flexDirection='column' gap={2} width='100%'>
+        <WalletLogin />
+        <WarpcastLogin />
+      </Box>
+    </SinglePageLayout>
   );
 }

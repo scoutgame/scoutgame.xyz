@@ -1,6 +1,7 @@
 {
   "name": "scout-game",
   "version": "0.0.0",
+  "type": "module",
   "browserslist": [
     "defaults"
   ],
@@ -41,15 +42,6 @@
     "onchain-cron:test": "dotenv -e .env.test.local -- npm test -w apps/onchain-cron",
     "onchain-cron:staging": "npm run start:prod:node18 -w apps/onchain-cron",
     "onchain-cron:prod": "npm run start:prod:node18 -w apps/onchain-cron",
-    "telegram": "npx react-env --path .env.local --dest ./apps/telegram/public -- npm run start --workspace=apps/telegram",
-    "telegram:remote": "npx react-env --path .env.production --dest ./apps/telegram/public -- npm run start --workspace=apps/telegram",
-    "telegram:build": "npm run build --w=apps/telegram",
-    "telegram:start:prod": "npx react-env --path .env.local --dest ./apps/telegram/public -- npm run start:prod --workspace=apps/telegram",
-    "telegram:test": "dotenv -e .env.test.local -- npm test -w apps/telegram",
-    "telegram:e2e": "npx dotenv -e .env.test.local -- npm run test:e2e -w=apps/telegram -- --headed",
-    "telegram:e2e:ci": "npx dotenv -e .env.test.local -- npm run test:e2e -w=apps/telegram",
-    "telegram:start:test": "npm run start:test -w=apps/telegram",
-    "telegram:start:test:ci": "npm run start:test:ci -w=apps/telegram",
     "admin": "npx react-env --path .env.local --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:remote": "npx react-env --path .env.production --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:build": "npm run build -w=apps/admin",
@@ -67,7 +59,7 @@
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.107.1",
+    "@charmverse/core": "^0.107.2",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",
@@ -142,7 +134,6 @@
     "playwright": "^1.47.1",
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
-    "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   }
 }

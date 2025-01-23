@@ -85,6 +85,7 @@
           "./apps/cron/",
           "./packages/github/",
           "./packages/loops/",
+          "./packages/mailer/",
           "./packages/mixpanel/",
           "./packages/nextjs/",
           "./packages/scoutgame/",

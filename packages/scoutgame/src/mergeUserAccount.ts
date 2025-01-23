@@ -63,25 +63,14 @@ export const mergeUserAccount = async ({
         farcasterId: true,
         farcasterName: true,
         telegramId: true,
+        telegramName: true,
         deletedAt: true,
         builderStatus: true,
         bio: true,
         wallets: {
           select: {
             scoutedNfts: {
-              where: {
-                builderNft: {
-                  season: getCurrentSeasonStart(),
-                  nftType: 'starter_pack'
-                }
-              },
-              select: {
-                builderNft: {
-                  select: {
-                    builderId: true
-                  }
-                }
-              }
+              take: 1
             }
           }
         }
@@ -101,25 +90,14 @@ export const mergeUserAccount = async ({
         email: true,
         farcasterId: true,
         telegramId: true,
+        telegramName: true,
         deletedAt: true,
         path: true,
         wallets: {
           select: {
             address: true,
             scoutedNfts: {
-              where: {
-                builderNft: {
-                  season: getCurrentSeasonStart(),
-                  nftType: 'starter_pack'
-                }
-              },
-              select: {
-                builderNft: {
-                  select: {
-                    builderId: true
-                  }
-                }
-              }
+              take: 1
             }
           }
         }
@@ -127,15 +105,11 @@ export const mergeUserAccount = async ({
     })
   ]);
 
-  const retainedUserStarterPackNft = new Set(
-    retainedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
-  ).size;
-  const mergedUserStarterPackNft = new Set(
-    mergedUser.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
-  ).size;
+  const retainedUserHasNfts = retainedUser.wallets.some((wallet) => wallet.scoutedNfts.length > 0);
+  const mergedUserHasNfts = mergedUser.wallets.some((wallet) => wallet.scoutedNfts.length > 0);
 
-  if (retainedUserStarterPackNft + mergedUserStarterPackNft > 3) {
-    throw new Error('Can not merge more than 3 starter pack NFTs');
+  if (retainedUserHasNfts && mergedUserHasNfts) {
+    throw new Error('Can not merge two accounts with NFTs');
   }
 
   if (retainedUser.builderStatus !== null && mergedUser.builderStatus !== null) {
@@ -173,6 +147,7 @@ export const mergeUserAccount = async ({
         farcasterId: retainedUser.farcasterId || mergedUser.farcasterId,
         farcasterName: retainedUser.farcasterName || mergedUser.farcasterName,
         telegramId: retainedUser.telegramId || mergedUser.telegramId,
+        telegramName: retainedUser.telegramName || mergedUser.telegramName,
         bio: retainedUser.bio || mergedUser.bio,
         walletENS: retainedUser.walletENS || mergedUser.walletENS
       };
@@ -186,6 +161,7 @@ export const mergeUserAccount = async ({
           farcasterId: null,
           farcasterName: null,
           telegramId: null,
+          telegramName: null,
           deletedAt: new Date(),
           // Update the path so that the user is harder to find
           path: `${mergedUser.path}-${v4()}`,
@@ -234,24 +210,6 @@ export const mergeUserAccount = async ({
         },
         data: {
           userId: retainedUserId
-        }
-      });
-
-      await tx.pointsReceipt.updateMany({
-        where: {
-          recipientId: mergedUserId
-        },
-        data: {
-          recipientId: retainedUserId
-        }
-      });
-
-      await tx.pointsReceipt.updateMany({
-        where: {
-          senderId: mergedUserId
-        },
-        data: {
-          senderId: retainedUserId
         }
       });
 

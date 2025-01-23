@@ -46,6 +46,7 @@ cdk.context.json
 .vscode/vscode-chrome-debug-userdatadir/
 /depgraphs
 /scripts/*.json
+!/scripts/tsconfig.json
 apps/onchain-scoutgame/scripts/dataReplication/cache/
 
 # debug

@@ -13,11 +13,13 @@ test.describe('Buy Nft', () => {
     address = account.address;
   });
 
+  const season = getCurrentSeasonStart();
+
   test('Should be able to buy an nft', async ({ utils, page, userPage }) => {
     // Only for testing locally. Ensure the database is clean
     // await prisma.scout.deleteMany({});
     const builder = await mockBuilder({
-      nftSeason: getCurrentSeasonStart(),
+      nftSeason: season,
       avatar:
         'https://cdn.charmverse.io/user-content/5906c806-9497-43c7-9ffc-2eecd3c3a3ec/cbed10a8-4f05-4b35-9463-fe8f15413311/b30047899c1514539cc32cdb3db0c932.jpg',
       bio: 'Software Engineer @charmverse.',
@@ -32,7 +34,7 @@ test.describe('Buy Nft', () => {
     await mockBuilderNft({
       builderId: builder.id,
       chainId: 10,
-      contractAddress: getBuilderNftContractAddress(),
+      contractAddress: getBuilderNftContractAddress(season),
       tokenId: Math.floor(Math.random() * 1000000)
     });
 
@@ -105,7 +107,7 @@ test.describe('Buy Nft', () => {
     await mockBuilderNft({
       builderId: builder.id,
       chainId: 10,
-      contractAddress: getBuilderNftContractAddress(),
+      contractAddress: getBuilderNftContractAddress(season),
       tokenId: Math.floor(Math.random() * 1000000)
     });
 
