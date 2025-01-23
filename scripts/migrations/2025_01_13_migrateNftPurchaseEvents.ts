@@ -12,14 +12,13 @@ import { prettyPrint } from '@packages/utils/strings';
 
 async function migrateNftPurchaseEvents() {
 
-  const ignoredTxAttestations = await getRevertedMintTransactionAttestations();
 
   async function handleTransferSingleEvent({onchainEvent, purchaseEvent}: {onchainEvent: TransferSingleEvent, purchaseEvent: Pick<NFTPurchaseEvent, 'id' | 'tokensPurchased' | 'senderWalletAddress' | 'walletAddress' | 'builderNftId' | 'txHash' | 'txLogIndex'>}) {
 
-    // Don't reindex reverted mint transactions
-    if (ignoredTxAttestations.some(attestation => attestation.transactionHashesMap[onchainEvent.transactionHash.toLowerCase()])) {
-      return;
-    }
+    // // Don't reindex reverted mint transactions
+    // if (ignoredTxAttestations.some(attestation => attestation.transactionHashesMap[onchainEvent.transactionHash.toLowerCase()])) {
+    //   return;
+    // }
 
     const senderWallet = onchainEvent.args.from !== NULL_EVM_ADDRESS ? onchainEvent.args.from.toLowerCase() : null;
     const recipientWallet = onchainEvent.args.to !== NULL_EVM_ADDRESS ? onchainEvent.args.to.toLowerCase() : null;
@@ -124,7 +123,7 @@ async function migrateNftPurchaseEvents() {
         const onchainEvent = selectedSeasonScoutedTxHashes[key];
     
         if (onchainEvent) {
-    
+          log.info('Found onchain event for purchase event', {purchaseEvent, onchainEvent});
           await handleTransferSingleEvent({onchainEvent, purchaseEvent});
         } else {
           log.error('No onchain event found for purchase event', {purchaseEvent});
@@ -135,9 +134,7 @@ async function migrateNftPurchaseEvents() {
 
   const seasons = ['2024-W41', '2025-W02'];
 
-  for (const season of seasons) {
-    await handleMigration(season);
-  }
+  await Promise.all(seasons.map(season => handleMigration(season)));
 }
 
 
