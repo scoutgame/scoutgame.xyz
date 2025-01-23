@@ -14,7 +14,7 @@ import { PublicProfileTabsMenu } from './PublicProfileTabsMenu';
 
 type UserProfile = BasicUserInfo & { displayName: string; builderStatus: BuilderStatus | null };
 
-export function PublicProfilePage({ user, tab }: { user: UserProfile; tab: string }) {
+export function PublicProfilePage({ scoutId, user, tab }: { scoutId?: string; user: UserProfile; tab: string }) {
   return (
     <Box gap={2} display='flex' flexDirection='column' margin='auto'>
       <Hidden mdDown>
@@ -38,6 +38,7 @@ export function PublicProfilePage({ user, tab }: { user: UserProfile; tab: strin
       </Box>
       {tab === 'builder' ? (
         <PublicBuilderProfile
+          scoutId={scoutId}
           builder={{
             ...user,
             nftType: BuilderNftType.default

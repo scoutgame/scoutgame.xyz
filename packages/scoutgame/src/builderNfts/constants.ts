@@ -1,7 +1,7 @@
 import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma';
-import type { ISOWeek } from '@packages/dates/config';
+import type { ISOWeek, Season } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
@@ -30,7 +30,7 @@ const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9f
 const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
 export const realOptimismMainnetBuildersContract = '0x743ec903fe6d05e73b19a6db807271bb66100e83';
 
-export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
+export function getBuilderNftContractAddress(season: ISOWeek): Address {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
@@ -43,7 +43,7 @@ export function getBuilderNftContractAddress(season: ISOWeek = getCurrentSeasonS
   return address?.toLowerCase() as Address;
 }
 
-export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCurrentSeasonStart()): Address {
+export function getBuilderNftStarterPackContractAddress(season: ISOWeek): Address {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
@@ -57,8 +57,16 @@ export function getBuilderNftStarterPackContractAddress(season: ISOWeek = getCur
  */
 export const MAX_STARTER_PACK_PURCHASES = 3;
 
-export function getBuilderNftContractAddressForNftType(nftType: BuilderNftType): Address {
-  return nftType === 'starter_pack' ? getBuilderNftStarterPackContractAddress() : getBuilderNftContractAddress();
+export function getBuilderNftContractAddressForNftType({
+  nftType,
+  season
+}: {
+  nftType: BuilderNftType;
+  season: ISOWeek;
+}): Address {
+  return nftType === 'starter_pack'
+    ? getBuilderNftStarterPackContractAddress(season)
+    : getBuilderNftContractAddress(season);
 }
 
 // USDC Contract we use for payments

@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
   builderNftChain,
   getBuilderNftContractAddress,
@@ -83,7 +84,8 @@ export function useDecentTransaction({
   useScoutToken
 }: DecentTransactionProps) {
   const _contractAddress =
-    contractAddress || (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress());
+    contractAddress ||
+    (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress(getCurrentSeasonStart()));
 
   const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterPackContract(_contractAddress);
 

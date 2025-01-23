@@ -51,6 +51,7 @@ export async function aggregateNftSalesData({
   const uniqueScoutIds = await prisma.nFTPurchaseEvent
     .findMany({
       where: {
+        senderWalletAddress: null,
         builderNft: {
           nftType,
           season
@@ -63,7 +64,11 @@ export async function aggregateNftSalesData({
     })
     .then((data) => ({ _count: { scoutId: data.length } }));
 
-  const mintEvents = await prisma.nFTPurchaseEvent.count();
+  const mintEvents = await prisma.nFTPurchaseEvent.count({
+    where: {
+      senderWalletAddress: null
+    }
+  });
 
   return {
     totalNftsSold: nftsPaidWithPoints + nftsPaidWithCrypto,

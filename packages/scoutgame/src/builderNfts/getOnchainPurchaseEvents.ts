@@ -1,11 +1,14 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import type { ISOWeek } from '@packages/dates/config';
+import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
 
 import type { BuilderScoutedEvent } from './accounting/getBuilderScoutedEvents';
 import { getBuilderScoutedEvents } from './accounting/getBuilderScoutedEvents';
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
 import { getTransferSingleEvents } from './accounting/getTransferSingleEvents';
+import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from './constants';
 
 type SimplifiedGroupedEvent = {
   scoutId: string;
@@ -17,16 +20,45 @@ type SimplifiedGroupedEvent = {
   builderScoutedEvent: BuilderScoutedEvent['args'];
 };
 
+async function getOnchainEvents(query: {
+  fromBlock?: number;
+  toBlock?: number;
+  contractAddress: Address;
+  chainId: number;
+}) {
+  const [builderEventLogs, transferSingleEventLogs] = await Promise.all([
+    getBuilderScoutedEvents(query),
+    getTransferSingleEvents(query)
+  ]);
+
+  return groupEventsByTransactionHash([...builderEventLogs, ...transferSingleEventLogs]);
+}
+
 export async function getOnchainPurchaseEvents({
   scoutId,
   fromBlock,
-  toBlock
+  toBlock,
+  season
 }: {
   scoutId: string;
+  season: ISOWeek;
   fromBlock?: number;
   toBlock?: number;
 }) {
-  const groupedEvents = await getOnchainEvents({ fromBlock, toBlock });
+  const [groupedNftEvents, groupedStarterPackEvents] = await Promise.all([
+    getOnchainEvents({
+      fromBlock,
+      toBlock,
+      contractAddress: getBuilderNftContractAddress(season),
+      chainId: builderNftChain.id
+    }),
+    getOnchainEvents({
+      fromBlock,
+      toBlock,
+      contractAddress: getBuilderNftStarterPackContractAddress(season),
+      chainId: builderNftChain.id
+    })
+  ]);
 
   const fromBlockTimestamp = fromBlock
     ? await getPublicClient(optimism.id)
@@ -67,7 +99,7 @@ export async function getOnchainPurchaseEvents({
     }
   });
 
-  const mappedEvents = groupedEvents
+  const mappedEvents = [...groupedNftEvents, ...groupedStarterPackEvents]
     .filter((event) => event.scoutId === scoutId)
     .map((event) => {
       const nftPurchase = nftPurchases.find((nft) => nft.txHash.toLowerCase() === event.txHash.toLowerCase()) ?? null;
@@ -109,13 +141,4 @@ function groupEventsByTransactionHash(events: (BuilderScoutedEvent | TransferSin
     transferEvent: entry.transferEvent!,
     builderScoutedEvent: entry.builderScoutedEvent!
   }));
-}
-
-export async function getOnchainEvents(query: { fromBlock?: number; toBlock?: number } = {}) {
-  const [builderEventLogs, transferSingleEventLogs] = await Promise.all([
-    getBuilderScoutedEvents(query),
-    getTransferSingleEvents(query)
-  ]);
-
-  return groupEventsByTransactionHash([...builderEventLogs, ...transferSingleEventLogs]);
 }

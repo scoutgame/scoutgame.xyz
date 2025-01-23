@@ -123,7 +123,7 @@ export async function ScoutPage({
               {buildersLayout === 'table' && (
                 <ScoutPageTable tab='builders' order={builderOrder} sort={builderSort} userId={userId} />
               )}
-              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery />}
+              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} />}
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>
