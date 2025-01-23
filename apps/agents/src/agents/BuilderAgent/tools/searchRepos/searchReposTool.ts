@@ -6,7 +6,7 @@ import type { IFuseOptions } from 'fuse.js';
 import Fuse from 'fuse.js';
 
 // Define the repository type
-type Repository = {
+export type Repository = {
   id: number;
   owner: string;
   name: string;
