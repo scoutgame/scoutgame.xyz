@@ -2,7 +2,7 @@ import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GemsReceiptType, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getWeekFromDate, getStartOfWeek, isToday } from '@packages/dates/utils';
+import { getWeekFromDate, getStartOfWeek, getStartOfDay } from '@packages/dates/utils';
 import type { Commit } from '@packages/github/getCommitsByUser';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { isTruthy } from '@packages/utils/types';
@@ -34,13 +34,18 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
     return null;
   }
   const builderEventDate = new Date(commit.commit.committer!.date);
+  const startOfToday = getStartOfDay(builderEventDate).toJSDate();
 
   const week = getWeekFromDate(builderEventDate);
-  const start = getStartOfWeek(season as Season);
+  const startOfSeason = getStartOfWeek(season as Season);
 
   const previousGitEvents = await prisma.githubEvent.findMany({
     where: {
-      createdBy: commit.author.id
+      createdBy: commit.author.id,
+      type: 'commit',
+      completedAt: {
+        gte: startOfToday
+      }
     },
     select: {
       id: true,
@@ -66,21 +71,14 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
     }
   });
 
-  const existingGithubEvent = previousGitEvents.some(
-    (event) => event.commitHash === commit.sha && event.type === 'commit'
-  );
+  const existingGithubEvent = previousGitEvents.some((event) => event.commitHash === commit.sha);
 
   if (existingGithubEvent) {
     // already processed
     return;
   }
-  const existingPullRequestEvent = previousGitEvents.some(
-    (event) => event.commitHash === commit.sha && event.type === 'merged_pull_request'
-  );
 
-  const existingGithubEventToday = previousGitEvents.some((event) => {
-    return isToday(event.createdAt, DateTime.fromISO(commit.commit.author.date, { zone: 'utc' }));
-  });
+  const existingGithubEventToday = previousGitEvents.length > 0;
 
   await prisma.$transaction(async (tx) => {
     const githubUser = await tx.githubUser.upsert({
@@ -107,11 +105,11 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
       }
     });
 
-    if (githubUser.builderId && !existingGithubEventToday && !existingPullRequestEvent) {
+    if (githubUser.builderId && !existingGithubEventToday) {
       const gemReceiptType: GemsReceiptType = 'daily_commit';
 
       const gemValue = gemsValues[gemReceiptType];
-      if (builderEventDate >= start.toJSDate()) {
+      if (builderEventDate >= startOfSeason.toJSDate()) {
         const existingBuilderEvent = await tx.builderEvent.findFirst({
           where: {
             githubEventId: event.id
