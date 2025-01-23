@@ -91,7 +91,7 @@ function getEnrichedFilePath(repoOwner: string, repoName: string) {
   return path.resolve(enrichedDir, `${repoId}.json`);
 }
 
-export async function enrichRepoData({ repoOwner, repoName }: { repoOwner: string; repoName: string }) {
+async function enrichRepoData({ repoOwner, repoName }: { repoOwner: string; repoName: string }) {
   const repoId = normaliseRepoNameAndOwner({ repoOwner, repoName });
   const enrichedDir = path.resolve('apps/agents/src/agents/BuilderAgent/lib/enriched');
   const enrichedFilePath = getEnrichedFilePath(repoOwner, repoName);
@@ -207,7 +207,7 @@ export async function enrichRepoData({ repoOwner, repoName }: { repoOwner: strin
     if (node.children) {
       node.children.forEach((child) => {
         // 50% chance to skip this child's children and just process its content
-        const skipChildren = Math.random() < 0.4;
+        const skipChildren = filePath.split('/').length > 1 && Math.random() < 0.4;
 
         queue.push({
           node: {
@@ -289,7 +289,7 @@ export async function enrichRepoData({ repoOwner, repoName }: { repoOwner: strin
   return parsedResult;
 }
 
-async function processRepo({
+export async function processRepo({
   repoOwner,
   repoName,
   forceReprocessing
@@ -359,6 +359,11 @@ Expected output format is JSON object with the following fields:
       }
     }
   ).then((response) => JSON.parse(response.choices[0].message.content) as RepoSummary);
+
+  fs.writeFileSync(
+    enrichedFilePath,
+    JSON.stringify({ ...finalSummary, repo: `https://github.com/${repoOwner}/${repoName}` }, null, 2)
+  );
 
   return finalSummary;
 }
