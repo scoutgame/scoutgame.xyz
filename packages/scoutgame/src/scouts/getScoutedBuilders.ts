@@ -106,7 +106,10 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
                   builderEvent: {
                     season: getCurrentSeasonStart()
                   },
-                  scoutId
+                  ...validMintNftPurchaseEvent,
+                  scoutWallet: {
+                    scoutId
+                  }
                 },
                 select: {
                   tokensPurchased: true
