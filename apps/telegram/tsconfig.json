@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "declarationMap": true,
+    "declaration": true,
+    "rootDir": "../../",
+    "baseUrl": ".",
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@charmverse/core/prisma": ["../../node_modules/@charmverse/core/dist/cjs/prisma"],
+      "@charmverse/core/prisma-client": ["../../node_modules/@charmverse/core/dist/cjs/prisma-client"],
+      "@charmverse/core/log": ["../../node_modules/@charmverse/core/dist/cjs/lib/log"],
+      "@charmverse/core/utilities": ["../../node_modules/@charmverse/core/dist/cjs/utilities"],
+      "@charmverse/core/errors": ["../../node_modules/@charmverse/core/dist/cjs/errors"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["../../node_modules", ".next/"]
+}
