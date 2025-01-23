@@ -367,11 +367,11 @@ Expected output format is JSON object with the following fields:
 
 // Fix the github file filtering to ignore config, aws and other files that dont provide value
 
-processRepo({ repoOwner: 'scoutgame', repoName: 'scoutgame.xyz' })
-  .then((result) => {
-    log.info('result', result);
-  })
-  .catch((error) => {
-    // eslint-disable-next-line no-console
-    console.error(error);
-  });
+// processRepo({ repoOwner: 'scoutgame', repoName: 'scoutgame.xyz' })
+//   .then((result) => {
+//     log.info('result', result);
+//   })
+//   .catch((error) => {
+//     // eslint-disable-next-line no-console
+//     console.error(error);
+//   });
