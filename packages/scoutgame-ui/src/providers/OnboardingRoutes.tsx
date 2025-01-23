@@ -72,6 +72,8 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
       case '3': {
         if (profileRedirect === 'true') {
           return '/profile';
+        } else if (user?.builderStatus) {
+          return redirectUrl;
         } else {
           urlParams.set('step', '4');
           return `${baseRoute}?${urlParams.toString()}`;

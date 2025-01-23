@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useOnboardingRoutes } from 'providers/OnboardingRoutes';
-import type { MouseEventHandler } from 'react';
+
+import { useOnboardingRoutes } from '../../../providers/OnboardingRoutes';
 
 import { HowItWorksContent } from './HowItWorksContent';
 
