@@ -88,9 +88,11 @@ async function retrieveNftPurchasesFromDeletedUsers(filename: string) {
       builderNft: {
         season: getCurrentSeasonStart()
       },
-      scout: {
-        deletedAt: {
-          gt: new Date('2025-01-10')
+      scoutWallet: {
+        scout: {
+          deletedAt: {
+            gt: new Date('2025-01-01')
+          }
         }
       }
     },
@@ -100,7 +102,12 @@ async function retrieveNftPurchasesFromDeletedUsers(filename: string) {
       }
     },
     include: {
-      scout: true,
+      scout: {
+        include: {
+          mergedFromEvents: true,
+          mergedToEvents: true
+        }
+      },
       builderNft: {
         include: {
           builder: true
