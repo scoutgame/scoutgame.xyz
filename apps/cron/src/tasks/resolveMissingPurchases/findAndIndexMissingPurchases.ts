@@ -3,7 +3,6 @@ import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
-import { getRevertedMintTransactionAttestations } from '@packages/safetransactions/getRevertedMintTransactionAttestations';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
@@ -14,7 +13,6 @@ import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { prefix0x } from '@packages/utils/prefix0x';
 
 export async function findAndIndexMissingPurchases({
@@ -174,11 +172,8 @@ export async function findAndIndexMissingPurchases({
         scoutgameMintsLogger.error(`Tx ${missingTx.transactionHash} has no recipient address`);
       }
 
-      process.exit(0);
-
       await recordNftMint({
         amount: Number(missingTx.args.value),
-        scoutId: scoutId as string,
         mintTxHash: missingTx.transactionHash,
         paidWithPoints: false,
         pointsValue: asPoints,
