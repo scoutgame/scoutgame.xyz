@@ -20,14 +20,14 @@ export function getMatchingNFTPurchaseEvent(
       txLogIndex: params.txLogIndex,
       // Checking for to and from
       senderWalletAddress:
-        params.senderWalletAddress === NULL_EVM_ADDRESS
+        !params.senderWalletAddress || params.senderWalletAddress === NULL_EVM_ADDRESS
           ? null
           : {
               equals: params.senderWalletAddress,
               mode: 'insensitive'
             },
       walletAddress:
-        params.walletAddress === NULL_EVM_ADDRESS
+        !params.walletAddress || params.walletAddress === NULL_EVM_ADDRESS
           ? null
           : {
               equals: params.walletAddress,
