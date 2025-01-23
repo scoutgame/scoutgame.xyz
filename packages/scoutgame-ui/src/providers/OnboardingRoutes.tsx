@@ -45,9 +45,9 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
         : '/scout';
     const profileRedirect = urlParams.get('profile-redirect') as 'true' | 'false' | undefined;
 
-    // fallback to base route if not on welcome page
-    if (!pathname.startsWith(baseRoute)) {
-      return redirectUrl;
+    if (pathname.includes('builder-registration-callback')) {
+      urlParams.set('step', '3');
+      return `${baseRoute}?${urlParams.toString()}`;
     }
 
     switch (step) {
