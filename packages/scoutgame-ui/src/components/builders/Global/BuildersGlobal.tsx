@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { useGlobalModal } from '../../../providers/ModalProviders';
+import { useGlobalModal } from '../../../providers/ModalProvider';
 import { useUser } from '../../../providers/UserProvider';
 
 export function BuildersGlobal() {
@@ -17,6 +17,9 @@ export function BuildersGlobal() {
   useEffect(() => {
     if (!isBuilder && builderModal === 'newBuilder') {
       openModal('newBuilder');
+    }
+
+    if (Object.keys(searchParams).length > 0) {
       router.replace('/builders');
     }
   }, [isBuilder, builderModal]);

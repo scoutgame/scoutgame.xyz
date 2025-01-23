@@ -4,7 +4,11 @@ import { getScoutFarcasterBuilderSocialGraph } from '@packages/farcaster/getScou
 
 import { getBuildersByFid } from './getBuildersByFid';
 
-export async function loadBuildersUserKnows({ fid }: { fid: number }) {
+export async function loadBuildersUserKnows({ fid }: { fid: number | null }) {
+  if (!fid) {
+    return null;
+  }
+
   try {
     const { followers, following } = await getScoutFarcasterBuilderSocialGraph({
       fid,

@@ -85,7 +85,7 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
           <Button
             variant='contained'
             color='primary'
-            href={`/login?redirectUrl=${encodeURIComponent('/builders?modal=newBuilder')}`}
+            href={`/login?redirectUrl=${encodeURIComponent('/builders?modal=newBuilder')}&type=builder`}
           >
             Sign in
           </Button>

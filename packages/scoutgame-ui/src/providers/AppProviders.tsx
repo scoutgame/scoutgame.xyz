@@ -15,7 +15,7 @@ import { Toaster } from 'sonner';
 import theme from '../theme/theme';
 
 import { LinkInterceptor } from './LinkInterceptor';
-import { ModalProvider } from './ModalProviders';
+import { ModalProvider } from './ModalProvider';
 import { SWRProvider } from './SwrProvider';
 import { WagmiProvider } from './WagmiProvider';
 

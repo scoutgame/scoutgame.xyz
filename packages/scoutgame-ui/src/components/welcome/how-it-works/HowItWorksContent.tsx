@@ -1,13 +1,11 @@
 'use client';
 
 import { Button, List, ListItem, ListItemAvatar, Stack, Typography } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-import Link from 'next/link';
-import React from 'react';
+import type { MouseEventHandler } from 'react';
 
-export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React.MouseEventHandler }) {
+export function HowItWorksContent({ onClickContinue }: { onClickContinue?: MouseEventHandler }) {
   const isMdScreen = useMdScreen();
   const iconSize = isMdScreen ? 24 : 18;
 
@@ -79,10 +77,8 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React
         </ListItem>
       </List>
       <Button
-        LinkComponent={Link}
         variant='contained'
         onClick={onClickContinue}
-        href='/builders-you-know'
         data-test='continue-button'
         sx={{ margin: '0 auto', display: 'flex', width: 'fit-content' }}
       >

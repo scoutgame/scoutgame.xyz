@@ -6,7 +6,7 @@ import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { InfoPageFooter } from '@packages/scoutgame-ui/components/info/components/InfoPageFooter';
 import Image from 'next/image';
 
-import { useGlobalModal } from '../../../providers/ModalProviders';
+import { useGlobalModal } from '../../../providers/ModalProvider';
 
 function ContainerStack({ children, ...props }: { children: React.ReactNode } & StackProps) {
   return (

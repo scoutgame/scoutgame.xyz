@@ -32,6 +32,7 @@ function WalletLoginButton() {
   const { address, chainId, isConnected } = useAccount();
   const searchParams = useSearchParams();
   const redirectUrlEncoded = searchParams.get('redirectUrl');
+  const type = searchParams.get('type');
   const inviteCode = searchParams.get('invite-code');
   const referralCode = searchParams.get('ref');
   const redirectUrl = redirectUrlEncoded ? decodeURIComponent(redirectUrlEncoded) : '/';
@@ -47,7 +48,11 @@ function WalletLoginButton() {
     isExecuting: isLoggingIn
   } = useAction(loginWithWalletAction, {
     onSuccess: async ({ data }) => {
-      const nextPage = !data?.onboarded ? '/welcome' : inviteCode ? '/welcome/builder' : redirectUrl || '/scout';
+      const nextPage = !data?.onboarded
+        ? `/welcome${type ? `?type=${type}` : ''}`
+        : inviteCode
+          ? '/welcome?step=2'
+          : redirectUrl || '/scout';
 
       if (!data?.success) {
         return;

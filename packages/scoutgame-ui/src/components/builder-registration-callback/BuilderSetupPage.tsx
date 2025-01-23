@@ -7,25 +7,25 @@ import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useRef, useState } from 'react';
 
+import { useOnboardingRoutes } from '../../providers/OnboardingRoutes';
 import { LoadingComponent } from '../common/Loading/LoadingComponent';
 
 export function BuilderSetupPage({
   state,
   code,
-  githubRedirectError,
-  redirectToProfile
+  githubRedirectError
 }: {
-  redirectToProfile: string;
   githubRedirectError: string;
   state: string;
   code: string;
 }) {
   const [githubConnectError, setGithubConnectError] = useState<string | null>(null);
   const router = useRouter();
+  const { getNextRoute } = useOnboardingRoutes();
   const ref = useRef(0);
   const { execute: setupBuilderProfile, status } = useAction(setupBuilderProfileAction, {
     onSuccess: () => {
-      router.push(redirectToProfile ? '/welcome/spam-policy?profile-redirect=true' : '/welcome/spam-policy');
+      router.push(getNextRoute());
     },
     onError: (error) => {
       log.error('Error setting up builder profile', { error });
