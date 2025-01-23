@@ -59,12 +59,12 @@ function Document() {
         Scouts and Developers. You can find details about active partnerships here. Check back often for new
         opportunities!
       </Typography>
-      <Stack direction='row' gap={2}>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 4, md: 2 }}>
         <Stack flex={1} gap={2}>
           <Typography variant='h6' fontWeight={600} color='secondary'>
             Developer Rewards
           </Typography>
-          <Stack gap={3}>
+          <Stack gap={{ xs: 2, md: 3 }}>
             <PartnerReward name='Celo' image='/images/crypto/celo.png' href='/info/partner-rewards/celo' />
             <PartnerReward name='Game7' image='/images/crypto/game7.png' href='/info/partner-rewards/game7' />
             <PartnerReward name='Lit Protocol' image='/images/crypto/lit.png' href='/info/partner-rewards/lit' />
@@ -76,7 +76,7 @@ function Document() {
           <Typography variant='h6' fontWeight={600} color='secondary'>
             Scout Rewards
           </Typography>
-          <Stack gap={3}>
+          <Stack gap={{ xs: 2, md: 3 }}>
             <PartnerReward name='Glo Dollar' image='/images/crypto/glo-dollar.png' status='completed' />
             <PartnerReward name='Moxie' image='/images/crypto/moxie.png' href='/info/partner-rewards/moxie' />
             <PartnerReward name='Optimism' image='/images/crypto/op.png' href='/info/partner-rewards/optimism' />
