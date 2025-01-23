@@ -308,7 +308,51 @@ describe('recordMergedPullRequest', () => {
     expect(scoutActivities).toBe(1);
   });
 
-  it('should  create two builder events on the same day for different repos', async () => {
+  it('should allow creating multiple builder events per repo per day', async () => {
+    const builder = await mockBuilder();
+    const repo = await mockRepo();
+
+    const now = DateTime.fromObject({ weekday: 3 }, { zone: 'utc' }); // 1 is Monday and 7 is Sunday
+
+    const lastWeekPr = mockPullRequest({
+      createdAt: now.minus({ days: 2 }).toISO(),
+      state: 'MERGED',
+      author: builder.githubUser,
+      repo
+    });
+
+    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([
+      mockPullRequest()
+    ]);
+
+    // record a builder event for the last week PR, use a different date so that it creates a builder event for the last week
+    await recordMergedPullRequest({
+      pullRequest: lastWeekPr,
+      repo,
+      season: currentSeason,
+      now: DateTime.fromISO(lastWeekPr.createdAt, { zone: 'utc' })
+    });
+
+    const pullRequest2 = mockPullRequest({
+      createdAt: now.minus({ days: 2 }).toISO(),
+      state: 'MERGED',
+      repo,
+      author: builder.githubUser
+    });
+
+    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: currentSeason, now });
+
+    const gemsReceipts = await prisma.gemsReceipt.findMany({
+      where: {
+        event: {
+          builderId: builder.id
+        }
+      }
+    });
+    expect(gemsReceipts).toHaveLength(2);
+  });
+
+  it('should create two builder events on the same day for different repos', async () => {
     const builder = await mockBuilder();
     const repo = await mockRepo();
     const repo2 = await mockRepo();
