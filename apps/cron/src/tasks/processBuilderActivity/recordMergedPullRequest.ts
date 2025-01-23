@@ -54,15 +54,15 @@ export async function recordMergedPullRequest({
   const previousGitEvents = await prisma.githubEvent.findMany({
     where: {
       createdBy: pullRequest.author.id,
-      // streaks are based on created date
-      createdAt: {
+      // streaks are based on merged date
+      completedAt: {
         gte: new Date(new Date(pullRequest.createdAt).getTime() - streakWindow)
       },
       type: 'merged_pull_request'
     },
     select: {
       id: true,
-      createdAt: true,
+      completedAt: true,
       pullRequestNumber: true,
       repoId: true,
       createdBy: true,
