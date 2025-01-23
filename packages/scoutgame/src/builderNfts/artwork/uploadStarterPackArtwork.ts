@@ -30,7 +30,7 @@ export async function uploadStarterPackArtwork({
     season,
     tokenId: Number(tokenId),
     filename: 'starter-pack-artwork.png',
-    contractName: getBuilderNftStarterPackContractAddress()
+    contractName: getBuilderNftStarterPackContractAddress(season)
   });
 
   await uploadFileToS3({
@@ -71,7 +71,7 @@ export async function uploadStarterPackArtworkCongrats({
     season,
     tokenId: Number(tokenId),
     starterPack: true,
-    contractName: getBuilderNftStarterPackContractAddress()
+    contractName: getBuilderNftStarterPackContractAddress(season)
   });
 
   await uploadFileToS3({

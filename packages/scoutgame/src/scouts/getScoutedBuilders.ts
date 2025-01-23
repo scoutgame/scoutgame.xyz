@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { DateTime } from 'luxon';
 

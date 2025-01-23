@@ -1,25 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { prettyPrint } from '@packages/utils/strings';
-import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+
 async function query() {
   const scout = await prisma.scout.findMany({
-    where: { path: '' },
-    select: {
-      builderNfts: {
-        where: {
-          season: getCurrentSeasonStart()
-        },
-        select: {
-          nftSoldEvents: {
-            select: {
-              scoutId: true,
-              tokensPurchased: true
-            }
-          }
-        }
-      }
-    }
+    where: { path: 'alfreedom' }
     // include: {
     //   nftPurchaseEvents: {
     //     select: {
@@ -39,7 +22,12 @@ async function query() {
     //   }
     // }
   });
-  prettyPrint(scout);
+  const github = await prisma.githubRepo.findMany({
+    where: {
+      name: 'reown-com'
+    }
+  });
+  console.log(scout);
   // await sendPointsForMiscEvent({
   //   builderId: scout!.id,
   //   points: 50,

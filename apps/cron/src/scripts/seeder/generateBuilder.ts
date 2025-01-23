@@ -70,7 +70,7 @@ export async function generateBuilder({ tokenId }: { tokenId: number }) {
     builderNft = {
       id: faker.string.uuid(),
       chainId: builderNftChain.id,
-      contractAddress: getBuilderNftContractAddress(),
+      contractAddress: getBuilderNftContractAddress(getCurrentSeasonStart()),
       currentPrice: faker.number.int({ min: 1000000, max: 10000000 }),
       season: getCurrentSeasonStart(),
       tokenId,

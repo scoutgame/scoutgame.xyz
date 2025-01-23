@@ -2,8 +2,9 @@ import { log } from '@charmverse/core/log';
 
 import type { MixpanelEventMap, MixpanelEventName, MixpanelTrackBase } from './interfaces';
 import { mixpanel } from './mixpanel';
+import { getPlatform } from './platform';
 import type { UTMParams } from './utils';
-import { eventNameToHumanFormat, getPlatform, paramsToHumanFormat } from './utils';
+import { eventNameToHumanFormat, paramsToHumanFormat } from './utils';
 
 export function trackUserAction<T extends MixpanelEventName>(
   eventName: T,
