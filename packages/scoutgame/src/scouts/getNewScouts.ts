@@ -121,6 +121,7 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
     where: {
       deletedAt: null,
       wallets: {
+        some: {},
         every: {
           purchaseEvents: {
             every: {

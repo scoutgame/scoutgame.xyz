@@ -485,7 +485,7 @@ export async function mockNFTPurchaseEvent({
         }
       }
     },
-    include: { nftPurchaseEvent: true }
+    include: { nftPurchaseEvent: { include: { scoutWallet: true } } }
   });
 }
 

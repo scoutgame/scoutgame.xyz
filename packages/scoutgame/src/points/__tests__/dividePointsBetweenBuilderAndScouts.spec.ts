@@ -39,7 +39,8 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
           tokensPurchased: 10
         })
       ).nftPurchaseEvent,
-      builderNft
+      builderNft,
+      scoutId: scout1.id
     } as PartialNftPurchaseEvent);
 
     nftPurchaseEvents.push({
@@ -52,7 +53,8 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
           tokensPurchased: 20
         })
       ).nftPurchaseEvent,
-      builderNft
+      builderNft,
+      scoutId: scout2.id
     } as PartialNftPurchaseEvent);
 
     nftPurchaseEvents.push({
@@ -66,7 +68,8 @@ describe('dividePointsBetweenBuilderAndScouts', () => {
           nftType: 'starter_pack'
         })
       ).nftPurchaseEvent,
-      builderNft: starterPackNft
+      builderNft: starterPackNft,
+      scoutId: scout1.id
     } as PartialNftPurchaseEvent);
   });
 

@@ -55,6 +55,10 @@ export async function recordNftTransfer({
     await findOrCreateWalletUser({ wallet: fromWallet });
   }
 
+  if (toWallet) {
+    await findOrCreateWalletUser({ wallet: toWallet });
+  }
+
   const _sentAt = await getPublicClient(builderNftChain.id)
     .getBlock({
       blockNumber: transferSingleEvent.blockNumber
