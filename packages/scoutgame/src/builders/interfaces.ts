@@ -17,6 +17,7 @@ export type BuilderMetrics = {
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[] | null;
   gemsCollected?: number;
+  nftsSoldToScout?: number;
 };
 
 export type BuilderInfo = BasicUserInfo &
@@ -26,7 +27,6 @@ export type BuilderInfo = BasicUserInfo &
     farcasterId?: number | null;
     nftImageUrl?: string | null;
     congratsImageUrl: string | null;
-    nftsSoldToScout?: number;
   };
 
 export type Last14DaysRank = { date: string; rank: number | null; gems: number }[];

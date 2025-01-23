@@ -3,6 +3,8 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -14,11 +16,13 @@ export type CompositeCursor = {
 export async function getPaginatedBuilders({
   limit,
   week,
-  cursor
+  cursor,
+  scoutId
 }: {
   limit: number;
   week: ISOWeek;
   cursor: CompositeCursor | null;
+  scoutId?: string;
 }): Promise<{ builders: BuilderInfo[]; nextCursor: CompositeCursor | null }> {
   const season = getCurrentSeasonStart(week);
 
@@ -75,15 +79,37 @@ export async function getPaginatedBuilders({
                 nftType: true,
                 congratsImageUrl: true,
                 estimatedPayout: true,
-                nftSoldEvents: {
-                  select: {
-                    scoutWallet: {
+                nftSoldEvents: scoutId
+                  ? {
+                      where: {
+                        ...validMintNftPurchaseEvent,
+                        builderEvent: {
+                          season
+                        },
+                        scoutWallet: {
+                          scoutId
+                        }
+                      },
                       select: {
-                        scoutId: true
+                        scoutWallet: {
+                          select: {
+                            scoutId: true
+                          }
+                        },
+                        tokensPurchased: true
                       }
                     }
-                  }
-                }
+                  : {
+                      where: validMintNftPurchaseEvent,
+                      select: {
+                        scoutWallet: {
+                          select: {
+                            scoutId: true
+                          }
+                        },
+                        tokensPurchased: true
+                      }
+                    }
               }
             },
             builderCardActivities: {
@@ -137,7 +163,10 @@ export async function getPaginatedBuilders({
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
         estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0,
-        gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0
+        gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
+        nftsSoldToScout:
+          stat.user.builderNfts?.[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) ||
+          undefined
       }))
     );
   const userId = builders[builders.length - 1]?.id;

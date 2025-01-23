@@ -99,7 +99,20 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
           nftType: true,
           tokenId: true,
           congratsImageUrl: true,
-          estimatedPayout: true
+          estimatedPayout: true,
+          nftSoldEvents: scoutId
+            ? {
+                where: {
+                  builderEvent: {
+                    season: getCurrentSeasonStart()
+                  },
+                  scoutId
+                },
+                select: {
+                  tokensPurchased: true
+                }
+              }
+            : undefined
         }
       }
     }
@@ -107,19 +120,14 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
 
   return builders.map((builder) => ({
     ...builder,
-    nftsSoldToScout: scoutedBuilderNfts.reduce((acc, nft) => {
-      if (nft.builderNft.tokenId === builder.builderNfts[0]?.tokenId) {
-        acc += nft.balance;
-      }
-      return acc;
-    }, 0),
     nftImageUrl: builder.builderNfts[0].imageUrl,
     nftType: builder.builderNfts[0].nftType,
     congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
     price: builder.builderNfts[0].currentPrice ?? BigInt(0),
     level: builder.userSeasonStats[0]?.level ?? 0,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
-    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0])
+    last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
+    nftsSoldToScout: builder.builderNfts[0].nftSoldEvents.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0)
   }));
 }
 
