@@ -9,7 +9,7 @@ import { InfoPageContainer } from './components/InfoPageContainer';
 
 export function InfoPage() {
   return (
-    <InfoPageContainer data-test='info-page' image='/images/info/info_banner.png' title='All about Scout Game!'>
+    <InfoPageContainer data-test='info-page' image='/images/info/info_banner.png' title='How to Play'>
       <Document />
     </InfoPageContainer>
   );
@@ -170,9 +170,5 @@ export function InfoPageContent() {
 }
 
 function Document() {
-  return (
-    <InfoCard title='How to Play'>
-      <InfoPageContent />
-    </InfoCard>
-  );
+  return <InfoPageContent />;
 }
