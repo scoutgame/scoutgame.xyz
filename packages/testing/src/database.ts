@@ -19,6 +19,7 @@ export async function mockBuilder({
   githubUserId = randomLargeInt(),
   githubUserLogin = `github_user:${githubUserId}`,
   onboardedAt,
+  currentBalance,
   path = uuid(),
   agreedToTermsAt = new Date(),
   nftSeason = mockSeason,
@@ -48,6 +49,7 @@ export async function mockBuilder({
     data: {
       id,
       createdAt,
+      currentBalance,
       path,
       displayName,
       builderStatus,
@@ -185,6 +187,7 @@ export async function mockScout({
 
   if (builderId) {
     await mockNFTPurchaseEvent({ builderId, scoutId: scout.id, season, week: nftWeek });
+    await mockScoutedNft({ builderId, scoutId: scout.id, season, nftType: 'default' });
   }
   if (stats) {
     if (stats.allTime) {

@@ -1,3 +1,4 @@
+import type { Prisma } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
@@ -5,42 +6,56 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
-const userSelect = (week: string, season: string) => ({
-  ...BasicUserInfoSelect,
-  userSeasonStats: {
-    where: {
-      season
+const userSelect = (week: string, season: string, userId?: string) =>
+  ({
+    ...BasicUserInfoSelect,
+    userSeasonStats: {
+      where: {
+        season
+      },
+      select: {
+        level: true
+      }
     },
-    select: {
-      level: true
-    }
-  },
-  builderCardActivities: {
-    select: {
-      last14Days: true
-    }
-  },
-  userWeeklyStats: {
-    where: {
-      week
+    builderCardActivities: {
+      select: {
+        last14Days: true
+      }
     },
-    select: {
-      gemsCollected: true
-    }
-  },
-  builderNfts: {
-    where: {
-      season,
-      nftType: BuilderNftType.default
+    userWeeklyStats: {
+      where: {
+        week
+      },
+      select: {
+        gemsCollected: true
+      }
     },
-    select: {
-      currentPrice: true,
-      imageUrl: true,
-      congratsImageUrl: true,
-      estimatedPayout: true
+    builderNfts: {
+      where: {
+        season,
+        nftType: BuilderNftType.default
+      },
+      select: {
+        currentPrice: true,
+        imageUrl: true,
+        congratsImageUrl: true,
+        estimatedPayout: true,
+        nftSoldEvents: userId
+          ? {
+              where: {
+                builderEvent: {
+                  season
+                },
+                scoutId: userId
+              },
+              select: {
+                tokensPurchased: true
+              }
+            }
+          : undefined
+      }
     }
-  }
-});
+  }) satisfies Prisma.ScoutSelect;
 
 export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?: string } = {}): Promise<
   BuilderInfo[]
@@ -119,7 +134,9 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default,
-      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0
+      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
+      nftsSoldToScout:
+        builder.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || 0
     };
   });
 }

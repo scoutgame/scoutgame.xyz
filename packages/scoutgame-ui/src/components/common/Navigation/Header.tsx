@@ -3,7 +3,7 @@
 import { log } from '@charmverse/core/log';
 import InfoIcon from '@mui/icons-material/Info';
 import { Box, Container, Menu, MenuItem, Toolbar, AppBar, Button, Typography, Stack, IconButton } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';

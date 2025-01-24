@@ -59,35 +59,24 @@ describe('mergeUserAccount', () => {
     ).rejects.toThrow('Can not merge builder account profiles');
   });
 
-  it('should throw an error if the merged user has more than 3 starter pack NFTs', async () => {
-    const builders = await Promise.all(Array.from({ length: 3 }).map(() => mockBuilder()));
-    await Promise.all(
-      builders.map((builder) =>
-        mockBuilderNft({ builderId: builder.id, nftType: 'starter_pack', season: getCurrentSeasonStart() })
-      )
-    );
+  it('should throw an error if both users own NFTs', async () => {
+    const builder = await mockBuilder({ createNft: true });
     const primaryUser = await mockScout();
     const secondaryUser = await mockScout({
       farcasterId: randomIntFromInterval(1, 1000000)
     });
     await Promise.all([
-      ...Array.from({ length: 3 }).map((_, index) =>
-        mockScoutedNft({
-          builderId: builders[index].id,
-          nftType: 'starter_pack',
-          scoutId: primaryUser.id,
-          season: getCurrentSeasonStart()
-        })
-      ),
       mockScoutedNft({
-        builderId: builders[2].id,
-        nftType: 'starter_pack',
-        scoutId: secondaryUser.id,
-        season: getCurrentSeasonStart()
+        builderId: builder.id,
+        scoutId: primaryUser.id
+      }),
+      mockScoutedNft({
+        builderId: builder.id,
+        scoutId: secondaryUser.id
       })
     ]);
     await expect(mergeUserAccount({ userId: primaryUser.id, farcasterId: secondaryUser.farcasterId })).rejects.toThrow(
-      'Can not merge more than 3 starter pack NFTs'
+      'Can not merge two accounts with NFTs'
     );
   });
 
@@ -200,12 +189,6 @@ describe('mergeUserAccount', () => {
         builderNftId: builderNft1.id,
         scoutId: scout1.id
       }),
-      // Purchase builder 2 nft using builder 1
-      mockScoutedNft({
-        builderNftId: builderNft2.id,
-        scoutId: builder1.id,
-        balance: 2
-      }),
       // Purchase builder 1 nft using scout 2
       mockScoutedNft({
         builderNftId: builderNft1.id,
@@ -228,15 +211,6 @@ describe('mergeUserAccount', () => {
         points: 250,
         nftType: 'default',
         season: getCurrentSeasonStart()
-      }),
-      // Purchase builder 2 nft using builder 1
-      mockNFTPurchaseEvent({
-        builderId: builder2.id,
-        scoutId: builder1.id,
-        points: 150,
-        nftType: 'default',
-        season: getCurrentSeasonStart(),
-        tokensPurchased: 2
       }),
       // Purchase builder 1 nft using scout 2
       mockNFTPurchaseEvent({
@@ -283,14 +257,14 @@ describe('mergeUserAccount', () => {
     expect(retainedUser.id).toEqual(builder1.id);
 
     // Builder 1:
-    // 250 (selling nft to scout 1) + 100 (selling nft to scout 2) + 200 (gems payout) - 150 (purchasing nft of builder 2) + 200 (gems payout from builder 2) = 600 points
+    // 250 (selling nft to scout 1) + 100 (selling nft to scout 2) + 200 (gems payout) + 200 (gems payout from builder 2) = 750 points
     // Points earned as builder = 200 points
     // Points earned as scout = 200 points
 
-    expect(retainedUser.currentBalance).toEqual(600);
+    expect(retainedUser.currentBalance).toEqual(750);
     expect(retainedUser.userSeasonStats[0].pointsEarnedAsBuilder).toEqual(200);
     expect(retainedUser.userSeasonStats[0].pointsEarnedAsScout).toEqual(200);
-    expect(retainedUser.userSeasonStats[0].nftsPurchased).toEqual(5);
+    expect(retainedUser.userSeasonStats[0].nftsPurchased).toEqual(3);
     expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(4);
     expect(retainedUser.userSeasonStats[0].nftOwners).toEqual(2);
 
@@ -304,6 +278,6 @@ describe('mergeUserAccount', () => {
       }
     });
 
-    expect(retainedUserAfterClaim.currentBalance).toEqual(600);
+    expect(retainedUserAfterClaim.currentBalance).toEqual(750);
   });
 });

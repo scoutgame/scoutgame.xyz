@@ -6,6 +6,7 @@ import { getWeekFromDate } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 import { BuilderInfo } from './generateSeedData';
 import { randomTimeOfDay } from './generator';
+import { randomIntFromInterval } from '@packages/testing/generators';
 
 export async function generateNftPurchaseEvents(
   scoutId: string,
@@ -47,7 +48,8 @@ export async function generateNftPurchaseEvents(
           recipientAddress: faker.finance.ethereumAddress(),
           createdAt,
           skipMixpanel: true,
-          skipPriceRefresh: true
+          skipPriceRefresh: true,
+          mintTxLogIndex: randomIntFromInterval(0, 100)
         });
       });
     }

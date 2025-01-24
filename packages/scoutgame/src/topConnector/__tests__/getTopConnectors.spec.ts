@@ -1,26 +1,24 @@
-import { prisma } from '@charmverse/core/prisma-client';
-import { mockScout } from '@packages/testing/database';
+import { mockBuilder, mockScout } from '@packages/testing/database';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
-import { v4 as uuid, v4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 import { getTop5ConnectorsToday, getTopConnectorOfTheDay } from '../getTopConnectors';
 
 describe('getTopConnectors', () => {
   describe('getTop5ConnectorsToday', () => {
     it('should return user in top 5 if the user is in the list of referrals today ', async () => {
-      const userId = uuid();
-      await mockReferralUsers({ userId });
+      const referrer = await mockUserWithReferral();
 
-      const connectors = await getTop5ConnectorsToday(userId);
-      const myUserIndex = connectors.findIndex((d) => d.builderId === userId);
+      const connectors = await getTop5ConnectorsToday(referrer.id);
+      const myUserIndex = connectors.findIndex((d) => d.builderId === referrer.id);
       expect(connectors.length).toBe(5);
       expect(myUserIndex).toBeLessThanOrEqual(4);
     });
 
     it('should not return user in top 5 if the user did not refer anyone today', async () => {
       const userId = uuid();
-      await mockReferralUsers();
+      await mockUserWithReferral();
 
       const connectors = await getTop5ConnectorsToday(userId);
       const myUser = connectors.find((d) => d.builderId === userId);
@@ -30,7 +28,7 @@ describe('getTopConnectors', () => {
 
   describe('getTopConnectorOfTheDay', () => {
     it('should return the top connector of the day', async () => {
-      await mockReferralUsers();
+      await mockUserWithReferral();
 
       const topConnector = await getTopConnectorOfTheDay();
       expect(topConnector).toBeDefined();
@@ -38,34 +36,14 @@ describe('getTopConnectors', () => {
   });
 });
 
-export async function mockReferralUsers({ count = 10, userId }: { count?: number; userId?: string } = {}) {
-  for (let i = 0; i < count; i++) {
-    const referral = await mockScout(userId && i === 0 ? { id: userId } : undefined);
+async function mockUserWithReferral({ userId }: { userId?: string } = {}) {
+  const referrer = await mockScout({ id: userId, verifiedEmail: true });
 
-    await prisma.scoutEmailVerification.create({
-      data: {
-        code: v4(),
-        email: referral.email || '',
-        scoutId: referral.id,
-        completedAt: new Date()
-      }
-    });
-
-    await updateReferralUsers(referral.id);
-
-    const randomReferee = Math.random() * 10;
-    for (let j = 0; j < randomReferee; j++) {
-      const referee = await mockScout();
-      await createReferralEvent(referral.referralCode || '', referee.id);
-      await prisma.scoutEmailVerification.create({
-        data: {
-          code: v4(),
-          email: referee.email || '',
-          scoutId: referee.id,
-          completedAt: new Date()
-        }
-      });
-      await updateReferralUsers(referee.id);
-    }
+  for (let j = 0; j < 5; j++) {
+    const builder = await mockBuilder({ createNft: true });
+    const referee = await mockScout({ verifiedEmail: true, builderId: builder.id });
+    await createReferralEvent(referrer.referralCode || '', referee.id);
+    await updateReferralUsers(referee.id);
   }
+  return referrer;
 }

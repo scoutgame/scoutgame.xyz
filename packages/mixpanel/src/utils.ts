@@ -1,7 +1,3 @@
-import env from '@beam-australia/react-env';
-import { log } from '@charmverse/core/log';
-import { ReferralPlatform } from '@charmverse/core/prisma';
-import { isProdEnv } from '@packages/utils/constants';
 import { capitalize } from '@packages/utils/strings';
 
 export function eventNameToHumanFormat(eventName: string) {
@@ -43,26 +39,4 @@ export function getUTMParamsFromSearch(searchString: string): UTMParams | undefi
     utm_from: new Date().toLocaleDateString(), // so we know when these were created
     ...utmParams
   };
-}
-
-const platform = env('SCOUTGAME_PLATFORM') || process.env.REACT_APP_SCOUTGAME_PLATFORM;
-
-function isPlatform(_platform: string = ''): _platform is ReferralPlatform {
-  const availablePlatforms = Object.values(ReferralPlatform);
-
-  return availablePlatforms.includes(_platform as ReferralPlatform);
-}
-
-export function getPlatform(): ReferralPlatform {
-  if (isPlatform(platform)) {
-    return platform;
-  }
-
-  if (platform || isProdEnv) {
-    log.warn(`Unknown value for REACT_APP_SCOUTGAME_PLATFORM: ${platform}`, {
-      env: typeof window !== 'undefined' ? (window as any).__ENV : null
-    });
-  }
-
-  return 'unknown';
 }

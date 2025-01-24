@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { DateTime } from 'luxon';
-import { isToday } from 'packages/dates/src/utils';
-import { getStartOfWeek } from 'packages/dates/src/utils';
+import { getCurrentWeek, getPreviousWeek, isToday } from '@packages/dates/utils';
+import { getStartOfWeek } from '@packages/dates/utils';
 
 async function backfillBuildersCardActivityRanks() {
   const threeWeeksAgoDate = DateTime.now().setZone('UTC').minus({ weeks: 2 }).startOf('week').startOf('day').toJSDate();
@@ -13,7 +13,7 @@ async function backfillBuildersCardActivityRanks() {
       createdAt: {
         gte: threeWeeksAgoDate,
         lte: yesterdayDate
-      },
+      }
     },
     select: {
       value: true,
@@ -44,14 +44,11 @@ async function backfillBuildersCardActivityRanks() {
   })
 
   const weeklyGemsReceiptsRecord: Record<string, {
-    week: string,
-    receipts: {
-      value: number,
-      builderId: string,
-      createdAt: Date,
-      displayName: string
-    }[]
-  }> = {}
+    value: number,
+    builderId: string,
+    createdAt: Date,
+    displayName: string
+  }[]> = {}
 
   for (const gemsReceipt of gemsReceipts) {
     const week = gemsReceipt.event.week;
@@ -59,13 +56,10 @@ async function backfillBuildersCardActivityRanks() {
     const value = gemsReceipt.value;
 
     if (!weeklyGemsReceiptsRecord[week]) {
-      weeklyGemsReceiptsRecord[week] = {
-        week,
-        receipts: []
-      }
+      weeklyGemsReceiptsRecord[week] = []
     }
 
-    weeklyGemsReceiptsRecord[week].receipts.push({
+    weeklyGemsReceiptsRecord[week].push({
       value,
       builderId,
       createdAt: gemsReceipt.createdAt,
@@ -73,7 +67,24 @@ async function backfillBuildersCardActivityRanks() {
     })
   }
 
-  const sortedWeeks = Object.values(weeklyGemsReceiptsRecord).sort((a, b) => a.week > b.week ? 1 : -1);
+  const currentWeek = getCurrentWeek();
+  const previousWeek = getPreviousWeek(currentWeek);
+  const previousPreviousWeek = getPreviousWeek(previousWeek);
+
+  const sortedWeekReceipts = [
+    {
+      week: previousPreviousWeek,
+      receipts: weeklyGemsReceiptsRecord[previousPreviousWeek]
+    },
+    {
+      week: previousWeek,
+      receipts: weeklyGemsReceiptsRecord[previousWeek]
+    },
+    {
+      week: currentWeek,
+      receipts: weeklyGemsReceiptsRecord[currentWeek]
+    }
+  ];
 
   const builderRanksRecord: Record<string, {
     date: string,
@@ -81,7 +92,7 @@ async function backfillBuildersCardActivityRanks() {
     gems: number
   }[]> = {}
 
-  for (const {week ,receipts} of sortedWeeks) {
+  for (const {week, receipts = []} of sortedWeekReceipts) {
     const weekStart = getStartOfWeek(week);
     const weeklyBuilderGemsRecord: Record<string, {
       gemsCollected: number,
@@ -160,6 +171,7 @@ async function backfillBuildersCardActivityRanks() {
           last14Days: builderRanks.slice(-14),
         },
       })
+      console.log(`Upserted builder card activity for builder ${builder.id}`);
     } catch (error) {
       console.error(`Error upserting builder card activity for builder ${builder.id}:`, error);
     }

@@ -26,7 +26,11 @@ export async function revertFraudulentMintTransactions({
     select: {
       createdAt: true,
       txHash: true,
-      scoutId: true,
+      scoutWallet: {
+        select: {
+          scoutId: true
+        }
+      },
       paidInPoints: true,
       builderNft: {
         select: {
@@ -119,7 +123,7 @@ export async function revertFraudulentMintTransactions({
       amount: Number(transferSingleEvent.args.value),
       nftType: builderNft.nftType,
       revertedTransactionHash: txHash,
-      scoutId: builderNft.nftType === 'starter_pack' ? nftPurchaseEvent.scoutId : undefined
+      scoutId: builderNft.nftType === 'starter_pack' ? nftPurchaseEvent.scoutWallet?.scoutId : undefined
     });
   }
 

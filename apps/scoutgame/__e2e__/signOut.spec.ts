@@ -4,7 +4,7 @@ import { expect, test } from './test';
 
 test.describe('Sign Out', () => {
   test('Should be able to sign out', async ({ utils, page }) => {
-    const builder = await mockBuilder({});
+    const builder = await mockBuilder({ onboardedAt: new Date(), agreedToTermsAt: new Date() });
 
     await utils.loginAsUserId(builder.id);
     await page.goto('/scout');

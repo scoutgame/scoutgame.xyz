@@ -113,7 +113,7 @@ export async function uploadMetadata({
     season,
     tokenId: Number(tokenId),
     filename: starterPack ? 'starter-pack-metadata.json' : 'metadata.json',
-    contractName: starterPack ? getBuilderNftStarterPackContractAddress() : builderNftArtworkContractName
+    contractName: starterPack ? getBuilderNftStarterPackContractAddress(season) : builderNftArtworkContractName
   });
 
   // Generate the metadata object
@@ -125,7 +125,7 @@ export async function uploadMetadata({
       season,
       tokenId: Number(tokenId),
       filename: starterPack ? 'starter-pack-artwork.png' : 'artwork.png',
-      contractName: starterPack ? getBuilderNftStarterPackContractAddress() : builderNftArtworkContractName
+      contractName: starterPack ? getBuilderNftStarterPackContractAddress(season) : builderNftArtworkContractName
     })}`,
     attributes: attributes || []
   };
