@@ -67,6 +67,7 @@ export async function divideTokensBetweenBuilderAndHolders({
 
   // Calculate the total number of NFTs purchased by each scout
   const nftSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalNft, 0);
+  const starterPackSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
 
   const earnableScoutTokens = Math.floor(
     calculateEarnableScoutTokensForRank({ rank, weeklyAllocatedPoints: weeklyAllocatedTokens }) * normalisationFactor
@@ -75,7 +76,7 @@ export async function divideTokensBetweenBuilderAndHolders({
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
     const scoutRewardShare = calculateRewardForScout({
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: 0 }
+      supply: { default: nftSupply, starterPack: starterPackSupply }
     });
     const scoutTokens = Math.floor(scoutRewardShare * scoutTokensShare * earnableScoutTokens);
 
@@ -85,7 +86,7 @@ export async function divideTokensBetweenBuilderAndHolders({
   const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
     const scoutRewardShare = calculateRewardForScout({
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: 0 }
+      supply: { default: nftSupply, starterPack: starterPackSupply }
     });
     const scoutTokens = Math.floor(scoutRewardShare * scoutTokensShare * earnableScoutTokens);
 
@@ -97,8 +98,8 @@ export async function divideTokensBetweenBuilderAndHolders({
   return {
     nftSupply: {
       default: nftSupply,
-      starterPack: 0,
-      total: 0
+      starterPack: starterPackSupply,
+      total: nftSupply + starterPackSupply
     },
     earnableScoutTokens,
     tokensPerScoutByWallet,

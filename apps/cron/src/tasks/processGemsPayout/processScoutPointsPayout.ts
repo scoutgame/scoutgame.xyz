@@ -1,6 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
-import { builderNftChain } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import { divideTokensBetweenBuilderAndHolders } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
@@ -14,7 +12,6 @@ export async function processScoutPointsPayout({
   rank,
   gemsCollected,
   week,
-  blockNumber,
   season,
   createdAt,
   normalisationFactor = 1,
@@ -24,7 +21,6 @@ export async function processScoutPointsPayout({
   rank: number;
   gemsCollected: number;
   week: string;
-  blockNumber?: number;
   season: string;
   createdAt?: Date;
   normalisationFactor?: number;
@@ -38,13 +34,6 @@ export async function processScoutPointsPayout({
       }
     }
   });
-
-  if (!blockNumber) {
-    blockNumber = await getLastBlockOfWeek({
-      chainId: builderNftChain.id,
-      week
-    });
-  }
 
   if (existingGemsPayoutEvent) {
     scoutgameMintsLogger.warn(`Gems payout event already exists for builder in week ${week}`, { userId: builderId });

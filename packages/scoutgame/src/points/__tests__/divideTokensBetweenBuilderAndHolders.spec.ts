@@ -47,7 +47,7 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
           },
           {
             totalNft: 5,
-            totalStarter: 0,
+            totalStarter: 2,
             wallet: userAddress2
           }
         ],
@@ -59,7 +59,7 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
           },
           {
             totalNft: 5,
-            totalStarter: 0,
+            totalStarter: 2,
             scoutId: userId2
           }
         ]
@@ -70,17 +70,17 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
       expect.objectContaining<TokenDistribution>({
         nftSupply: {
           default: 15,
-          starterPack: 0,
-          total: 0
+          starterPack: 2,
+          total: 17
         },
         earnableScoutTokens: 2400,
         tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
-          { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1280 },
-          { wallet: userAddress2, nftTokens: 5, erc20Tokens: 640 }
+          { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1263 },
+          { wallet: userAddress2, nftTokens: 5, erc20Tokens: 656 }
         ]),
         tokensPerScoutByScoutId: expect.arrayContaining<TokenDistribution['tokensPerScoutByScoutId'][number]>([
-          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1280 },
-          { scoutId: userId2, nftTokens: 5, erc20Tokens: 640 }
+          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1263 },
+          { scoutId: userId2, nftTokens: 5, erc20Tokens: 656 }
         ]),
         tokensForBuilder: 480
       })

@@ -1,22 +1,21 @@
 import { log } from '@charmverse/core/log';
-import { type GithubRepo, type GithubUser, prisma } from '@charmverse/core/prisma-client';
+import { type GithubRepo, type GithubUser } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
-import { claimPoints } from '@packages/scoutgame/points/claimPoints';
-import { getWeekFromDate, getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
 import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
-import { DateTime } from 'luxon';
+import { claimPoints } from '@packages/scoutgame/points/claimPoints';
 import { findOrCreateFarcasterUser } from '@packages/users/findOrCreateFarcasterUser';
+import { DateTime } from 'luxon';
 
-import { processScoutPointsPayout } from '../../tasks/processGemsPayout/processScoutPointsPayout';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
+import { processScoutPointsPayout } from '../../tasks/processGemsPayout/processScoutPointsPayout';
 
+import { updateBuildersCardActivity } from '../../tasks/updateBuildersCardActivity/updateBuildersCardActivity';
 import { generateBuilder } from './generateBuilder';
 import { generateBuilderEvents } from './generateBuilderEvents';
 import { generateGithubRepos } from './generateGithubRepos';
 import { generateNftPurchaseEvents } from './generateNftPurchaseEvents';
 import { generateScout } from './generateScout';
-import { updateBuildersCardActivity } from '../../tasks/updateBuildersCardActivity/updateBuildersCardActivity';
-import { getNftPurchaseEvents } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 
 export type BuilderInfo = {
   id: string;
@@ -174,11 +173,6 @@ export async function generateSeedData(
      
       for (const { builder, gemsCollected, rank } of topWeeklyBuilders) {
 
-        const nftPurchaseEvents = await getNftPurchaseEvents({
-          week,
-          builderId: builder.id
-        });
-
         try {
           await processScoutPointsPayout({
             builderId: builder.id,
@@ -187,7 +181,6 @@ export async function generateSeedData(
             week,
             season: getCurrentSeasonStart(),
             createdAt: date.toJSDate(),
-            nftPurchaseEvents,
             // We started with 100k points per week
             weeklyAllocatedPoints: 1e5
           });
