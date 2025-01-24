@@ -166,14 +166,21 @@ async function enrichRepoData({ rawData }: { rawData: string }) {
 
   let maxTokensReached = false;
 
+  // Generate a random seed for this run to ensure different file sampling
+  const randomSeed = Math.random();
+
   while (queue.length > 0) {
     const { node, filePath } = queue.shift()!;
 
     // Add children to queue
     if (node.children) {
       node.children.forEach((child) => {
-        // 50% chance to skip this child's children and just process its content
-        const skipChildren = filePath.split('/').length > 1 && Math.random() < 0.4;
+        // Use randomSeed to generate a deterministic but different value for each file
+        const hash = (randomSeed + child.name).split('').reduce((a, b) => {
+          a = (a << 5) - a + b.charCodeAt(0);
+          return a & a;
+        }, 0);
+        const skipChildren = filePath.split('/').length > 1 && Math.abs(hash) % 100 < 30; // Fixed 30% skip rate
 
         queue.push({
           node: {
