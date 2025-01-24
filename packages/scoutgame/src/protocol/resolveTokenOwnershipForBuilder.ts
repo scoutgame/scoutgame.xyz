@@ -1,9 +1,72 @@
+import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
-import { getAddress } from 'viem';
 
-import { getNftPurchaseEvents } from '../points/getWeeklyPointsPoolAndBuilders';
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+import type { PartialNftPurchaseEvent } from '../points/getWeeklyPointsPoolAndBuilders';
 import { mapPurchaseEventsToOwnership } from '../points/mapPurchaseEventsToOwnership';
+
+export async function getNftPurchaseEvents({
+  week,
+  builderId,
+  onlyMints = false
+}: {
+  week: string;
+  builderId?: string;
+  onlyMints?: boolean;
+}): Promise<PartialNftPurchaseEvent[]> {
+  const season = getCurrentSeasonStart(week);
+  return prisma.nFTPurchaseEvent
+    .findMany({
+      where: {
+        builderEvent: {
+          week: {
+            lte: week
+          }
+        },
+        builderNft: {
+          season,
+          builderId
+        },
+        ...(onlyMints ? validMintNftPurchaseEvent : {})
+      },
+      select: {
+        scoutWallet: {
+          select: {
+            address: true,
+            scoutId: true
+          }
+        },
+        senderWallet: {
+          select: {
+            address: true,
+            scoutId: true
+          }
+        },
+        tokensPurchased: true,
+        builderNft: {
+          select: {
+            tokenId: true,
+            builderId: true,
+            nftType: true
+          }
+        }
+      }
+    })
+    .then((data) =>
+      data.map(
+        (record) =>
+          ({
+            ...record,
+            from: record.senderWallet,
+            to: record.scoutWallet,
+            tokenId: record.builderNft.tokenId,
+            nftType: record.builderNft.nftType
+          }) as PartialNftPurchaseEvent
+      )
+    );
+}
 
 export type TokenOwnershipForBuilder = {
   byScoutId: {

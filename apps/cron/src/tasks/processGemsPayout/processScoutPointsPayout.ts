@@ -4,7 +4,6 @@ import { builderNftChain } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import { divideTokensBetweenBuilderAndHolders } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
-import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { incrementPointsEarnedStats } from '@packages/scoutgame/points/updatePointsEarned';
 import { resolveTokenOwnershipForBuilder } from '@packages/scoutgame/protocol/resolveTokenOwnershipForBuilder';
 import { v4 } from 'uuid';
@@ -12,7 +11,6 @@ import { type Address } from 'viem';
 
 export async function processScoutPointsPayout({
   builderId,
-  nftPurchaseEvents,
   rank,
   gemsCollected,
   week,
@@ -23,7 +21,6 @@ export async function processScoutPointsPayout({
   weeklyAllocatedPoints
 }: {
   builderId: string;
-  nftPurchaseEvents: PartialNftPurchaseEvent[];
   rank: number;
   gemsCollected: number;
   week: string;

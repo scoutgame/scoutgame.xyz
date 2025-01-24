@@ -595,7 +595,8 @@ export async function mockNFTTransferEvent({
       nftPurchaseEvent: {
         create: {
           builderNftId: builderNft.id,
-          senderWalletAddress: toScoutWallet.address,
+          walletAddress: toScoutWallet.address,
+          senderWalletAddress: fromScoutWallet.address,
           txLogIndex: 0,
           pointsValue: points,
           txHash: `0x${Math.random().toString(16).substring(2)}`,

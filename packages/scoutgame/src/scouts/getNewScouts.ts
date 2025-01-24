@@ -3,7 +3,7 @@ import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
-import { resolveTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
+import { getNftPurchaseEvents, resolveTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 export type NewScout = {
   id: string;
@@ -23,10 +23,9 @@ export async function getRankedNewScoutsForCurrentWeek({
 } = {}): Promise<NewScout[]> {
   const [{ pointsPerScout: _pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
     (async function calculatePointsPerScout() {
-      const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints, nftPurchaseEvents } =
-        await getWeeklyPointsPoolAndBuilders({
-          week
-        });
+      const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } = await getWeeklyPointsPoolAndBuilders({
+        week
+      });
       // aggregate values for each scout per topWeeklyBuilder
       const pointsPerScout: Record<string, number> = {};
 
@@ -49,6 +48,8 @@ export async function getRankedNewScoutsForCurrentWeek({
           });
         })
       );
+
+      const nftPurchaseEvents = await getNftPurchaseEvents({ week, onlyMints: true });
 
       return {
         nftPurchaseEvents,
