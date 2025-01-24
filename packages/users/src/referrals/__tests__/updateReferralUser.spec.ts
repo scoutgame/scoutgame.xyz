@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { mockBuilder, mockScout, mockScoutedNft } from '@packages/testing/database';
 
-import { rewardPoints } from '../../constants';
+import { referralBonusPoints, rewardPoints } from '../../constants';
 import { createVerificationCode, verifyEmail } from '../../verifyEmail';
 import { createReferralEvent } from '../createReferralEvent';
 import { updateReferralUsers } from '../updateReferralUsers';
@@ -73,7 +73,7 @@ describe('updateReferralUsers', () => {
     });
 
     expect(updatedReferralUser.id).toBe(referrer.id);
-    expect(updatedReferralUser.currentBalance).toBe(50 + rewardPoints);
+    expect(updatedReferralUser.currentBalance).toBe(50 + rewardPoints + referralBonusPoints);
     expect(updatedRefereeUser.id).toBe(referee.id);
     expect(updatedRefereeUser.currentBalance).toBe(rewardPoints);
   });
