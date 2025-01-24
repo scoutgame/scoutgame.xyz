@@ -13,35 +13,50 @@ async function runEnrichmentPipeline() {
   const repos = JSON.parse(await fs.readFile(reposPath, 'utf-8')) as Repository[];
   const processingTimes: number[] = [];
 
-  for (let i = 0; i < repos.length; i++) {
+  for (let i = 0; i < repos.length; i += 5) {
+    const batchStart = Date.now();
+    const batch = repos.slice(i, i + 5);
+
     try {
-      const repo = repos[i];
-      const iterationStart = Date.now();
+      // Process batch of repos concurrently
+      const results = await Promise.all(
+        batch.map(async (repo) => {
+          try {
+            const iterationStart = Date.now();
+            await processRepo({ repoOwner: repo.owner, repoName: repo.name });
+            return Date.now() - iterationStart;
+          } catch (error) {
+            log.error(`Error processing repo ${repo.owner}/${repo.name}:`, error);
+            return 0;
+          }
+        })
+      );
 
-      await processRepo({ repoOwner: repo.owner, repoName: repo.name });
+      // Filter out failed attempts (0ms processing time) and add successful times
+      const validTimes = results.filter((time) => time > 0);
+      processingTimes.push(...validTimes);
 
-      const timeForIteration = Date.now() - iterationStart;
+      const batchTime = Date.now() - batchStart;
 
-      if (timeForIteration > 3000) {
-        processingTimes.push(timeForIteration);
-
+      if (validTimes.length > 0) {
         // Calculate average time and estimate remaining time
         const avgTime = processingTimes.reduce((a, b) => a + b, 0) / processingTimes.length;
-        const remainingItems = repos.length - (i + 1);
-        const estimatedTimeRemaining = avgTime * remainingItems;
+        const remainingItems = repos.length - (i + batch.length);
+        const estimatedTimeRemaining = (avgTime / 5) * remainingItems; // Adjust for parallel processing
 
         log.info('/////////////////////////////////');
-        log.info(`Processed ${i + 1}/${repos.length} repos`);
-        log.info(`Average processing time: ${(avgTime / 1000).toFixed(2)}s`);
+        log.info(`Processed batch ${i / 5 + 1} (${i + batch.length}/${repos.length} repos)`);
+        log.info(`Batch processing time: ${(batchTime / 1000).toFixed(2)}s`);
+        log.info(`Average processing time per batch: ${(avgTime / 1000).toFixed(2)}s`);
         log.info(`Estimated time remaining: ${(estimatedTimeRemaining / 1000 / 60).toFixed(2)} minutes`);
         log.info('/////////////////////////////////');
       } else {
         log.info('/////////////////////////////////');
-        log.info(`Already processed ${i + 1}/${repos.length} repos`);
+        log.info(`Batch ${i / 5 + 1} already processed (${i + batch.length}/${repos.length} repos)`);
         log.info('/////////////////////////////////');
       }
     } catch (error) {
-      log.error(`Error processing repo ${repos[i].owner}/${repos[i].name}:`, error);
+      log.error(`Error processing batch starting at index ${i}:`, error);
     }
   }
 }

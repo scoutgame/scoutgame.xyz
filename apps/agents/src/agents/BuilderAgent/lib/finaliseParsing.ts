@@ -24,4 +24,4 @@ async function finaliseParsing() {
   await fs.writeFile(targetFile, JSON.stringify(jsonData, null, 2));
 }
 
-// finaliseParsing();
+finaliseParsing();
