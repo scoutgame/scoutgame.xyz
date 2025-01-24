@@ -201,25 +201,25 @@ function HowToPlaySection() {
         <Step
           stepNumber='Step 1'
           title='Sign Up & Apply'
-          description="Connect your GitHub and let us verify your open-source contributions. Once you're approved, your Builder Card goes live, and you're in the game!"
+          description="Connect your GitHub and let us verify your open source contributions. Once you make your first qualified contribution, you're approved. Your Developer Card goes live, and you're in the game!"
           iconSrc='/images/home/github-icon.svg'
         />
         <Step
           stepNumber='Step 2'
           title='Collect Gems Weekly'
-          description='Earn Gems every week by tackling issues in qualified open-source projects. Contributions earn you 1, 10, 30, or even 100 Gems based on their impact. More Gems mean more Scout Points and higher ranks!'
+          description='Earn Gems every week by tackling issues in qualified open-source projects. Contributions earn you 1, 10, 30, or even 100 Gems based on their impact. More Gems mean higher rank!'
           iconSrc='/images/home/code-icon.svg'
         />
         <Step
           stepNumber='Step 3'
           title='Earn Rewards'
-          description='Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You’ll also get 20% of the revenue from Builder Card sales, boosting your rewards!'
+          description='Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You’ll also get 20% of your Developer Card sales, boosting your rewards!'
           iconSrc='/images/home/trophy-icon.svg'
         />
         <Step
           stepNumber='Step 4'
           title='Earn Tokens'
-          description='Turn your skills into real rewards. Collect tokens and prizes from top partners like Celo and Optimism for your contributions to the ecosystem.'
+          description='Turn your skills into rewards. Collect tokens and prizes from top partners like Celo and Optimism for your contributions to the ecosystem.'
           iconSrc='/images/home/quests-icon.svg'
         />
       </Container>
@@ -306,7 +306,7 @@ function FooterSection({ partnerUtmCampaign }: { partnerUtmCampaign: string }) {
     >
       <Stack mx='auto' justifyContent='center' alignItems='center' gap={2}>
         <Typography variant='h6' textAlign='center'>
-          Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
+          Write code & earn rewards! <br /> Join Scout Game!
         </Typography>
         <Button variant='contained' sx={{ width: '50%' }}>
           <Link href={`${builderLoginUrl}&utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
