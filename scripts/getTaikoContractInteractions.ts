@@ -1,4 +1,4 @@
-import { Address, createPublicClient, http } from 'viem';
+import { Address, createPublicClient, http, TransactionReceipt } from 'viem';
 import { taiko } from 'viem/chains';
 import { prisma } from '@charmverse/core/prisma-client';
 
@@ -6,7 +6,7 @@ type BlockchainClient = ReturnType<typeof createPublicClient>;
 
 /**
  * Taiko Contract exmples */
-const contracts = [
+const contracts: Address[] = [
   // Avalon Finance
 
   '0xb961661F5Ca019e232661Bd26686288a6E21d928',
@@ -36,15 +36,39 @@ const contracts = [
   '0x78adDA11Bfc437DeC4a39318FF7e52Cf00DC062c'
 ];
 
-async function getContractInteractions(
-  client: BlockchainClient,
-  address: Address,
-  fromBlock: bigint,
-  toBlock: bigint,
-  pageSize: bigint = BigInt(1000)
-) {
+async function retrieveContractInteractions({
+  client,
+  address,
+  fromBlock,
+  toBlock,
+  contractId,
+  pageSize = BigInt(10000)
+}: {
+  client: BlockchainClient;
+  address: Address;
+  fromBlock: bigint;
+  toBlock: bigint;
+  contractId: string;
+  pageSize?: bigint;
+}) {
   // Get all events from the contract
   let allLogs: Awaited<ReturnType<typeof client.getLogs>> = [];
+  let transactions: TransactionReceipt[] = [];
+
+  const earliestBlock = await prisma.scoutProjectContractTransactioData.findFirst({
+    where: {
+      contractId
+    },
+    orderBy: {
+      blockNumber: 'desc'
+    }
+  });
+
+  if (earliestBlock) {
+    console.log('Found latest block', earliestBlock.blockNumber);
+    fromBlock = earliestBlock.blockNumber;
+  }
+
   for (let currentBlock = fromBlock; currentBlock <= toBlock; currentBlock += pageSize) {
     const nextStep = currentBlock + (pageSize - BigInt(1));
     const endBlock = nextStep > toBlock ? toBlock : nextStep;
@@ -53,23 +77,68 @@ async function getContractInteractions(
       fromBlock: currentBlock,
       toBlock: endBlock
     });
+    const txHashes = new Set<Address>(logs.map((log) => log.transactionHash));
+    const txData = await Promise.all(
+      Array.from(txHashes).map((txHash) => client.getTransactionReceipt({ hash: txHash }))
+    );
+    await Promise.all([
+      prisma.scoutProjectContractTransactioData.createMany({
+        data: txData.map((tx) => ({
+          contractId,
+          blockNumber: tx.blockNumber,
+          txHash: tx.transactionHash,
+          logIndex: tx.transactionIndex,
+          txData: JSON.parse(toJson(tx) || '{}'),
+          from: tx.from.toLowerCase(),
+          to: tx.to ? tx.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
+          status: tx.status
+        }))
+      })
+      // prisma.scoutProjectContractTransaction.createMany({
+      //   data: logs.map((log) => ({
+      //     contractId,
+      //     blockNumber: log.blockNumber,
+      //     txHash: log.transactionHash,
+      //     from: log.address.toLowerCase(),
+      //     gasUsed: txDataByHash[log.transactionHash].gasUsed,
+      //     to: log.address.toLowerCase(),
+      //     status: log.removed ? 'removed' : 'success'
+      //   }))
+      // })
+    ]);
     allLogs = [...allLogs, ...logs];
-    console.log('logs', logs.length);
+    transactions = [...transactions, ...txData];
+    // Log progress every 10%
+    const progress = Number(((currentBlock - fromBlock) * BigInt(100)) / (toBlock - fromBlock));
+    if (progress % 10 === 0) {
+      console.log(`${progress}% complete, ${allLogs.length} events processed so far`);
+    }
   }
   const logs = allLogs;
 
   console.log('found logs', logs.length);
+  console.log('found transactions', transactions.length);
 
-  console.log('log sample', logs.slice(0, 5));
+  console.log('log sample', logs.slice(0, 2));
+  console.log('transactions sample', transactions.slice(0, 2));
 
   // Extract unique addresses that interacted with contract
   const uniqueAddresses = new Set(logs.map((log) => log.address.toLowerCase()));
   console.log('Total unique addresses:', uniqueAddresses.size);
-  console.log('Addresses:', Array.from(uniqueAddresses));
+  //console.log('Addresses:', Array.from(uniqueAddresses));
 }
 
+// handle bigint serialization
+function toJson(data: any) {
+  if (data !== undefined) {
+    return JSON.stringify(data, (_, v) => (typeof v === 'bigint' ? `${v}#bigint` : v)).replace(
+      /"(-?\d+)#bigint"/g,
+      (_, a) => a
+    );
+  }
+}
 // binary search to find the deployment block
-async function findDeploymentBlock(
+async function findDeploymentBlockNumber(
   client: BlockchainClient,
   contractAddress: Address,
   startBlock: bigint,
@@ -112,6 +181,7 @@ async function findDeploymentBlock(
 
 // call findDeploymentBlock
 (async () => {
+  // await prisma.scoutProjectContract.deleteMany();
   const client = createPublicClient({
     chain: taiko,
     transport: http()
@@ -133,7 +203,6 @@ async function findDeploymentBlock(
 
   // create contracts
   for (const contractAddress of contracts) {
-    console.log('Contract address:', contractAddress);
     const contract = await findOrCreateContract(
       client,
       project.id,
@@ -141,9 +210,16 @@ async function findDeploymentBlock(
       latestBlock,
       creator.id
     );
-    console.log('Contract created:', contract.address);
+    // Get block timestamp for deployment block
+    console.log('Retrieving events for contract:', contract.address, 'Deployed:', contract.deployedAt);
     // get contract interactions
-    // await getContractInteractions(client, address, contract.blockNumber, latestBlock);
+    await retrieveContractInteractions({
+      client,
+      address: contractAddress,
+      fromBlock: contract.blockNumber,
+      toBlock: latestBlock,
+      contractId: contract.id
+    });
   }
 })();
 
@@ -160,15 +236,26 @@ async function findOrCreateContract(
       address: addressLower
     }
   });
-  const deployer = await prisma.scoutProjectDeployer.findFirst({
-    where: {
-      projectId
-    }
-  });
   if (contract) {
     return contract;
   }
-  const deploymentBlock = await findDeploymentBlock(client, address, BigInt(0), latestBlock);
+  const deploymentBlockNumber = await findDeploymentBlockNumber(client, address, BigInt(0), latestBlock);
+  const deploymentBlock = await client.getBlock({
+    blockNumber: deploymentBlockNumber
+  });
+  const deploymentTimestamp = new Date(Number(deploymentBlock.timestamp) * 1000);
+  const creationData = await getContractCreation(address);
+  console.log('creationData', creationData);
+  const creationTxHash = creationData.result[0].txHash;
+  const creationContractAddress = creationData.result[0].contractAddress;
+  const creationContractCreator = creationData.result[0].contractCreator.toLowerCase();
+
+  const deployer = await prisma.scoutProjectDeployer.findFirst({
+    where: {
+      address: creationContractCreator,
+      projectId
+    }
+  });
 
   return prisma.scoutProjectContract.create({
     data: {
@@ -178,10 +265,10 @@ async function findOrCreateContract(
           id: projectId
         }
       },
-      blockNumber: deploymentBlock,
+      blockNumber: deploymentBlockNumber,
       chainId: taiko.id,
-      deployTxHash: '0x',
-      deployedAt: new Date(),
+      deployTxHash: creationTxHash,
+      deployedAt: deploymentTimestamp,
       createdBy,
       deployer: deployer
         ? {
@@ -191,7 +278,7 @@ async function findOrCreateContract(
           }
         : {
             create: {
-              address: '0x' + Math.random(),
+              address: creationContractCreator,
               projectId
             }
           }
@@ -219,4 +306,29 @@ async function findOrCreateProject() {
   });
 }
 
-// getContractInteractions();
+// taiko methods
+async function getContractSourceCode(address: string) {
+  return getContractApi('&action=getsourcecode&address=' + address);
+}
+
+async function getContractCreation(address: string) {
+  return getContractApi<{ result: { contractAddress: Address; contractCreator: Address; txHash: string }[] }>(
+    '&action=getcontractcreation&contractaddresses=' + address
+  );
+}
+
+async function getContractApi<T>(queryStr: string): Promise<T> {
+  const apiKey = process.env.TAIKO_API_KEY;
+  const url = `https://api.taikoscan.io/api?apikey=${apiKey}&module=contract${queryStr}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching contract source code:', error);
+    throw error;
+  }
+}
+
+// retrieveContractInteractions();
