@@ -56,11 +56,10 @@ export async function processScoutPointsPayout({
 
   const resolvedNftBalances = await resolveTokenOwnershipForBuilder({
     week,
-    builderId,
-    blockNumber
+    builderId
   });
 
-  const { tokensForBuilder, tokensPerScout, nftSupply } = await divideTokensBetweenBuilderAndHolders({
+  const { tokensForBuilder, tokensPerScoutByWallet, nftSupply } = await divideTokensBetweenBuilderAndHolders({
     builderId,
     rank,
     weeklyAllocatedTokens: weeklyAllocatedPoints,
@@ -104,7 +103,7 @@ export async function processScoutPointsPayout({
       const scoutWallets = await prisma.scoutWallet.findMany({
         where: {
           address: {
-            in: tokensPerScout.map(({ wallet }) => wallet)
+            in: tokensPerScoutByWallet.map(({ wallet }) => wallet)
           }
         }
       });
@@ -118,7 +117,7 @@ export async function processScoutPointsPayout({
       );
 
       await Promise.all([
-        ...tokensPerScout.map(async ({ wallet, erc20Tokens }) => {
+        ...tokensPerScoutByWallet.map(async ({ wallet, erc20Tokens }) => {
           await tx.pointsReceipt.create({
             data: {
               value: erc20Tokens,

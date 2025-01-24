@@ -1,8 +1,12 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import { getCurrentWeek } from '@packages/dates/utils';
 import type { MockBuilder } from '@packages/testing/database';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
+import { prettyPrint } from '@packages/utils/strings';
+import { v4 as uuid } from 'uuid';
 
+import { resolveTokenOwnershipForBuilder } from '../../protocol/resolveTokenOwnershipForBuilder';
 import type { TokenDistribution } from '../divideTokensBetweenBuilderAndHolders';
 import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenBuilderAndHolders';
 
@@ -16,6 +20,9 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
   const rank = 1;
   const weeklyAllocatedTokens = 100_000;
   const normalisationFactor = 0.8;
+
+  const userId1 = uuid();
+  const userId2 = uuid();
 
   const userAddress1 = randomWalletAddress();
   const userAddress2 = randomWalletAddress();
@@ -34,16 +41,32 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
       rank,
       weeklyAllocatedTokens,
       normalisationFactor,
-      owners: [
-        {
-          tokens: { default: 10, starter_pack: 0 },
-          wallet: userAddress1
-        },
-        {
-          tokens: { default: 5, starter_pack: 0 },
-          wallet: userAddress2
-        }
-      ]
+      owners: {
+        byWallet: [
+          {
+            totalNft: 10,
+            totalStarter: 0,
+            wallet: userAddress1
+          },
+          {
+            totalNft: 5,
+            totalStarter: 0,
+            wallet: userAddress2
+          }
+        ],
+        byScoutId: [
+          {
+            totalNft: 10,
+            totalStarter: 0,
+            scoutId: userId1
+          },
+          {
+            totalNft: 5,
+            totalStarter: 0,
+            scoutId: userId2
+          }
+        ]
+      }
     });
 
     expect(result).toMatchObject<TokenDistribution>(
@@ -54,15 +77,19 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
           total: 0
         },
         earnableScoutTokens: 2400,
-        tokensPerScout: expect.arrayContaining<TokenDistribution['tokensPerScout'][number]>([
+        tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
           { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1280 },
           { wallet: userAddress2, nftTokens: 5, erc20Tokens: 640 }
+        ]),
+        tokensPerScoutByScoutId: expect.arrayContaining<TokenDistribution['tokensPerScoutByScoutId'][number]>([
+          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1280 },
+          { scoutId: userId2, nftTokens: 5, erc20Tokens: 640 }
         ]),
         tokensForBuilder: 480
       })
     );
 
-    const totalTokensDistributed = result.tokensPerScout.reduce((acc, scout) => acc + scout.erc20Tokens, 0);
+    const totalTokensDistributed = result.tokensPerScoutByWallet.reduce((acc, scout) => acc + scout.erc20Tokens, 0);
     expect(totalTokensDistributed + result.tokensForBuilder).toBeLessThanOrEqual(result.earnableScoutTokens);
   });
 
@@ -74,7 +101,10 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
         rank,
         weeklyAllocatedTokens,
         normalisationFactor,
-        owners: []
+        owners: {
+          byScoutId: [],
+          byWallet: []
+        }
       })
     ).rejects.toThrow(InvalidInputError);
   });
@@ -86,7 +116,10 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
         rank: -1,
         weeklyAllocatedTokens,
         normalisationFactor,
-        owners: []
+        owners: {
+          byScoutId: [],
+          byWallet: []
+        }
       })
     ).rejects.toThrow('Invalid rank provided');
   });

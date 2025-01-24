@@ -16,6 +16,7 @@ import { generateGithubRepos } from './generateGithubRepos';
 import { generateNftPurchaseEvents } from './generateNftPurchaseEvents';
 import { generateScout } from './generateScout';
 import { updateBuildersCardActivity } from '../../tasks/updateBuildersCardActivity/updateBuildersCardActivity';
+import { getNftPurchaseEvents } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 
 export type BuilderInfo = {
   id: string;
@@ -170,18 +171,14 @@ export async function generateSeedData(
     if (date.weekday === 7) {
       await updateBuildersRank({ week });
       const topWeeklyBuilders = await getBuildersLeaderboard({ quantity: 100, week });
-      const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
-        where: {
-          builderNft: {
-            season: getCurrentSeasonStart()
-          }
-        },
-        include: {
-          builderNft: true,
-          scoutWallet: true
-        }
-      });
+     
       for (const { builder, gemsCollected, rank } of topWeeklyBuilders) {
+
+        const nftPurchaseEvents = await getNftPurchaseEvents({
+          week,
+          builderId: builder.id
+        });
+
         try {
           await processScoutPointsPayout({
             builderId: builder.id,
@@ -190,10 +187,7 @@ export async function generateSeedData(
             week,
             season: getCurrentSeasonStart(),
             createdAt: date.toJSDate(),
-            nftPurchaseEvents: nftPurchaseEvents.map((ev) => ({
-              ...ev,
-              scoutId: ev.scoutWallet!.scoutId,
-            })),
+            nftPurchaseEvents,
             // We started with 100k points per week
             weeklyAllocatedPoints: 1e5
           });
