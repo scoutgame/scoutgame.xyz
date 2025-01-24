@@ -5,7 +5,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
-import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { baseUrl } from '@packages/utils/constants';
 import type { Address } from 'viem';
@@ -277,14 +276,6 @@ export async function recordNftMint(
     log.error('Error sending builder card scouted email', { error, builderId: builderNft.builderId, userId: scoutId });
   }
 
-  try {
-    // check if we should count a referral
-    await updateReferralUsers(scoutId);
-    await createReferralBonusEvent(scoutId);
-  } catch (error) {
-    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
-  }
-
   const week = getCurrentWeek();
 
   await refreshEstimatedPayouts({
@@ -300,6 +291,13 @@ export async function recordNftMint(
     tokenId: builderNft.tokenId,
     wallet: recipientAddress.toLowerCase() as `0x${string}`
   });
+
+  try {
+    // check if we should count a referral
+    await updateReferralUsers(scoutId);
+  } catch (error) {
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
+  }
 
   return {
     builderNft,

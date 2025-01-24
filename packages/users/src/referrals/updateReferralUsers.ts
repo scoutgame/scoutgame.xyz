@@ -1,11 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { baseUrl } from '@packages/utils/constants';
 
-import { rewardPoints } from '../constants';
+import { referralBonusPoints, rewardPoints } from '../constants';
 
 type Result =
   | 'already_referred'
@@ -18,7 +18,8 @@ type Result =
 export async function updateReferralUsers(refereeId: string): Promise<{ result: Result }> {
   const referee = await prisma.scout.findUniqueOrThrow({
     where: {
-      id: refereeId
+      id: refereeId,
+      deletedAt: null
     },
     select: {
       email: true,
@@ -70,7 +71,8 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
       }
     },
     include: {
-      builderEvent: true
+      builderEvent: true,
+      bonusBuilderEvent: true
     }
   });
 
@@ -114,7 +116,7 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
         },
         data: {
           currentBalance: {
-            increment: rewardPoints
+            increment: rewardPoints + referralBonusPoints
           }
         },
         select: {
@@ -163,12 +165,43 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
         }
       });
 
-      await prisma.referralCodeEvent.update({
+      await tx.referralCodeEvent.update({
         where: {
           id: referralCodeEvent.id
         },
         data: {
           completedAt: new Date()
+        }
+      });
+
+      await tx.builderEvent.create({
+        data: {
+          type: 'referral_bonus',
+          season: getCurrentSeasonStart(),
+          description: 'Received points for a referred user scouting a builder',
+          week: getCurrentWeek(),
+          builder: {
+            connect: {
+              id: referrerId
+            }
+          },
+          referralBonusEvent: {
+            connect: {
+              id: referralCodeEvent.id
+            }
+          },
+          pointsReceipts: {
+            create: {
+              value: referralBonusPoints,
+              claimedAt: new Date(),
+              recipient: {
+                connect: {
+                  id: referrerId
+                }
+              },
+              season: getCurrentSeasonStart()
+            }
+          }
         }
       });
 
