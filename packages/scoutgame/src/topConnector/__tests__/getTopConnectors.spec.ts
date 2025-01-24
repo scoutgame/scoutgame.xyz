@@ -1,9 +1,14 @@
+import { prisma } from '@charmverse/core/prisma-client';
 import { mockBuilder, mockScout } from '@packages/testing/database';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { v4 as uuid } from 'uuid';
 
 import { getTop5ConnectorsToday, getTopConnectorOfTheDay } from '../getTopConnectors';
+
+beforeEach(async () => {
+  await prisma.builderEvent.deleteMany();
+});
 
 describe('getTopConnectors', () => {
   describe('getTop5ConnectorsToday', () => {
