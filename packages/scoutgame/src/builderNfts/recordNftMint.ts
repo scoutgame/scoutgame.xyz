@@ -276,13 +276,6 @@ export async function recordNftMint(
     log.error('Error sending builder card scouted email', { error, builderId: builderNft.builderId, userId: scoutId });
   }
 
-  try {
-    // check if we should count a referral
-    await updateReferralUsers(scoutId);
-  } catch (error) {
-    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
-  }
-
   const week = getCurrentWeek();
 
   await refreshEstimatedPayouts({
@@ -298,6 +291,13 @@ export async function recordNftMint(
     tokenId: builderNft.tokenId,
     wallet: recipientAddress.toLowerCase() as `0x${string}`
   });
+
+  try {
+    // check if we should count a referral
+    await updateReferralUsers(scoutId);
+  } catch (error) {
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
+  }
 
   return {
     builderNft,
