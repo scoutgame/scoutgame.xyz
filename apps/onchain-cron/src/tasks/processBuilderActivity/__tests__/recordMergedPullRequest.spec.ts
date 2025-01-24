@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getCurrentSeasonStart, getWeekStartEnd } from '@packages/dates/utils';
-import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockRepo, mockScout } from '@packages/testing/database';
+import { getWeekStartEnd } from '@packages/dates/utils';
+import { mockBuilder, mockBuilderNft, mockRepo, mockScout } from '@packages/testing/database';
 import { randomLargeInt } from '@packages/testing/generators';
 import { DateTime } from 'luxon';
 import { v4 } from 'uuid';
@@ -308,7 +308,7 @@ describe('recordMergedPullRequest', () => {
     expect(scoutActivities).toBe(1);
   });
 
-  it('should only create one builder event per repo per day', async () => {
+  it('should allow creating multiple builder events per repo per day', async () => {
     const builder = await mockBuilder();
     const repo = await mockRepo();
 
@@ -349,10 +349,10 @@ describe('recordMergedPullRequest', () => {
         }
       }
     });
-    expect(gemsReceipts).toHaveLength(1);
+    expect(gemsReceipts).toHaveLength(2);
   });
 
-  it('should  create two builder events on the same day for different repos', async () => {
+  it('should create two builder events on the same day for different repos', async () => {
     const builder = await mockBuilder();
     const repo = await mockRepo();
     const repo2 = await mockRepo();
