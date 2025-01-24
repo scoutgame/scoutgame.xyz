@@ -1,6 +1,9 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { uniqueValues } from '@packages/utils/array';
+
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -79,16 +82,34 @@ export async function getPaginatedBuilders({
                 nftSoldEvents: scoutId
                   ? {
                       where: {
+                        ...validMintNftPurchaseEvent,
                         builderEvent: {
                           season
                         },
-                        scoutId
+                        scoutWallet: {
+                          scoutId
+                        }
                       },
                       select: {
+                        scoutWallet: {
+                          select: {
+                            scoutId: true
+                          }
+                        },
                         tokensPurchased: true
                       }
                     }
-                  : undefined
+                  : {
+                      where: validMintNftPurchaseEvent,
+                      select: {
+                        scoutWallet: {
+                          select: {
+                            scoutId: true
+                          }
+                        },
+                        tokensPurchased: true
+                      }
+                    }
               }
             },
             builderCardActivities: {
@@ -134,6 +155,10 @@ export async function getPaginatedBuilders({
         displayName: stat.user.displayName,
         builderPoints: stat.user.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
         price: stat.user.builderNfts?.[0]?.currentPrice ?? 0,
+        scoutedBy: uniqueValues(
+          stat.user.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
+        ).length,
+        nftsSold: stat.user.userSeasonStats[0]?.nftsSold ?? 0,
         builderStatus: stat.user.builderStatus!,
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),

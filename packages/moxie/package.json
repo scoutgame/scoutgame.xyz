@@ -9,5 +9,8 @@
   },
   "exports": {
     "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@packages/scoutgame": "^0.0.0"
   }
 }
