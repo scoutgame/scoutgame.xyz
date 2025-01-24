@@ -39,16 +39,23 @@ function Step({
   title,
   description,
   iconSrc,
-  additionalContent
+  additionalContent,
+  activeBorder
 }: {
   stepNumber: string;
   title: string;
   description: string | React.ReactNode;
   iconSrc: string;
   additionalContent?: React.ReactNode;
+  activeBorder?: boolean;
 }) {
   return (
-    <ContainerStack sx={{ flexDirection: additionalContent ? 'column' : 'row' }}>
+    <ContainerStack
+      sx={{
+        flexDirection: additionalContent ? 'column' : 'row',
+        ...(activeBorder ? { borderColor: 'secondary.main', borderStyle: 'solid', borderWidth: 2 } : {})
+      }}
+    >
       <Stack
         flexDirection='row'
         width='100%'
@@ -186,11 +193,17 @@ function HeroSection({
   );
 }
 
-function HowToPlaySection() {
+export function HowToPlaySection({
+  title = 'How to Play',
+  activeBorder = false
+}: {
+  title?: string;
+  activeBorder?: boolean;
+}) {
   return (
     <Stack alignItems='center' mt={3}>
       <Typography variant='h4' color='secondary' fontWeight={500}>
-        How to Play
+        {title}
       </Typography>
       <Container
         maxWidth='lg'
@@ -203,24 +216,28 @@ function HowToPlaySection() {
           title='Sign Up & Apply'
           description="Connect your GitHub and let us verify your open source contributions. Once you make your first qualified contribution, you're approved. Your Developer Card goes live, and you're in the game!"
           iconSrc='/images/home/github-icon.svg'
+          activeBorder={activeBorder}
         />
         <Step
           stepNumber='Step 2'
           title='Collect Gems Weekly'
           description='Earn Gems every week by tackling issues in qualified open-source projects. Contributions earn you 1, 10, 30, or even 100 Gems based on their impact. More Gems mean higher rank!'
           iconSrc='/images/home/code-icon.svg'
+          activeBorder={activeBorder}
         />
         <Step
           stepNumber='Step 3'
           title='Earn Rewards'
           description='Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You’ll also get 20% of your Developer Card sales, boosting your rewards!'
           iconSrc='/images/home/trophy-icon.svg'
+          activeBorder={activeBorder}
         />
         <Step
           stepNumber='Step 4'
           title='Earn Tokens'
           description='Turn your skills into rewards. Collect tokens and prizes from top partners like Celo and Optimism for your contributions to the ecosystem.'
           iconSrc='/images/home/quests-icon.svg'
+          activeBorder={activeBorder}
         />
       </Container>
     </Stack>
