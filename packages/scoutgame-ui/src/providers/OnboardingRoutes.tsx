@@ -6,7 +6,7 @@ import { createContext, useCallback, useContext, useMemo } from 'react';
 
 import { useUser } from './UserProvider';
 
-export type OnboardingStep = '1' | '2' | '3' | '4' | '5';
+export type OnboardingStep = '1' | '2' | '3' | '4';
 
 interface OnboardingRoutesContextType {
   getNextRoute: (overwriteStep?: OnboardingStep) => string;
@@ -79,9 +79,8 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
         }
         // How it works
         case '4':
-          if (user?.farcasterId) {
-            urlParams.set('step', '5');
-            return `${baseRoute}?${urlParams.toString()}`;
+          if (user?.farcasterId && type !== 'builder') {
+            return `/builders-you-know`;
           } else {
             return redirectUrl;
           }
