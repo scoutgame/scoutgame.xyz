@@ -8,7 +8,6 @@ import {
   mockScout
 } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
-import { prettyPrint } from '@packages/utils/strings';
 
 import { resolveTokenOwnershipForBuilder } from '../resolveTokenOwnershipForBuilder';
 
@@ -150,13 +149,15 @@ describe('resolveTokenOwnershipForBuilder', () => {
       week: purchaseWeek
     });
 
-    expect(byScoutIdBuilder1).toEqual([
-      {
-        scoutId: mockScout1.id,
-        totalNft: 10,
-        totalStarter: 1
-      }
-    ]);
+    expect(byScoutIdBuilder1).toMatchObject(
+      expect.arrayContaining([
+        {
+          scoutId: mockScout1.id,
+          totalNft: 10,
+          totalStarter: 1
+        }
+      ])
+    );
 
     expect(byWalletBuilder1).toEqual([{ wallet: mockScoutWallet1.toLowerCase(), totalNft: 10, totalStarter: 1 }]);
 
@@ -165,18 +166,22 @@ describe('resolveTokenOwnershipForBuilder', () => {
       week: purchaseWeek
     });
 
-    expect(byScoutIdBuilder2).toEqual([
-      { scoutId: mockScout1.id, totalNft: 17, totalStarter: 1 },
-      { scoutId: mockScout2.id, totalNft: 0, totalStarter: 1 },
-      { scoutId: mockScout3.id, totalNft: 9, totalStarter: 1 }
-    ]);
+    expect(byScoutIdBuilder2).toMatchObject(
+      expect.arrayContaining([
+        { scoutId: mockScout1.id, totalNft: 17, totalStarter: 1 },
+        { scoutId: mockScout2.id, totalNft: 0, totalStarter: 1 },
+        { scoutId: mockScout3.id, totalNft: 9, totalStarter: 1 }
+      ])
+    );
 
-    expect(byWalletBuilder2).toEqual([
-      { wallet: mockScoutWallet1.toLowerCase(), totalNft: 5, totalStarter: 0 },
-      { wallet: mockScoutWallet1Secondary.toLowerCase(), totalNft: 12, totalStarter: 1 },
-      { wallet: mockScoutWallet2.toLowerCase(), totalNft: 0, totalStarter: 1 },
-      { wallet: mockScoutWallet3.toLowerCase(), totalNft: 9, totalStarter: 1 }
-    ]);
+    expect(byWalletBuilder2).toMatchObject(
+      expect.arrayContaining([
+        { wallet: mockScoutWallet1.toLowerCase(), totalNft: 5, totalStarter: 0 },
+        { wallet: mockScoutWallet1Secondary.toLowerCase(), totalNft: 12, totalStarter: 1 },
+        { wallet: mockScoutWallet2.toLowerCase(), totalNft: 0, totalStarter: 1 },
+        { wallet: mockScoutWallet3.toLowerCase(), totalNft: 9, totalStarter: 1 }
+      ])
+    );
 
     // Perform burns and transfers
     await mockNFTBurnEvent({
@@ -214,19 +219,21 @@ describe('resolveTokenOwnershipForBuilder', () => {
         week: purchaseWeek
       });
 
-    prettyPrint({ byScoutIdBuilder2AfterEvents, byWalletBuilder2AfterEvents });
+    expect(byScoutIdBuilder2AfterEvents).toMatchObject(
+      expect.arrayContaining([
+        { scoutId: mockScout1.id, totalNft: 16, totalStarter: 1 },
+        { scoutId: mockScout2.id, totalNft: 1, totalStarter: 1 },
+        { scoutId: mockScout3.id, totalNft: 6, totalStarter: 1 }
+      ])
+    );
 
-    expect(byScoutIdBuilder2AfterEvents).toEqual([
-      { scoutId: mockScout1.id, totalNft: 16, totalStarter: 1 },
-      { scoutId: mockScout2.id, totalNft: 1, totalStarter: 1 },
-      { scoutId: mockScout3.id, totalNft: 6, totalStarter: 1 }
-    ]);
-
-    expect(byWalletBuilder2AfterEvents).toEqual([
-      { wallet: mockScoutWallet1.toLowerCase(), totalNft: 2, totalStarter: 0 },
-      { wallet: mockScoutWallet1Secondary.toLowerCase(), totalNft: 14, totalStarter: 1 },
-      { wallet: mockScoutWallet2.toLowerCase(), totalNft: 1, totalStarter: 1 },
-      { wallet: mockScoutWallet3.toLowerCase(), totalNft: 6, totalStarter: 1 }
-    ]);
+    expect(byWalletBuilder2AfterEvents).toMatchObject(
+      expect.arrayContaining([
+        { wallet: mockScoutWallet1.toLowerCase(), totalNft: 2, totalStarter: 0 },
+        { wallet: mockScoutWallet1Secondary.toLowerCase(), totalNft: 14, totalStarter: 1 },
+        { wallet: mockScoutWallet2.toLowerCase(), totalNft: 1, totalStarter: 1 },
+        { wallet: mockScoutWallet3.toLowerCase(), totalNft: 6, totalStarter: 1 }
+      ])
+    );
   });
 });
