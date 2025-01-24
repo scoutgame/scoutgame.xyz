@@ -1,67 +1,44 @@
-import { createPublicClient, http } from 'viem';
+import { Address, createPublicClient, http } from 'viem';
 import { taiko } from 'viem/chains';
+import { prisma } from '@charmverse/core/prisma-client';
+
+type BlockchainClient = ReturnType<typeof createPublicClient>;
 
 /**
- * Taiko Contract exmples
+ * Taiko Contract exmples */
+const contracts = [
+  // Avalon Finance
 
-Avalon Finance
+  '0xb961661F5Ca019e232661Bd26686288a6E21d928',
+  '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8',
+  '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
+  '0xF4858292f8985371d440Ec17cD0fC8bA22867f8e',
+  '0x9dd29AA2BD662E6b569524ba00C55be39e7B00fB',
+  '0xC1bFbF4E0AdCA79790bfa0A557E4080F05e2B438',
 
-0xb961661F5Ca019e232661Bd26686288a6E21d928
-0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8
-0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147
-0xF4858292f8985371d440Ec17cD0fC8bA22867f8e
-0x9dd29AA2BD662E6b569524ba00C55be39e7B00fB
-0xC1bFbF4E0AdCA79790bfa0A557E4080F05e2B438
+  // Crack and Stack
 
-Crack and Stack
+  '0xF8F1B21615BDbEA8D142cfaf4828EA0236Cab115',
+  '0x12689b6ddE632E69fBAA70d066f86aC9fDd33dd1',
+  '0x2c301eBfB0bb42Af519377578099b63E921515B7',
+  '0x009C32F03d6eEa4F6DA9DD3f8EC7Dc85824Ae0e6',
+  '0x1ACa21A2a2a070d3536a69733c7044feDEB88f5A',
+  '0x7ddB8A975778a434dE03dd666F11Ce962DCdD290',
+  '0x6C8865042792B5E919fC95bF771ccaDF6F0cfA22',
+  '0xD31A4be996b7E1cc20974181127E6fCA15649913',
+  '0xA9EC1fEEE212851c829B028F094156CD04A3a547',
+  '0xb64C1461453DAdD104A583dCCeef30ce296fde20',
+  '0xD8F7cd7d919c5266777FB83542F956dD30E80187',
 
-0xF8F1B21615BDbEA8D142cfaf4828EA0236Cab115
-0x12689b6ddE632E69fBAA70d066f86aC9fDd33dd1
-0x2c301eBfB0bb42Af519377578099b63E921515B7
-0x009C32F03d6eEa4F6DA9DD3f8EC7Dc85824Ae0e6
-0x1ACa21A2a2a070d3536a69733c7044feDEB88f5A
-0x7ddB8A975778a434dE03dd666F11Ce962DCdD290
-0x6C8865042792B5E919fC95bF771ccaDF6F0cfA22
-0xD31A4be996b7E1cc20974181127E6fCA15649913
-0xA9EC1fEEE212851c829B028F094156CD04A3a547
-0xb64C1461453DAdD104A583dCCeef30ce296fde20
-0xD8F7cd7d919c5266777FB83542F956dD30E80187
+  // 21Blackjack (selected for Low Volume)
 
-21Blackjack (selected for Low Volume)
-
-0x8C5720982b54874F53F2514BbD2382ADce98a0ca
-0x78adDA11Bfc437DeC4a39318FF7e52Cf00DC062c
-
-
-
-A "trusted user" represents an address linked to an account the meets a certain threshold of reputation. Currently, there are several teams in the Optimism ecosystem building reputation models in a privacy-preserving way. This metric aggregates reputation data from multiple platforms (Farcaster, Passport, EigenTrust by Karma3Labs), and the Optimist NFT collection. In order to be consider a trusted user, an address must meet at least two of the following requirements as of 2024-05-21: have a Farcaster ID of 20939, have a Passport score of 20 points or higher, have a Karma3Labs EigenTrust GlobalRank in the top 42,000 of Farcaster users, hold an Optimist NFT in their wallet, or qualified for at least two (out of four) Optimism airdrops.
-
-OpenRank Trusted Users
-Definition: The count of addresses in the badgeholder web of trust (derived from EigenTrust/OpenRank on Farcaster) who have interacted with the project over the RF4 scope.
-
-Power User Addresses
-Definition: The count of ‘power users’ who have interacted with the project over the RF4 scope (Oct 2023 – Jun 2024).
-
-Recurring Addresses
-Definition: The count of addresses that have interacted with the project during at least 3 distinct months in the RF4 scope.
-
-Total Transactions
-Definition: The total count of successful transactions involving the project over the RF4 scope (Oct 2023 – Jun 2024).
-
-Trusted Optimism Users’ Share of Total Interactions
-Definition: The ratio (percentage) of trusted transactions relative to all project transactions over the RF4 scope.
-
-Trusted Recurring Users
-Definition: The count of trusted users who have interacted with the project over at least 3 distinct months in the RF4 scope.
-
-Users Onboarded
-Definition: The count of trusted users new to the Superchain (i.e., “onboarded”) over the RF4 scope, who have also interacted with the project.
-
-*/
+  '0x8C5720982b54874F53F2514BbD2382ADce98a0ca',
+  '0x78adDA11Bfc437DeC4a39318FF7e52Cf00DC062c'
+];
 
 async function getContractInteractions(
-  client: any,
-  address: string,
+  client: BlockchainClient,
+  address: Address,
   fromBlock: bigint,
   toBlock: bigint,
   pageSize: bigint = BigInt(1000)
@@ -93,8 +70,8 @@ async function getContractInteractions(
 
 // binary search to find the deployment block
 async function findDeploymentBlock(
-  client: any,
-  contractAddress: string,
+  client: BlockchainClient,
+  contractAddress: Address,
   startBlock: bigint,
   endBlock: bigint
 ): Promise<bigint> {
@@ -135,18 +112,111 @@ async function findDeploymentBlock(
 
 // call findDeploymentBlock
 (async () => {
-  const address = '0xF8F1B21615BDbEA8D142cfaf4828EA0236Cab115';
-
-  console.log('Contract address:', address);
-
   const client = createPublicClient({
     chain: taiko,
     transport: http()
   });
   const latestBlock = await client.getBlockNumber();
-  const deploymentBlock = await findDeploymentBlock(client, address, BigInt(0), latestBlock);
-  console.log('Deployment block:', deploymentBlock);
-  await getContractInteractions(client, address, deploymentBlock, latestBlock);
+  let creator = await prisma.scout.findFirst();
+  if (!creator) {
+    creator = await prisma.scout.create({
+      data: {
+        path: '0x' + Math.random(),
+        displayName: 'Scout',
+        referralCode: 'scout'
+      }
+    });
+  }
+
+  // create project
+  const project = await findOrCreateProject();
+
+  // create contracts
+  for (const contractAddress of contracts) {
+    console.log('Contract address:', contractAddress);
+    const contract = await findOrCreateContract(
+      client,
+      project.id,
+      contractAddress as Address,
+      latestBlock,
+      creator.id
+    );
+    console.log('Contract created:', contract.address);
+    // get contract interactions
+    // await getContractInteractions(client, address, contract.blockNumber, latestBlock);
+  }
 })();
+
+async function findOrCreateContract(
+  client: BlockchainClient,
+  projectId: string,
+  address: Address,
+  latestBlock: bigint,
+  createdBy: string
+) {
+  const addressLower = address.toLowerCase();
+  const contract = await prisma.scoutProjectContract.findFirst({
+    where: {
+      address: addressLower
+    }
+  });
+  const deployer = await prisma.scoutProjectDeployer.findFirst({
+    where: {
+      projectId
+    }
+  });
+  if (contract) {
+    return contract;
+  }
+  const deploymentBlock = await findDeploymentBlock(client, address, BigInt(0), latestBlock);
+
+  return prisma.scoutProjectContract.create({
+    data: {
+      address: addressLower,
+      project: {
+        connect: {
+          id: projectId
+        }
+      },
+      blockNumber: deploymentBlock,
+      chainId: taiko.id,
+      deployTxHash: '0x',
+      deployedAt: new Date(),
+      createdBy,
+      deployer: deployer
+        ? {
+            connect: {
+              id: deployer.id
+            }
+          }
+        : {
+            create: {
+              address: '0x' + Math.random(),
+              projectId
+            }
+          }
+    }
+  });
+}
+
+async function findOrCreateProject() {
+  const project = await prisma.scoutProject.findFirst({
+    where: {
+      name: 'Taiko'
+    }
+  });
+  if (project) {
+    return project;
+  }
+  return prisma.scoutProject.create({
+    data: {
+      name: 'Taiko',
+      avatar: 'https://taiko.xyz/favicon.ico',
+      description: 'Taiko is a decentralized blockchain platform that enables scalable and secure smart contracts.',
+      website: 'https://taiko.xyz',
+      github: 'https://github.com/taiko-network'
+    }
+  });
+}
 
 // getContractInteractions();
