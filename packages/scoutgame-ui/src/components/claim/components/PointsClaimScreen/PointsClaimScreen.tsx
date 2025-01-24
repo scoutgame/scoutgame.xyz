@@ -161,9 +161,7 @@ export function PointsClaimScreen({
             <Box width={{ xs: 'fit-content', md: '100%' }}>
               {onchainClaimData ? (
                 connectedAddress !== onchainClaimData.address.toLowerCase() ? (
-                  <Suspense>
-                    <WalletLogin />
-                  </Suspense>
+                  <WalletLogin />
                 ) : (
                   <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
                 )

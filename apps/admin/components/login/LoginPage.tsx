@@ -22,9 +22,7 @@ export function LoginPage() {
       />
       <Typography variant='h5'>Admin Access</Typography>
       <Box display='flex' flexDirection='column' width='100%'>
-        <Suspense>
-          <WarpcastLogin />
-        </Suspense>
+        <WarpcastLogin />
       </Box>
     </SinglePageLayout>
   );

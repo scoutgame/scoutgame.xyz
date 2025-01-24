@@ -52,10 +52,8 @@ export function LoginPage() {
         Fantasy sports with onchain developers
       </Typography>
       <Box display='flex' flexDirection='column' gap={2} width='100%'>
-        <Suspense>
-          <WalletLogin />
-          <WarpcastLogin />
-        </Suspense>
+        <WalletLogin />
+        <WarpcastLogin />
       </Box>
     </SinglePageLayout>
   );
