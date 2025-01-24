@@ -4,14 +4,17 @@ import { Stack, Tooltip, Typography } from '@mui/material';
 import Image from 'next/image';
 
 import { useDynamicFontSize } from '../../../../hooks/useDynamicFontSize';
+import { useIsMounted } from '../../../../hooks/useIsMounted';
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 
 export function BuilderCardName({
   name,
   size,
   starterPack,
-  nftsSoldToScout
+  nftsSoldToScout,
+  hideScoutCount = false
 }: {
+  hideScoutCount?: boolean;
   nftsSoldToScout?: number | null;
   name: string;
   size: 'x-small' | 'small' | 'medium' | 'large';
@@ -21,6 +24,12 @@ export function BuilderCardName({
   const minFontSize = size === 'medium' || size === 'large' ? 12 : size === 'small' ? 9.5 : 8.5;
   const { fontSize, spanRef } = useDynamicFontSize(name, minFontSize, maxFontSize);
   const isMdScreen = useMdScreen();
+  const isMounted = useIsMounted();
+  const showScoutCount = !hideScoutCount && nftsSoldToScout;
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Stack
@@ -42,7 +51,7 @@ export function BuilderCardName({
         flexDirection='row'
         alignItems='center'
         justifyContent='center'
-        width={nftsSoldToScout ? 'calc(100% - 20px)' : '100%'}
+        width={showScoutCount ? 'calc(100% - 20px)' : '100%'}
       >
         <Typography
           ref={spanRef}
@@ -61,7 +70,7 @@ export function BuilderCardName({
           {name}
         </Typography>
       </Stack>
-      {nftsSoldToScout ? (
+      {showScoutCount ? (
         <Tooltip title='# of cards you hold'>
           <Stack flexDirection='row' alignItems='center' height='100%' gap={0.35}>
             <Typography

@@ -17,8 +17,10 @@ export function BuilderCard({
   size = 'medium',
   disableProfileUrl = false,
   markStarterCardPurchased = false,
-  type
+  type,
+  hideScoutCount = false
 }: {
+  hideScoutCount?: boolean;
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
   hideDetails?: boolean;
@@ -50,7 +52,12 @@ export function BuilderCard({
         {builder.builderStatus === 'banned' ? (
           <Typography textAlign='center'>SUSPENDED</Typography>
         ) : hideDetails ? null : (
-          <BuilderCardStats {...builder} starterPack={type === 'starter_pack'} size={size} />
+          <BuilderCardStats
+            {...builder}
+            starterPack={type === 'starter_pack'}
+            size={size}
+            hideScoutCount={hideScoutCount}
+          />
         )}
       </BuilderCardNftDisplay>
       {typeof builder.price !== 'undefined' && showPurchaseButton && (
