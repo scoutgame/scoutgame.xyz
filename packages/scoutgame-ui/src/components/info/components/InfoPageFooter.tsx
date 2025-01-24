@@ -74,6 +74,9 @@ export function InfoPageFooter() {
           <MuiLink href='/info'>
             <Typography>About Scout Game</Typography>
           </MuiLink>
+          <MuiLink href='/info/partner-rewards'>
+            <Typography>Partner Rewards</Typography>
+          </MuiLink>
           <MuiLink href='/info/contribution-guide'>
             <Typography>Open-Source Contribution Guide</Typography>
           </MuiLink>
@@ -116,9 +119,6 @@ export function InfoPageFooter() {
           </MuiLink>
           <MuiLink href='/info/partner-rewards/optimism'>
             <Typography>Optimism</Typography>
-          </MuiLink>
-          <MuiLink href='/info/partner-rewards/op-supersim'>
-            <Typography>OP Supersim</Typography>
           </MuiLink>
         </Stack>
       </Container>

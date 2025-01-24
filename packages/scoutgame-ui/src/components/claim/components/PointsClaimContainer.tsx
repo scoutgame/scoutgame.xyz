@@ -1,4 +1,4 @@
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';

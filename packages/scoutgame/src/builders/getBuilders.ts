@@ -15,7 +15,7 @@ export type BuilderMetadata = {
   gemsCollected: number;
   estimatedPayout: number | null;
   last14Days: (number | null)[];
-  nftsPurchasedByUser: number | null;
+  nftsSoldToScout: number | null;
 };
 
 export async function getBuilders({
@@ -117,7 +117,7 @@ export async function getBuilders({
       gemsCollected: user.userWeeklyStats[0]?.gemsCollected || 0,
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
-      nftsPurchasedByUser:
+      nftsSoldToScout:
         user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
     }));
   } else if (sortBy === 'estimated_payout') {
@@ -195,7 +195,7 @@ export async function getBuilders({
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
       level: builder.userSeasonStats[0]?.level || 0,
-      nftsPurchasedByUser: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
+      nftsSoldToScout: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
     }));
   } else if (sortBy === 'price') {
     const builderNfts = await prisma.builderNft.findMany({
@@ -267,7 +267,7 @@ export async function getBuilders({
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
       level: builder.userSeasonStats[0]?.level || 0,
       estimatedPayout: estimatedPayout || 0,
-      nftsPurchasedByUser: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
+      nftsSoldToScout: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
     }));
   } else if (sortBy === 'week_gems') {
     const userWeeklyStats = await prisma.userWeeklyStats.findMany({
@@ -340,7 +340,7 @@ export async function getBuilders({
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       level: user.userSeasonStats[0]?.level || 0,
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
-      nftsPurchasedByUser:
+      nftsSoldToScout:
         user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null,
       price: (user.builderNfts[0]?.currentPrice || 0) as bigint
     }));

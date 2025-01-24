@@ -9,7 +9,7 @@ import {
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import {
@@ -163,7 +163,8 @@ export async function handlePendingTransaction({
               ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
               : convertCostToPoints(pendingTx.targetAmountReceived),
           recipientAddress: pendingTx.senderAddress,
-          scoutId: pendingTx.userId
+          scoutId: pendingTx.userId,
+          mintTxLogIndex: validatedMint.txLogIndex
         });
       }
     }

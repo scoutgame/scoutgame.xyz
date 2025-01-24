@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, List, ListItem, ListItemAvatar, Stack, Typography } from '@mui/material';
+import { getPlatform } from '@packages/mixpanel/platform';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Link from 'next/link';
@@ -9,6 +10,7 @@ import React from 'react';
 export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React.MouseEventHandler }) {
   const isMdScreen = useMdScreen();
   const iconSize = isMdScreen ? 24 : 18;
+
   return (
     <>
       <Typography color='secondary' textAlign='center' width='100%' fontWeight={700} variant='h5'>

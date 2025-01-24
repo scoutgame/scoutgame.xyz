@@ -54,15 +54,15 @@ export async function recordMergedPullRequest({
   const previousGitEvents = await prisma.githubEvent.findMany({
     where: {
       createdBy: pullRequest.author.id,
-      // streaks are based on created date
-      createdAt: {
-        gte: new Date(new Date(pullRequest.createdAt).getTime() - streakWindow)
+      // streaks are based on merged date
+      completedAt: {
+        gte: new Date(pullRequestDate.getTime() - streakWindow)
       },
       type: 'merged_pull_request'
     },
     select: {
       id: true,
-      createdAt: true,
+      completedAt: true,
       pullRequestNumber: true,
       repoId: true,
       createdBy: true,
@@ -129,13 +129,6 @@ export async function recordMergedPullRequest({
     }
   }
 
-  const existingGithubEventToday = previousGitEvents.some((event) => {
-    if (event.repoId !== pullRequest.repository.id) {
-      return false;
-    }
-    return isToday(event.createdAt, DateTime.fromISO(pullRequest.createdAt, { zone: 'utc' }));
-  });
-
   return prisma.$transaction(async (tx) => {
     const githubUser = await tx.githubUser.upsert({
       where: {
@@ -162,7 +155,7 @@ export async function recordMergedPullRequest({
         completedAt: pullRequest.mergedAt
       }
     });
-    if (githubUser.builderId && !existingGithubEventToday) {
+    if (githubUser.builderId) {
       const builder = await tx.scout.findUniqueOrThrow({
         where: {
           id: githubUser.builderId
@@ -176,8 +169,17 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
-      const weeklyBuilderEvents = previousGitEvents.filter((e) => e.builderEvent).length;
-      const threeDayPrStreak = weeklyBuilderEvents % 3 === 2;
+      const previousDaysWithPr = new Set(
+        previousGitEvents
+          .filter((e) => e.builderEvent)
+          .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
+          .filter(isTruthy)
+      );
+
+      const thisPrDate = builderEventDate.toISOString().split('T')[0];
+      const isFirstPrInDay = !previousDaysWithPr.has(thisPrDate);
+      const threeDayPrStreak = isFirstPrInDay && previousDaysWithPr.size % 3 === 2;
+
       const gemReceiptType: GemsReceiptType =
         isFirstMergedPullRequest && !hasFirstMergedPullRequestAlreadyThisWeek
           ? 'first_pr'
@@ -209,6 +211,7 @@ export async function recordMergedPullRequest({
           // It's a new event, we can record notification
           const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
             where: {
+              senderWalletAddress: null,
               builderNft: {
                 season,
                 builderId: githubUser.builderId

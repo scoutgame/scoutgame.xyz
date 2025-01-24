@@ -1,6 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Address } from 'viem';
+import { parseEventLogs } from 'viem';
 
+import { transferSingleAbi } from './accounting/getTransferSingleEvents';
 import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
 import { recordNftMint } from './recordNftMint';
 
@@ -32,5 +34,11 @@ export async function mintNFT(params: MintNFTParams) {
     }
   });
 
-  await recordNftMint({ ...params, mintTxHash: txResult.transactionHash });
+  const parsedLogs = parseEventLogs({
+    abi: [transferSingleAbi],
+    logs: txResult.logs,
+    eventName: ['TransferSingle']
+  });
+
+  await recordNftMint({ ...params, mintTxHash: txResult.transactionHash, mintTxLogIndex: parsedLogs[0].logIndex });
 }

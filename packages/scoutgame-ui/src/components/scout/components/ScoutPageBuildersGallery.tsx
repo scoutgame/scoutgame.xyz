@@ -1,15 +1,16 @@
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentWeek } from '@packages/dates/utils';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getPaginatedBuilders } from '@packages/scoutgame/builders/getPaginatedBuilders';
 
 import { BuildersGalleryContainer } from './BuildersGalleryContainer';
 
-export async function ScoutPageBuildersGallery() {
+export async function ScoutPageBuildersGallery({ userId }: { userId?: string }) {
   const [error, data] = await safeAwaitSSRData(
     getPaginatedBuilders({
       limit: 10,
       week: getCurrentWeek(),
-      cursor: null
+      cursor: null,
+      scoutId: userId
     })
   );
 

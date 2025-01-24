@@ -9,7 +9,7 @@ import { Dialog } from '../Dialog';
 export function SignInModalMessage({
   open,
   onClose,
-  path = '/home'
+  path = '/'
 }: {
   open: boolean;
   onClose: VoidFunction;

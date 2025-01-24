@@ -4,7 +4,6 @@ type QuestRecord = {
   link?: string;
   partner?: string;
   rewards?: string;
-  internal?: boolean;
   totalSteps?: number;
   tag: string;
   resettable: boolean;
@@ -82,7 +81,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     points: 5,
     label: 'Scout a Starter Card',
     link: '/builders',
-    internal: true,
     tag: 'scout',
     resettable: true,
     verifiable: true
@@ -91,7 +89,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Scout All 3 Starter Cards',
     points: 15,
     link: '/builders',
-    internal: true,
     totalSteps: 3,
     tag: 'scout',
     resettable: true,
@@ -101,7 +98,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Scout a Full Season Card',
     points: 15,
     link: '/builders',
-    internal: true,
     tag: 'scout',
     resettable: true,
     verifiable: true
@@ -112,7 +108,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     rewards: 'OP rewards',
     partner: 'Optimism',
     link: '/info/partner-rewards/optimism',
-    internal: true,
     tag: 'scout',
     resettable: true,
     verifiable: true
@@ -121,7 +116,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Scout 5 Builders',
     points: 10,
     link: '/builders',
-    internal: true,
     totalSteps: 5,
     tag: 'scout',
     resettable: true,
@@ -131,7 +125,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Scout & Share a Builder',
     points: 5,
     link: '/builders',
-    internal: true,
     tag: 'scout',
     resettable: true,
     verifiable: true
@@ -142,7 +135,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     rewards: '$Moxie tokens',
     partner: 'Moxie',
     link: '/info/partner-rewards/moxie',
-    internal: true,
     tag: 'scout',
     resettable: true,
     verifiable: true
@@ -151,7 +143,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Share a Weekly Claim',
     points: 10,
     link: '/claim',
-    internal: true,
     tag: 'scout',
     resettable: true,
     verifiable: false
@@ -160,7 +151,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Share your Scout profile',
     points: 20,
     link: '/profile?tab=scout-build',
-    internal: true,
     tag: 'scout',
     resettable: true,
     verifiable: false
@@ -169,7 +159,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Verify your email',
     points: 10,
     link: '/accounts',
-    internal: true,
     tag: 'scout',
     resettable: false,
     verifiable: true
@@ -178,7 +167,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Score Your First Commit',
     points: 10,
     link: '/info/builders',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -187,7 +175,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Score Your First PR',
     points: 15,
     link: '/info/builders',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -196,7 +183,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Score a Streak',
     points: 20,
     link: '/info/builders',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -205,7 +191,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'First Contribution to a Repo',
     points: 25,
     link: '/info/builders',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -214,7 +199,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     label: 'Share a Builder Profile',
     points: 25,
     link: '/profile?tab=scout-build',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: false
@@ -225,7 +209,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     rewards: '50-450 cUSD',
     partner: 'Celo',
     link: '/info/partner-rewards/celo',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -236,7 +219,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     rewards: '$250',
     partner: 'Game7',
     link: '/info/partner-rewards/game7',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -247,7 +229,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     rewards: '$50–$250 USDC',
     partner: 'Lit',
     link: '/info/partner-rewards/lit',
-    internal: true,
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -255,7 +236,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'link-farcaster-account': {
     label: 'Link your account with Farcaster',
     points: 10,
-    internal: true,
     link: '/accounts',
     tag: 'scout',
     resettable: false,
@@ -264,7 +244,6 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'link-telegram-account': {
     label: 'Link your account with Telegram',
     points: 10,
-    internal: true,
     link: '/accounts',
     tag: 'scout',
     resettable: false,

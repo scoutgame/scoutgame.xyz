@@ -7,6 +7,8 @@ type MintValidation = {
   walletAddress: string;
   tokenId: number;
   tokensMinted: number;
+  txHash: string;
+  txLogIndex: number;
 };
 
 export async function validateTransferrableNftMint({
@@ -33,6 +35,8 @@ export async function validateTransferrableNftMint({
   return {
     walletAddress: transferSingleEvent.args.to,
     tokenId: Number(transferSingleEvent.args.id),
-    tokensMinted: Number(transferSingleEvent.args.value)
+    tokensMinted: Number(transferSingleEvent.args.value),
+    txHash,
+    txLogIndex: transferSingleEvent.logIndex
   };
 }

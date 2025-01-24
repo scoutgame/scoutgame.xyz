@@ -3,7 +3,7 @@
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/utils';
+import { getPlatform } from '@packages/mixpanel/platform';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import Image from 'next/image';
@@ -157,10 +157,10 @@ export function BuildersTable({
               >
                 <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
                 <Stack width='100%'>
-                  {builder.nftsPurchasedByUser ? (
+                  {builder.nftsSoldToScout ? (
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <TableCellText color='green.main' noWrap>
-                        {builder.nftsPurchasedByUser}
+                        {builder.nftsSoldToScout}
                       </TableCellText>
                       <Image width={15} height={15} src='/images/profile/icons/cards-green.svg' alt='green-icon' />
                     </Stack>

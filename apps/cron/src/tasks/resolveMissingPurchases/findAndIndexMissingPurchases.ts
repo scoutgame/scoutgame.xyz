@@ -1,20 +1,21 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
+import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
+import { getRevertedMintTransactionAttestations } from '@packages/safetransactions/getRevertedMintTransactionAttestations';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
-import {
-  getStarterPackTransferSingleEvents,
-  getTransferSingleEvents
-} from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
+import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
+import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
+import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
-
-// Deploy date for new version of contract Jan 03 2025
-const startBlockNumberForReindexing = 130_157_497;
+import { prefix0x } from '@packages/utils/prefix0x';
 
 export async function findAndIndexMissingPurchases({
   nftType,
@@ -23,13 +24,20 @@ export async function findAndIndexMissingPurchases({
   nftType: BuilderNftType;
   season?: ISOWeek;
 }) {
-  const transferSingleEvents = await (nftType === BuilderNftType.starter_pack
-    ? getStarterPackTransferSingleEvents({ fromBlock: startBlockNumberForReindexing })
-    : getTransferSingleEvents({ fromBlock: startBlockNumberForReindexing }));
+  const weekBeforeSeason = getPreviousWeek(season);
 
+  const startBlockNumber = await getLastBlockOfWeek({ week: weekBeforeSeason, chainId: builderNftChain.id });
+
+  const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
+
+  const transferSingleEvents = await getTransferSingleWithBatchMerged({
+    fromBlock: startBlockNumber,
+    contractAddress,
+    chainId: builderNftChain.id
+  });
   const transferSingleEventsMapped = transferSingleEvents.reduce(
     (acc, val) => {
-      acc[val.transactionHash] = val;
+      acc[uniqueNftPurchaseEventKey(val)] = val;
 
       return acc;
     },
@@ -38,19 +46,50 @@ export async function findAndIndexMissingPurchases({
 
   const missingEvents: typeof transferSingleEvents = [];
 
-  const uniqueTxHashes = await prisma.nFTPurchaseEvent
-    .groupBy({
-      by: ['txHash'],
+  const uniqueStoredTransactions = await prisma.nFTPurchaseEvent
+    .findMany({
       where: {
         builderNft: {
+          contractAddress,
           season
+        }
+      },
+      select: {
+        txHash: true,
+        txLogIndex: true,
+        senderWalletAddress: true,
+        walletAddress: true,
+        tokensPurchased: true,
+        id: true,
+        builderNft: {
+          select: {
+            tokenId: true
+          }
         }
       }
     })
-    .then((transactions) => new Set(transactions.map((tx) => tx.txHash)));
+    .then(
+      (transactions) =>
+        new Map(
+          transactions.map((tx) => [
+            uniqueNftPurchaseEventKey({
+              args: {
+                from: (tx.senderWalletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
+                to: (tx.walletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
+                id: BigInt(tx.builderNft.tokenId),
+                value: BigInt(tx.tokensPurchased),
+                operator: (tx.senderWalletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`
+              },
+              transactionHash: prefix0x(tx.txHash),
+              logIndex: tx.txLogIndex as number
+            }),
+            tx
+          ])
+        )
+    );
 
   for (const event of transferSingleEvents) {
-    if (!uniqueTxHashes.has(event.transactionHash)) {
+    if (!uniqueStoredTransactions.has(uniqueNftPurchaseEventKey(event))) {
       missingEvents.push(event);
     }
   }
@@ -94,20 +133,21 @@ export async function findAndIndexMissingPurchases({
     for (const missingTx of groupedByTokenId[key as any].records) {
       scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
 
-      if (missingTx.args.to === '0x0000000000000000000000000000000000000000') {
-        scoutgameMintsLogger.error('Skipping burn tx', missingTx.transactionHash, 'tokenId', key);
-        // eslint-disable-next-line no-continue
-        continue;
-      } else if (missingTx.args.from !== '0x0000000000000000000000000000000000000000') {
-        scoutgameMintsLogger.error('Skipping transfer tx', missingTx.transactionHash, 'tokenId', key);
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-
       const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
 
       if (!matchingNft) {
         scoutgameMintsLogger.error(`NFT with tokenId ${key} not found`);
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      // Null to means this is a burn, which impacts the total supply. Not null from means this is a transfer from an existing wallet
+      if (missingTx.args.to === NULL_EVM_ADDRESS || missingTx.args.from !== NULL_EVM_ADDRESS) {
+        scoutgameMintsLogger.info('Detected secondary market transfer', missingTx.transactionHash, 'tokenId', key);
+        await recordNftTransfer({
+          contractAddress,
+          transferSingleEvent: missingTx
+        });
         // eslint-disable-next-line no-continue
         continue;
       }
@@ -150,10 +190,9 @@ export async function findAndIndexMissingPurchases({
         paidWithPoints: false,
         pointsValue: asPoints,
         builderNftId: matchingNft.id,
-        recipientAddress: address
+        recipientAddress: address,
+        mintTxLogIndex: missingTx.logIndex
       });
     }
   }
 }
-
-// findAndIndexMissingPurchases({ nftType: BuilderNftType.default }).then(console.log);

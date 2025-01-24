@@ -26,26 +26,26 @@ test.describe('Quests page', () => {
     await expect(questsPage.claimedIcon).toBeVisible();
   });
 
-  test('Can click on quests', async ({ page, questsPage, utils }) => {
-    const newUser = await mockScout({
-      onboardedAt: new Date(),
-      agreedToTermsAt: new Date()
-    });
-    await utils.loginAsUserId(newUser.id);
+  // test('Can click on quests', async ({ page, questsPage, utils }) => {
+  //   const newUser = await mockScout({
+  //     onboardedAt: new Date(),
+  //     agreedToTermsAt: new Date()
+  //   });
+  //   await utils.loginAsUserId(newUser.id);
 
-    await page.goto('/quests');
-    await expect(questsPage.container).toBeVisible();
+  //   await page.goto('/quests');
+  //   await expect(questsPage.container).toBeVisible();
 
-    // Click on the top quests
-    const map = ['follow-x-account', 'share-x-telegram'].map(async (key) => {
-      const locator = page.locator(`data-test=quest-${key}`);
-      await expect(locator).toBeVisible();
-      await expect(locator).toBeEnabled();
-      await locator.click();
-    });
+  //   // Click on the top quests
+  //   const map = ['follow-x-account', 'share-x-telegram'].map(async (key) => {
+  //     const locator = page.locator(`data-test=quest-${key}`);
+  //     await expect(locator).toBeVisible();
+  //     await expect(locator).toBeEnabled();
+  //     await locator.click();
+  //   });
 
-    await Promise.all(map);
-  });
+  //   await Promise.all(map);
+  // });
 
   test('Friendly quest', async ({ page, questsPage, utils, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);

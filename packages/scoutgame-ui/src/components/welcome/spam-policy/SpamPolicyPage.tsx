@@ -9,7 +9,6 @@ import { useAction } from 'next-safe-action/hooks';
 
 import { SinglePageLayout } from '../../common/Layout';
 import { SinglePageWrapper } from '../../common/SinglePageWrapper';
-import { InfoBackgroundImage } from '../../layout/InfoBackgroundImage';
 
 export function SpamPolicyPage({ redirectToProfile }: { redirectToProfile: boolean }) {
   const { user } = useUser();
@@ -25,7 +24,6 @@ export function SpamPolicyPage({ redirectToProfile }: { redirectToProfile: boole
 
   return (
     <SinglePageLayout>
-      <InfoBackgroundImage />
       <SinglePageWrapper bgcolor='background.default'>
         <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
           Spam Policy

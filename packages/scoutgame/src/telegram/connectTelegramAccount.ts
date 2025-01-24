@@ -1,18 +1,23 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getUserProfile } from '@packages/users/getUserProfile';
 
-export async function connectTelegramAccount({ telegramId, userId }: { telegramId: number; userId: string }) {
-  const existingTelegramUser = await getUserProfile({ telegramId });
+import { completeQuests } from '../quests/completeQuests';
 
-  if (existingTelegramUser) {
-    if (existingTelegramUser.id === userId) {
-      throw new Error('Telegram account already connected to this user');
+export async function connectTelegramAccount({ telegramId, userId }: { telegramId: number; userId: string }) {
+  const connectedUser = await getUserProfile({ telegramId });
+
+  if (connectedUser) {
+    if (connectedUser.id === userId) {
+      return {};
     }
-    return existingTelegramUser;
+    return { connectedUser };
   }
 
   await prisma.scout.update({
     where: { id: userId },
     data: { telegramId }
   });
+
+  await completeQuests(userId, ['link-telegram-account']);
+  return {};
 }

@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 export default async function Welcome() {
   const user = await getUserFromSession();
 
-  if (user?.onboardedAt && user?.agreedToTermsAt && !user?.builderStatus) {
+  if (user?.onboardedAt && user?.agreedToTermsAt) {
     log.debug('Redirect user to home page from Welcome page', { userId: user.id });
-    redirect('/');
+    redirect('/scout');
   }
 
   // logic in  middleware.ts guarantees that user exists
