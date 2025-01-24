@@ -14,8 +14,10 @@ type RepoSummary = {
   summary: string;
 };
 
+const nameAndOwnerSeparator = '__--__';
+
 function normaliseRepoNameAndOwner({ repoOwner, repoName }: { repoOwner: string; repoName: string }) {
-  return `${repoOwner}_${repoName}`;
+  return `${repoOwner}${nameAndOwnerSeparator}${repoName}`;
 }
 
 type DeepseekResponse = {
@@ -206,7 +208,7 @@ async function enrichRepoData({ rawData }: { rawData: string }) {
   }
 
   if (!maxTokensReached) {
-    log.info('Exhausted tokens, stopping with', totalFiles, 'files and', totalTokens, 'tokens');
+    log.info(`Exhausted tokens, stopping with ${totalFiles} files and ${totalTokens} tokens`);
   }
 
   // process.exit(0);
@@ -279,8 +281,11 @@ export async function processRepo({
     const ingestUrl = `https://gitingest.com/${repoOwner}/${repoName}`;
     const formData = new FormData();
     formData.append('max_file_size', '243');
-    formData.append('pattern_type', 'include');
-    formData.append('pattern', '*.ts,*.tsx,*.py,*.sol');
+    formData.append('pattern_type', 'exclude');
+    formData.append(
+      'pattern',
+      '*.yaml,*.yml,*.toml,*.json,*.md,*.txt,*.lock,*.config,*.env,*.example,*.sample,*.log,*.csv,*.xml'
+    );
     formData.append('input_text', `${repoOwner}/${repoName}`);
 
     const response = await POST<string>(ingestUrl, formData, {
@@ -290,6 +295,7 @@ export async function processRepo({
 
     // Step 2: Search for download link in response HTML
     const downloadLinkMatch = response.match(/<a href="\/download\/([^"]+)"/);
+
     if (!downloadLinkMatch) {
       throw new Error('Download link not found in response');
     }
