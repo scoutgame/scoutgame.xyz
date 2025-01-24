@@ -3,18 +3,21 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 import { getUserProfile } from '@packages/users/getUserProfile';
 
-export async function connectFarcasterAccount({ fid, userId }: { fid: number; userId: string }) {
-  const existingFarcasterUser = await getUserProfile({ farcasterId: fid });
+import { completeQuests } from '../quests/completeQuests';
 
-  if (existingFarcasterUser) {
-    if (existingFarcasterUser.id === userId) {
-      throw new Error('Farcaster account already connected to this user');
+export async function connectFarcasterAccount({ fid, userId }: { fid: number; userId: string }) {
+  const connectedUser = await getUserProfile({ farcasterId: fid });
+
+  if (connectedUser) {
+    if (connectedUser.id === userId) {
+      log.debug('Farcaster account already connected to this user', { userId, fid });
+      return {};
     }
-    return existingFarcasterUser;
+    return { connectedUser };
   }
 
   const profile = await getFarcasterUserById(fid).catch((error) => {
-    log.error('Error fetching Farcaster profile', { fid, error });
+    log.error('Error fetching Farcaster profile', { userId, fid, error });
     return null;
   });
 
@@ -26,4 +29,8 @@ export async function connectFarcasterAccount({ fid, userId }: { fid: number; us
     where: { id: userId },
     data: { farcasterId: fid, farcasterName: profile.username }
   });
+
+  await completeQuests(userId, ['link-farcaster-account']);
+
+  return {};
 }

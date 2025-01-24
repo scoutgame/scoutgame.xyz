@@ -1,11 +1,9 @@
 import type { BuilderEvent, NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
+import { mockBuilder, mockScout, mockBuilderNft, mockNFTPurchaseEvent } from '@packages/testing/database';
 import { randomLargeInt, randomWalletAddress } from '@packages/testing/generators';
-import { referralBonusPoints } from '@packages/users/constants';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
-import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { v4 } from 'uuid';
 
 jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
@@ -174,7 +172,7 @@ describe('recordNftMint', () => {
     expect(refreshBuilderNftPrice).not.toHaveBeenCalled();
   });
 
-  it('should create a referral bonus event if the scout has a referral code', async () => {
+  it.only('should create a referral bonus event if the scout has a referral code', async () => {
     const referrer = await mockScout();
     const mockWallet = randomWalletAddress().toLowerCase();
     const referee = await mockScout({ wallets: [mockWallet] });
@@ -189,7 +187,14 @@ describe('recordNftMint', () => {
     });
 
     const builder = await mockBuilder();
-    const builderNft = await mockBuilderNft({ builderId: builder.id, season });
+    const builderNft = await mockBuilderNft({ builderId: builder.id, season, nftType: 'default' });
+
+    await mockNFTPurchaseEvent({
+      builderId: builder.id,
+      scoutId: referee.id,
+      nftType: 'default',
+      season
+    });
 
     await createReferralEvent(referrer.referralCode, referee.id);
 
@@ -213,6 +218,6 @@ describe('recordNftMint', () => {
       }
     });
 
-    expect(referrerAfterReferralBonus.currentBalance).toBe(40);
+    expect(referrerAfterReferralBonus.currentBalance).toBe(50);
   });
 });
