@@ -222,8 +222,8 @@ describe('processScoutPointsPayout', () => {
 
     // Scout 1 has 3 NFTs, scout 2 has 7 NFTs
     const events = await Promise.all([
-      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week }),
-      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week })
+      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week, season: mockSeason }),
+      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week, season: mockSeason })
     ]);
 
     const weeklyAllocatedPoints = 1e5;
