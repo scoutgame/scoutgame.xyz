@@ -1,4 +1,5 @@
 import { Button, Divider, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
+import { builderLoginUrl } from '@packages/scoutgame/constants';
 import Image from 'next/image';
 import { Suspense } from 'react';
 
@@ -82,11 +83,7 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
             <JoinGithubButton text='Apply' />
           </Suspense>
         ) : (
-          <Button
-            variant='contained'
-            color='primary'
-            href={`/login?redirectUrl=${encodeURIComponent('/builders?modal=newBuilder')}&type=builder`}
-          >
+          <Button variant='contained' color='primary' href={builderLoginUrl}>
             Sign in
           </Button>
         )}

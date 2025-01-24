@@ -1,5 +1,6 @@
 import type { StackProps } from '@mui/material';
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -170,7 +171,7 @@ function HeroSection({
               }}
               data-test='get-started-button'
             >
-              <Link href={`/login?utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
+              <Link href={`${builderLoginUrl}&utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
             </Button>
           </Stack>
           <Hidden mdDown>
@@ -308,7 +309,7 @@ function FooterSection({ partnerUtmCampaign }: { partnerUtmCampaign: string }) {
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
         <Button variant='contained' sx={{ width: '50%' }}>
-          <Link href={`/login?utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
+          <Link href={`${builderLoginUrl}&utm_source=partner&utm_campaign=${partnerUtmCampaign}`}>Get started</Link>
         </Button>
       </Stack>
     </Stack>
