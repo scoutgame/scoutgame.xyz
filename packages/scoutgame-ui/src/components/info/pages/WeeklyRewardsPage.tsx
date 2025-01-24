@@ -52,7 +52,6 @@ function Document() {
           </TableRow>
         </TableBody>
       </Table>
-      <Typography>A Builder may only score Gems for one PR per approved repo per day.</Typography>
       <Typography>Gem rewards do not stack. The maximum score for a single PR is 100 Gems.</Typography>
       <Typography>
         At the end of each week, Builders are ranked by the number of Gems they collected that week. Scout Points are
