@@ -10,8 +10,10 @@ export function BuilderCardName({
   name,
   size,
   starterPack,
-  nftsSoldToScout
+  nftsSoldToScout,
+  hideScoutCount = false
 }: {
+  hideScoutCount?: boolean;
   nftsSoldToScout?: number | null;
   name: string;
   size: 'x-small' | 'small' | 'medium' | 'large';
@@ -21,6 +23,7 @@ export function BuilderCardName({
   const minFontSize = size === 'medium' || size === 'large' ? 12 : size === 'small' ? 9.5 : 8.5;
   const { fontSize, spanRef } = useDynamicFontSize(name, minFontSize, maxFontSize);
   const isMdScreen = useMdScreen();
+  const showScoutCount = !hideScoutCount && nftsSoldToScout;
 
   return (
     <Stack
@@ -42,7 +45,7 @@ export function BuilderCardName({
         flexDirection='row'
         alignItems='center'
         justifyContent='center'
-        width={nftsSoldToScout ? 'calc(100% - 20px)' : '100%'}
+        width={showScoutCount ? 'calc(100% - 20px)' : '100%'}
       >
         <Typography
           ref={spanRef}
@@ -61,7 +64,7 @@ export function BuilderCardName({
           {name}
         </Typography>
       </Stack>
-      {nftsSoldToScout ? (
+      {showScoutCount ? (
         <Tooltip title='# of cards you hold'>
           <Stack flexDirection='row' alignItems='center' height='100%' gap={0.35}>
             <Typography
