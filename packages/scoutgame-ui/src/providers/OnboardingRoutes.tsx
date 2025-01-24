@@ -6,7 +6,7 @@ import { createContext, useCallback, useContext, useMemo } from 'react';
 
 import { useUser } from './UserProvider';
 
-type OnboardingStep = '1' | '2' | '3' | '4';
+export type OnboardingStep = '1' | '2' | '3' | '4' | '5';
 
 interface OnboardingRoutesContextType {
   getNextRoute: (overwriteStep?: OnboardingStep) => string;

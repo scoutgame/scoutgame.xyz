@@ -5,6 +5,7 @@ import { BuilderPage } from '@packages/scoutgame-ui/components/welcome/builder/B
 import { HowItWorksPage } from '@packages/scoutgame-ui/components/welcome/how-it-works/HowItWorksPage';
 import { SpamPolicyPage } from '@packages/scoutgame-ui/components/welcome/spam-policy/SpamPolicyPage';
 import { WelcomePage } from '@packages/scoutgame-ui/components/welcome/WelcomePage';
+import type { OnboardingStep } from '@packages/scoutgame-ui/providers/OnboardingRoutes';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
@@ -24,7 +25,7 @@ export default async function Welcome({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const scoutSort = (searchParams.step as string | undefined) || '1';
+  const scoutSort = (searchParams.step as OnboardingStep | undefined) || '1';
   const type = (searchParams.type as 'scout' | 'builder' | undefined) || 'scout';
   const redirectUrl = searchParams.redirectUrl as string | undefined;
 
