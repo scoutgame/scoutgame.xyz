@@ -32,3 +32,5 @@ async function runEnrichmentPipeline() {
     log.info(`Estimated time remaining: ${(estimatedTimeRemaining / 1000 / 60).toFixed(2)} minutes`);
   }
 }
+
+runEnrichmentPipeline().then(console.log);

@@ -91,43 +91,7 @@ function getEnrichedFilePath(repoOwner: string, repoName: string) {
   return path.resolve(enrichedDir, `${repoId}.json`);
 }
 
-async function enrichRepoData({ repoOwner, repoName }: { repoOwner: string; repoName: string }) {
-  const repoId = normaliseRepoNameAndOwner({ repoOwner, repoName });
-  const enrichedDir = path.resolve('apps/agents/src/agents/BuilderAgent/lib/enriched');
-  const enrichedFilePath = getEnrichedFilePath(repoOwner, repoName);
-
-  // Step 1: POST request to gitingest
-  const ingestedFileTxtPath = path.join(enrichedDir, `${repoId}.txt`);
-
-  if (!fs.existsSync(ingestedFileTxtPath)) {
-    log.info('Ingesting repo data for', repoId);
-    const ingestUrl = `https://gitingest.com/${repoOwner}/${repoName}`;
-    const formData = new FormData();
-    formData.append('max_file_size', '243');
-    formData.append('pattern_type', 'include');
-    formData.append('pattern', '*.ts,*.tsx,*.py,*.sol');
-    formData.append('input_text', `${repoOwner}/${repoName}`);
-
-    const response = await POST<string>(ingestUrl, formData, {
-      skipStringifying: true,
-      noHeaders: true
-    });
-
-    // Step 2: Search for download link in response HTML
-    const downloadLinkMatch = response.match(/<a href="\/download\/([^"]+)"/);
-    if (!downloadLinkMatch) {
-      throw new Error('Download link not found in response');
-    }
-    const downloadUrl = `https://gitingest.com/download/${downloadLinkMatch[1]}`;
-
-    log.info('downloadUrl', downloadUrl);
-
-    const downloadResponse = await GET<ArrayBuffer>(downloadUrl, { responseType: 'arraybuffer' });
-    fs.writeFileSync(ingestedFileTxtPath, String(downloadResponse));
-  }
-
-  const rawData = fs.readFileSync(ingestedFileTxtPath, 'utf-8');
-
+async function enrichRepoData({ rawData }: { rawData: string }) {
   const fileTree = parseFileTreeFromGitingest(rawData, [
     // Test and Mock-related directories
     '__tests__',
@@ -284,8 +248,6 @@ async function enrichRepoData({ repoOwner, repoName }: { repoOwner: string; repo
 
   const parsedResult = JSON.parse(deepseekResponse.choices[0].message.content) as RepoSummary;
 
-  fs.writeFileSync(enrichedFilePath, JSON.stringify(parsedResult, null, 2));
-
   return parsedResult;
 }
 
@@ -298,17 +260,50 @@ export async function processRepo({
   repoName: string;
   forceReprocessing?: boolean;
 }) {
+  log.info('--------------------------------');
+  log.info(`Processing repo: https://github.com/${repoOwner}/${repoName}`);
+
   const enrichedFilePath = getEnrichedFilePath(repoOwner, repoName);
+  const repoId = normaliseRepoNameAndOwner({ repoOwner, repoName });
+  const enrichedDir = path.resolve('apps/agents/src/agents/BuilderAgent/lib/enriched');
+  const ingestedFileTxtPath = path.join(enrichedDir, `${repoId}.txt`);
 
   // Check if repo data already exists
   if (fs.existsSync(enrichedFilePath) && !forceReprocessing) {
     return JSON.parse(fs.readFileSync(enrichedFilePath, 'utf-8'));
   }
 
-  const [firstSummary, secondSummary] = await Promise.all([
-    enrichRepoData({ repoOwner, repoName }),
-    enrichRepoData({ repoOwner, repoName })
-  ]);
+  // Download and save raw content if needed
+  if (!fs.existsSync(ingestedFileTxtPath)) {
+    log.info('Ingesting repo data for', repoId);
+    const ingestUrl = `https://gitingest.com/${repoOwner}/${repoName}`;
+    const formData = new FormData();
+    formData.append('max_file_size', '243');
+    formData.append('pattern_type', 'include');
+    formData.append('pattern', '*.ts,*.tsx,*.py,*.sol');
+    formData.append('input_text', `${repoOwner}/${repoName}`);
+
+    const response = await POST<string>(ingestUrl, formData, {
+      skipStringifying: true,
+      noHeaders: true
+    });
+
+    // Step 2: Search for download link in response HTML
+    const downloadLinkMatch = response.match(/<a href="\/download\/([^"]+)"/);
+    if (!downloadLinkMatch) {
+      throw new Error('Download link not found in response');
+    }
+    const downloadUrl = `https://gitingest.com/download/${downloadLinkMatch[1]}`;
+
+    log.info('downloadUrl', downloadUrl);
+
+    const downloadResponse = await GET<ArrayBuffer>(downloadUrl, { responseType: 'arraybuffer' });
+    fs.writeFileSync(ingestedFileTxtPath, String(downloadResponse));
+  }
+
+  const rawData = fs.readFileSync(ingestedFileTxtPath, 'utf-8');
+
+  const [firstSummary, secondSummary] = await Promise.all([enrichRepoData({ rawData }), enrichRepoData({ rawData })]);
 
   const finalSummary = await POST<DeepseekResponse>(
     'https://api.deepseek.com/chat/completions',
@@ -364,6 +359,9 @@ Expected output format is JSON object with the following fields:
     enrichedFilePath,
     JSON.stringify({ ...finalSummary, repo: `https://github.com/${repoOwner}/${repoName}` }, null, 2)
   );
+
+  prettyPrint(finalSummary);
+  log.info('--------------------------------');
 
   return finalSummary;
 }
