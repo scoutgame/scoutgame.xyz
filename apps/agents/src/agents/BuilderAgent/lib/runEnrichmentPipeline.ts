@@ -21,22 +21,29 @@ async function runEnrichmentPipeline() {
       await processRepo({ repoOwner: repo.owner, repoName: repo.name });
 
       const timeForIteration = Date.now() - iterationStart;
-      processingTimes.push(timeForIteration);
 
-      // Calculate average time and estimate remaining time
-      const avgTime = processingTimes.reduce((a, b) => a + b, 0) / processingTimes.length;
-      const remainingItems = repos.length - (i + 1);
-      const estimatedTimeRemaining = avgTime * remainingItems;
+      if (timeForIteration > 3000) {
+        processingTimes.push(timeForIteration);
 
-      log.info('/////////////////////////////////');
-      log.info(`Processed ${i + 1}/${repos.length} repos`);
-      log.info(`Average processing time: ${(avgTime / 1000).toFixed(2)}s`);
-      log.info(`Estimated time remaining: ${(estimatedTimeRemaining / 1000 / 60).toFixed(2)} minutes`);
-      log.info('/////////////////////////////////');
+        // Calculate average time and estimate remaining time
+        const avgTime = processingTimes.reduce((a, b) => a + b, 0) / processingTimes.length;
+        const remainingItems = repos.length - (i + 1);
+        const estimatedTimeRemaining = avgTime * remainingItems;
+
+        log.info('/////////////////////////////////');
+        log.info(`Processed ${i + 1}/${repos.length} repos`);
+        log.info(`Average processing time: ${(avgTime / 1000).toFixed(2)}s`);
+        log.info(`Estimated time remaining: ${(estimatedTimeRemaining / 1000 / 60).toFixed(2)} minutes`);
+        log.info('/////////////////////////////////');
+      } else {
+        log.info('/////////////////////////////////');
+        log.info(`Already processed ${i + 1}/${repos.length} repos`);
+        log.info('/////////////////////////////////');
+      }
     } catch (error) {
       log.error(`Error processing repo ${repos[i].owner}/${repos[i].name}:`, error);
     }
   }
 }
 
-runEnrichmentPipeline().then(console.log);
+// runEnrichmentPipeline().then(console.log);

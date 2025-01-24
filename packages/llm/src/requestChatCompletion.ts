@@ -73,7 +73,16 @@ export async function requestChatCompletion({
   }
 
   if (response.choices[0].message.tool_calls) {
-    llmLogger.info('Agent requested a tool call', { toolCalls: response.choices[0].message.tool_calls });
+    // // llmLogger.info(
+    //   'Agent requested a tool call',
+    //   JSON.stringify(
+    //     {
+    //       toolCalls: response.choices[0].message.tool_calls
+    //     },
+    //     null,
+    //     2
+    //   )
+    // );
     (response as ChatCompletionResponse).tool_calls = response.choices[0].message.tool_calls?.map((toolCall) => ({
       name: toolCall.function.name,
       arguments: parseToolCallArguments(toolCall.function.arguments)

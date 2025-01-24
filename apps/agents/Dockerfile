@@ -19,7 +19,9 @@ COPY --parents apps/*/package.json          \
   apps/agents/package.json            \
   apps/agents/agents.yml        \
   apps/agents/src/agents/BuilderAgent/tools/searchRepos/repos.json \
+  apps/agents/src/agents/BuilderAgent/tools/searchRepos/repos-enriched.json \
   .
+
 
 # Copy compiled code
 COPY --parents apps/*/dist .

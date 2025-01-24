@@ -176,20 +176,17 @@ async function enrichRepoData({ rawData }: { rawData: string }) {
     if (node.children) {
       node.children.forEach((child) => {
         // Use randomSeed to generate a deterministic but different value for each file
-        const hash = (randomSeed + child.name).split('').reduce((a, b) => {
-          a = (a << 5) - a + b.charCodeAt(0);
-          return a & a;
-        }, 0);
-        const skipChildren = filePath.split('/').length > 1 && Math.abs(hash) % 100 < 30; // Fixed 30% skip rate
 
-        queue.push({
-          node: {
-            ...child,
-            // Remove children if we're skipping them
-            children: skipChildren ? undefined : child.children
-          },
-          filePath: `${filePath}/${child.name}`
-        });
+        function shouldSkipThisChild() {
+          return filePath.split('/').length > 1 && Math.random() < 0.3; // 30% chance to skip this child
+        }
+
+        if (!shouldSkipThisChild()) {
+          queue.push({
+            node: child,
+            filePath: `${filePath}/${child.name}`
+          });
+        }
       });
     }
 
@@ -291,7 +288,7 @@ export async function processRepo({
     formData.append('pattern_type', 'exclude');
     formData.append(
       'pattern',
-      '*.yaml,*.yml,*.toml,*.json,*.md,*.txt,*.lock,*.config,*.env,*.example,*.sample,*.log,*.csv,*.xml'
+      '*.yaml,*.yml,*.toml,*.json,*.txt,*.lock,*.config,*.env,*.example,*.sample,*.log,*.csv,*.xml'
     );
     formData.append('input_text', `${repoOwner}/${repoName}`);
 

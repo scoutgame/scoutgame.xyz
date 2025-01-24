@@ -18,28 +18,25 @@ export type Repository = {
 };
 
 const fuseSearchOptions: IFuseOptions<Repository> = {
-  keys: [
-    { name: 'name', weight: 1 },
-    { name: 'description', weight: 1 },
-    { name: 'topics', weight: 2 },
-    { name: 'readme', weight: 1.2 }
-  ],
-  threshold: 0.3,
-  shouldSort: true
+  keys: [{ name: 'summary' }, { name: 'topics' }],
+  threshold: 0.1,
+  isCaseSensitive: false,
+  // findAllMatches: true,
+  shouldSort: true,
+  ignoreLocation: true
+};
+
+type SearchQuery = {
+  query: string;
+  limit?: number;
+  // keys?: (keyof Repository)[];
 };
 
 // Search function with relevance scoring
-export function searchRepositories({
-  query,
-  limit = 5
-}: {
-  query: string;
-  keys?: (keyof Repository)[];
-  limit?: number;
-}) {
+export function searchRepositories({ query, limit = 5 }: SearchQuery) {
   // Load repositories from JSON file
   const repositories: Repository[] = JSON.parse(
-    readFileSync(path.resolve('src/agents/BuilderAgent/tools/searchRepos/repos.json'), 'utf-8')
+    readFileSync(path.resolve('src/agents/BuilderAgent/tools/searchRepos/repos-enriched.json'), 'utf-8')
   );
 
   const fuse = new Fuse(repositories, fuseSearchOptions);
