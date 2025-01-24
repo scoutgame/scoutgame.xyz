@@ -3,6 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
+import type { Address } from 'viem';
 
 import { randomLargeInt, mockSeason, randomWalletAddress } from './generators';
 
@@ -489,6 +490,116 @@ export async function mockNFTPurchaseEvent({
           season,
           recipientId: builderId,
           senderId: scoutId
+        }
+      }
+    },
+    include: { nftPurchaseEvent: { include: { scoutWallet: true } } }
+  });
+}
+
+export async function mockNFTBurnEvent({
+  builderId,
+  points = 0,
+  week = getCurrentWeek(),
+  season = mockSeason,
+  tokensBurned = 1,
+  nftType,
+  walletAddress
+}: {
+  builderId: string;
+  points?: number;
+  season?: string;
+  tokensBurned?: number;
+  week?: string;
+  nftType?: BuilderNftType;
+  walletAddress?: string;
+}) {
+  const builderNft = await prisma.builderNft.findFirstOrThrow({
+    where: {
+      builderId,
+      season,
+      nftType: nftType ?? 'default'
+    }
+  });
+
+  const scoutWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { address: walletAddress } });
+
+  return prisma.builderEvent.create({
+    data: {
+      builder: {
+        connect: {
+          id: builderId
+        }
+      },
+      season,
+      type: 'nft_purchase',
+      week,
+      nftPurchaseEvent: {
+        create: {
+          builderNftId: builderNft.id,
+          senderWalletAddress: scoutWallet.address,
+          txLogIndex: 0,
+          pointsValue: points,
+          txHash: `0x${Math.random().toString(16).substring(2)}`,
+          tokensPurchased: tokensBurned
+        }
+      }
+    },
+    include: { nftPurchaseEvent: { include: { scoutWallet: true } } }
+  });
+}
+
+export async function mockNFTTransferEvent({
+  builderId,
+  points = 0,
+  week = getCurrentWeek(),
+  season = mockSeason,
+  tokensTransferred = 1,
+  nftType,
+  from,
+  to
+}: {
+  builderId: string;
+  points?: number;
+  season?: string;
+  tokensTransferred?: number;
+  week?: string;
+  nftType?: BuilderNftType;
+  from: Address;
+  to: Address;
+}) {
+  const builderNft = await prisma.builderNft.findFirstOrThrow({
+    where: {
+      builderId,
+      season,
+      nftType: nftType ?? 'default'
+    }
+  });
+
+  const fromScoutWallet = await prisma.scoutWallet.findFirstOrThrow({
+    where: { address: from.toLowerCase() }
+  });
+
+  const toScoutWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { address: to.toLowerCase() } });
+
+  return prisma.builderEvent.create({
+    data: {
+      builder: {
+        connect: {
+          id: builderId
+        }
+      },
+      season,
+      type: 'nft_purchase',
+      week,
+      nftPurchaseEvent: {
+        create: {
+          builderNftId: builderNft.id,
+          senderWalletAddress: toScoutWallet.address,
+          txLogIndex: 0,
+          pointsValue: points,
+          txHash: `0x${Math.random().toString(16).substring(2)}`,
+          tokensPurchased: tokensTransferred
         }
       }
     },
