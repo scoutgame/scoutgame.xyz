@@ -1,0 +1,17 @@
+{
+  "name": "@packages/llm",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./index.ts",
+  "scripts": {
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts --maxWorkers=2 --passWithNoTests"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@packages/utils": "^1.0.0",
+    "openai": "^4.78.1",
+    "tiktoken": "^1.0.18"
+  }
+}
