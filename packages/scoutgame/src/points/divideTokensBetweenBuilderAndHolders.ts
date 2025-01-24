@@ -49,7 +49,7 @@ export async function divideTokensBetweenBuilderAndHolders({
   rank: number;
   weeklyAllocatedTokens: number;
   normalisationFactor: number;
-  owners: { wallet: Address; tokens: Record<BuilderNftType, number> }[];
+  owners: WalletBuilderNftsOwnership[];
 }): Promise<TokenDistribution> {
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError('Invalid builderId must be a valid UUID');

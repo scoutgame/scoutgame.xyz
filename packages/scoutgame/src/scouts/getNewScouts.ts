@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
-import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
+import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
 
 export type NewScout = {
@@ -30,10 +30,10 @@ export async function getRankedNewScoutsForCurrentWeek({
       const pointsPerScout: Record<string, number> = {};
 
       topWeeklyBuilders.forEach((builder) => {
-        const { pointsPerScout: builderPointsPerScout } = dividePointsBetweenBuilderAndScouts({
+        const { pointsPerScout: builderPointsPerScout } = divideTokensBetweenBuilderAndHolders({
           builderId: builder.builder.id,
           rank: builder.rank,
-          weeklyAllocatedPoints,
+          weeklyAllocatedTokens: weeklyAllocatedPoints,
           normalisationFactor,
           nftPurchaseEvents
         });
