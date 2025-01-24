@@ -74,6 +74,26 @@ services:
     profiles:
       - stg-onchain-scoutgame
 
+  prd-agents:
+    extends:
+      service: defaults
+    ports:
+      - '80:3000'
+    command: ['npm', 'run', 'agents:prod']
+    profiles:
+      - prd-agents
+
+  stg-agents:
+    extends:
+      service: defaults
+    ports:
+      - '80:3000'
+    command: ['npm', 'run', 'agents:staging']
+    environment:
+      - REACT_APP_APP_ENV=staging
+    profiles:
+      - stg-agents
+
   prd-scoutgamecron:
     extends:
       service: defaults
