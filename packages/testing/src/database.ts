@@ -434,7 +434,8 @@ export async function mockNFTPurchaseEvent({
   week = getCurrentWeek(),
   season = mockSeason,
   tokensPurchased = 1,
-  nftType
+  nftType,
+  walletAddress
 }: {
   builderId: string;
   scoutId: string;
@@ -443,6 +444,7 @@ export async function mockNFTPurchaseEvent({
   tokensPurchased?: number;
   week?: string;
   nftType?: BuilderNftType;
+  walletAddress?: string;
 }) {
   const builderNft = await prisma.builderNft.findFirstOrThrow({
     where: {
@@ -453,8 +455,13 @@ export async function mockNFTPurchaseEvent({
   });
 
   const scoutWallet = await prisma.scoutWallet
-    .findFirst({ where: { scoutId } })
-    .then((wallet) => wallet ?? prisma.scoutWallet.create({ data: { scoutId, address: randomWalletAddress() } }));
+    .findFirst({ where: { scoutId, address: walletAddress } })
+    .then((wallet) => {
+      if (walletAddress && !wallet) {
+        throw new Error('Scout wallet not found');
+      }
+      return wallet ?? prisma.scoutWallet.create({ data: { scoutId, address: randomWalletAddress() } });
+    });
 
   return prisma.builderEvent.create({
     data: {

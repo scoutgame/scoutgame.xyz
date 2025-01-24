@@ -1,12 +1,9 @@
 import { InvalidInputError } from '@charmverse/core/errors';
-import { getCurrentWeek } from '@packages/dates/utils';
 import type { MockBuilder } from '@packages/testing/database';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
-import { prettyPrint } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
 
-import { resolveTokenOwnershipForBuilder } from '../../protocol/resolveTokenOwnershipForBuilder';
 import type { TokenDistribution } from '../divideTokensBetweenBuilderAndHolders';
 import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenBuilderAndHolders';
 

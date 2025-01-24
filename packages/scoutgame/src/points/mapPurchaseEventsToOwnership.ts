@@ -34,7 +34,12 @@ export function mapPurchaseEventsToOwnership(events: PartialNftPurchaseEvent[]):
       if (!ownership[fromScoutId][event.from!.address as Address][event.nftType]) {
         ownership[fromScoutId][event.from!.address as Address][event.nftType] = {};
       }
-      ownership[fromScoutId][event.from!.address as Address][event.nftType][event.tokenId] -= event.tokensPurchased;
+
+      const currentFromBalance =
+        ownership[fromScoutId][event.from!.address as Address][event.nftType][event.tokenId] || 0;
+
+      ownership[fromScoutId][event.from!.address as Address][event.nftType][event.tokenId] =
+        currentFromBalance - event.tokensPurchased;
     }
 
     if (toScoutId) {
@@ -52,7 +57,9 @@ export function mapPurchaseEventsToOwnership(events: PartialNftPurchaseEvent[]):
       if (!ownership[toScoutId][event.to!.address as Address][event.nftType]) {
         ownership[toScoutId][event.to!.address as Address][event.nftType] = {};
       }
-      ownership[toScoutId][event.to!.address as Address][event.nftType][event.tokenId] += event.tokensPurchased;
+      const currentToBalance = ownership[toScoutId][event.to!.address as Address][event.nftType][event.tokenId] || 0;
+      ownership[toScoutId][event.to!.address as Address][event.nftType][event.tokenId] =
+        currentToBalance + event.tokensPurchased;
     }
   }
 
