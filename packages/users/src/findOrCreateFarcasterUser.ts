@@ -54,6 +54,10 @@ export async function findOrCreateFarcasterUser({
       // There can be a case where the referrer is not found. Maybe someone will try to guess referral codes to get rewards.
       log.warn('Error creating referral event.', { error, startParam: referralCode, referrerId: user.id });
     });
+
+    await completeQuests(user.id, ['link-farcaster-account']).catch((error) => {
+      log.error('Error completing quest: link-farcaster-account', { error, userId: user.id });
+    });
   }
 
   return user;
