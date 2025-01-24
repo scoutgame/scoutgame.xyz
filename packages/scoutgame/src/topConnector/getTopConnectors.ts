@@ -45,6 +45,7 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
       }
     },
     select: {
+      createdAt: true,
       builder: {
         select: {
           avatar: true,
@@ -64,7 +65,11 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
   // Group all builder events by builderId and sum points value
   // Convert the object to an array, sort by points value in descending order
   const sortedByBuilder = groupBuilderEvents(
-    allBuilderEvents.map((events) => ({ builder: events.builder, receipt: events.pointsReceipts[0] }))
+    allBuilderEvents.map((events) => ({
+      builder: events.builder,
+      receipt: events.pointsReceipts[0],
+      createdAt: events.createdAt
+    }))
   );
 
   // Check if user is below the 5th position
@@ -105,6 +110,7 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
       }
     },
     select: {
+      createdAt: true,
       pointsReceipts: {
         select: {
           value: true,
@@ -131,7 +137,11 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
   });
 
   const sortedByBuilder = groupBuilderEvents(
-    allBuilderEvents.map((events) => ({ builder: events.builder, receipt: events.pointsReceipts[0] }))
+    allBuilderEvents.map((events) => ({
+      builder: events.builder,
+      receipt: events.pointsReceipts[0],
+      createdAt: events.createdAt
+    }))
   );
 
   return sortedByBuilder.at(0);
@@ -151,10 +161,15 @@ type PartialUser = {
  * Convert the object to an array, sort by points value in descending order
  */
 function groupBuilderEvents(
-  events: { builder: PartialUser | null; receipt: { value: number; recipientId: string | null } }[]
+  events: { builder: PartialUser | null; receipt: { value: number; recipientId: string | null }; createdAt: Date }[]
 ) {
   const byBuilder = events.reduce<{
-    [id: string]: Omit<PartialUser, 'wallets'> & { builderId: string; referralPoints: number; address: string };
+    [id: string]: Omit<PartialUser, 'wallets'> & {
+      builderId: string;
+      referralPoints: number;
+      address: string;
+      earliestEventDate: Date;
+    };
   }>((acc, event) => {
     const recipientId = event.receipt.recipientId;
     if (!recipientId || !event.builder) {
@@ -166,6 +181,8 @@ function groupBuilderEvents(
 
     if (recipientRecord) {
       recipientRecord.referralPoints += value;
+      recipientRecord.earliestEventDate =
+        event.createdAt < recipientRecord.earliestEventDate ? event.createdAt : recipientRecord.earliestEventDate;
     } else if (recipientId) {
       acc[recipientId] = {
         builderId: recipientId,
@@ -173,7 +190,8 @@ function groupBuilderEvents(
         avatar: event.builder.avatar,
         displayName: event.builder.displayName,
         path: event.builder.path,
-        address: event.builder.wallets?.[0]?.address as string
+        address: event.builder.wallets?.[0]?.address as string,
+        earliestEventDate: event.createdAt
       };
     }
 
@@ -181,6 +199,17 @@ function groupBuilderEvents(
   }, {});
 
   return Object.values(byBuilder)
-    .sort((a, b) => b.referralPoints - a.referralPoints)
+    .sort((a, b) => {
+      const aDate = a.earliestEventDate;
+      const bDate = b.earliestEventDate;
+
+      const aPoints = a.referralPoints;
+      const bPoints = b.referralPoints;
+
+      if (aPoints === bPoints) {
+        return aDate.getTime() - bDate.getTime();
+      }
+      return bPoints - aPoints;
+    })
     .map((b, i) => ({ ...b, rank: i + 1 }));
 }
