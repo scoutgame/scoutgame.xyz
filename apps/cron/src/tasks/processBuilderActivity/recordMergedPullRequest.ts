@@ -56,7 +56,7 @@ export async function recordMergedPullRequest({
       createdBy: pullRequest.author.id,
       // streaks are based on merged date
       completedAt: {
-        gte: new Date(new Date(pullRequest.createdAt).getTime() - streakWindow)
+        gte: new Date(pullRequestDate.getTime() - streakWindow)
       },
       type: 'merged_pull_request'
     },
@@ -179,6 +179,7 @@ export async function recordMergedPullRequest({
       const thisPrDate = builderEventDate.toISOString().split('T')[0];
       const isFirstPrInDay = !previousDaysWithPr.has(thisPrDate);
       const threeDayPrStreak = isFirstPrInDay && previousDaysWithPr.size % 3 === 2;
+
       const gemReceiptType: GemsReceiptType =
         isFirstMergedPullRequest && !hasFirstMergedPullRequestAlreadyThisWeek
           ? 'first_pr'
