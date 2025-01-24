@@ -4,6 +4,7 @@ import { Stack, Tooltip, Typography } from '@mui/material';
 import Image from 'next/image';
 
 import { useDynamicFontSize } from '../../../../hooks/useDynamicFontSize';
+import { useIsMounted } from '../../../../hooks/useIsMounted';
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 
 export function BuilderCardName({
@@ -23,7 +24,12 @@ export function BuilderCardName({
   const minFontSize = size === 'medium' || size === 'large' ? 12 : size === 'small' ? 9.5 : 8.5;
   const { fontSize, spanRef } = useDynamicFontSize(name, minFontSize, maxFontSize);
   const isMdScreen = useMdScreen();
+  const isMounted = useIsMounted();
   const showScoutCount = !hideScoutCount && nftsSoldToScout;
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Stack
