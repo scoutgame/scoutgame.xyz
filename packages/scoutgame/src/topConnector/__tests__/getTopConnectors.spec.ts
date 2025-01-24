@@ -8,12 +8,14 @@ import { getTop5ConnectorsToday, getTopConnectorOfTheDay } from '../getTopConnec
 describe('getTopConnectors', () => {
   describe('getTop5ConnectorsToday', () => {
     it('should return user in top 5 if the user is in the list of referrals today ', async () => {
-      const referrer = await mockUserWithReferral();
+      const referrer1 = await mockUserWithReferral();
+      const referrer2 = await mockUserWithReferral();
+      await mockReferrals(referrer2.referralCode);
 
-      const connectors = await getTop5ConnectorsToday(referrer.id);
-      const myUserIndex = connectors.findIndex((d) => d.builderId === referrer.id);
-      expect(connectors.length).toBe(5);
-      expect(myUserIndex).toBeLessThanOrEqual(4);
+      const connectors = await getTop5ConnectorsToday(referrer1.id);
+      const myUserIndex = connectors.findIndex((d) => d.builderId === referrer1.id);
+      expect(connectors.length).toBe(2);
+      expect(myUserIndex).toBeLessThanOrEqual(2);
     });
 
     it('should not return user in top 5 if the user did not refer anyone today', async () => {
@@ -38,12 +40,15 @@ describe('getTopConnectors', () => {
 
 async function mockUserWithReferral({ userId }: { userId?: string } = {}) {
   const referrer = await mockScout({ id: userId, verifiedEmail: true });
+  await mockReferrals(referrer.referralCode);
+  return referrer;
+}
 
+async function mockReferrals(referralCode: string) {
   for (let j = 0; j < 5; j++) {
     const builder = await mockBuilder({ createNft: true });
     const referee = await mockScout({ verifiedEmail: true, builderId: builder.id });
-    await createReferralEvent(referrer.referralCode || '', referee.id);
+    await createReferralEvent(referralCode, referee.id);
     await updateReferralUsers(referee.id);
   }
-  return referrer;
 }

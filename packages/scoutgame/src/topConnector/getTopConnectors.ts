@@ -1,4 +1,3 @@
-import type { PointsReceipt, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { DateTime } from 'luxon';
 
@@ -26,29 +25,37 @@ export type TopConnector = {
 export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnector[]> {
   const startOfDay = DateTime.utc().startOf('day').toJSDate();
 
-  const allBuilderEvents = await prisma.pointsReceipt.findMany({
+  const allBuilderEvents = await prisma.builderEvent.findMany({
     where: {
       createdAt: {
         gte: startOfDay
       },
-      event: {
-        type: {
-          in: ['referral', 'referral_bonus']
+      type: {
+        in: ['referral', 'referral_bonus']
+      },
+      pointsReceipts: {
+        some: {
+          value: {
+            gt: 0
+          },
+          recipient: {
+            deletedAt: null
+          }
         }
-      },
-      value: {
-        gt: 0
-      },
-      recipient: {
-        deletedAt: null
       }
     },
-    include: {
-      recipient: {
+    select: {
+      builder: {
         select: {
           avatar: true,
           displayName: true,
           path: true
+        }
+      },
+      pointsReceipts: {
+        select: {
+          value: true,
+          recipientId: true
         }
       }
     }
@@ -56,7 +63,9 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
 
   // Group all builder events by builderId and sum points value
   // Convert the object to an array, sort by points value in descending order
-  const sortedByBuilder = groupBuilderEvents(allBuilderEvents);
+  const sortedByBuilder = groupBuilderEvents(
+    allBuilderEvents.map((events) => ({ builder: events.builder, receipt: events.pointsReceipts[0] }))
+  );
 
   // Check if user is below the 5th position
   const userInSortedBuilderArray = sortedByBuilder.find((b, i) => b.builderId === userId && i > 4);
@@ -75,26 +84,34 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
   const startOfDay = date.toUTC().startOf('day').toJSDate();
   const endOfDay = date.toUTC().endOf('day').toJSDate();
 
-  const allBuilderEvents = await prisma.pointsReceipt.findMany({
+  const allBuilderEvents = await prisma.builderEvent.findMany({
     where: {
       createdAt: {
         gte: startOfDay,
         lte: endOfDay
       },
-      event: {
-        type: {
-          in: ['referral', 'referral_bonus']
+      type: {
+        in: ['referral', 'referral_bonus']
+      },
+      pointsReceipts: {
+        some: {
+          value: {
+            gt: 0
+          },
+          recipient: {
+            deletedAt: null
+          }
         }
-      },
-      recipient: {
-        deletedAt: null
-      },
-      value: {
-        gt: 0
       }
     },
-    include: {
-      recipient: {
+    select: {
+      pointsReceipts: {
+        select: {
+          value: true,
+          recipientId: true
+        }
+      },
+      builder: {
         select: {
           avatar: true,
           displayName: true,
@@ -113,12 +130,19 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
     }
   });
 
-  const sortedByBuilder = groupBuilderEvents(allBuilderEvents);
+  const sortedByBuilder = groupBuilderEvents(
+    allBuilderEvents.map((events) => ({ builder: events.builder, receipt: events.pointsReceipts[0] }))
+  );
 
   return sortedByBuilder.at(0);
 }
 
-type PartialUser = Pick<Scout, 'avatar' | 'displayName' | 'path'> & { wallets?: { address: string }[] };
+type PartialUser = {
+  avatar: string | null;
+  displayName: string;
+  path: string;
+  wallets?: { address: string }[];
+};
 
 /**
  *
@@ -126,27 +150,30 @@ type PartialUser = Pick<Scout, 'avatar' | 'displayName' | 'path'> & { wallets?: 
  *
  * Convert the object to an array, sort by points value in descending order
  */
-function groupBuilderEvents(events: (PointsReceipt & { recipient?: PartialUser | null })[]) {
+function groupBuilderEvents(
+  events: { builder: PartialUser | null; receipt: { value: number; recipientId: string | null } }[]
+) {
   const byBuilder = events.reduce<{
     [id: string]: Omit<PartialUser, 'wallets'> & { builderId: string; referralPoints: number; address: string };
   }>((acc, event) => {
-    if (!event.recipientId || !event.recipient) {
+    const recipientId = event.receipt.recipientId;
+    if (!recipientId || !event.builder) {
       return acc;
     }
 
-    const recipientRecord = acc[event.recipientId];
-    const value = event.value;
+    const recipientRecord = acc[recipientId];
+    const value = event.receipt.value;
 
     if (recipientRecord) {
       recipientRecord.referralPoints += value;
-    } else if (event.recipientId) {
-      acc[event.recipientId] = {
-        builderId: event.recipientId,
+    } else if (recipientId) {
+      acc[recipientId] = {
+        builderId: recipientId,
         referralPoints: value,
-        avatar: event.recipient.avatar,
-        displayName: event.recipient.displayName,
-        path: event.recipient.path,
-        address: event.recipient.wallets?.[0]?.address as string
+        avatar: event.builder.avatar,
+        displayName: event.builder.displayName,
+        path: event.builder.path,
+        address: event.builder.wallets?.[0]?.address as string
       };
     }
 
