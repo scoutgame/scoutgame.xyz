@@ -1,16 +1,40 @@
-import { Container, Stack, Typography } from '@mui/material';
-import type { UserScoutProject } from '@packages/scoutgame/projects/getUserScoutProjects';
+'use client';
 
-import { CreateProjectButton } from './CreateProject/CreateProjectButton';
+import AddIcon from '@mui/icons-material/Add';
+import { Button, Container, Stack, Typography } from '@mui/material';
+import type { UserScoutProject } from '@packages/scoutgame/projects/getUserScoutProjects';
+import { useState } from 'react';
+
+import { CreateProjectForm } from './CreateProject/CreateProjectForm';
+import { ProjectsList } from './ProjectsList';
 
 export function ProjectsPage({ projects }: { projects: UserScoutProject[] }) {
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+
   return (
     <Container maxWidth='lg'>
-      <Stack my={2} gap={4}>
+      <Stack my={3} gap={2}>
         <Typography variant='h5' color='secondary'>
-          Projects
+          {isCreatingProject ? 'Create a project' : 'Projects'}
         </Typography>
-        <CreateProjectButton projects={projects} />
+        {!isCreatingProject ? (
+          <Stack gap={2}>
+            <ProjectsList projects={projects} />
+            <Button
+              onClick={() => {
+                setIsCreatingProject(true);
+              }}
+              startIcon={<AddIcon />}
+              variant='outlined'
+              color='secondary'
+              sx={{ width: 'fit-content' }}
+            >
+              Create a project
+            </Button>
+          </Stack>
+        ) : (
+          <CreateProjectForm onCancel={() => setIsCreatingProject(false)} />
+        )}
       </Stack>
     </Container>
   );

@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import Image from 'next/image';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -7,7 +8,7 @@ import { useController } from 'react-hook-form';
 import { useS3UploadInput } from '../../../hooks/useS3UploadInput';
 
 type ProjectAvatarFieldProps = {
-  control: Control<any>;
+  control: Control<CreateScoutProjectFormValues>;
   avatarSize?: number;
   isLoading?: boolean;
   onAvatarChange?: (url: string) => void;
