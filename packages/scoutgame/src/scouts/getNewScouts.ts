@@ -3,6 +3,7 @@ import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
+import { resolveTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 export type NewScout = {
   id: string;
@@ -29,18 +30,26 @@ export async function getRankedNewScoutsForCurrentWeek({
       // aggregate values for each scout per topWeeklyBuilder
       const pointsPerScout: Record<string, number> = {};
 
-      topWeeklyBuilders.forEach((builder) => {
-        const { pointsPerScout: builderPointsPerScout } = divideTokensBetweenBuilderAndHolders({
-          builderId: builder.builder.id,
-          rank: builder.rank,
-          weeklyAllocatedTokens: weeklyAllocatedPoints,
-          normalisationFactor,
-          nftPurchaseEvents
-        });
-        builderPointsPerScout.forEach(({ scoutId, scoutPoints }) => {
-          pointsPerScout[scoutId] = (pointsPerScout[scoutId] || 0) + scoutPoints;
-        });
-      });
+      await Promise.all(
+        topWeeklyBuilders.map(async (builder) => {
+          const tokenOwnership = await resolveTokenOwnershipForBuilder({
+            builderId: builder.builder.id,
+            week
+          });
+
+          const { tokensPerScoutByScoutId: builderPointsPerScout } = await divideTokensBetweenBuilderAndHolders({
+            builderId: builder.builder.id,
+            rank: builder.rank,
+            weeklyAllocatedTokens: weeklyAllocatedPoints,
+            normalisationFactor,
+            owners: tokenOwnership
+          });
+          builderPointsPerScout.forEach(({ scoutId, erc20Tokens }) => {
+            pointsPerScout[scoutId] = (pointsPerScout[scoutId] || 0) + erc20Tokens;
+          });
+        })
+      );
+
       return {
         nftPurchaseEvents,
         pointsPerScout
@@ -52,7 +61,7 @@ export async function getRankedNewScoutsForCurrentWeek({
   return (
     newScouts
       .map((scout): NewScout => {
-        const scoutTransactions = _nftPurchaseEvents.filter((event) => event.scoutId === scout.id);
+        const scoutTransactions = _nftPurchaseEvents.filter((event) => event.to?.scoutId === scout.id);
         const buildersScouted = Array.from(new Set(scoutTransactions.map((event) => event.builderNft.builderId)));
         const nftsHeld = scoutTransactions.reduce((acc, event) => acc + event.tokensPurchased, 0);
         return {

@@ -2,7 +2,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
-import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
+import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
+import { resolveTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 export type NftStats = {
   builderStrikes: number;
@@ -52,14 +53,15 @@ export async function getBuilderNftStats({
       }
     })
   ]);
-  const { nftSupply } = dividePointsBetweenBuilderAndScouts({
+  const owners = await resolveTokenOwnershipForBuilder({
     builderId,
-    nftPurchaseEvents: nftPurchaseEvents.map((event) => ({
-      ...event,
-      scoutId: event.scoutWallet!.scoutId
-    })),
+    week
+  });
+  const { nftSupply } = await divideTokensBetweenBuilderAndHolders({
+    builderId,
+    owners,
     rank: 1, // rank doesnt actually matter here
-    weeklyAllocatedPoints: 100,
+    weeklyAllocatedTokens: 100,
     normalisationFactor: 1
   });
   return {
