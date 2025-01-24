@@ -27,9 +27,11 @@ async function runEnrichmentPipeline() {
     const remainingItems = repos.length - (i + 1);
     const estimatedTimeRemaining = avgTime * remainingItems;
 
+    log.info('/////////////////////////////////');
     log.info(`Processed ${i + 1}/${repos.length} repos`);
     log.info(`Average processing time: ${(avgTime / 1000).toFixed(2)}s`);
     log.info(`Estimated time remaining: ${(estimatedTimeRemaining / 1000 / 60).toFixed(2)} minutes`);
+    log.info('/////////////////////////////////');
   }
 }
 
