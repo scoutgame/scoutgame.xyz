@@ -38,5 +38,10 @@ export const apps: { [key: string]: { stg?: Options; prd?: Options } } = {
     prd: {
       sslCert: scoutgameCert
     }
+  },
+  agents: {
+    prd: {
+      sslCert: scoutgameCert
+    }
   }
 };

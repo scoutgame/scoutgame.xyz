@@ -7,10 +7,11 @@ import {
   builderPointsShare as builderTokensShare,
   scoutPointsShare as scoutTokensShare
 } from '../builderNfts/constants';
+import type { TokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 import { calculateEarnableScoutPointsForRank as calculateEarnableScoutTokensForRank } from './calculatePoints';
 
-const nftTypeMultipliers: Record<BuilderNftType, number> = {
+export const nftTypeMultipliers: Record<BuilderNftType, number> = {
   starter_pack: 0.1,
   default: 1
 };
@@ -22,8 +23,13 @@ export type TokenDistribution = {
     total: number;
   };
   earnableScoutTokens: number;
-  tokensPerScout: {
+  tokensPerScoutByWallet: {
     wallet: Address;
+    nftTokens: number;
+    erc20Tokens: number;
+  }[];
+  tokensPerScoutByScoutId: {
+    scoutId: string;
     nftTokens: number;
     erc20Tokens: number;
   }[];
@@ -49,7 +55,7 @@ export async function divideTokensBetweenBuilderAndHolders({
   rank: number;
   weeklyAllocatedTokens: number;
   normalisationFactor: number;
-  owners: { wallet: Address; tokens: Record<BuilderNftType, number> }[];
+  owners: TokenOwnershipForBuilder;
 }): Promise<TokenDistribution> {
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError('Invalid builderId must be a valid UUID');
@@ -60,20 +66,31 @@ export async function divideTokensBetweenBuilderAndHolders({
   }
 
   // Calculate the total number of NFTs purchased by each scout
-  const nftSupply = owners.reduce((acc, owner) => acc + owner.tokens.default, 0);
+  const nftSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalNft, 0);
+  const starterPackSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
 
   const earnableScoutTokens = Math.floor(
     calculateEarnableScoutTokensForRank({ rank, weeklyAllocatedPoints: weeklyAllocatedTokens }) * normalisationFactor
   );
 
-  const tokensPerScout = owners.map((owner) => {
+  const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
     const scoutRewardShare = calculateRewardForScout({
-      purchased: { default: owner.tokens.default, starterPack: 0 },
-      supply: { default: nftSupply, starterPack: 0 }
+      purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
+      supply: { default: nftSupply, starterPack: starterPackSupply }
     });
     const scoutTokens = Math.floor(scoutRewardShare * scoutTokensShare * earnableScoutTokens);
 
-    return { wallet: owner.wallet, nftTokens: owner.tokens.default, erc20Tokens: scoutTokens };
+    return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
+  });
+
+  const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
+    const scoutRewardShare = calculateRewardForScout({
+      purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
+      supply: { default: nftSupply, starterPack: starterPackSupply }
+    });
+    const scoutTokens = Math.floor(scoutRewardShare * scoutTokensShare * earnableScoutTokens);
+
+    return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
   const tokensForBuilder = Math.floor(builderTokensShare * earnableScoutTokens);
@@ -81,11 +98,12 @@ export async function divideTokensBetweenBuilderAndHolders({
   return {
     nftSupply: {
       default: nftSupply,
-      starterPack: 0,
-      total: 0
+      starterPack: starterPackSupply,
+      total: nftSupply + starterPackSupply
     },
     earnableScoutTokens,
-    tokensPerScout,
+    tokensPerScoutByWallet,
+    tokensPerScoutByScoutId,
     tokensForBuilder
   };
 }

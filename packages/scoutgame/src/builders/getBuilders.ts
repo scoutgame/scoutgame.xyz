@@ -2,6 +2,8 @@ import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type BuildersSortBy = 'price' | 'level' | 'week_gems' | 'estimated_payout';
@@ -71,13 +73,18 @@ export async function getBuilders({
                         builderEvent: {
                           season
                         },
-                        scoutId: userId
+                        scoutWallet: {
+                          scoutId: userId
+                        },
+                        senderWalletAddress: null
                       },
                       select: {
                         tokensPurchased: true
                       }
                     }
-                  : undefined
+                  : {
+                      where: validMintNftPurchaseEvent
+                    }
               }
             },
             userSeasonStats: {
@@ -148,13 +155,18 @@ export async function getBuilders({
                 builderEvent: {
                   season
                 },
-                scoutId: userId
+                scoutWallet: {
+                  scoutId: userId
+                },
+                senderWalletAddress: null
               },
               select: {
                 tokensPurchased: true
               }
             }
-          : undefined,
+          : {
+              where: validMintNftPurchaseEvent
+            },
         builder: {
           select: {
             path: true,
@@ -219,13 +231,18 @@ export async function getBuilders({
                 builderEvent: {
                   season
                 },
-                scoutId: userId
+                scoutWallet: {
+                  scoutId: userId
+                },
+                senderWalletAddress: null
               },
               select: {
                 tokensPurchased: true
               }
             }
-          : undefined,
+          : {
+              where: validMintNftPurchaseEvent
+            },
         builder: {
           select: {
             path: true,
@@ -305,13 +322,18 @@ export async function getBuilders({
                         builderEvent: {
                           season
                         },
-                        scoutId: userId
+                        scoutWallet: {
+                          scoutId: userId
+                        },
+                        senderWalletAddress: null
                       },
                       select: {
                         tokensPurchased: true
                       }
                     }
-                  : undefined
+                  : {
+                      where: validMintNftPurchaseEvent
+                    }
               }
             },
             builderCardActivities: {

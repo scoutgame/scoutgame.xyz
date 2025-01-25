@@ -39,7 +39,7 @@ export const getPublicClient = (chainId: number) => {
     chain,
     transport: http(providerUrl, {
       retryCount: 1,
-      timeout: 10000
+      timeout: 20000
     })
   });
 };

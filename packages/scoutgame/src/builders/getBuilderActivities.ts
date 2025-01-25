@@ -4,6 +4,7 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
 import type { BonusPartner } from '../bonus';
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 
 export type BuilderActivityType = 'nft_purchase' | 'merged_pull_request';
 
@@ -50,10 +51,7 @@ export async function getBuilderActivities({
         },
         {
           type: 'nft_purchase',
-          nftPurchaseEvent: {
-            // Corresponds to a mint
-            senderWalletAddress: null
-          }
+          nftPurchaseEvent: validMintNftPurchaseEvent
         }
       ]
     },
@@ -71,10 +69,15 @@ export async function getBuilderActivities({
       type: true,
       nftPurchaseEvent: {
         select: {
-          scout: {
+          scoutWallet: {
             select: {
-              path: true,
-              displayName: true
+              scout: {
+                select: {
+                  id: true,
+                  path: true,
+                  displayName: true
+                }
+              }
             }
           },
           tokensPurchased: true
@@ -110,8 +113,8 @@ export async function getBuilderActivities({
           createdAt: event.createdAt,
           type: 'nft_purchase' as const,
           scout: {
-            path: event.nftPurchaseEvent.scout.path,
-            displayName: event.nftPurchaseEvent.scout.displayName
+            path: event.nftPurchaseEvent.scoutWallet!.scout.path,
+            displayName: event.nftPurchaseEvent.scoutWallet!.scout.displayName
           }
         };
       } else if (

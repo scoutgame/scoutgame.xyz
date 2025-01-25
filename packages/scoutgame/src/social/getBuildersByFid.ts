@@ -53,7 +53,7 @@ export async function getBuildersByFid({
             congratsImageUrl: true,
             currentPrice: true,
             nftSoldEvents: {
-              distinct: 'scoutId'
+              distinct: 'walletAddress'
             },
             nftType: true,
             estimatedPayout: true

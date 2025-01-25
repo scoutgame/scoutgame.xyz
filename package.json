@@ -45,7 +45,12 @@
     "admin": "npx react-env --path .env.local --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:remote": "npx react-env --path .env.production --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:build": "npm run build -w=apps/admin",
-    "admin:test": "dotenv -e .env.test.local -- npm test -w apps/admin"
+    "admin:test": "dotenv -e .env.test.local -- npm test -w apps/admin",
+    "generate:package": "chmod +x ./scripts/generatePackage.sh && ./scripts/generatePackage.sh",
+    "agents": "dotenv -e .env.local -- npm run start -w=apps/agents",
+    "agents:staging": "npm run start:prod:node18 -w apps/agents",
+    "agents:prod": "npm run start:prod:node18 -w apps/agents",
+    "agents:test": "dotenv -e .env.test.local -- npm test -w apps/agents"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -54,7 +59,7 @@
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.108.0",
+    "@charmverse/core": "^0.108.1",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",
@@ -105,6 +110,7 @@
     "@types/luxon": "2.4",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/parser": "^8.9.0",
+    "cd": "^0.3.3",
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
     "encoding": "^0.1.13",

@@ -3,18 +3,20 @@ import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
-import { getRevertedMintTransactionAttestations } from '@packages/safetransactions/getRevertedMintTransactionAttestations';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
+import {
+  builderNftChain,
+  getBuilderNftContractAddressForNftType,
+  validMintNftPurchaseEvent
+} from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { prefix0x } from '@packages/utils/prefix0x';
 
 export async function findAndIndexMissingPurchases({
@@ -49,6 +51,7 @@ export async function findAndIndexMissingPurchases({
   const uniqueStoredTransactions = await prisma.nFTPurchaseEvent
     .findMany({
       where: {
+        ...validMintNftPurchaseEvent,
         builderNft: {
           contractAddress,
           season
@@ -68,10 +71,10 @@ export async function findAndIndexMissingPurchases({
         }
       }
     })
-    .then(
-      (transactions) =>
-        new Map(
-          transactions.map((tx) => [
+    .then((transactions) =>
+      transactions.reduce(
+        (acc, tx) => {
+          acc[
             uniqueNftPurchaseEventKey({
               args: {
                 from: (tx.senderWalletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
@@ -82,14 +85,16 @@ export async function findAndIndexMissingPurchases({
               },
               transactionHash: prefix0x(tx.txHash),
               logIndex: tx.txLogIndex as number
-            }),
-            tx
-          ])
-        )
+            })
+          ] = tx;
+          return acc;
+        },
+        {} as Record<string, (typeof transactions)[number]>
+      )
     );
 
   for (const event of transferSingleEvents) {
-    if (!uniqueStoredTransactions.has(uniqueNftPurchaseEventKey(event))) {
+    if (!uniqueStoredTransactions[uniqueNftPurchaseEventKey(event)]) {
       missingEvents.push(event);
     }
   }
@@ -166,26 +171,14 @@ export async function findAndIndexMissingPurchases({
 
       const asPoints = convertCostToPoints(price);
 
-      const address = transferSingleEventsMapped[missingTx.transactionHash].args.to;
+      const address = transferSingleEventsMapped[uniqueNftPurchaseEventKey(missingTx)].args.to;
 
       if (!address) {
         scoutgameMintsLogger.error(`Tx ${missingTx.transactionHash} has no recipient address`);
       }
 
-      let scoutId = await prisma.scoutWallet
-        .findFirst({ where: { address: address.toLowerCase() } })
-        .then((scout) => scout?.scoutId);
-
-      if (!scoutId) {
-        scoutgameMintsLogger.info(
-          `Scout with unknown address ${address} who minted ${missingTx.args.value} NFTs with tokenId ${missingTx.args.id} at transaction ${missingTx.transactionHash} not found, creating new user`
-        );
-        scoutId = await findOrCreateWalletUser({ wallet: address }).then((scout) => scout.id);
-      }
-
       await recordNftMint({
         amount: Number(missingTx.args.value),
-        scoutId: scoutId as string,
         mintTxHash: missingTx.transactionHash,
         paidWithPoints: false,
         pointsValue: asPoints,
@@ -196,3 +189,10 @@ export async function findAndIndexMissingPurchases({
     }
   }
 }
+
+// findAndIndexMissingPurchases({
+//   nftType: 'default',
+//   season: '2025-W02'
+// }).then(() => {
+//   process.exit(0);
+// });
