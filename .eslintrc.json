@@ -86,6 +86,7 @@
           "./packages/loops/",
           "./packages/mailer/",
           "./packages/mixpanel/",
+          "./packages/moxie/",
           "./packages/nextjs/",
           "./packages/scoutgame/",
           "./packages/scoutgame-ui/",
