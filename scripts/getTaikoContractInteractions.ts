@@ -42,7 +42,7 @@ async function retrieveContractInteractions({
   fromBlock,
   toBlock,
   contractId,
-  pageSize = BigInt(10000)
+  pageSize = BigInt(1000)
 }: {
   client: BlockchainClient;
   address: Address;
