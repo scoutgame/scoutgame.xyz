@@ -53,7 +53,17 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
         },
         select: {
           nftSoldEvents: {
-            where: validMintNftPurchaseEvent,
+            where: {
+              ...validMintNftPurchaseEvent,
+              // builderNft: {
+              //   nftType: 'default'
+              // },
+              builderEvent: {
+                week: {
+                  lte: week
+                }
+              }
+            },
             select: {
               scoutWallet: {
                 select: {
