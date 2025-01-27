@@ -1,6 +1,6 @@
 'use client';
 
-import AddIcon from '@mui/icons-material/Add';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { Button, Stack, Typography } from '@mui/material';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
@@ -67,7 +67,7 @@ export function ProjectTeamMemberForm({ control }: { control: Control<CreateScou
           variant='outlined'
           color='secondary'
           sx={{ width: 'fit-content' }}
-          startIcon={<AddIcon />}
+          startIcon={<AddCircleOutlineIcon />}
           onClick={() => setOpen(true)}
         >
           Team Member

@@ -17,6 +17,7 @@ import { useUser } from '../../../providers/UserProvider';
 import { FormErrors } from '../../common/FormErrors';
 
 import { ProjectAvatarField } from './ProjectAvatarField';
+import { ProjectSmartContractForm } from './ProjectSmartContractForm';
 import { ProjectTeamMemberForm } from './ProjectTeamMemberForm';
 
 export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
@@ -163,6 +164,7 @@ export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
                 <br />
                 Sign a message with the wallet that deployed your contracts to prove ownership.
               </Typography>
+              <ProjectSmartContractForm control={control} />
             </Stack>
           </Stack>
           <Divider />

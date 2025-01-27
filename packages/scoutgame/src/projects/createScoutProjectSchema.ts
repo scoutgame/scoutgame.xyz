@@ -6,6 +6,15 @@ export const createScoutProjectSchema = yup.object({
   description: yup.string().required('Description is required'),
   website: yup.string().url('Invalid website URL').required('Website is required'),
   github: yup.string().required('Github is required'),
+  contracts: yup
+    .array()
+    .of(
+      yup.object({
+        address: yup.string().required('Contract address is required'),
+        chainId: yup.number().integer().required('Chain ID is required')
+      })
+    )
+    .min(0),
   teamMembers: yup
     .array()
     .of(

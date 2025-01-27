@@ -1,4 +1,4 @@
-import AddIcon from '@mui/icons-material/Add';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import Image from 'next/image';
@@ -80,7 +80,7 @@ export function ProjectAvatarField({ control, avatarSize = 150, isLoading, onAva
         />
       ) : (
         <Stack flexDirection='row' alignItems='center' justifyContent='center' gap={0.5}>
-          <AddIcon fontSize='small' color={error ? 'error' : 'inherit'} />
+          <AddCircleOutlineIcon fontSize='small' color={error ? 'error' : 'inherit'} />
           <Typography variant='body2' color={error ? 'error' : 'textPrimary'}>
             Image
           </Typography>
