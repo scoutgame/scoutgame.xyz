@@ -182,24 +182,33 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
       break;
     }
 
-    const results = await queryRepos(repoList).then(async (data) => {
-      const repos = data?.search?.edges.map((edge) => edge.node) || [];
-      if (!data?.search) {
-        console.log('No search data', data);
-      }
-      const _results: FlatRepositoryData[] = [];
-      for (let repo of repos) {
-        const prs = repo.pullRequests.edges.filter((edge) => edge.node.updatedAt >= cutoffDate.toISOString());
-        // compensate for the limit of 50 PRs from the initial query
-        if (prs.length >= 50) {
-          const extra = await queryPullRequests(repo.url.replace('https://github.com/', ''));
-          repo.pullRequests.edges = extra.search.edges;
-          _results.push(mapToFlatObject(repo, cutoffDate));
-          console.log('requested additional PRs', prs.length, repo.pullRequests.edges.length);
+    const results = await queryRepos(repoList)
+      .then(async (data) => {
+        const repos = data?.search?.edges.map((edge) => edge.node) || [];
+        if (!data?.search) {
+          console.log('No search data', data);
         }
-      }
-      return _results;
-    });
+        const _results: FlatRepositoryData[] = [];
+        for (let repo of repos) {
+          const prs = repo.pullRequests.edges.filter((edge) => edge.node.updatedAt >= cutoffDate.toISOString());
+          // compensate for the limit of 50 PRs from the initial query
+          if (prs.length >= 50) {
+            try {
+              const extra = await queryPullRequests(repo.url.replace('https://github.com/', ''));
+              repo.pullRequests.edges = extra.search.edges;
+              _results.push(mapToFlatObject(repo, cutoffDate));
+              console.log('requested additional PRs', prs.length, repo.pullRequests.edges.length);
+            } catch (e) {
+              console.error('Error querying pull requests for repo', repo.url, e);
+            }
+          }
+        }
+        return _results;
+      })
+      .catch((error) => {
+        console.error('Error querying repos', error);
+        return [];
+      });
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
