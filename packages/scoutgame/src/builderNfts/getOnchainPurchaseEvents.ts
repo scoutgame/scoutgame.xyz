@@ -8,7 +8,12 @@ import type { BuilderScoutedEvent } from './accounting/getBuilderScoutedEvents';
 import { getBuilderScoutedEvents } from './accounting/getBuilderScoutedEvents';
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
 import { getTransferSingleEvents } from './accounting/getTransferSingleEvents';
-import { builderNftChain, getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from './constants';
+import {
+  builderNftChain,
+  getBuilderNftContractAddress,
+  getBuilderNftStarterPackContractAddress,
+  validMintNftPurchaseEvent
+} from './constants';
 
 type SimplifiedGroupedEvent = {
   scoutId: string;
@@ -68,7 +73,10 @@ export async function getOnchainPurchaseEvents({
 
   const nftPurchases = await prisma.nFTPurchaseEvent.findMany({
     where: {
-      scoutId,
+      ...validMintNftPurchaseEvent,
+      scoutWallet: {
+        scoutId
+      },
       createdAt: fromBlockTimestamp
         ? {
             gte: fromBlockTimestamp

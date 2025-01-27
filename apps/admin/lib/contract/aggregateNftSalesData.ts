@@ -1,5 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
+import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
+import { uniqueValues } from '@packages/utils/array';
 
 export type NftSalesData = {
   totalNftsSold: number;
@@ -51,30 +53,31 @@ export async function aggregateNftSalesData({
   const uniqueScoutIds = await prisma.nFTPurchaseEvent
     .findMany({
       where: {
-        senderWalletAddress: null,
+        ...validMintNftPurchaseEvent,
         builderNft: {
           nftType,
           season
         }
       },
-      distinct: ['scoutId'],
       select: {
-        scoutId: true
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        }
       }
     })
-    .then((data) => ({ _count: { scoutId: data.length } }));
+    .then((data) => uniqueValues(data.map((item) => item.scoutWallet!.scoutId)));
 
   const mintEvents = await prisma.nFTPurchaseEvent.count({
-    where: {
-      senderWalletAddress: null
-    }
+    where: validMintNftPurchaseEvent
   });
 
   return {
     totalNftsSold: nftsPaidWithPoints + nftsPaidWithCrypto,
     nftsPaidWithCrypto,
     nftsPaidWithPoints,
-    uniqueHolders: uniqueScoutIds._count.scoutId,
+    uniqueHolders: uniqueScoutIds.length,
     mintEvents
   };
 }

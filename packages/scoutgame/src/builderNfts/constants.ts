@@ -1,8 +1,7 @@
 import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
-import type { BuilderNftType } from '@charmverse/core/prisma';
-import type { ISOWeek, Season } from '@packages/dates/config';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import type { BuilderNftType, Prisma } from '@charmverse/core/prisma';
+import type { ISOWeek } from '@packages/dates/config';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import { optimism, optimismSepolia } from 'viem/chains';
@@ -144,3 +143,15 @@ export const lastBlockOfPreSeason01 = 130_261_411;
 //     }
 //   })
 //   .then(console.log);
+
+/**
+ * We store the 0x000...0000 address as a null in our database
+ *
+ * A mint transaction comes from sender wallet and has a linked wallet address
+ */
+export const validMintNftPurchaseEvent = {
+  senderWalletAddress: null,
+  walletAddress: {
+    not: null
+  }
+} as const satisfies Prisma.NFTPurchaseEventWhereInput;

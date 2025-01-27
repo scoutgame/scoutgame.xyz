@@ -1,7 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { isTruthy } from '@packages/utils/types';
 import { uniq } from 'lodash';
 
@@ -52,11 +53,26 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
         },
         select: {
           nftSoldEvents: {
+            where: {
+              ...validMintNftPurchaseEvent,
+              // builderNft: {
+              //   nftType: 'default'
+              // },
+              builderEvent: {
+                week: {
+                  lte: week
+                }
+              }
+            },
             select: {
-              scout: {
+              scoutWallet: {
                 select: {
-                  farcasterId: true,
-                  id: true
+                  scout: {
+                    select: {
+                      farcasterId: true,
+                      id: true
+                    }
+                  }
                 }
               }
             }
@@ -89,7 +105,7 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
 
   const scoutIds = new Set(
     builders
-      .flatMap((b) => b.builderNfts.flatMap((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId)))
+      .flatMap((b) => b.builderNfts.flatMap((nft) => nft.nftSoldEvents.map((e) => e.scoutWallet!.scout.farcasterId)))
       .filter(isTruthy)
   );
 
@@ -108,7 +124,7 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
       const builderFid = builder.farcasterId as number;
       const scoutsFids = uniq(
         builder.builderNfts
-          .map((nft) => nft.nftSoldEvents.map((e) => e.scout.farcasterId))
+          .map((nft) => nft.nftSoldEvents.map((e) => e.scoutWallet!.scout.farcasterId))
           .flat()
           .filter((scoutFid) => scoutFid)
       ) as number[];

@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 
 async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath: string }) {
@@ -15,7 +16,7 @@ async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath
 
   const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
-      senderWalletAddress: null,
+      ...validMintNftPurchaseEvent,
       builderNft: {
         season: getCurrentSeasonStart(),
         builder: {
@@ -26,9 +27,9 @@ async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath
     select: {
       id: true,
       tokensPurchased: true,
-      scout: {
+      scoutWallet: {
         select: {
-          id: true
+          scoutId: true
         }
       }
     }
@@ -37,10 +38,10 @@ async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath
   const nftPurchaseEventIds = nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.id);
   const nftPurchaseEventsRecord: Record<string, number> = {};
   nftPurchaseEvents.forEach((nftPurchaseEvent) => {
-    if (!nftPurchaseEventsRecord[nftPurchaseEvent.scout.id]) {
-      nftPurchaseEventsRecord[nftPurchaseEvent.scout.id] = 0;
+    if (!nftPurchaseEventsRecord[nftPurchaseEvent.scoutWallet!.scoutId]) {
+      nftPurchaseEventsRecord[nftPurchaseEvent.scoutWallet!.scoutId] = 0;
     }
-    nftPurchaseEventsRecord[nftPurchaseEvent.scout.id] += nftPurchaseEvent.tokensPurchased;
+    nftPurchaseEventsRecord[nftPurchaseEvent.scoutWallet!.scoutId] += nftPurchaseEvent.tokensPurchased;
   });
 
   await prisma.$transaction(

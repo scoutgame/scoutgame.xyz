@@ -2,6 +2,7 @@ import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { isTruthy } from '@packages/utils/types';
 import { v4 as uuid } from 'uuid';
 
@@ -99,17 +100,22 @@ export async function recordClosedPullRequest({
 
     const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
       where: {
+        ...validMintNftPurchaseEvent,
         builderNft: {
           season,
           builderId: builder.id
         }
       },
       select: {
-        scoutId: true
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        }
       }
     });
     const uniqueScoutIds = Array.from(
-      new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutId).filter(isTruthy))
+      new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutWallet!.scoutId).filter(isTruthy))
     );
 
     const activityType = (shouldBeBanned ? 'builder_suspended' : 'builder_strike') as ScoutGameActivityType;

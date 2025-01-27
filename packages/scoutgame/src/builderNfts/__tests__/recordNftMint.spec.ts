@@ -54,8 +54,8 @@ describe('recordNftMint', () => {
       mintTxHash,
       pointsValue: 100,
       recipientAddress: mockWallet,
-      scoutId: scout.id,
-      paidWithPoints: true
+      paidWithPoints: true,
+      mintTxLogIndex: 0
     });
 
     const builderEvent = await prisma.builderEvent.findFirstOrThrow({
@@ -91,11 +91,11 @@ describe('recordNftMint', () => {
         id: expect.any(String),
         paidInPoints: true,
         pointsValue: 100,
-        scoutId: expect.any(String),
         tokensPurchased: amount,
         txHash: mintTxHash,
         walletAddress: mockWallet,
-        senderWalletAddress: null
+        senderWalletAddress: null,
+        txLogIndex: 0
       }
     });
 
@@ -143,9 +143,9 @@ describe('recordNftMint', () => {
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
       recipientAddress: mockWallet,
-      scoutId: scout.id,
       paidWithPoints: true,
-      skipMixpanel: true
+      skipMixpanel: true,
+      mintTxLogIndex: 0
     });
   });
 
@@ -164,9 +164,9 @@ describe('recordNftMint', () => {
       mintTxHash: `0x123${Math.random().toString()}`,
       pointsValue: 100,
       recipientAddress: mockWallet,
-      scoutId: scout.id,
       paidWithPoints: true,
-      skipPriceRefresh: true
+      skipPriceRefresh: true,
+      mintTxLogIndex: 0
     });
 
     expect(refreshBuilderNftPrice).not.toHaveBeenCalled();
@@ -205,8 +205,8 @@ describe('recordNftMint', () => {
       pointsValue: 100,
       season,
       recipientAddress: mockWallet,
-      scoutId: referee.id,
-      paidWithPoints: true
+      paidWithPoints: true,
+      mintTxLogIndex: 0
     });
 
     const referrerAfterReferralBonus = await prisma.scout.findUniqueOrThrow({

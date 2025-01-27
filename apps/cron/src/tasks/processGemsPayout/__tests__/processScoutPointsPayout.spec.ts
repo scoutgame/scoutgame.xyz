@@ -4,7 +4,6 @@ import { builderPointsShare, scoutPointsShare } from '@packages/scoutgame/builde
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/testing/database';
-import { mockSeason } from '@packages/testing/generators';
 
 import { processScoutPointsPayout } from '../processScoutPointsPayout';
 
@@ -15,12 +14,12 @@ describe('processScoutPointsPayout', () => {
     const scout2 = await mockScout();
     const rank = 1;
     const gemsCollected = 10;
-    const week = getCurrentWeek();
+    const mockSeason = '2025-W02';
+    const week = mockSeason;
 
     await mockBuilderNft({ builderId: builder.id, season: mockSeason });
     await processScoutPointsPayout({
       builderId: builder.id,
-      nftPurchaseEvents: [],
       rank,
       gemsCollected,
       week,
@@ -87,7 +86,8 @@ describe('processScoutPointsPayout', () => {
     const builder = await mockBuilder();
     const rank = 1;
     const gemsCollected = 10;
-    const week = getCurrentWeek();
+    const mockSeason = '2025-W02';
+    const week = mockSeason;
 
     const builderNft = await mockBuilderNft({ builderId: builder.id, season: mockSeason });
 
@@ -96,18 +96,25 @@ describe('processScoutPointsPayout', () => {
 
     // Scout 1 has 3 NFTs, scout 2 has 7 NFTs
     const events = await Promise.all([
-      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, tokensPurchased: 2 }),
-      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0 }),
-      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0 }),
-      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, tokensPurchased: 6 })
+      mockNFTPurchaseEvent({
+        builderId: builder.id,
+        scoutId: scout1.id,
+        points: 0,
+        tokensPurchased: 2,
+        week,
+        season: mockSeason
+      }),
+      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week, season: mockSeason }),
+      mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week, season: mockSeason }),
+      mockNFTPurchaseEvent({
+        builderId: builder.id,
+        scoutId: scout2.id,
+        points: 0,
+        tokensPurchased: 6,
+        week,
+        season: mockSeason
+      })
     ]);
-    const nftPurchaseEvents: PartialNftPurchaseEvent[] = events.map(
-      ({ nftPurchaseEvent }) =>
-        ({
-          ...nftPurchaseEvent,
-          builderNft
-        }) as PartialNftPurchaseEvent
-    );
 
     const totalPoints = calculateEarnableScoutPointsForRank({ weeklyAllocatedPoints: 1e5, rank });
 
@@ -120,7 +127,6 @@ describe('processScoutPointsPayout', () => {
     });
     await processScoutPointsPayout({
       builderId: builder.id,
-      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
@@ -138,7 +144,7 @@ describe('processScoutPointsPayout', () => {
 
     expect(Math.floor(builderPointReceipt.value)).toEqual(Math.floor(builderPointsShare * totalPoints));
 
-    const builderStats = await getStats({ userId: builder.id });
+    const builderStats = await getStats({ userId: builder.id, season: mockSeason });
     expect(builderStats.season?.pointsEarnedAsBuilder).toBe(builderPointReceipt.value);
     expect(builderStats.allTime?.pointsEarnedAsBuilder).toBe(builderPointReceipt.value);
 
@@ -150,7 +156,7 @@ describe('processScoutPointsPayout', () => {
 
     expect(Math.floor(scout1PointReceipt.value)).toEqual(Math.floor(scoutPointsShare * totalPoints * (3 / 10)));
 
-    const scout1Stats = await getStats({ userId: scout1.id });
+    const scout1Stats = await getStats({ userId: scout1.id, season: mockSeason });
     expect(scout1Stats.season?.pointsEarnedAsScout).toBe(scout1PointReceipt.value);
     expect(scout1Stats.allTime?.pointsEarnedAsScout).toBe(scout1PointReceipt.value);
 
@@ -162,7 +168,7 @@ describe('processScoutPointsPayout', () => {
 
     expect(Math.floor(scout2PointReceipt.value)).toEqual(Math.floor(scoutPointsShare * totalPoints * (7 / 10)));
 
-    const scout2Stats = await getStats({ userId: scout2.id });
+    const scout2Stats = await getStats({ userId: scout2.id, season: mockSeason });
     expect(scout2Stats.season?.pointsEarnedAsScout).toBe(scout2PointReceipt.value);
     expect(scout2Stats.allTime?.pointsEarnedAsScout).toBe(scout2PointReceipt.value);
 
@@ -205,7 +211,9 @@ describe('processScoutPointsPayout', () => {
     const builder = await mockBuilder();
     const rank = 1;
     const gemsCollected = 10;
-    const week = '2023-W01';
+
+    const mockSeason = '2025-W02';
+    const week = mockSeason;
 
     const scout1 = await mockScout();
     const scout2 = await mockScout();
@@ -214,22 +222,14 @@ describe('processScoutPointsPayout', () => {
 
     // Scout 1 has 3 NFTs, scout 2 has 7 NFTs
     const events = await Promise.all([
-      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week }),
-      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week })
+      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout1.id, points: 0, week, season: mockSeason }),
+      await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: scout2.id, points: 0, week, season: mockSeason })
     ]);
-    const nftPurchaseEvents: PartialNftPurchaseEvent[] = events.map(
-      ({ nftPurchaseEvent }) =>
-        ({
-          ...nftPurchaseEvent,
-          builderNft
-        }) as PartialNftPurchaseEvent
-    );
 
     const weeklyAllocatedPoints = 1e5;
 
     await processScoutPointsPayout({
       builderId: builder.id,
-      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
@@ -238,7 +238,6 @@ describe('processScoutPointsPayout', () => {
     });
     await processScoutPointsPayout({
       builderId: builder.id,
-      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
@@ -247,7 +246,6 @@ describe('processScoutPointsPayout', () => {
     });
     await processScoutPointsPayout({
       builderId: builder.id,
-      nftPurchaseEvents,
       rank,
       gemsCollected,
       week,
@@ -325,11 +323,11 @@ describe('processScoutPointsPayout', () => {
   });
 });
 
-async function getStats({ userId }: { userId: string }) {
+async function getStats({ userId, season }: { userId: string; season: string }) {
   const userSeasonStats = await prisma.userSeasonStats.findFirstOrThrow({
     where: {
       userId,
-      season: mockSeason
+      season
     }
   });
   const allTimeStats = await prisma.userAllTimeStats.findFirst({

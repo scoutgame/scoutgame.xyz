@@ -43,7 +43,6 @@ export async function generateNftPurchaseEvents(
           amount: nftsPurchased,
           paidWithPoints: false,
           pointsValue,
-          scoutId,
           mintTxHash: faker.finance.ethereumAddress(),
           recipientAddress: faker.finance.ethereumAddress(),
           createdAt,

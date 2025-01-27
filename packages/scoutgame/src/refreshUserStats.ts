@@ -4,6 +4,8 @@ import { arrayUtils } from '@charmverse/core/utilities';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
+import { validMintNftPurchaseEvent } from './builderNfts/constants';
+
 export async function refreshUserStats({
   userId,
   week = getCurrentWeek(),
@@ -68,8 +70,13 @@ export async function refreshUserStats({
     },
     include: {
       nftSoldEvents: {
+        where: validMintNftPurchaseEvent,
         select: {
-          scoutId: true,
+          scoutWallet: {
+            select: {
+              scoutId: true
+            }
+          },
           tokensPurchased: true
         }
       }
@@ -78,7 +85,9 @@ export async function refreshUserStats({
 
   const nftsBought = await tx.nFTPurchaseEvent.count({
     where: {
-      scoutId: userId,
+      scoutWallet: {
+        scoutId: userId
+      },
       builderNft: {
         season
       }
@@ -91,7 +100,9 @@ export async function refreshUserStats({
     season,
     nftsPurchased: nftsBought,
     nftsSold: builderNft?.nftSoldEvents.length,
-    nftOwners: builderNft ? arrayUtils.uniqueValues(builderNft.nftSoldEvents.map((ev) => ev.scoutId)).length : undefined
+    nftOwners: builderNft
+      ? arrayUtils.uniqueValues(builderNft.nftSoldEvents.map((ev) => ev.scoutWallet!.scoutId)).length
+      : undefined
   };
 
   const seasonStatsRecord = await tx.userSeasonStats.upsert({

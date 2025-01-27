@@ -38,11 +38,6 @@ export async function recordNftTransfer({
   const fromWallet = from !== NULL_EVM_ADDRESS ? from.toLowerCase() : null;
   const toWallet = to !== NULL_EVM_ADDRESS ? to.toLowerCase() : null;
 
-  if (!toWallet) {
-    log.warn('Skipping burn transaction', { transferSingleEvent });
-    return;
-  }
-
   const existingNftPurchaseEvent = await getMatchingNFTPurchaseEvent({
     builderNftId: matchingNft.id,
     tokensPurchased: Number(transferSingleEvent.args.value),
@@ -56,10 +51,12 @@ export async function recordNftTransfer({
     return;
   }
 
-  const scoutId: string = await findOrCreateWalletUser({ wallet: toWallet }).then((user) => user.id);
-
   if (fromWallet) {
     await findOrCreateWalletUser({ wallet: fromWallet });
+  }
+
+  if (toWallet) {
+    await findOrCreateWalletUser({ wallet: toWallet });
   }
 
   const _sentAt = await getPublicClient(builderNftChain.id)
@@ -91,7 +88,6 @@ export async function recordNftTransfer({
           walletAddress: toWallet,
           senderWalletAddress: fromWallet,
           txLogIndex: logIndex,
-          scoutId,
           activities: {
             create: {
               recipientType: 'builder',

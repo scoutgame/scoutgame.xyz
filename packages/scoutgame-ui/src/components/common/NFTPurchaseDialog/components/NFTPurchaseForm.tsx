@@ -36,7 +36,7 @@ import {
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { calculateRewardForScout } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
+import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import {
   scoutProtocolChainId,
   scoutProtocolBuilderNftContractAddress,

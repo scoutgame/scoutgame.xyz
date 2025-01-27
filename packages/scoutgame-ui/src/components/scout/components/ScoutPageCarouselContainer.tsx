@@ -6,7 +6,7 @@ import { MAX_STARTER_PACK_PURCHASES } from '@packages/scoutgame/builderNfts/cons
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { getStarterPackBuilders } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { getTodaysHotBuilders } from '@packages/scoutgame/builders/getTodaysHotBuilders';
-import { aggregateTokensPurchased } from '@packages/scoutgame/scouts/aggregateTokensPurchased';
+import { aggregateStarterPackTokensPurchased } from '@packages/scoutgame/scouts/aggregateStarterPackTokensPurchased';
 
 import { ScoutPageCarousel } from './ScoutPageCarousel';
 
@@ -16,7 +16,7 @@ export async function ScoutPageCarouselContainer() {
   const [, builders = []] = await safeAwaitSSRData(getTodaysHotBuilders());
   const starterPackBuilders: StarterPackBuilder[] = [];
 
-  const [, purchases = 0] = await safeAwaitSSRData(aggregateTokensPurchased(scoutId));
+  const [, purchases = 0] = await safeAwaitSSRData(aggregateStarterPackTokensPurchased(scoutId));
 
   const remainingStarterCards = MAX_STARTER_PACK_PURCHASES - purchases;
 

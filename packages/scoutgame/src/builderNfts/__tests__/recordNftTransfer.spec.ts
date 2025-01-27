@@ -113,7 +113,6 @@ describe('recordNftTransfer', () => {
         id: expect.any(String),
         paidInPoints: false,
         pointsValue: 0,
-        scoutId: expect.any(String),
         tokensPurchased: amount,
         txHash: transferTxHash,
         walletAddress: mockRecipientWallet,
@@ -148,8 +147,7 @@ describe('recordNftTransfer', () => {
     });
   });
 
-  // We are skipping these for now since the scoutID is still mandatory on the NFTPurchaseEvent table
-  it('should skip burn transactions', async () => {
+  it('should handle burn transactions', async () => {
     const randomWallet = randomWalletAddress().toLowerCase() as Address;
 
     const builder = await mockBuilder({ wallets: [{ address: randomWallet }] });
@@ -185,6 +183,17 @@ describe('recordNftTransfer', () => {
       }
     });
 
-    expect(dbTransfer).toBeNull();
+    expect(dbTransfer).toMatchObject<NFTPurchaseEvent>({
+      id: expect.any(String),
+      builderNftId: builderNft.id,
+      createdAt: expect.any(Date),
+      paidInPoints: false,
+      pointsValue: 0,
+      tokensPurchased: 0,
+      txHash: transferTxHash,
+      walletAddress: null,
+      senderWalletAddress: scoutWallet,
+      txLogIndex: 5
+    });
   });
 });
