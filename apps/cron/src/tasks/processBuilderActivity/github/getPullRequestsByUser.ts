@@ -12,6 +12,7 @@ type GraphQLPullRequest = {
   url: string;
   state: 'CLOSED' | 'MERGED';
   mergedAt?: string;
+  reviewDecision: null | 'APPROVED';
   closedAt?: string;
   createdAt: string;
   number: number;
@@ -53,7 +54,7 @@ const prSearchQuery = `
       }
       nodes {
         ... on PullRequest {
-        databaseId
+          databaseId
           author {
             login
             ... on User {
@@ -65,6 +66,7 @@ const prSearchQuery = `
           url
           state
           mergedAt
+          reviewDecision
           closedAt
           createdAt
           number

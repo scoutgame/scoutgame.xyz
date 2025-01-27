@@ -194,7 +194,9 @@ export async function recordMergedPullRequest({
           ? 'first_pr'
           : threeDayPrStreak
             ? 'third_pr_in_streak'
-            : 'regular_pr';
+            : pullRequest.reviewDecision === 'APPROVED'
+              ? 'regular_pr'
+              : 'regular_pr_unreviewed';
 
       const gemValue = gemsValues[gemReceiptType];
 
