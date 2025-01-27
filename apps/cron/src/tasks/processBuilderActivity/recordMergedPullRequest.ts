@@ -73,7 +73,8 @@ export async function recordMergedPullRequest({
           week: true,
           gemsReceipt: {
             select: {
-              value: true
+              value: true,
+              type: true
             }
           }
         }
@@ -170,11 +171,18 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
+      const previousStreakEvent = previousGitEvents.find(
+        (e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak'
+      );
+      const previousStreakEventDate = previousStreakEvent?.completedAt?.toISOString().split('T')[0];
       const previousDaysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
           .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
           .filter(isTruthy)
+          // We only grab events from the last 7 days, so what looked like a streak may change over time
+          // To address this, we filter out events that happened before a previous streak event
+          .filter((dateStr) => !previousStreakEventDate || dateStr > previousStreakEventDate)
       );
 
       const thisPrDate = builderEventDate.toISOString().split('T')[0];
