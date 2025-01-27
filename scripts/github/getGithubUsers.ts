@@ -1,7 +1,6 @@
-import { gql } from '@apollo/client';
 import { log } from '@charmverse/core/log';
 
-import { githubGrapghQLClient } from 'lib/github/githubGraphQLClient';
+import { octokit } from '@packages/github/client';
 
 type GithubUser = {
   login: string;
@@ -29,9 +28,9 @@ export async function getGithubUsers({ logins }: { logins: string[] }): Promise<
     if (list.length === 0) {
       break;
     }
-    const results = await githubGrapghQLClient
-      .query<{ data: any }>({
-        query: gql`
+    const results = await octokit
+      .graphql<{ data: any }>({
+        query: `
           query {
             ${list
               .map(
@@ -52,7 +51,7 @@ export async function getGithubUsers({ logins }: { logins: string[] }): Promise<
           }
         `
       })
-      .then(({ data }) => {
+      .then((data) => {
         return Object.values(data).map((edge) => ({
           login: edge.login,
           name: edge.name || undefined,

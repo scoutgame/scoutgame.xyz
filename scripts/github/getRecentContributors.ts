@@ -1,10 +1,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'path';
-import { prettyPrint } from 'lib/utils/strings';
 import { uniq, sortBy } from 'lodash';
-import { getRepositoryActivity, FlatRepositoryData, queryRepos, octokit } from './getRepositoryActivity';
 import { prisma } from '@charmverse/core/prisma-client';
 const sourceFile = resolve(process.cwd(), './repoActivity2.json');
+
+import { getRepositoryActivity } from './getRepositoryActivity';
 
 /**
  * Use this script to perform database searches.

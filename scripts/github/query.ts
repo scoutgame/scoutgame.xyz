@@ -1,7 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'path';
-import { prettyPrint } from 'lib/utils/strings';
-import { getRepositoryActivity, FlatRepositoryData, queryRepos, octokit } from './getRepositoryActivity';
+import { getRepositoryActivity } from './getRepositoryActivity';
 import { prisma } from '@charmverse/core/prisma-client';
 import { uniqBy, sortBy, uniq } from 'lodash';
 import { getGithubUsers } from './getGithubUsers';
@@ -298,21 +297,3 @@ async function query() {
     }
   }
 }
-
-async function queryRepoActivity() {
-  // const commits = await getRepoCommits({ owner: 'charmverse', repo: 'app.charmverse.io' });
-  // console.log('FIRST RESULT');
-  const repos = await prisma.githubRepo.findMany({
-    where: { handPicked: true }
-  });
-  // console.log('Repos', projects.map((p) => p.repo).flat().length);
-
-  const repoActivity = await getRepositoryActivity({
-    cutoffDate: cutoffDate,
-    repos: repos.map((r) => `${r.owner}/${r.name}`)
-  });
-  // write to file
-  await writeFile('repoActivity2.json', JSON.stringify(repoActivity, null, 2));
-}
-
-queryRepoActivity();

@@ -1,36 +1,8 @@
 import { log } from '@charmverse/core/log';
-import { githubAccessToken } from '@packages/utils/constants';
-import { githubGrapghQLClient } from 'lib/github/githubGraphQLClient';
-import { uniq, uniqBy } from 'lodash';
-import { Octokit } from '@octokit/core';
-import { throttling } from '@octokit/plugin-throttling';
-import { paginateGraphQL } from '@octokit/plugin-paginate-graphql';
-
-const MyOctokit = Octokit.plugin(throttling, paginateGraphQL);
-export const octokit = new MyOctokit({
-  auth: githubAccessToken,
-  throttle: {
-    onRateLimit: (retryAfter, options, _octokit, retryCount) => {
-      //log.warn(`[Octokit] Request quota exhausted for request ${options.method} ${options.url}`);
-
-      log.info(`[Octokit] Retrying after ${retryAfter} seconds!`);
-      return true;
-      // if (retryCount < 2) {
-      //   // only retries twice
-      //   return true;
-      // }
-    },
-    onSecondaryRateLimit: (retryAfter, options, _octokit) => {
-      // does not retry, only logs a warning
-      log.warn(
-        `[Octokit] SecondaryRateLimit detected for request ${options.method} ${options.url}. Retrying after ${retryAfter} seconds!`
-      );
-      // try again
-      return true;
-    }
-  }
-});
-
+import { octokit } from '@packages/github/client';
+import { prisma } from '@charmverse/core/prisma-client';
+import { writeFile } from 'fs/promises';
+import { uniqueValuesBy } from '@packages/utils/array';
 type RepositoryData = {
   id: string;
   url: string;
@@ -171,7 +143,7 @@ function mapToFlatObject(data: RepositoryData, cutoffDate: Date): FlatRepository
     return updatedAt >= cutoffDate;
   });
 
-  const uniqAuthors = uniqBy(filteredPullRequests.map((pr) => pr.node.author).filter(Boolean), 'login');
+  const uniqAuthors = uniqueValuesBy(filteredPullRequests.map((pr) => pr.node.author).filter(Boolean), 'login');
   const missingAuthor = filteredPullRequests.find((edge) => !edge.node.author);
   if (missingAuthor) {
     console.log('Missing author', data.url, missingAuthor);
@@ -199,7 +171,7 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
 
   const maxQueriedRepos = totalRepos;
 
-  log.info(`Total repos to query: ${totalRepos}`);
+  log.info(`Total repos to query: ${totalRepos}, 50 per query...`);
 
   const allData: FlatRepositoryData[] = [];
 
@@ -237,3 +209,21 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
   }
   return allData;
 }
+
+const cutoffDate = new Date('2024-12-01');
+
+async function queryRepoActivity() {
+  const repos = await prisma.githubRepo.findMany({
+    where: { ownerType: 'org', events: { some: {} } }
+  });
+  console.log('Repos', repos.length);
+
+  const repoActivity = await getRepositoryActivity({
+    cutoffDate: cutoffDate,
+    repos: repos.map((r) => `${r.owner}/${r.name}`)
+  });
+  // write to file
+  await writeFile('latest_repo_activity.json', JSON.stringify(repoActivity, null, 2));
+}
+
+queryRepoActivity();
