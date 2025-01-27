@@ -48,6 +48,9 @@ export type FlatRepositoryData = {
   authors: { login: string; avatarUrl?: string }[];
 };
 
+const cutoffDate = '2024-12-01';
+const queryRange = cutoffDate + '..2025-01-27';
+
 // get pull requests by repo: "<owner>/<repo>"
 const queryPullRequests = (repo: string) =>
   octokit.graphql.paginate<{
@@ -81,7 +84,7 @@ const queryPullRequests = (repo: string) =>
       }
     }`,
     {
-      searchStr: repo + ' is:pr is:merged updated:2024-06-01..2024-11-05'
+      searchStr: repo + ' is:pr is:merged updated:' + queryRange
     }
   );
 
@@ -139,7 +142,6 @@ export const queryRepos = (repos: string[]) =>
 function mapToFlatObject(data: RepositoryData, cutoffDate: Date): FlatRepositoryData {
   const filteredPullRequests = data.pullRequests.edges.filter((edge) => {
     const updatedAt = new Date(edge.node.updatedAt);
-
     return updatedAt >= cutoffDate;
   });
 
@@ -169,13 +171,11 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
 
   const perQuery = 50;
 
-  const maxQueriedRepos = totalRepos;
-
   log.info(`Total repos to query: ${totalRepos}, 50 per query...`);
 
   const allData: FlatRepositoryData[] = [];
 
-  for (let i = 0; i <= maxQueriedRepos; i += perQuery) {
+  for (let i = 0; i <= totalRepos; i += perQuery) {
     const repoList = repos.slice(i, i + perQuery).map((repo) => `repo:${repo.replace('https://github.com/', '')}`);
 
     if (repoList.length === 0) {
@@ -201,6 +201,9 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
             } catch (e) {
               console.error('Error querying pull requests for repo', repo.url, e);
             }
+          } else {
+            console.log('No additional PRs requested for', repo.url);
+            _results.push(mapToFlatObject(repo, cutoffDate));
           }
         }
         return _results;
@@ -214,25 +217,23 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
 
     allData.push(...results);
 
-    log.info(`Queried repos ${i + 1}-${i + Math.min(repoList.length, perQuery)} / ${maxQueriedRepos}`);
+    log.info(`Queried repos ${i + 1}-${i + Math.min(repoList.length, perQuery)} / ${totalRepos}`);
   }
   return allData;
 }
-
-const cutoffDate = new Date('2024-12-01');
 
 async function queryRepoActivity() {
   const repos = await prisma.githubRepo.findMany({
     where: { ownerType: 'org', events: { some: {} } }
   });
-  console.log('Repos', repos.length);
+  console.log('Getting activity for', repos.length, 'repos since:', cutoffDate);
 
   const repoActivity = await getRepositoryActivity({
-    cutoffDate: cutoffDate,
+    cutoffDate: new Date(cutoffDate),
     repos: repos.map((r) => `${r.owner}/${r.name}`)
   });
   // write to file
-  await writeFile('latest_repo_activity.json', JSON.stringify(repoActivity, null, 2));
+  await writeFile('latest_repo_activity_2.json', JSON.stringify(repoActivity, null, 2));
 }
 
 queryRepoActivity();
