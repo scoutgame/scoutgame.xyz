@@ -73,7 +73,8 @@ export async function recordMergedPullRequest({
           week: true,
           gemsReceipt: {
             select: {
-              value: true
+              value: true,
+              type: true
             }
           }
         }
@@ -170,9 +171,13 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
+      const previousStreakEvent = previousGitEvents.find(
+        (e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak'
+      );
       const previousDaysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
+          .filter((e) => !previousStreakEvent || (e.completedAt && e.completedAt > previousStreakEvent.completedAt!))
           .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
           .filter(isTruthy)
       );
