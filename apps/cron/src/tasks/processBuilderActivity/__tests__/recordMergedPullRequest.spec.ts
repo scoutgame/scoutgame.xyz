@@ -461,7 +461,7 @@ describe('recordMergedPullRequest', () => {
   });
 
   // We only grab events from the last 7 days, so what looked like a streak may change over time
-  it('Does not look at dates prior to a streak in the 7 day window', async () => {
+  it('Handles streaks that started with events prior to the 7 day window', async () => {
     const builder = await mockBuilder({ createNft: true });
     const repo = await mockRepo();
 
