@@ -17,7 +17,7 @@ import { useUser } from '../../../providers/UserProvider';
 import { FormErrors } from '../../common/FormErrors';
 
 import { ProjectAvatarField } from './ProjectAvatarField';
-import { ProjectFormTeamMember } from './ProjectFormTeamMember';
+import { ProjectTeamMemberForm } from './ProjectTeamMemberForm';
 
 export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
   const { user } = useUser();
@@ -172,7 +172,7 @@ export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
                 Team
               </Typography>
               <Typography>Split Project Based Rewards with your teammates.</Typography>
-              <ProjectFormTeamMember control={control} />
+              <ProjectTeamMemberForm control={control} />
             </Stack>
           </Stack>
           <FormErrors errors={errors} />

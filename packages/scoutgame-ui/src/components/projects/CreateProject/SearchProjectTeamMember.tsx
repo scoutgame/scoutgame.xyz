@@ -1,18 +1,28 @@
-'use clieBox, nt';
+'use client';
 
-import { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import SearchIcon from '@mui/icons-material/Search';
-import { Autocomplete, Box, CircularProgress, InputAdornment, styled, TextField, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  InputAdornment,
+  Stack,
+  styled,
+  TextField,
+  Typography,
+  Chip
+} from '@mui/material';
 import type { BuilderSearchResult } from '@packages/scoutgame/builders/searchBuilders';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useSearchBuilders } from '../../../hooks/api/builders';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { Avatar } from '../../common/Avatar';
 import { Dialog } from '../../common/Dialog';
 
-const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult>)({
+const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult, true>)({
   '& .MuiAutocomplete-popper': {
     zIndex: 1100
   },
@@ -27,9 +37,11 @@ const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult>)({
 export function SearchProjectTeamMember({
   open,
   setOpen,
-  onProjectMemberAdd
+  onProjectMembersAdd,
+  filteredMemberIds
 }: {
-  onProjectMemberAdd: (projectMemberInfo: CreateScoutProjectFormValues['teamMembers'][number]) => void;
+  filteredMemberIds: string[];
+  onProjectMembersAdd: (projectMembersInfo: CreateScoutProjectFormValues['teamMembers']) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
@@ -38,74 +50,122 @@ export function SearchProjectTeamMember({
   const { data: searchResults, isLoading } = useSearchBuilders(debouncedSearchTerm);
   // delay the loading state to avoid flickering
   const debouncedIsLoading = useDebouncedValue(isLoading, 500);
+  const [selectedMembers, setSelectedMembers] = useState<BuilderSearchResult[]>([]);
+
+  const addProjectMembers = useCallback(() => {
+    onProjectMembersAdd(
+      selectedMembers.map((member) => ({
+        avatar: member.avatar ?? '',
+        displayName: member.displayName,
+        scoutId: member.id,
+        role: 'member'
+      }))
+    );
+  }, [selectedMembers, onProjectMembersAdd]);
+
+  const filteredSearchResults = useMemo(() => {
+    return searchResults?.filter((option) => !filteredMemberIds.includes(option.id)) ?? [];
+  }, [searchResults, filteredMemberIds]);
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)} title='Search project team member'>
-      <StyledAutocomplete
-        loading={debouncedIsLoading}
-        loadingText='Loading...'
-        size='small'
-        renderOption={(props, option, { inputValue }) => {
-          if (inputValue && inputValue.length >= 2 && searchResults?.length === 0) {
+    <Dialog
+      open={open}
+      onClose={() => setOpen(false)}
+      title='Search project team member'
+      sx={{
+        '&': { zIndex: 1 },
+        '& .MuiDialog-paper': { minWidth: '400px', height: '100%' }
+      }}
+    >
+      <Stack gap={2}>
+        <StyledAutocomplete
+          loading={debouncedIsLoading}
+          loadingText='Loading...'
+          size='small'
+          noOptionsText=''
+          renderOption={(props, option, { inputValue }) => {
+            if (inputValue && inputValue.length >= 2 && filteredSearchResults?.length === 0) {
+              return (
+                <Box component='li' {...props} sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <CircularProgress size={24} />
+                </Box>
+              );
+            }
+
             return (
-              <Box component='li' {...props} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <CircularProgress size={24} />
-              </Box>
+              <li {...props}>
+                <Box
+                  component='a'
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    textDecoration: 'none',
+                    color: 'inherit'
+                  }}
+                >
+                  <Avatar src={option.avatar} alt={option.displayName} sx={{ mr: 2 }} />
+                  <Typography variant='body1'>{option.displayName}</Typography>
+                </Box>
+              </li>
             );
-          }
-          return (
-            <li {...props}>
-              <Box
-                component='a'
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '100%',
-                  textDecoration: 'none',
-                  color: 'inherit'
+          }}
+          value={selectedMembers}
+          onChange={(event, newValue) => setSelectedMembers(newValue)}
+          multiple
+          fullWidth
+          open={open && filteredSearchResults.length > 0}
+          options={filteredSearchResults}
+          getOptionLabel={(option) => option.displayName}
+          onInputChange={(event, value) => setSearchTerm(value)}
+          renderTags={(tagValue, getTagProps) =>
+            tagValue.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option.id}
+                label={option.displayName}
+                avatar={<Avatar src={option.avatar} alt={option.displayName} />}
+                sx={{ borderRadius: '16px' }}
+                variant='outlined'
+                size='small'
+                onDelete={() => {
+                  setSelectedMembers(selectedMembers.filter((selectedMember) => selectedMember.id !== option.id));
                 }}
-                onClick={() =>
-                  onProjectMemberAdd({
-                    avatar: option.avatar ?? '',
-                    displayName: option.displayName,
-                    scoutId: option.id,
-                    role: 'member'
-                  })
-                }
-              >
-                <Avatar src={option.avatar} alt={option.displayName} sx={{ mr: 2 }} />
-                <Typography variant='body1'>{option.displayName}</Typography>
-              </Box>
-            </li>
-          );
-        }}
-        fullWidth
-        open={open}
-        onOpen={() => setOpen(true)}
-        onClose={() => setOpen(false)}
-        options={searchResults ?? []}
-        getOptionLabel={(option) => option.displayName}
-        onInputChange={(event, value) => setSearchTerm(value)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            fullWidth
-            variant='outlined'
-            placeholder='Search for team members'
-            slotProps={{
-              input: {
+              />
+            ))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              fullWidth
+              variant='outlined'
+              placeholder='Search for team members'
+              InputProps={{
                 ...params.InputProps,
                 startAdornment: (
-                  <InputAdornment position='start'>
-                    <SearchIcon />
-                  </InputAdornment>
+                  <>
+                    <InputAdornment position='start'>
+                      <SearchIcon />
+                    </InputAdornment>
+                    {params.InputProps.startAdornment}
+                  </>
                 )
-              }
-            }}
-          />
-        )}
-        noOptionsText='Search for team members'
-      />
+              }}
+            />
+          )}
+        />
+        <Button
+          color='secondary'
+          variant='outlined'
+          sx={{
+            width: 'fit-content'
+          }}
+          onClick={addProjectMembers}
+          disabled={selectedMembers.length === 0}
+        >
+          Add members
+        </Button>
+      </Stack>
     </Dialog>
   );
 }
