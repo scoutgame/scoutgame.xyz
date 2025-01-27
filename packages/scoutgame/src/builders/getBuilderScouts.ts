@@ -4,6 +4,8 @@ import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+
 export type ScoutInfo = BasicUserInfo & {
   displayName: string;
   nfts: number;
@@ -22,29 +24,34 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
         builderId,
         season: getCurrentSeasonStart()
       },
-      // Only return mints
-      senderWalletAddress: null
+      ...validMintNftPurchaseEvent
     },
     select: {
-      scout: {
-        select: BasicUserInfoSelect
+      scoutWallet: {
+        select: {
+          scout: {
+            select: BasicUserInfoSelect
+          }
+        }
       },
       tokensPurchased: true
     }
   });
 
-  const uniqueScoutIds = Array.from(new Set(nftPurchaseEvents.map((event) => event.scout.id).filter(isTruthy)));
+  const uniqueScoutIds = Array.from(
+    new Set(nftPurchaseEvents.map((event) => event.scoutWallet!.scout.id).filter(isTruthy))
+  );
   const scoutsRecord: Record<string, ScoutInfo> = {};
 
   nftPurchaseEvents.forEach((event) => {
-    const existingScout = scoutsRecord[event.scout.id];
+    const existingScout = scoutsRecord[event.scoutWallet!.scout.id];
     if (!existingScout) {
-      scoutsRecord[event.scout.id] = {
-        ...event.scout,
+      scoutsRecord[event.scoutWallet!.scout.id] = {
+        ...event.scoutWallet!.scout,
         nfts: 0
       };
     }
-    scoutsRecord[event.scout.id].nfts += event.tokensPurchased;
+    scoutsRecord[event.scoutWallet!.scout.id].nfts += event.tokensPurchased;
   });
 
   const totalNftsSold = Object.values(scoutsRecord).reduce((acc, scout) => acc + scout.nfts, 0);

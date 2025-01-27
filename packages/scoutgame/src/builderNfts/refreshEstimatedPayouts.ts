@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { nftTypeMultipliers } from '../points/dividePointsBetweenBuilderAndScouts';
+import { nftTypeMultipliers } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
 
 import { scoutPointsShare } from './constants';

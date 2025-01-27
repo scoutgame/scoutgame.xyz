@@ -1,8 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
-import { dividePointsBetweenBuilderAndScouts } from '../points/dividePointsBetweenBuilderAndScouts';
+import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
+import { getNftPurchaseEvents, resolveTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 export type NewScout = {
   id: string;
@@ -22,25 +23,34 @@ export async function getRankedNewScoutsForCurrentWeek({
 } = {}): Promise<NewScout[]> {
   const [{ pointsPerScout: _pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
     (async function calculatePointsPerScout() {
-      const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints, nftPurchaseEvents } =
-        await getWeeklyPointsPoolAndBuilders({
-          week
-        });
+      const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } = await getWeeklyPointsPoolAndBuilders({
+        week
+      });
       // aggregate values for each scout per topWeeklyBuilder
       const pointsPerScout: Record<string, number> = {};
 
-      topWeeklyBuilders.forEach((builder) => {
-        const { pointsPerScout: builderPointsPerScout } = dividePointsBetweenBuilderAndScouts({
-          builderId: builder.builder.id,
-          rank: builder.rank,
-          weeklyAllocatedPoints,
-          normalisationFactor,
-          nftPurchaseEvents
-        });
-        builderPointsPerScout.forEach(({ scoutId, scoutPoints }) => {
-          pointsPerScout[scoutId] = (pointsPerScout[scoutId] || 0) + scoutPoints;
-        });
-      });
+      await Promise.all(
+        topWeeklyBuilders.map(async (builder) => {
+          const tokenOwnership = await resolveTokenOwnershipForBuilder({
+            builderId: builder.builder.id,
+            week
+          });
+
+          const { tokensPerScoutByScoutId: builderPointsPerScout } = await divideTokensBetweenBuilderAndHolders({
+            builderId: builder.builder.id,
+            rank: builder.rank,
+            weeklyAllocatedTokens: weeklyAllocatedPoints,
+            normalisationFactor,
+            owners: tokenOwnership
+          });
+          builderPointsPerScout.forEach(({ scoutId, erc20Tokens }) => {
+            pointsPerScout[scoutId] = (pointsPerScout[scoutId] || 0) + erc20Tokens;
+          });
+        })
+      );
+
+      const nftPurchaseEvents = await getNftPurchaseEvents({ week, onlyMints: true });
+
       return {
         nftPurchaseEvents,
         pointsPerScout
@@ -52,7 +62,7 @@ export async function getRankedNewScoutsForCurrentWeek({
   return (
     newScouts
       .map((scout): NewScout => {
-        const scoutTransactions = _nftPurchaseEvents.filter((event) => event.scoutId === scout.id);
+        const scoutTransactions = _nftPurchaseEvents.filter((event) => event.to?.scoutId === scout.id);
         const buildersScouted = Array.from(new Set(scoutTransactions.map((event) => event.builderNft.builderId)));
         const nftsHeld = scoutTransactions.reduce((acc, event) => acc + event.tokensPurchased, 0);
         return {
@@ -120,33 +130,38 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
   return prisma.scout.findMany({
     where: {
       deletedAt: null,
-      nftPurchaseEvents: {
+      wallets: {
+        some: {},
         every: {
-          OR: [
-            {
-              // every nft purchase event must have been purchased this week or later
-              builderEvent: {
-                week: {
-                  gte: week
+          purchaseEvents: {
+            every: {
+              OR: [
+                {
+                  // every nft purchase event must have been purchased this week or later
+                  builderEvent: {
+                    week: {
+                      gte: week
+                    },
+                    season
+                  }
                 },
+                {
+                  // every nft purchase event must have been purchased this week or later
+                  builderEvent: {
+                    season: {
+                      not: season
+                    }
+                  }
+                }
+              ]
+            },
+            // at least one NFT was purchased this week
+            some: {
+              builderEvent: {
+                week,
                 season
               }
-            },
-            {
-              // every nft purchase event must have been purchased this week or later
-              builderEvent: {
-                season: {
-                  not: season
-                }
-              }
             }
-          ]
-        },
-        // at least one NFT was purchased this week
-        some: {
-          builderEvent: {
-            week,
-            season
           }
         }
       }

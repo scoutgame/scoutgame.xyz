@@ -1,49 +1,57 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getWeekStartEnd, getDateFromISOWeek } from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 
 export async function getBuildersForPartner({ week, bonusPartner }: { week: string; bonusPartner: BonusPartner }) {
-  const events = await prisma.builderEvent.findMany({
+  const { start, end } = getWeekStartEnd(getDateFromISOWeek(week).toJSDate());
+
+  const events = await prisma.githubEvent.findMany({
     where: {
-      githubEvent: {
-        repo: {
-          bonusPartner
-        }
+      repo: {
+        bonusPartner
       },
       type: 'merged_pull_request',
-      week
+      completedAt: {
+        gte: start.toJSDate(),
+        lt: end.toJSDate()
+      },
+      githubUser: {
+        builder: {
+          builderStatus: 'approved'
+        }
+      }
     },
     orderBy: {
-      createdAt: 'asc'
+      completedAt: 'asc'
     },
     select: {
-      createdAt: true,
-      builder: {
+      completedAt: true,
+      githubUser: {
         select: {
-          path: true,
-          email: true,
-          displayName: true
-        }
-      },
-      githubEvent: {
-        select: {
-          createdAt: true,
-          url: true,
-          repo: {
+          builder: {
             select: {
-              name: true,
-              owner: true
+              path: true,
+              email: true,
+              displayName: true
             }
           }
+        }
+      },
+      url: true,
+      repo: {
+        select: {
+          name: true,
+          owner: true
         }
       }
     }
   });
   return events.map((event) => ({
-    'User Name': event.builder.displayName,
-    'Profile Link': `https://scoutgame.xyz/u/${event.builder.path}`,
-    Email: event.builder.email,
-    Repo: `${event.githubEvent!.repo.owner}/${event.githubEvent!.repo.name}`,
-    Date: event.createdAt.toDateString(),
-    Link: event.githubEvent!.url
+    'User Name': event.githubUser.builder!.displayName,
+    'Profile Link': `https://scoutgame.xyz/u/${event.githubUser.builder!.path}`,
+    Email: event.githubUser.builder!.email,
+    Repo: `${event.repo.owner}/${event.repo.name}`,
+    Date: event.completedAt?.toDateString(),
+    Link: event.url
   }));
 }

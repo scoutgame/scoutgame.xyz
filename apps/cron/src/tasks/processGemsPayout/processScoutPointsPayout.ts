@@ -1,14 +1,14 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
-import { dividePointsBetweenBuilderAndScouts } from '@packages/scoutgame/points/dividePointsBetweenBuilderAndScouts';
-import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
+import { divideTokensBetweenBuilderAndHolders } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import { incrementPointsEarnedStats } from '@packages/scoutgame/points/updatePointsEarned';
+import { resolveTokenOwnershipForBuilder } from '@packages/scoutgame/protocol/resolveTokenOwnershipForBuilder';
 import { v4 } from 'uuid';
+import { type Address } from 'viem';
 
 export async function processScoutPointsPayout({
   builderId,
-  nftPurchaseEvents,
   rank,
   gemsCollected,
   week,
@@ -18,7 +18,6 @@ export async function processScoutPointsPayout({
   weeklyAllocatedPoints
 }: {
   builderId: string;
-  nftPurchaseEvents: PartialNftPurchaseEvent[];
   rank: number;
   gemsCollected: number;
   week: string;
@@ -41,12 +40,17 @@ export async function processScoutPointsPayout({
     return;
   }
 
-  const { pointsForBuilder, pointsPerScout, nftSupply } = dividePointsBetweenBuilderAndScouts({
+  const resolvedNftBalances = await resolveTokenOwnershipForBuilder({
+    week,
+    builderId
+  });
+
+  const { tokensForBuilder, tokensPerScoutByWallet, nftSupply } = await divideTokensBetweenBuilderAndHolders({
     builderId,
-    nftPurchaseEvents,
     rank,
-    weeklyAllocatedPoints,
-    normalisationFactor
+    weeklyAllocatedTokens: weeklyAllocatedPoints,
+    normalisationFactor,
+    owners: resolvedNftBalances
   });
 
   if (nftSupply.total === 0) {
@@ -82,34 +86,50 @@ export async function processScoutPointsPayout({
         }
       });
 
+      const scoutWallets = await prisma.scoutWallet.findMany({
+        where: {
+          address: {
+            in: tokensPerScoutByWallet.map(({ wallet }) => wallet)
+          }
+        }
+      });
+
+      const walletToScoutId = scoutWallets.reduce(
+        (acc, { address, scoutId }) => {
+          acc[address.toLowerCase() as Address] = scoutId;
+          return acc;
+        },
+        {} as Record<Address, string>
+      );
+
       await Promise.all([
-        ...pointsPerScout.map(async ({ scoutId, scoutPoints }) => {
+        ...tokensPerScoutByWallet.map(async ({ wallet, erc20Tokens }) => {
           await tx.pointsReceipt.create({
             data: {
-              value: scoutPoints,
-              recipientId: scoutId,
+              value: erc20Tokens,
+              recipientId: walletToScoutId[wallet.toLowerCase() as Address],
               eventId: builderEventId,
               season,
               activities: {
                 create: {
                   recipientType: 'scout',
                   type: 'points',
-                  userId: scoutId,
+                  userId: walletToScoutId[wallet.toLowerCase() as Address],
                   createdAt
                 }
               }
             }
           });
           await incrementPointsEarnedStats({
-            userId: scoutId,
+            userId: walletToScoutId[wallet.toLowerCase() as Address],
             season,
-            scoutPoints,
+            scoutPoints: erc20Tokens,
             tx
           });
         }),
         tx.pointsReceipt.create({
           data: {
-            value: pointsForBuilder,
+            value: tokensForBuilder,
             recipientId: builderId,
             eventId: builderEventId,
             season,
@@ -126,7 +146,7 @@ export async function processScoutPointsPayout({
         incrementPointsEarnedStats({
           userId: builderId,
           season,
-          builderPoints: pointsForBuilder,
+          builderPoints: tokensForBuilder,
           tx
         })
       ]);

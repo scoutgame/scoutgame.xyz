@@ -1,9 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { seasons } from '@packages/dates/config';
-import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
+import { getCurrentSeason, getLastWeek } from '@packages/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
-import { questsRecord } from '@packages/scoutgame/quests/questRecords';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
@@ -33,7 +31,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     return;
   }
 
-  const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints, nftPurchaseEvents } =
+  const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints } =
     await getWeeklyPointsPoolAndBuilders({ week });
 
   scoutgameMintsLogger.debug(`Allocation: ${weeklyAllocatedPoints} -- Total points for week ${week}: ${totalPoints}`, {
@@ -55,8 +53,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
         week,
         season,
         normalisationFactor,
-        weeklyAllocatedPoints,
-        nftPurchaseEvents
+        weeklyAllocatedPoints
       });
     } catch (error) {
       scoutgameMintsLogger.error(`Error processing scout points payout for builder ${builder.id}: ${error}`);

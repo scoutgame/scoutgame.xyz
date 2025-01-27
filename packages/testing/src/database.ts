@@ -3,6 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
+import type { Address } from 'viem';
 
 import { randomLargeInt, mockSeason, randomWalletAddress } from './generators';
 
@@ -434,7 +435,8 @@ export async function mockNFTPurchaseEvent({
   week = getCurrentWeek(),
   season = mockSeason,
   tokensPurchased = 1,
-  nftType
+  nftType,
+  walletAddress
 }: {
   builderId: string;
   scoutId: string;
@@ -443,6 +445,7 @@ export async function mockNFTPurchaseEvent({
   tokensPurchased?: number;
   week?: string;
   nftType?: BuilderNftType;
+  walletAddress?: string;
 }) {
   const builderNft = await prisma.builderNft.findFirstOrThrow({
     where: {
@@ -451,6 +454,15 @@ export async function mockNFTPurchaseEvent({
       nftType: nftType ?? 'default'
     }
   });
+
+  const scoutWallet = await prisma.scoutWallet
+    .findFirst({ where: { scoutId, address: walletAddress } })
+    .then((wallet) => {
+      if (walletAddress && !wallet) {
+        throw new Error('Scout wallet not found');
+      }
+      return wallet ?? prisma.scoutWallet.create({ data: { scoutId, address: randomWalletAddress() } });
+    });
 
   return prisma.builderEvent.create({
     data: {
@@ -465,7 +477,8 @@ export async function mockNFTPurchaseEvent({
       nftPurchaseEvent: {
         create: {
           builderNftId: builderNft.id,
-          scoutId,
+          walletAddress: scoutWallet.address,
+          txLogIndex: 0,
           pointsValue: points,
           txHash: `0x${Math.random().toString(16).substring(2)}`,
           tokensPurchased
@@ -480,7 +493,118 @@ export async function mockNFTPurchaseEvent({
         }
       }
     },
-    include: { nftPurchaseEvent: true }
+    include: { nftPurchaseEvent: { include: { scoutWallet: true } } }
+  });
+}
+
+export async function mockNFTBurnEvent({
+  builderId,
+  points = 0,
+  week = getCurrentWeek(),
+  season = mockSeason,
+  tokensBurned = 1,
+  nftType,
+  walletAddress
+}: {
+  builderId: string;
+  points?: number;
+  season?: string;
+  tokensBurned?: number;
+  week?: string;
+  nftType?: BuilderNftType;
+  walletAddress?: string;
+}) {
+  const builderNft = await prisma.builderNft.findFirstOrThrow({
+    where: {
+      builderId,
+      season,
+      nftType: nftType ?? 'default'
+    }
+  });
+
+  const scoutWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { address: walletAddress } });
+
+  return prisma.builderEvent.create({
+    data: {
+      builder: {
+        connect: {
+          id: builderId
+        }
+      },
+      season,
+      type: 'nft_purchase',
+      week,
+      nftPurchaseEvent: {
+        create: {
+          builderNftId: builderNft.id,
+          senderWalletAddress: scoutWallet.address,
+          txLogIndex: 0,
+          pointsValue: points,
+          txHash: `0x${Math.random().toString(16).substring(2)}`,
+          tokensPurchased: tokensBurned
+        }
+      }
+    },
+    include: { nftPurchaseEvent: { include: { scoutWallet: true } } }
+  });
+}
+
+export async function mockNFTTransferEvent({
+  builderId,
+  points = 0,
+  week = getCurrentWeek(),
+  season = mockSeason,
+  tokensTransferred = 1,
+  nftType,
+  from,
+  to
+}: {
+  builderId: string;
+  points?: number;
+  season?: string;
+  tokensTransferred?: number;
+  week?: string;
+  nftType?: BuilderNftType;
+  from: Address;
+  to: Address;
+}) {
+  const builderNft = await prisma.builderNft.findFirstOrThrow({
+    where: {
+      builderId,
+      season,
+      nftType: nftType ?? 'default'
+    }
+  });
+
+  const fromScoutWallet = await prisma.scoutWallet.findFirstOrThrow({
+    where: { address: from.toLowerCase() }
+  });
+
+  const toScoutWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { address: to.toLowerCase() } });
+
+  return prisma.builderEvent.create({
+    data: {
+      builder: {
+        connect: {
+          id: builderId
+        }
+      },
+      season,
+      type: 'nft_purchase',
+      week,
+      nftPurchaseEvent: {
+        create: {
+          builderNftId: builderNft.id,
+          walletAddress: toScoutWallet.address,
+          senderWalletAddress: fromScoutWallet.address,
+          txLogIndex: 0,
+          pointsValue: points,
+          txHash: `0x${Math.random().toString(16).substring(2)}`,
+          tokensPurchased: tokensTransferred
+        }
+      }
+    },
+    include: { nftPurchaseEvent: { include: { scoutWallet: true } } }
   });
 }
 
@@ -543,6 +667,42 @@ export async function mockBuilderNft({
   nftType?: BuilderNftType;
   estimatedPayout?: number;
 }) {
+  const ownerWallets =
+    typeof owners[0] === 'string'
+      ? await Promise.all(
+          owners.map(async (owner) => {
+            const scoutId = owner as string;
+            const existingWallet = await prisma.scoutWallet.findFirst({
+              where: { scoutId }
+            });
+            if (existingWallet) {
+              return existingWallet;
+            }
+            return prisma.scoutWallet.create({
+              data: {
+                scoutId,
+                address: randomWalletAddress()
+              }
+            });
+          })
+        )
+      : await Promise.all(
+          (owners as { id: string }[]).map(async (owner) => {
+            const existingWallet = await prisma.scoutWallet.findFirst({
+              where: { scoutId: owner.id }
+            });
+            if (existingWallet) {
+              return existingWallet;
+            }
+            return prisma.scoutWallet.create({
+              data: {
+                scoutId: owner.id,
+                address: randomWalletAddress()
+              }
+            });
+          })
+        );
+
   const nft = await prisma.builderNft.create({
     data: {
       builderId,
@@ -555,11 +715,12 @@ export async function mockBuilderNft({
       nftType: nftType ?? 'default',
       nftSoldEvents: {
         createMany: {
-          data: owners.map((owner) => ({
-            scoutId: typeof owner === 'string' ? owner : owner.id,
+          data: owners.map((owner, index) => ({
+            walletAddress: ownerWallets[index].address,
             pointsValue: 10,
             txHash: `0x${Math.random().toString(16).substring(2)}`,
-            tokensPurchased: 1
+            tokensPurchased: 1,
+            txLogIndex: 0
           }))
         }
       },

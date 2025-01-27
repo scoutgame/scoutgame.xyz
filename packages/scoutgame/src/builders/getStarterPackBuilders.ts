@@ -44,7 +44,9 @@ export async function getStarterPackBuilders({
           nftSoldEvents: userId
             ? {
                 where: {
-                  scoutId: userId
+                  scoutWallet: {
+                    scoutId: userId
+                  }
                 },
                 select: {
                   id: true

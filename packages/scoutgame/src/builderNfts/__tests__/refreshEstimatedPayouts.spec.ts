@@ -3,7 +3,7 @@ import { jest } from '@jest/globals';
 import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 
-import { nftTypeMultipliers } from '../../points/dividePointsBetweenBuilderAndScouts';
+import { nftTypeMultipliers } from '../../points/divideTokensBetweenBuilderAndHolders';
 import { scoutPointsShare } from '../constants';
 import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 
