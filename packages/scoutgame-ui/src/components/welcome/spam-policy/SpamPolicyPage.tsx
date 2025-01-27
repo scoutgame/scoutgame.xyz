@@ -23,7 +23,7 @@ export function SpamPolicyPage() {
   });
 
   return (
-    <SinglePageLayout>
+    <SinglePageLayout data-test='spam-policy-page'>
       <SinglePageWrapper bgcolor='background.default'>
         <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
           Spam Policy

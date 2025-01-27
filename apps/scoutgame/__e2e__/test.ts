@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test';
 
+import { BuildersPage } from './po/BuildersPage.po';
 import { ClaimPage } from './po/ClaimPage.po';
 import { HomePage } from './po/HomePage.po';
 import { InfoPage } from './po/InfoPage.po';
@@ -20,6 +21,7 @@ type Fixtures = {
   infoPage: InfoPage;
   userPage: UserPage;
   scoutPage: ScoutPage;
+  buildersPage: BuildersPage;
   claimPage: ClaimPage;
   questsPage: QuestsPage;
 };
@@ -55,7 +57,8 @@ export const test = base.extend<Fixtures>({
   userPage: ({ page }, use) => use(new UserPage(page)),
   scoutPage: ({ page }, use) => use(new ScoutPage(page)),
   claimPage: ({ page }, use) => use(new ClaimPage(page)),
-  questsPage: ({ page }, use) => use(new QuestsPage(page))
+  questsPage: ({ page }, use) => use(new QuestsPage(page)),
+  buildersPage: ({ page }, use) => use(new BuildersPage(page))
 });
 
 export { chromium, expect } from '@playwright/test';

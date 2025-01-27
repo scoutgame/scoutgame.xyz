@@ -12,7 +12,7 @@ import { SkipBuilderStepButton } from './components/SkipBuilderStepButton';
 
 export function BuilderPage() {
   return (
-    <SinglePageLayout>
+    <SinglePageLayout data-test='welcome-builders-page'>
       <SinglePageWrapper bgcolor='background.default'>
         <Box display='flex' flexDirection='column' alignItems='center' my={0} justifyContent='space-evenly' gap={2}>
           <Image

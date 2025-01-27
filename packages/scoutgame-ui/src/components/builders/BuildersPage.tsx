@@ -42,6 +42,7 @@ export async function BuildersPage({ week, tab, builderSort, builderOrder, user 
           md: 'calc(100vh - 100px)',
           xs: 'calc(100vh - 165px)'
         }}
+        data-test='builders-page'
       >
         <Grid size={{ xs: 12, md: 8 }} sx={{ height: '100%', overflowX: 'hidden', px: 1, gap: 2 }}>
           <PartnerRewards />
