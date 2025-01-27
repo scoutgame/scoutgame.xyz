@@ -177,7 +177,7 @@ export async function recordMergedPullRequest({
       const previousDaysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
-          .filter((e) => !previousStreakEvent || (e.completedAt && e.completedAt > previousStreakEvent.completedAt!))
+          // .filter((e) => !previousStreakEvent || (e.completedAt && e.completedAt > previousStreakEvent.completedAt!))
           .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
           .filter(isTruthy)
       );

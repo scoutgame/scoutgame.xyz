@@ -460,6 +460,51 @@ describe('recordMergedPullRequest', () => {
     expect(gemsReceipts.map((r) => r.type)).toEqual(['regular_pr', 'regular_pr', 'third_pr_in_streak', 'regular_pr']);
   });
 
+  it('the PR after a streak should be a regular PR', async () => {
+    const builder = await mockBuilder({ createNft: true });
+    const repo = await mockRepo();
+
+    // pick a static day-of-week for stability
+    const now = DateTime.fromObject({ weekday: 3 }, { zone: 'utc' }); // 1 is Monday and 7 is Sunday
+
+    const mergedAts = [6, 5, 4, 3, 2, 1];
+    const prs = mergedAts.map((daysAgo) =>
+      mockPullRequest({
+        mergedAt: now.minus({ days: daysAgo }).toISO(),
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo
+      })
+    );
+
+    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([
+      mockPullRequest()
+    ]);
+    for (const pullRequest of prs) {
+      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason, now });
+    }
+
+    const gemsReceipts = await prisma.gemsReceipt.findMany({
+      where: {
+        event: {
+          builderId: builder.id
+        }
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+
+    expect(gemsReceipts.map((r) => r.type)).toEqual([
+      'regular_pr',
+      'regular_pr',
+      'third_pr_in_streak',
+      'regular_pr',
+      'regular_pr',
+      'third_pr_in_streak'
+    ]);
+  });
+
   it('should allow creating multiple builder events per repo per day', async () => {
     const builder = await mockBuilder();
     const repo = await mockRepo();
