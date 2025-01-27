@@ -196,15 +196,12 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
             try {
               const extra = await queryPullRequests(repo.url.replace('https://github.com/', ''));
               repo.pullRequests.edges = extra.search.edges;
-              _results.push(mapToFlatObject(repo, cutoffDate));
               console.log('requested additional PRs', prs.length, repo.pullRequests.edges.length);
             } catch (e) {
               console.error('Error querying pull requests for repo', repo.url, e);
             }
-          } else {
-            console.log('No additional PRs requested for', repo.url);
-            _results.push(mapToFlatObject(repo, cutoffDate));
           }
+          _results.push(mapToFlatObject(repo, cutoffDate));
         }
         return _results;
       })
