@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import { v4 } from 'uuid';
 
 import { mockPullRequest } from '../../../testing/generators';
+import { gemsValues } from '../config';
 
 const currentSeason = '2024-W40';
 
@@ -152,30 +153,46 @@ describe('recordMergedPullRequest', () => {
 
     const repo = await mockRepo();
 
-    const pullRequest = mockPullRequest({
-      mergedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      reviewDecision: null,
-      state: 'MERGED',
-      author: builder.githubUser,
-      repo
-    });
+    const pullRequests = [
+      mockPullRequest({
+        mergedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo
+      }),
+      mockPullRequest({
+        mergedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo
+      })
+    ];
 
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
+    await recordMergedPullRequest({ pullRequest: pullRequests[0], repo, season: currentSeason });
+    await recordMergedPullRequest({ pullRequest: pullRequests[1], repo, season: currentSeason });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
         event: {
           builderId: builder.id
         }
+      },
+      orderBy: {
+        createdAt: 'asc'
       }
     });
 
-    expect(gemsReceipts).toHaveLength(1);
-    expect(gemsReceipts[0].type).toBe('regular_pr_unreviewed');
-    expect(gemsReceipts[0].value).toBe(2);
+    expect(gemsReceipts).toHaveLength(2);
+    expect(gemsReceipts[0].type).toBe('first_pr');
+    expect(gemsReceipts[0].value).toBe(gemsValues.first_pr);
+    expect(gemsReceipts[1].type).toBe('regular_pr_unreviewed');
+    expect(gemsReceipts[1].value).toBe(gemsValues.regular_pr_unreviewed);
   });
 
   it('should create builder events and gems receipts for a regular merged pull request', async () => {
