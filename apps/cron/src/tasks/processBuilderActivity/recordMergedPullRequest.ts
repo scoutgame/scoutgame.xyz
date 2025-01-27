@@ -23,7 +23,7 @@ type RepoInput = Pick<GithubRepo, 'defaultBranch' | 'bonusPartner'>;
 
 export type MergedPullRequestMeta = Pick<
   PullRequest,
-  'author' | 'number' | 'title' | 'repository' | 'url' | 'createdAt' | 'mergedAt' | 'mergeCommit'
+  'author' | 'number' | 'title' | 'repository' | 'url' | 'createdAt' | 'mergedAt' | 'mergeCommit' | 'reviewDecision'
 >;
 
 /**
