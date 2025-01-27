@@ -214,7 +214,9 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
 
     allData.push(...results);
 
-    log.info(`Queried repos ${i + 1}-${i + Math.min(repoList.length, perQuery)} / ${totalRepos}`);
+    log.info(
+      `Queried repos ${i + 1}-${i + Math.min(repoList.length, perQuery)} / ${totalRepos}. Results so far: ${allData.length}`
+    );
   }
   return allData;
 }
@@ -230,7 +232,7 @@ async function queryRepoActivity() {
     repos: repos.map((r) => `${r.owner}/${r.name}`)
   });
   // write to file
-  await writeFile('latest_repo_activity_2.json', JSON.stringify(repoActivity, null, 2));
+  await writeFile('latest_repo_activity_' + queryRange + '.json', JSON.stringify(repoActivity, null, 2));
 }
 
-queryRepoActivity();
+// queryRepoActivity();
