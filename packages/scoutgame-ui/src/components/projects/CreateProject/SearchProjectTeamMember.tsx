@@ -11,7 +11,8 @@ import {
   styled,
   TextField,
   Typography,
-  Chip
+  Chip,
+  Tooltip
 } from '@mui/material';
 import type { BuilderSearchResult } from '@packages/scoutgame/builders/searchBuilders';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
@@ -33,6 +34,8 @@ const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult, true>)({
     borderRadius: '10px'
   }
 });
+
+const MAX_TEAM_MEMBERS = 5;
 
 export function SearchProjectTeamMember({
   open,
@@ -74,7 +77,12 @@ export function SearchProjectTeamMember({
       title='Search project team member'
       sx={{
         '&': { zIndex: 1 },
-        '& .MuiDialog-paper': { minWidth: '400px', height: '100%' }
+        '& .MuiDialog-paper': {
+          width: '400px',
+          maxWidth: '400px',
+          height: '100%',
+          maxHeight: '500px'
+        }
       }}
     >
       <Stack gap={2}>
@@ -125,7 +133,13 @@ export function SearchProjectTeamMember({
                 key={option.id}
                 label={option.displayName}
                 avatar={<Avatar src={option.avatar} alt={option.displayName} />}
-                sx={{ borderRadius: '16px' }}
+                sx={{
+                  maxWidth: '200px',
+                  '& .MuiChip-label': {
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }
+                }}
                 variant='outlined'
                 size='small'
                 onDelete={() => {
@@ -154,17 +168,26 @@ export function SearchProjectTeamMember({
             />
           )}
         />
-        <Button
-          color='secondary'
-          variant='outlined'
-          sx={{
-            width: 'fit-content'
-          }}
-          onClick={addProjectMembers}
-          disabled={selectedMembers.length === 0}
+        <Tooltip
+          title={
+            selectedMembers.length >= MAX_TEAM_MEMBERS
+              ? 'Maximum 5 team members allowed'
+              : selectedMembers.length === 0
+                ? 'Select at least one member'
+                : ''
+          }
         >
-          Add members
-        </Button>
+          <span style={{ width: 'fit-content' }}>
+            <Button
+              color='secondary'
+              variant='outlined'
+              onClick={addProjectMembers}
+              disabled={selectedMembers.length === 0 || selectedMembers.length >= MAX_TEAM_MEMBERS}
+            >
+              Add members
+            </Button>
+          </span>
+        </Tooltip>
       </Stack>
     </Dialog>
   );
