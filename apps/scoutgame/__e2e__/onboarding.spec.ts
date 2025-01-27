@@ -41,7 +41,7 @@ test.describe('Onboarding flow', () => {
 
     await welcomePage.submitExtraDetails.click();
 
-    await page.waitForURL('**/welcome/how-it-works', { waitUntil: 'load' });
+    await expect(welcomePage.howItWorksPage).toBeVisible();
 
     // make sure we saved onboarding preferences
     const user = await prisma.scout.findFirstOrThrow({
