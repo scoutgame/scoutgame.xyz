@@ -138,7 +138,7 @@ export function PublicBuilderProfileContainer({
               ) : (
                 <Paper sx={{ p: 2 }}>
                   <Typography>
-                    No Scouts have discovered this Builder yet. Be the first to support their journey!
+                    No Scouts have discovered this Developer yet. Be the first to support their journey!
                   </Typography>
                 </Paper>
               )}
@@ -155,7 +155,7 @@ export function PublicBuilderProfileContainer({
                 {builderActivities.length > 0 ? (
                   <BuilderActivitiesList activities={builderActivities} />
                 ) : (
-                  <Typography>No recent activity by this builder.</Typography>
+                  <Typography>No recent activity by this developer.</Typography>
                 )}
               </Box>
             </Stack>

@@ -67,15 +67,15 @@ function Document() {
   return (
     <InfoCard>
       <Typography>
-        Celo is partnering with Scout Game to support builders who contribute to the ecosystem. Celo has a prize pool of
-        5000 cUSD to distribute to talented Builders!
+        Celo is partnering with Scout Game to support developer who contribute to the ecosystem. Celo has a prize pool
+        of 5000 cUSD to distribute to talented Developer!
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         How it works
       </Typography>
       <Typography>
         Ecosystem projects, that you can find in the list below (link list below), will mark their issues with a Tier in
-        GitHub. The Tier determines the builder's reward offered by Celo for merging a PR that addresses the issue.
+        GitHub. The Tier determines the developer's reward offered by Celo for merging a PR that addresses the issue.
         Unmarked issues will default to the Common Tier.
       </Typography>
       <Table>

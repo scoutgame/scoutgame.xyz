@@ -125,7 +125,7 @@ export function ActivityTable({ activities }: { activities: BuilderActivity[] })
         }}
       >
         <CommonTableRow>
-          <TableCell>BUILDER</TableCell>
+          <TableCell>DEVELOPER</TableCell>
           <TableCell sx={{ '&.MuiTableCell-root': { pr: 0 } }}>
             <Stack direction='row' gap={0.5} alignItems='center' justifyContent='space-between'>
               <Typography variant='body2'>ACTION</Typography>

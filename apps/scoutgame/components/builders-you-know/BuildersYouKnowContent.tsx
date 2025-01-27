@@ -17,7 +17,7 @@ export function BuildersYouKnowContent({
     <Grid2 gap={2}>
       <Grid2 size={{ xs: 12 }}>
         <Typography color='secondary' textAlign='center' width='100%' fontWeight={700} variant='h5'>
-          Builders You Know
+          Developers You Know
         </Typography>
       </Grid2>
 

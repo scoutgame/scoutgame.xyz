@@ -32,13 +32,13 @@ export async function ScoutProfile({ userId }: { userId: string }) {
       />
       <Stack>
         <Typography variant='h5' my={2} color='secondary' fontWeight='500'>
-          Scouted Builders
+          Scouted Developers
         </Typography>
         {scoutedBuilders.length > 0 ? (
           <BuildersGallery builders={scoutedBuilders} columns={3} size='small' markStarterCardPurchased />
         ) : (
           <Paper sx={{ p: 2 }}>
-            <Typography>You haven't scouted any Builders yet. Start exploring and discover talent!</Typography>
+            <Typography>You haven't scouted any Developers yet. Start exploring and discover talent!</Typography>
           </Paper>
         )}
       </Stack>

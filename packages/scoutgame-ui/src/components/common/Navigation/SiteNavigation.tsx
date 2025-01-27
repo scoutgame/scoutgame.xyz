@@ -81,7 +81,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           LinkComponent={Link}
         />
         <BottomNavigationAction
-          label='Builders'
+          label='Developers'
           href='/builders'
           value='builders'
           icon={<BuilderIcon />}

@@ -250,7 +250,7 @@ export function BuilderShareImage({
               width: '100%'
             }}
           >
-            <p style={{ margin: 0 }}>No recent activity by this builder.</p>
+            <p style={{ margin: 0 }}>No recent activity by this developer.</p>
           </div>
         ) : null}
       </div>

@@ -31,7 +31,7 @@ export async function BuilderRewardsTableContainer({ week }: { week: string | nu
           alignItems: 'center'
         }}
       >
-        <Typography>Time to scout some Builders!</Typography>
+        <Typography>Time to scout some Developers!</Typography>
         <Box
           sx={{
             width: {

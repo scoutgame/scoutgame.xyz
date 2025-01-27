@@ -37,7 +37,7 @@ export function BuildersGalleryContainer({
         setNextCursor(newCursor);
       } else if (actionResponse?.serverError) {
         setError(actionResponse.serverError.message);
-        log.warn('Error fetching more builders', {
+        log.warn('Error fetching more developers', {
           error: actionResponse.serverError,
           cursor: nextCursor
         });

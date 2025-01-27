@@ -200,7 +200,7 @@ function HowToPlaySection() {
         <Step
           stepNumber='Step 1'
           title='Sign Up & Apply'
-          description="Connect your GitHub and let us verify your open-source contributions. Once you're approved, your Builder Card goes live, and you're in the game!"
+          description="Connect your GitHub and let us verify your open-source contributions. Once you're approved, your Developer Card goes live, and you're in the game!"
           iconSrc='/images/home/github-icon.svg'
         />
         <Step
@@ -212,7 +212,7 @@ function HowToPlaySection() {
         <Step
           stepNumber='Step 3'
           title='Earn Rewards'
-          description='Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You’ll also get 20% of the revenue from Builder Card sales, boosting your rewards!'
+          description="Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You'll also get 20% of the revenue from Developer Card sales, boosting your rewards!"
           iconSrc='/images/home/trophy-icon.svg'
         />
         <Step

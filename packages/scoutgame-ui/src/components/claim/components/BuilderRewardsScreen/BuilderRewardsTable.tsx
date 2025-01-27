@@ -49,7 +49,7 @@ export function BuilderRewardsTable({
     <Table>
       <StyledTableHead>
         <TableRow>
-          <TableCell align='left'>BUILDER</TableCell>
+          <TableCell align='left'>DEVELOPER</TableCell>
           <TableCell align='center'>CARDS HELD</TableCell>
           {week ? <TableCell align='center'>RANK</TableCell> : null}
           <TableCell align='right'>POINTS</TableCell>

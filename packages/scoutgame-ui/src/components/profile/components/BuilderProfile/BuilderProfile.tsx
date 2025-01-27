@@ -49,7 +49,7 @@ export async function BuilderProfile({
   if (!builder.githubLogin && !hideGithubButton) {
     return (
       <Stack gap={2} alignItems='center'>
-        <Typography>Connect your GitHub account to apply as a Builder.</Typography>
+        <Typography>Connect your GitHub account to apply as a Developer.</Typography>
         <JoinGithubButton />
       </Stack>
     );
@@ -67,7 +67,7 @@ export async function BuilderProfile({
           justifyContent: 'center'
         }}
       >
-        <Typography align='center'>Your Builder account is pending approval.</Typography>
+        <Typography align='center'>Your Developer account is pending approval.</Typography>
         <Typography align='center'>Check back soon!</Typography>
       </Box>
     );
@@ -89,7 +89,7 @@ export async function BuilderProfile({
       {builder.builderStatus === 'banned' ? (
         <Alert severity='error'>
           <Typography>
-            Your builder account has been banned. Submit an appeal for review{' '}
+            Your developer account has been banned. Submit an appeal for review{' '}
             <Typography color='secondary' component='span'>
               <Link href={appealUrl}>here</Link>
             </Typography>
