@@ -28,7 +28,8 @@ export function useLoginSuccessHandler() {
       return `/welcome?${searchparams.toString()}`;
     }
 
-    if (inviteCode) {
+    if (inviteCode && user?.onboarded) {
+      searchparams.set('step', '2');
       return `/welcome?${searchparams.toString()}`;
     }
 

@@ -37,22 +37,27 @@ export default async function Welcome({
 
   switch (scoutSort) {
     case '1': {
-      if (user?.onboardedAt && user?.agreedToTermsAt) {
+      if (user.onboardedAt && user.agreedToTermsAt) {
         log.debug('Redirect user to home page from Welcome page', { userId: user.id });
         redirect(startingPagePath);
       }
       return <WelcomePage user={user} />;
     }
     case '2':
-      if (type === 'builder') {
+      if (
+        (user.onboardedAt && user.agreedToTermsAt && user.builderStatus !== 'rejected') ||
+        user.builderStatus === null
+      ) {
         return <BuilderPage />;
       }
-      return null;
+      log.debug('Redirect user to home page from Builder page', { userId: user.id });
+      return redirect(startingPagePath);
     case '3': {
       if (user.builderStatus) {
         return <SpamPolicyPage />;
       }
-      return null;
+      log.debug('Redirect user to home page from Spam Policy page', { userId: user.id });
+      return redirect(startingPagePath);
     }
     case '4': {
       return <HowItWorksPage />;
