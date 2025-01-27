@@ -460,14 +460,15 @@ describe('recordMergedPullRequest', () => {
     expect(gemsReceipts.map((r) => r.type)).toEqual(['regular_pr', 'regular_pr', 'third_pr_in_streak', 'regular_pr']);
   });
 
-  it('the PR after a streak should be a regular PR, even if the streak is not consecutive', async () => {
+  // We only grab events from the last 7 days, so what looked like a streak may change over time
+  it('Does not look at dates prior to a streak in the 7 day window', async () => {
     const builder = await mockBuilder({ createNft: true });
     const repo = await mockRepo();
 
-    // pick a static day-of-week for stability
     const now = DateTime.fromObject({ weekday: 3 }, { zone: 'utc' }); // 1 is Monday and 7 is Sunday
 
-    const mergedAts = [8, 4, 4, 2, 2, 0];
+    // mergedAt should include a date outside the 7 day window
+    const mergedAts = [8, 4, 2, 0];
     const prs = mergedAts.map((daysAgo) =>
       mockPullRequest({
         mergedAt: now.minus({ days: daysAgo }).toISO(),
@@ -495,14 +496,7 @@ describe('recordMergedPullRequest', () => {
       }
     });
 
-    expect(gemsReceipts.map((r) => r.type)).toEqual([
-      'regular_pr',
-      'regular_pr',
-      'regular_pr',
-      'third_pr_in_streak',
-      'regular_pr',
-      'regular_pr'
-    ]);
+    expect(gemsReceipts.map((r) => r.type)).toEqual(['regular_pr', 'regular_pr', 'third_pr_in_streak', 'regular_pr']);
   });
 
   it('should allow creating multiple builder events per repo per day', async () => {
