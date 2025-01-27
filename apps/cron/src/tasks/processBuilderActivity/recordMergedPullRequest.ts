@@ -9,6 +9,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { streakWindow } from '@packages/dates/config';
 import { getStartOfWeek, getWeekFromDate, isToday } from '@packages/dates/utils';
+import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import { isTruthy } from '@packages/utils/types';
@@ -72,7 +73,8 @@ export async function recordMergedPullRequest({
           week: true,
           gemsReceipt: {
             select: {
-              value: true
+              value: true,
+              type: true
             }
           }
         }
@@ -169,11 +171,18 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
+      const previousStreakEvent = previousGitEvents.find(
+        (e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak'
+      );
+      const previousStreakEventDate = previousStreakEvent?.completedAt?.toISOString().split('T')[0];
       const previousDaysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
           .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
           .filter(isTruthy)
+          // We only grab events from the last 7 days, so what looked like a streak may change over time
+          // To address this, we filter out events that happened before a previous streak event
+          .filter((dateStr) => !previousStreakEventDate || dateStr > previousStreakEventDate)
       );
 
       const thisPrDate = builderEventDate.toISOString().split('T')[0];
@@ -211,19 +220,23 @@ export async function recordMergedPullRequest({
           // It's a new event, we can record notification
           const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
             where: {
-              senderWalletAddress: null,
+              ...validMintNftPurchaseEvent,
               builderNft: {
                 season,
                 builderId: githubUser.builderId
               }
             },
             select: {
-              scoutId: true
+              scoutWallet: {
+                select: {
+                  scoutId: true
+                }
+              }
             }
           });
 
           const uniqueScoutIds = Array.from(
-            new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutId).filter(isTruthy))
+            new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutWallet!.scoutId).filter(isTruthy))
           );
           const builderEvent = await tx.builderEvent.create({
             data: {

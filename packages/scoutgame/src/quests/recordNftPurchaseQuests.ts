@@ -8,7 +8,9 @@ export async function recordNftPurchaseQuests(scoutId: string, skipMixpanel: boo
   const season = getCurrentSeasonStart();
   const scoutNftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
-      scoutId,
+      scoutWallet: {
+        scoutId
+      },
       builderNft: {
         season
       }

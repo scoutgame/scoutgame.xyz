@@ -80,12 +80,14 @@
           "../..",
           "./apps/scoutgame/",
           "./apps/telegram/",
+          "./apps/agents/",
           "./apps/admin/",
           "./apps/cron/",
           "./packages/github/",
           "./packages/loops/",
           "./packages/mailer/",
           "./packages/mixpanel/",
+          "./packages/moxie/",
           "./packages/nextjs/",
           "./packages/scoutgame/",
           "./packages/scoutgame-ui/",
@@ -93,7 +95,9 @@
           "./packages/users/",
           "./packages/utils/",
           "./packages/waitlist/",
-          "./packages/safetransactions/"
+          "./packages/telegram/",
+          "./packages/safetransactions/",
+          "./packages/llm/"
         ]
       }
     ],

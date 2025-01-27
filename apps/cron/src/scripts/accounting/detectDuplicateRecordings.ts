@@ -27,7 +27,11 @@ async function detectDuplicateRecordings() {
     },
     select: {
       createdAt: true,
-      scoutId: true,
+      scoutWallet: {
+        select: {
+          scoutId: true
+        }
+      },
       paidInPoints: true,
       pointsValue: true,
       txHash: true,

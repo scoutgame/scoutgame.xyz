@@ -2,9 +2,10 @@ import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import { prefix0x } from '@packages/utils/prefix0x';
 
 export function uniqueNftPurchaseEventKey(event: Pick<TransferSingleEvent, 'args' | 'transactionHash' | 'logIndex'>) {
-  return `${event.args.id}-${event.args.value}-${event.args.from}-${event.args.to}-${event.transactionHash}-${event.logIndex}`;
+  return `${event.args.id}-${event.args.value}-${!event.args.from ? NULL_EVM_ADDRESS : event.args.from.toLowerCase()}-${!event.args.to ? NULL_EVM_ADDRESS : event.args.to.toLowerCase()}-${prefix0x(event.transactionHash.toLowerCase())}-${event.logIndex}`;
 }
 
 export function getMatchingNFTPurchaseEvent(
@@ -20,14 +21,14 @@ export function getMatchingNFTPurchaseEvent(
       txLogIndex: params.txLogIndex,
       // Checking for to and from
       senderWalletAddress:
-        params.senderWalletAddress === NULL_EVM_ADDRESS
+        !params.senderWalletAddress || params.senderWalletAddress === NULL_EVM_ADDRESS
           ? null
           : {
               equals: params.senderWalletAddress,
               mode: 'insensitive'
             },
       walletAddress:
-        params.walletAddress === NULL_EVM_ADDRESS
+        !params.walletAddress || params.walletAddress === NULL_EVM_ADDRESS
           ? null
           : {
               equals: params.walletAddress,

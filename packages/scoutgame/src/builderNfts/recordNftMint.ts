@@ -5,7 +5,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
-import { createReferralBonusEvent } from '@packages/users/referrals/createReferralBonusEvent';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { baseUrl } from '@packages/utils/constants';
 import type { Address } from 'viem';
@@ -21,7 +21,7 @@ import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 export async function recordNftMint(
-  params: Omit<MintNFTParams, 'nftType'> & {
+  params: Omit<MintNFTParams, 'nftType' | 'scoutId'> & {
     createdAt?: Date;
     mintTxHash: string;
     mintTxLogIndex: number;
@@ -35,7 +35,6 @@ export async function recordNftMint(
     builderNftId,
     paidWithPoints,
     recipientAddress,
-    scoutId,
     mintTxLogIndex,
     pointsValue,
     createdAt,
@@ -47,6 +46,10 @@ export async function recordNftMint(
   if (!mintTxHash.trim().startsWith('0x')) {
     throw new InvalidInputError(`Mint transaction hash is required`);
   }
+
+  const { id: scoutId } = await findOrCreateWalletUser({
+    wallet: recipientAddress
+  });
 
   const existingTx = await getMatchingNFTPurchaseEvent({
     builderNftId,
@@ -107,13 +110,20 @@ export async function recordNftMint(
   const nftPurchaseEvent = await prisma.$transaction(async (tx) => {
     const owners = await tx.nFTPurchaseEvent.findMany({
       where: {
-        builderNftId
+        builderNftId,
+        walletAddress: {
+          not: null
+        }
       },
       select: {
-        scoutId: true
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        }
       }
     });
-    const uniqueOwners = Array.from(new Set(owners.map((owner) => owner.scoutId).concat(scoutId))).length;
+    const uniqueOwners = Array.from(new Set(owners.map((owner) => owner.scoutWallet!.scoutId).concat(scoutId))).length;
 
     const builderEvent = await tx.builderEvent.create({
       data: {
@@ -135,7 +145,6 @@ export async function recordNftMint(
             builderNftId,
             walletAddress: recipientAddress.toLowerCase() as `0x${string}`,
             txLogIndex: mintTxLogIndex,
-            scoutId,
             activities: {
               create: {
                 recipientType: 'builder',
@@ -277,14 +286,6 @@ export async function recordNftMint(
     log.error('Error sending builder card scouted email', { error, builderId: builderNft.builderId, userId: scoutId });
   }
 
-  try {
-    // check if we should count a referral
-    await updateReferralUsers(scoutId);
-    await createReferralBonusEvent(scoutId);
-  } catch (error) {
-    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
-  }
-
   const week = getCurrentWeek();
 
   await refreshEstimatedPayouts({
@@ -300,6 +301,13 @@ export async function recordNftMint(
     tokenId: builderNft.tokenId,
     wallet: recipientAddress.toLowerCase() as `0x${string}`
   });
+
+  try {
+    // check if we should count a referral
+    await updateReferralUsers(scoutId);
+  } catch (error) {
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
+  }
 
   return {
     builderNft,

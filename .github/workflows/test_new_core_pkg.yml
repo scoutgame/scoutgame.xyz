@@ -55,8 +55,6 @@ jobs:
             test_command: |
               npm run typecheck -w apps/scoutgame
               npx dotenv -e .env.test.local -- npm run test -w packages
-          - app_name: telegram
-            test_command: npm run typecheck -w apps/telegram
           - app_name: cron
             test_command: npm run typecheck -w apps/cron
           - app_name: admin

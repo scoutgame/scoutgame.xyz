@@ -7,12 +7,14 @@ export function BuildersGallery({
   builders,
   columns = 6,
   size = 'medium',
-  markStarterCardPurchased = false
+  markStarterCardPurchased = false,
+  hideScoutCount = false
 }: {
   builders: BuilderInfo[];
   columns?: number;
   size?: 'small' | 'medium' | 'large';
   markStarterCardPurchased?: boolean;
+  hideScoutCount?: boolean;
 }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -35,6 +37,7 @@ export function BuildersGallery({
                 size={size}
                 type={builder.nftType}
                 markStarterCardPurchased={markStarterCardPurchased}
+                hideScoutCount={hideScoutCount}
               />
             </Box>
           </Grid>

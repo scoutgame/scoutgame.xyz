@@ -3,6 +3,8 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -46,7 +48,10 @@ const userSelect = (week: string, season: string, userId?: string) =>
                 builderEvent: {
                   season
                 },
-                scoutId: userId
+                ...validMintNftPurchaseEvent,
+                scoutWallet: {
+                  scoutId: userId
+                }
               },
               select: {
                 tokensPurchased: true

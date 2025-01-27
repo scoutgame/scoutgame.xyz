@@ -1,5 +1,8 @@
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { uniqueValues } from '@packages/utils/array';
+
+import { validMintNftPurchaseEvent } from './constants';
 
 export async function getAllNftOwners({
   builderId,
@@ -20,13 +23,17 @@ export async function getAllNftOwners({
     },
     select: {
       nftSoldEvents: {
-        distinct: 'scoutId',
+        where: validMintNftPurchaseEvent,
         select: {
-          scoutId: true
+          scoutWallet: {
+            select: {
+              scoutId: true
+            }
+          }
         }
       }
     }
   });
 
-  return builderNft?.nftSoldEvents.map((ev) => ev.scoutId) || [];
+  return uniqueValues(builderNft?.nftSoldEvents.map((ev) => ev.scoutWallet!.scoutId) || []);
 }

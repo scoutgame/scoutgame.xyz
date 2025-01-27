@@ -141,12 +141,16 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
               }
             },
             select: {
-              scoutId: true
+              scoutWallet: {
+                select: {
+                  scoutId: true
+                }
+              }
             }
           });
 
           const uniqueScoutIds = Array.from(
-            new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutId).filter(isTruthy))
+            new Set(nftPurchaseEvents.map((nftPurchaseEvent) => nftPurchaseEvent.scoutWallet!.scoutId).filter(isTruthy))
           );
 
           await tx.builderEvent.create({

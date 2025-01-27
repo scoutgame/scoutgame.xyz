@@ -1,6 +1,8 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
+import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type BuilderCardStats = {
@@ -45,10 +47,13 @@ export async function getBuilderCardStats({
           nftSoldEvents: scoutId
             ? {
                 where: {
+                  ...validMintNftPurchaseEvent,
                   builderEvent: {
                     season
                   },
-                  scoutId
+                  scoutWallet: {
+                    scoutId
+                  }
                 },
                 select: {
                   tokensPurchased: true

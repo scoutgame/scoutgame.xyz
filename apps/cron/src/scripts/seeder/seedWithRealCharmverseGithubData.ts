@@ -8,6 +8,9 @@ import { log } from '@charmverse/core/log';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { ISOWeek } from '@packages/dates/config';
+import { randomWalletAddress } from '@packages/testing/generators';
+import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
+import { Address } from 'viem';
 
 function getRandomValue<T>(arr: T[]): T {
   const randomIndex = Math.floor(Math.random() * arr.length);
@@ -196,11 +199,17 @@ async function generateNftPurchaseEvents({
       ({
         builderNftId: nft.id,
         pointsValue: 0,
-        scoutId: getRandomValue(scoutId),
+        walletAddress: randomWalletAddress().toLowerCase(),
         tokensPurchased: 10,
         txHash: `0xabc`
       }) as Prisma.NFTPurchaseEventCreateManyInput
   );
+
+  for (const input of inputs) {
+    await findOrCreateWalletUser({
+      wallet: input.walletAddress as Address,
+    });
+  }
 
   await prisma.nFTPurchaseEvent.createMany({ data: inputs });
 }
