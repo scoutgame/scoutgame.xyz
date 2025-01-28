@@ -96,11 +96,11 @@ export async function findAndIndexMissingPurchases({
 
   // Early exit
   if (!missingEvents.length) {
-    scoutgameMintsLogger.info('No missing events found');
+    scoutgameMintsLogger.info(`No missing events found for ${nftType} nfts in season ${season}`);
     return;
   }
 
-  scoutgameMintsLogger.info(`Found ${missingEvents.length} missing events`);
+  scoutgameMintsLogger.info(`Found ${missingEvents.length} missing events for ${nftType} nfts in season ${season}`);
 
   const groupedByTokenId = missingEvents.reduce(
     (acc, val) => {
