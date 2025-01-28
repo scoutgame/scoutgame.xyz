@@ -45,9 +45,13 @@ async function getData(scoutId: string) {
           referralCodeEvent: true
         }
       },
-      nftPurchaseEvents: {
+      wallets: {
         select: {
-          paidInPoints: true
+          purchaseEvents: {
+            select: {
+              paidInPoints: true
+            }
+          }
         }
       }
     }
@@ -96,16 +100,20 @@ async function retrieveNftPurchasesFromDeletedUsers(filename: string) {
         }
       }
     },
-    orderBy: {
-      scout: {
-        displayName: 'asc'
-      }
-    },
+    // orderBy: {
+    //   scout: {
+    //     displayName: 'asc'
+    //   }
+    // },
     include: {
-      scout: {
+      scoutWallet: {
         include: {
-          mergedFromEvents: true,
-          mergedToEvents: true
+          scout: {
+            include: {
+              mergedFromEvents: true,
+              mergedToEvents: true
+            }
+          }
         }
       },
       builderNft: {
@@ -119,7 +127,7 @@ async function retrieveNftPurchasesFromDeletedUsers(filename: string) {
   const columns = 'scout,scout id,deleted,deleted at,builder, builder id,tokenAmount,nft type,txHash';
   const rows = purchases.map(
     (p) =>
-      `${p.scout.displayName},${p.scout.id},${p.scout.deletedAt?.toISOString()},${p.scout.deletedAt?.toDateString()},${p.builderNft.builder.displayName},${p.builderNft.builder.id},${p.tokensPurchased},${p.builderNft.nftType},${p.txHash}`
+      `${p.scoutWallet!.scout.displayName},${p.scoutWallet!.scout.id},${p.scoutWallet!.scout.deletedAt?.toISOString()},${p.scoutWallet!.scout.deletedAt?.toDateString()},${p.builderNft.builder.displayName},${p.builderNft.builder.id},${p.tokensPurchased},${p.builderNft.nftType},${p.txHash}`
   );
   await writeFile(filename, [columns, ...rows].join('\n'));
   console.log('Saved to', filename);

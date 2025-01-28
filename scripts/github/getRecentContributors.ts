@@ -1,10 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'path';
-import { prettyPrint } from 'lib/utils/strings';
 import { uniq, sortBy } from 'lodash';
-import { getRepositoryActivity, FlatRepositoryData, queryRepos, octokit } from './getRepositoryActivity';
 import { prisma } from '@charmverse/core/prisma-client';
-const sourceFile = resolve(process.cwd(), './repoActivity2.json');
+import { getGithubUsers } from './getGithubUsers';
+import { getRepositoryActivity } from './getRepositoryActivity';
+
+const sourceFile = resolve(process.cwd(), './latest_repo_activity_2.json');
 
 /**
  * Use this script to perform database searches.
@@ -30,8 +31,9 @@ async function getRecentContributions() {
 
 async function getAuthorsWithEmail() {
   const repos: any[] = JSON.parse((await readFile(sourceFile)).toString());
-  console.log(repos[0]);
-  const authorList = repos.map(({ authors }) => authors).flat();
+  console.log('Found', repos.length, 'repos from:', sourceFile);
+  const authorList = new Set(repos.map(({ authors }) => authors).flat());
+  console.log('Found', authorList.size, 'authors');
   const prs = repos
     .map(({ pullRequests, ...repo }) =>
       pullRequests.map((pr: any) => ({
@@ -40,33 +42,46 @@ async function getAuthorsWithEmail() {
       }))
     )
     .flat();
-  const prsWithAuthor = prs.filter((pr) => pr.pr.author?.email);
-  const authors = prsWithAuthor.reduce<Record<string, any[]>>((acc, pr) => {
-    acc[pr.pr.author.email] = acc[pr.pr.author.email] || [];
-    acc[pr.pr.author.email].push(pr);
-    return acc;
-  }, {});
-  const emails = Object.keys(authors);
+  const logins = Array.from(authorList);
+  const contributors = await getGithubUsers({ logins });
+  console.log('Found', contributors.length, 'contributors');
+  const withEmail = contributors.filter((c) => c.email);
+  console.log('Found', withEmail.length, 'contributors with email');
+  const withTwitter = contributors.filter((c) => c.twitter);
+  console.log('Found', withTwitter.length, 'contributors with twitter');
+
+  // const prsWithAuthor = prs.filter((pr) => pr.pr.author?.email);
+  // console.log('Found', prsWithAuthor.length, 'prs with author');
+  // const authors = prsWithAuthor.reduce<Record<string, any[]>>((acc, pr) => {
+  //   acc[pr.pr.author.twitterUsername] = acc[pr.pr.author.twitterUsername] || [];
+  //   acc[pr.pr.author.twitterUsername].push(pr);
+  //   return acc;
+  // }, {});
+  // const emails = Object.keys(authors);
+  // console.log('Found', emails.length, 'authors with twitterUsername');
   const githubUsers = await prisma.githubUser.findMany({
     where: {
-      builderId: {
-        not: null
-      },
-      email: {
-        in: emails
+      login: {
+        in: logins
       }
     }
   });
-  const authorData = Object.entries(authors).filter(([email]) => !githubUsers.some((user) => user.email === email));
-  console.log('builders in SG', Object.keys(authors).length, githubUsers.length, authorData.length);
-  console.log('repos', prsWithAuthor.length, 'of', prs.length);
-  // export a CSV of authors with columns: email, PR Count, PR Repos
-  const csv = sortBy(authorData, ([, prs]) => -prs.length).map(([email, prs]: [string, any[]]) => {
-    const author = authorList.find((a) => a.email === email);
-    const mostRecentPr = sortBy(prs, (pr) => pr.pr.updatedAt).reverse()[0];
-    return `${email},${author?.name},${prs.length},${mostRecentPr.repo.url.replace('https://github.com/', '')}`;
+  console.log('Found', githubUsers.length, 'github users');
+  const newContributors = withTwitter.filter((c) => !githubUsers.some((user) => user.login === c.login));
+  console.log('Found', newContributors.length, 'new contributors with twitter');
+  // const authorData = Object.entries(authors).filter(([email]) => !githubUsers.some((user) => user.email === email));
+  // console.log('builders in SG', Object.keys(authors).length, githubUsers.length, authorData.length);
+  // console.log('repos', prsWithAuthor.length, 'of', prs.length);
+  // // export a CSV of authors with columns: email, PR Count, PR Repos
+  // const csv = sortBy(authorData, ([, prs]) => -prs.length).map(([email, prs]: [string, any[]]) => {
+  //   const author = authorList.find((a) => a.email === email);
+  //   const mostRecentPr = sortBy(prs, (pr) => pr.pr.updatedAt).reverse()[0];
+  //   return `${email},${author?.name},${prs.length},${mostRecentPr.repo.url.replace('https://github.com/', '')}`;
+  // });
+  const csv = newContributors.map((author) => {
+    return `${author.twitter},${author.name}`;
   });
-  await writeFile('authors.csv', 'email,name,prs,repos\n' + csv.join('\n'));
+  await writeFile('authors.csv', 'twitter,name\n' + csv.join('\n'));
 }
 
 getAuthorsWithEmail();
