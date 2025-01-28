@@ -1,4 +1,5 @@
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
+import { prettyPrint } from '@packages/utils/strings';
 
 import { builderNftChain, builderSmartContractMinterKey } from './constants';
 
@@ -8,6 +9,7 @@ export function getScoutGameNftMinterWallet() {
   }
   return getWalletClient({
     chainId: builderNftChain.id,
-    privateKey: builderSmartContractMinterKey
+    privateKey: builderSmartContractMinterKey,
+    httpRetries: 3
   });
 }
