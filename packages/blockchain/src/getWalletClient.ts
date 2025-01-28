@@ -1,6 +1,7 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import { sleep } from '@packages/utils/sleep';
+import type { WalletClient } from 'viem';
 import { createWalletClient, http, publicActions } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
 
@@ -57,8 +58,9 @@ export function getWalletClient({
   const originalSendTransaction = client.sendTransaction;
 
   async function overridenSendTransaction(
-    ...args: Parameters<typeof originalSendTransaction>
-  ): ReturnType<typeof originalSendTransaction> {
+    ...args: Parameters<WalletClient['sendTransaction']>
+    // Needed to make the function return type compatible with the original sendTransaction function
+  ): Promise<Awaited<ReturnType<WalletClient['sendTransaction']>>> {
     try {
       const result = await originalSendTransaction(...args);
       return result;
