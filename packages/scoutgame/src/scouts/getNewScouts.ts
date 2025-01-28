@@ -127,35 +127,47 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
 // new Scout definition: only scouts that purchased NFT this week for the first time
 export async function getNewScouts({ week, season: testSeason }: { week: string; season?: string }) {
   const season = testSeason || getCurrentSeason(week).start;
-  // Get scouts who made purchases this week but have no purchases in other weeks
-  const newScouts = await prisma.$queryRaw<NewScout[]>`
-    SELECT 
-      s.id,
-      s.path,
-      s."displayName",
-      s.avatar
-    FROM "Scout" s
-    WHERE s."deletedAt" IS NULL
-      AND EXISTS (
-        SELECT 1
-        FROM "ScoutWallet" sw
-        JOIN "NFTPurchaseEvent" npe ON sw.address = npe."walletAddress"
-        JOIN "BuilderEvent" be ON be."nftPurchaseEventId" = npe.id
-        WHERE sw."scoutId" = s.id
-          AND be.season = ${season}
-          AND be.week = ${week}
-      )
-      AND NOT EXISTS (
-        SELECT 1
-        FROM "ScoutWallet" sw
-        JOIN "NFTPurchaseEvent" npe ON sw.address = npe."walletAddress"
-        JOIN "BuilderEvent" be ON be."nftPurchaseEventId" = npe.id
-        WHERE sw."scoutId" = s.id
-          AND be.season = ${season}
-          AND be.week < ${week}
-      )
-    GROUP BY s.id, s.path, s."displayName", s.avatar;
-  `;
+  const newScouts = await prisma.scout.findMany({
+    where: {
+      deletedAt: null,
+      // Has purchases this week
+      wallets: {
+        some: {
+          purchaseEvents: {
+            some: {
+              builderEvent: {
+                season,
+                week
+              }
+            }
+          }
+        }
+      },
+      // Does NOT have purchases in earlier weeks
+      NOT: {
+        wallets: {
+          some: {
+            purchaseEvents: {
+              some: {
+                builderEvent: {
+                  season,
+                  week: {
+                    lt: week
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    select: {
+      id: true,
+      path: true,
+      displayName: true,
+      avatar: true
+    }
+  });
 
   return newScouts;
 }
