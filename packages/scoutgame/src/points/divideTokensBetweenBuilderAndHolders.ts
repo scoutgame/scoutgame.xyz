@@ -44,7 +44,7 @@ export type TokenDistribution = {
  * @param normalisationFactor - Normalisation factor for tokens to ensure we hit the full quota allocated
  * @param owners - Snapshot of the owners of the NFTs purchased
  */
-export async function divideTokensBetweenBuilderAndHolders({
+export function divideTokensBetweenBuilderAndHolders({
   builderId,
   rank,
   weeklyAllocatedTokens,
@@ -56,7 +56,7 @@ export async function divideTokensBetweenBuilderAndHolders({
   weeklyAllocatedTokens: number;
   normalisationFactor: number;
   owners: TokenOwnershipForBuilder;
-}): Promise<TokenDistribution> {
+}): TokenDistribution {
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError('Invalid builderId must be a valid UUID');
   }

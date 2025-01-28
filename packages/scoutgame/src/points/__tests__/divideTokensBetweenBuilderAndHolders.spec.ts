@@ -33,7 +33,7 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
 
   // Success Cases
   it('should correctly distribute tokens among scouts and builder, counting normal NFTs as 10x compared to starter pack NFTs', async () => {
-    const result = await divideTokensBetweenBuilderAndHolders({
+    const result = divideTokensBetweenBuilderAndHolders({
       builderId: builder.id,
       rank,
       weeklyAllocatedTokens,

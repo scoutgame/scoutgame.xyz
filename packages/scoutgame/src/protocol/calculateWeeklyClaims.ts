@@ -158,7 +158,7 @@ export async function calculateWeeklyClaims({
           totalStarter: 0
         }));
 
-        const { tokensPerScoutByWallet, tokensForBuilder } = await divideTokensBetweenBuilderAndHolders({
+        const { tokensPerScoutByWallet, tokensForBuilder } = divideTokensBetweenBuilderAndHolders({
           builderId: builder.builder.id,
           normalisationFactor,
           rank: index + 1,

@@ -36,7 +36,7 @@ export async function getRankedNewScoutsForCurrentWeek({
             week
           });
 
-          const { tokensPerScoutByScoutId: builderPointsPerScout } = await divideTokensBetweenBuilderAndHolders({
+          const { tokensPerScoutByScoutId: builderPointsPerScout } = divideTokensBetweenBuilderAndHolders({
             builderId: builder.builder.id,
             rank: builder.rank,
             weeklyAllocatedTokens: weeklyAllocatedPoints,
