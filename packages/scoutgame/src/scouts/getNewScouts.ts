@@ -127,55 +127,35 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
 // new Scout definition: only scouts that purchased NFT this week for the first time
 export async function getNewScouts({ week, season: testSeason }: { week: string; season?: string }) {
   const season = testSeason || getCurrentSeason(week).start;
-  return prisma.scout.findMany({
-    where: {
-      deletedAt: null,
-      wallets: {
-        some: {},
-        every: {
-          purchaseEvents: {
-            every: {
-              OR: [
-                {
-                  // every nft purchase event must have been purchased this week or later
-                  builderEvent: {
-                    week: {
-                      gte: week
-                    },
-                    season
-                  }
-                },
-                {
-                  // every nft purchase event must have been purchased this week or later
-                  builderEvent: {
-                    season: {
-                      not: season
-                    }
-                  }
-                }
-              ]
-            },
-            // at least one NFT was purchased this week
-            some: {
-              builderEvent: {
-                week,
-                season
-              }
-            }
-          }
-        }
-      }
-    },
-    select: {
-      id: true,
-      path: true,
-      displayName: true,
-      avatar: true,
-      wallets: {
-        select: {
-          address: true
-        }
-      }
-    }
-  });
+  // Get scouts who made purchases this week but have no purchases in other weeks
+  const newScouts = await prisma.$queryRaw<NewScout[]>`
+    SELECT 
+      s.id,
+      s.path,
+      s."displayName",
+      s.avatar
+    FROM "Scout" s
+    WHERE s."deletedAt" IS NULL
+      AND EXISTS (
+        SELECT 1
+        FROM "ScoutWallet" sw
+        JOIN "NFTPurchaseEvent" npe ON sw.address = npe."walletAddress"
+        JOIN "BuilderEvent" be ON be."nftPurchaseEventId" = npe.id
+        WHERE sw."scoutId" = s.id
+          AND be.season = ${season}
+          AND be.week = ${week}
+      )
+      AND NOT EXISTS (
+        SELECT 1
+        FROM "ScoutWallet" sw
+        JOIN "NFTPurchaseEvent" npe ON sw.address = npe."walletAddress"
+        JOIN "BuilderEvent" be ON be."nftPurchaseEventId" = npe.id
+        WHERE sw."scoutId" = s.id
+          AND be.season = ${season}
+          AND be.week < ${week}
+      )
+    GROUP BY s.id, s.path, s."displayName", s.avatar;
+  `;
+
+  return newScouts;
 }
