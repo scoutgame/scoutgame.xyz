@@ -23,7 +23,7 @@ function Document() {
       </Typography>
       <Typography>
         Optimism is partnering with Scout Game to reward new Scouts for playing the game! Each week, new Scouts will
-        compete for a chance to win a share of 500 OP!
+        compete for a chance to win a share of 300 OP!
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         How it works
@@ -31,7 +31,7 @@ function Document() {
       <Typography>
         Scouts that purchase their FIRST Developer Card during the week will be eligible for that week's New Scout
         competition. New Scouts will compete with each other to earn the most Scout Points during their first week
-        playing the game. The Top 10 point earners will be awarded OP, from a weekly pool of 500 OP, as follows:
+        playing the game. The Top 10 point earners will be awarded OP, from a weekly pool of 300 OP, as follows:
       </Typography>
       <Table size='small'>
         <TableHead>
@@ -43,43 +43,43 @@ function Document() {
         <TableBody>
           <TableRow>
             <TableCell>1</TableCell>
-            <TableCell align='right'>100 OP</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>2</TableCell>
-            <TableCell align='right'>80 OP</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>3</TableCell>
-            <TableCell align='right'>70 OP</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>4</TableCell>
             <TableCell align='right'>60 OP</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>5</TableCell>
+            <TableCell>2</TableCell>
             <TableCell align='right'>50 OP</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>6</TableCell>
+            <TableCell>3</TableCell>
             <TableCell align='right'>40 OP</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>7</TableCell>
+            <TableCell>4</TableCell>
             <TableCell align='right'>35 OP</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>8</TableCell>
+            <TableCell>5</TableCell>
+            <TableCell align='right'>30 OP</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>6</TableCell>
             <TableCell align='right'>25 OP</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>9</TableCell>
+            <TableCell>7</TableCell>
             <TableCell align='right'>20 OP</TableCell>
           </TableRow>
           <TableRow>
+            <TableCell>8</TableCell>
+            <TableCell align='right'>15 OP</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>9</TableCell>
+            <TableCell align='right'>15 OP</TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell>10</TableCell>
-            <TableCell align='right'>20 OP</TableCell>
+            <TableCell align='right'>10 OP</TableCell>
           </TableRow>
         </TableBody>
       </Table>
