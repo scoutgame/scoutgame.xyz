@@ -11,9 +11,11 @@ import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loadi
 import { FarcasterLoginModal } from '@packages/scoutgame-ui/components/common/Warpcast/FarcasterModal';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { usePopupState, bindPopover } from 'material-ui-popup-state/hooks';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
+
+import { useLoginSuccessHandler } from '../../../hooks/useLoginSuccessHandler';
 
 import { WarpcastIcon } from './WarpcastIcon';
 
@@ -22,11 +24,8 @@ export function WarpcastLoginButton() {
   const router = useRouter();
   const { refreshUser } = useUser();
   const { isAuthenticated } = useProfile();
-  const searchParams = useSearchParams();
-  const redirectUrlEncoded = searchParams.get('redirectUrl');
-  const referralCode = searchParams.get('ref');
-  const inviteCode = searchParams.get('invite-code');
-  const redirectUrl = redirectUrlEncoded ? decodeURIComponent(redirectUrlEncoded) : '/';
+  const { params, getNextPageLink } = useLoginSuccessHandler();
+  const { inviteCode, referralCode } = params;
 
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
 
@@ -37,8 +36,6 @@ export function WarpcastLoginButton() {
     result
   } = useAction(loginWithFarcasterAction, {
     onSuccess: async ({ data }) => {
-      const nextPage = !data?.onboarded ? '/welcome' : inviteCode ? '/welcome/builder' : redirectUrl || '/scout';
-
       if (!data?.success) {
         return;
       }
@@ -46,8 +43,8 @@ export function WarpcastLoginButton() {
       await refreshUser();
 
       await revalidatePath();
-      router.push(nextPage);
-      popupState.close();
+
+      router.push(getNextPageLink({ onboarded: data?.onboarded }));
     },
     onError(err) {
       log.error('Error on login', { error: err.error.serverError });

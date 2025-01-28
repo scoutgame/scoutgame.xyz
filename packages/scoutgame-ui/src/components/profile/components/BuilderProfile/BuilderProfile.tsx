@@ -9,6 +9,7 @@ import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
 import { JoinGithubButton } from '../../../common/JoinGithubButton';
@@ -50,7 +51,9 @@ export async function BuilderProfile({
     return (
       <Stack gap={2} alignItems='center'>
         <Typography>Connect your GitHub account to apply as a Developer.</Typography>
-        <JoinGithubButton />
+        <Suspense>
+          <JoinGithubButton />
+        </Suspense>
       </Stack>
     );
   }
@@ -76,10 +79,12 @@ export async function BuilderProfile({
   if (builder.builderStatus === 'rejected') {
     return (
       <Stack gap={2} alignItems='center'>
-        <Typography>
-          Your Builder account was not approved. Connect your GitHub account again if you think this was a mistake.
-          <JoinGithubButton />
-        </Typography>
+        <Suspense>
+          <Typography>
+            Your Developer account was not approved. Connect your GitHub account again if you think this was a mistake.
+            <JoinGithubButton />
+          </Typography>
+        </Suspense>
       </Stack>
     );
   }

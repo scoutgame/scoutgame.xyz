@@ -3,6 +3,7 @@
 import { AuthKitProvider } from '@farcaster/auth-kit';
 import { Link, Typography } from '@mui/material';
 import { getAuthConfig } from '@packages/scoutgame/farcaster/config';
+import { Suspense } from 'react';
 
 import { useTrackEvent } from '../../../hooks/useTrackEvent';
 
@@ -14,7 +15,9 @@ export function WarpcastLogin() {
 
   return (
     <AuthKitProvider config={authConfig}>
-      <WarpcastLoginButton />
+      <Suspense>
+        <WarpcastLoginButton />
+      </Suspense>
       <Link
         href='https://www.farcaster.xyz/'
         target='_blank'

@@ -1,138 +1,56 @@
 'use client';
 
-import { Button, Divider, List, ListItem, ListItemText, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
-import { useState } from 'react';
 
-import { useMdScreen } from '../../../hooks/useMediaScreens';
-import { useUser } from '../../../providers/UserProvider';
-import { Dialog } from '../../common/Dialog';
-import { JoinGithubButton } from '../../common/JoinGithubButton';
-
-function InviteModal({ open, onClose, signedIn }: { open: boolean; onClose: () => void; signedIn: boolean }) {
-  return (
-    <Dialog open={open} onClose={onClose}>
-      <Stack
-        gap={{
-          xs: 1,
-          md: 2
-        }}
-        m={{
-          xs: 1,
-          md: 2
-        }}
-      >
-        <Typography variant='h6' color='secondary' textAlign='center'>
-          Be a Scout Game Developer
-        </Typography>
-
-        <Stack>
-          <Typography fontWeight={500} mb={1} color='secondary'>
-            How it Works
-          </Typography>
-          <List
-            sx={{ listStyleType: 'decimal', pl: 2, '& .MuiListItem-root': { py: 0.25, px: 0.5, display: 'list-item' } }}
-          >
-            <ListItem>
-              <ListItemText primary='Scout Game creates Developer Cards to represent participating developers.' />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary='Developers compete in weekly contests by contributing to approved open source onchain projects.' />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary='Scouts show their support by purchasing Developer Cards. Developers and Scouts earn rewards based on the results of the weekly contest.' />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary='Developers and Scouts earn rewards based on the results of the weekly contest.' />
-            </ListItem>
-          </List>
-        </Stack>
-
-        <Stack>
-          <Typography fontWeight={500} mb={1} color='secondary'>
-            Developer Benefits
-          </Typography>
-          <List
-            sx={{ listStyleType: 'decimal', pl: 2, '& .MuiListItem-root': { py: 0.25, px: 0.5, display: 'list-item' } }}
-          >
-            <ListItem>
-              <ListItemText primary='Receive a share of your Developer Card sales' />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary='Earn Scout Points for contributing to approved projects' />
-            </ListItem>
-            <ListItem>
-              <ListItemText primary='Earn partner rewards from friendly ecosystems like Optimism' />
-            </ListItem>
-          </List>
-        </Stack>
-        <Divider sx={{ backgroundColor: 'secondary.main', width: '50%', mx: 'auto' }} />
-        <Image src='/images/github-logo.png' width={120} height={30} alt='github' style={{ margin: '10px auto' }} />
-        <Typography>
-          {signedIn ? 'Apply to be a Developer by connecting your GitHub.' : 'Sign up / Sign in to apply.'}
-        </Typography>
-        {signedIn ? (
-          <JoinGithubButton text='Apply' />
-        ) : (
-          <Button variant='contained' color='primary' href='/login'>
-            Sign in
-          </Button>
-        )}
-      </Stack>
-    </Dialog>
-  );
-}
+import { useGlobalModal } from '../../../providers/ModalProvider';
 
 export function BuilderPageInviteCard() {
-  const { user } = useUser();
-  const [open, setOpen] = useState(false);
-
-  const isDesktop = useMdScreen();
-
-  if (user && user.builderStatus !== null) {
-    return null;
-  }
+  const { openModal } = useGlobalModal();
 
   return (
-    <>
-      <Paper
-        sx={{
-          p: {
-            xs: 1,
-            md: 3
-          },
-          my: {
-            xs: 0.5,
-            md: 1
-          },
-          display: 'flex',
-          flexDirection: 'column',
-          gap: {
-            xs: 0.75,
-            md: 2
-          }
-        }}
+    <Paper
+      sx={{
+        p: {
+          xs: 2,
+          md: 4
+        },
+        my: {
+          xs: 0.5,
+          md: 1
+        },
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 3
+      }}
+    >
+      <Stack flexDirection='row' alignItems='center' margin='auto'>
+        <Box display={{ xs: 'block', md: 'none' }} justifyContent='center'>
+          <Image src='/images/profile/builder-dog.png' alt='be a builder' width={80} height={80} />
+        </Box>
+        <Box>
+          <Typography variant='h5' fontWeight={600} color='secondary' textAlign='center' mb={1}>
+            Write code
+          </Typography>
+          <Typography variant='h5' fontWeight={600} color='secondary' textAlign='center'>
+            Earn rewards
+          </Typography>
+        </Box>
+      </Stack>
+      <Typography variant='h6' lineHeight={1.3} textAlign='center'>
+        Become a developer in the Scout Game and earn rewards for contributing to over a thousand open source crypto
+        repositories.
+      </Typography>
+      <Button
+        onClick={() => openModal('newBuilder')}
+        color='primary'
+        sx={{ cursor: 'pointer', width: 200, textAlign: 'center', fontWeight: 400, margin: '0 auto' }}
       >
-        <Typography variant={isDesktop ? 'h5' : 'body1'} fontWeight={600} color='secondary' textAlign='center'>
-          Are you a Developer?
-        </Typography>
-        <Typography variant={isDesktop ? 'h6' : 'subtitle2'} fontWeight={400}>
-          Do you regularly contribute to open source onchain repositories?
-        </Typography>
-        <Typography variant={isDesktop ? 'h6' : 'subtitle2'} fontWeight={400}>
-          Scout Game rewards Developers for contributing to the onchain ecosystem.
-        </Typography>
-
-        <Typography
-          variant={isDesktop ? 'h6' : 'subtitle2'}
-          onClick={() => setOpen(true)}
-          color='primary'
-          sx={{ cursor: 'pointer', width: '100%', textAlign: 'center', fontWeight: 400 }}
-        >
-          Learn more
-        </Typography>
-      </Paper>
-      <InviteModal open={open} onClose={() => setOpen(false)} signedIn={!!user} />
-    </>
+        Get Started
+      </Button>
+      <Box display={{ xs: 'none', md: 'flex' }} justifyContent='center'>
+        <Image src='/images/profile/builder-dog.png' alt='be a builder' width={300} height={300} />
+      </Box>
+    </Paper>
   );
 }
