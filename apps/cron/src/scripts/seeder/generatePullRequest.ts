@@ -19,6 +19,7 @@ export function generatePullRequest({
   const nameWithOwner = `${githubRepo.owner}/${githubRepo.name}`;
   return {
     baseRefName: 'main',
+    reviewDecision: 'APPROVED',
     author: {
       id: githubUser.id,
       login: githubUser.login

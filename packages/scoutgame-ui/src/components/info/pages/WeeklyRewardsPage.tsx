@@ -36,7 +36,11 @@ function Document() {
             <TableCell align='center'>1</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>One merged Pull Request in a Qualified GitHub Repository</TableCell>
+            <TableCell>One merged Pull Request in a Qualified GitHub Repository without a Code Review</TableCell>
+            <TableCell align='center'>2</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>One merged Pull Request with a Code Review in a Qualified GitHub Repository</TableCell>
             <TableCell align='center'>10</TableCell>
           </TableRow>
           <TableRow>

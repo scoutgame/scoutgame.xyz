@@ -118,7 +118,6 @@ describe('recordCommit', () => {
         builderId: builder.id
       }
     });
-
     expect(builderEvent).toBeDefined();
     expect(builderEvent?.bonusPartner).toBe('test-partner');
   });
