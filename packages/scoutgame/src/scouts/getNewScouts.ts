@@ -165,7 +165,12 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
       id: true,
       path: true,
       displayName: true,
-      avatar: true
+      avatar: true,
+      wallets: {
+        select: {
+          address: true
+        }
+      }
     }
   });
 
