@@ -22,8 +22,8 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React
             <img src='/images/number_icon_1.png' alt='1' />
           </ListItemAvatar>
           <Typography fontSize={{ xs: '13px', sm: '1rem' }}>
-            <strong>Discover builders who are contributing to cool onchain projects.</strong> Choose from the Hot
-            Builders section or explore the Scout page to find hidden gems.
+            <strong>Discover developers who are contributing to cool onchain projects.</strong> Choose from the Hot
+            Developers section or explore the Scout page to find hidden gems.
           </Typography>
         </ListItem>
         <ListItem sx={{ px: 1, alignItems: 'flex-start' }}>
@@ -33,7 +33,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React
           <Stack display='flex' gap={2}>
             <Typography fontSize={{ xs: '13px', sm: '1rem' }}>
               <strong>
-                Scout them by buying their Builder Cards with{' '}
+                Scout them by buying their Developer Cards with{' '}
                 <Typography
                   component='span'
                   color='secondary'
@@ -74,7 +74,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: React
               {'  '}
               increase
             </strong>{' '}
-            as your builders climb the weekly Leaderboard. The more they code, the higher you go!
+            as your developers climb the weekly Leaderboard. The more they code, the higher you go!
           </Typography>
         </ListItem>
       </List>

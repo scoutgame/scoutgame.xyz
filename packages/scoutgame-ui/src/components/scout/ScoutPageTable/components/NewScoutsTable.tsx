@@ -52,7 +52,7 @@ export function NewScoutsTable({ scouts }: { scouts: NewScout[] }) {
               CARDS HELD
             </TableCell>
             <TableCell align='right' sx={{ width: '40%' }}>
-              <Tooltip title="Gems earned by the scout's builders">
+              <Tooltip title="Gems earned by the scout's developers">
                 <Stack display='inline-flex' flexDirection='row' gap={0.5} alignItems='center'>
                   POINTS
                   <PointsIcon />

@@ -23,7 +23,7 @@ function InviteModal({ open, onClose, signedIn }: { open: boolean; onClose: () =
         }}
       >
         <Typography variant='h6' color='secondary' textAlign='center'>
-          Be a Scout Game Builder
+          Be a Scout Game Developer
         </Typography>
 
         <Stack>
@@ -34,29 +34,29 @@ function InviteModal({ open, onClose, signedIn }: { open: boolean; onClose: () =
             sx={{ listStyleType: 'decimal', pl: 2, '& .MuiListItem-root': { py: 0.25, px: 0.5, display: 'list-item' } }}
           >
             <ListItem>
-              <ListItemText primary='Scout Game creates Builder Cards to represent participating developers.' />
+              <ListItemText primary='Scout Game creates Developer Cards to represent participating developers.' />
             </ListItem>
             <ListItem>
-              <ListItemText primary='Builders compete in weekly contests by contributing to approved open source onchain projects.' />
+              <ListItemText primary='Developers compete in weekly contests by contributing to approved open source onchain projects.' />
             </ListItem>
             <ListItem>
-              <ListItemText primary='Scouts show their support by purchasing Builder Cards. Builders and Scouts earn rewards based on the results of the weekly contest.' />
+              <ListItemText primary='Scouts show their support by purchasing Developer Cards. Developers and Scouts earn rewards based on the results of the weekly contest.' />
             </ListItem>
             <ListItem>
-              <ListItemText primary='Builders and Scouts earn rewards based on the results of the weekly contest.' />
+              <ListItemText primary='Developers and Scouts earn rewards based on the results of the weekly contest.' />
             </ListItem>
           </List>
         </Stack>
 
         <Stack>
           <Typography fontWeight={500} mb={1} color='secondary'>
-            Builder Benefits
+            Developer Benefits
           </Typography>
           <List
             sx={{ listStyleType: 'decimal', pl: 2, '& .MuiListItem-root': { py: 0.25, px: 0.5, display: 'list-item' } }}
           >
             <ListItem>
-              <ListItemText primary='Receive a share of your Builder Card sales' />
+              <ListItemText primary='Receive a share of your Developer Card sales' />
             </ListItem>
             <ListItem>
               <ListItemText primary='Earn Scout Points for contributing to approved projects' />
@@ -69,7 +69,7 @@ function InviteModal({ open, onClose, signedIn }: { open: boolean; onClose: () =
         <Divider sx={{ backgroundColor: 'secondary.main', width: '50%', mx: 'auto' }} />
         <Image src='/images/github-logo.png' width={120} height={30} alt='github' style={{ margin: '10px auto' }} />
         <Typography>
-          {signedIn ? 'Apply to be a Builder by connecting your GitHub.' : 'Sign up / Sign in to apply.'}
+          {signedIn ? 'Apply to be a Developer by connecting your GitHub.' : 'Sign up / Sign in to apply.'}
         </Typography>
         {signedIn ? (
           <JoinGithubButton text='Apply' />
@@ -120,7 +120,7 @@ export function BuilderPageInviteCard() {
           Do you regularly contribute to open source onchain repositories?
         </Typography>
         <Typography variant={isDesktop ? 'h6' : 'subtitle2'} fontWeight={400}>
-          Scout Game rewards Builders for contributing to the onchain ecosystem.
+          Scout Game rewards Developers for contributing to the onchain ecosystem.
         </Typography>
 
         <Typography

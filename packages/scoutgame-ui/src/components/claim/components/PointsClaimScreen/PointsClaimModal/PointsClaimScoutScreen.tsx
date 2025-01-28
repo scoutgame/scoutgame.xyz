@@ -101,7 +101,7 @@ export function PointsClaimScoutScreen({
                 margin: 0
               }}
             >
-              My Top Builders:
+              My Top Developers:
             </h2>
 
             {builders.map((builder) => (

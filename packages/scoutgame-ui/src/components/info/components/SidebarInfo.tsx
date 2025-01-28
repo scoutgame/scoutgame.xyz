@@ -12,10 +12,10 @@ const links = [
   { href: '/info', text: 'All about Scout Game' },
   { href: '/info/about-scoutgame', text: 'What is Scout Game?' },
   { href: '/info/scouts', text: 'How it works for Scouts' },
-  { href: '/info/builders', text: 'How it works for Builders' },
+  { href: '/info/builders', text: 'How it works for Developers' },
   { href: '/info/points', text: 'Scout Points' },
-  { href: '/info/weekly-rewards', text: 'Weekly Builder Ranking & Rewards' },
-  { href: '/info/builder-nfts', text: 'Builder NFTs' },
+  { href: '/info/weekly-rewards', text: 'Weekly Developer Ranking & Rewards' },
+  { href: '/info/builder-nfts', text: 'Developer NFTs' },
   { href: '/info/contribution-guide', text: 'Contribution Guide' },
   { href: '/info/spam-policy', text: 'Spam Policy' }
 ];

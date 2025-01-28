@@ -16,8 +16,8 @@ function Document() {
   return (
     <InfoCard>
       <Typography>
-        Lit Protocol is partnering with Scout Game to support builders who contribute to the ecosystem. There will be a
-        total prize pool of $1,000 up for grabs for builders who complete qualified issues ranked by level of
+        Lit Protocol is partnering with Scout Game to support developers who contribute to the ecosystem. There will be
+        a total prize pool of $1,000 up for grabs for developers who complete qualified issues ranked by level of
         difficulty:
       </Typography>
       <List>

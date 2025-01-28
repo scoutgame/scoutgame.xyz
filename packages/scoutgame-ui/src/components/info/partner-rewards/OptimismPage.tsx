@@ -29,7 +29,7 @@ function Document() {
         How it works
       </Typography>
       <Typography>
-        Scouts that purchase their FIRST Builder Card during the week will be eligible for that week's New Scout
+        Scouts that purchase their FIRST Developer Card during the week will be eligible for that week's New Scout
         competition. New Scouts will compete with each other to earn the most Scout Points during their first week
         playing the game. The Top 10 point earners will be awarded OP, from a weekly pool of 500 OP, as follows:
       </Typography>

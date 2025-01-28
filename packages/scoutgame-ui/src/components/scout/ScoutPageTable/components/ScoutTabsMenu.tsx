@@ -3,7 +3,7 @@ import { TabsMenu } from '../../../common/Tabs/TabsMenu';
 
 export const scoutTabs: TabItem[] = [
   { label: 'Scouts', value: 'scouts' },
-  { label: 'Builders', value: 'builders' }
+  { label: 'Developer', value: 'builders' }
 ];
 
 export function ScoutTabsMenu({ tab }: { tab: string }) {

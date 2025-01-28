@@ -76,7 +76,7 @@ export function SearchBuildersInput({ sx }: { sx?: SxProps }) {
           {...params}
           fullWidth
           variant='outlined'
-          placeholder='Search for builders'
+          placeholder='Search for developers'
           // onChange={(e) => setSearchTerm(e.target.value)}
           slotProps={{
             input: {

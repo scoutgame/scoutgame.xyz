@@ -14,7 +14,7 @@ export function PointsPage() {
 function Document() {
   return (
     <InfoCard>
-      <Typography>Scouts and Builders are rewarded in-game with Scout Points.</Typography>
+      <Typography>Scouts and Developers are rewarded in-game with Scout Points.</Typography>
       <Typography>
         Scout Points are claimable at the end of each week and remain claimable for only the current season and the next
         season.

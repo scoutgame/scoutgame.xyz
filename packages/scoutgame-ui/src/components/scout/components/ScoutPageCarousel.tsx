@@ -23,9 +23,9 @@ export function ScoutPageCarousel({
 
   const isStarterPackEnabled = starterPackBuilders.length > 0 && scoutId;
   const nextTab = tab === 'starter_pack' ? 'top_builders' : 'starter_pack';
-  const text = tab === 'starter_pack' && isStarterPackEnabled ? 'Top Builders' : 'Starter Pack';
+  const text = tab === 'starter_pack' && isStarterPackEnabled ? 'Top Developers' : 'Starter Pack';
   const title =
-    tab === 'starter_pack' && isStarterPackEnabled ? 'Scout the Starter Pack!' : "Scout today's HOT Builders!";
+    tab === 'starter_pack' && isStarterPackEnabled ? 'Scout the Starter Pack!' : "Scout today's HOT Developers!";
   const color = tab === 'starter_pack' && isStarterPackEnabled ? 'green.main' : 'secondary';
 
   const handleTabSwitch = () => setTab(nextTab);

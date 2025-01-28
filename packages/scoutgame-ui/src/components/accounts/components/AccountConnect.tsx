@@ -38,11 +38,11 @@ export function AccountConnect({
       <Typography sx={{ py: 1, pb: 2 }} variant='body1'>
         {connectedUser.builderStatus === null && user.builderStatus === null ? (
           <>
-            Merge Profile by selecting which one to keep. Your Points and Builders will be transferred to the selected
+            Merge Profile by selecting which one to keep. Your Points and Developers will be transferred to the selected
             profile
           </>
         ) : (
-          'Your Points and Builders will be transferred into your builder account'
+          'Your Points and Developers will be transferred into your developer account'
         )}
       </Typography>
       {connectedUser.starterPackNftCount + user.starterPackNftCount > 3 ? (
@@ -69,7 +69,7 @@ export function AccountConnect({
             </Stack>
           ) : isMergeDisabled ? (
             <Alert color='error' icon={<CloseIcon />}>
-              Can not merge two builder accounts. Please select a different account to merge.
+              Can not merge two developer accounts. Please select a different account to merge.
             </Alert>
           ) : (
             <ProfileCard user={connectedUser} />
