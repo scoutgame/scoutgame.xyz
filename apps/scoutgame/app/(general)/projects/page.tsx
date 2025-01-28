@@ -1,3 +1,3 @@
-import Projects from '@packages/scoutgame-ui/components/projects/ProjectsPageContainer';
+import ProjectsPage from '@packages/scoutgame-ui/components/projects/ProjectsPageContainer';
 
-export default Projects;
+export default ProjectsPage;

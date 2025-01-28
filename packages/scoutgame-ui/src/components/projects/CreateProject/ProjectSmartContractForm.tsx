@@ -1,28 +1,16 @@
 'use client';
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { Button, FormLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { fancyTrim } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useCallback, useState } from 'react';
 import { useFieldArray, type Control } from 'react-hook-form';
+import { useAccount } from 'wagmi';
 
-const chainRecords: Record<
-  number,
-  {
-    chainId: number;
-    image: string;
-    name: string;
-  }
-> = {
-  167000: {
-    chainId: 167000,
-    image: '/images/crypto/taiko.png',
-    name: 'Taiko'
-  }
-};
+import { chainRecords } from '../constants';
 
 export function ProjectSmartContractForm({ control }: { control: Control<CreateScoutProjectFormValues> }) {
   const [open, setOpen] = useState(false);
@@ -31,6 +19,7 @@ export function ProjectSmartContractForm({ control }: { control: Control<CreateS
     control,
     name: 'contracts'
   });
+  const { address } = useAccount();
 
   const onCancel = useCallback(() => {
     setTempContract(null);
@@ -39,11 +28,14 @@ export function ProjectSmartContractForm({ control }: { control: Control<CreateS
 
   const onSave = useCallback(() => {
     if (tempContract) {
-      append(tempContract);
+      append({
+        ...tempContract,
+        deployerAddress: address ?? ''
+      });
       setTempContract(null);
       setOpen(false);
     }
-  }, [append, tempContract, setTempContract, setOpen]);
+  }, [append, tempContract, setTempContract, setOpen, address]);
 
   const onCreate = useCallback(() => {
     setTempContract({

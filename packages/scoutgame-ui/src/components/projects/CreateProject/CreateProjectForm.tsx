@@ -12,6 +12,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
+import { useAccount } from 'wagmi';
 
 import { useUser } from '../../../providers/UserProvider';
 import { FormErrors } from '../../common/FormErrors';
@@ -21,6 +22,7 @@ import { ProjectSmartContractForm } from './ProjectSmartContractForm';
 import { ProjectTeamMemberForm } from './ProjectTeamMemberForm';
 
 export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
+  const { address } = useAccount();
   const { user } = useUser();
   const [errors, setErrors] = useState<string[] | null>(null);
   const {
@@ -40,7 +42,9 @@ export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
       github: '',
       teamMembers: user
         ? [{ scoutId: user.id, role: 'owner', avatar: user.avatar ?? '', displayName: user.displayName }]
-        : []
+        : [],
+      contracts: [],
+      deployers: address ? [{ address, verifiedAt: new Date() }] : []
     }
   });
 
@@ -57,7 +61,7 @@ export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
   const { execute: createProject, isExecuting } = useAction(createScoutProjectAction, {
     onSuccess: (data) => {
       if (data?.data) {
-        router.push(`/projects/${data?.data.id}`);
+        router.push(`/projects/${data?.data.path}`);
       }
     }
   });

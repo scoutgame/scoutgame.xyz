@@ -40,6 +40,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
       },
       select: {
         id: true,
+        path: true,
         scoutProjectDeployers: true
       }
     });
@@ -50,18 +51,17 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
       await tx.scoutProjectContract.createMany({
         data: payload.contracts
           .map((contract) => {
-            const deployer = scoutProjectDeployers.find((d) => d.address === contract.address);
+            const deployer = scoutProjectDeployers.find((d) => d.address === contract.deployerAddress);
             if (!deployer) {
               return null;
             }
             return {
-              scoutProjectId: scoutProject.id,
+              createdBy: userId,
+              projectId: scoutProject.id,
               address: contract.address,
               chainId: contract.chainId,
-              createdBy: userId,
               deployedAt: new Date(),
-              projectId: scoutProject.id,
-              deployerId: deployer?.id,
+              deployerId: deployer.id,
               deployTxHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
               blockNumber: 0
             };
@@ -73,5 +73,8 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     return scoutProject;
   });
 
-  return project;
+  return {
+    id: project.id,
+    path: project.path
+  };
 }

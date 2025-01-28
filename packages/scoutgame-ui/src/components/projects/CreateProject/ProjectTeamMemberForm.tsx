@@ -1,5 +1,6 @@
 'use client';
 
+import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { Button, Stack, Typography } from '@mui/material';
@@ -9,13 +10,9 @@ import { useFieldArray, type Control } from 'react-hook-form';
 
 import { useUser } from '../../../providers/UserProvider';
 import { Avatar } from '../../common/Avatar';
+import { ProjectRoleText } from '../constants';
 
 import { SearchProjectTeamMember } from './SearchProjectTeamMember';
-
-const RoleTextRecord: Record<string, string> = {
-  owner: 'Project Owner',
-  member: 'Project Member'
-};
 
 export function ProjectTeamMemberForm({ control }: { control: Control<CreateScoutProjectFormValues> }) {
   const { user } = useUser();
@@ -32,7 +29,7 @@ export function ProjectTeamMemberForm({ control }: { control: Control<CreateScou
   return (
     <>
       <Stack gap={2}>
-        <Stack gap={2}>
+        <Stack gap={1}>
           {teamMembers.map((member, index) => (
             <Stack
               key={member.scoutId}
@@ -42,12 +39,13 @@ export function ProjectTeamMemberForm({ control }: { control: Control<CreateScou
               bgcolor='background.paper'
               py={1}
               px={1.5}
+              borderRadius={1}
             >
               <Stack flexDirection='row' alignItems='center' gap={1} flex={1}>
                 <Avatar size='small' variant='circular' src={member.avatar} />
                 <Typography>{member.displayName}</Typography>
                 <Typography variant='caption' color='secondary'>
-                  {RoleTextRecord[member.role]}
+                  {ProjectRoleText[member.role as ScoutProjectMemberRole]}
                 </Typography>
               </Stack>
               {member.scoutId !== user?.id && (

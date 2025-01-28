@@ -13,7 +13,7 @@ export function ProjectsPage({ projects }: { projects: UserScoutProject[] }) {
 
   return (
     <Container maxWidth='lg'>
-      <Stack my={3} gap={2}>
+      <Stack my={4} gap={2}>
         <Typography variant='h5' color='secondary'>
           {isCreatingProject ? 'Create a project' : 'Projects'}
         </Typography>

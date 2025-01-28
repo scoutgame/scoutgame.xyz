@@ -4,7 +4,7 @@ import { getUserScoutProjects } from '@packages/scoutgame/projects/getUserScoutP
 
 import { ProjectsPage } from './ProjectsPage';
 
-export default async function Projects() {
+export default async function ProjectsPageContainer() {
   const session = await getSession();
   const scoutId = session.scoutId;
 

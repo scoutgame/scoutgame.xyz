@@ -11,7 +11,8 @@ export const createScoutProjectSchema = yup.object({
     .of(
       yup.object({
         address: yup.string().required('Contract address is required'),
-        chainId: yup.number().integer().required('Chain ID is required')
+        chainId: yup.number().integer().required('Chain ID is required'),
+        deployerAddress: yup.string().required('Deployer address is required')
       })
     )
     .min(0),

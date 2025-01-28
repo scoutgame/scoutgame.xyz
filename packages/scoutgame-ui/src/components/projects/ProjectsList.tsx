@@ -7,12 +7,12 @@ import { Avatar } from '../common/Avatar';
 
 export function ProjectsList({ projects }: { projects: UserScoutProject[] }) {
   return (
-    <Stack gap={2}>
+    <Stack gap={1}>
       {projects.length === 0 ? (
         <Typography>No projects created</Typography>
       ) : (
         projects.map((project) => (
-          <Link href={`/projects/${project.id}`} key={project.id}>
+          <Link href={`/projects/${project.path}`} key={project.id}>
             <Stack
               key={project.id}
               flexDirection='row'
@@ -22,6 +22,7 @@ export function ProjectsList({ projects }: { projects: UserScoutProject[] }) {
               py={1}
               bgcolor='background.paper'
               justifyContent='space-between'
+              borderRadius={1}
             >
               <Stack flexDirection='row' gap={1.5} alignItems='center'>
                 <Avatar src={project.avatar} size='small' variant='rounded' />

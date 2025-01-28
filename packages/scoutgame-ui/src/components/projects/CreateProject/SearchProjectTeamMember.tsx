@@ -74,7 +74,7 @@ export function SearchProjectTeamMember({
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
-      title='Search project team member'
+      title='Search project team members'
       sx={{
         '&': { zIndex: 1 },
         '& .MuiDialog-paper': {
