@@ -15,6 +15,19 @@ export const createScoutProjectSchema = yup.object({
       })
     )
     .min(0),
+  deployers: yup
+    .array()
+    .of(
+      yup.object({
+        address: yup.string().required('Deployer address is required'),
+        verifiedAt: yup.date().required('Verified at is required')
+      })
+    )
+    .when('contracts', {
+      is: (contracts: any[]) => contracts && contracts.length > 0,
+      then: (schema) => schema.min(1, 'At least one deployer is required when contracts are provided'),
+      otherwise: (schema) => schema
+    }),
   teamMembers: yup
     .array()
     .of(
