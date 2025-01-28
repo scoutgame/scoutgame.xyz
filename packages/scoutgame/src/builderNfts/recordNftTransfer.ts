@@ -6,6 +6,8 @@ import { getWeekFromDate } from '@packages/dates/utils';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import type { Address } from 'viem';
 
+import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
 import { builderNftChain } from './constants';
 import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
@@ -48,6 +50,9 @@ export async function recordNftTransfer({
   });
 
   if (existingNftPurchaseEvent) {
+    log.info(
+      `Skipping duplicate NFT transfer with txHash ${txHash} tokenId ${transferSingleEvent.args.id} from ${fromWallet} to ${toWallet}`
+    );
     return;
   }
 
@@ -121,4 +126,8 @@ export async function recordNftTransfer({
       nftType: 'default'
     });
   }
+
+  scoutgameMintsLogger.info(
+    `Recorded NFT transfer with txHash ${txHash} tokenId ${transferSingleEvent.args.id} from ${fromWallet ?? 'null'} to ${toWallet ?? 'null'}`
+  );
 }

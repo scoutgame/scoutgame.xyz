@@ -3,8 +3,16 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { prefix0x } from '@packages/utils/prefix0x';
+import type { Address } from 'viem';
 
-export function uniqueNftPurchaseEventKey(event: Pick<TransferSingleEvent, 'args' | 'transactionHash' | 'logIndex'>) {
+export function uniqueNftPurchaseEventKey(
+  event: Pick<TransferSingleEvent, 'transactionHash' | 'logIndex'> & {
+    args: Pick<TransferSingleEvent['args'], 'id' | 'value'> & {
+      from: Address | null;
+      to: Address | null;
+    };
+  }
+) {
   return `${event.args.id}-${event.args.value}-${!event.args.from ? NULL_EVM_ADDRESS : event.args.from.toLowerCase()}-${!event.args.to ? NULL_EVM_ADDRESS : event.args.to.toLowerCase()}-${prefix0x(event.transactionHash.toLowerCase())}-${event.logIndex}`;
 }
 
