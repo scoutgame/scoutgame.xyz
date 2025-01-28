@@ -65,16 +65,20 @@ export function getWalletClient({
       const result = await originalSendTransaction(...args);
       return result;
     } catch (e) {
-      const retryAttempts = (args[0] as { retryAttempts?: number })?.retryAttempts ?? 0;
-
-      if (retryAttempts >= MAX_TX_RETRIES) {
-        log.error(`Max retries reached for sending transaction, ${retryAttempts}`, { e, args });
-        throw e;
-      }
-
       const replacementTransactionUnderpriced = /replacement transaction underpriced/;
       const nonceErrorExpression = /nonce too low/;
       if (JSON.stringify(e).match(nonceErrorExpression) || JSON.stringify(e).match(replacementTransactionUnderpriced)) {
+        const retryAttempts = (args[0] as { retryAttempts?: number })?.retryAttempts ?? 0;
+
+        (args[0] as { retryAttempts?: number }).retryAttempts = retryAttempts + 1;
+
+        if (retryAttempts >= MAX_TX_RETRIES) {
+          log.error(`Max retries reached for sending transaction, ${retryAttempts}`, { e, args });
+          throw e;
+        }
+
+        log.info(`Retrying failed transaction attempt nb. ${retryAttempts}`, { e, args });
+
         const randomTimeout = Math.floor(Math.random() * 8000) + 2000; // Random timeout between 2-10 seconds
         await sleep(randomTimeout);
 
