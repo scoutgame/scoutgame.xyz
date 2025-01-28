@@ -42,28 +42,33 @@ async function getAuthorsWithEmail() {
       }))
     )
     .flat();
-  const contributors = await getGithubUsers({ logins: Array.from(authorList) });
+  const logins = Array.from(authorList);
+  const contributors = await getGithubUsers({ logins });
   console.log('Found', contributors.length, 'contributors');
   const withEmail = contributors.filter((c) => c.email);
   console.log('Found', withEmail.length, 'contributors with email');
-  const prsWithAuthor = prs.filter((pr) => pr.pr.author?.email);
-  const authors = prsWithAuthor.reduce<Record<string, any[]>>((acc, pr) => {
-    acc[pr.pr.author.email] = acc[pr.pr.author.email] || [];
-    acc[pr.pr.author.email].push(pr);
-    return acc;
-  }, {});
-  const emails = Object.keys(authors);
-  console.log('Found', emails.length, 'authors with email');
-  // const githubUsers = await prisma.githubUser.findMany({
-  //   where: {
-  //     builderId: {
-  //       not: null
-  //     },
-  //     email: {
-  //       in: emails
-  //     }
-  //   }
-  // });
+  const withTwitter = contributors.filter((c) => c.twitter);
+  console.log('Found', withTwitter.length, 'contributors with twitter');
+
+  // const prsWithAuthor = prs.filter((pr) => pr.pr.author?.email);
+  // console.log('Found', prsWithAuthor.length, 'prs with author');
+  // const authors = prsWithAuthor.reduce<Record<string, any[]>>((acc, pr) => {
+  //   acc[pr.pr.author.twitterUsername] = acc[pr.pr.author.twitterUsername] || [];
+  //   acc[pr.pr.author.twitterUsername].push(pr);
+  //   return acc;
+  // }, {});
+  // const emails = Object.keys(authors);
+  // console.log('Found', emails.length, 'authors with twitterUsername');
+  const githubUsers = await prisma.githubUser.findMany({
+    where: {
+      login: {
+        in: logins
+      }
+    }
+  });
+  console.log('Found', githubUsers.length, 'github users');
+  const newContributors = withTwitter.filter((c) => !githubUsers.some((user) => user.login === c.login));
+  console.log('Found', newContributors.length, 'new contributors with twitter');
   // const authorData = Object.entries(authors).filter(([email]) => !githubUsers.some((user) => user.email === email));
   // console.log('builders in SG', Object.keys(authors).length, githubUsers.length, authorData.length);
   // console.log('repos', prsWithAuthor.length, 'of', prs.length);
@@ -73,7 +78,10 @@ async function getAuthorsWithEmail() {
   //   const mostRecentPr = sortBy(prs, (pr) => pr.pr.updatedAt).reverse()[0];
   //   return `${email},${author?.name},${prs.length},${mostRecentPr.repo.url.replace('https://github.com/', '')}`;
   // });
-  // await writeFile('authors.csv', 'email,name,prs,repos\n' + csv.join('\n'));
+  const csv = newContributors.map((author) => {
+    return `${author.twitter},${author.name}`;
+  });
+  await writeFile('authors.csv', 'twitter,name\n' + csv.join('\n'));
 }
 
 getAuthorsWithEmail();

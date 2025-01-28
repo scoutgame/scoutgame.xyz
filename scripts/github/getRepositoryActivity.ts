@@ -223,7 +223,7 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
 
 async function queryRepoActivity() {
   const repos = await prisma.githubRepo.findMany({
-    where: { ownerType: 'org', events: { some: {} } }
+    where: { handPicked: true, events: { none: {} } }
   });
   console.log('Getting activity for', repos.length, 'repos since:', cutoffDate);
 
@@ -232,7 +232,7 @@ async function queryRepoActivity() {
     repos: repos.map((r) => `${r.owner}/${r.name}`)
   });
   // write to file
-  await writeFile('latest_repo_activity_' + queryRange + '.json', JSON.stringify(repoActivity, null, 2));
+  await writeFile('latest_handpicked_repo_activity_' + queryRange + '.json', JSON.stringify(repoActivity, null, 2));
 }
 
 // queryRepoActivity();

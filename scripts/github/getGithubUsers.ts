@@ -110,7 +110,53 @@ export const bots = [
   'paritytech-substrate-connect-pr',
   'tokenlistform',
   'pyca-boringbot',
-  'pull'
+  'pull',
+  'rapids-bot',
+  'copybara-service',
+  'stimpy-bot',
+  'd-o-c-labassistant',
+  'rk-1b',
+  'yacarbot',
+  'repo-butler',
+  'app-token-issuer-test-toolings',
+  'public-glueops-renovatebot',
+  'EthenNotEthan',
+  'ibm-mend-app',
+  'deepin-community-bot',
+  'red-hat-konflux',
+  'opensearch-trigger-bot',
+  'renovate-widdix',
+  'pulumi-renovate',
+  'cibuildwheel-bot',
+  'descope',
+  'renovate-pagopa',
+  'nixpkgs-ci',
+  'hash-worker',
+  'tsang-bot',
+  'renovate-coveo',
+  'renovate-on-actions',
+  'serious-scaffold',
+  'sre-read-write',
+  'toucan-bot',
+  'shamubot',
+  'cilium-renovate',
+  'theriver-bot',
+  'angelnu-bot',
+  'updateclibot',
+  'jenkins-infra-updatecli',
+  'mintlify',
+  'mend-for-github-com',
+  'pull-bunyan',
+  '31mo',
+  'msclock-bot',
+  'ludos-renovate',
+  'valtionavustus-renovate',
+  'patchback',
+  'ppat-self-hosted-renovate-bot',
+  'laneybot',
+  'aquaproj-aqua-registry',
+  'balena-renovate',
+  'app-token-issuer-engops'
 ];
 
 export async function getGithubUsers({ logins: unfilteredLogins }: { logins: string[] }): Promise<GithubUser[]> {
@@ -166,7 +212,7 @@ export async function getGithubUsers({ logins: unfilteredLogins }: { logins: str
         }));
       })
       .catch((error) => {
-        log.error('Could not resolve users', { logins, error });
+        log.error('Could not resolve users', { error });
         return [];
       });
 
