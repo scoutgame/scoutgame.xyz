@@ -72,11 +72,13 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
           </List>
         </Stack>
         <Divider sx={{ backgroundColor: 'secondary.main', width: '50%', mx: 'auto' }} />
-        <Image src='/images/github-logo.png' width={120} height={30} alt='github' style={{ margin: '10px auto' }} />
+        {signedIn && (
+          <Image src='/images/github-logo.png' width={120} height={30} alt='github' style={{ margin: '10px auto' }} />
+        )}
         <Typography>
           {signedIn
             ? "Apply to be a Developer by connecting your GitHub. You'll be in the game once you make your first qualified contribution."
-            : 'Sign up / Sign in to apply.'}
+            : 'Sign up to apply.'}
         </Typography>
         {signedIn ? (
           <Suspense>
@@ -84,7 +86,7 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
           </Suspense>
         ) : (
           <Button variant='contained' color='primary' href={builderLoginUrl}>
-            Sign in
+            Sign in to apply
           </Button>
         )}
       </Stack>
