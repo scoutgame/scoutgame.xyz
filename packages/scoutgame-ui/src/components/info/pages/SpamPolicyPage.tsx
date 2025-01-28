@@ -16,7 +16,7 @@ export function SpamPolicyPage() {
 function Document() {
   return (
     <InfoCard>
-      <Typography>Scout Game automatically detects REJECTED Pull Requests from Builders.</Typography>
+      <Typography>Scout Game automatically detects REJECTED Pull Requests from Developers.</Typography>
       <List>
         <ListItem>
           <Typography>Each rejected Pull Request is treated as an abuse report.</Typography>
@@ -29,12 +29,12 @@ function Document() {
         </ListItem>
         <ListItem>
           <Typography>
-            Builders receiving 3 abuse reports will be suspended from the Scout Game and unable to score points
+            Developers receiving 3 abuse reports will be suspended from the Scout Game and unable to score points
           </Typography>
         </ListItem>
         <ListItem>
           <Typography>
-            A suspended Builder may appeal to rejoin the Scout Game.
+            A suspended Developer may appeal to rejoin the Scout Game.
             <br /> Submit an appeal here:{' '}
             <Link href='https://appeal.scoutgame.xyz' target='_blank'>
               https://appeal.scoutgame.xyz

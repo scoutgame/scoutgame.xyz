@@ -28,15 +28,15 @@ export function BuilderPage() {
             alt='Scout game score'
           />
           <Typography variant='h5' fontWeight='700' color='text.secondary'>
-            Are you a builder?
+            Are you a developer?
           </Typography>
           <Typography>
-            Scout Game rewards Builders for contributing to the onchain ecosystem. You earn more rewards when scouts
+            Scout Game rewards Developers for contributing to the onchain ecosystem. You earn more rewards when scouts
             show their support by minting your unique NFT.
           </Typography>
           <Typography>
-            Sign up as a Builder now, and you will be eligible to earn Scout Points and a share of your NFT sales during
-            the first season of Scout Game.
+            Sign up as a Developer now, and you will be eligible to earn Scout Points and a share of your NFT sales
+            during the first season of Scout Game.
           </Typography>
           <Image src='/images/github-logo.png' width={120} height={30} alt='github' />
           <Typography>Connect to GitHub to sign up and verify your code contributions.</Typography>

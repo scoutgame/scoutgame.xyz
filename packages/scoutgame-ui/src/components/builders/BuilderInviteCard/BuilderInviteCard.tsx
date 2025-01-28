@@ -4,10 +4,8 @@ import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
 import { useGlobalModal } from '../../../providers/ModalProvider';
-import { useUser } from '../../../providers/UserProvider';
 
 export function BuilderPageInviteCard() {
-  const { user } = useUser();
   const { openModal } = useGlobalModal();
 
   return (

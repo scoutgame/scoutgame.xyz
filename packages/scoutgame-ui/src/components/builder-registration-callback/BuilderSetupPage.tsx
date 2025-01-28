@@ -28,7 +28,7 @@ export function BuilderSetupPage({
       router.push(getNextRoute());
     },
     onError: (error) => {
-      log.error('Error setting up builder profile', { error });
+      log.error('Error setting up developer profile', { error });
       setGithubConnectError(error.error.serverError?.message || 'Something went wrong');
     }
   });
@@ -50,9 +50,11 @@ export function BuilderSetupPage({
   return (
     <Paper sx={{ p: 2 }}>
       <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
-        Setting up your builder profile...
+        Setting up your developer profile...
       </Typography>
-      <Typography mb={2}>We are setting up your builder profile. This process usually takes a few seconds.</Typography>
+      <Typography mb={2}>
+        We are setting up your developer profile. This process usually takes a few seconds.
+      </Typography>
       {!error && <LoadingComponent isLoading={status === 'executing'} />}
       {error && (
         <Typography variant='body2' component='em' sx={{ mt: 2 }}>

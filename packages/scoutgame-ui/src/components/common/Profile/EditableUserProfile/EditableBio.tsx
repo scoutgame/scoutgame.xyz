@@ -14,7 +14,7 @@ type EditableBioProps = {
 };
 
 export const DEFAULT_BIO =
-  'I’m playing the Scout Game: discovering builders, earning rewards, and supporting the future onchain.';
+  "I'm playing the Scout Game: discovering developers, earning rewards, and supporting the future onchain.";
 
 export function EditableBio({ bio, onBioChange, control, isDesktop }: EditableBioProps) {
   const {
