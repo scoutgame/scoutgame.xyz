@@ -2,7 +2,7 @@
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { LoadingButton } from '@mui/lab';
-import { Button, Typography, useTheme } from '@mui/material';
+import { Button } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/platform';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import dynamic from 'next/dynamic';
@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 import { useTrackEvent } from '../../../hooks/useTrackEvent';
+import { useGlobalModal } from '../../../providers/ModalProvider';
 import { useUser } from '../../../providers/UserProvider';
 import { DynamicLoadingContext, LoadingComponent } from '../Loading/DynamicLoading';
 import type { NFTPurchaseProps } from '../NFTPurchaseDialog/components/NFTPurchaseForm';
@@ -33,12 +34,11 @@ export function ScoutButton({
   markStarterCardPurchased?: boolean;
   type?: 'default' | 'starter_pack';
 }) {
-  const theme = useTheme();
   const trackEvent = useTrackEvent();
-  const [isPurchasing, setIsPurchasing] = useState<boolean>(false);
   const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [dialogLoadingStatus, setDialogLoadingStatus] = useState<boolean>(false);
   const { user, isLoading } = useUser();
+  const { openModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
 
   const platform = getPlatform();
@@ -50,7 +50,7 @@ export function ScoutButton({
   const handleClick = () => {
     trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });
     if (isAuthenticated) {
-      setIsPurchasing(true);
+      openModal('nftPurchase', builder);
     } else {
       setAuthPopup(true);
     }
@@ -95,17 +95,6 @@ export function ScoutButton({
             />
           </LoadingButton>
         )}
-
-        {isPurchasing && (
-          <NFTPurchaseDialog
-            open
-            onClose={() => {
-              setIsPurchasing(false);
-            }}
-            builder={builder}
-          />
-        )}
-
         <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>
     </div>
