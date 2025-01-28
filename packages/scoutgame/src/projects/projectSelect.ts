@@ -21,7 +21,8 @@ export const projectSelect = {
         select: {
           id: true,
           avatar: true,
-          displayName: true
+          displayName: true,
+          path: true
         }
       },
       role: true

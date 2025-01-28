@@ -76,7 +76,9 @@ export function ProfilePage({ user, tab, hideGithubButton, scoutProjects }: Prof
               </Suspense>
             </Box>
           </Stack>
-          {scoutProjects && scoutProjects.length ? <ProjectsTab scoutProjects={scoutProjects} /> : null}
+          <Box my={1}>
+            {scoutProjects && scoutProjects.length ? <ProjectsTab scoutProjects={scoutProjects} /> : null}
+          </Box>
         </Paper>
       </Stack>
       <Suspense fallback={tab === 'scout' ? <ScoutProfileLoading /> : <LoadingComponent isLoading />}>

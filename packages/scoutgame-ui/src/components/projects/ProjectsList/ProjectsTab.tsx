@@ -6,9 +6,7 @@ import Link from 'next/link';
 export function ProjectsTab({ scoutProjects }: { scoutProjects: UserScoutProjectInfo[] }) {
   return (
     <Stack gap={1}>
-      <Typography variant='h6' color='text.secondary'>
-        Projects
-      </Typography>
+      <Typography color='secondary'>Projects</Typography>
       <Stack
         flexDirection='row'
         rowGap={1}

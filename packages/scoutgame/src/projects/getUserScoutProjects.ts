@@ -18,6 +18,7 @@ export type UserScoutProject = {
   }[];
   teamMembers: {
     id: string;
+    path: string;
     avatar: string;
     displayName: string;
     role: ScoutProjectMemberRole;
@@ -51,7 +52,8 @@ export async function getUserScoutProjects({ userId }: { userId: string }): Prom
       id: member.user.id,
       avatar: member.user.avatar ?? '',
       displayName: member.user.displayName,
-      role: member.role
+      role: member.role,
+      path: member.user.path
     }))
   }));
 }

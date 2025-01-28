@@ -40,8 +40,12 @@ export function PublicProfilePage({
             </Box>
           </Stack>
         </Paper>
+        {scoutProjects && scoutProjects.length ? (
+          <Box my={1}>
+            <ProjectsTab scoutProjects={scoutProjects} />
+          </Box>
+        ) : null}
       </Hidden>
-      {scoutProjects && scoutProjects.length ? <ProjectsTab scoutProjects={scoutProjects} /> : null}
       <Box position='sticky' top={0} zIndex={1} bgcolor='background.default'>
         <PublicProfileTabsMenu
           tab={tab}
@@ -56,9 +60,10 @@ export function PublicProfilePage({
             ...user,
             nftType: BuilderNftType.default
           }}
+          scoutProjects={scoutProjects}
         />
       ) : (
-        <PublicScoutProfile publicUser={user} />
+        <PublicScoutProfile publicUser={user} scoutProjects={scoutProjects} />
       )}
     </Box>
   );

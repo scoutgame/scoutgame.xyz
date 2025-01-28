@@ -22,7 +22,8 @@ export async function getProjectByPath(path: string): Promise<UserScoutProject |
       id: member.user.id,
       avatar: member.user.avatar ?? '',
       displayName: member.user.displayName,
-      role: member.role
+      role: member.role,
+      path: member.user.path
     }))
   };
 }

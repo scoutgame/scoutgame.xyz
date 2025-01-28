@@ -13,10 +13,25 @@ export function ProjectPage({ project }: { project: UserScoutProject }) {
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>
-        <Stack gap={1} flexDirection='row' alignItems='center' bgcolor='background.paper' p={2} px={1} borderRadius={1}>
-          <div>
-            <BackButton />
-          </div>
+        <Stack
+          gap={{
+            xs: 0.5,
+            md: 1
+          }}
+          flexDirection='row'
+          alignItems='center'
+          bgcolor='background.paper'
+          p={{
+            xs: 1,
+            md: 2
+          }}
+          px={{
+            xs: 0.5,
+            md: 1
+          }}
+          borderRadius={1}
+        >
+          <BackButton />
           <Image src={project.avatar} alt={project.name} width={100} height={100} style={{ objectFit: 'cover' }} />
           <Stack gap={1} ml={1}>
             <Stack flexDirection='row' alignItems='center' gap={1}>
@@ -37,7 +52,7 @@ export function ProjectPage({ project }: { project: UserScoutProject }) {
           </Typography>
           <Stack gap={1}>
             {project.contracts.length === 0 ? (
-              <Typography>No contracts found</Typography>
+              <Typography>No contracts added</Typography>
             ) : (
               project.contracts.map((contract) => (
                 <Stack
@@ -69,28 +84,30 @@ export function ProjectPage({ project }: { project: UserScoutProject }) {
           </Typography>
           <Stack gap={1}>
             {project.teamMembers.map((member) => (
-              <Stack
-                key={member.id}
-                flexDirection='row'
-                alignItems='center'
-                gap={1}
-                bgcolor='background.paper'
-                px={1.5}
-                py={1}
-                borderRadius={1}
-              >
-                <Image
-                  src={member.avatar}
-                  alt={member.displayName}
-                  width={25}
-                  height={25}
-                  style={{ borderRadius: '50%' }}
-                />
-                <Typography>{member.displayName}</Typography>
-                <Typography variant='caption' color='secondary'>
-                  {ProjectRoleText[member.role as ScoutProjectMemberRole]}
-                </Typography>
-              </Stack>
+              <Link href={`/u/${member.path}`} key={member.id}>
+                <Stack
+                  key={member.id}
+                  flexDirection='row'
+                  alignItems='center'
+                  gap={1}
+                  bgcolor='background.paper'
+                  px={1.5}
+                  py={1}
+                  borderRadius={1}
+                >
+                  <Image
+                    src={member.avatar}
+                    alt={member.displayName}
+                    width={25}
+                    height={25}
+                    style={{ borderRadius: '50%' }}
+                  />
+                  <Typography>{member.displayName}</Typography>
+                  <Typography variant='caption' color='secondary'>
+                    {ProjectRoleText[member.role as ScoutProjectMemberRole]}
+                  </Typography>
+                </Stack>
+              </Link>
             ))}
           </Stack>
         </Stack>

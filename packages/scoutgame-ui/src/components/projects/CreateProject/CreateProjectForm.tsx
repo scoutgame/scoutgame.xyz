@@ -14,6 +14,7 @@ import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 
+import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { useUser } from '../../../providers/UserProvider';
 import { FormErrors } from '../../common/FormErrors';
 
@@ -24,6 +25,7 @@ import { ProjectTeamMemberForm } from './ProjectTeamMemberForm';
 export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
   const { address } = useAccount();
   const { user } = useUser();
+  const isMdScreen = useMdScreen();
   const [errors, setErrors] = useState<string[] | null>(null);
   const {
     control,
@@ -82,7 +84,10 @@ export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
           sx={{
             gap: 3,
             mb: 2,
-            height: 'calc(100vh - 225px)',
+            height: {
+              md: 'calc(100vh - 225px)',
+              xs: 'calc(100vh - 250px)'
+            },
             overflow: 'auto',
             pr: 1.5
           }}
@@ -90,7 +95,7 @@ export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
           <Stack gap={3}>
             <Stack>
               <FormLabel>Logo</FormLabel>
-              <ProjectAvatarField control={control} isLoading={isExecuting} />
+              <ProjectAvatarField control={control} isLoading={isExecuting} avatarSize={isMdScreen ? 150 : 100} />
             </Stack>
             <Stack>
               <FormLabel required>Name</FormLabel>

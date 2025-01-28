@@ -3,12 +3,14 @@
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { Box, Stack, Paper, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
+import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
 import { BuildersGallery } from '../../../common/Gallery/BuildersGallery';
 import { UserProfile } from '../../../common/Profile/UserProfile';
+import { ProjectsTab } from '../../../projects/ProjectsList/ProjectsTab';
 
 import { PublicScoutProfileStats } from './PublicScoutProfileStats';
 
@@ -20,6 +22,7 @@ export type ScoutProfileProps = {
   seasonPoints: number;
   nftsPurchased: number;
   scoutedBuilders: BuilderInfo[];
+  scoutProjects?: UserScoutProjectInfo[];
 };
 
 export function PublicScoutProfileContainer({
@@ -27,7 +30,8 @@ export function PublicScoutProfileContainer({
   allTimePoints,
   seasonPoints,
   nftsPurchased,
-  scoutedBuilders
+  scoutedBuilders,
+  scoutProjects
 }: ScoutProfileProps) {
   const isDesktop = useMdScreen();
   return (
@@ -42,6 +46,7 @@ export function PublicScoutProfileContainer({
           </Stack>
         </Paper>
       ) : null}
+      {!isDesktop && scoutProjects && scoutProjects.length ? <ProjectsTab scoutProjects={scoutProjects} /> : null}
       <Paper
         sx={{
           my: 2,
