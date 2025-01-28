@@ -33,7 +33,7 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
 
   // Success Cases
   it('should correctly distribute tokens among scouts and builder, counting normal NFTs as 10x compared to starter pack NFTs', async () => {
-    const result = await divideTokensBetweenBuilderAndHolders({
+    const result = divideTokensBetweenBuilderAndHolders({
       builderId: builder.id,
       rank,
       weeklyAllocatedTokens,
@@ -92,7 +92,7 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
 
   // Error Cases
   it('should throw an error if builderId is invalid', async () => {
-    await expect(
+    expect(() =>
       divideTokensBetweenBuilderAndHolders({
         builderId: 'invalid-builder-id',
         rank,
@@ -103,11 +103,11 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
           byWallet: []
         }
       })
-    ).rejects.toThrow(InvalidInputError);
+    ).toThrow('Invalid builderId must be a valid UUID');
   });
 
   it('should throw an error if rank is invalid', async () => {
-    await expect(
+    expect(() =>
       divideTokensBetweenBuilderAndHolders({
         builderId: builder.id,
         rank: -1,
@@ -118,6 +118,6 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
           byWallet: []
         }
       })
-    ).rejects.toThrow('Invalid rank provided');
+    ).toThrow('Invalid rank provided. Must be a number greater than 0');
   });
 });

@@ -45,7 +45,7 @@ export async function processScoutPointsPayout({
     builderId
   });
 
-  const { tokensForBuilder, tokensPerScoutByWallet, nftSupply } = await divideTokensBetweenBuilderAndHolders({
+  const { tokensForBuilder, tokensPerScoutByWallet, nftSupply } = divideTokensBetweenBuilderAndHolders({
     builderId,
     rank,
     weeklyAllocatedTokens: weeklyAllocatedPoints,

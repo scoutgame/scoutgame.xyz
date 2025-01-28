@@ -57,7 +57,7 @@ export async function getBuilderNftStats({
     builderId,
     week
   });
-  const { nftSupply } = await divideTokensBetweenBuilderAndHolders({
+  const { nftSupply } = divideTokensBetweenBuilderAndHolders({
     builderId,
     owners,
     rank: 1, // rank doesnt actually matter here
