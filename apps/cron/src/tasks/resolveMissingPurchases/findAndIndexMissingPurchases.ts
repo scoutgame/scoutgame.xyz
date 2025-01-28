@@ -105,7 +105,7 @@ export async function findAndIndexMissingPurchases({
     return;
   }
 
-  scoutgameMintsLogger.error(`Found ${missingEvents.length} missing events`);
+  scoutgameMintsLogger.info(`Found ${missingEvents.length} missing events`);
 
   const groupedByTokenId = missingEvents.reduce(
     (acc, val) => {
@@ -136,7 +136,7 @@ export async function findAndIndexMissingPurchases({
 
   for (const key of allTokenIdsAsString) {
     for (const missingTx of groupedByTokenId[key as any].records) {
-      scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
+      scoutgameMintsLogger.info('Missing tx', missingTx.transactionHash, 'tokenId', key);
 
       const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
 
