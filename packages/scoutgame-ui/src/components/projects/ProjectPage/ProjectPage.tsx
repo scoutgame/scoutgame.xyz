@@ -36,27 +36,31 @@ export function ProjectPage({ project }: { project: UserScoutProject }) {
             Contracts
           </Typography>
           <Stack gap={1}>
-            {project.contracts.map((contract) => (
-              <Stack
-                key={contract.id}
-                flexDirection='row'
-                alignItems='center'
-                gap={1}
-                bgcolor='background.paper'
-                px={1.5}
-                py={1}
-                borderRadius={1}
-              >
-                <Typography>{contract.address}</Typography>
-                <Image
-                  src={chainRecords[contract.chainId].image}
-                  alt={chainRecords[contract.chainId].name}
-                  width={20}
-                  height={20}
-                  style={{ borderRadius: '50%' }}
-                />
-              </Stack>
-            ))}
+            {project.contracts.length === 0 ? (
+              <Typography>No contracts found</Typography>
+            ) : (
+              project.contracts.map((contract) => (
+                <Stack
+                  key={contract.id}
+                  flexDirection='row'
+                  alignItems='center'
+                  gap={1}
+                  bgcolor='background.paper'
+                  px={1.5}
+                  py={1}
+                  borderRadius={1}
+                >
+                  <Typography>{contract.address}</Typography>
+                  <Image
+                    src={chainRecords[contract.chainId].image}
+                    alt={chainRecords[contract.chainId].name}
+                    width={20}
+                    height={20}
+                    style={{ borderRadius: '50%' }}
+                  />
+                </Stack>
+              ))
+            )}
           </Stack>
         </Stack>
         <Stack gap={1}>
