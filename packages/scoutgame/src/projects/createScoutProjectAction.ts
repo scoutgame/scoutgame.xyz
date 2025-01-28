@@ -1,6 +1,7 @@
 'use server';
 
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { revalidatePath } from 'next/cache';
 
 import { createScoutProject } from './createScoutProject';
 import { createScoutProjectSchema } from './createScoutProjectSchema';
@@ -14,6 +15,7 @@ export const createScoutProjectAction = authActionClient
     const userId = ctx.session.scoutId;
 
     const createdScoutProject = await createScoutProject(parsedInput, userId);
+    revalidatePath('/projects');
 
     return createdScoutProject;
   });
