@@ -28,3 +28,10 @@ export const projectSelect = {
     }
   }
 } satisfies Prisma.ScoutProjectSelect;
+
+export const projectInfoSelect = {
+  id: true,
+  name: true,
+  avatar: true,
+  path: true
+} satisfies Prisma.ScoutProjectSelect;

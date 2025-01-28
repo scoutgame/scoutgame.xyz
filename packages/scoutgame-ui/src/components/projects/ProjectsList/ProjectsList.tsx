@@ -1,11 +1,10 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Stack, Typography } from '@mui/material';
-import type { UserScoutProject } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import Image from 'next/image';
 import Link from 'next/link';
 
-import { Avatar } from '../common/Avatar';
-
-export function ProjectsList({ projects }: { projects: UserScoutProject[] }) {
+export function ProjectsList({ projects }: { projects: UserScoutProjectInfo[] }) {
   return (
     <Stack gap={1}>
       {projects.length === 0 ? (
@@ -25,7 +24,7 @@ export function ProjectsList({ projects }: { projects: UserScoutProject[] }) {
               borderRadius={1}
             >
               <Stack flexDirection='row' gap={1.5} alignItems='center'>
-                <Avatar src={project.avatar} size='small' variant='rounded' />
+                <Image style={{ objectFit: 'cover' }} src={project.avatar} alt={project.name} width={32} height={32} />
                 <Typography variant='h6'>{project.name}</Typography>
               </Stack>
               <ChevronRightIcon />

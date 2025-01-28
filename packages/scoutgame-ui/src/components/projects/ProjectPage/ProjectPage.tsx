@@ -6,15 +6,19 @@ import type { UserScoutProject } from '@packages/scoutgame/projects/getUserScout
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { BackButton } from '../../common/Button/BackButton';
 import { chainRecords, ProjectRoleText } from '../constants';
 
 export function ProjectPage({ project }: { project: UserScoutProject }) {
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>
-        <Stack gap={2} flexDirection='row' alignItems='center' bgcolor='background.paper' p={2} borderRadius={1}>
-          <Image src={project.avatar} alt={project.name} width={100} height={100} />
-          <Stack gap={1}>
+        <Stack gap={1} flexDirection='row' alignItems='center' bgcolor='background.paper' p={2} px={1} borderRadius={1}>
+          <div>
+            <BackButton />
+          </div>
+          <Image src={project.avatar} alt={project.name} width={100} height={100} style={{ objectFit: 'cover' }} />
+          <Stack gap={1} ml={1}>
             <Stack flexDirection='row' alignItems='center' gap={1}>
               <Typography variant='h5'>{project.name}</Typography>
               <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>

@@ -1,10 +1,12 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
+import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { TalentProfile } from '@packages/users/getUserByPath';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { Suspense } from 'react';
 
 import { LoadingComponent } from '../common/Loading/LoadingComponent';
+import { ProjectsTab } from '../projects/ProjectsList/ProjectsTab';
 
 import { BuilderProfile } from './components/BuilderProfile/BuilderProfile';
 import { ProfileStatsContainer as ProfileStats } from './components/ProfileStats/ProfileStatsContainer';
@@ -25,9 +27,10 @@ type ProfilePageProps = {
   user: UserWithProfiles;
   tab: ProfileTab;
   hideGithubButton?: boolean;
+  scoutProjects?: UserScoutProjectInfo[];
 };
 
-export function ProfilePage({ user, tab, hideGithubButton }: ProfilePageProps) {
+export function ProfilePage({ user, tab, hideGithubButton, scoutProjects }: ProfilePageProps) {
   return (
     <Box
       sx={{
@@ -54,8 +57,7 @@ export function ProfilePage({ user, tab, hideGithubButton }: ProfilePageProps) {
               xs: 0,
               md: 2
             },
-            gap: 2,
-            flexDirection: { xs: 'column', md: 'row' },
+            flexDirection: 'column',
             justifyContent: 'space-between',
             backgroundColor: {
               xs: 'transparent',
@@ -64,14 +66,17 @@ export function ProfilePage({ user, tab, hideGithubButton }: ProfilePageProps) {
           }}
           elevation={0}
         >
-          <Stack justifyContent='center' flex={1}>
-            <UserProfileForm user={user} />
+          <Stack gap={2} sx={{ flexDirection: { xs: 'column', md: 'row' } }}>
+            <Stack justifyContent='center' flex={1}>
+              <UserProfileForm user={user} />
+            </Stack>
+            <Box flex={1}>
+              <Suspense fallback={<LoadingComponent isLoading />}>
+                <ProfileStats userId={user.id} />
+              </Suspense>
+            </Box>
           </Stack>
-          <Box flex={1}>
-            <Suspense fallback={<LoadingComponent isLoading />}>
-              <ProfileStats userId={user.id} />
-            </Suspense>
-          </Box>
+          {scoutProjects && scoutProjects.length ? <ProjectsTab scoutProjects={scoutProjects} /> : null}
         </Paper>
       </Stack>
       <Suspense fallback={tab === 'scout' ? <ScoutProfileLoading /> : <LoadingComponent isLoading />}>

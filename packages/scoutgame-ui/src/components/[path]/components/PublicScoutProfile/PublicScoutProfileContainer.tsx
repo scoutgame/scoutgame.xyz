@@ -3,12 +3,14 @@
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { Box, Stack, Paper, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
+import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
 import { BuildersGallery } from '../../../common/Gallery/BuildersGallery';
 import { UserProfile } from '../../../common/Profile/UserProfile';
+import { ProjectsInfoList } from '../../../projects/ProjectsList/ProjectsTab';
 
 import { PublicScoutProfileStats } from './PublicScoutProfileStats';
 

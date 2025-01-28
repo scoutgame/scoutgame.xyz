@@ -6,7 +6,7 @@ import type { UserScoutProject } from '@packages/scoutgame/projects/getUserScout
 import { useState } from 'react';
 
 import { CreateProjectForm } from './CreateProject/CreateProjectForm';
-import { ProjectsList } from './ProjectsList';
+import { ProjectsList } from './ProjectsList/ProjectsList';
 
 export function ProjectsPage({ projects }: { projects: UserScoutProject[] }) {
   const [isCreatingProject, setIsCreatingProject] = useState(false);

@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
+import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { findScoutOrThrow } from '@packages/scoutgame/scouts/findScoutOrThrow';
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { getScoutStats } from '@packages/scoutgame/scouts/getScoutStats';
