@@ -115,7 +115,8 @@ describe('recordCommit', () => {
 
     const builderEvent = await prisma.builderEvent.findFirst({
       where: {
-        builderId: builder.id
+        builderId: builder.id,
+        type: 'daily_commit'
       }
     });
     expect(builderEvent).toEqual(expect.objectContaining({ bonusPartner: 'test-partner' }));
