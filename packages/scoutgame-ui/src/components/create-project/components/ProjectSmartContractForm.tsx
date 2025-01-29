@@ -6,6 +6,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { Button, CircularProgress, FormLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from '@packages/scoutgame/projects/constants';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { getContractDeployerAddressAction } from '@packages/scoutgame/projects/getContractDeployerAddressAction';
 import Image from 'next/image';
@@ -44,17 +45,15 @@ export function ProjectSmartContractForm({
   });
   const [tempContract, setTempContract] = useState<{ address: string; chainId: number } | null>(null);
 
-  const MESSAGE_TO_SIGN = 'I am the deployer of this contract';
-
   const verifyDeployerOwnership = useCallback(
     async (deployerAddress: `0x${string}`) => {
       try {
         const signature = await signMessageAsync({
-          message: MESSAGE_TO_SIGN
+          message: CONTRACT_DEPLOYER_SIGN_MESSAGE
         });
 
         const isValid = await verifyMessage({
-          message: MESSAGE_TO_SIGN,
+          message: CONTRACT_DEPLOYER_SIGN_MESSAGE,
           signature,
           address: deployerAddress
         });
