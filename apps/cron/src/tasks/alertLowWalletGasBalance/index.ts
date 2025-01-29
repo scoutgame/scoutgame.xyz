@@ -1,5 +1,5 @@
-import { log } from '@charmverse/core/log';
-import { builderCreatorAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getWalletClient } from '@packages/blockchain/getWalletClient';
+import { builderNftChain, builderSmartContractMinterKey } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { POST } from '@packages/utils/http';
 import type Koa from 'koa';
@@ -15,6 +15,13 @@ export async function alertLowWalletGasBalance(
   if (!discordWebhook) {
     throw new Error('No Discord webhook found');
   }
+
+  const client = getWalletClient({
+    chainId: builderNftChain.id,
+    privateKey: builderSmartContractMinterKey
+  });
+
+  const builderCreatorAddress = client.account.address;
 
   const balanceInUSD = await getWalletGasBalanceInUSD(builderCreatorAddress);
   scoutgameMintsLogger.info(`Admin wallet has a balance of ${balanceInUSD} USD`);

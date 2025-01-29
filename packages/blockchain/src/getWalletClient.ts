@@ -50,8 +50,7 @@ export function getWalletClient({
     account,
     transport: http(rpcUrl, {
       retryCount: httpRetries,
-      timeout: 5000,
-      retryDelay: 3000
+      timeout: 5000
     })
   }).extend(publicActions);
 
@@ -61,34 +60,80 @@ export function getWalletClient({
     ...args: Parameters<WalletClient['sendTransaction']>
     // Needed to make the function return type compatible with the original sendTransaction function
   ): Promise<Awaited<ReturnType<WalletClient['sendTransaction']>>> {
-    try {
-      const result = await originalSendTransaction(...args);
-      return result;
-    } catch (e) {
-      const replacementTransactionUnderpriced = /replacement transaction underpriced/;
-      const nonceErrorExpression = /nonce too low/;
-      if (JSON.stringify(e).match(nonceErrorExpression) || JSON.stringify(e).match(replacementTransactionUnderpriced)) {
-        const retryAttempts = (args[0] as { retryAttempts?: number })?.retryAttempts ?? 0;
+    let nextNonce =
+      args[0].nonce ??
+      (await client.getTransactionCount({
+        address: account.address
+      })) + 1;
 
-        (args[0] as { retryAttempts?: number }).retryAttempts = retryAttempts + 1;
+    const slicedArgs = [
+      {
+        ...args[0],
+        nonce: nextNonce
+      },
+      ...args.slice(1)
+    ] as Parameters<WalletClient['sendTransaction']>;
 
-        if (retryAttempts >= MAX_TX_RETRIES) {
-          log.error(`Max retries reached for sending transaction, ${retryAttempts}`, { e, args });
+    for (let i = 0; i < MAX_TX_RETRIES; i++) {
+      try {
+        const result = await originalSendTransaction(...slicedArgs);
+
+        return result;
+      } catch (e) {
+        const replacementTransactionUnderpriced = /replacement transaction underpriced/;
+        const nonceErrorExpression = /nonce too low/;
+
+        const errorAsString = JSON.stringify(e);
+
+        if (errorAsString.match(nonceErrorExpression) || errorAsString.match(replacementTransactionUnderpriced)) {
+          const retryAttempts = (args[0] as { retryAttempts?: number })?.retryAttempts ?? 0;
+
+          (args[0] as { retryAttempts?: number }).retryAttempts = retryAttempts + 1;
+
+          if (retryAttempts >= MAX_TX_RETRIES) {
+            log.error(`Max retries reached for sending transaction, ${retryAttempts}`, { e, args });
+            throw e;
+          }
+
+          log.info(`Retrying failed transaction attempt nb. ${retryAttempts}`, { e, args });
+
+          const randomTimeout = Math.floor(Math.random() * 3000) + 2000; // Random timeout between 2-10 seconds
+          await sleep(randomTimeout);
+
+          if (errorAsString.match(nonceErrorExpression)) {
+            const nonceMatch = errorAsString.match(/nonce too low: next nonce (\d+)/);
+            if (nonceMatch) {
+              nextNonce = parseInt(nonceMatch[1], 10);
+            }
+          } else {
+            nextNonce =
+              (await client.getTransactionCount({
+                address: account.address,
+                blockTag: 'pending'
+              })) + 1;
+          }
+        } else {
           throw e;
         }
-
-        log.info(`Retrying failed transaction attempt nb. ${retryAttempts}`, { e, args });
-
-        const randomTimeout = Math.floor(Math.random() * 8000) + 2000; // Random timeout between 2-10 seconds
-        await sleep(randomTimeout);
-
-        return overridenSendTransaction(...args);
       }
-      throw e;
     }
+
+    throw new Error('Max retries reached for sending transaction');
   }
 
   client.sendTransaction = overridenSendTransaction as any;
 
   return client;
 }
+
+// const client = getWalletClient({
+//   chainId: builderNftChain.id,
+//   privateKey: builderSmartContractMinterKey
+// });
+
+// client
+//   .getTransactionCount({
+//     address: client.account.address,
+//     blockTag: 'latest'
+//   })
+//   .then(console.log);
