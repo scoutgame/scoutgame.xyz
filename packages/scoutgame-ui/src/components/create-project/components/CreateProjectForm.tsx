@@ -29,7 +29,6 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
 
   const {
     control,
-    getValues,
     formState: { isDirty },
     handleSubmit
   } = useForm({
@@ -59,7 +58,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
 
   function onInvalid(fieldErrors: FieldErrors) {
     setErrors(['The form is invalid. Please check the fields and try again.']);
-    log.warn('Invalid form submission', { fieldErrors, values: getValues() });
+    log.warn('Invalid form submission', { fieldErrors });
   }
 
   const onSubmit = (data: CreateScoutProjectFormValues) => {

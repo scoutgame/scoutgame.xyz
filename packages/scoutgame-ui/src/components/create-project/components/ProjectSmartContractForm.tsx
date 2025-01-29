@@ -1,19 +1,19 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
+import { stringUtils } from '@charmverse/core/utilities';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { Button, FormLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Button, CircularProgress, FormLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
-import { fancyTrim } from '@packages/utils/strings';
+import { getContractDeployerAddressAction } from '@packages/scoutgame/projects/getContractDeployerAddressAction';
 import Image from 'next/image';
+import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import { useFieldArray, type Control } from 'react-hook-form';
-import { verifyMessage, getAddress, erc20Abi } from 'viem';
-import { sepolia, taiko } from 'viem/chains';
-import { useSignMessage, usePublicClient, useConfig } from 'wagmi';
+import { verifyMessage } from 'viem';
+import { useSignMessage } from 'wagmi';
 
-import { FormErrors } from '../../../components/common/FormErrors';
 import { chainRecords } from '../../projects/constants';
 
 export type Deployer = { address: string; verified: boolean; signature: string | null };
@@ -27,8 +27,8 @@ export function ProjectSmartContractForm({
   deployers: Deployer[];
   setDeployers: React.Dispatch<React.SetStateAction<Deployer[]>>;
 }) {
+  const { executeAsync: getContractDeployerAddress, isExecuting } = useAction(getContractDeployerAddressAction);
   const [open, setOpen] = useState(false);
-  const config = useConfig();
   const { signMessageAsync } = useSignMessage();
   const {
     fields: contracts,
@@ -40,60 +40,8 @@ export function ProjectSmartContractForm({
     name: 'contracts'
   });
   const [tempContract, setTempContract] = useState<{ address: string; chainId: number } | null>(null);
-  const publicClient = usePublicClient({
-    config: {
-      ...config,
-      chains: [sepolia, taiko]
-    }
-  });
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const MESSAGE_TO_SIGN = 'I am the deployer of this contract';
-
-  const fetchDeployerAddress = useCallback(
-    async (contractAddress: string) => {
-      try {
-        if (!publicClient) {
-          throw new Error('Public client not found');
-        }
-
-        // First verify the contract exists
-        const bytecode = await publicClient.getBytecode({
-          address: getAddress(contractAddress)
-        });
-
-        if (!bytecode) {
-          throw new Error('Contract not found');
-        }
-
-        // Get the contract creation transaction
-        const filter = await publicClient.createContractEventFilter({
-          address: getAddress(contractAddress),
-          fromBlock: 0n,
-          toBlock: 'latest',
-          abi: erc20Abi
-        });
-
-        const logs = await publicClient.getFilterLogs({ filter });
-
-        // The first transaction to the contract should be its creation
-        if (logs.length > 0) {
-          const receipt = await publicClient.getTransactionReceipt({
-            hash: logs[0].transactionHash
-          });
-
-          return receipt.from;
-        }
-
-        throw new Error('Could not find contract creation transaction');
-      } catch (error) {
-        log.info('Error fetching deployer address', { error });
-        setErrorMessage('Could not determine deployer address. Please try again.');
-        return null;
-      }
-    },
-    [publicClient]
-  );
 
   const verifyDeployerOwnership = useCallback(
     async (deployerAddress: `0x${string}`, contractAddress: `0x${string}`) => {
@@ -135,7 +83,13 @@ export function ProjectSmartContractForm({
 
   const onSave = useCallback(async () => {
     if (tempContract) {
-      const deployerAddress = await fetchDeployerAddress(tempContract.address);
+      const getContractDeployerAddressResult = await getContractDeployerAddress({
+        chainId: Number(tempContract.chainId),
+        contractAddress: tempContract.address
+      });
+
+      const deployerAddress = getContractDeployerAddressResult?.data;
+
       if (!deployerAddress) {
         return;
       }
@@ -149,7 +103,7 @@ export function ProjectSmartContractForm({
       setTempContract(null);
       setOpen(false);
     }
-  }, [append, tempContract, fetchDeployerAddress, setTempContract, setOpen, setDeployers]);
+  }, [append, tempContract, getContractDeployerAddress, setTempContract, setOpen, setDeployers]);
 
   const onCreate = useCallback(() => {
     setTempContract({
@@ -189,18 +143,21 @@ export function ProjectSmartContractForm({
     <Stack gap={2}>
       {Object.values(groupedContracts).map((deployer) => (
         <Stack gap={1} key={deployer.address}>
-          <Stack flexDirection='row' alignItems='center' gap={1}>
-            <Typography>Deployer Address: {deployer.address}</Typography>
-            <Button
-              variant='contained'
-              color='primary'
-              size='small'
-              onClick={() => verifyDeployerOwnership(deployer.address, deployer.contracts[0].address)}
-            >
-              Sign
-            </Button>
+          <Stack flexDirection='row' alignItems='center' gap={1} justifyContent='space-between'>
+            <Typography color='secondary'>Deployer Address: {stringUtils.shortenHex(deployer.address)}</Typography>
+            {deployer.verified ? null : (
+              <Button
+                variant='contained'
+                color='primary'
+                size='small'
+                disabled={isExecuting}
+                onClick={() => verifyDeployerOwnership(deployer.address, deployer.contracts[0].address)}
+              >
+                Sign
+              </Button>
+            )}
           </Stack>
-          <Stack>
+          <Stack gap={1}>
             {deployer.contracts.map((contract, index) => (
               <Stack
                 key={contract.address}
@@ -220,9 +177,19 @@ export function ProjectSmartContractForm({
                     alt={chainRecords[contract.chainId].name}
                     style={{ borderRadius: '50%' }}
                   />
-                  <Typography>{fancyTrim(contract.address)}</Typography>
+                  <Typography color={deployer.verified ? undefined : 'error'}>
+                    {stringUtils.shortenHex(contract.address)}
+                  </Typography>
                 </Stack>
-                <DeleteIcon fontSize='small' onClick={() => remove(index)} color='error' sx={{ cursor: 'pointer' }} />
+                <Stack alignItems='center' gap={1} flexDirection='row'>
+                  {!deployer.verified && <Typography color='error'>Must sign with Deployer Address</Typography>}
+                  <DeleteIcon
+                    fontSize='small'
+                    onClick={() => !isExecuting && remove(index)}
+                    color={isExecuting ? 'disabled' : 'error'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                </Stack>
               </Stack>
             ))}
           </Stack>
@@ -234,6 +201,7 @@ export function ProjectSmartContractForm({
           <Stack flex={0.75}>
             <FormLabel>Contract Address</FormLabel>
             <TextField
+              disabled={isExecuting}
               value={tempContract?.address}
               onChange={(e) => setTempContract(tempContract ? { ...tempContract, address: e.target.value } : null)}
               placeholder='0x0000000...'
@@ -247,6 +215,7 @@ export function ProjectSmartContractForm({
                 onChange={(e) =>
                   setTempContract(tempContract ? { ...tempContract, chainId: e.target.value as number } : null)
                 }
+                disabled={isExecuting}
                 fullWidth
                 displayEmpty
                 renderValue={(chainId) =>
@@ -277,7 +246,6 @@ export function ProjectSmartContractForm({
           </Stack>
         </Stack>
       )}
-      <FormErrors errors={errorMessage ? [errorMessage] : []} />
       {!open ? (
         <Button
           variant='outlined'
@@ -289,19 +257,33 @@ export function ProjectSmartContractForm({
           Contract Address
         </Button>
       ) : (
-        <Stack flexDirection='row' gap={2} justifyContent='flex-end'>
-          <Button variant='outlined' color='primary' sx={{ width: 'fit-content' }} onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button
-            variant='contained'
-            color='primary'
-            sx={{ width: 'fit-content' }}
-            onClick={onSave}
-            disabled={!tempContract || !tempContract.address || !tempContract.chainId}
-          >
-            Save
-          </Button>
+        <Stack flexDirection='row' alignItems='center' justifyContent={isExecuting ? 'space-between' : 'flex-end'}>
+          {isExecuting && (
+            <Stack flexDirection='row' alignItems='center' gap={1}>
+              <CircularProgress size={20} />
+              <Typography>Fetching deployer address...</Typography>
+            </Stack>
+          )}
+          <Stack flexDirection='row' alignItems='center' gap={1}>
+            <Button
+              variant='outlined'
+              color='primary'
+              sx={{ width: 'fit-content' }}
+              onClick={onCancel}
+              disabled={isExecuting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant='contained'
+              color='primary'
+              sx={{ width: 'fit-content' }}
+              onClick={onSave}
+              disabled={!tempContract || !tempContract.address || !tempContract.chainId || isExecuting}
+            >
+              Save
+            </Button>
+          </Stack>
         </Stack>
       )}
     </Stack>

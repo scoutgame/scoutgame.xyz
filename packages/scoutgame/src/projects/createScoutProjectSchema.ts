@@ -27,6 +27,9 @@ export const createScoutProjectSchema = yup.object({
         signature: yup.string().required('Signature is required')
       })
     )
+    .test('deployer-signature', 'Every deployer must have a signature', (deployers) => {
+      return deployers ? deployers.every((deployer) => deployer.signature) : true;
+    })
     .when('contracts', {
       is: (contracts: any[]) => contracts && contracts.length > 0,
       then: (schema) => schema.min(1, 'At least one deployer is required when contracts are provided'),
