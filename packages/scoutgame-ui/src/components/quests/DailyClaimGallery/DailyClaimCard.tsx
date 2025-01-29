@@ -60,7 +60,7 @@ function AnimatedContent({
           bottom={0}
           position='absolute'
         >
-          <Image src='/images/quests/question-icon.png' alt='Quest icon' width={24} height={24} />
+          <Image src='/images/quests/question-icon.svg' alt='Quest icon' width={24} height={24} />
         </Stack>
       ) : null}
     </AnimatePresence>
