@@ -39,7 +39,7 @@ export default async function Home() {
           px: 1
         }}
       >
-        Fantasy sports for onchain builders
+        Fantasy sports for onchain developers
       </Typography>
     </Box>
   );

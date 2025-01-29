@@ -27,9 +27,9 @@ export function BuilderRewardsScreen({ period }: { period: string }) {
   return (
     <Stack gap={1} pt={1} alignItems='center'>
       <Typography color='secondary' variant='h6'>
-        Builder Rewards
+        Developer Rewards
       </Typography>
-      <Typography textAlign='center'>See how many Scout Points your Builders have earned for you!</Typography>
+      <Typography textAlign='center'>See how many Scout Points your Developers have earned for you!</Typography>
       <TabsMenu
         tabs={[
           { value: week || lastWeek, label: 'Weekly' },

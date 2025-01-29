@@ -9,6 +9,7 @@ import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
 import { JoinGithubButton } from '../../../common/JoinGithubButton';
@@ -49,8 +50,10 @@ export async function BuilderProfile({
   if (!builder.githubLogin && !hideGithubButton) {
     return (
       <Stack gap={2} alignItems='center'>
-        <Typography>Connect your GitHub account to apply as a Builder.</Typography>
-        <JoinGithubButton />
+        <Typography>Connect your GitHub account to apply as a Developer.</Typography>
+        <Suspense>
+          <JoinGithubButton />
+        </Suspense>
       </Stack>
     );
   }
@@ -67,7 +70,7 @@ export async function BuilderProfile({
           justifyContent: 'center'
         }}
       >
-        <Typography align='center'>Your Builder account is pending approval.</Typography>
+        <Typography align='center'>Your Developer account is pending approval.</Typography>
         <Typography align='center'>Check back soon!</Typography>
       </Box>
     );
@@ -76,10 +79,12 @@ export async function BuilderProfile({
   if (builder.builderStatus === 'rejected') {
     return (
       <Stack gap={2} alignItems='center'>
-        <Typography>
-          Your Builder account was not approved. Connect your GitHub account again if you think this was a mistake.
-          <JoinGithubButton />
-        </Typography>
+        <Suspense>
+          <Typography>
+            Your Developer account was not approved. Connect your GitHub account again if you think this was a mistake.
+            <JoinGithubButton />
+          </Typography>
+        </Suspense>
       </Stack>
     );
   }
@@ -89,7 +94,7 @@ export async function BuilderProfile({
       {builder.builderStatus === 'banned' ? (
         <Alert severity='error'>
           <Typography>
-            Your builder account has been banned. Submit an appeal for review{' '}
+            Your developer account has been banned. Submit an appeal for review{' '}
             <Typography color='secondary' component='span'>
               <Link href={appealUrl}>here</Link>
             </Typography>

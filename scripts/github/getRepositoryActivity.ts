@@ -1,36 +1,8 @@
 import { log } from '@charmverse/core/log';
-import { githubAccessToken } from '@packages/utils/constants';
-import { githubGrapghQLClient } from 'lib/github/githubGraphQLClient';
-import { uniq, uniqBy } from 'lodash';
-import { Octokit } from '@octokit/core';
-import { throttling } from '@octokit/plugin-throttling';
-import { paginateGraphQL } from '@octokit/plugin-paginate-graphql';
-
-const MyOctokit = Octokit.plugin(throttling, paginateGraphQL);
-export const octokit = new MyOctokit({
-  auth: githubAccessToken,
-  throttle: {
-    onRateLimit: (retryAfter, options, _octokit, retryCount) => {
-      //log.warn(`[Octokit] Request quota exhausted for request ${options.method} ${options.url}`);
-
-      log.info(`[Octokit] Retrying after ${retryAfter} seconds!`);
-      return true;
-      // if (retryCount < 2) {
-      //   // only retries twice
-      //   return true;
-      // }
-    },
-    onSecondaryRateLimit: (retryAfter, options, _octokit) => {
-      // does not retry, only logs a warning
-      log.warn(
-        `[Octokit] SecondaryRateLimit detected for request ${options.method} ${options.url}. Retrying after ${retryAfter} seconds!`
-      );
-      // try again
-      return true;
-    }
-  }
-});
-
+import { octokit } from '@packages/github/client';
+import { prisma } from '@charmverse/core/prisma-client';
+import { writeFile } from 'fs/promises';
+import { uniqueValuesBy } from '@packages/utils/array';
 type RepositoryData = {
   id: string;
   url: string;
@@ -76,6 +48,9 @@ export type FlatRepositoryData = {
   authors: { login: string; avatarUrl?: string }[];
 };
 
+const cutoffDate = '2024-12-01';
+const queryRange = cutoffDate + '..2025-01-27';
+
 // get pull requests by repo: "<owner>/<repo>"
 const queryPullRequests = (repo: string) =>
   octokit.graphql.paginate<{
@@ -109,7 +84,7 @@ const queryPullRequests = (repo: string) =>
       }
     }`,
     {
-      searchStr: repo + ' is:pr is:merged updated:2024-06-01..2024-11-05'
+      searchStr: repo + ' is:pr is:merged updated:' + queryRange
     }
   );
 
@@ -167,11 +142,10 @@ export const queryRepos = (repos: string[]) =>
 function mapToFlatObject(data: RepositoryData, cutoffDate: Date): FlatRepositoryData {
   const filteredPullRequests = data.pullRequests.edges.filter((edge) => {
     const updatedAt = new Date(edge.node.updatedAt);
-
     return updatedAt >= cutoffDate;
   });
 
-  const uniqAuthors = uniqBy(filteredPullRequests.map((pr) => pr.node.author).filter(Boolean), 'login');
+  const uniqAuthors = uniqueValuesBy(filteredPullRequests.map((pr) => pr.node.author).filter(Boolean), 'login');
   const missingAuthor = filteredPullRequests.find((edge) => !edge.node.author);
   if (missingAuthor) {
     console.log('Missing author', data.url, missingAuthor);
@@ -197,43 +171,68 @@ export async function getRepositoryActivity({ cutoffDate, repos }: { cutoffDate:
 
   const perQuery = 50;
 
-  const maxQueriedRepos = totalRepos;
-
-  log.info(`Total repos to query: ${totalRepos}`);
+  log.info(`Total repos to query: ${totalRepos}, 50 per query...`);
 
   const allData: FlatRepositoryData[] = [];
 
-  for (let i = 0; i <= maxQueriedRepos; i += perQuery) {
+  for (let i = 0; i <= totalRepos; i += perQuery) {
     const repoList = repos.slice(i, i + perQuery).map((repo) => `repo:${repo.replace('https://github.com/', '')}`);
 
     if (repoList.length === 0) {
       break;
     }
 
-    const results = await queryRepos(repoList).then(async (data) => {
-      const repos = data?.search?.edges.map((edge) => edge.node) || [];
-      if (!data?.search) {
-        console.log('No search data', data);
-      }
-      const _results: FlatRepositoryData[] = [];
-      for (let repo of repos) {
-        const prs = repo.pullRequests.edges.filter((edge) => edge.node.updatedAt >= cutoffDate.toISOString());
-        // compensate for the limit of 50 PRs from the initial query
-        if (prs.length >= 50) {
-          const extra = await queryPullRequests(repo.url.replace('https://github.com/', ''));
-          repo.pullRequests.edges = extra.search.edges;
-          _results.push(mapToFlatObject(repo, cutoffDate));
-          console.log('requested additional PRs', prs.length, repo.pullRequests.edges.length);
+    const results = await queryRepos(repoList)
+      .then(async (data) => {
+        const repos = data?.search?.edges.map((edge) => edge.node) || [];
+        if (!data?.search) {
+          console.log('No search data', data);
         }
-      }
-      return _results;
-    });
+        const _results: FlatRepositoryData[] = [];
+        for (let repo of repos) {
+          const prs = repo.pullRequests.edges.filter((edge) => edge.node.updatedAt >= cutoffDate.toISOString());
+          // compensate for the limit of 50 PRs from the initial query
+          if (prs.length >= 50) {
+            try {
+              const extra = await queryPullRequests(repo.url.replace('https://github.com/', ''));
+              repo.pullRequests.edges = extra.search.edges;
+              console.log('requested additional PRs', prs.length, repo.pullRequests.edges.length);
+            } catch (e) {
+              console.error('Error querying pull requests for repo', repo.url, e);
+            }
+          }
+          _results.push(mapToFlatObject(repo, cutoffDate));
+        }
+        return _results;
+      })
+      .catch((error) => {
+        console.error('Error querying repos', error);
+        return [];
+      });
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     allData.push(...results);
 
-    log.info(`Queried repos ${i + 1}-${i + Math.min(repoList.length, perQuery)} / ${maxQueriedRepos}`);
+    log.info(
+      `Queried repos ${i + 1}-${i + Math.min(repoList.length, perQuery)} / ${totalRepos}. Results so far: ${allData.length}`
+    );
   }
   return allData;
 }
+
+async function queryRepoActivity() {
+  const repos = await prisma.githubRepo.findMany({
+    where: { handPicked: true, events: { none: {} } }
+  });
+  console.log('Getting activity for', repos.length, 'repos since:', cutoffDate);
+
+  const repoActivity = await getRepositoryActivity({
+    cutoffDate: new Date(cutoffDate),
+    repos: repos.map((r) => `${r.owner}/${r.name}`)
+  });
+  // write to file
+  await writeFile('latest_handpicked_repo_activity_' + queryRange + '.json', JSON.stringify(repoActivity, null, 2));
+}
+
+// queryRepoActivity();

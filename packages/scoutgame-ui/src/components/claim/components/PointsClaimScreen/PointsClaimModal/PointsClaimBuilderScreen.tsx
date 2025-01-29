@@ -41,7 +41,7 @@ export function PointsClaimBuilderScreen({
           margin: 0
         }}
       >
-        TOP BUILDER
+        TOP DEVELOEPR
       </h1>
 
       <h2

@@ -27,7 +27,7 @@ export function PublicProfileTabsMenu({
       value={tab}
       tabs={[
         { value: 'scout', label: 'Scout' },
-        ...(isApprovedBuilder ? [{ value: 'builder', label: 'Builder' }] : [])
+        ...(isApprovedBuilder ? [{ value: 'builder', label: 'Developer' }] : [])
       ]}
     />
   );

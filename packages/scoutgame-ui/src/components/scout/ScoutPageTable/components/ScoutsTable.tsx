@@ -93,7 +93,7 @@ export function ScoutsTable({ scouts, order, sort }: { scouts: ScoutInfo[]; orde
             }}
           >
             <Stack direction='row' alignItems='center' justifyContent='center'>
-              BUILDERS
+              DEVELOPERS
               <SortIcon columnName='builders' order={order} sort={sort} />
             </Stack>
           </TableCell>

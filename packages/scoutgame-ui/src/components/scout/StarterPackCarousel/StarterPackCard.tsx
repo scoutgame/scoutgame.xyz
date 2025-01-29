@@ -57,7 +57,7 @@ export function StarterPackCard({ builder }: { builder: StarterPackBuilder }) {
         >
           Read more
         </Button>
-        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} title='Builder info'>
+        <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} title='Developer info'>
           <StarterPackCardDetails
             name={builderData.name}
             description={builderData.description}

@@ -26,6 +26,7 @@ import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useIsMounted } from '../../../../hooks/useIsMounted';
+import { useOnboardingRoutes } from '../../../../providers/OnboardingRoutes';
 import { useUser } from '../../../../providers/UserProvider';
 import { FormErrors } from '../../../common/FormErrors';
 import { DEFAULT_BIO } from '../../../common/Profile/EditableUserProfile/EditableBio';
@@ -35,18 +36,13 @@ export function ExtraDetailsForm({ user }: { user: SessionUser }) {
   const router = useRouter();
   const { refreshUser } = useUser();
   const [errors, setErrors] = useState<string[] | null>(null);
+  const { getNextRoute } = useOnboardingRoutes();
 
   const { execute, isExecuting } = useAction(saveOnboardingDetailsAction, {
     async onSuccess() {
       // update the user object with the new terms of service agreement
       await refreshUser();
-      // If builder already has a status, show the spam policy page
-      // Otherwise show the scout info page
-      if (user.builderStatus) {
-        router.push('/welcome/spam-policy');
-      } else {
-        router.push('/welcome/how-it-works');
-      }
+      router.push(getNextRoute());
     },
     onError(err) {
       const hasValidationErrors = err.error.validationErrors?.fieldErrors;

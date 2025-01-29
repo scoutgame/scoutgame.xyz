@@ -23,7 +23,7 @@ type RepoInput = Pick<GithubRepo, 'defaultBranch' | 'bonusPartner'>;
 
 export type MergedPullRequestMeta = Pick<
   PullRequest,
-  'author' | 'number' | 'title' | 'repository' | 'url' | 'createdAt' | 'mergedAt' | 'mergeCommit'
+  'author' | 'number' | 'title' | 'repository' | 'url' | 'createdAt' | 'mergedAt' | 'mergeCommit' | 'reviewDecision'
 >;
 
 /**
@@ -194,7 +194,9 @@ export async function recordMergedPullRequest({
           ? 'first_pr'
           : threeDayPrStreak
             ? 'third_pr_in_streak'
-            : 'regular_pr';
+            : pullRequest.reviewDecision === 'APPROVED'
+              ? 'regular_pr'
+              : 'regular_pr_unreviewed';
 
       const gemValue = gemsValues[gemReceiptType];
 

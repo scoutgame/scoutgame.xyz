@@ -29,7 +29,7 @@ export function PublicScoutProfileStats({
             </Typography>
           </Stack>
           <Typography color='green.main' variant='subtitle2'>
-            {buildersScouted || 0} Builders
+            {buildersScouted || 0} Developers
           </Typography>
           <Stack flexDirection='row' gap={0.5}>
             <Typography color='green.main' variant='subtitle2'>

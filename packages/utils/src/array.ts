@@ -34,6 +34,10 @@ export function uniqueValues<T = any>(values: T[]): T[] {
   return Array.from(new Set(values));
 }
 
+export function uniqueValuesBy<T = Record<string, any>>(values: T[], key: keyof T): T[] {
+  return Array.from(new Set(values.map((value) => value[key]))) as T[];
+}
+
 // Flattens an object with list of arrays to a single list
 export function flatArrayMap<T>(obj: { [key: string]: T[] }): T[] {
   return Object.keys(obj).reduce((list, key) => {

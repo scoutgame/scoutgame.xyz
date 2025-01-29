@@ -18,13 +18,15 @@ export function BountyCasterPage() {
 function Document() {
   return (
     <InfoCard title=''>
-      <Typography>Bountycaster is partnering with Scout Game to offer additional USDC rewards for builders!</Typography>
+      <Typography>
+        Bountycaster is partnering with Scout Game to offer additional USDC rewards for developers!
+      </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         How it works
       </Typography>
       <Typography>
         Check Bountycaster for daily bounties from @ccarella.eth. Receive additional USDC rewards for being the first
-        Builder to claim the bounty. Bounties will be paid by ccarella.eth via Bountycaster.
+        Developer to claim the bounty. Bounties will be paid by ccarella.eth via Bountycaster.
       </Typography>
     </InfoCard>
   );

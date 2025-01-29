@@ -16,15 +16,15 @@ function Document() {
   return (
     <InfoCard>
       <Typography>
-        Game7 is partnering with Scout Game to support builders who contribute to the ecosystem. Game7 will distribute
-        20 rewards of $250 each, from a prize pool of $5000 USD, to Builders!
+        Game7 is partnering with Scout Game to support developers who contribute to the ecosystem. Game7 will distribute
+        20 rewards of $250 each, from a prize pool of $5000 USD, to Developers!
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         How it works
       </Typography>
       <Typography>
-        External builders will be rewarded $250 for merging a PR that addresses an Issue in one of the following GitHub
-        Repos:
+        External developers will be rewarded $250 for merging a PR that addresses an Issue in one of the following
+        GitHub Repos:
       </Typography>
       <List>
         <ListItem>

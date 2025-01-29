@@ -15,7 +15,5 @@ export default async function BuilderSetup({
 }: {
   searchParams: { state: string; code: string; error: string; 'profile-redirect': string };
 }) {
-  return (
-    <BuilderSetupPage state={state} code={code} githubRedirectError={error} redirectToProfile={redirectToProfile} />
-  );
+  return <BuilderSetupPage state={state} code={code} githubRedirectError={error} />;
 }

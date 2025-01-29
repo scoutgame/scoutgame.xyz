@@ -8,20 +8,24 @@ import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAct
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useConnectModal, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
 import { toast } from 'sonner';
 import { getAddress } from 'viem';
 import { useSignMessage, useAccount } from 'wagmi';
+
+import { useLoginSuccessHandler } from '../../../hooks/useLoginSuccessHandler';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
 export function WalletLogin() {
   return (
     <RainbowKitProvider>
-      <WalletLoginButton />
+      <Suspense>
+        <WalletLoginButton />
+      </Suspense>
     </RainbowKitProvider>
   );
 }
@@ -30,11 +34,9 @@ function WalletLoginButton() {
   const [isConnecting, setIsConnecting] = useState(false);
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId, isConnected } = useAccount();
-  const searchParams = useSearchParams();
-  const redirectUrlEncoded = searchParams.get('redirectUrl');
-  const inviteCode = searchParams.get('invite-code');
-  const referralCode = searchParams.get('ref');
-  const redirectUrl = redirectUrlEncoded ? decodeURIComponent(redirectUrlEncoded) : '/';
+  const { params, getNextPageLink } = useLoginSuccessHandler();
+  const { inviteCode, referralCode } = params;
+
   const { refreshUser } = useUser();
   const router = useRouter();
   const { signMessageAsync } = useSignMessage();
@@ -47,8 +49,6 @@ function WalletLoginButton() {
     isExecuting: isLoggingIn
   } = useAction(loginWithWalletAction, {
     onSuccess: async ({ data }) => {
-      const nextPage = !data?.onboarded ? '/welcome' : inviteCode ? '/welcome/builder' : redirectUrl || '/scout';
-
       if (!data?.success) {
         return;
       }
@@ -56,7 +56,11 @@ function WalletLoginButton() {
       await refreshUser(data.user);
 
       await revalidatePath();
-      router.push(nextPage);
+
+      router.push(getNextPageLink({ onboarded: data?.onboarded }));
+    },
+    onError(err) {
+      log.error('Error on login', { error: err.error.serverError });
     }
   });
 

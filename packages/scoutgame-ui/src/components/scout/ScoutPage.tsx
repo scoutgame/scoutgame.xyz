@@ -25,7 +25,7 @@ export const scoutTabOptions: TabItem[] = [
 ];
 
 export const scoutTabMobileOptions: TabItem[] = [
-  { label: 'Builders', value: 'builders' },
+  { label: 'Developers', value: 'builders' },
   { label: 'All Scouts', value: 'scouts' },
   { label: 'New Scouts', value: 'new-scouts' }
 ];
@@ -84,7 +84,7 @@ export async function ScoutPage({
             sx={{ display: { xs: 'none', md: 'flex' }, mt: 4 }}
           >
             <Typography color='secondary' textAlign='center' variant='h5'>
-              Browse All Builders
+              Browse All Developers
             </Typography>
             <Stack
               sx={{

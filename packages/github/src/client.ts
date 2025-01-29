@@ -1,10 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { Octokit } from '@octokit/core';
+import { paginateGraphQL } from '@octokit/plugin-paginate-graphql';
 import { paginateRest } from '@octokit/plugin-paginate-rest';
 import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import { throttling } from '@octokit/plugin-throttling';
 
-const OctokitWithThrottling = Octokit.plugin(throttling, paginateRest, restEndpointMethods);
+const OctokitWithThrottling = Octokit.plugin(throttling, paginateRest, paginateGraphQL, restEndpointMethods);
 
 export const octokit = new OctokitWithThrottling({
   auth: process.env.GITHUB_ACCESS_TOKEN,

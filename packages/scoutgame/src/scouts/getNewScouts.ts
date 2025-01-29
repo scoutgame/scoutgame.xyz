@@ -36,7 +36,7 @@ export async function getRankedNewScoutsForCurrentWeek({
             week
           });
 
-          const { tokensPerScoutByScoutId: builderPointsPerScout } = await divideTokensBetweenBuilderAndHolders({
+          const { tokensPerScoutByScoutId: builderPointsPerScout } = divideTokensBetweenBuilderAndHolders({
             builderId: builder.builder.id,
             rank: builder.rank,
             weeklyAllocatedTokens: weeklyAllocatedPoints,
@@ -127,39 +127,34 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
 // new Scout definition: only scouts that purchased NFT this week for the first time
 export async function getNewScouts({ week, season: testSeason }: { week: string; season?: string }) {
   const season = testSeason || getCurrentSeason(week).start;
-  return prisma.scout.findMany({
+  const newScouts = await prisma.scout.findMany({
     where: {
       deletedAt: null,
+      // Has purchases this week
       wallets: {
-        some: {},
-        every: {
+        some: {
           purchaseEvents: {
-            every: {
-              OR: [
-                {
-                  // every nft purchase event must have been purchased this week or later
-                  builderEvent: {
-                    week: {
-                      gte: week
-                    },
-                    season
-                  }
-                },
-                {
-                  // every nft purchase event must have been purchased this week or later
-                  builderEvent: {
-                    season: {
-                      not: season
-                    }
-                  }
-                }
-              ]
-            },
-            // at least one NFT was purchased this week
             some: {
               builderEvent: {
-                week,
-                season
+                season,
+                week
+              }
+            }
+          }
+        }
+      },
+      // Does NOT have purchases in earlier weeks
+      NOT: {
+        wallets: {
+          some: {
+            purchaseEvents: {
+              some: {
+                builderEvent: {
+                  season,
+                  week: {
+                    lt: week
+                  }
+                }
               }
             }
           }
@@ -178,4 +173,6 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
       }
     }
   });
+
+  return newScouts;
 }
