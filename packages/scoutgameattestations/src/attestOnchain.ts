@@ -20,7 +20,7 @@ async function setupEAS() {
   const rpcUrl = getChainById(scoutGameAttestationChainId)?.rpcUrls[0] as string;
 
   // ethers v6 version of StaticJSONRPCProvider https://github.com/ethers-io/ethers.js/discussions/3994
-  const provider = new JsonRpcProvider(rpcUrl as string, undefined, {
+  const provider = new JsonRpcProvider(rpcUrl, undefined, {
     staticNetwork: Network.from(scoutGameAttestationChainId)
   });
 
