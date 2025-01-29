@@ -1,6 +1,8 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import { log } from '@charmverse/core/log';
 import { createWalletClient, http, publicActions } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
+import { optimism } from 'viem/chains';
 
 import { getChainById } from './chains';
 import { getAlchemyBaseUrl } from './provider/alchemy/client';
@@ -8,6 +10,7 @@ import { getAlchemyBaseUrl } from './provider/alchemy/client';
 export function getWalletClient({
   chainId,
   privateKey,
+
   mnemonic
 }: {
   chainId: number;
@@ -30,12 +33,21 @@ export function getWalletClient({
 
   let rpcUrl = chain.rpcUrls[0];
 
-  try {
-    const alchemyUrl = getAlchemyBaseUrl(chainId);
+  if (chainId === optimism.id) {
+    const apiKey = process.env.ANKR_API_ID;
+    if (!apiKey) {
+      log.warn('No ANKR_API_ID found, using default rpc url');
+    } else {
+      rpcUrl = `https://rpc.ankr.com/optimism/${apiKey}`;
+    }
+  } else {
+    try {
+      const alchemyUrl = getAlchemyBaseUrl(chainId);
 
-    rpcUrl = alchemyUrl;
-  } catch (e) {
-    // If the alchemy url is not valid, we use the rpc url
+      rpcUrl = alchemyUrl;
+    } catch (e) {
+      // If the alchemy url is not valid, we use the rpc url
+    }
   }
 
   return createWalletClient({
