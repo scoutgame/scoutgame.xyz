@@ -204,7 +204,9 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
               </Stack>
             ))}
         </Stack>
-        <Typography>The primary wallet will receive rewards at the end of each week.</Typography>
+        <Typography variant='body2'>
+          <sup>*</sup>The primary wallet will receive rewards at the end of each week.
+        </Typography>
         <LoadingButton
           disabled={isLoading}
           loading={isLoading}
