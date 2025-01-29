@@ -1,4 +1,6 @@
+import { getChainById } from '@packages/blockchain/chains';
 import type { Page } from '@playwright/test';
+import { optimism } from 'viem/chains';
 
 import { GeneralPageLayout } from './GeneralPageLayout.po';
 
@@ -67,7 +69,7 @@ export class UserPage extends GeneralPageLayout {
     });
 
     // Mock the builder id verification and contract
-    await this.page.route('https://mainnet.optimism.io/', async (route) => {
+    await this.page.route(getChainById(optimism.id)!.rpcUrls[0], async (route) => {
       await route.fulfill({
         status: 200,
         json: {
