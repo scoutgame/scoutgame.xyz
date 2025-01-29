@@ -83,6 +83,7 @@
           "./apps/agents/",
           "./apps/admin/",
           "./apps/cron/",
+          "./packages/blockchain/",
           "./packages/github/",
           "./packages/loops/",
           "./packages/mailer/",
@@ -97,7 +98,8 @@
           "./packages/waitlist/",
           "./packages/telegram/",
           "./packages/safetransactions/",
-          "./packages/llm/"
+          "./packages/llm/",
+          "./packages/scoutgameattestations/"
         ]
       }
     ],
