@@ -1,14 +1,14 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
 import type { ScoutProjectDetailed } from './getUserScoutProjects';
-import { projectSelect } from './projectSelect';
+import { projectDetailedSelect } from './projectSelect';
 
 export async function getProjectByPath(path: string): Promise<ScoutProjectDetailed | null> {
   const scoutProject = await prisma.scoutProject.findUnique({
     where: {
       path
     },
-    select: projectSelect
+    select: projectDetailedSelect
   });
 
   if (!scoutProject) {
@@ -18,6 +18,7 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
   return {
     ...scoutProject,
     contracts: scoutProject.scoutProjectContracts,
+    deployers: scoutProject.scoutProjectDeployers,
     teamMembers: scoutProject.scoutProjectMembers.map((member) => ({
       id: member.user.id,
       avatar: member.user.avatar ?? '',

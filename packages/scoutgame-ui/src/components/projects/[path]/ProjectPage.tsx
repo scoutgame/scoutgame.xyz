@@ -2,13 +2,15 @@ import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
-import { Container, Stack, Typography } from '@mui/material';
+import { Box, Container, Stack, Typography } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { BackButton } from '../../common/Button/BackButton';
 import { chainRecords, ProjectRoleText } from '../constants';
+
+import { EditProjectIcon } from './components/EditProjectIcon';
 
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   return (
@@ -40,7 +42,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             height={100}
             style={{ objectFit: 'cover' }}
           />
-          <Stack gap={1} ml={1}>
+          <Stack gap={1} ml={1} flex={1}>
             <Stack flexDirection='row' alignItems='center' gap={1}>
               <Typography variant='h5'>{project.name}</Typography>
               {project.github && (
@@ -56,6 +58,9 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             </Stack>
             <Typography>{project.description}</Typography>
           </Stack>
+          <Box sx={{ alignSelf: 'flex-start' }}>
+            <EditProjectIcon path={project.path} teamMembers={project.teamMembers} />
+          </Box>
         </Stack>
         <Stack gap={1}>
           <Typography color='secondary' variant='h6'>

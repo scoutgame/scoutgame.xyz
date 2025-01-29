@@ -1,6 +1,6 @@
-import type { Prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import type { Prisma } from '@charmverse/core/prisma-client';
 
-export const projectSelect = {
+export const projectDetailedSelect = {
   id: true,
   path: true,
   avatar: true,
@@ -12,7 +12,8 @@ export const projectSelect = {
     select: {
       id: true,
       address: true,
-      chainId: true
+      chainId: true,
+      deployerId: true
     }
   },
   scoutProjectMembers: {
@@ -27,10 +28,16 @@ export const projectSelect = {
       },
       role: true
     }
+  },
+  scoutProjectDeployers: {
+    select: {
+      id: true,
+      address: true
+    }
   }
 } satisfies Prisma.ScoutProjectSelect;
 
-export const projectInfoSelect = {
+export const projectMinimalSelect = {
   id: true,
   name: true,
   avatar: true,

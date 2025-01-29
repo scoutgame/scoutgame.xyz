@@ -1,14 +1,18 @@
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
-import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import Image from 'next/image';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import * as yup from 'yup';
 
 import { useS3UploadInput } from '../../../hooks/useS3UploadInput';
 
+const avatarSchema = yup.object({
+  avatar: yup.string().notRequired()
+});
+
 type ProjectAvatarFieldProps = {
-  control: Control<CreateScoutProjectFormValues>;
+  control: Control<yup.InferType<typeof avatarSchema>>;
   avatarSize?: number;
   isLoading?: boolean;
   onAvatarChange?: (url: string) => void;

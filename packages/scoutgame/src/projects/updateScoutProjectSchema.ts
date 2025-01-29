@@ -1,17 +1,18 @@
 import * as yup from 'yup';
 
-export const createScoutProjectSchema = yup.object({
-  avatar: yup.string().nullable(),
-  name: yup.string().required('Name is required'),
-  description: yup.string().nullable(),
-  website: yup.string().url('Invalid website URL').nullable(),
+export const updateScoutProjectSchema = yup.object({
+  projectId: yup.string().uuid().required(),
+  avatar: yup.string().notRequired(),
+  name: yup.string(),
+  description: yup.string().notRequired(),
+  website: yup.string().url('Invalid website URL').notRequired(),
   github: yup
     .string()
     .test('github', 'Invalid github URL', (value) => {
       if (!value) return true;
       return value.startsWith('https://github.com/') || value.startsWith('https://github.com/');
     })
-    .nullable(),
+    .notRequired(),
   contracts: yup
     .array()
     .of(
@@ -21,13 +22,14 @@ export const createScoutProjectSchema = yup.object({
         deployerAddress: yup.string().required('Deployer address is required')
       })
     )
-    .min(0),
+    .notRequired(),
   deployers: yup
     .array()
     .of(
       yup.object({
         address: yup.string().required('Deployer address is required'),
-        signature: yup.string().required('Signature is required')
+        // If we are passing an already verified deployer, signature is not required
+        signature: yup.string().nullable()
       })
     )
     .test('deployer-signature', 'Every deployer must have a signature', (deployers) => {
@@ -37,7 +39,8 @@ export const createScoutProjectSchema = yup.object({
       is: (contracts: any[]) => contracts && contracts.length > 0,
       then: (schema) => schema.min(1, 'At least one deployer is required when contracts are provided'),
       otherwise: (schema) => schema
-    }),
+    })
+    .notRequired(),
   teamMembers: yup
     .array()
     .of(
@@ -48,7 +51,7 @@ export const createScoutProjectSchema = yup.object({
         displayName: yup.string().required('Display name is required')
       })
     )
-    .required('Team members are required')
+    .notRequired()
 });
 
-export type CreateScoutProjectFormValues = yup.InferType<typeof createScoutProjectSchema>;
+export type UpdateScoutProjectFormValues = yup.InferType<typeof updateScoutProjectSchema>;

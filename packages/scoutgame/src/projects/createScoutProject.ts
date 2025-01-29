@@ -9,6 +9,7 @@ import {
 } from '@packages/aws/uploadToS3Server';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import sharp from 'sharp';
+import type { Transaction } from 'viem';
 import { verifyMessage } from 'viem';
 
 import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
@@ -18,6 +19,7 @@ import { generateRandomAvatar } from './generateRandomAvatar';
 
 export async function createScoutProject(payload: CreateScoutProjectFormValues, userId: string) {
   const path = await generateProjectPath(payload.name);
+  const contractTransactionRecord: Record<string, Transaction> = {};
 
   if (payload.deployers) {
     for (const deployer of payload.deployers) {
@@ -35,14 +37,16 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
 
   if (payload.contracts) {
     for (const contract of payload.contracts) {
-      const actualDeployer = await getContractDeployerAddress({
+      const transaction = await getContractDeployerAddress({
         contractAddress: contract.address,
         chainId: contract.chainId
       });
 
-      if (contract.deployerAddress.toLowerCase() !== actualDeployer.toLowerCase()) {
+      contractTransactionRecord[contract.address] = transaction;
+
+      if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
         throw new Error(
-          `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${actualDeployer}`
+          `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
         );
       }
     }
@@ -127,10 +131,11 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             projectId: scoutProject.id,
             address: contract.address,
             chainId: contract.chainId,
+            // TODO: Fix the deployed at date
             deployedAt: new Date(),
             deployerId: deployer.id,
-            deployTxHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
-            blockNumber: 0
+            deployTxHash: contractTransactionRecord[contract.address].hash,
+            blockNumber: Number(contractTransactionRecord[contract.address].blockNumber)
           };
         })
       });
