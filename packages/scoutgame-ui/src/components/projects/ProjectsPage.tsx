@@ -17,7 +17,7 @@ export function ProjectsPage({ projects }: { projects: ScoutProjectDetailed[] })
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>
-        <Typography variant='h5' color='secondary'>
+        <Typography variant='h4' color='secondary' fontWeight={600}>
           {isCreatingProject ? 'Create a project' : 'Projects'}
         </Typography>
         {!isCreatingProject ? (
