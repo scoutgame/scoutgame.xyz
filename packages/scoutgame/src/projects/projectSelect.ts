@@ -9,6 +9,9 @@ export const projectDetailedSelect = {
   website: true,
   github: true,
   scoutProjectContracts: {
+    where: {
+      deletedAt: null
+    },
     select: {
       id: true,
       address: true,
@@ -17,6 +20,9 @@ export const projectDetailedSelect = {
     }
   },
   scoutProjectMembers: {
+    where: {
+      deletedAt: null
+    },
     select: {
       user: {
         select: {

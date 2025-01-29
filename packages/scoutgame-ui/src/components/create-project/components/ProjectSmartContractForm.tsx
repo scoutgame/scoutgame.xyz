@@ -16,6 +16,7 @@ import { useFieldArray, type Control } from 'react-hook-form';
 import { verifyMessage } from 'viem';
 import { useSignMessage } from 'wagmi';
 
+import { Dialog } from '../../common/Dialog';
 import { FormErrors } from '../../common/FormErrors';
 import { chainRecords } from '../../projects/constants';
 
@@ -32,6 +33,9 @@ export function ProjectSmartContractForm({
 }) {
   const { executeAsync: getContractDeployerAddress, isExecuting } = useAction(getContractDeployerAddressAction);
   const [open, setOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<`0x${string}` | null>(null);
+
   const { signMessageAsync } = useSignMessage();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
@@ -87,16 +91,15 @@ export function ProjectSmartContractForm({
       }
 
       const existingDeployer = deployers.find((d) => d.address === deployerAddress);
-      if (existingDeployer) {
-        return;
+      if (!existingDeployer) {
+        setDeployers((prev) => [...prev, { address: deployerAddress, verified: false, signature: null }]);
       }
-
-      setDeployers((prev) => [...prev, { address: deployerAddress, verified: false, signature: null }]);
 
       append({
         ...tempContract,
         deployerAddress
       });
+
       setTempContract(null);
       setOpen(false);
     }
@@ -222,7 +225,10 @@ export function ProjectSmartContractForm({
                   {!deployer.verified && <Typography color='error'>Must sign with Deployer Address</Typography>}
                   <DeleteIcon
                     fontSize='small'
-                    onClick={() => removeContract(contract.address)}
+                    onClick={() => {
+                      setSelectedContract(contract.address);
+                      setIsConfirmModalOpen(true);
+                    }}
                     color={isExecuting ? 'disabled' : 'error'}
                     sx={{ cursor: 'pointer' }}
                   />
@@ -324,6 +330,25 @@ export function ProjectSmartContractForm({
         </Stack>
       )}
       <FormErrors errors={errorMessage ? [errorMessage] : null} />
+      <Dialog title='Remove Contract' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
+        <Typography>Are you sure you want to remove this contract from the project?</Typography>
+        <Stack flexDirection='row' alignItems='center' gap={1} mt={2}>
+          <Button color='primary' variant='outlined' onClick={() => setIsConfirmModalOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (selectedContract) {
+                removeContract(selectedContract);
+              }
+              setIsConfirmModalOpen(false);
+            }}
+            color='error'
+          >
+            Remove
+          </Button>
+        </Stack>
+      </Dialog>
     </Stack>
   );
 }

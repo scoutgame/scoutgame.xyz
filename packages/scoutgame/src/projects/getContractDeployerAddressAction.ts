@@ -9,10 +9,10 @@ export const getContractDeployerAddressAction = actionClient
   .metadata({ actionName: 'get-contract-deployer-address' })
   .schema(getContractDeployerAddressSchema)
   .action(async ({ parsedInput }) => {
-    const deployerAddress = await getContractDeployerAddress({
+    const { transaction } = await getContractDeployerAddress({
       contractAddress: parsedInput.contractAddress,
       chainId: parsedInput.chainId
     });
 
-    return deployerAddress as `0x${string}`;
+    return transaction.from;
   });

@@ -9,7 +9,6 @@ import {
 } from '@packages/aws/uploadToS3Server';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import sharp from 'sharp';
-import type { Transaction } from 'viem';
 import { verifyMessage } from 'viem';
 
 import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
@@ -38,11 +37,11 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   if (payload.contracts) {
     for (const contract of payload.contracts) {
       const { block, transaction } = await getContractDeployerAddress({
-        contractAddress: contract.address,
+        contractAddress: contract.address.toLowerCase(),
         chainId: contract.chainId
       });
 
-      contractTransactionRecord[contract.address] = {
+      contractTransactionRecord[contract.address.toLowerCase()] = {
         txHash: transaction.hash,
         blockNumber: Number(block.number),
         blockTimestamp: Number(block.timestamp)
@@ -50,7 +49,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
 
       if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
         throw new Error(
-          `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
+          `Contract ${contract.address.toLowerCase()} was not deployed by the provided deployer. Actual deployer: ${transaction.from.toLowerCase()}`
         );
       }
     }
@@ -95,7 +94,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             ? {
                 createMany: {
                   data: payload.deployers.map((deployer) => ({
-                    address: deployer.address,
+                    address: deployer.address.toLowerCase(),
                     verifiedBy: userId,
                     verifiedAt: new Date()
                   }))
@@ -128,17 +127,17 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             (d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase()
           );
           if (!deployer) {
-            throw new Error(`Deployer not found for contract ${contract.address}`);
+            throw new Error(`Deployer not found for contract ${contract.address.toLowerCase()}`);
           }
           return {
             createdBy: userId,
             projectId: scoutProject.id,
-            address: contract.address,
+            address: contract.address.toLowerCase(),
             chainId: contract.chainId,
-            deployedAt: new Date(contractTransactionRecord[contract.address].blockTimestamp * 1000),
+            deployedAt: new Date(contractTransactionRecord[contract.address.toLowerCase()].blockTimestamp * 1000),
             deployerId: deployer.id,
-            deployTxHash: contractTransactionRecord[contract.address].txHash,
-            blockNumber: contractTransactionRecord[contract.address].blockNumber
+            deployTxHash: contractTransactionRecord[contract.address.toLowerCase()].txHash,
+            blockNumber: contractTransactionRecord[contract.address.toLowerCase()].blockNumber
           };
         })
       });

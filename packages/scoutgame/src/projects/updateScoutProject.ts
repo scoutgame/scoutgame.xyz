@@ -14,7 +14,8 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     select: {
       scoutProjectMembers: {
         select: {
-          userId: true
+          userId: true,
+          deletedAt: true
         }
       },
       scoutProjectDeployers: {
@@ -24,7 +25,8 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       },
       scoutProjectContracts: {
         select: {
-          address: true
+          address: true,
+          deletedAt: true
         }
       }
     }
@@ -35,38 +37,58 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     { chainId: number; txHash: string; blockNumber: number; blockTimestamp: number }
   > = {};
   const projectMemberIds = project.scoutProjectMembers.map((member) => member.userId);
-  const projectDeployerAddresses = project.scoutProjectDeployers.map((deployer) => deployer.address);
-  const projectContractAddresses = project.scoutProjectContracts.map((contract) => contract.address);
+  const projectDeployerAddresses = project.scoutProjectDeployers.map((deployer) => deployer.address.toLowerCase());
+  const projectContractAddresses = project.scoutProjectContracts.map((contract) => contract.address.toLowerCase());
 
   const addedContractAddresses =
     payload.contracts
-      ?.map((contract) => contract.address)
+      ?.map((contract) => contract.address.toLowerCase())
       .filter((address) => !projectContractAddresses.includes(address)) ?? [];
   const addedDeployerAddresses =
     payload.deployers
-      ?.map((deployer) => deployer.address)
+      ?.map((deployer) => deployer.address.toLowerCase())
       .filter((address) => !projectDeployerAddresses.includes(address)) ?? [];
   const addedProjectMemberIds =
     payload.teamMembers?.map((member) => member.scoutId).filter((scoutId) => !projectMemberIds.includes(scoutId)) ?? [];
 
   const removedContractAddresses =
     payload.contracts &&
-    projectContractAddresses.filter((address) => !payload.contracts!.some((contract) => contract.address === address));
+    projectContractAddresses.filter(
+      (address) => !payload.contracts!.some((contract) => contract.address.toLowerCase() === address.toLowerCase())
+    );
   const removedDeployerAddresses =
     payload.deployers &&
-    projectDeployerAddresses.filter((address) => !payload.deployers!.some((deployer) => deployer.address === address));
+    projectDeployerAddresses.filter(
+      (address) => !payload.deployers!.some((deployer) => deployer.address.toLowerCase() === address.toLowerCase())
+    );
   const removedProjectMemberIds =
     payload.teamMembers &&
     projectMemberIds.filter((scoutId) => !payload.teamMembers!.some((member) => member.scoutId === scoutId));
 
+  const deletedProjectMemberIds = project.scoutProjectMembers
+    .filter((member) => member.deletedAt)
+    .map((member) => member.userId);
+  const deletedContractAddresses = project.scoutProjectContracts
+    .filter((contract) => contract.deletedAt)
+    .map((contract) => contract.address.toLowerCase());
+
+  const restoredProjectMemberIds = deletedProjectMemberIds.filter((scoutId) =>
+    payload.teamMembers?.map((member) => member.scoutId).includes(scoutId)
+  );
+  const restoredContractAddresses = deletedContractAddresses.filter((address) =>
+    payload.contracts?.map((contract) => contract.address.toLowerCase()).includes(address)
+  );
+
   if (payload.deployers && addedDeployerAddresses.length > 0) {
     for (const deployerAddress of addedDeployerAddresses) {
-      const deployer = payload.deployers.find((_deployer) => _deployer.address === deployerAddress);
+      const deployer = payload.deployers.find(
+        (_deployer) => _deployer.address.toLowerCase() === deployerAddress.toLowerCase()
+      );
       if (deployer) {
         const isValidSignature = await verifyMessage({
           message: CONTRACT_DEPLOYER_SIGN_MESSAGE,
           signature: deployer.signature as `0x${string}`,
-          address: deployer.address as `0x${string}`
+          address: deployer.address.toLowerCase() as `0x${string}`
         });
         if (!isValidSignature) {
           throw new Error(`Invalid signature for deployer ${deployer.address}`);
@@ -77,13 +99,15 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   if (payload.contracts && addedContractAddresses.length > 0) {
     for (const contractAddress of addedContractAddresses) {
-      const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
+      const contract = payload.contracts.find(
+        (_contract) => _contract.address.toLowerCase() === contractAddress.toLowerCase()
+      );
       if (contract) {
         const { transaction, block } = await getContractDeployerAddress({
-          contractAddress: contract.address,
+          contractAddress: contract.address.toLowerCase(),
           chainId: contract.chainId
         });
-        contractTransactionRecord[contract.address] = {
+        contractTransactionRecord[contract.address.toLowerCase()] = {
           chainId: contract.chainId,
           txHash: transaction.hash,
           blockNumber: Number(block.number),
@@ -91,7 +115,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
         };
         if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
           throw new Error(
-            `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
+            `Contract ${contract.address.toLowerCase()} was not deployed by the provided deployer. Actual deployer: ${transaction.from.toLowerCase()}`
           );
         }
       }
@@ -151,6 +175,34 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       });
     }
 
+    if (restoredProjectMemberIds && restoredProjectMemberIds.length > 0) {
+      await tx.scoutProjectMember.updateMany({
+        where: {
+          userId: {
+            in: restoredProjectMemberIds
+          },
+          projectId: _updatedProject.id
+        },
+        data: {
+          deletedAt: null
+        }
+      });
+    }
+
+    if (restoredContractAddresses && restoredContractAddresses.length > 0) {
+      await tx.scoutProjectContract.updateMany({
+        where: {
+          address: {
+            in: restoredContractAddresses
+          },
+          projectId: _updatedProject.id
+        },
+        data: {
+          deletedAt: null
+        }
+      });
+    }
+
     if (addedProjectMemberIds && addedProjectMemberIds.length > 0) {
       await tx.scoutProjectMember.createMany({
         data: addedProjectMemberIds.map((scoutId) => ({
@@ -171,7 +223,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           addedDeployerRecord[address] = deployerId;
           return {
             id: deployerId,
-            address,
+            address: address.toLowerCase(),
             projectId: _updatedProject.id,
             createdBy: userId
           };
@@ -184,7 +236,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
         data: addedContractAddresses.map((address) => ({
           createdBy: userId,
           projectId: _updatedProject.id,
-          address,
+          address: address.toLowerCase(),
           chainId: contractTransactionRecord[address].chainId,
           deployedAt: new Date(contractTransactionRecord[address].blockTimestamp * 1000),
           deployTxHash: contractTransactionRecord[address].txHash,
