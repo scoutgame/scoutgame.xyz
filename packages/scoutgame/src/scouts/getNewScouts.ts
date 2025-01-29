@@ -49,10 +49,10 @@ export async function getRankedNewScoutsForCurrentWeek({
         return __pointsPerScout;
       }, {});
 
-      const nftPurchaseMintEvents = nftPurchaseEvents.filter((event) => event.from === null);
+      const nftMintEvents = nftPurchaseEvents.filter((event) => event.to && event.from === null);
 
       return {
-        nftPurchaseEvents: nftPurchaseMintEvents,
+        nftPurchaseEvents: nftMintEvents,
         pointsPerScout
       };
     })(),
