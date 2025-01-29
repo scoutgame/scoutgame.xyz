@@ -1,5 +1,4 @@
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
-import { prettyPrint } from '@packages/utils/strings';
 
 import { builderNftChain, builderSmartContractMinterKey } from './constants';
 
