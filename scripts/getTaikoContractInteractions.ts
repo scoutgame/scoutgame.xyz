@@ -11,7 +11,7 @@ type BlockchainClient = ReturnType<typeof createPublicClient>;
 const contracts: Address[] = [
   // Avalon Finance
 
-  // '0xb961661F5Ca019e232661Bd26686288a6E21d928',
+  '0xb961661F5Ca019e232661Bd26686288a6E21d928',
   '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8'
   // '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
   // '0xF4858292f8985371d440Ec17cD0fC8bA22867f8e',
@@ -55,7 +55,7 @@ async function retrieveContractInteractions({
   let allLogs: Awaited<ReturnType<typeof getLogs>> = [];
   let transactions: Awaited<ReturnType<typeof getTransactionReceipt>>[] = [];
 
-  const earliestBlock = await prisma.scoutProjectContractTransactioData.findFirst({
+  const earliestBlock = await prisma.scoutProjectContractTransaction.findFirst({
     where: {
       contractId
     },
@@ -78,14 +78,13 @@ async function retrieveContractInteractions({
       fromBlock: currentBlock,
       toBlock: endBlock
     });
-    console.log('logs', logs);
+    // console.log('logs', logs);
     const txHashes = new Set<string>(logs.map((log) => log.transactionHash));
-    console.log('txHashes', txHashes);
     const txData = await Promise.all(
       Array.from(txHashes).map((txHash) => getTransactionReceipt({ chainId: taiko.id, txHash }))
     );
     await Promise.all([
-      prisma.scoutProjectContractTransactioData.createMany({
+      prisma.scoutProjectContractTransaction.createMany({
         data: txData.map((tx) => ({
           contractId,
           blockNumber: Number(tx.blockNumber),
@@ -96,25 +95,23 @@ async function retrieveContractInteractions({
           to: tx.to ? tx.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
           status: tx.status
         }))
+      }),
+      prisma.scoutProjectContractLog.createMany({
+        data: logs.map((log) => ({
+          contractId,
+          blockNumber: Number(log.blockNumber),
+          txHash: log.transactionHash,
+          from: log.address.toLowerCase(),
+          logIndex: Number(log.logIndex)
+        }))
       })
-      // prisma.scoutProjectContractTransaction.createMany({
-      //   data: logs.map((log) => ({
-      //     contractId,
-      //     blockNumber: log.blockNumber,
-      //     txHash: log.transactionHash,
-      //     from: log.address.toLowerCase(),
-      //     gasUsed: txDataByHash[log.transactionHash].gasUsed,
-      //     to: log.address.toLowerCase(),
-      //     status: log.removed ? 'removed' : 'success'
-      //   }))
-      // })
     ]);
     allLogs = [...allLogs, ...logs];
     transactions = [...transactions, ...txData];
     // Log progress every 10%
     const progress = Number(((currentBlock - fromBlock) * BigInt(100)) / (toBlock - fromBlock));
     if (progress % 10 === 0) {
-      console.log(`${progress}% complete, ${allLogs.length} events processed so far`);
+      console.log(`${progress}% complete, ${allLogs.length} logs so far. Current block: ${currentBlock}`);
     }
   }
   const logs = allLogs;
@@ -223,7 +220,8 @@ async function findDeploymentBlockNumber(
       creator.id
     );
     // Get block timestamp for deployment block
-    console.log('Retrieving events for contract:', contract.address, 'Deployed:', contract.deployedAt);
+    console.log('Retrieving events for contract:', contract.address, contract.id, 'Deployed:', contract.deployedAt);
+    console.timeEnd('retrieveContractInteractions');
     // get contract interactions
     await retrieveContractInteractions({
       address: contractAddress,
@@ -231,6 +229,7 @@ async function findDeploymentBlockNumber(
       toBlock: latestBlock,
       contractId: contract.id
     });
+    console.timeEnd('retrieveContractInteractions');
   }
 })();
 
