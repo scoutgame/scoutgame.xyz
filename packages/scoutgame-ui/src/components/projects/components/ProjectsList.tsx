@@ -26,7 +26,7 @@ export function ProjectsList({ projects }: { projects: ScoutProjectMinimal[] }) 
               <Stack flexDirection='row' gap={1.5} alignItems='center'>
                 <Image
                   style={{ objectFit: 'cover' }}
-                  src={project.avatar ?? 'https://www.svgrepo.com/show/335614/project.svg'}
+                  src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
                   alt={project.name}
                   width={32}
                   height={32}

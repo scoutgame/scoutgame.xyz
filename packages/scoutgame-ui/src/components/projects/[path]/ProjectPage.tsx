@@ -33,7 +33,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
         >
           <BackButton />
           <Image
-            src={project.avatar ?? 'https://www.svgrepo.com/show/335614/project.svg'}
+            src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
             alt={project.name}
             width={100}
             height={100}

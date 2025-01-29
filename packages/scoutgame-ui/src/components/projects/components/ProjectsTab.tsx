@@ -20,7 +20,7 @@ export function ProjectsTab({ scoutProjects }: { scoutProjects: ScoutProjectMini
           <Link key={project.id} href={`/projects/${project.path}`}>
             <Stack flexDirection='row' gap={0.75} alignItems='center'>
               <Image
-                src={project.avatar ?? 'https://www.svgrepo.com/show/335614/project.svg'}
+                src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
                 alt={project.name}
                 width={20}
                 height={20}
