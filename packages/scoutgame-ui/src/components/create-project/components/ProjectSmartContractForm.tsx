@@ -3,6 +3,7 @@
 import { log } from '@charmverse/core/log';
 import { stringUtils } from '@charmverse/core/utilities';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { Button, CircularProgress, FormLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
@@ -14,6 +15,7 @@ import { useFieldArray, type Control } from 'react-hook-form';
 import { verifyMessage } from 'viem';
 import { useSignMessage } from 'wagmi';
 
+import { FormErrors } from '../../common/FormErrors';
 import { chainRecords } from '../../projects/constants';
 
 export type Deployer = { address: string; verified: boolean; signature: string | null };
@@ -30,6 +32,7 @@ export function ProjectSmartContractForm({
   const { executeAsync: getContractDeployerAddress, isExecuting } = useAction(getContractDeployerAddressAction);
   const [open, setOpen] = useState(false);
   const { signMessageAsync } = useSignMessage();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
     fields: contracts,
     append,
@@ -44,7 +47,7 @@ export function ProjectSmartContractForm({
   const MESSAGE_TO_SIGN = 'I am the deployer of this contract';
 
   const verifyDeployerOwnership = useCallback(
-    async (deployerAddress: `0x${string}`, contractAddress: `0x${string}`) => {
+    async (deployerAddress: `0x${string}`) => {
       try {
         const signature = await signMessageAsync({
           message: MESSAGE_TO_SIGN
@@ -56,24 +59,14 @@ export function ProjectSmartContractForm({
           address: deployerAddress
         });
 
-        if (isValid) {
-          const contractIndex = contracts.findIndex((f) => f.address === contractAddress);
-          const contract = contracts[contractIndex];
-          if (contractIndex !== -1) {
-            update(contractIndex, {
-              ...contract,
-              deployerAddress
-            });
-          }
-          return true;
-        }
-        return false;
+        return { signature, isValid };
       } catch (error) {
+        setErrorMessage('Error verifying deployer ownership');
         log.info('Error verifying deployer ownership', { error });
-        return false;
+        return { signature: null, isValid: false };
       }
     },
-    [signMessageAsync, contracts, update]
+    [signMessageAsync]
   );
 
   const onCancel = useCallback(() => {
@@ -94,6 +87,11 @@ export function ProjectSmartContractForm({
         return;
       }
 
+      const existingDeployer = deployers.find((d) => d.address === deployerAddress);
+      if (existingDeployer) {
+        return;
+      }
+
       setDeployers((prev) => [...prev, { address: deployerAddress, verified: false, signature: null }]);
 
       append({
@@ -103,7 +101,7 @@ export function ProjectSmartContractForm({
       setTempContract(null);
       setOpen(false);
     }
-  }, [append, tempContract, getContractDeployerAddress, setTempContract, setOpen, setDeployers]);
+  }, [append, tempContract, getContractDeployerAddress, setTempContract, setOpen, setDeployers, deployers]);
 
   const onCreate = useCallback(() => {
     setTempContract({
@@ -139,26 +137,66 @@ export function ProjectSmartContractForm({
     );
   }, [contracts, deployers]);
 
+  const signWithDeployerAddress = useCallback(
+    async (deployerAddress: `0x${string}`, contractAddress: `0x${string}`) => {
+      const { signature, isValid } = await verifyDeployerOwnership(deployerAddress);
+      if (isValid) {
+        const contractIndex = contracts.findIndex((f) => f.address === contractAddress);
+        const contract = contracts[contractIndex];
+        if (contractIndex !== -1) {
+          update(contractIndex, {
+            ...contract,
+            deployerAddress
+          });
+          setErrorMessage(null);
+          setDeployers((_deployers) =>
+            _deployers.map((deployer) =>
+              deployer.address === deployerAddress ? { ...deployer, verified: true, signature } : deployer
+            )
+          );
+        }
+      } else {
+        setErrorMessage('Deployer address is not verified');
+      }
+    },
+    [contracts, update, setErrorMessage, verifyDeployerOwnership, setDeployers]
+  );
+
+  const removeContract = useCallback(
+    (contractAddress: `0x${string}`) => {
+      const contractIndex = contracts.findIndex((f) => f.address === contractAddress);
+      if (contractIndex !== -1) {
+        setErrorMessage(null);
+        remove(contractIndex);
+      }
+    },
+    [contracts, remove, setErrorMessage]
+  );
+
   return (
     <Stack gap={2}>
       {Object.values(groupedContracts).map((deployer) => (
         <Stack gap={1} key={deployer.address}>
           <Stack flexDirection='row' alignItems='center' gap={1} justifyContent='space-between'>
-            <Typography color='secondary'>Deployer Address: {stringUtils.shortenHex(deployer.address)}</Typography>
+            <Stack flexDirection='row' alignItems='center' gap={1}>
+              <Typography color='secondary'>Deployer Address: {stringUtils.shortenHex(deployer.address)}</Typography>
+              {deployer.verified && <CheckCircleIcon color='secondary' fontSize='small' />}
+            </Stack>
             {deployer.verified ? null : (
               <Button
                 variant='contained'
                 color='primary'
                 size='small'
                 disabled={isExecuting}
-                onClick={() => verifyDeployerOwnership(deployer.address, deployer.contracts[0].address)}
+                // Sending the first contract address as contract is grouped by deployer address
+                onClick={() => signWithDeployerAddress(deployer.address, deployer.contracts[0].address)}
               >
                 Sign
               </Button>
             )}
           </Stack>
           <Stack gap={1}>
-            {deployer.contracts.map((contract, index) => (
+            {deployer.contracts.map((contract) => (
               <Stack
                 key={contract.address}
                 justifyContent='space-between'
@@ -185,7 +223,7 @@ export function ProjectSmartContractForm({
                   {!deployer.verified && <Typography color='error'>Must sign with Deployer Address</Typography>}
                   <DeleteIcon
                     fontSize='small'
-                    onClick={() => !isExecuting && remove(index)}
+                    onClick={() => removeContract(contract.address)}
                     color={isExecuting ? 'disabled' : 'error'}
                     sx={{ cursor: 'pointer' }}
                   />
@@ -286,6 +324,7 @@ export function ProjectSmartContractForm({
           </Stack>
         </Stack>
       )}
+      <FormErrors errors={errorMessage ? [errorMessage] : null} />
     </Stack>
   );
 }

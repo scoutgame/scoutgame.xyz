@@ -6,11 +6,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { createScoutProjectAction } from '@packages/scoutgame/projects/createScoutProjectAction';
-import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { createScoutProjectSchema } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -30,7 +29,8 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
   const {
     control,
     formState: { isDirty },
-    handleSubmit
+    handleSubmit,
+    setValue
   } = useForm({
     resolver: yupResolver(createScoutProjectSchema),
     mode: 'onChange',
@@ -57,24 +57,29 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
   });
 
   function onInvalid(fieldErrors: FieldErrors) {
-    setErrors(['The form is invalid. Please check the fields and try again.']);
+    setErrors([
+      `The form is invalid. ${Object.values(fieldErrors)
+        .map((error) => error?.message)
+        .join(', ')}`
+    ]);
     log.warn('Invalid form submission', { fieldErrors });
   }
 
-  const onSubmit = (data: CreateScoutProjectFormValues) => {
-    createProject({
-      ...data,
-      deployers: deployers
-        .filter((deployer) => deployer.signature && deployer.verified)
-        .map((deployer) => ({
-          address: deployer.address,
-          signature: deployer.signature as `0x${string}`
-        }))
-    });
+  const onSubmit = () => {
+    setValue(
+      'deployers',
+      deployers.map((deployer) => ({
+        address: deployer.address,
+        signature: deployer.signature as `0x${string}`
+      }))
+    );
+    handleSubmit((data) => {
+      return createProject(data);
+    }, onInvalid)();
   };
 
   return (
-    <form noValidate onSubmit={handleSubmit(onSubmit, onInvalid)}>
+    <>
       <Stack
         sx={{
           gap: 3,
@@ -198,7 +203,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
         <LoadingButton
           variant='contained'
           color='primary'
-          type='submit'
+          onClick={onSubmit}
           loading={isExecuting}
           disabled={isExecuting || !isDirty}
           sx={{ width: 'fit-content' }}
@@ -206,6 +211,6 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
           Save
         </LoadingButton>
       </Stack>
-    </form>
+    </>
   );
 }

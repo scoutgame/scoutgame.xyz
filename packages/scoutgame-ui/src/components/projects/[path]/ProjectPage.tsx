@@ -1,4 +1,5 @@
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import { stringUtils } from '@charmverse/core/utilities';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
 import { Container, Stack, Typography } from '@mui/material';
@@ -75,7 +76,6 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                   py={1}
                   borderRadius={1}
                 >
-                  <Typography>{contract.address}</Typography>
                   <Image
                     src={chainRecords[contract.chainId].image}
                     alt={chainRecords[contract.chainId].name}
@@ -83,6 +83,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                     height={20}
                     style={{ borderRadius: '50%' }}
                   />
+                  <Typography>{stringUtils.shortenHex(contract.address)}</Typography>
                 </Stack>
               ))
             )}
