@@ -3,8 +3,9 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
-import { useUser } from 'providers/UserProvider';
 import { useState } from 'react';
+
+import { useUser } from '../../providers/UserProvider';
 
 import { CreateProjectForm } from './components/CreateProjectForm/CreateProjectForm';
 import { ProjectsList } from './components/ProjectsList/ProjectsList';
