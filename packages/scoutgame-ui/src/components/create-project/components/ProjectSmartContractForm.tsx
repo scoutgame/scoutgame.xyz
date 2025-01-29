@@ -10,7 +10,7 @@ import { useCallback, useState } from 'react';
 import { useFieldArray, type Control } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 
-import { chainRecords } from '../../constants';
+import { chainRecords } from '../../projects/constants';
 
 export function ProjectSmartContractForm({ control }: { control: Control<CreateScoutProjectFormValues> }) {
   const [open, setOpen] = useState(false);

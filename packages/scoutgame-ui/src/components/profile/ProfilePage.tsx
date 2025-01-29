@@ -6,7 +6,7 @@ import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { Suspense } from 'react';
 
 import { LoadingComponent } from '../common/Loading/LoadingComponent';
-import { ProjectsTab } from '../projects/components/ProjectsList/ProjectsTab';
+import { ProjectsTab } from '../projects/components/ProjectsTab';
 
 import { BuilderProfile } from './components/BuilderProfile/BuilderProfile';
 import { ProfileStatsContainer as ProfileStats } from './components/ProfileStats/ProfileStatsContainer';

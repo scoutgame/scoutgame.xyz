@@ -18,10 +18,10 @@ import type { BuilderSearchResult } from '@packages/scoutgame/builders/searchBui
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { useCallback, useMemo, useState } from 'react';
 
-import { useSearchBuilders } from '../../../../hooks/api/builders';
-import { useDebouncedValue } from '../../../../hooks/useDebouncedValue';
-import { Avatar } from '../../../common/Avatar';
-import { Dialog } from '../../../common/Dialog';
+import { useSearchBuilders } from '../../../hooks/api/builders';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
+import { Avatar } from '../../common/Avatar';
+import { Dialog } from '../../common/Dialog';
 
 const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult, true>)({
   '& .MuiAutocomplete-popper': {

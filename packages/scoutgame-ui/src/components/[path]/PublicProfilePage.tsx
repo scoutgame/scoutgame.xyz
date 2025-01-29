@@ -8,7 +8,7 @@ import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BackButton } from '../common/Button/BackButton';
 import { Hidden } from '../common/Hidden';
 import { UserProfile } from '../common/Profile/UserProfile';
-import { ProjectsTab } from '../projects/components/ProjectsList/ProjectsTab';
+import { ProjectsTab } from '../projects/components/ProjectsTab';
 
 import { PublicBuilderProfile } from './components/PublicBuilderProfile/PublicBuilderProfile';
 import { PublicScoutProfile } from './components/PublicScoutProfile/PublicScoutProfile';

@@ -8,9 +8,9 @@ import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/
 import { useState } from 'react';
 import { useFieldArray, type Control } from 'react-hook-form';
 
-import { useUser } from '../../../../providers/UserProvider';
-import { Avatar } from '../../../common/Avatar';
-import { ProjectRoleText } from '../../constants';
+import { useUser } from '../../../providers/UserProvider';
+import { Avatar } from '../../common/Avatar';
+import { ProjectRoleText } from '../../projects/constants';
 
 import { SearchProjectTeamMember } from './SearchProjectTeamMember';
 

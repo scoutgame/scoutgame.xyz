@@ -5,7 +5,7 @@ import Image from 'next/image';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
-import { useS3UploadInput } from '../../../../hooks/useS3UploadInput';
+import { useS3UploadInput } from '../../../hooks/useS3UploadInput';
 
 type ProjectAvatarFieldProps = {
   control: Control<CreateScoutProjectFormValues>;
