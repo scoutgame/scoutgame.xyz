@@ -1,6 +1,8 @@
 import 'server-only';
 
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
+import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { findScoutOrThrow } from '@packages/scoutgame/scouts/findScoutOrThrow';
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { getScoutStats } from '@packages/scoutgame/scouts/getScoutStats';
@@ -10,7 +12,13 @@ import { ErrorSSRMessage } from '../../../common/ErrorSSRMessage';
 
 import { PublicScoutProfileContainer } from './PublicScoutProfileContainer';
 
-export async function PublicScoutProfile({ publicUser }: { publicUser: BasicUserInfo }) {
+export async function PublicScoutProfile({
+  publicUser,
+  scoutProjects
+}: {
+  publicUser: BasicUserInfo;
+  scoutProjects?: ScoutProjectMinimal[];
+}) {
   const allPromises = [
     findScoutOrThrow(publicUser.id),
     getScoutStats(publicUser.id),
@@ -34,6 +42,7 @@ export async function PublicScoutProfile({ publicUser }: { publicUser: BasicUser
       seasonPoints={seasonPoints}
       nftsPurchased={nftsPurchased}
       scoutedBuilders={scoutedBuilders}
+      scoutProjects={scoutProjects}
     />
   );
 }
