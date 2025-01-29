@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { mockScout } from '@packages/testing/database';
+import { mockScout, mockGithubUser } from '@packages/testing/database';
 import { randomIntFromInterval } from '@packages/testing/generators';
 
 import { expect, test } from './test';
@@ -13,7 +13,12 @@ test.describe('Onboarding flow', () => {
     await expect(loginPage.container).toBeVisible();
   });
 
-  test('Save new user preferences and get through onboarding', async ({ welcomePage, scoutPage, page, utils }) => {
+  test('Save new user preferences and get through onboarding as a scout', async ({
+    welcomePage,
+    scoutPage,
+    page,
+    utils
+  }) => {
     const newUser = await mockScout({
       onboardedAt: null,
       agreedToTermsAt: null,
@@ -41,7 +46,7 @@ test.describe('Onboarding flow', () => {
 
     await welcomePage.submitExtraDetails.click();
 
-    await page.waitForURL('**/welcome/how-it-works', { waitUntil: 'load' });
+    await expect(welcomePage.howItWorksPage).toBeVisible();
 
     // make sure we saved onboarding preferences
     const user = await prisma.scout.findFirstOrThrow({
@@ -76,6 +81,62 @@ test.describe('Onboarding flow', () => {
     });
 
     expect(!!userAfterOnboarding.onboardedAt).toBe(true);
+  });
+
+  test('Save new user preferences and get through onboarding as a builder', async ({
+    welcomePage,
+    buildersPage,
+    page,
+    utils
+  }) => {
+    const newUser = await mockScout({
+      onboardedAt: null,
+      agreedToTermsAt: null,
+      avatar: 'https://placehold.co/256'
+    });
+    await utils.loginAsUserId(newUser.id);
+
+    // Logged in user should be redirected automatically
+    await page.goto('/welcome?type=builder');
+
+    await expect(welcomePage.userEmailInput).toBeEditable();
+    await expect(welcomePage.notifyAboutGrants).toBeVisible();
+    await expect(welcomePage.acceptTerms).toBeVisible();
+
+    const email = `test-${randomIntFromInterval(1, 1000000)}@gmail.com`;
+
+    await welcomePage.userEmailInput.fill(email);
+    await expect(welcomePage.userEmailInput).toHaveValue(email);
+
+    await welcomePage.notifyAboutGrants.focus();
+    await expect(welcomePage.notifyAboutGrants).toBeChecked();
+
+    await welcomePage.acceptTerms.click();
+    await expect(welcomePage.acceptTerms).toBeChecked();
+
+    await welcomePage.submitExtraDetails.click();
+
+    await expect(welcomePage.buildersPage).toBeVisible();
+
+    // mock step 2
+    await prisma.scout.update({
+      where: {
+        id: newUser.id
+      },
+      data: {
+        builderStatus: 'applied'
+      }
+    });
+    await mockGithubUser({
+      builderId: newUser.id
+    });
+
+    await page.goto('/welcome?step=3&type=builder');
+    await expect(welcomePage.spamPolicyPage).toBeVisible();
+
+    await Promise.all([page.waitForURL('**/builders', { waitUntil: 'load' }), welcomePage.continueButton.click()]);
+
+    await expect(buildersPage.container).toBeVisible();
   });
 
   test('Require terms of service agreement for user that was onboarded somehow', async ({

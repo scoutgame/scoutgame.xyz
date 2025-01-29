@@ -13,9 +13,9 @@ export function StarterPackInfo({ remainingStarterCards = 3 }: { remainingStarte
         Earn Scout Points
       </Typography>
       <Typography>Start your collection by purchasing {remainingCardsPhrase} from this Starter Pack!</Typography>
-      <Typography>Starter Cards cost only 20 Scout Points, up to 95% off from regular Builder Cards!</Typography>
+      <Typography>Starter Cards cost only 20 Scout Points, up to 95% off from regular Developer Cards!</Typography>
       <Typography variant='caption'>
-        <sup>*</sup>Starter Cards earn 1/10 Scout Points compared to regular Builder Cards.
+        <sup>*</sup>Starter Cards earn 1/10 Scout Points compared to regular Developer Cards.
       </Typography>
     </Box>
   );

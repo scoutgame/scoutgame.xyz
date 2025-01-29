@@ -7,17 +7,14 @@ import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accoun
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import {
-  builderNftChain,
-  getBuilderNftContractAddressForNftType,
-  validMintNftPurchaseEvent
-} from '@packages/scoutgame/builderNfts/constants';
+import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { prefix0x } from '@packages/utils/prefix0x';
+import type { Address } from 'viem';
 
 export async function findAndIndexMissingPurchases({
   nftType,
@@ -51,7 +48,6 @@ export async function findAndIndexMissingPurchases({
   const uniqueStoredTransactions = await prisma.nFTPurchaseEvent
     .findMany({
       where: {
-        ...validMintNftPurchaseEvent,
         builderNft: {
           contractAddress,
           season
@@ -77,11 +73,10 @@ export async function findAndIndexMissingPurchases({
           acc[
             uniqueNftPurchaseEventKey({
               args: {
-                from: (tx.senderWalletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
-                to: (tx.walletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`,
+                from: tx.senderWalletAddress as Address | null,
+                to: tx.walletAddress as Address | null,
                 id: BigInt(tx.builderNft.tokenId),
-                value: BigInt(tx.tokensPurchased),
-                operator: (tx.senderWalletAddress ?? NULL_EVM_ADDRESS) as `0x${string}`
+                value: BigInt(tx.tokensPurchased)
               },
               transactionHash: prefix0x(tx.txHash),
               logIndex: tx.txLogIndex as number
@@ -101,11 +96,11 @@ export async function findAndIndexMissingPurchases({
 
   // Early exit
   if (!missingEvents.length) {
-    scoutgameMintsLogger.info('No missing events found');
+    scoutgameMintsLogger.info(`No missing events found for ${nftType} nfts in season ${season}`);
     return;
   }
 
-  scoutgameMintsLogger.error(`Found ${missingEvents.length} missing events`);
+  scoutgameMintsLogger.info(`Found ${missingEvents.length} missing events for ${nftType} nfts in season ${season}`);
 
   const groupedByTokenId = missingEvents.reduce(
     (acc, val) => {
@@ -136,7 +131,7 @@ export async function findAndIndexMissingPurchases({
 
   for (const key of allTokenIdsAsString) {
     for (const missingTx of groupedByTokenId[key as any].records) {
-      scoutgameMintsLogger.error('Missing tx', missingTx.transactionHash, 'tokenId', key);
+      scoutgameMintsLogger.info('Missing tx', missingTx.transactionHash, 'tokenId', key);
 
       const matchingNft = nfts.find((nft) => nft.tokenId === Number(key));
 
@@ -189,10 +184,3 @@ export async function findAndIndexMissingPurchases({
     }
   }
 }
-
-// findAndIndexMissingPurchases({
-//   nftType: 'default',
-//   season: '2025-W02'
-// }).then(() => {
-//   process.exit(0);
-// });

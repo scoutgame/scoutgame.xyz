@@ -15,7 +15,7 @@ export function LitLandingPage() {
       partnerName='Lit Protocol'
       partnerBanner='/images/promos/lit-promo-slide.png'
       partnerInfoLink='/info/partner-rewards/lit'
-      partnerRewardsText='Lit Protocol is partnering with Scout Game to support builders who contribute to the ecosystem.'
+      partnerRewardsText='Lit Protocol is partnering with Scout Game to support developers who contribute to the ecosystem.'
       partnerUtmCampaign='lit'
     />
   );

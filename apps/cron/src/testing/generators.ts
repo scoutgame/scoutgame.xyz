@@ -25,6 +25,7 @@ export function mockPullRequest(
     baseRefName: 'main',
     closedAt: state === 'CLOSED' ? new Date().toISOString() : undefined,
     mergedAt: state === 'MERGED' ? new Date().toISOString() : undefined,
+    reviewDecision: fields.reviewDecision ?? 'APPROVED',
     createdAt: new Date().toISOString(),
     mergeCommit: fields.sha
       ? {

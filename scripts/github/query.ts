@@ -1,10 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'path';
-import { prettyPrint } from 'lib/utils/strings';
-import { getRepositoryActivity, FlatRepositoryData, queryRepos, octokit } from './getRepositoryActivity';
+import { getRepositoryActivity } from './getRepositoryActivity';
 import { prisma } from '@charmverse/core/prisma-client';
 import { uniqBy, sortBy, uniq } from 'lodash';
-import { getGithubUsers } from './getGithubUsers';
+import { bots, getGithubUsers } from './getGithubUsers';
 
 type Ecosystem = {
   // Ecosystem Level Information
@@ -16,107 +15,6 @@ type Ecosystem = {
   // These are structs including a url and tags for a git repository. These URLs do not necessarily have to be on GitHub.
   repo: { url: string; missing?: boolean }[]; // { url:  "https://github.com/zeroexchange/0-charts" }
 };
-
-export const bots = [
-  'github-actions',
-  'etc-contribunator',
-  'homarr-renovate',
-  'playground-manager',
-  'feisar-bot',
-  'spicerabot',
-  'simplificator-renovate',
-  'phillip-ground',
-  'danmharris-renovate',
-  'rosey-the-renovator-bot',
-  'renovate-bot-github-app',
-  'nix-flake-updater-sandhose',
-  'octo-sts',
-  'anaconda-renovate',
-  'leather-bot',
-  '404-bot',
-  'renovate-bot-github-app',
-  'repo-jeeves',
-  'ibis-squawk-bot',
-  'tyriis-automation',
-  'doug-piranha-bot',
-  'shipwasher',
-  'aisling-bot',
-  'codewarden-bot',
-  'budimanjojo-bot',
-  'smurf-bot',
-  'glad-os-bot',
-  'gabe565-renovate',
-  'self-hosted-test',
-  'dextek-bot',
-  'robodexo2000',
-  'bot-akira',
-  'unhesitatingeffectivebot',
-  'hoschi-bot',
-  'mchesterbot',
-  'ishioni-bot',
-  'k3s-home-gha-bot',
-  'fld-01',
-  'home-gitops-renovate',
-  'release-please-for-lemonade',
-  'mend-bolt-for-github',
-  'dependabot[bot]',
-  'nero-alpha',
-  'app-token-issuer-functions',
-  'allcontributors',
-  'novasama-bot',
-  'nips-ja-sync',
-  'layerone-renovate',
-  'depfu',
-  'duwenjieG',
-  'hercules-ci',
-  'core-repository-dispatch-app',
-  'pr-action',
-  'moonpay-github-security',
-  'renovate',
-  'app-token-issuer-infra-releng',
-  'app-token-issuer-releng-renovate',
-  'ellipsis-dev',
-  'term-finance-publisher',
-  'transifex-integration',
-  'aaronyuai',
-  'api3-ecosystem-pr-bot',
-  'sweep-ai',
-  'stack-file',
-  'devin-ai-integration',
-  'cybersecurity-github-actions-ci',
-  'pre-commit-ci',
-  'runway-github',
-  'akeyless-target-app',
-  'finschia-auto-pr',
-  'bitgo-renovate-bot',
-  'sui-merge-bot',
-  'stainless-app',
-  'ipfs-shipyard-mgmt-read-write',
-  'azure-pipelines',
-  'penify-dev',
-  'term-finance-publisher',
-  'live-github-bot',
-  'paritytech-subxt-pr-maker',
-  'smartdeploy-deployer',
-  'dependabot-preview',
-  'petr-hanzl',
-  'paritytech-polkadotsdk-templatebot',
-  'snyk-io',
-  'galoybot-app',
-  'figure-renovate',
-  'corda-jenkins-ci02',
-  'dependabot',
-  'ipfs-mgmt-read-write',
-  'codefactor-io',
-  'libp2p-mgmt-read-write',
-  'deepsource-autofix',
-  'graphops-renovate',
-  'filplus-github-bot-read-write',
-  'imgbot',
-  'paritytech-substrate-connect-pr',
-  'tokenlistform',
-  'pyca-boringbot'
-];
 
 const sourceFile = resolve(process.cwd(), '../crypto-ecosystems-export/projects.json');
 
@@ -298,21 +196,3 @@ async function query() {
     }
   }
 }
-
-async function queryRepoActivity() {
-  // const commits = await getRepoCommits({ owner: 'charmverse', repo: 'app.charmverse.io' });
-  // console.log('FIRST RESULT');
-  const repos = await prisma.githubRepo.findMany({
-    where: { handPicked: true }
-  });
-  // console.log('Repos', projects.map((p) => p.repo).flat().length);
-
-  const repoActivity = await getRepositoryActivity({
-    cutoffDate: cutoffDate,
-    repos: repos.map((r) => `${r.owner}/${r.name}`)
-  });
-  // write to file
-  await writeFile('repoActivity2.json', JSON.stringify(repoActivity, null, 2));
-}
-
-queryRepoActivity();

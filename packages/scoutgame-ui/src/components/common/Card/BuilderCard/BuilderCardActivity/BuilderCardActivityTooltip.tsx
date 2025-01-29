@@ -38,7 +38,7 @@ export function BuilderCardActivityTooltip() {
         <Typography fontWeight='bold'>PRICE</Typography>
         <Typography>
           The current cost of the Developer’s Card in Scout Points. Purchase the Developer’s Card to scout the Developer
-          and earn Scout Points as they move up the leader board. Builder cards may also be purchased with USDC or ETH
+          and earn Scout Points as they move up the leader board. Developer cards may also be purchased with USDC or ETH
           on Optimism, Base, Arbitrum, and Zora.
         </Typography>
       </Stack>

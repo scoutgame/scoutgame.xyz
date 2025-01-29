@@ -76,7 +76,7 @@ function getShareMessage({
 }: ShareMessageProps & { referralCode?: string }) {
   const imageUrl = `${window.location.origin}/points-claim/${userPath}?week=${week}`;
   let shareMessage = isBuilder
-    ? `I scored ${totalUnclaimedPoints} Scout Points this week as a Top Builder!`
+    ? `I scored ${totalUnclaimedPoints} Scout Points this week as a Top Developer!`
     : `I scored ${totalUnclaimedPoints} Scout Points this week as a Top Scout!`;
   // Twitter discounts tweets with links
   if (platform === 'x') {
@@ -90,7 +90,7 @@ function getShareMessage({
             .map((builder) => (builder.farcasterHandle ? `@${builder.farcasterHandle}` : builder.displayName))
             .join(', ')
         : builders.map((builder) => builder.displayName).join(', ');
-    shareMessage += ` Big shoutout to my top Builders: ${buildersFormatted}. Who will be next?\nMy profile: https://scoutgame.xyz/u/${userPath}\n\n`;
+    shareMessage += ` Big shoutout to my top Developers: ${buildersFormatted}. Who will be next?\nMy profile: https://scoutgame.xyz/u/${userPath}\n\n`;
   }
   const urls = {
     x: `https://x.com/intent/tweet?text=${encodeURIComponent(`${shareMessage}\nJoin me! ${referralCode ? `https://scoutgame.xyz/login?ref=${referralCode}` : ''}`)}`,

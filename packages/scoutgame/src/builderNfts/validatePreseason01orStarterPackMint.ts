@@ -2,6 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { parseEventLogs } from 'viem';
 
 import { builderScoutedAbi } from './accounting/getBuilderScoutedEvents';
+import { transferSingleAbi } from './accounting/getTransferSingleEvents';
 
 type MintValidation = {
   scoutId: string;
@@ -29,9 +30,9 @@ export async function validatePreseason01orStarterPackMint({
   })[0];
 
   const transferSingleEvent = parseEventLogs({
-    abi: [builderScoutedAbi],
+    abi: [transferSingleAbi],
     logs: onchainEvent.logs,
-    eventName: ['BuilderScouted']
+    eventName: ['TransferSingle']
   })[0];
 
   if (!builderScoutedEvent || !transferSingleEvent) {

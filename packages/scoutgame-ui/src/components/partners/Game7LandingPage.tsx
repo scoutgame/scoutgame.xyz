@@ -15,7 +15,7 @@ export function Game7LandingPage() {
       partnerName='Game 7'
       partnerBanner='/images/promos/game7-promo-slide.png'
       partnerInfoLink='/info/partner-rewards/game7'
-      partnerRewardsText='Game7 is partnering with Scout Game to support builders who contribute to the ecosystem.'
+      partnerRewardsText='Game7 is partnering with Scout Game to support developers who contribute to the ecosystem.'
       partnerUtmCampaign='game7'
     />
   );

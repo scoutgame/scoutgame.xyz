@@ -21,7 +21,7 @@ function BuilderRewardRow({ builderReward }: { builderReward: BuilderPointsRecei
   return (
     <TableRow>
       <TableCell align='left'>
-        <Typography>Builder rewards</Typography>
+        <Typography>Developer rewards</Typography>
       </TableCell>
       <TableCell align='center'>
         <Typography>{builderReward.week}</Typography>

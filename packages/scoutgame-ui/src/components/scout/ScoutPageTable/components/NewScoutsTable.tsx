@@ -28,7 +28,7 @@ export function NewScoutsTable({ scouts }: { scouts: NewScout[] }) {
           </Button>
         }
       >
-        Join now and compete for 500 OP
+        Join now and compete for 300 OP
       </Alert>
       <Table size='small' sx={{ backgroundColor: 'background.paper' }} data-test='new-scouts-table'>
         <TableHead
@@ -52,7 +52,7 @@ export function NewScoutsTable({ scouts }: { scouts: NewScout[] }) {
               CARDS HELD
             </TableCell>
             <TableCell align='right' sx={{ width: '40%' }}>
-              <Tooltip title="Gems earned by the scout's builders">
+              <Tooltip title="Gems earned by the scout's developers">
                 <Stack display='inline-flex' flexDirection='row' gap={0.5} alignItems='center'>
                   POINTS
                   <PointsIcon />

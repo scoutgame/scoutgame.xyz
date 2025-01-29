@@ -63,13 +63,13 @@ export function PublicScoutProfileContainer({
           nftsPurchased={nftsPurchased}
         />
         <Typography variant='h6' my={2} color='secondary' fontWeight='500' textAlign='center'>
-          Scouted Builders
+          Scouted Developers
         </Typography>
         {scoutedBuilders.length > 0 ? (
           <BuildersGallery hideScoutCount builders={scoutedBuilders} columns={5} size={isDesktop ? 'large' : 'small'} />
         ) : (
           <Paper sx={{ p: 2 }}>
-            <Typography>This Scout hasn't discovered any Builders yet. Check back to see who they find!</Typography>
+            <Typography>This Scout hasn't discovered any Developers yet. Check back to see who they find!</Typography>
           </Paper>
         )}
       </Paper>

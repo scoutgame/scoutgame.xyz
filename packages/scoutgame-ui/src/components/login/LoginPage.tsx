@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { useGetUserTrigger } from '@packages/scoutgame-ui/hooks/api/session';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
 import { SinglePageLayout } from '../common/Layout';
 import { WalletLogin } from '../common/WalletLogin/WalletLogin';

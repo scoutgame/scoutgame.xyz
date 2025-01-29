@@ -111,7 +111,7 @@ export function InfoPageContent() {
         additionalContent={
           <Stack alignItems='center'>
             <Typography variant='h6' color='secondary' mt={2} mb={1} textAlign='center'>
-              carl's Builder Card
+              carl's Developer Card
             </Typography>
             <Hidden mdDown>
               <Image

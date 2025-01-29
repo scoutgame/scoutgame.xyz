@@ -1,12 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { prettyPrint } from 'lib/utils/strings';
 import { promises } from 'node:fs';
 import { resolve } from 'path';
 
-import { Octokit } from '@octokit/rest';
 import { GetResponseDataTypeFromEndpointMethod, Endpoints } from '@octokit/types';
 
-const octokit = new Octokit();
+import { octokit } from '@packages/github/client';
 
 type ListCommitsResponse = Endpoints['GET /repos/{owner}/{repo}/commits']['response']['data'];
 
@@ -39,7 +37,6 @@ function getPullRequests({ repo, owner }: { owner: string; repo: string }) {
 }
 
 function getRepoCommits({ repo, owner }: { owner: string; repo: string }) {
-  const octokit = new Octokit({ auth: '' });
   return octokit.paginate('GET /repos/{owner}/{repo}/commits', {
     owner,
     repo,
@@ -48,7 +45,6 @@ function getRepoCommits({ repo, owner }: { owner: string; repo: string }) {
 }
 
 function getGithubUser({ account_id }: { account_id: string }) {
-  const octokit = new Octokit();
   return octokit.request('GET /users/{account_id}', {
     account_id
   });

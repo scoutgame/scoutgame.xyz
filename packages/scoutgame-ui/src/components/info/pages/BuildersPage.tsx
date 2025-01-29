@@ -6,7 +6,11 @@ import { InfoPageContainer } from '../components/InfoPageContainer';
 
 export function BuildersPage() {
   return (
-    <InfoPageContainer data-test='builders-page' image='/images/info/info_banner.png' title='How it works for Builders'>
+    <InfoPageContainer
+      data-test='builders-page'
+      image='/images/info/info_banner.png'
+      title='How it works for Developers'
+    >
       <Document />
     </InfoPageContainer>
   );
@@ -17,14 +21,14 @@ const googleDoc = 'https://docs.google.com/spreadsheets/d/1K7vxnjyWu1ylApuz6K2Zq
 function Document() {
   return (
     <InfoCard>
-      <Typography>Join the Scout Game as a Builder and connect your GitHub account.</Typography>
+      <Typography>Join the Scout Game as a Developer and connect your GitHub account.</Typography>
       <Typography>
-        Builders in the Scout Game gain recognition by actively contributing to approved projects. Each season lasts
-        three months, and builders earn Scout Gems weekly by completing specific tasks tied to their contributions. At
-        the end of each week, Scout Gems are converted to Scout Points depending on the Builder’s rank.
+        Developers in the Scout Game gain recognition by actively contributing to approved projects. Each season lasts
+        three months, and Developers earn Scout Gems weekly by completing specific tasks tied to their contributions. At
+        the end of each week, Scout Gems are converted to Scout Points depending on the Developer's rank.
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
-        Key Builder Actions:
+        Key Developer Actions:
       </Typography>
       <div>
         <Typography>Collect Gems for completing qualified actions:</Typography>

@@ -7,7 +7,11 @@ import { findAndIndexMissingPurchases } from './findAndIndexMissingPurchases';
 export async function resolveMissingPurchasesTask(ctx: Koa.Context) {
   scoutgameMintsLogger.info('Resyncing builder NFT sales');
 
-  await findAndIndexMissingPurchases({ nftType: BuilderNftType.default });
-  await findAndIndexMissingPurchases({ nftType: BuilderNftType.starter_pack });
-  scoutgameMintsLogger.info(`Syncing complete`);
+  try {
+    await findAndIndexMissingPurchases({ nftType: BuilderNftType.default });
+    await findAndIndexMissingPurchases({ nftType: BuilderNftType.starter_pack });
+    scoutgameMintsLogger.info(`Syncing complete`);
+  } catch (error) {
+    scoutgameMintsLogger.error('Error resolving missing purchases', { error });
+  }
 }

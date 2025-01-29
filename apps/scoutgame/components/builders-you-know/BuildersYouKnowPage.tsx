@@ -10,14 +10,14 @@ export function BuildersYouKnowPage({ builders }: { builders: BuilderInfo[] }) {
   return (
     <PageContainer>
       <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
-        Builders You Know
+        Developers You Know
       </Typography>
       <Typography mb={2} textAlign='center'>
-        We found some Builders you might know
+        We found some Developers you might know
       </Typography>
       <Box display='flex' flexDirection='column' mb={4}>
         <Button variant='contained' LinkComponent={Link} href='/scout' sx={{ margin: 'auto', px: 2 }}>
-          See all builders
+          See all developers
         </Button>
       </Box>
       <Suspense fallback={<LoadingGallery />}>

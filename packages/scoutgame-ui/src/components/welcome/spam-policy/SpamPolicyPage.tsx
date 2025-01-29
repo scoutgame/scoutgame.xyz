@@ -3,27 +3,27 @@
 import { Button, Typography } from '@mui/material';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { saveOnboardedAction } from '@packages/users/saveOnboardedAction';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 
+import { useOnboardingRoutes } from '../../../providers/OnboardingRoutes';
 import { SinglePageLayout } from '../../common/Layout';
 import { SinglePageWrapper } from '../../common/SinglePageWrapper';
 
-export function SpamPolicyPage({ redirectToProfile }: { redirectToProfile: boolean }) {
+export function SpamPolicyPage() {
   const { user } = useUser();
   const router = useRouter();
+  const { getNextRoute } = useOnboardingRoutes();
   // programmatically added builders will land here skipping the /welcome/builder page
   // we set the onboardedAt flag on that page, so make sure we set it here too if the user hasn't been onboarded yet
   const { executeAsync, isExecuting } = useAction(saveOnboardedAction, {
     onSuccess: () => {
-      // Redirect the programmatically added builders to the /how-it-works page to continue with the normal flow
-      router.push('/welcome/how-it-works');
+      router.push(getNextRoute());
     }
   });
 
   return (
-    <SinglePageLayout>
+    <SinglePageLayout data-test='spam-policy-page'>
       <SinglePageWrapper bgcolor='background.default'>
         <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
           Spam Policy
@@ -40,8 +40,7 @@ export function SpamPolicyPage({ redirectToProfile }: { redirectToProfile: boole
         {user ? (
           user.onboardedAt ? (
             <Button
-              LinkComponent={Link}
-              href={redirectToProfile ? '/profile' : '/welcome/how-it-works'}
+              onClick={() => router.push(getNextRoute())}
               data-test='continue-button'
               disabled={isExecuting}
               sx={{ margin: '0 auto', display: 'flex' }}

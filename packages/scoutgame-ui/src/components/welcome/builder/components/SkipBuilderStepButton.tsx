@@ -5,11 +5,15 @@ import { saveOnboardedAction } from '@packages/users/saveOnboardedAction';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 
+import { useOnboardingRoutes } from '../../../../providers/OnboardingRoutes';
+
 export function SkipBuilderStepButton() {
   const router = useRouter();
+  const { getNextRoute } = useOnboardingRoutes();
   const { executeAsync, isExecuting } = useAction(saveOnboardedAction, {
     onSuccess: () => {
-      router.push('/welcome/how-it-works');
+      // Trick here to get the next route to be the How it works page
+      router.push(getNextRoute('3'));
     }
   });
 
