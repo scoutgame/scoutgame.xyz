@@ -1,9 +1,11 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
+import { builderNftChain, builderSmartContractMinterKey } from '@packages/scoutgame/builderNfts/constants';
 import { sleep } from '@packages/utils/sleep';
 import type { WalletClient } from 'viem';
 import { createWalletClient, http, publicActions } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
+import { optimism } from 'viem/chains';
 
 import { getChainById } from './chains';
 import { getAlchemyBaseUrl } from './provider/alchemy/client';
@@ -37,12 +39,22 @@ export function getWalletClient({
 
   let rpcUrl = chain.rpcUrls[0];
 
-  try {
-    const alchemyUrl = getAlchemyBaseUrl(chainId);
+  // We ran into issues with data synching of optimism by Alchemy, so we use ANKR for now
+  if (chainId === optimism.id) {
+    const apiKey = process.env.ANKR_API_KEY;
+    if (!apiKey) {
+      log.warn('No ANKR_API_KEY found, using default rpc url');
+    } else {
+      rpcUrl = `https://rpc.ankr.com/optimism/${apiKey}`;
+    }
+  } else {
+    try {
+      const alchemyUrl = getAlchemyBaseUrl(chainId);
 
-    rpcUrl = alchemyUrl;
-  } catch (e) {
-    // If the alchemy url is not valid, we use the rpc url
+      rpcUrl = alchemyUrl;
+    } catch (e) {
+      // If the alchemy url is not valid, we use the rpc url
+    }
   }
 
   const client = createWalletClient({
@@ -66,6 +78,8 @@ export function getWalletClient({
         address: account.address
       })) + 1;
 
+    console.log('__nextNonce', nextNonce);
+
     const slicedArgs = [
       {
         ...args[0],
@@ -76,16 +90,23 @@ export function getWalletClient({
 
     for (let i = 0; i < MAX_TX_RETRIES; i++) {
       try {
+        // if (i === 0) {
+        //   throw new Error(`nonce too low: next nonce ${nextNonce}`);
+        // }
+
         const result = await originalSendTransaction(...slicedArgs);
 
         return result;
       } catch (e) {
         const replacementTransactionUnderpriced = /replacement transaction underpriced/;
-        const nonceErrorExpression = /nonce too low/;
+        const nonceErrorExpression = /nonce too low: next nonce \d+/;
 
         const errorAsString = JSON.stringify(e);
 
-        if (errorAsString.match(nonceErrorExpression) || errorAsString.match(replacementTransactionUnderpriced)) {
+        const isNonceError = errorAsString.match(nonceErrorExpression);
+        const isReplacementTransactionUnderpriced = errorAsString.match(replacementTransactionUnderpriced);
+
+        if (isNonceError || isReplacementTransactionUnderpriced) {
           const retryAttempts = (args[0] as { retryAttempts?: number })?.retryAttempts ?? 0;
 
           (args[0] as { retryAttempts?: number }).retryAttempts = retryAttempts + 1;
@@ -100,8 +121,8 @@ export function getWalletClient({
           const randomTimeout = Math.floor(Math.random() * 3000) + 2000; // Random timeout between 2-10 seconds
           await sleep(randomTimeout);
 
-          if (errorAsString.match(nonceErrorExpression)) {
-            const nonceMatch = errorAsString.match(/nonce too low: next nonce (\d+)/);
+          if (isNonceError) {
+            const nonceMatch = errorAsString.match(nonceErrorExpression);
             if (nonceMatch) {
               nextNonce = parseInt(nonceMatch[1], 10);
             }
@@ -131,9 +152,11 @@ export function getWalletClient({
 //   privateKey: builderSmartContractMinterKey
 // });
 
-// client
-//   .getTransactionCount({
-//     address: client.account.address,
-//     blockTag: 'latest'
-//   })
-//   .then(console.log);
+// // client
+// //   .getTransactionCount({
+// //     address: client.account.address,
+// //     blockTag: 'latest'
+// //   })
+// //   .then(console.log);
+
+// client.getBlockNumber().then(console.log);
