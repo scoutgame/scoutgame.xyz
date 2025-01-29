@@ -12,9 +12,7 @@ export function CreateProjectPage({ user }: { user: SessionUser }) {
         <Typography variant='h4' color='secondary' fontWeight={600}>
           Create a project
         </Typography>
-        <Stack>
-          <CreateProjectForm user={user} />
-        </Stack>
+        <CreateProjectForm user={user} />
       </Stack>
     </Container>
   );

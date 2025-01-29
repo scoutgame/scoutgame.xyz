@@ -1,11 +1,14 @@
 import * as yup from 'yup';
 
 export const createScoutProjectSchema = yup.object({
-  avatar: yup.string().required('Avatar is required'),
+  avatar: yup.string(),
   name: yup.string().required('Name is required'),
-  description: yup.string().required('Description is required'),
-  website: yup.string().url('Invalid website URL').required('Website is required'),
-  github: yup.string().required('Github is required'),
+  description: yup.string(),
+  website: yup.string().url('Invalid website URL'),
+  github: yup.string().test('github', 'Invalid github URL', (value) => {
+    if (!value) return true;
+    return value.startsWith('https://github.com/') || value.startsWith('https://github.com/');
+  }),
   contracts: yup
     .array()
     .of(
@@ -35,7 +38,7 @@ export const createScoutProjectSchema = yup.object({
       yup.object({
         scoutId: yup.string().uuid().required(),
         role: yup.string().required('Role is required').oneOf(['owner', 'member']),
-        avatar: yup.string().required('Avatar is required'),
+        avatar: yup.string(),
         displayName: yup.string().required('Display name is required')
       })
     )

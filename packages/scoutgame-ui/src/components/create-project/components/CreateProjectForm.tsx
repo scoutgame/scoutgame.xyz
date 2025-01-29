@@ -70,13 +70,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       <Stack
         sx={{
           gap: 3,
-          mb: 2,
-          height: {
-            md: 'calc(100vh - 225px)',
-            xs: 'calc(100vh - 250px)'
-          },
-          overflow: 'auto',
-          pr: 1.5
+          mb: 2
         }}
       >
         <Stack gap={3}>
@@ -175,7 +169,15 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
         </Stack>
         <FormErrors errors={errors} />
       </Stack>
-      <Stack gap={2} flexDirection='row' justifyContent='flex-end'>
+      <Stack
+        gap={2}
+        flexDirection='row'
+        justifyContent='flex-end'
+        position='sticky'
+        bottom={0}
+        p={2}
+        bgcolor='background.default'
+      >
         <Button
           variant='outlined'
           color='primary'

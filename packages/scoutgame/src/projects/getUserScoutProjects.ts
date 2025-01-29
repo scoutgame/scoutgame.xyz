@@ -17,12 +17,7 @@ export type ScoutProjectDetailed = Pick<
   }[];
 };
 
-export type ScoutProjectMinimal = {
-  id: string;
-  path: string;
-  avatar: string;
-  name: string;
-};
+export type ScoutProjectMinimal = Pick<ScoutProject, 'id' | 'path' | 'avatar' | 'name'>;
 
 export async function getUserScoutProjects({ userId }: { userId: string }): Promise<ScoutProjectDetailed[]> {
   const scoutProjects = await prisma.scoutProject.findMany({

@@ -32,16 +32,26 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
           borderRadius={1}
         >
           <BackButton />
-          <Image src={project.avatar} alt={project.name} width={100} height={100} style={{ objectFit: 'cover' }} />
+          <Image
+            src={project.avatar ?? 'https://www.svgrepo.com/show/335614/project.svg'}
+            alt={project.name}
+            width={100}
+            height={100}
+            style={{ objectFit: 'cover' }}
+          />
           <Stack gap={1} ml={1}>
             <Stack flexDirection='row' alignItems='center' gap={1}>
               <Typography variant='h5'>{project.name}</Typography>
-              <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
-                <GitHubIcon />
-              </Link>
-              <Link href={project.website} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
-                <LanguageIcon />
-              </Link>
+              {project.github && (
+                <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
+                  <GitHubIcon />
+                </Link>
+              )}
+              {project.website && (
+                <Link href={project.website} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
+                  <LanguageIcon />
+                </Link>
+              )}
             </Stack>
             <Typography>{project.description}</Typography>
           </Stack>
