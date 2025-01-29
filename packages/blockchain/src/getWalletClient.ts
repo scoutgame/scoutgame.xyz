@@ -1,25 +1,21 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
-import { sleep } from '@packages/utils/sleep';
-import type { WalletClient } from 'viem';
 import { createWalletClient, http, publicActions } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
+import { optimism } from 'viem/chains';
 
 import { getChainById } from './chains';
 import { getAlchemyBaseUrl } from './provider/alchemy/client';
 
-const MAX_TX_RETRIES = 10;
-
 export function getWalletClient({
   chainId,
   privateKey,
-  mnemonic,
-  httpRetries = 1
+
+  mnemonic
 }: {
   chainId: number;
   privateKey?: string;
   mnemonic?: string;
-  httpRetries?: number;
 }) {
   const chain = getChainById(chainId);
 
@@ -37,58 +33,29 @@ export function getWalletClient({
 
   let rpcUrl = chain.rpcUrls[0];
 
-  try {
-    const alchemyUrl = getAlchemyBaseUrl(chainId);
-
-    rpcUrl = alchemyUrl;
-  } catch (e) {
-    // If the alchemy url is not valid, we use the rpc url
-  }
-
-  const client = createWalletClient({
-    chain: chain.viem,
-    account,
-    transport: http(rpcUrl, {
-      retryCount: httpRetries,
-      timeout: 5000,
-      retryDelay: 3000
-    })
-  }).extend(publicActions);
-
-  const originalSendTransaction = client.sendTransaction;
-
-  async function overridenSendTransaction(
-    ...args: Parameters<WalletClient['sendTransaction']>
-    // Needed to make the function return type compatible with the original sendTransaction function
-  ): Promise<Awaited<ReturnType<WalletClient['sendTransaction']>>> {
+  if (chainId === optimism.id) {
+    const apiKey = process.env.ANKR_API_ID;
+    if (!apiKey) {
+      log.warn('No ANKR_API_ID found, using default rpc url');
+    } else {
+      rpcUrl = `https://rpc.ankr.com/optimism/${apiKey}`;
+    }
+  } else {
     try {
-      const result = await originalSendTransaction(...args);
-      return result;
+      const alchemyUrl = getAlchemyBaseUrl(chainId);
+
+      rpcUrl = alchemyUrl;
     } catch (e) {
-      const replacementTransactionUnderpriced = /replacement transaction underpriced/;
-      const nonceErrorExpression = /nonce too low/;
-      if (JSON.stringify(e).match(nonceErrorExpression) || JSON.stringify(e).match(replacementTransactionUnderpriced)) {
-        const retryAttempts = (args[0] as { retryAttempts?: number })?.retryAttempts ?? 0;
-
-        (args[0] as { retryAttempts?: number }).retryAttempts = retryAttempts + 1;
-
-        if (retryAttempts >= MAX_TX_RETRIES) {
-          log.error(`Max retries reached for sending transaction, ${retryAttempts}`, { e, args });
-          throw e;
-        }
-
-        log.info(`Retrying failed transaction attempt nb. ${retryAttempts}`, { e, args });
-
-        const randomTimeout = Math.floor(Math.random() * 8000) + 2000; // Random timeout between 2-10 seconds
-        await sleep(randomTimeout);
-
-        return overridenSendTransaction(...args);
-      }
-      throw e;
+      // If the alchemy url is not valid, we use the rpc url
     }
   }
 
-  client.sendTransaction = overridenSendTransaction as any;
-
-  return client;
+  return createWalletClient({
+    chain: chain.viem,
+    account,
+    transport: http(rpcUrl, {
+      retryCount: 2,
+      timeout: 5000
+    })
+  }).extend(publicActions);
 }
