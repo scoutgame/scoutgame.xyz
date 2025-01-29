@@ -1,7 +1,7 @@
 import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { EAS } from '@ethereum-attestation-service/eas-sdk';
 import { getChainById } from '@packages/blockchain/chains';
-import { Wallet, providers } from 'ethers';
+import { Network, Wallet, JsonRpcProvider } from 'ethers';
 import type { Address } from 'viem';
 
 import { scoutGameAttestationChainId, scoutGameEasAttestationContractAddress } from './constants';
@@ -19,9 +19,9 @@ async function setupEAS() {
 
   const rpcUrl = getChainById(scoutGameAttestationChainId)?.rpcUrls[0] as string;
 
-  const provider = new providers.JsonRpcProvider({
-    url: rpcUrl as string,
-    skipFetchSetup: true
+  // ethers v6 version of StaticJSONRPCProvider https://github.com/ethers-io/ethers.js/discussions/3994
+  const provider = new JsonRpcProvider(rpcUrl as string, undefined, {
+    staticNetwork: Network.from(scoutGameAttestationChainId)
   });
 
   const wallet = new Wallet(attesterWalletKey as string, provider);
@@ -30,7 +30,7 @@ async function setupEAS() {
 
   eas.connect(wallet);
 
-  const currentGasPrice = await wallet.getGasPrice();
+  const currentGasPrice = (await provider.getFeeData()).gasPrice;
 
   return {
     eas,
