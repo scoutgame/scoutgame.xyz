@@ -98,7 +98,8 @@
           "./packages/waitlist/",
           "./packages/telegram/",
           "./packages/safetransactions/",
-          "./packages/llm/"
+          "./packages/llm/",
+          "./packages/scoutgameattestations/"
         ]
       }
     ],
