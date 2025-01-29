@@ -19,8 +19,9 @@ const supportedChains = {
 
 export type SupportedChainId = keyof typeof supportedChains;
 
-// 50 requests/minute for Public tier - https://www.ankr.com/docs/rpc-service/service-plans/#rate-limits
-const rateLimiter = RateLimit(0.8);
+// ≈1800 requests/minute for Public tier - https://www.ankr.com/docs/rpc-service/service-plans/#rate-limits
+// Note: if ankr is used heavily on multiple instances/apps, we might want to reduce the rate limit
+const rateLimiter = RateLimit(1800 / 60);
 
 export function getAnkrBaseUrl(chainId: SupportedChainId) {
   const chainPath = supportedChains[chainId];
