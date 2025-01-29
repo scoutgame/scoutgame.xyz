@@ -143,6 +143,7 @@ export const RPC: Record<string, IChainDetails> = {
     chainId: optimism.id,
     viem: optimism,
     chainName: 'Optimism',
+    // Disable Alchemy for now as it's causing issues with data syncing
     // alchemyUrl: 'https://opt-mainnet.g.alchemy.com',
     rpcUrls: ['https://rpc.ankr.com/optimism'],
     gnosisUrl: 'https://safe-transaction-optimism.safe.global',

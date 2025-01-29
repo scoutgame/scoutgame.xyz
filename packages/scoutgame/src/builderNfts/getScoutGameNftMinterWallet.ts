@@ -8,7 +8,6 @@ export function getScoutGameNftMinterWallet() {
   }
   return getWalletClient({
     chainId: builderNftChain.id,
-    privateKey: builderSmartContractMinterKey,
-    httpRetries: 3
+    privateKey: builderSmartContractMinterKey
   });
 }

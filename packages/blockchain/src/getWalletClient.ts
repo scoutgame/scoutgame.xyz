@@ -16,7 +16,7 @@ export function getWalletClient({
   chainId,
   privateKey,
   mnemonic,
-  httpRetries = 1
+  httpRetries = 2
 }: {
   chainId: number;
   privateKey?: string;
@@ -39,11 +39,10 @@ export function getWalletClient({
 
   let rpcUrl = chain.rpcUrls[0];
 
-  // We ran into issues with data synching of optimism by Alchemy, so we use ANKR for now
   if (chainId === optimism.id) {
-    const apiKey = process.env.ANKR_API_KEY;
+    const apiKey = process.env.ANKR_API_ID;
     if (!apiKey) {
-      log.warn('No ANKR_API_KEY found, using default rpc url');
+      log.warn('No ANKR_API_ID found, using default rpc url');
     } else {
       rpcUrl = `https://rpc.ankr.com/optimism/${apiKey}`;
     }
@@ -72,34 +71,18 @@ export function getWalletClient({
     ...args: Parameters<WalletClient['sendTransaction']>
     // Needed to make the function return type compatible with the original sendTransaction function
   ): Promise<Awaited<ReturnType<WalletClient['sendTransaction']>>> {
-    let nextNonce =
-      args[0].nonce ??
-      (await client.getTransactionCount({
-        address: account.address
-      })) + 1;
-
-    console.log('__nextNonce', nextNonce);
-
-    const slicedArgs = [
-      {
-        ...args[0],
-        nonce: nextNonce
-      },
-      ...args.slice(1)
-    ] as Parameters<WalletClient['sendTransaction']>;
-
     for (let i = 0; i < MAX_TX_RETRIES; i++) {
       try {
         // if (i === 0) {
         //   throw new Error(`nonce too low: next nonce ${nextNonce}`);
         // }
 
-        const result = await originalSendTransaction(...slicedArgs);
+        const result = await originalSendTransaction(...args);
 
         return result;
       } catch (e) {
-        const replacementTransactionUnderpriced = /replacement transaction underpriced/;
-        const nonceErrorExpression = /nonce too low: next nonce \d+/;
+        const replacementTransactionUnderpriced = /replacement/;
+        const nonceErrorExpression = /nonce/;
 
         const errorAsString = JSON.stringify(e);
 
@@ -120,19 +103,6 @@ export function getWalletClient({
 
           const randomTimeout = Math.floor(Math.random() * 3000) + 2000; // Random timeout between 2-10 seconds
           await sleep(randomTimeout);
-
-          if (isNonceError) {
-            const nonceMatch = errorAsString.match(nonceErrorExpression);
-            if (nonceMatch) {
-              nextNonce = parseInt(nonceMatch[1], 10);
-            }
-          } else {
-            nextNonce =
-              (await client.getTransactionCount({
-                address: account.address,
-                blockTag: 'pending'
-              })) + 1;
-          }
         } else {
           throw e;
         }

@@ -60,7 +60,8 @@ const qualifiedProjects = [
   'https://github.com/Ubeswap/ubeswap-interface-v3',
   'https://github.com/gitcoinco/grants-stack',
   'https://github.com/capsule-org/awesome-capsule/issues',
-  'https://github.com/capsule-org/examples-hub/issues'
+  'https://github.com/capsule-org/examples-hub/issues',
+  'https://github.com/distroinfinity/superflow'
 ];
 
 function Document() {
