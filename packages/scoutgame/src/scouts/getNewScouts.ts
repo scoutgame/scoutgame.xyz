@@ -3,7 +3,7 @@ import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
-import { getNftPurchaseEvents, resolveTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
+import { getNftPurchaseEvents, computeTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 export type NewScout = {
   id: string;
@@ -23,36 +23,36 @@ export async function getRankedNewScoutsForCurrentWeek({
 } = {}): Promise<NewScout[]> {
   const [{ pointsPerScout: _pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
     (async function calculatePointsPerScout() {
-      const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } = await getWeeklyPointsPoolAndBuilders({
-        week
-      });
+      const [{ normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints }, nftPurchaseEvents] = await Promise.all([
+        getWeeklyPointsPoolAndBuilders({
+          week
+        }),
+        getNftPurchaseEvents({ week })
+      ]);
+
       // aggregate values for each scout per topWeeklyBuilder
-      const pointsPerScout: Record<string, number> = {};
+      const pointsPerScout = topWeeklyBuilders.reduce<Record<string, number>>((__pointsPerScout, builder) => {
+        const tokenOwnership = computeTokenOwnershipForBuilder({
+          purchaseEvents: nftPurchaseEvents.filter((event) => event.builderNft.builderId === builder.builder.id)
+        });
 
-      await Promise.all(
-        topWeeklyBuilders.map(async (builder) => {
-          const tokenOwnership = await resolveTokenOwnershipForBuilder({
-            builderId: builder.builder.id,
-            week
-          });
+        const { tokensPerScoutByScoutId: builderPointsPerScout } = divideTokensBetweenBuilderAndHolders({
+          builderId: builder.builder.id,
+          rank: builder.rank,
+          weeklyAllocatedTokens: weeklyAllocatedPoints,
+          normalisationFactor,
+          owners: tokenOwnership
+        });
+        builderPointsPerScout.forEach(({ scoutId, erc20Tokens }) => {
+          __pointsPerScout[scoutId] = (__pointsPerScout[scoutId] || 0) + erc20Tokens;
+        });
+        return __pointsPerScout;
+      }, {});
 
-          const { tokensPerScoutByScoutId: builderPointsPerScout } = divideTokensBetweenBuilderAndHolders({
-            builderId: builder.builder.id,
-            rank: builder.rank,
-            weeklyAllocatedTokens: weeklyAllocatedPoints,
-            normalisationFactor,
-            owners: tokenOwnership
-          });
-          builderPointsPerScout.forEach(({ scoutId, erc20Tokens }) => {
-            pointsPerScout[scoutId] = (pointsPerScout[scoutId] || 0) + erc20Tokens;
-          });
-        })
-      );
-
-      const nftPurchaseEvents = await getNftPurchaseEvents({ week, onlyMints: true });
+      const nftPurchaseMintEvents = nftPurchaseEvents.filter((event) => event.from === null);
 
       return {
-        nftPurchaseEvents,
+        nftPurchaseEvents: nftPurchaseMintEvents,
         pointsPerScout
       };
     })(),
@@ -173,6 +173,5 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
       }
     }
   });
-
   return newScouts;
 }

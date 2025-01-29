@@ -89,7 +89,19 @@ export async function resolveTokenOwnershipForBuilder({
   builderId: string;
 }): Promise<TokenOwnershipForBuilder> {
   const purchaseEvents = await getNftPurchaseEvents({ week, builderId });
+  return computeTokenOwnershipForBuilder({ purchaseEvents });
+}
 
+/**
+ * Compute the token ownership for a builder
+ * @param purchaseEvents - All the purchase events for the builder NFT
+ * @returns
+ */
+export function computeTokenOwnershipForBuilder({
+  purchaseEvents
+}: {
+  purchaseEvents: PartialNftPurchaseEvent[];
+}): TokenOwnershipForBuilder {
   const ownership = mapPurchaseEventsToOwnership(purchaseEvents);
 
   const byScoutId = Object.entries(ownership).map(([scoutId, walletMap]) => {
