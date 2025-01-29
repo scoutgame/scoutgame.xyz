@@ -13,7 +13,7 @@ const contracts: Address[] = [
 
   // '0xb961661F5Ca019e232661Bd26686288a6E21d928',
   // '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8',
-  '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
+  // '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
   '0xF4858292f8985371d440Ec17cD0fC8bA22867f8e',
   '0x9dd29AA2BD662E6b569524ba00C55be39e7B00fB',
   '0xC1bFbF4E0AdCA79790bfa0A557E4080F05e2B438',
@@ -221,7 +221,7 @@ async function findDeploymentBlockNumber(
     );
     // Get block timestamp for deployment block
     console.log('Retrieving events for contract:', contract.address, contract.id, 'Deployed:', contract.deployedAt);
-    console.timeEnd('Processing time');
+    console.time('Processing time');
     // get contract interactions
     await retrieveContractInteractions({
       address: contractAddress,
