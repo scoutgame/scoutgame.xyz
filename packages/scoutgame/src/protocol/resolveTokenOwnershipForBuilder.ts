@@ -35,7 +35,8 @@ export async function getNftPurchaseEvents({
         scoutWallet: {
           select: {
             address: true,
-            scoutId: true
+            scoutId: true,
+            primary: true
           }
         },
         senderWallet: {
