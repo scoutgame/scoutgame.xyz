@@ -1,12 +1,12 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
-import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { TalentProfile } from '@packages/users/getUserByPath';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { Suspense } from 'react';
 
 import { LoadingComponent } from '../common/Loading/LoadingComponent';
-import { ProjectsTab } from '../projects/ProjectsList/ProjectsTab';
+import { ProjectsTab } from '../projects/components/ProjectsList/ProjectsTab';
 
 import { BuilderProfile } from './components/BuilderProfile/BuilderProfile';
 import { ProfileStatsContainer as ProfileStats } from './components/ProfileStats/ProfileStatsContainer';
@@ -27,7 +27,7 @@ type ProfilePageProps = {
   user: UserWithProfiles;
   tab: ProfileTab;
   hideGithubButton?: boolean;
-  scoutProjects?: UserScoutProjectInfo[];
+  scoutProjects?: ScoutProjectMinimal[];
 };
 
 export function ProfilePage({ user, tab, hideGithubButton, scoutProjects }: ProfilePageProps) {

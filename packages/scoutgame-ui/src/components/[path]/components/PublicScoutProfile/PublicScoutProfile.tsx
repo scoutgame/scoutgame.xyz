@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { findScoutOrThrow } from '@packages/scoutgame/scouts/findScoutOrThrow';
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
@@ -17,7 +17,7 @@ export async function PublicScoutProfile({
   scoutProjects
 }: {
   publicUser: BasicUserInfo;
-  scoutProjects?: UserScoutProjectInfo[];
+  scoutProjects?: ScoutProjectMinimal[];
 }) {
   const allPromises = [
     findScoutOrThrow(publicUser.id),

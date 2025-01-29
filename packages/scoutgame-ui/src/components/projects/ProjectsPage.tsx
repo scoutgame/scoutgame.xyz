@@ -2,14 +2,16 @@
 
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Container, Stack, Typography } from '@mui/material';
-import type { UserScoutProject } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import { useUser } from 'providers/UserProvider';
 import { useState } from 'react';
 
-import { CreateProjectForm } from './CreateProject/CreateProjectForm';
-import { ProjectsList } from './ProjectsList/ProjectsList';
+import { CreateProjectForm } from './components/CreateProjectForm/CreateProjectForm';
+import { ProjectsList } from './components/ProjectsList/ProjectsList';
 
-export function ProjectsPage({ projects }: { projects: UserScoutProject[] }) {
+export function ProjectsPage({ projects }: { projects: ScoutProjectDetailed[] }) {
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const { user } = useUser();
 
   return (
     <Container maxWidth='lg'>
@@ -32,9 +34,9 @@ export function ProjectsPage({ projects }: { projects: UserScoutProject[] }) {
               Create a project
             </Button>
           </Stack>
-        ) : (
-          <CreateProjectForm onCancel={() => setIsCreatingProject(false)} />
-        )}
+        ) : user ? (
+          <CreateProjectForm onCancel={() => setIsCreatingProject(false)} user={user} />
+        ) : null}
       </Stack>
     </Container>
   );

@@ -1,21 +1,13 @@
-import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import type { ScoutProject, ScoutProjectContract, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 import { projectInfoSelect, projectSelect } from './projectSelect';
 
-export type UserScoutProject = {
-  id: string;
-  path: string;
-  avatar: string;
-  name: string;
-  description: string;
-  website: string;
-  github: string;
-  contracts: {
-    id: string;
-    address: string;
-    chainId: number;
-  }[];
+export type ScoutProjectDetailed = Pick<
+  ScoutProject,
+  'id' | 'path' | 'avatar' | 'name' | 'description' | 'website' | 'github'
+> & {
+  contracts: Pick<ScoutProjectContract, 'id' | 'address' | 'chainId'>[];
   teamMembers: {
     id: string;
     path: string;
@@ -25,14 +17,14 @@ export type UserScoutProject = {
   }[];
 };
 
-export type UserScoutProjectInfo = {
+export type ScoutProjectMinimal = {
   id: string;
   path: string;
   avatar: string;
   name: string;
 };
 
-export async function getUserScoutProjects({ userId }: { userId: string }): Promise<UserScoutProject[]> {
+export async function getUserScoutProjects({ userId }: { userId: string }): Promise<ScoutProjectDetailed[]> {
   const scoutProjects = await prisma.scoutProject.findMany({
     where: {
       scoutProjectMembers: {
@@ -58,7 +50,7 @@ export async function getUserScoutProjects({ userId }: { userId: string }): Prom
   }));
 }
 
-export async function getUserScoutProjectsInfo({ userId }: { userId: string }): Promise<UserScoutProjectInfo[]> {
+export async function getUserScoutProjectsInfo({ userId }: { userId: string }): Promise<ScoutProjectMinimal[]> {
   const projects = await prisma.scoutProject.findMany({
     where: {
       scoutProjectMembers: {

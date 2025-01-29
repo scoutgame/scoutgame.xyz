@@ -4,35 +4,33 @@ import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
+import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { createScoutProjectAction } from '@packages/scoutgame/projects/createScoutProjectAction';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { createScoutProjectSchema } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 
-import { useMdScreen } from '../../../hooks/useMediaScreens';
-import { useUser } from '../../../providers/UserProvider';
-import { FormErrors } from '../../common/FormErrors';
+import { useMdScreen } from '../../../../hooks/useMediaScreens';
+import { FormErrors } from '../../../common/FormErrors';
 
 import { ProjectAvatarField } from './ProjectAvatarField';
 import { ProjectSmartContractForm } from './ProjectSmartContractForm';
 import { ProjectTeamMemberForm } from './ProjectTeamMemberForm';
 
-export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
+export function CreateProjectForm({ onCancel, user }: { onCancel: VoidFunction; user: SessionUser }) {
   const { address } = useAccount();
-  const { user } = useUser();
   const isMdScreen = useMdScreen();
   const [errors, setErrors] = useState<string[] | null>(null);
   const {
     control,
     getValues,
     formState: { isDirty },
-    handleSubmit,
-    setValue
+    handleSubmit
   } = useForm({
     resolver: yupResolver(createScoutProjectSchema),
     mode: 'onChange',
@@ -42,23 +40,13 @@ export function CreateProjectForm({ onCancel }: { onCancel: VoidFunction }) {
       description: '',
       website: '',
       github: '',
-      teamMembers: user
-        ? [{ scoutId: user.id, role: 'owner', avatar: user.avatar ?? '', displayName: user.displayName }]
-        : [],
+      teamMembers: [{ scoutId: user.id, role: 'owner', avatar: user.avatar ?? '', displayName: user.displayName }],
       contracts: [],
       deployers: address ? [{ address, verifiedAt: new Date() }] : []
     }
   });
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (user) {
-      setValue('teamMembers', [
-        { scoutId: user.id, role: 'owner', avatar: user.avatar ?? '', displayName: user.displayName }
-      ]);
-    }
-  }, [user?.id]);
 
   const { execute: createProject, isExecuting } = useAction(createScoutProjectAction, {
     onSuccess: (data) => {

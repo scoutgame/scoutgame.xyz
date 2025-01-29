@@ -1,10 +1,10 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Stack, Typography } from '@mui/material';
-import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export function ProjectsList({ projects }: { projects: UserScoutProjectInfo[] }) {
+export function ProjectsList({ projects }: { projects: ScoutProjectMinimal[] }) {
   return (
     <Stack gap={1}>
       {projects.length === 0 ? (

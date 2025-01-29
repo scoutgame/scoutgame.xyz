@@ -2,14 +2,14 @@ import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
 import { Container, Stack, Typography } from '@mui/material';
-import type { UserScoutProject } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { BackButton } from '../../common/Button/BackButton';
 import { chainRecords, ProjectRoleText } from '../constants';
 
-export function ProjectPage({ project }: { project: UserScoutProject }) {
+export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>

@@ -1,9 +1,9 @@
 import { Stack, Typography } from '@mui/material';
-import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export function ProjectsTab({ scoutProjects }: { scoutProjects: UserScoutProjectInfo[] }) {
+export function ProjectsTab({ scoutProjects }: { scoutProjects: ScoutProjectMinimal[] }) {
   return (
     <Stack gap={1}>
       <Typography color='secondary'>Projects</Typography>

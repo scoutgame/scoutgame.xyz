@@ -2,13 +2,13 @@ import 'server-only';
 
 import { BuilderNftType, type BuilderStatus } from '@charmverse/core/prisma-client';
 import { Box, Stack, Paper } from '@mui/material';
-import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
 import { BackButton } from '../common/Button/BackButton';
 import { Hidden } from '../common/Hidden';
 import { UserProfile } from '../common/Profile/UserProfile';
-import { ProjectsTab } from '../projects/ProjectsList/ProjectsTab';
+import { ProjectsTab } from '../projects/components/ProjectsList/ProjectsTab';
 
 import { PublicBuilderProfile } from './components/PublicBuilderProfile/PublicBuilderProfile';
 import { PublicScoutProfile } from './components/PublicScoutProfile/PublicScoutProfile';
@@ -25,7 +25,7 @@ export function PublicProfilePage({
   scoutId?: string;
   user: UserProfile;
   tab: string;
-  scoutProjects?: UserScoutProjectInfo[];
+  scoutProjects?: ScoutProjectMinimal[];
 }) {
   return (
     <Box gap={2} display='flex' flexDirection='column' margin='auto'>

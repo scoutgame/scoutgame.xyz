@@ -5,7 +5,7 @@ import { getBuilderCardStats } from '@packages/scoutgame/builders/getBuilderCard
 import { getBuilderNft } from '@packages/scoutgame/builders/getBuilderNft';
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
-import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 
 import type { BuilderProfileProps } from './PublicBuilderProfileContainer';
 import { PublicBuilderProfileContainer } from './PublicBuilderProfileContainer';
@@ -17,7 +17,7 @@ export async function PublicBuilderProfile({
 }: {
   builder: BuilderProfileProps['builder'];
   scoutId?: string;
-  scoutProjects?: UserScoutProjectInfo[];
+  scoutProjects?: ScoutProjectMinimal[];
 }) {
   const builderId = builder.id;
 

@@ -1,9 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-import type { UserScoutProject } from './getUserScoutProjects';
+import type { ScoutProjectDetailed } from './getUserScoutProjects';
 import { projectSelect } from './projectSelect';
 
-export async function getProjectByPath(path: string): Promise<UserScoutProject | null> {
+export async function getProjectByPath(path: string): Promise<ScoutProjectDetailed | null> {
   const scoutProject = await prisma.scoutProject.findUnique({
     where: {
       path

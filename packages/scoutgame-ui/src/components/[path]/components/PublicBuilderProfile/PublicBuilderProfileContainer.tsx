@@ -6,7 +6,7 @@ import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderAct
 import type { BuilderCardStats } from '@packages/scoutgame/builders/getBuilderCardStats';
 import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
-import type { UserScoutProjectInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
 import { useLgScreen, useMdScreen } from '../../../../hooks/useMediaScreens';
@@ -16,7 +16,7 @@ import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
 import { UserProfile } from '../../../common/Profile/UserProfile';
 import { BuilderActivitiesList } from '../../../profile/components/BuilderProfile/BuilderActivitiesList';
 import { BuilderWeeklyStats } from '../../../profile/components/BuilderProfile/BuilderWeeklyStats';
-import { ProjectsTab } from '../../../projects/ProjectsList/ProjectsTab';
+import { ProjectsTab } from '../../../projects/components/ProjectsList/ProjectsTab';
 
 import { PublicBuilderStats } from './PublicBuilderStats';
 
@@ -29,7 +29,7 @@ export type BuilderProfileProps = {
     nftType: BuilderNftType;
   } & BuilderCardStats;
   builderActivities: BuilderActivity[];
-  scoutProjects?: UserScoutProjectInfo[];
+  scoutProjects?: ScoutProjectMinimal[];
 } & BuilderStats &
   BuilderScouts;
 
