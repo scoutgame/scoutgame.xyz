@@ -54,7 +54,7 @@ export function getWalletClient({
     chain: chain.viem,
     account,
     transport: http(rpcUrl, {
-      retryCount: 1,
+      retryCount: 2,
       timeout: 5000
     })
   }).extend(publicActions);
