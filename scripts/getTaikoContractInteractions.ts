@@ -1,6 +1,8 @@
 import { Address, createPublicClient, http, TransactionReceipt } from 'viem';
 import { taiko } from 'viem/chains';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getLogs } from '@packages/blockchain/provider/ankr/getLogs';
+import { getTransactionReceipt } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
 
 type BlockchainClient = ReturnType<typeof createPublicClient>;
 
@@ -9,42 +11,40 @@ type BlockchainClient = ReturnType<typeof createPublicClient>;
 const contracts: Address[] = [
   // Avalon Finance
 
-  '0xb961661F5Ca019e232661Bd26686288a6E21d928',
-  '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8',
-  '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
-  '0xF4858292f8985371d440Ec17cD0fC8bA22867f8e',
-  '0x9dd29AA2BD662E6b569524ba00C55be39e7B00fB',
-  '0xC1bFbF4E0AdCA79790bfa0A557E4080F05e2B438',
+  // '0xb961661F5Ca019e232661Bd26686288a6E21d928',
+  '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8'
+  // '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
+  // '0xF4858292f8985371d440Ec17cD0fC8bA22867f8e',
+  // '0x9dd29AA2BD662E6b569524ba00C55be39e7B00fB',
+  // '0xC1bFbF4E0AdCA79790bfa0A557E4080F05e2B438',
 
-  // Crack and Stack
+  // // Crack and Stack
 
-  '0xF8F1B21615BDbEA8D142cfaf4828EA0236Cab115',
-  '0x12689b6ddE632E69fBAA70d066f86aC9fDd33dd1',
-  '0x2c301eBfB0bb42Af519377578099b63E921515B7',
-  '0x009C32F03d6eEa4F6DA9DD3f8EC7Dc85824Ae0e6',
-  '0x1ACa21A2a2a070d3536a69733c7044feDEB88f5A',
-  '0x7ddB8A975778a434dE03dd666F11Ce962DCdD290',
-  '0x6C8865042792B5E919fC95bF771ccaDF6F0cfA22',
-  '0xD31A4be996b7E1cc20974181127E6fCA15649913',
-  '0xA9EC1fEEE212851c829B028F094156CD04A3a547',
-  '0xb64C1461453DAdD104A583dCCeef30ce296fde20',
-  '0xD8F7cd7d919c5266777FB83542F956dD30E80187',
+  // '0xF8F1B21615BDbEA8D142cfaf4828EA0236Cab115',
+  // '0x12689b6ddE632E69fBAA70d066f86aC9fDd33dd1',
+  // '0x2c301eBfB0bb42Af519377578099b63E921515B7',
+  // '0x009C32F03d6eEa4F6DA9DD3f8EC7Dc85824Ae0e6',
+  // '0x1ACa21A2a2a070d3536a69733c7044feDEB88f5A',
+  // '0x7ddB8A975778a434dE03dd666F11Ce962DCdD290',
+  // '0x6C8865042792B5E919fC95bF771ccaDF6F0cfA22',
+  // '0xD31A4be996b7E1cc20974181127E6fCA15649913',
+  // '0xA9EC1fEEE212851c829B028F094156CD04A3a547',
+  // '0xb64C1461453DAdD104A583dCCeef30ce296fde20',
+  // '0xD8F7cd7d919c5266777FB83542F956dD30E80187',
 
-  // 21Blackjack (selected for Low Volume)
+  // // 21Blackjack (selected for Low Volume)
 
-  '0x8C5720982b54874F53F2514BbD2382ADce98a0ca',
-  '0x78adDA11Bfc437DeC4a39318FF7e52Cf00DC062c'
+  // '0x8C5720982b54874F53F2514BbD2382ADce98a0ca',
+  // '0x78adDA11Bfc437DeC4a39318FF7e52Cf00DC062c'
 ];
 
 async function retrieveContractInteractions({
-  client,
   address,
   fromBlock,
   toBlock,
   contractId,
-  pageSize = BigInt(1000)
+  pageSize = BigInt(900)
 }: {
-  client: BlockchainClient;
   address: Address;
   fromBlock: bigint;
   toBlock: bigint;
@@ -52,8 +52,8 @@ async function retrieveContractInteractions({
   pageSize?: bigint;
 }) {
   // Get all events from the contract
-  let allLogs: Awaited<ReturnType<typeof client.getLogs>> = [];
-  let transactions: TransactionReceipt[] = [];
+  let allLogs: Awaited<ReturnType<typeof getLogs>> = [];
+  let transactions: Awaited<ReturnType<typeof getTransactionReceipt>>[] = [];
 
   const earliestBlock = await prisma.scoutProjectContractTransactioData.findFirst({
     where: {
@@ -72,23 +72,26 @@ async function retrieveContractInteractions({
   for (let currentBlock = fromBlock; currentBlock <= toBlock; currentBlock += pageSize) {
     const nextStep = currentBlock + (pageSize - BigInt(1));
     const endBlock = nextStep > toBlock ? toBlock : nextStep;
-    const logs = await client.getLogs({
+    const logs = await getLogs({
+      chainId: taiko.id,
       address,
       fromBlock: currentBlock,
       toBlock: endBlock
     });
-    const txHashes = new Set<Address>(logs.map((log) => log.transactionHash));
+    console.log('logs', logs);
+    const txHashes = new Set<string>(logs.map((log) => log.transactionHash));
+    console.log('txHashes', txHashes);
     const txData = await Promise.all(
-      Array.from(txHashes).map((txHash) => client.getTransactionReceipt({ hash: txHash }))
+      Array.from(txHashes).map((txHash) => getTransactionReceipt({ chainId: taiko.id, txHash }))
     );
     await Promise.all([
       prisma.scoutProjectContractTransactioData.createMany({
         data: txData.map((tx) => ({
           contractId,
-          blockNumber: tx.blockNumber,
+          blockNumber: Number(tx.blockNumber),
           txHash: tx.transactionHash,
-          logIndex: tx.transactionIndex,
           txData: JSON.parse(toJson(tx) || '{}'),
+          gasUsed: Number(tx.gasUsed),
           from: tx.from.toLowerCase(),
           to: tx.to ? tx.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
           status: tx.status
@@ -182,6 +185,15 @@ async function findDeploymentBlockNumber(
 // call findDeploymentBlock
 (async () => {
   // await prisma.scoutProjectContract.deleteMany();
+  // await prisma.scoutProjectContract.delete({
+  //   where: {
+  //     address_chainId: {
+  //       address: '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8'.toLowerCase(),
+  //       chainId: taiko.id
+  //     }
+  //   }
+  // });
+
   const client = createPublicClient({
     chain: taiko,
     transport: http()
@@ -214,7 +226,6 @@ async function findDeploymentBlockNumber(
     console.log('Retrieving events for contract:', contract.address, 'Deployed:', contract.deployedAt);
     // get contract interactions
     await retrieveContractInteractions({
-      client,
       address: contractAddress,
       fromBlock: contract.blockNumber,
       toBlock: latestBlock,
@@ -245,7 +256,7 @@ async function findOrCreateContract(
   });
   const deploymentTimestamp = new Date(Number(deploymentBlock.timestamp) * 1000);
   const creationData = await getContractCreation(address);
-  console.log('creationData', creationData);
+  //console.log('creationData', creationData);
   const creationTxHash = creationData.result[0].txHash;
   const creationContractAddress = creationData.result[0].contractAddress;
   const creationContractCreator = creationData.result[0].contractCreator.toLowerCase();
