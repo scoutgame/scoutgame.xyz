@@ -3,7 +3,7 @@ import { log } from '@charmverse/core/log';
 import { builderNftChain, builderSmartContractMinterKey } from '@packages/scoutgame/builderNfts/constants';
 import { sleep } from '@packages/utils/sleep';
 import type { WalletClient } from 'viem';
-import { createWalletClient, http, publicActions } from 'viem';
+import { createWalletClient, http, publicActions, parseEther } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
 import { optimism } from 'viem/chains';
 
@@ -15,13 +15,11 @@ const MAX_TX_RETRIES = 10;
 export function getWalletClient({
   chainId,
   privateKey,
-  mnemonic,
-  httpRetries = 2
+  mnemonic
 }: {
   chainId: number;
   privateKey?: string;
   mnemonic?: string;
-  httpRetries?: number;
 }) {
   const chain = getChainById(chainId);
 
@@ -60,7 +58,6 @@ export function getWalletClient({
     chain: chain.viem,
     account,
     transport: http(rpcUrl, {
-      retryCount: httpRetries,
       timeout: 5000
     })
   }).extend(publicActions);
@@ -69,39 +66,38 @@ export function getWalletClient({
 
   async function overridenSendTransaction(
     ...args: Parameters<WalletClient['sendTransaction']>
-    // Needed to make the function return type compatible with the original sendTransaction function
   ): Promise<Awaited<ReturnType<WalletClient['sendTransaction']>>> {
     for (let i = 0; i < MAX_TX_RETRIES; i++) {
       try {
-        // if (i === 0) {
-        //   throw new Error(`nonce too low: next nonce ${nextNonce}`);
-        // }
-
         const result = await originalSendTransaction(...args);
+
+        await client.waitForTransactionReceipt({ hash: result });
 
         return result;
       } catch (e) {
         const replacementTransactionUnderpriced = /replacement/;
-        const nonceErrorExpression = /nonce/;
+        const nonceErrorExpression = /nonce|already used|pending|already known/;
 
         const errorAsString = JSON.stringify(e);
-
         const isNonceError = errorAsString.match(nonceErrorExpression);
         const isReplacementTransactionUnderpriced = errorAsString.match(replacementTransactionUnderpriced);
 
+        console.log('isNonceError', isNonceError);
+        console.log('isReplacementTransactionUnderpriced', isReplacementTransactionUnderpriced);
+
         if (isNonceError || isReplacementTransactionUnderpriced) {
-          const retryAttempts = (args[0] as { retryAttempts?: number })?.retryAttempts ?? 0;
-
-          (args[0] as { retryAttempts?: number }).retryAttempts = retryAttempts + 1;
-
-          if (retryAttempts >= MAX_TX_RETRIES) {
-            log.error(`Max retries reached for sending transaction, ${retryAttempts}`, { e, args });
+          if (i >= MAX_TX_RETRIES) {
+            log.error(`Max retries reached for sending transaction, ${i}`, { e, args });
             throw e;
           }
 
-          log.info(`Retrying failed transaction attempt nb. ${retryAttempts}`, { e, args });
+          log.info(`Retrying failed transaction attempt nb. ${i + 1}`, { e, args });
 
-          const randomTimeout = Math.floor(Math.random() * 3000) + 2000; // Random timeout between 2-10 seconds
+          args[0].nonce = await client.getTransactionCount({
+            address: client.account.address
+          });
+
+          const randomTimeout = Math.floor(Math.random() * 3000) + 2000; // Random timeout between 2-5 seconds
           await sleep(randomTimeout);
         } else {
           throw e;
@@ -117,16 +113,33 @@ export function getWalletClient({
   return client;
 }
 
-// const client = getWalletClient({
-//   chainId: builderNftChain.id,
-//   privateKey: builderSmartContractMinterKey
-// });
+const client = getWalletClient({
+  chainId: optimism.id,
+  privateKey: builderSmartContractMinterKey
+});
 
-// // client
-// //   .getTransactionCount({
-// //     address: client.account.address,
-// //     blockTag: 'latest'
-// //   })
-// //   .then(console.log);
+// console.log('Address', client.account.address);
+
+// async function test() {
+//   await Promise.all(
+//     Array.from({ length: 5 }, async (_, i) => {
+//       const multiplier = BigInt(1000000000000);
+
+//       const value = multiplier * BigInt(i + 1);
+
+//       // console.log('Value', value);
+
+//       const first = '0x518AF6fA5eEC4140e4283f7BDDaB004D45177946';
+//       const second = '0xA0e2928705304a6e554166251C1E8f4340b81547';
+
+//       const tx = await client.sendTransaction({
+//         to: second,
+//         value: multiplier * BigInt(i + 1)
+//       });
+//     })
+//   );
+// }
+
+// test().then(console.log);
 
 // client.getBlockNumber().then(console.log);
