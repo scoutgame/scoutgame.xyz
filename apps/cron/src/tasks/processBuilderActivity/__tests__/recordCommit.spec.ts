@@ -115,11 +115,11 @@ describe('recordCommit', () => {
 
     const builderEvent = await prisma.builderEvent.findFirst({
       where: {
-        builderId: builder.id
+        builderId: builder.id,
+        type: 'daily_commit'
       }
     });
-    expect(builderEvent).toBeDefined();
-    expect(builderEvent?.bonusPartner).toBe('test-partner');
+    expect(builderEvent).toEqual(expect.objectContaining({ bonusPartner: 'test-partner' }));
   });
 
   it('should create builder events and gems receipts for a regular merged pull request', async () => {

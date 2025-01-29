@@ -1,4 +1,6 @@
 import { getSession } from '@packages/nextjs/session/getSession';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
+import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { PublicProfilePage } from '@packages/scoutgame-ui/components/[path]/PublicProfilePage';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import { getUserByPathCached } from '@packages/users/getUserByPathCached';
@@ -47,11 +49,13 @@ export default async function Profile({ params, searchParams }: Props) {
     return notFound();
   }
 
+  const [, scoutProjects] = await safeAwaitSSRData(getUserScoutProjectsInfo({ userId: user.id }));
+
   return (
     <>
       <FarcasterMetadata user={user} />
       <PageContainer>
-        <PublicProfilePage scoutId={scoutId} user={user} tab={tab} />
+        <PublicProfilePage scoutId={scoutId} user={user} tab={tab} scoutProjects={scoutProjects} />
       </PageContainer>
     </>
   );
