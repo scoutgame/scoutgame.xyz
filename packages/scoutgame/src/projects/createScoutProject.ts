@@ -1,11 +1,20 @@
+import { log } from '@charmverse/core/log';
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import {
+  uploadUrlToS3,
+  getFilenameWithExtension,
+  uploadFileToS3,
+  getUserS3FilePath
+} from '@packages/aws/uploadToS3Server';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
+import sharp from 'sharp';
 import { verifyMessage } from 'viem';
 
 import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { CreateScoutProjectFormValues } from './createScoutProjectSchema';
 import { generateProjectPath } from './generateProjectPath';
+import { generateRandomAvatar } from './generateRandomAvatar';
 
 export async function createScoutProject(payload: CreateScoutProjectFormValues, userId: string) {
   const path = await generateProjectPath(payload.name);
@@ -36,6 +45,31 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
           `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${actualDeployer}`
         );
       }
+    }
+  }
+
+  if (!payload.avatar) {
+    const randomAvatarSvg = generateRandomAvatar();
+    const imageBuffer = await sharp(Buffer.from(randomAvatarSvg)).resize(256, 256).png().toBuffer();
+
+    const pathInS3 = getUserS3FilePath({ userId, url: 'avatar.png' });
+    try {
+      const { fileUrl } = await uploadFileToS3({
+        pathInS3,
+        content: imageBuffer,
+        contentType: 'image/png'
+      });
+      payload.avatar = fileUrl;
+    } catch (e) {
+      log.error('Failed to save avatar', { error: e, pathInS3, userId });
+    }
+  } else if (payload.avatar) {
+    const pathInS3 = getUserS3FilePath({ userId, url: getFilenameWithExtension(payload.avatar) });
+    try {
+      const { url } = await uploadUrlToS3({ pathInS3, url: payload.avatar });
+      payload.avatar = url;
+    } catch (e) {
+      log.error('Failed to save avatar', { error: e, pathInS3, url: payload.avatar, userId });
     }
   }
 

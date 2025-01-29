@@ -7,6 +7,7 @@ import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/m
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { createScoutProjectAction } from '@packages/scoutgame/projects/createScoutProjectAction';
 import { createScoutProjectSchema } from '@packages/scoutgame/projects/createScoutProjectSchema';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
@@ -191,13 +192,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
         p={2}
         bgcolor='background.default'
       >
-        <Button
-          variant='outlined'
-          color='primary'
-          onClick={() => {
-            router.push('/projects');
-          }}
-        >
+        <Button variant='outlined' color='primary' href='/projects' LinkComponent={Link}>
           Cancel
         </Button>
         <LoadingButton
