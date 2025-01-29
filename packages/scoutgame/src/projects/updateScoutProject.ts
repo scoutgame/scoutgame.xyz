@@ -1,7 +1,6 @@
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import { v4 } from 'uuid';
-import type { Transaction } from 'viem';
 import { verifyMessage } from 'viem';
 
 import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
@@ -31,7 +30,10 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
   });
 
-  const contractRecord: Record<string, { tx: Transaction; chainId: number }> = {};
+  const contractTransactionRecord: Record<
+    string,
+    { chainId: number; txHash: string; blockNumber: number; blockTimestamp: number }
+  > = {};
   const projectMemberIds = project.scoutProjectMembers.map((member) => member.userId);
   const projectDeployerAddresses = project.scoutProjectDeployers.map((deployer) => deployer.address);
   const projectContractAddresses = project.scoutProjectContracts.map((contract) => contract.address);
@@ -77,15 +79,17 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     for (const contractAddress of addedContractAddresses) {
       const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
       if (contract) {
-        const transaction = await getContractDeployerAddress({
+        const { transaction, block } = await getContractDeployerAddress({
           contractAddress: contract.address,
           chainId: contract.chainId
         });
-        contractRecord[contract.address] = {
-          tx: transaction,
-          chainId: contract.chainId
+        contractTransactionRecord[contract.address] = {
+          chainId: contract.chainId,
+          txHash: transaction.hash,
+          blockNumber: Number(block.number),
+          blockTimestamp: Number(block.timestamp)
         };
-        if (transaction.from.toLowerCase() !== contract.deployerAddress.toLowerCase()) {
+        if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
           throw new Error(
             `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
           );
@@ -181,11 +185,10 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           createdBy: userId,
           projectId: _updatedProject.id,
           address,
-          chainId: contractRecord[address].chainId,
-          // TODO: get accurate deployed at
-          deployedAt: new Date(),
-          deployTxHash: contractRecord[address].tx.hash,
-          blockNumber: Number(contractRecord[address].tx.blockNumber),
+          chainId: contractTransactionRecord[address].chainId,
+          deployedAt: new Date(contractTransactionRecord[address].blockTimestamp * 1000),
+          deployTxHash: contractTransactionRecord[address].txHash,
+          blockNumber: contractTransactionRecord[address].blockNumber,
           deployerId: addedDeployerRecord[address]
         }))
       });

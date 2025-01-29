@@ -1,4 +1,4 @@
-import type { Transaction } from 'viem';
+import type { Block, Transaction } from 'viem';
 import { createPublicClient, http, getAddress } from 'viem';
 
 import { getChainById } from './chains';
@@ -9,7 +9,7 @@ export async function getContractDeployerAddress({
 }: {
   contractAddress: string;
   chainId: number;
-}): Promise<Transaction> {
+}): Promise<{ transaction: Transaction; block: Block }> {
   const chain = getChainById(chainId)?.viem;
   if (!chain) {
     throw new Error(`Chain ID ${chainId} not supported`);
@@ -62,7 +62,10 @@ export async function getContractDeployerAddress({
           if (tx.to === null && tx.input.length > 2) {
             const receipt = await client.getTransactionReceipt({ hash: tx.hash });
             if (receipt.contractAddress?.toLowerCase() === formattedAddress.toLowerCase()) {
-              return tx;
+              return {
+                transaction: tx,
+                block
+              };
             }
           }
         }

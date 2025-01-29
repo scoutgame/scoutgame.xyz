@@ -19,7 +19,7 @@ import { generateRandomAvatar } from './generateRandomAvatar';
 
 export async function createScoutProject(payload: CreateScoutProjectFormValues, userId: string) {
   const path = await generateProjectPath(payload.name);
-  const contractTransactionRecord: Record<string, Transaction> = {};
+  const contractTransactionRecord: Record<string, { txHash: string; blockNumber: number; blockTimestamp: number }> = {};
 
   if (payload.deployers) {
     for (const deployer of payload.deployers) {
@@ -37,12 +37,16 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
 
   if (payload.contracts) {
     for (const contract of payload.contracts) {
-      const transaction = await getContractDeployerAddress({
+      const { block, transaction } = await getContractDeployerAddress({
         contractAddress: contract.address,
         chainId: contract.chainId
       });
 
-      contractTransactionRecord[contract.address] = transaction;
+      contractTransactionRecord[contract.address] = {
+        txHash: transaction.hash,
+        blockNumber: Number(block.number),
+        blockTimestamp: Number(block.timestamp)
+      };
 
       if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
         throw new Error(
@@ -131,11 +135,10 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             projectId: scoutProject.id,
             address: contract.address,
             chainId: contract.chainId,
-            // TODO: Fix the deployed at date
-            deployedAt: new Date(),
+            deployedAt: new Date(contractTransactionRecord[contract.address].blockTimestamp * 1000),
             deployerId: deployer.id,
-            deployTxHash: contractTransactionRecord[contract.address].hash,
-            blockNumber: Number(contractTransactionRecord[contract.address].blockNumber)
+            deployTxHash: contractTransactionRecord[contract.address].txHash,
+            blockNumber: contractTransactionRecord[contract.address].blockNumber
           };
         })
       });
