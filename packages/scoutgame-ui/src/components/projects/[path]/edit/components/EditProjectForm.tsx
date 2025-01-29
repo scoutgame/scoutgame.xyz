@@ -162,7 +162,7 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
         p={2}
         bgcolor='background.default'
       >
-        <Button variant='outlined' color='primary' href='/projects' LinkComponent={Link}>
+        <Button variant='outlined' color='primary' href={`/projects/${project.path}`} LinkComponent={Link}>
           Cancel
         </Button>
         <LoadingButton

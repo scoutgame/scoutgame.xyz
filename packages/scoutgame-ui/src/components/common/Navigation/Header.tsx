@@ -144,6 +144,9 @@ export function Header() {
                       <MenuItem component={Link} href='/accounts'>
                         Accounts
                       </MenuItem>
+                      <MenuItem component={Link} href='/projects'>
+                        Projects
+                      </MenuItem>
                       {platform === 'webapp' && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out
