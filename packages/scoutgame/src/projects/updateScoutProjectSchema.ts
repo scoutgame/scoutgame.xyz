@@ -29,11 +29,15 @@ export const updateScoutProjectSchema = yup.object({
       yup.object({
         address: yup.string().required('Deployer address is required'),
         // If we are passing an already verified deployer, signature is not required
-        signature: yup.string().nullable()
+        signature: yup.string().nullable(),
+        verified: yup.boolean().required()
       })
     )
     .test('deployer-signature', 'Every deployer must have a signature', (deployers) => {
-      return deployers ? deployers.every((deployer) => deployer.signature) : true;
+      // Non-verified deployers must have a signature, verified deployers were fetched from the database
+      return deployers
+        ? deployers.filter((deployer) => !deployer.verified).every((deployer) => deployer.signature)
+        : true;
     })
     .when('contracts', {
       is: (contracts: any[]) => contracts && contracts.length > 0,

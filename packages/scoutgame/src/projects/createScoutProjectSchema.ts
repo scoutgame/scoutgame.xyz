@@ -27,11 +27,14 @@ export const createScoutProjectSchema = yup.object({
     .of(
       yup.object({
         address: yup.string().required('Deployer address is required'),
-        signature: yup.string().required('Signature is required')
+        signature: yup.string().required('Signature is required'),
+        verified: yup.boolean().required()
       })
     )
     .test('deployer-signature', 'Every deployer must have a signature', (deployers) => {
-      return deployers ? deployers.every((deployer) => deployer.signature) : true;
+      return deployers
+        ? deployers.filter((deployer) => !deployer.verified).every((deployer) => deployer.signature)
+        : true;
     })
     .when('contracts', {
       is: (contracts: any[]) => contracts && contracts.length > 0,

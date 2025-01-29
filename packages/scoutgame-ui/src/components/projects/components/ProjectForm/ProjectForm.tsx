@@ -1,0 +1,166 @@
+'use client';
+
+import LoadingButton from '@mui/lab/LoadingButton';
+import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
+import Link from 'next/link';
+import type { Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
+
+import { ProjectAvatarField } from '../../../../components/create-project/components/ProjectAvatarField';
+import type { Deployer } from '../../../../components/create-project/components/ProjectSmartContractForm';
+import { ProjectSmartContractForm } from '../../../../components/create-project/components/ProjectSmartContractForm';
+import { useMdScreen } from '../../../../hooks/useMediaScreens';
+import { FormErrors } from '../../../common/FormErrors';
+import { ProjectTeamMemberForm } from '../../../create-project/components/ProjectTeamMemberForm';
+
+export function ProjectForm({
+  control,
+  isDisabled,
+  onSave,
+  isDirty,
+  errors,
+  deployers,
+  setDeployers,
+  cancelLink
+}: {
+  errors?: string[] | null;
+  isDirty: boolean;
+  isDisabled?: boolean;
+  onSave: VoidFunction;
+  control: Control<any>;
+  deployers: Deployer[];
+  setDeployers: React.Dispatch<React.SetStateAction<Deployer[]>>;
+  cancelLink: string;
+}) {
+  const isMdScreen = useMdScreen();
+
+  return (
+    <>
+      <Stack
+        sx={{
+          gap: 3,
+          mb: 2
+        }}
+      >
+        <Stack gap={3}>
+          <Stack>
+            <FormLabel>Logo</FormLabel>
+            <ProjectAvatarField control={control} isLoading={isDisabled} avatarSize={isMdScreen ? 150 : 100} />
+          </Stack>
+          <Stack>
+            <FormLabel required>Name</FormLabel>
+            <Controller
+              control={control}
+              name='name'
+              render={({ field, fieldState }) => (
+                <TextField
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  placeholder='Smart Contract'
+                  required
+                  {...field}
+                />
+              )}
+            />
+          </Stack>
+          <Stack>
+            <FormLabel>Description</FormLabel>
+            <Controller
+              control={control}
+              name='description'
+              render={({ field, fieldState }) => (
+                <TextField
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  multiline
+                  minRows={3}
+                  placeholder='Brief project summary'
+                  {...field}
+                />
+              )}
+            />
+          </Stack>
+          <Stack>
+            <FormLabel>Project Website</FormLabel>
+            <Controller
+              control={control}
+              name='website'
+              render={({ field, fieldState }) => (
+                <TextField
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  placeholder='https://example.com'
+                  {...field}
+                />
+              )}
+            />
+          </Stack>
+          <Stack>
+            <FormLabel>Repository</FormLabel>
+            <Controller
+              control={control}
+              name='github'
+              render={({ field, fieldState }) => (
+                <TextField
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  placeholder='https://github.com/example/project'
+                  {...field}
+                />
+              )}
+            />
+          </Stack>
+        </Stack>
+        <Divider />
+        <Stack gap={3}>
+          <Stack gap={1}>
+            <Typography color='secondary' variant='h6'>
+              Smart Contracts
+            </Typography>
+            <Typography lineHeight={2}>
+              Add your smart contracts to earn additional gems and to participate in partner rewards, such as the Taiko
+              AI challenge.
+              <br />
+              Sign a message with the wallet that deployed your contracts to prove ownership.
+            </Typography>
+            <ProjectSmartContractForm control={control} deployers={deployers} setDeployers={setDeployers} />
+          </Stack>
+        </Stack>
+        <Divider />
+        <Stack gap={3}>
+          <Stack gap={1}>
+            <Typography color='secondary' variant='h6'>
+              Team
+            </Typography>
+            <Typography>Split Project Based Rewards with your teammates.</Typography>
+            <ProjectTeamMemberForm control={control} />
+          </Stack>
+        </Stack>
+        <FormErrors errors={errors} />
+      </Stack>
+      <Stack
+        gap={2}
+        flexDirection='row'
+        justifyContent='flex-end'
+        position='sticky'
+        bottom={0}
+        p={2}
+        bgcolor='background.default'
+      >
+        <Button variant='outlined' color='primary' href={cancelLink} LinkComponent={Link}>
+          Cancel
+        </Button>
+        <LoadingButton
+          variant='contained'
+          color='primary'
+          onClick={onSave}
+          loading={isDisabled}
+          disabled={isDisabled || !isDirty}
+          sx={{ width: 'fit-content' }}
+        >
+          Save
+        </LoadingButton>
+      </Stack>
+    </>
+  );
+}

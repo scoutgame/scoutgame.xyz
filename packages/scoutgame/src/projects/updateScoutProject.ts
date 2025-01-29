@@ -51,13 +51,13 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const removedContractAddresses =
     payload.contracts &&
-    projectContractAddresses.filter((address) => payload.contracts!.some((contract) => contract.address === address));
+    projectContractAddresses.filter((address) => !payload.contracts!.some((contract) => contract.address === address));
   const removedDeployerAddresses =
     payload.deployers &&
-    projectDeployerAddresses.filter((address) => payload.deployers!.some((deployer) => deployer.address === address));
+    projectDeployerAddresses.filter((address) => !payload.deployers!.some((deployer) => deployer.address === address));
   const removedProjectMemberIds =
     payload.teamMembers &&
-    projectMemberIds.filter((scoutId) => payload.teamMembers!.some((member) => member.scoutId === scoutId));
+    projectMemberIds.filter((scoutId) => !payload.teamMembers!.some((member) => member.scoutId === scoutId));
 
   if (payload.deployers && addedDeployerAddresses.length > 0) {
     for (const deployerAddress of addedDeployerAddresses) {
