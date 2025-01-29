@@ -24,7 +24,7 @@ export const createScoutProjectSchema = yup.object({
     .of(
       yup.object({
         address: yup.string().required('Deployer address is required'),
-        verifiedAt: yup.date().required('Verified at is required')
+        signature: yup.string().required('Signature is required')
       })
     )
     .when('contracts', {

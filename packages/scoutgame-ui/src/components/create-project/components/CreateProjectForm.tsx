@@ -10,22 +10,23 @@ import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/
 import { createScoutProjectSchema } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
-import { useAccount } from 'wagmi';
 
 import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { FormErrors } from '../../common/FormErrors';
 
 import { ProjectAvatarField } from './ProjectAvatarField';
+import type { Deployer } from './ProjectSmartContractForm';
 import { ProjectSmartContractForm } from './ProjectSmartContractForm';
 import { ProjectTeamMemberForm } from './ProjectTeamMemberForm';
 
 export function CreateProjectForm({ user }: { user: SessionUser }) {
-  const { address } = useAccount();
   const isMdScreen = useMdScreen();
   const [errors, setErrors] = useState<string[] | null>(null);
+  const [deployers, setDeployers] = useState<Deployer[]>([]);
+
   const {
     control,
     getValues,
@@ -42,7 +43,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       github: '',
       teamMembers: [{ scoutId: user.id, role: 'owner', avatar: user.avatar ?? '', displayName: user.displayName }],
       contracts: [],
-      deployers: address ? [{ address, verifiedAt: new Date() }] : []
+      deployers: []
     }
   });
 
@@ -62,7 +63,15 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
   }
 
   const onSubmit = (data: CreateScoutProjectFormValues) => {
-    createProject(data);
+    createProject({
+      ...data,
+      deployers: deployers
+        .filter((deployer) => deployer.signature && deployer.verified)
+        .map((deployer) => ({
+          address: deployer.address,
+          signature: deployer.signature as `0x${string}`
+        }))
+    });
   };
 
   return (
@@ -154,7 +163,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
               <br />
               Sign a message with the wallet that deployed your contracts to prove ownership.
             </Typography>
-            <ProjectSmartContractForm control={control} />
+            <ProjectSmartContractForm control={control} deployers={deployers} setDeployers={setDeployers} />
           </Stack>
         </Stack>
         <Divider />

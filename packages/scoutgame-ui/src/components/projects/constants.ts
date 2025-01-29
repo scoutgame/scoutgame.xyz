@@ -12,6 +12,11 @@ export const chainRecords: Record<
     chainId: 167000,
     image: '/images/crypto/taiko.png',
     name: 'Taiko'
+  },
+  11155111: {
+    chainId: 11155111,
+    image: '/images/crypto/ethereum-circle.png',
+    name: 'Sepolia Testnet'
   }
 };
 
