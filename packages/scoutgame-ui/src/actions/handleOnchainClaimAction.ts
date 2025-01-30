@@ -31,7 +31,7 @@ export const handleOnchainClaimAction = authActionClient
 
     const decimals = await getScoutTokenERC20Contract().decimals();
 
-    const scout = await prisma.scout.findFirstOrThrow({
+    const scout = await prisma.scout.findFirst({
       where: {
         id: userId,
         wallets: {
@@ -41,6 +41,10 @@ export const handleOnchainClaimAction = authActionClient
         }
       }
     });
+
+    if (!scout) {
+      throw new Error('Scout wallet is not connected to the user account');
+    }
 
     await prisma.tokensReceipt.updateMany({
       where: {

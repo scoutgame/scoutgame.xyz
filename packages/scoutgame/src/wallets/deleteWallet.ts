@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getAddress } from 'viem';
+import { getAddress } from 'viem/utils';
 
 export async function deleteWallet({ address, userId }: { address: string; userId: string }) {
   const walletAddress = getAddress(address).toLowerCase();
