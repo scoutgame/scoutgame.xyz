@@ -17,8 +17,7 @@ export function ProjectsList({ projects }: { projects: ScoutProjectMinimal[] }) 
               flexDirection='row'
               gap={1.5}
               alignItems='center'
-              px={1.5}
-              py={1}
+              p={2}
               bgcolor='background.paper'
               justifyContent='space-between'
               borderRadius={1}
@@ -28,8 +27,8 @@ export function ProjectsList({ projects }: { projects: ScoutProjectMinimal[] }) 
                   style={{ objectFit: 'cover' }}
                   src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
                   alt={project.name}
-                  width={32}
-                  height={32}
+                  width={40}
+                  height={40}
                 />
                 <Typography variant='h6'>{project.name}</Typography>
               </Stack>
