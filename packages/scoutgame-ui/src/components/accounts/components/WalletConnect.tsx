@@ -80,8 +80,8 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
     onSuccess: () => {
       toast.success('Wallet deleted successfully');
     },
-    onError: () => {
-      toast.error('Failed to delete wallet');
+    onError: (err) => {
+      toast.error(`Failed. ${err.error?.serverError?.message || "Can't delete wallet"}`);
     }
   });
 
