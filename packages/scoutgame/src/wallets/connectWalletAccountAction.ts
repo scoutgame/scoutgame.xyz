@@ -1,6 +1,7 @@
 'use server';
 
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { revalidatePath } from 'next/cache';
 
 import { connectWalletAccount } from './connectWalletAccount';
 import { connectWalletAccountSchema } from './connectWalletAccountSchema';
@@ -13,6 +14,8 @@ export const connectWalletAccountAction = authActionClient
     const userId = ctx.session.scoutId;
 
     const existingWalletUser = await connectWalletAccount({ address: walletAddress, userId });
+
+    revalidatePath('/accounts');
 
     return { success: true, connectedUser: existingWalletUser };
   });

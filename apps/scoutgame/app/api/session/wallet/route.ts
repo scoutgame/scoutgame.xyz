@@ -1,12 +1,14 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
+import { getSession } from '@packages/nextjs/session/getSession';
 import { NextResponse } from 'next/server';
 import { isAddress } from 'viem';
 
 export async function GET(request: Request) {
-  const user = await getUserFromSession();
-  if (!user) {
+  const session = await getSession();
+  const scoutId = session?.scoutId;
+
+  if (!scoutId) {
     return new Response('Unauthorized', { status: 401 });
   }
   const { searchParams } = new URL(request.url);
@@ -23,10 +25,10 @@ export async function GET(request: Request) {
     }
   });
   if (existingUser) {
-    if (existingUser.scoutId !== user.id) {
+    if (existingUser.scoutId !== scoutId) {
       log.warn('Wallet address already in use by another user', {
         address,
-        userId: user.id,
+        userId: scoutId,
         existingUserId: existingUser.scoutId
       });
       return new Response(`Address ${address} is already in use`, {
@@ -34,13 +36,17 @@ export async function GET(request: Request) {
       });
     }
   } else {
+    const wallets = await prisma.scoutWallet.findMany({ where: { scoutId } });
+    const primary = wallets.length === 0; // The first scout wallet should be set to primary
+
     await prisma.scoutWallet.create({
       data: {
         address: address.toLowerCase(),
-        scoutId: user.id
+        scoutId,
+        primary
       }
     });
-    log.info('Added wallet address to user', { address, userId: user.id });
+    log.info('Added wallet address to user', { address, userId: scoutId, primary });
   }
   return NextResponse.json({ success: true });
 }

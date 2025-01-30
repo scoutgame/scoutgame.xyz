@@ -178,8 +178,9 @@ export async function mockScout({
       telegramId,
       wallets: {
         createMany: {
-          data: wallets.map((address) => ({
-            address
+          data: wallets.map((address, index) => ({
+            address,
+            primary: index === 0
           }))
         }
       }

@@ -11,6 +11,7 @@ import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { publicActions } from 'viem';
 import { useSwitchChain, useWalletClient } from 'wagmi';
 
@@ -41,7 +42,14 @@ export function PointsClaimScreen({
   onchainClaimData?: ClaimData;
 }) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
-  const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction);
+  const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction, {
+    onSuccess() {
+      toast.success('You claimed your points successfully');
+    },
+    onError(error) {
+      toast.error(error.error.serverError?.message || 'There was an error while claiming');
+    }
+  });
   const { refreshUser, user } = useUser();
   const [showModal, setShowModal] = useState(false);
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);

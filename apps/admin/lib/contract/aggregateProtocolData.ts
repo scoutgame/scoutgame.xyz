@@ -69,7 +69,7 @@ export async function aggregateProtocolData({ userId }: { userId?: string }): Pr
           const weekFromDb = weeklyClaims.find((claim) => claim.week === week) as WeeklyClaimsTyped;
 
           if (userId && weekFromDb) {
-            const userWallet = await prisma.scoutWallet.findFirst({ where: { scoutId: userId } });
+            const userWallet = await prisma.scoutWallet.findFirst({ where: { scoutId: userId, primary: true } });
             if (userWallet) {
               const userClaim = weekFromDb.claims.leaves.find(
                 (_claim) => _claim.address.toLowerCase() === userWallet?.address.toLowerCase()
