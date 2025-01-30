@@ -21,12 +21,12 @@ export type SupportedChainId = keyof typeof supportedChains;
 
 // ≈1800 requests/minute for Public tier - https://www.ankr.com/docs/rpc-service/service-plans/#rate-limits
 // Note: if ankr is used heavily on multiple instances/apps, we might want to reduce the rate limit
-const rateLimiter = RateLimit(1800 / 60);
+const rateLimiter = RateLimit(1500, { timeUnit: 60 * 1000, uniformDistribution: true });
 
 export function getAnkrBaseUrl(chainId: SupportedChainId) {
   const chainPath = supportedChains[chainId];
   if (!chainPath) throw new Error(`Chain id "${chainId}" not supported by Ankr`);
-  return `https://rpc.ankr.com/${chainPath}`; /// ${process.env.ANKR_API_ID}`;
+  return `https://rpc.ankr.com/${chainPath}/${process.env.ANKR_API_ID}`; /// ${process.env.ANKR_API_ID}`;
 }
 
 export type ResponseError = {
@@ -58,6 +58,7 @@ export async function ankrRequest<T>({
   }).then((r) => {
     // console.log('res', r);
     if ((r as ResponseError).error) {
+      log.error('Ankr error', { error: (r as ResponseError).error });
       throw new Error((r as ResponseError).error.message);
     }
     // console.log('ankrRequest response', JSON.stringify(r, null, 2));

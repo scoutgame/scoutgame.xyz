@@ -3,17 +3,21 @@ import { taiko } from 'viem/chains';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getLogs } from '@packages/blockchain/provider/ankr/getLogs';
 import { getTransactionReceipt } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
-
+import fs from 'fs';
+import { prettyPrint } from '@packages/utils/strings';
 type BlockchainClient = ReturnType<typeof createPublicClient>;
+
+// Midnight UTC Jan 1, 2025 - get blocks here: https://taikoscan.io/blockdateconverter
+const earliestBlockNumber = BigInt(729328);
 
 /**
  * Taiko Contract exmples */
 const contracts: Address[] = [
   // Avalon Finance
 
-  // '0xb961661F5Ca019e232661Bd26686288a6E21d928',
-  // '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8',
-  // '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
+  '0xb961661F5Ca019e232661Bd26686288a6E21d928',
+  '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8',
+  '0x64Eaf7cDE96277ed9253b8268DFC85eB2EB0D147',
   '0xF4858292f8985371d440Ec17cD0fC8bA22867f8e',
   '0x9dd29AA2BD662E6b569524ba00C55be39e7B00fB',
   '0xC1bFbF4E0AdCA79790bfa0A557E4080F05e2B438',
@@ -55,7 +59,7 @@ async function retrieveContractInteractions({
   let allLogs: Awaited<ReturnType<typeof getLogs>> = [];
   let transactions: Awaited<ReturnType<typeof getTransactionReceipt>>[] = [];
 
-  const earliestBlock = await prisma.scoutProjectContractTransaction.findFirst({
+  const earliestBlock = await prisma.scoutProjectContractLog.findFirst({
     where: {
       contractId
     },
@@ -66,7 +70,7 @@ async function retrieveContractInteractions({
 
   if (earliestBlock) {
     console.log('Found latest block', earliestBlock.blockNumber);
-    fromBlock = earliestBlock.blockNumber;
+    fromBlock = earliestBlock.blockNumber + BigInt(1);
   }
 
   for (let currentBlock = fromBlock; currentBlock <= toBlock; currentBlock += pageSize) {
@@ -80,44 +84,62 @@ async function retrieveContractInteractions({
     });
     // console.log('logs', logs);
     const txHashes = new Set<string>(logs.map((log) => log.transactionHash));
+    if (txHashes.size > 0) {
+      console.log('Found', logs.length, 'logs and', txHashes.size, 'transactions...');
+    }
+    console.time('Retrieving transactions');
     const txData = await Promise.all(
       Array.from(txHashes).map((txHash) => getTransactionReceipt({ chainId: taiko.id, txHash }))
     );
-    await Promise.all([
-      prisma.scoutProjectContractTransaction.createMany({
-        data: txData.map((tx) => ({
-          contractId,
-          blockNumber: Number(tx.blockNumber),
-          txHash: tx.transactionHash,
-          txData: JSON.parse(toJson(tx) || '{}'),
-          gasUsed: Number(tx.gasUsed),
-          from: tx.from.toLowerCase(),
-          to: tx.to ? tx.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
-          status: tx.status
-        }))
-      }),
-      prisma.scoutProjectContractLog.createMany({
-        data: logs.map((log) => ({
-          contractId,
-          blockNumber: Number(log.blockNumber),
-          txHash: log.transactionHash,
-          from: log.address.toLowerCase(),
-          logIndex: Number(log.logIndex)
-        }))
-      })
-    ]);
-    allLogs = [...allLogs, ...logs];
-    transactions = [...transactions, ...txData];
+    console.timeEnd('Retrieving transactions');
+
+    if (logs.length > 0) {
+      await Promise.all([
+        prisma.scoutProjectContractTransaction.createMany({
+          data: txData.map((tx) => ({
+            contractId,
+            blockNumber: Number(tx.blockNumber),
+            txHash: tx.transactionHash,
+            txData: JSON.parse(toJson(tx) || '{}'),
+            gasUsed: Number(tx.gasUsed),
+            gasPrice: Number(tx.effectiveGasPrice),
+            gasCost: Number(tx.gasUsed) * Number(tx.effectiveGasPrice),
+            from: tx.from.toLowerCase(),
+            to: tx.to ? tx.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
+            status: tx.status
+          }))
+        }),
+        prisma.scoutProjectContractLog.createMany({
+          data: logs.map((log) => ({
+            contractId,
+            blockNumber: Number(log.blockNumber),
+            txHash: log.transactionHash,
+            from: log.address.toLowerCase(),
+            logIndex: Number(log.logIndex)
+          }))
+        })
+      ]);
+      allLogs = [...allLogs, ...logs];
+      // transactions = [...transactions, ...txData];
+    }
     // Log progress every 10%
     const progress = Number(((currentBlock - fromBlock) * BigInt(100)) / (toBlock - fromBlock));
     if (progress % 10 === 0) {
-      console.log(`${progress}% complete, ${allLogs.length} logs so far. Current block: ${currentBlock}`);
+      console.log(
+        `Processed up to block:`,
+        endBlock,
+        ` / `,
+        allLogs.length.toLocaleString(),
+        `logs captured / `,
+        progress,
+        `% complete`
+      );
     }
   }
   const logs = allLogs;
 
   console.log('Retrieved logs', logs.length);
-  console.log('Retrieved transactions', transactions.length);
+  // console.log('Retrieved transactions', transactions.length);
 
   // console.log('log sample', logs.slice(0, 2));
   // console.log('transactions sample', transactions.slice(0, 2));
@@ -125,6 +147,117 @@ async function retrieveContractInteractions({
   // Extract unique addresses that interacted with contract
   const uniqueAddresses = new Set(logs.map((log) => log.address.toLowerCase()));
   console.log('Total unique addresses:', uniqueAddresses.size);
+  //console.log('Addresses:', Array.from(uniqueAddresses));
+}
+
+async function retrieveContractInteractionsFromLogs({
+  fromBlock,
+  contractId
+}: {
+  fromBlock: bigint;
+  contractId: string;
+}) {
+  const earliestBlock = await prisma.scoutProjectContractTransaction.findFirst({
+    where: {
+      contractId
+    },
+    orderBy: {
+      blockNumber: 'desc'
+    }
+  });
+
+  if (earliestBlock) {
+    console.log(
+      'Total txs saved:',
+      await prisma.scoutProjectContractTransaction.count({ where: { contractId } }),
+      'Latest block number:',
+      earliestBlock.blockNumber
+    );
+    //fromBlock = earliestBlock.blockNumber + BigInt(1);
+  }
+
+  const dbLogs = await prisma.scoutProjectContractLog.findMany({
+    where: {
+      contractId,
+      blockNumber: {
+        gte: fromBlock
+      }
+    },
+    orderBy: {
+      blockNumber: 'asc'
+    }
+  });
+  // console.log('logs', logs);
+  const txHashes = Array.from(new Set<string>(dbLogs.map((log) => log.txHash)));
+  if (txHashes.length > 0) {
+    console.log('Retrieving', txHashes.length, 'transactions for', dbLogs.length, 'logs...');
+  }
+  const PAGE_SIZE = 1000;
+  let skip = 0;
+  while (txHashes.length > 0) {
+    const txHashChunk = txHashes.slice(skip, skip + PAGE_SIZE);
+
+    if (txHashChunk.length === 0) {
+      break;
+    }
+
+    const savedHashes = await prisma.scoutProjectContractTransaction.findMany({
+      where: {
+        contractId,
+        txHash: {
+          in: txHashChunk
+        }
+      },
+      select: {
+        txHash: true
+      }
+    });
+    if (savedHashes.length > 0) {
+      console.log('Previously saved txs:', savedHashes.length);
+    }
+    const newTxHashes = txHashChunk.filter((txHash) => !savedHashes.some((savedHash) => savedHash.txHash === txHash));
+    if (newTxHashes.length > 0) {
+      console.time('Retrieving transactions');
+      const txData = await Promise.all(
+        newTxHashes.map((txHash) => getTransactionReceipt({ chainId: taiko.id, txHash }))
+      );
+      console.timeEnd('Retrieving transactions');
+
+      // prettyPrint(txData);
+      // return ;
+
+      const result = await prisma.scoutProjectContractTransaction.createMany({
+        data: txData.map((tx) => ({
+          contractId,
+          blockNumber: Number(tx.blockNumber),
+          txHash: tx.transactionHash,
+          txData: JSON.parse(toJson(tx) || '{}'),
+          gasUsed: Number(tx.gasUsed),
+          gasPrice: Number(tx.effectiveGasPrice),
+          gasCost: Number(tx.gasUsed) * Number(tx.effectiveGasPrice),
+          from: tx.from.toLowerCase(),
+          to: tx.to ? tx.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
+          status: tx.status
+        }))
+      });
+      // Log progress every 10%
+      console.log(
+        'Persisted',
+        skip + PAGE_SIZE,
+        `transactions. Latest block:`,
+        Math.max(...txData.map((tx) => Number(tx.blockNumber)))
+      );
+    }
+    skip += PAGE_SIZE;
+  }
+  // console.log('Retrieved transactions', transactions.length);
+
+  // console.log('log sample', logs.slice(0, 2));
+  // console.log('transactions sample', transactions.slice(0, 2));
+
+  // Extract unique addresses that interacted with contract
+  // const uniqueAddresses = new Set(logs.map((log) => log.address.toLowerCase()));
+  // console.log('Total unique addresses:', uniqueAddresses.size);
   //console.log('Addresses:', Array.from(uniqueAddresses));
 }
 
@@ -137,6 +270,22 @@ function toJson(data: any) {
     );
   }
 }
+
+// splits json into two if it's too large
+function toJsonArray(data: any) {
+  try {
+    const json = toJson(data);
+    return json;
+  } catch (error) {
+    console.error('Could not properly serialize data', error);
+    if ((error as Error).name === 'RangeError') {
+      const split = Math.floor(data.length / 2);
+      return [toJson(data.slice(0, split))!, toJson(data.slice(split))!];
+    }
+    throw error;
+  }
+}
+
 // binary search to find the deployment block
 async function findDeploymentBlockNumber(
   client: BlockchainClient,
@@ -178,60 +327,6 @@ async function findDeploymentBlockNumber(
 
   throw new Error('Deployment block not found');
 }
-
-// call findDeploymentBlock
-(async () => {
-  // await prisma.scoutProjectContract.deleteMany();
-  // await prisma.scoutProjectContract.delete({
-  //   where: {
-  //     address_chainId: {
-  //       address: '0xC8ef1F781CA76E344e7B5c5C136834c132B5A1E8'.toLowerCase(),
-  //       chainId: taiko.id
-  //     }
-  //   }
-  // });
-
-  const client = createPublicClient({
-    chain: taiko,
-    transport: http()
-  });
-  const latestBlock = await client.getBlockNumber();
-  let creator = await prisma.scout.findFirst();
-  if (!creator) {
-    creator = await prisma.scout.create({
-      data: {
-        path: '0x' + Math.random(),
-        displayName: 'Scout',
-        referralCode: 'scout'
-      }
-    });
-  }
-
-  // create project
-  const project = await findOrCreateProject();
-
-  // create contracts
-  for (const contractAddress of contracts) {
-    const contract = await findOrCreateContract(
-      client,
-      project.id,
-      contractAddress as Address,
-      latestBlock,
-      creator.id
-    );
-    // Get block timestamp for deployment block
-    console.log('Retrieving events for contract:', contract.address, contract.id, 'Deployed:', contract.deployedAt);
-    console.time('Processing time');
-    // get contract interactions
-    await retrieveContractInteractions({
-      address: contractAddress,
-      fromBlock: contract.blockNumber,
-      toBlock: latestBlock,
-      contractId: contract.id
-    });
-    console.timeEnd('Processing time');
-  }
-})();
 
 async function findOrCreateContract(
   client: BlockchainClient,
@@ -297,23 +392,45 @@ async function findOrCreateContract(
 }
 
 async function findOrCreateProject() {
+  let creator = await prisma.scout.findFirst();
+  if (!creator) {
+    creator = await prisma.scout.create({
+      data: {
+        path: '0x' + Math.random(),
+        displayName: 'Scout',
+        referralCode: 'scout'
+      }
+    });
+  }
   const project = await prisma.scoutProject.findFirst({
     where: {
       name: 'Taiko'
     }
   });
   if (project) {
-    return project;
+    return { id: project.id, createdBy: creator.id };
   }
-  return prisma.scoutProject.create({
+  const result = await prisma.scoutProject.create({
     data: {
       name: 'Taiko',
       avatar: 'https://taiko.xyz/favicon.ico',
       description: 'Taiko is a decentralized blockchain platform that enables scalable and secure smart contracts.',
       website: 'https://taiko.xyz',
-      github: 'https://github.com/taiko-network'
+      github: 'https://github.com/taiko-network',
+      scoutProjectMembers: {
+        create: {
+          createdBy: creator.id,
+          user: {
+            connect: {
+              id: creator.id
+            }
+          },
+          role: 'owner'
+        }
+      }
     }
   });
+  return { id: result.id, createdBy: creator.id };
 }
 
 // taiko methods
@@ -341,4 +458,103 @@ async function getContractApi<T>(queryStr: string): Promise<T> {
   }
 }
 
-// retrieveContractInteractions();
+async function saveToDisk() {
+  // const contracts = await prisma.scoutProjectContract.findMany();
+  // console.log('contracts', contracts.length);
+  // // store in file
+  // fs.writeFileSync('scout_contracts.json', toJson(contracts));
+
+  // const transactions = await prisma.scoutProjectContractTransaction.findMany();
+  // console.log('transactions', transactions.length);
+  // // store in file
+  // fs.writeFileSync('scout_contract_transactions.json', toJson(transactions));
+
+  const PAGE_SIZE = 100000;
+  let skip = 0;
+  let allLogs: any[] = [];
+
+  while (true) {
+    const logs = await prisma.scoutProjectContractLog.findMany({
+      orderBy: {
+        blockNumber: 'asc'
+      },
+      take: PAGE_SIZE,
+      skip
+    });
+
+    if (logs.length === 0) {
+      break;
+    }
+
+    allLogs = [...allLogs, ...logs];
+    skip += PAGE_SIZE;
+
+    console.log(`Retrieved ${allLogs.length} logs so far...`);
+
+    // store in file
+    const json = toJsonArray(allLogs) || '[]';
+    if (typeof json === 'string') {
+      fs.writeFileSync('scout_contract_logs_' + skip + '.json', json);
+    } else if (Array.isArray(json)) {
+      fs.writeFileSync('scout_contract_logs_' + skip + '.json', json[0]);
+      fs.writeFileSync('scout_contract_logs_' + skip + '_2.json', json[1]);
+    }
+  }
+
+  console.log('logs', allLogs.length);
+}
+
+(async () => {
+  // await saveToDisk();
+  // return;
+
+  // console.log(await prisma.scoutProjectContractTransaction.deleteMany());
+  // await prisma.scoutProjectContract.delete({
+  //   where: {
+  //     address_chainId: {
+  //       address: '0x9dd29AA2BD662E6b569524ba00C55be39e7B00fB'.toLowerCase(),
+  //       chainId: taiko.id
+  //     }
+  //   }
+  // });
+
+  const client = createPublicClient({
+    chain: taiko,
+    transport: http()
+  });
+  const latestBlock = await client.getBlockNumber();
+
+  // create project
+  const project = await findOrCreateProject();
+
+  // create contracts
+  try {
+    for (const contractAddress of contracts) {
+      const contract = await findOrCreateContract(
+        client,
+        project.id,
+        contractAddress as Address,
+        latestBlock,
+        project.createdBy
+      );
+      // Get block timestamp for deployment block
+      console.log('Retrieving events for contract:', contract.address, contract.id, 'Deployed:', contract.deployedAt);
+      console.time('Processing time');
+      const fromBlock = contract.blockNumber > earliestBlockNumber ? contract.blockNumber : earliestBlockNumber;
+      // get contract interactions
+      // await retrieveContractInteractions({
+      //   address: contractAddress,
+      //   fromBlock: fromBlock,
+      //   toBlock: latestBlock,
+      //   contractId: contract.id
+      // });
+      await retrieveContractInteractionsFromLogs({
+        fromBlock: fromBlock,
+        contractId: contract.id
+      });
+      console.timeEnd('Processing time');
+    }
+  } catch (error) {
+    console.error('Error processing contract:', error);
+  }
+})();
