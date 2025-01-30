@@ -18,7 +18,6 @@ import { useSendTransaction } from 'wagmi';
 
 import { useRefreshShareImage } from '../hooks/api/builders';
 
-import { useSnackbar } from './SnackbarContext';
 import { useUser } from './UserProvider';
 
 type MintTransactionInput = {
