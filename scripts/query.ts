@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { prettyPrint } from '@packages/utils/strings';
 
 async function query() {
   const scout = await prisma.scout.findMany({
@@ -22,20 +23,7 @@ async function query() {
     //   }
     // }
   });
-  const github = await prisma.githubRepo.findMany({
-    where: {
-      name: 'reown-com'
-    }
-  });
-  console.log(scout);
-  // await sendPointsForMiscEvent({
-  //   builderId: scout!.id,
-  //   points: 50,
-  //   claimed: true,
-  //   description: 'Refund for suspended builders: futreall and mdqst',
-  //   hideFromNotifications: true,
-  //   earnedAs: 'scout'
-  // });
+  prettyPrint(scout);
 }
 
 query();
