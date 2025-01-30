@@ -74,7 +74,7 @@ export function ProjectTeamMemberForm({ control }: { control: Control<CreateScou
           startIcon={<AddCircleOutlineIcon />}
           onClick={() => setOpen(true)}
         >
-          Team Member
+          Add a member
         </Button>
       </Stack>
       <SearchProjectTeamMember

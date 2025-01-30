@@ -57,7 +57,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                 </Link>
               )}
             </Stack>
-            <Typography>{project.description}</Typography>
+            <Typography sx={{ whiteSpace: 'pre-wrap' }}>{project.description}</Typography>
           </Stack>
           <Box sx={{ alignSelf: 'flex-start' }}>
             <EditProjectIcon path={project.path} teamMembers={project.teamMembers} />

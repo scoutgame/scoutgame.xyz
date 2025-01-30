@@ -1,11 +1,11 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Container, Stack, Typography } from '@mui/material';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Link from 'next/link';
 
 import { ProjectsList } from './components/ProjectsList';
 
-export function ProjectsPage({ projects }: { projects: ScoutProjectDetailed[] }) {
+export function ProjectsPage({ projects }: { projects: ScoutProjectMinimal[] }) {
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>

@@ -31,13 +31,19 @@ export function ProjectSmartContractForm({
   deployers: Deployer[];
   setDeployers: React.Dispatch<React.SetStateAction<Deployer[]>>;
 }) {
-  const { executeAsync: getContractDeployerAddress, isExecuting } = useAction(getContractDeployerAddressAction);
   const [open, setOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState<`0x${string}` | null>(null);
 
   const { signMessageAsync } = useSignMessage();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const { executeAsync: getContractDeployerAddress, isExecuting } = useAction(getContractDeployerAddressAction, {
+    onError: ({ error }) => {
+      setErrorMessage(error.serverError?.message ?? 'Error adding contract');
+    }
+  });
+
   const {
     fields: contracts,
     append,
@@ -73,9 +79,10 @@ export function ProjectSmartContractForm({
   );
 
   const onCancel = useCallback(() => {
+    setErrorMessage(null);
     setTempContract(null);
     setOpen(false);
-  }, [setTempContract, setOpen]);
+  }, [setTempContract, setOpen, setErrorMessage]);
 
   const onSave = useCallback(async () => {
     if (tempContract) {
@@ -297,14 +304,24 @@ export function ProjectSmartContractForm({
           startIcon={<AddCircleOutlineIcon />}
           onClick={onCreate}
         >
-          Contract Address
+          Add a contract
         </Button>
       ) : (
-        <Stack flexDirection='row' alignItems='center' justifyContent={isExecuting ? 'space-between' : 'flex-end'}>
+        <Stack
+          flexDirection='row'
+          alignItems='center'
+          width='100%'
+          justifyContent={isExecuting || errorMessage ? 'space-between' : 'flex-end'}
+        >
           {isExecuting && (
             <Stack flexDirection='row' alignItems='center' gap={1}>
               <CircularProgress size={20} />
               <Typography>Fetching deployer address...</Typography>
+            </Stack>
+          )}
+          {errorMessage && !isExecuting && (
+            <Stack flexDirection='row' alignItems='center'>
+              <FormErrors errors={[errorMessage]} />
             </Stack>
           )}
           <Stack flexDirection='row' alignItems='center' gap={1}>
@@ -329,7 +346,6 @@ export function ProjectSmartContractForm({
           </Stack>
         </Stack>
       )}
-      <FormErrors errors={errorMessage ? [errorMessage] : null} />
       <Dialog title='Remove Contract' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
         <Typography>Are you sure you want to remove this contract from the project?</Typography>
         <Stack flexDirection='row' alignItems='center' gap={1} mt={2}>

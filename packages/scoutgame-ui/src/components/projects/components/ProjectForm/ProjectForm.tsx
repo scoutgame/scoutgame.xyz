@@ -15,7 +15,7 @@ import { ProjectTeamMemberForm } from '../../../create-project/components/Projec
 
 export function ProjectForm({
   control,
-  isDisabled,
+  isExecuting,
   onSave,
   isDirty,
   errors,
@@ -25,7 +25,7 @@ export function ProjectForm({
 }: {
   errors?: string[] | null;
   isDirty: boolean;
-  isDisabled?: boolean;
+  isExecuting?: boolean;
   onSave: VoidFunction;
   control: Control<any>;
   deployers: Deployer[];
@@ -45,7 +45,7 @@ export function ProjectForm({
         <Stack gap={3}>
           <Stack>
             <FormLabel>Logo</FormLabel>
-            <ProjectAvatarField control={control} isLoading={isDisabled} avatarSize={isMdScreen ? 150 : 100} />
+            <ProjectAvatarField control={control} disabled={isExecuting} avatarSize={isMdScreen ? 150 : 100} />
           </Stack>
           <Stack>
             <FormLabel required>Name</FormLabel>
@@ -56,7 +56,7 @@ export function ProjectForm({
                 <TextField
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
-                  placeholder='Smart Contract'
+                  placeholder='Example Project Title'
                   required
                   {...field}
                 />
@@ -154,8 +154,8 @@ export function ProjectForm({
           variant='contained'
           color='primary'
           onClick={onSave}
-          loading={isDisabled}
-          disabled={isDisabled || !isDirty}
+          loading={isExecuting}
+          disabled={isExecuting || !isDirty}
           sx={{ width: 'fit-content' }}
         >
           Save

@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import type { ScoutProjectDeployer, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import {
   uploadUrlToS3,
@@ -84,10 +84,10 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     const scoutProject = await tx.scoutProject.create({
       data: {
         name: payload.name,
-        avatar: payload.avatar,
-        description: payload.description,
-        website: payload.website,
-        github: payload.github,
+        avatar: payload.avatar ?? null,
+        description: payload.description ?? null,
+        website: payload.website ?? null,
+        github: payload.github ?? null,
         path,
         scoutProjectDeployers:
           payload.deployers && payload.deployers.length
@@ -118,7 +118,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
       }
     });
 
-    const scoutProjectDeployers = scoutProject.scoutProjectDeployers;
+    const scoutProjectDeployers = scoutProject.scoutProjectDeployers as ScoutProjectDeployer[];
 
     if (payload.contracts && payload.contracts.length) {
       await tx.scoutProjectContract.createMany({

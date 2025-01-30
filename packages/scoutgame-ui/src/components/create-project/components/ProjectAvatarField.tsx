@@ -14,11 +14,11 @@ const avatarSchema = yup.object({
 type ProjectAvatarFieldProps = {
   control: Control<yup.InferType<typeof avatarSchema>>;
   avatarSize?: number;
-  isLoading?: boolean;
+  disabled?: boolean;
   onAvatarChange?: (url: string) => void;
 };
 
-export function ProjectAvatarField({ control, avatarSize = 150, isLoading, onAvatarChange }: ProjectAvatarFieldProps) {
+export function ProjectAvatarField({ control, avatarSize = 150, disabled, onAvatarChange }: ProjectAvatarFieldProps) {
   const {
     field: avatarField,
     fieldState: { error }
@@ -50,7 +50,7 @@ export function ProjectAvatarField({ control, avatarSize = 150, isLoading, onAva
       }}
     >
       <input
-        disabled={isUploading || isLoading}
+        disabled={isUploading || disabled}
         type='file'
         accept='image/*'
         ref={inputRef}
@@ -78,7 +78,7 @@ export function ProjectAvatarField({ control, avatarSize = 150, isLoading, onAva
             objectFit: 'cover'
           }}
           onClick={() => {
-            if (isLoading) return;
+            if (disabled) return;
             inputRef.current?.click();
           }}
         />

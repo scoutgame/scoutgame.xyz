@@ -1,6 +1,6 @@
+import type { ScoutProjectDeployer } from '@charmverse/core/prisma-client';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
-import { v4 } from 'uuid';
 import { verifyMessage } from 'viem';
 
 import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
@@ -40,28 +40,23 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   const projectDeployerAddresses = project.scoutProjectDeployers.map((deployer) => deployer.address.toLowerCase());
   const projectContractAddresses = project.scoutProjectContracts.map((contract) => contract.address.toLowerCase());
 
-  const addedContractAddresses =
+  const contractAddressesToCreate =
     payload.contracts
       ?.map((contract) => contract.address.toLowerCase())
       .filter((address) => !projectContractAddresses.includes(address)) ?? [];
-  const addedDeployerAddresses =
+  const deployerAddressesToCreate =
     payload.deployers
       ?.map((deployer) => deployer.address.toLowerCase())
       .filter((address) => !projectDeployerAddresses.includes(address)) ?? [];
-  const addedProjectMemberIds =
+  const projectMemberIdsToCreate =
     payload.teamMembers?.map((member) => member.scoutId).filter((scoutId) => !projectMemberIds.includes(scoutId)) ?? [];
 
-  const removedContractAddresses =
+  const contractAddressesToRemove =
     payload.contracts &&
     projectContractAddresses.filter(
       (address) => !payload.contracts!.some((contract) => contract.address.toLowerCase() === address.toLowerCase())
     );
-  const removedDeployerAddresses =
-    payload.deployers &&
-    projectDeployerAddresses.filter(
-      (address) => !payload.deployers!.some((deployer) => deployer.address.toLowerCase() === address.toLowerCase())
-    );
-  const removedProjectMemberIds =
+  const projectMemberIdsToRemove =
     payload.teamMembers &&
     projectMemberIds.filter((scoutId) => !payload.teamMembers!.some((member) => member.scoutId === scoutId));
 
@@ -72,15 +67,15 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     .filter((contract) => contract.deletedAt)
     .map((contract) => contract.address.toLowerCase());
 
-  const restoredProjectMemberIds = deletedProjectMemberIds.filter((scoutId) =>
+  const projectMemberIdsToRestore = deletedProjectMemberIds.filter((scoutId) =>
     payload.teamMembers?.map((member) => member.scoutId).includes(scoutId)
   );
-  const restoredContractAddresses = deletedContractAddresses.filter((address) =>
+  const contractAddressesToRestore = deletedContractAddresses.filter((address) =>
     payload.contracts?.map((contract) => contract.address.toLowerCase()).includes(address)
   );
 
-  if (payload.deployers && addedDeployerAddresses.length > 0) {
-    for (const deployerAddress of addedDeployerAddresses) {
+  if (payload.deployers && deployerAddressesToCreate.length > 0) {
+    for (const deployerAddress of deployerAddressesToCreate) {
       const deployer = payload.deployers.find(
         (_deployer) => _deployer.address.toLowerCase() === deployerAddress.toLowerCase()
       );
@@ -97,8 +92,8 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
   }
 
-  if (payload.contracts && addedContractAddresses.length > 0) {
-    for (const contractAddress of addedContractAddresses) {
+  if (payload.contracts && contractAddressesToCreate.length > 0) {
+    for (const contractAddress of contractAddressesToCreate) {
       const contract = payload.contracts.find(
         (_contract) => _contract.address.toLowerCase() === contractAddress.toLowerCase()
       );
@@ -136,11 +131,11 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       }
     });
 
-    if (removedContractAddresses && removedContractAddresses.length > 0) {
+    if (contractAddressesToRemove && contractAddressesToRemove.length > 0) {
       await tx.scoutProjectContract.updateMany({
         where: {
           address: {
-            in: removedContractAddresses
+            in: contractAddressesToRemove
           },
           projectId: _updatedProject.id
         },
@@ -150,22 +145,11 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       });
     }
 
-    if (removedDeployerAddresses && removedDeployerAddresses.length > 0) {
-      await tx.scoutProjectDeployer.deleteMany({
-        where: {
-          address: {
-            in: removedDeployerAddresses
-          },
-          projectId: _updatedProject.id
-        }
-      });
-    }
-
-    if (removedProjectMemberIds && removedProjectMemberIds.length > 0) {
+    if (projectMemberIdsToRemove && projectMemberIdsToRemove.length > 0) {
       await tx.scoutProjectMember.updateMany({
         where: {
           userId: {
-            in: removedProjectMemberIds
+            in: projectMemberIdsToRemove
           },
           projectId: _updatedProject.id
         },
@@ -175,11 +159,11 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       });
     }
 
-    if (restoredProjectMemberIds && restoredProjectMemberIds.length > 0) {
+    if (projectMemberIdsToRestore && projectMemberIdsToRestore.length > 0) {
       await tx.scoutProjectMember.updateMany({
         where: {
           userId: {
-            in: restoredProjectMemberIds
+            in: projectMemberIdsToRestore
           },
           projectId: _updatedProject.id
         },
@@ -189,11 +173,11 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       });
     }
 
-    if (restoredContractAddresses && restoredContractAddresses.length > 0) {
+    if (contractAddressesToRestore && contractAddressesToRestore.length > 0) {
       await tx.scoutProjectContract.updateMany({
         where: {
           address: {
-            in: restoredContractAddresses
+            in: contractAddressesToRestore
           },
           projectId: _updatedProject.id
         },
@@ -203,9 +187,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       });
     }
 
-    if (addedProjectMemberIds && addedProjectMemberIds.length > 0) {
+    if (projectMemberIdsToCreate && projectMemberIdsToCreate.length > 0) {
       await tx.scoutProjectMember.createMany({
-        data: addedProjectMemberIds.map((scoutId) => ({
+        data: projectMemberIdsToCreate.map((scoutId) => ({
           userId: scoutId,
           projectId: _updatedProject.id,
           role: ScoutProjectMemberRole.member,
@@ -214,26 +198,33 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       });
     }
 
-    const addedDeployerRecord: Record<string, string> = {};
+    let deployers: ScoutProjectDeployer[] = [];
 
-    if (addedDeployerAddresses.length > 0) {
-      await tx.scoutProjectDeployer.createMany({
-        data: addedDeployerAddresses.map((address) => {
-          const deployerId = v4();
-          addedDeployerRecord[address] = deployerId;
-          return {
-            id: deployerId,
-            address: address.toLowerCase(),
-            projectId: _updatedProject.id,
-            createdBy: userId
-          };
+    if (deployerAddressesToCreate.length > 0) {
+      deployers = await Promise.all(
+        deployerAddressesToCreate.map((address) => {
+          return tx.scoutProjectDeployer.create({
+            data: {
+              address: address.toLowerCase(),
+              projectId: _updatedProject.id,
+              verifiedBy: userId,
+              verifiedAt: new Date()
+            }
+          });
         })
-      });
+      );
     }
+    if (contractAddressesToCreate.length > 0) {
+      const contractsWithoutDeployer = contractAddressesToCreate.filter(
+        (address) => !deployers.some((deployer) => deployer.address === address.toLowerCase())
+      );
 
-    if (addedContractAddresses.length > 0) {
+      if (contractsWithoutDeployer.length > 0) {
+        throw new Error(`No deployer found for contract ${contractsWithoutDeployer.join(', ')}`);
+      }
+
       await tx.scoutProjectContract.createMany({
-        data: addedContractAddresses.map((address) => ({
+        data: contractAddressesToCreate.map((address) => ({
           createdBy: userId,
           projectId: _updatedProject.id,
           address: address.toLowerCase(),
@@ -241,7 +232,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           deployedAt: new Date(contractTransactionRecord[address].blockTimestamp * 1000),
           deployTxHash: contractTransactionRecord[address].txHash,
           blockNumber: contractTransactionRecord[address].blockNumber,
-          deployerId: addedDeployerRecord[address]
+          deployerId: deployers.find((deployer) => deployer.address === address.toLowerCase())!.id
         }))
       });
     }

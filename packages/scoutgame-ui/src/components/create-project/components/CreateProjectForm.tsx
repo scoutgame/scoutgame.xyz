@@ -46,6 +46,10 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       if (data?.data) {
         router.push(`/projects/${data?.data.path}`);
       }
+    },
+    onError: (error) => {
+      log.error('Error creating project', { error });
+      setErrors([error.error.serverError?.message ?? 'Failed to create project']);
     }
   });
 
@@ -59,6 +63,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
   }
 
   const onSubmit = () => {
+    // Need to set the deployers from state first before submitting
     setValue(
       'deployers',
       deployers.map((deployer) => ({
@@ -67,9 +72,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
         verified: deployer.verified
       }))
     );
-    handleSubmit((data) => {
-      return createProject(data);
-    }, onInvalid)();
+    handleSubmit(createProject, onInvalid)();
   };
 
   return (
@@ -78,7 +81,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       isDirty={isDirty}
       onSave={onSubmit}
       errors={errors}
-      isDisabled={isExecuting}
+      isExecuting={isExecuting}
       deployers={deployers}
       setDeployers={setDeployers}
       cancelLink='/projects'
