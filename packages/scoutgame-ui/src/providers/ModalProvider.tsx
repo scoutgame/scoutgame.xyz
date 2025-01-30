@@ -4,18 +4,19 @@ import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 import { InviteModal } from '../components/builders/InviteModal/InviteModal';
+import { NFTPurchaseDialog } from '../components/common/NFTPurchaseDialog/NFTPurchaseDialog';
 
 import { useUser } from './UserProvider';
 
 // Add here all the modal names you need
-type ModalType = 'newBuilder';
+type ModalType = 'newBuilder' | 'nftPurchase';
 
 type ModalState = {
-  [key in ModalType]: boolean;
+  [key in ModalType]: { open: boolean; data?: any };
 };
 
 type ModalContextType = {
-  openModal: (type: ModalType) => void;
+  openModal: (type: ModalType, data?: any) => void;
   closeModal: (type: ModalType) => void;
   isOpen: (type: ModalType) => boolean;
 };
@@ -23,20 +24,23 @@ type ModalContextType = {
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [modalState, setModalState] = useState<ModalState>({ newBuilder: false });
+  const [modalState, setModalState] = useState<ModalState>({
+    newBuilder: { open: false },
+    nftPurchase: { open: false, data: null }
+  });
   const { user } = useUser();
 
-  const openModal = useCallback((type: ModalType) => {
-    setModalState((prevState) => ({ ...prevState, [type]: true }));
+  const openModal = useCallback((type: ModalType, data?: any) => {
+    setModalState((prevState) => ({ ...prevState, [type]: { open: true, data } }));
   }, []);
 
   const closeModal = useCallback((type: ModalType) => {
-    setModalState((prevState) => ({ ...prevState, [type]: false }));
+    setModalState((prevState) => ({ ...prevState, [type]: { open: false, data: null } }));
   }, []);
 
   const isOpen = useCallback(
     (type: ModalType) => {
-      return type in modalState ? modalState[type] : false;
+      return type in modalState ? modalState[type]?.open : false;
     },
     [modalState]
   );
@@ -53,7 +57,12 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   return (
     <ModalContext.Provider value={value}>
       {children}
-      <InviteModal open={modalState?.newBuilder} onClose={() => closeModal('newBuilder')} signedIn={!!user} />
+      <InviteModal open={modalState?.newBuilder?.open} onClose={() => closeModal('newBuilder')} signedIn={!!user} />
+      <NFTPurchaseDialog
+        builder={modalState?.nftPurchase?.data}
+        open={modalState?.nftPurchase?.open}
+        onClose={() => closeModal('nftPurchase')}
+      />
     </ModalContext.Provider>
   );
 }
