@@ -68,7 +68,7 @@ test.describe('Buy Nft', () => {
     await expect(successView).toBeVisible();
 
     // Success message from snackbar
-    const successMessage = page.locator('data-test=snackbar-success');
+    const successMessage = page.locator('data-sonner-toast').locator('data-type=success');
     await expect(successMessage).toBeVisible();
 
     // Check that the scout wallet was created
