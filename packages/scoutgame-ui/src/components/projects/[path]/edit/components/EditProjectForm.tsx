@@ -91,7 +91,6 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
       setDeployers={setDeployers}
       cancelLink={`/projects/${project.path}`}
       showRemoveMemberConfirmation
-      isOwner={isOwner}
     />
   );
 }

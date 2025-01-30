@@ -17,12 +17,10 @@ import { SearchProjectTeamMember } from './SearchProjectTeamMember';
 
 export function ProjectTeamMemberForm({
   control,
-  showRemoveMemberConfirmation,
-  isOwner
+  showRemoveMemberConfirmation
 }: {
   control: Control<CreateScoutProjectFormValues>;
   showRemoveMemberConfirmation: boolean;
-  isOwner: boolean;
 }) {
   const { user } = useUser();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -101,7 +99,7 @@ export function ProjectTeamMemberForm({
                   {ProjectRoleText[member.role as ScoutProjectMemberRole]}
                 </Typography>
               </Stack>
-              {member.scoutId !== user?.id && isOwner && (
+              {member.scoutId !== user?.id && (
                 <Stack>
                   <IconButton size='small' onClick={(e) => setAnchorEl(e.currentTarget as unknown as HTMLElement)}>
                     <MoreHorizIcon />

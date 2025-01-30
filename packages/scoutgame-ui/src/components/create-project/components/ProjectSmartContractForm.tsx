@@ -208,38 +208,43 @@ export function ProjectSmartContractForm({
             {deployer.contracts.map((contract) => (
               <Stack
                 key={contract.address}
+                gap={1}
                 justifyContent='space-between'
                 flexDirection='row'
                 alignItems='center'
-                flex={1}
-                bgcolor='background.paper'
-                p={1}
-                borderRadius={1}
               >
-                <Stack gap={1} flex={0.75} flexDirection='row'>
-                  <Image
-                    src={chainRecords[contract.chainId].image}
-                    width={25}
-                    height={25}
-                    alt={chainRecords[contract.chainId].name}
-                    style={{ borderRadius: '50%' }}
-                  />
-                  <Typography color={deployer.verified ? undefined : 'error'}>
-                    {stringUtils.shortenHex(contract.address)}
-                  </Typography>
-                </Stack>
-                <Stack alignItems='center' gap={1} flexDirection='row'>
+                <Stack
+                  flexDirection='row'
+                  p={1}
+                  borderRadius={1}
+                  bgcolor='background.paper'
+                  alignItems='center'
+                  justifyContent='space-between'
+                  flex={1}
+                >
+                  <Stack gap={1} flex={0.75} flexDirection='row'>
+                    <Image
+                      src={chainRecords[contract.chainId].image}
+                      width={25}
+                      height={25}
+                      alt={chainRecords[contract.chainId].name}
+                      style={{ borderRadius: '50%' }}
+                    />
+                    <Typography color={deployer.verified ? undefined : 'error'}>
+                      {stringUtils.shortenHex(contract.address)}
+                    </Typography>
+                  </Stack>
                   {!deployer.verified && <Typography color='error'>Must sign with Deployer Address</Typography>}
-                  <DeleteIcon
-                    fontSize='small'
-                    onClick={() => {
-                      setSelectedContract(contract.address);
-                      setIsConfirmModalOpen(true);
-                    }}
-                    color={isExecuting ? 'disabled' : 'error'}
-                    sx={{ cursor: 'pointer' }}
-                  />
                 </Stack>
+                <DeleteIcon
+                  fontSize='small'
+                  onClick={() => {
+                    setSelectedContract(contract.address);
+                    setIsConfirmModalOpen(true);
+                  }}
+                  color={isExecuting ? 'disabled' : 'error'}
+                  sx={{ cursor: 'pointer' }}
+                />
               </Stack>
             ))}
           </Stack>

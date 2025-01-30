@@ -27,7 +27,7 @@ export async function getContractDeployerAddress({
   });
 
   if (!bytecode) {
-    throw new Error('Contract not found or is not a contract address');
+    throw new Error('Contract not found on the selected chain or is not a contract address');
   }
 
   let left = BigInt(0);
