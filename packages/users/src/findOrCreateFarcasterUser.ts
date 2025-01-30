@@ -7,7 +7,6 @@ import type { ConnectWaitlistTier } from '@packages/waitlist/scoring/constants';
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
 import { generateRandomName } from './generateRandomName';
-import { generateUserPath } from './generateUserPath';
 import { createReferralEvent } from './referrals/createReferralEvent';
 
 export async function findOrCreateFarcasterUser({
@@ -45,7 +44,7 @@ export async function findOrCreateFarcasterUser({
     bio: profile?.profile?.bio?.text,
     walletAddresses: profile?.verifications,
     displayName,
-    path: await generateUserPath(profile?.username ?? displayName),
+    path: profile?.username ?? displayName,
     tierOverride,
     farcasterName: profile?.username
   });

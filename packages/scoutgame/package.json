@@ -24,8 +24,8 @@
     "@packages/users": "^0.0.0",
     "@packages/utils": "^1.0.0",
     "@twa-dev/sdk": "^8.0.1",
-    "siwe": "^2.3.2",
-    "telegram": "^2.26.8"
+    "siwe": "^3.0.0",
+    "telegram": "^2.26.16"
   },
   "optionalDependencies": {
     "sharp": "^0.33.5"
