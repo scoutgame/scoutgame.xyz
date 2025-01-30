@@ -4,11 +4,11 @@ import { getAddress } from 'viem/utils';
 export async function updatePrimaryWallet(_address: string, userId: string) {
   const address = getAddress(_address).toLowerCase();
 
-  const userWallet = await prisma.scoutWallet.findUnique({
+  const userWallet = await prisma.scoutWallet.count({
     where: { address, scoutId: userId }
   });
 
-  if (!userWallet) {
+  if (userWallet === 0) {
     throw new Error('User wallet not found');
   }
 
