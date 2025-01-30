@@ -1,17 +1,18 @@
 import * as yup from 'yup';
 
-export const createScoutProjectSchema = yup.object({
-  avatar: yup.string().nullable(),
-  name: yup.string().required('Name is required'),
-  description: yup.string().nullable(),
-  website: yup.string().url('Invalid website URL').nullable(),
+export const updateScoutProjectSchema = yup.object({
+  projectId: yup.string().uuid().required(),
+  avatar: yup.string().notRequired(),
+  name: yup.string(),
+  description: yup.string().notRequired(),
+  website: yup.string().url('Invalid website URL').notRequired(),
   github: yup
     .string()
     .test('github', 'Invalid github URL', (value) => {
       if (!value) return true;
       return value.startsWith('https://github.com/') || value.startsWith('https://github.com/');
     })
-    .nullable(),
+    .notRequired(),
   contracts: yup
     .array()
     .of(
@@ -21,17 +22,20 @@ export const createScoutProjectSchema = yup.object({
         deployerAddress: yup.string().required('Deployer address is required')
       })
     )
-    .min(0),
+    .min(0)
+    .required('Contracts are required'),
   deployers: yup
     .array()
     .of(
       yup.object({
         address: yup.string().required('Deployer address is required'),
-        signature: yup.string().required('Signature is required'),
+        // If we are passing an already verified deployer, signature is not required
+        signature: yup.string().nullable(),
         verified: yup.boolean().required()
       })
     )
     .test('deployer-signature', 'Every deployer must have a signature', (deployers) => {
+      // Non-verified deployers must have a signature, verified deployers were fetched from the database
       return deployers
         ? deployers.filter((deployer) => !deployer.verified).every((deployer) => deployer.signature)
         : true;
@@ -40,7 +44,8 @@ export const createScoutProjectSchema = yup.object({
       is: (contracts: any[]) => contracts && contracts.length > 0,
       then: (schema) => schema.min(1, 'At least one deployer is required when contracts are provided'),
       otherwise: (schema) => schema
-    }),
+    })
+    .required('Contracts are required'),
   teamMembers: yup
     .array()
     .of(
@@ -55,4 +60,4 @@ export const createScoutProjectSchema = yup.object({
     .required('Team members are required')
 });
 
-export type CreateScoutProjectFormValues = yup.InferType<typeof createScoutProjectSchema>;
+export type UpdateScoutProjectFormValues = yup.InferType<typeof updateScoutProjectSchema>;

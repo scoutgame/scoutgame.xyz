@@ -10,7 +10,7 @@ import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
 import { BuildersGallery } from '../../../common/Gallery/BuildersGallery';
 import { UserProfile } from '../../../common/Profile/UserProfile';
-import { ProjectsTab } from '../../../projects/components/ProjectsList/ProjectsTab';
+import { ProjectsTab } from '../../../projects/components/ProjectsTab';
 
 import { PublicScoutProfileStats } from './PublicScoutProfileStats';
 

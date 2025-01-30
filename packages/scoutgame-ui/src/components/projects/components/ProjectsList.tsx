@@ -11,20 +11,25 @@ export function ProjectsList({ projects }: { projects: ScoutProjectMinimal[] }) 
         <Typography>No projects created</Typography>
       ) : (
         projects.map((project) => (
-          <Link href={`/projects/${project.path}`} key={project.id}>
+          <Link href={`/p/${project.path}`} key={project.id}>
             <Stack
               key={project.id}
               flexDirection='row'
               gap={1.5}
               alignItems='center'
-              px={1.5}
-              py={1}
+              p={2}
               bgcolor='background.paper'
               justifyContent='space-between'
               borderRadius={1}
             >
               <Stack flexDirection='row' gap={1.5} alignItems='center'>
-                <Image style={{ objectFit: 'cover' }} src={project.avatar} alt={project.name} width={32} height={32} />
+                <Image
+                  style={{ objectFit: 'cover' }}
+                  src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
+                  alt={project.name}
+                  width={40}
+                  height={40}
+                />
                 <Typography variant='h6'>{project.name}</Typography>
               </Stack>
               <ChevronRightIcon />

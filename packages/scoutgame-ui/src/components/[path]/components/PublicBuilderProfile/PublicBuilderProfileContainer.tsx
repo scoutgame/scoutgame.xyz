@@ -16,7 +16,7 @@ import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
 import { UserProfile } from '../../../common/Profile/UserProfile';
 import { BuilderActivitiesList } from '../../../profile/components/BuilderProfile/BuilderActivitiesList';
 import { BuilderWeeklyStats } from '../../../profile/components/BuilderProfile/BuilderWeeklyStats';
-import { ProjectsTab } from '../../../projects/components/ProjectsList/ProjectsTab';
+import { ProjectsTab } from '../../../projects/components/ProjectsTab';
 
 import { PublicBuilderStats } from './PublicBuilderStats';
 

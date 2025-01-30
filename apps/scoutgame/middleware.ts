@@ -12,7 +12,7 @@ const privateLinks = [
   '/builders-you-know',
   '/quests',
   '/accounts',
-  '/projects'
+  '/create-project'
 ];
 
 export async function middleware(request: NextRequest) {

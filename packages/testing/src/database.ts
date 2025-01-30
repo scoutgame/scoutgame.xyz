@@ -1,4 +1,11 @@
-import type { BuilderEvent, BuilderEventType, BuilderNftType, GithubRepo, Scout } from '@charmverse/core/prisma';
+import type {
+  BuilderEvent,
+  BuilderEventType,
+  BuilderNftType,
+  GithubRepo,
+  Scout,
+  ScoutProjectMemberRole
+} from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
@@ -804,4 +811,72 @@ export function mockUserWeeklyStats({
       season
     }
   });
+}
+
+export async function mockScoutProject({
+  name = 'Test Project',
+  userId,
+  memberIds = [],
+  deployerAddress,
+  contractAddresses = []
+}: {
+  name?: string;
+  userId: string;
+  memberIds?: string[];
+  deployerAddress?: string;
+  contractAddresses?: string[];
+}) {
+  const path = randomString();
+  const scoutProject = await prisma.scoutProject.create({
+    data: {
+      name,
+      path,
+      scoutProjectDeployers: deployerAddress
+        ? {
+            create: {
+              address: deployerAddress,
+              verifiedAt: new Date()
+            }
+          }
+        : undefined,
+      scoutProjectMembers: {
+        createMany: {
+          data: [
+            {
+              userId,
+              role: 'owner',
+              createdBy: userId
+            },
+            ...memberIds.map((memberId) => ({
+              userId: memberId,
+              role: 'member' as ScoutProjectMemberRole,
+              createdBy: userId
+            }))
+          ]
+        }
+      }
+    },
+    include: {
+      scoutProjectDeployers: true,
+      scoutProjectMembers: true
+    }
+  });
+
+  const deployer = scoutProject.scoutProjectDeployers[0];
+  if (contractAddresses.length && deployer) {
+    await prisma.scoutProjectContract.createMany({
+      data: contractAddresses.map((address) => ({
+        address,
+        chainId: 1,
+        projectId: scoutProject.id,
+        deployerId: deployer.id,
+        deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
+        deployedAt: new Date(),
+        createdBy: userId,
+        blockNumber: 1
+      }))
+    });
+  }
+
+  return scoutProject;
 }
