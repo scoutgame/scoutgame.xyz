@@ -21,7 +21,8 @@ export function ProjectForm({
   errors,
   deployers,
   setDeployers,
-  cancelLink
+  cancelLink,
+  showRemoveMemberConfirmation
 }: {
   errors?: string[] | null;
   isDirty: boolean;
@@ -31,6 +32,7 @@ export function ProjectForm({
   deployers: Deployer[];
   setDeployers: React.Dispatch<React.SetStateAction<Deployer[]>>;
   cancelLink: string;
+  showRemoveMemberConfirmation: boolean;
 }) {
   const isMdScreen = useMdScreen();
 
@@ -133,7 +135,7 @@ export function ProjectForm({
               Team
             </Typography>
             <Typography>Split Project Based Rewards with your teammates.</Typography>
-            <ProjectTeamMemberForm control={control} />
+            <ProjectTeamMemberForm control={control} showRemoveMemberConfirmation={showRemoveMemberConfirmation} />
           </Stack>
         </Stack>
         <FormErrors errors={errors} />

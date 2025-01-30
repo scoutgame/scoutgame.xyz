@@ -15,7 +15,13 @@ import { ProjectRoleText } from '../../projects/constants';
 
 import { SearchProjectTeamMember } from './SearchProjectTeamMember';
 
-export function ProjectTeamMemberForm({ control }: { control: Control<CreateScoutProjectFormValues> }) {
+export function ProjectTeamMemberForm({
+  control,
+  showRemoveMemberConfirmation
+}: {
+  control: Control<CreateScoutProjectFormValues>;
+  showRemoveMemberConfirmation: boolean;
+}) {
   const { user } = useUser();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedMemberIndex, setSelectedMemberIndex] = useState<number | null>(null);
@@ -56,8 +62,12 @@ export function ProjectTeamMemberForm({ control }: { control: Control<CreateScou
                   color='error'
                   fontSize='small'
                   onClick={() => {
-                    setSelectedMemberIndex(index);
-                    setIsConfirmModalOpen(true);
+                    if (showRemoveMemberConfirmation) {
+                      setSelectedMemberIndex(index);
+                      setIsConfirmModalOpen(true);
+                    } else {
+                      remove(index);
+                    }
                   }}
                   sx={{
                     cursor: 'pointer'
