@@ -61,8 +61,8 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
 
   const { execute: updateProject, isExecuting } = useAction(updateScoutProjectAction, {
     onSuccess: (data) => {
-      if (data?.data) {
-        router.push(`/projects/${data?.data.path}`);
+      if (data.data) {
+        router.push(`/p/${data.data.path}`);
       }
     }
   });
@@ -89,7 +89,7 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
       isExecuting={isExecuting}
       deployers={deployers}
       setDeployers={setDeployers}
-      cancelLink={`/projects/${project.path}`}
+      cancelLink={`/p/${project.path}`}
       showRemoveMemberConfirmation
     />
   );

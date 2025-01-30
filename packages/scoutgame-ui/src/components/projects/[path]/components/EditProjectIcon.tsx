@@ -17,7 +17,7 @@ export function EditProjectIcon({
   const teamMember = teamMembers.find((member) => member.id === user?.id && member.role === 'owner');
   if (!teamMember) return null;
   return (
-    <Link href={`/projects/${path}/edit`}>
+    <Link href={`/profile/projects/${path}/edit`}>
       <EditIcon color='primary' />
     </Link>
   );

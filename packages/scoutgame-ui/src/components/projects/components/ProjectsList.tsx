@@ -11,7 +11,7 @@ export function ProjectsList({ projects }: { projects: ScoutProjectMinimal[] }) 
         <Typography>No projects created</Typography>
       ) : (
         projects.map((project) => (
-          <Link href={`/projects/${project.path}`} key={project.id}>
+          <Link href={`/p/${project.path}`} key={project.id}>
             <Stack
               key={project.id}
               flexDirection='row'

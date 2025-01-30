@@ -44,7 +44,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
   const { execute: createProject, isExecuting } = useAction(createScoutProjectAction, {
     onSuccess: (data) => {
       if (data?.data) {
-        router.push(`/projects/${data?.data.path}`);
+        router.push(`/p/${data?.data.path}`);
       }
     },
     onError: (error) => {

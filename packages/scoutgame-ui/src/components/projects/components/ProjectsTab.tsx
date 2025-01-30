@@ -17,7 +17,7 @@ export function ProjectsTab({ scoutProjects }: { scoutProjects: ScoutProjectMini
         borderRadius={1}
       >
         {scoutProjects.map((project) => (
-          <Link key={project.id} href={`/projects/${project.path}`}>
+          <Link key={project.id} href={`/p/${project.path}`}>
             <Stack flexDirection='row' gap={0.75} alignItems='center'>
               <Image
                 src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}

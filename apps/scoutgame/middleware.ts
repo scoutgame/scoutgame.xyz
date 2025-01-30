@@ -12,7 +12,6 @@ const privateLinks = [
   '/builders-you-know',
   '/quests',
   '/accounts',
-  '/projects',
   '/create-project'
 ];
 

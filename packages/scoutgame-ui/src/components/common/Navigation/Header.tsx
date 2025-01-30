@@ -145,7 +145,7 @@ export function Header() {
                         Accounts
                       </MenuItem>
                       {user.builderStatus === 'approved' ? (
-                        <MenuItem component={Link} href='/projects'>
+                        <MenuItem component={Link} href='/profile/projects'>
                           Projects
                         </MenuItem>
                       ) : null}

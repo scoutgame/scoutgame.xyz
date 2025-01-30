@@ -17,6 +17,9 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>
+        <Typography variant='h4' color='secondary' fontWeight={600}>
+          Projects
+        </Typography>
         <Stack
           gap={{
             xs: 0.5,

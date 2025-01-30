@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Button, Container, Stack, Typography } from '@mui/material';
+import { Button, Container, Divider, Stack, Typography } from '@mui/material';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Link from 'next/link';
 
@@ -9,9 +9,16 @@ export function ProjectsPage({ projects }: { projects: ScoutProjectMinimal[] }) 
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>
-        <Typography variant='h4' color='secondary' fontWeight={600}>
-          Projects
-        </Typography>
+        <Stack gap={1}>
+          <Typography variant='h4' color='secondary' fontWeight={600}>
+            Projects
+          </Typography>
+          <Typography>
+            Projects are used by specific partner rewards, such as the Taiko AI Agents, to reward Developers for working
+            on projects that have deployed smart contracts which are generating transactions.
+          </Typography>
+        </Stack>
+        <Divider />
         <Stack gap={2}>
           <ProjectsList projects={projects} />
           <Button
