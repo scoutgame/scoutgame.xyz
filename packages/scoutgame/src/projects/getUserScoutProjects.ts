@@ -28,7 +28,8 @@ export async function getUserScoutProjects({ userId }: { userId: string }): Prom
     where: {
       scoutProjectMembers: {
         some: {
-          userId
+          userId,
+          deletedAt: null
         }
       },
       deletedAt: null

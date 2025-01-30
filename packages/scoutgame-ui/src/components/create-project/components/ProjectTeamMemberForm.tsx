@@ -10,12 +10,15 @@ import { useFieldArray, type Control } from 'react-hook-form';
 
 import { useUser } from '../../../providers/UserProvider';
 import { Avatar } from '../../common/Avatar';
+import { Dialog } from '../../common/Dialog';
 import { ProjectRoleText } from '../../projects/constants';
 
 import { SearchProjectTeamMember } from './SearchProjectTeamMember';
 
 export function ProjectTeamMemberForm({ control }: { control: Control<CreateScoutProjectFormValues> }) {
   const { user } = useUser();
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [selectedMemberIndex, setSelectedMemberIndex] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
   const {
     append,
@@ -52,7 +55,10 @@ export function ProjectTeamMemberForm({ control }: { control: Control<CreateScou
                 <DeleteIcon
                   color='error'
                   fontSize='small'
-                  onClick={() => remove(index)}
+                  onClick={() => {
+                    setSelectedMemberIndex(index);
+                    setIsConfirmModalOpen(true);
+                  }}
                   sx={{
                     cursor: 'pointer'
                   }}
@@ -87,6 +93,25 @@ export function ProjectTeamMemberForm({ control }: { control: Control<CreateScou
           setOpen(false);
         }}
       />
+      <Dialog title='Remove Member' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
+        <Typography>Are you sure you want to remove this member from the project?</Typography>
+        <Stack flexDirection='row' alignItems='center' gap={1} mt={2}>
+          <Button color='primary' variant='outlined' onClick={() => setIsConfirmModalOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (selectedMemberIndex !== null) {
+                remove(selectedMemberIndex);
+              }
+              setIsConfirmModalOpen(false);
+            }}
+            color='error'
+          >
+            Remove
+          </Button>
+        </Stack>
+      </Dialog>
     </>
   );
 }
