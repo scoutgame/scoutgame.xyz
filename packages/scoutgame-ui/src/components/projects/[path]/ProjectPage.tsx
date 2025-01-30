@@ -11,6 +11,7 @@ import { BackButton } from '../../common/Button/BackButton';
 import { chainRecords, ProjectRoleText } from '../constants';
 
 import { EditProjectIcon } from './components/EditProjectIcon';
+import { LeaveProjectButton } from './components/LeaveProjectButton';
 
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   return (
@@ -127,6 +128,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             ))}
           </Stack>
         </Stack>
+        <LeaveProjectButton project={project} />
       </Stack>
     </Container>
   );
