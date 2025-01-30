@@ -80,6 +80,21 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     }
   }
 
+  const builderMembersCount = await prisma.scout.count({
+    where: {
+      builderStatus: {
+        in: ['approved', 'banned']
+      },
+      id: {
+        in: payload.teamMembers.map((member) => member.scoutId)
+      }
+    }
+  });
+
+  if (builderMembersCount !== payload.teamMembers.length) {
+    throw new Error('All project members must be builders');
+  }
+
   const project = await prisma.$transaction(async (tx) => {
     const scoutProject = await tx.scoutProject.create({
       data: {

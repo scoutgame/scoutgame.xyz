@@ -87,6 +87,23 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const retainedProjectMemberIds = projectMemberIds.filter((scoutId) => payloadProjectMemberIds.includes(scoutId));
 
+  const builderMemberIds = [...retainedProjectMemberIds, ...projectMemberIdsToRestore, ...projectMemberIdsToCreate];
+
+  const builderMembersCount = await prisma.scout.count({
+    where: {
+      builderStatus: {
+        in: ['approved', 'banned']
+      },
+      id: {
+        in: builderMemberIds
+      }
+    }
+  });
+
+  if (builderMembersCount !== builderMemberIds.length) {
+    throw new Error('All project members must be builders');
+  }
+
   if (payload.deployers && deployerAddressesToCreate.length > 0) {
     for (const deployerAddress of deployerAddressesToCreate) {
       const deployer = payload.deployers.find(
