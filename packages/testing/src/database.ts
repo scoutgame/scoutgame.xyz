@@ -815,17 +815,29 @@ export function mockUserWeeklyStats({
 export async function mockScoutProject({
   name = 'Test Project',
   userId,
-  memberIds = []
+  memberIds = [],
+  deployerAddress,
+  contractAddresses = []
 }: {
   name?: string;
   userId: string;
   memberIds?: string[];
+  deployerAddress?: string;
+  contractAddresses?: string[];
 }) {
   const path = randomString();
-  return prisma.scoutProject.create({
+  const scoutProject = await prisma.scoutProject.create({
     data: {
       name,
       path,
+      scoutProjectDeployers: deployerAddress
+        ? {
+            create: {
+              address: deployerAddress,
+              verifiedAt: new Date()
+            }
+          }
+        : undefined,
       scoutProjectMembers: {
         createMany: {
           data: [
@@ -842,6 +854,28 @@ export async function mockScoutProject({
           ]
         }
       }
+    },
+    include: {
+      scoutProjectDeployers: true,
+      scoutProjectMembers: true
     }
   });
+
+  const deployer = scoutProject.scoutProjectDeployers[0];
+  if (contractAddresses.length && deployer) {
+    await prisma.scoutProjectContract.createMany({
+      data: contractAddresses.map((address) => ({
+        address,
+        chainId: 1,
+        projectId: scoutProject.id,
+        deployerId: deployer.id,
+        deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
+        deployedAt: new Date(),
+        createdBy: userId,
+        blockNumber: 1
+      }))
+    });
+  }
+
+  return scoutProject;
 }

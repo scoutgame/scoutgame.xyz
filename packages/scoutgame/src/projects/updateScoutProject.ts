@@ -1,4 +1,3 @@
-import type { ScoutProjectDeployer } from '@charmverse/core/prisma-client';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import { isTruthy } from '@packages/utils/types';
@@ -57,7 +56,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const contractTransactionRecord: Record<
     string,
-    { chainId: number; txHash: string; blockNumber: number; blockTimestamp: number }
+    { chainId: number; txHash: string; blockNumber: number; blockTimestamp: number; deployerAddress: string }
   > = {};
   const projectMemberIds = project.scoutProjectMembers.map((member) => member.userId);
   const projectDeployerAddresses = project.scoutProjectDeployers.map((deployer) => deployer.address.toLowerCase());
@@ -103,9 +102,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const builderMembersCount = await prisma.scout.count({
     where: {
-      builderStatus: {
-        in: ['approved', 'banned']
-      },
+      builderStatus: 'approved',
       id: {
         in: builderMemberIds
       }
@@ -116,7 +113,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     throw new Error('All project members must be builders');
   }
 
-  if (payload.deployers && deployerAddressesToCreate.length > 0) {
+  if (deployerAddressesToCreate.length) {
     for (const deployerAddress of deployerAddressesToCreate) {
       const deployer = payload.deployers.find(
         (_deployer) => _deployer.address.toLowerCase() === deployerAddress.toLowerCase()
@@ -134,7 +131,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
   }
 
-  if (payload.contracts && contractAddressesToCreate.length > 0) {
+  if (contractAddressesToCreate.length) {
     for (const contractAddress of contractAddressesToCreate) {
       const contract = payload.contracts.find(
         (_contract) => _contract.address.toLowerCase() === contractAddress.toLowerCase()
@@ -148,7 +145,8 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           chainId: contract.chainId,
           txHash: transaction.hash,
           blockNumber: Number(block.number),
-          blockTimestamp: Number(block.timestamp)
+          blockTimestamp: Number(block.timestamp),
+          deployerAddress: transaction.from.toLowerCase()
         };
         if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
           throw new Error(
@@ -173,7 +171,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       }
     });
 
-    if (contractAddressesToRemove.length > 0) {
+    if (contractAddressesToRemove.length) {
       await tx.scoutProjectContract.updateMany({
         where: {
           address: {
@@ -231,31 +229,38 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
     if (projectMemberIdsToCreate.length) {
       await tx.scoutProjectMember.createMany({
-        data: projectMemberIdsToCreate.map((scoutId) => ({
-          userId: scoutId,
+        data: projectMemberIdsToCreate
+          .map((scoutId) => payload.teamMembers.find((member) => member.scoutId === scoutId))
+          .filter(isTruthy)
+          .map((member) => ({
+            userId: member.scoutId,
+            projectId: _updatedProject.id,
+            role: member.role as ScoutProjectMemberRole,
+            createdBy: userId
+          }))
+      });
+    }
+
+    if (deployerAddressesToCreate.length) {
+      await tx.scoutProjectDeployer.createMany({
+        data: deployerAddressesToCreate.map((address) => ({
+          address: address.toLowerCase(),
           projectId: _updatedProject.id,
-          role: ScoutProjectMemberRole.member,
-          createdBy: userId
+          verifiedBy: userId,
+          verifiedAt: new Date()
         }))
       });
     }
 
-    let deployers: ScoutProjectDeployer[] = [];
-
-    if (deployerAddressesToCreate.length) {
-      deployers = await Promise.all(
-        deployerAddressesToCreate.map((address) => {
-          return tx.scoutProjectDeployer.create({
-            data: {
-              address: address.toLowerCase(),
-              projectId: _updatedProject.id,
-              verifiedBy: userId,
-              verifiedAt: new Date()
-            }
-          });
-        })
-      );
-    }
+    const deployers = await tx.scoutProjectDeployer.findMany({
+      where: {
+        projectId: _updatedProject.id
+      },
+      select: {
+        id: true,
+        address: true
+      }
+    });
 
     if (retainedProjectMemberIds.length) {
       await Promise.all(
@@ -263,22 +268,15 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           .map((scoutId) => payload.teamMembers.find((member) => member.scoutId === scoutId))
           .filter(isTruthy)
           .map((member) =>
-            tx.scoutProjectMember.upsert({
+            tx.scoutProjectMember.update({
               where: {
                 projectId_userId: {
                   projectId: _updatedProject.id,
                   userId: member.scoutId
                 }
               },
-              update: {
-                role: member.role as ScoutProjectMemberRole,
-                deletedAt: null
-              },
-              create: {
-                userId: member.scoutId,
-                projectId: _updatedProject.id,
-                role: member.role as ScoutProjectMemberRole,
-                createdBy: userId
+              data: {
+                role: member.role as ScoutProjectMemberRole
               }
             })
           )
@@ -286,14 +284,6 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
 
     if (contractAddressesToCreate.length) {
-      const contractsWithoutDeployer = contractAddressesToCreate.filter(
-        (address) => !deployers.some((deployer) => deployer.address === address.toLowerCase())
-      );
-
-      if (contractsWithoutDeployer.length) {
-        throw new Error(`No deployer found for contract ${contractsWithoutDeployer.join(', ')}`);
-      }
-
       await tx.scoutProjectContract.createMany({
         data: contractAddressesToCreate.map((address) => ({
           createdBy: userId,
@@ -303,7 +293,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           deployedAt: new Date(contractTransactionRecord[address].blockTimestamp * 1000),
           deployTxHash: contractTransactionRecord[address].txHash,
           blockNumber: contractTransactionRecord[address].blockNumber,
-          deployerId: deployers.find((deployer) => deployer.address === address.toLowerCase())!.id
+          deployerId: deployers.find(
+            (deployer) => deployer.address === contractTransactionRecord[address].deployerAddress
+          )!.id
         }))
       });
     }
