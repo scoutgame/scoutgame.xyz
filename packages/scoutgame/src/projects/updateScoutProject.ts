@@ -8,6 +8,18 @@ import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { UpdateScoutProjectFormValues } from './updateScoutProjectSchema';
 
 export async function updateScoutProject(payload: UpdateScoutProjectFormValues, userId: string) {
+  const projectMember = await prisma.scoutProjectMember.findFirst({
+    where: {
+      userId,
+      projectId: payload.projectId,
+      role: ScoutProjectMemberRole.owner
+    }
+  });
+
+  if (!projectMember) {
+    throw new Error('You are not authorized to update this project');
+  }
+
   const totalOwner = payload.teamMembers?.filter((member) => member.role === 'owner').length ?? 0;
 
   if (totalOwner > 1) {

@@ -8,6 +8,7 @@ import {
   getUserS3FilePath
 } from '@packages/aws/uploadToS3Server';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
+import { isTruthy } from '@packages/utils/types';
 import sharp from 'sharp';
 import { verifyMessage } from 'viem';
 
@@ -18,7 +19,17 @@ import { generateRandomAvatar } from './generateRandomAvatar';
 
 export async function createScoutProject(payload: CreateScoutProjectFormValues, userId: string) {
   const path = await generateProjectPath(payload.name);
-  const contractTransactionRecord: Record<string, { txHash: string; blockNumber: number; blockTimestamp: number }> = {};
+  const contractRecord: Record<string, { txHash: string; blockNumber: number; blockTimestamp: number }> = {};
+
+  const ownerCount = payload.teamMembers.filter((member) => member.role === 'owner').length;
+
+  if (ownerCount === 0) {
+    throw new Error('At least one owner is required');
+  }
+
+  if (ownerCount !== 1) {
+    throw new Error('Only one owner is allowed per project');
+  }
 
   if (payload.deployers) {
     for (const deployer of payload.deployers) {
@@ -41,7 +52,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
         chainId: contract.chainId
       });
 
-      contractTransactionRecord[contract.address.toLowerCase()] = {
+      contractRecord[contract.address.toLowerCase()] = {
         txHash: transaction.hash,
         blockNumber: Number(block.number),
         blockTimestamp: Number(block.timestamp)
@@ -82,9 +93,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
 
   const builderMembersCount = await prisma.scout.count({
     where: {
-      builderStatus: {
-        in: ['approved', 'banned']
-      },
+      builderStatus: 'approved',
       id: {
         in: payload.teamMembers.map((member) => member.scoutId)
       }
@@ -92,7 +101,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   });
 
   if (builderMembersCount !== payload.teamMembers.length) {
-    throw new Error('All project members must be builders');
+    throw new Error('All project members must be approved builders');
   }
 
   const project = await prisma.$transaction(async (tx) => {
@@ -137,24 +146,27 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
 
     if (payload.contracts && payload.contracts.length) {
       await tx.scoutProjectContract.createMany({
-        data: payload.contracts.map((contract) => {
-          const deployer = scoutProjectDeployers.find(
-            (d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase()
-          );
-          if (!deployer) {
-            throw new Error(`Deployer not found for contract ${contract.address.toLowerCase()}`);
-          }
-          return {
-            createdBy: userId,
-            projectId: scoutProject.id,
-            address: contract.address.toLowerCase(),
-            chainId: contract.chainId,
-            deployedAt: new Date(contractTransactionRecord[contract.address.toLowerCase()].blockTimestamp * 1000),
-            deployerId: deployer.id,
-            deployTxHash: contractTransactionRecord[contract.address.toLowerCase()].txHash,
-            blockNumber: contractTransactionRecord[contract.address.toLowerCase()].blockNumber
-          };
-        })
+        data: payload.contracts
+          .map((contract) => {
+            const deployer = scoutProjectDeployers.find(
+              (d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase()
+            );
+            if (!deployer) {
+              // This case will ideally never happen, its added to keep the type checker happy
+              return null;
+            }
+            return {
+              createdBy: userId,
+              projectId: scoutProject.id,
+              address: contract.address.toLowerCase(),
+              chainId: contract.chainId,
+              deployedAt: new Date(contractRecord[contract.address.toLowerCase()].blockTimestamp * 1000),
+              deployerId: deployer.id,
+              deployTxHash: contractRecord[contract.address.toLowerCase()].txHash,
+              blockNumber: contractRecord[contract.address.toLowerCase()].blockNumber
+            };
+          })
+          .filter(isTruthy)
       });
     }
 

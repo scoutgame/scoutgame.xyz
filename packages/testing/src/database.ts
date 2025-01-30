@@ -1,4 +1,11 @@
-import type { BuilderEvent, BuilderEventType, BuilderNftType, GithubRepo, Scout } from '@charmverse/core/prisma';
+import type {
+  BuilderEvent,
+  BuilderEventType,
+  BuilderNftType,
+  GithubRepo,
+  Scout,
+  ScoutProjectMemberRole
+} from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
@@ -801,6 +808,40 @@ export function mockUserWeeklyStats({
       rank,
       week,
       season
+    }
+  });
+}
+
+export async function mockScoutProject({
+  name = 'Test Project',
+  userId,
+  memberIds = []
+}: {
+  name?: string;
+  userId: string;
+  memberIds?: string[];
+}) {
+  const path = randomString();
+  return prisma.scoutProject.create({
+    data: {
+      name,
+      path,
+      scoutProjectMembers: {
+        createMany: {
+          data: [
+            {
+              userId,
+              role: 'owner',
+              createdBy: userId
+            },
+            ...memberIds.map((memberId) => ({
+              userId: memberId,
+              role: 'member' as ScoutProjectMemberRole,
+              createdBy: userId
+            }))
+          ]
+        }
+      }
     }
   });
 }
