@@ -68,8 +68,7 @@ test.describe('Buy Nft', () => {
     await expect(successView).toBeVisible();
 
     // Success message from snackbar
-    const successMessage = page.locator('data-sonner-toast').locator('data-type=success');
-    await expect(successMessage).toBeVisible();
+    await expect(page.locator('[data-sonner-toaster]')).toHaveAttribute('data-type', 'success');
 
     // Check that the scout wallet was created
     const scoutWallet = await prisma.scoutWallet.findFirst({
