@@ -86,6 +86,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       setDeployers={setDeployers}
       cancelLink='/projects'
       showRemoveMemberConfirmation={false}
+      isOwner
     />
   );
 }

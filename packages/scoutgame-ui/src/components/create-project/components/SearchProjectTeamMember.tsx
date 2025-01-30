@@ -64,7 +64,10 @@ export function SearchProjectTeamMember({
         role: 'member'
       }))
     );
-  }, [selectedMembers, onProjectMembersAdd]);
+    setOpen(false);
+    setSearchTerm('');
+    setSelectedMembers([]);
+  }, [selectedMembers, onProjectMembersAdd, setOpen, setSearchTerm, setSelectedMembers]);
 
   const filteredSearchResults = useMemo(() => {
     return searchResults?.filter((option) => !filteredMemberIds.includes(option.id)) ?? [];
@@ -119,13 +122,13 @@ export function SearchProjectTeamMember({
             );
           }}
           value={selectedMembers}
-          onChange={(event, newValue) => setSelectedMembers(newValue)}
+          onChange={(_, newValue) => setSelectedMembers(newValue)}
           multiple
           fullWidth
           open={open && filteredSearchResults.length > 0}
           options={filteredSearchResults}
           getOptionLabel={(option) => option.displayName}
-          onInputChange={(event, value) => setSearchTerm(value)}
+          onInputChange={(_, value) => setSearchTerm(value)}
           renderTags={(tagValue, getTagProps) =>
             tagValue.map((option, index) => (
               <Chip

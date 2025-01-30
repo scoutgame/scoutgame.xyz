@@ -22,7 +22,8 @@ export const updateScoutProjectSchema = yup.object({
         deployerAddress: yup.string().required('Deployer address is required')
       })
     )
-    .notRequired(),
+    .min(0)
+    .required('Contracts are required'),
   deployers: yup
     .array()
     .of(
@@ -44,7 +45,7 @@ export const updateScoutProjectSchema = yup.object({
       then: (schema) => schema.min(1, 'At least one deployer is required when contracts are provided'),
       otherwise: (schema) => schema
     })
-    .notRequired(),
+    .required('Contracts are required'),
   teamMembers: yup
     .array()
     .of(
@@ -55,7 +56,8 @@ export const updateScoutProjectSchema = yup.object({
         displayName: yup.string().required('Display name is required')
       })
     )
-    .notRequired()
+    .min(1, 'At least one team member is required')
+    .required('Team members are required')
 });
 
 export type UpdateScoutProjectFormValues = yup.InferType<typeof updateScoutProjectSchema>;

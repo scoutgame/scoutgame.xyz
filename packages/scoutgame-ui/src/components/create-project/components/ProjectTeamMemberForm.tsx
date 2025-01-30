@@ -2,10 +2,10 @@
 
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { Button, Stack, Typography } from '@mui/material';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { Button, MenuItem, Menu, Stack, Typography, IconButton } from '@mui/material';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
-import { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useFieldArray, type Control } from 'react-hook-form';
 
 import { useUser } from '../../../providers/UserProvider';
@@ -17,23 +17,67 @@ import { SearchProjectTeamMember } from './SearchProjectTeamMember';
 
 export function ProjectTeamMemberForm({
   control,
-  showRemoveMemberConfirmation
+  showRemoveMemberConfirmation,
+  isOwner
 }: {
   control: Control<CreateScoutProjectFormValues>;
   showRemoveMemberConfirmation: boolean;
+  isOwner: boolean;
 }) {
   const { user } = useUser();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedMemberIndex, setSelectedMemberIndex] = useState<number | null>(null);
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isMemberMenuOpen = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const {
     append,
     remove,
-    fields: teamMembers
+    fields: teamMembers,
+    update
   } = useFieldArray({
     name: 'teamMembers',
     control
   });
+
+  const handleMakeOwner = useCallback(
+    (index: number) => {
+      const currentOwnerIndex = teamMembers.findIndex((member) => member.role === 'owner');
+      const currentOwner = currentOwnerIndex !== -1 ? teamMembers[currentOwnerIndex] : null;
+      if (currentOwner) {
+        update(currentOwnerIndex, {
+          role: 'member',
+          displayName: currentOwner.displayName,
+          scoutId: currentOwner.scoutId,
+          avatar: currentOwner.avatar
+        });
+      }
+      update(index, {
+        role: 'owner',
+        displayName: teamMembers[index].displayName,
+        scoutId: teamMembers[index].scoutId,
+        avatar: teamMembers[index].avatar
+      });
+    },
+    [update, teamMembers]
+  );
+
+  const handleRemoveMember = useCallback(
+    (index: number) => {
+      if (showRemoveMemberConfirmation) {
+        setSelectedMemberIndex(index);
+        setIsConfirmModalOpen(true);
+      } else {
+        remove(index);
+      }
+    },
+    [remove, showRemoveMemberConfirmation, setSelectedMemberIndex, setIsConfirmModalOpen]
+  );
 
   return (
     <>
@@ -57,22 +101,30 @@ export function ProjectTeamMemberForm({
                   {ProjectRoleText[member.role as ScoutProjectMemberRole]}
                 </Typography>
               </Stack>
-              {member.scoutId !== user?.id && (
-                <DeleteIcon
-                  color='error'
-                  fontSize='small'
-                  onClick={() => {
-                    if (showRemoveMemberConfirmation) {
-                      setSelectedMemberIndex(index);
-                      setIsConfirmModalOpen(true);
-                    } else {
-                      remove(index);
-                    }
-                  }}
-                  sx={{
-                    cursor: 'pointer'
-                  }}
-                />
+              {member.scoutId !== user?.id && isOwner && (
+                <Stack>
+                  <IconButton size='small' onClick={(e) => setAnchorEl(e.currentTarget as unknown as HTMLElement)}>
+                    <MoreHorizIcon />
+                  </IconButton>
+                  <Menu anchorEl={anchorEl} open={isMemberMenuOpen} onClose={handleClose}>
+                    <MenuItem
+                      onClick={() => {
+                        handleMakeOwner(index);
+                        handleClose();
+                      }}
+                    >
+                      Make owner
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleRemoveMember(index);
+                        handleClose();
+                      }}
+                    >
+                      Remove
+                    </MenuItem>
+                  </Menu>
+                </Stack>
               )}
             </Stack>
           ))}
@@ -82,14 +134,14 @@ export function ProjectTeamMemberForm({
           color='secondary'
           sx={{ width: 'fit-content' }}
           startIcon={<AddCircleOutlineIcon />}
-          onClick={() => setOpen(true)}
+          onClick={() => setIsDialogOpen(true)}
         >
           Add a member
         </Button>
       </Stack>
       <SearchProjectTeamMember
-        open={open}
-        setOpen={setOpen}
+        open={isDialogOpen}
+        setOpen={setIsDialogOpen}
         filteredMemberIds={teamMembers.map((member) => member.scoutId)}
         onProjectMembersAdd={(membersInfo) => {
           membersInfo.forEach((memberInfo) => {
@@ -100,7 +152,7 @@ export function ProjectTeamMemberForm({
               displayName: memberInfo.displayName
             });
           });
-          setOpen(false);
+          setIsDialogOpen(false);
         }}
       />
       <Dialog title='Remove Member' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>

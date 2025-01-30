@@ -11,6 +11,7 @@ import { useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import { useUser } from '../../../../../providers/UserProvider';
 import type { Deployer } from '../../../../create-project/components/ProjectSmartContractForm';
 import { ProjectForm } from '../../../components/ProjectForm/ProjectForm';
 
@@ -22,6 +23,8 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
       signature: ''
     }))
   );
+  const { user } = useUser();
+  const isOwner = project.teamMembers.some((member) => member.id === user?.id && member.role === 'owner');
 
   const [errors, setErrors] = useState<string[] | null>(null);
   const {
@@ -88,6 +91,7 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
       setDeployers={setDeployers}
       cancelLink={`/projects/${project.path}`}
       showRemoveMemberConfirmation
+      isOwner={isOwner}
     />
   );
 }

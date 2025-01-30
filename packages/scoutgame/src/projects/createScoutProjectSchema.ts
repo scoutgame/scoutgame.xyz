@@ -51,6 +51,7 @@ export const createScoutProjectSchema = yup.object({
         displayName: yup.string().required('Display name is required')
       })
     )
+    .min(1, 'At least one team member is required')
     .required('Team members are required')
 });
 
