@@ -34,11 +34,11 @@ export function AppProviders({ children, user }: { children: ReactNode; user: Se
               <LinkInterceptor />
               <Toaster theme='dark' richColors />
               <UserProvider userSession={user}>
-                <ModalProvider>
-                  <SnackbarProvider>
-                    <PurchaseProvider>{children}</PurchaseProvider>
-                  </SnackbarProvider>
-                </ModalProvider>
+                <SnackbarProvider>
+                  <PurchaseProvider>
+                    <ModalProvider>{children}</ModalProvider>
+                  </PurchaseProvider>
+                </SnackbarProvider>
               </UserProvider>
             </SWRProvider>
           </ThemeProvider>

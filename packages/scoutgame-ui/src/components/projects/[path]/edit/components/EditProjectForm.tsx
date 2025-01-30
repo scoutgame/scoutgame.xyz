@@ -83,7 +83,7 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
       isDirty={isDirty}
       onSave={onSubmit}
       errors={errors}
-      isDisabled={isExecuting}
+      isExecuting={isExecuting}
       deployers={deployers}
       setDeployers={setDeployers}
       cancelLink={`/projects/${project.path}`}

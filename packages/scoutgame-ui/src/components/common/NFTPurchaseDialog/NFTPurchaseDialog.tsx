@@ -60,6 +60,10 @@ function NFTPurchaseDialogComponent(props: NFTPurchaseDialogProps) {
 }
 
 export function NFTPurchaseDialog(props: NFTPurchaseDialogProps) {
+  if (!props.builder) {
+    return null;
+  }
+
   return (
     <RainbowKitProvider>
       <NFTPurchaseDialogComponent {...props} />

@@ -84,10 +84,10 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     const scoutProject = await tx.scoutProject.create({
       data: {
         name: payload.name,
-        avatar: payload.avatar ?? null,
-        description: payload.description ?? null,
-        website: payload.website ?? null,
-        github: payload.github ?? null,
+        avatar: payload.avatar ?? '',
+        description: payload.description ?? '',
+        website: payload.website ?? '',
+        github: payload.github ?? '',
         path,
         scoutProjectDeployers:
           payload.deployers && payload.deployers.length
