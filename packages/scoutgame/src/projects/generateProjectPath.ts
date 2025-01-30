@@ -1,6 +1,5 @@
+import { prisma } from '@charmverse/core/prisma-client';
 import { v4 } from 'uuid';
-
-import { getProjectByPath } from './getProjectByPath';
 
 export async function generateProjectPath(name: string) {
   const path = name
@@ -9,8 +8,8 @@ export async function generateProjectPath(name: string) {
     .replace(/^-+|-+$/g, '')
     .replace(/-+/g, '-');
 
-  const existingProject = await getProjectByPath(path);
-  if (existingProject) {
+  const existingProject = await prisma.scoutProject.count({ where: { path } });
+  if (existingProject > 0) {
     return `${path}-${v4().split('-')[0]}`;
   }
   return path;

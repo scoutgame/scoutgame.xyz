@@ -7,7 +7,6 @@ import { getAddress } from 'viem';
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
 import { generateRandomName } from './generateRandomName';
-import { generateUserPath } from './generateUserPath';
 import { createReferralEvent } from './referrals/createReferralEvent';
 
 export async function findOrCreateWalletUser({
@@ -31,7 +30,6 @@ export async function findOrCreateWalletUser({
     log.warn('Could not retrieve ENS details while creating a user', { error, wallet });
   });
   const displayName = ens || generateRandomName();
-  const path = await generateUserPath(displayName);
   let farcasterName: string | undefined;
   let farcasterId: number | undefined;
   try {
@@ -50,7 +48,7 @@ export async function findOrCreateWalletUser({
     avatar: ensDetails?.avatar || undefined,
     walletAddresses: [wallet],
     displayName,
-    path,
+    path: displayName,
     farcasterName,
     farcasterId
   });

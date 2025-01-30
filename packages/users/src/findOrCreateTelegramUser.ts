@@ -6,7 +6,6 @@ import type { WebAppInitData } from '@twa-dev/types';
 
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
-import { generateUserPath } from './generateUserPath';
 import { createReferralEvent } from './referrals/createReferralEvent';
 
 export async function findOrCreateTelegramUser(
@@ -23,7 +22,7 @@ export async function findOrCreateTelegramUser(
     telegramId: telegramUser.id,
     avatar: telegramUser.photo_url,
     displayName,
-    path: await generateUserPath(telegramUser.username || displayName),
+    path: telegramUser.username || displayName,
     telegramName: displayName
   });
 

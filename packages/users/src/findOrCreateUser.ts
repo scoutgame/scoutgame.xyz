@@ -19,6 +19,7 @@ import type { Address } from 'viem';
 import { isAddress } from 'viem/utils';
 
 import { generateRandomAvatar } from './generateRandomAvatar';
+import { generateUserPath } from './generateUserPath';
 
 const waitlistTierPointsRecord: Record<ConnectWaitlistTier, number> = {
   legendary: 60,
@@ -38,6 +39,7 @@ export async function findOrCreateUser({
   walletAddresses,
   tierOverride,
   telegramId,
+  path,
   ...userProps
 }: {
   walletAddresses?: string[];
@@ -139,9 +141,12 @@ export async function findOrCreateUser({
     points = waitlistTierPointsRecord[tier] || 0;
     log.info('Creating user with waitlist percentile', { percentile: waitlistRecord.percentile, tier, points });
   }
+  const uniquePath = await generateUserPath(path);
+
   const newScout = await prisma.scout.create({
     data: {
       ...userProps,
+      path: uniquePath,
       id: userId,
       wallets: lowercaseAddresses?.length
         ? {
