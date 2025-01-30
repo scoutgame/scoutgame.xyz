@@ -30,11 +30,11 @@ export async function getContractDeployerAddress({
     throw new Error('Contract not found or is not a contract address');
   }
 
-  let left = 0n;
+  let left = BigInt(0);
   let right = await client.getBlockNumber();
 
   while (left <= right) {
-    const mid = left + (right - left) / 2n;
+    const mid = left + (right - left) / BigInt(2);
 
     const code = await client.getBytecode({
       address: formattedAddress,
@@ -42,11 +42,11 @@ export async function getContractDeployerAddress({
     });
 
     if (!code) {
-      left = mid + 1n;
+      left = mid + BigInt(1);
     } else {
       const prevCode = await client.getBytecode({
         address: formattedAddress,
-        blockNumber: mid - 1n
+        blockNumber: mid - BigInt(1)
       });
 
       if (!prevCode) {
@@ -70,7 +70,7 @@ export async function getContractDeployerAddress({
           }
         }
       }
-      right = mid - 1n;
+      right = mid - BigInt(1);
     }
   }
 
