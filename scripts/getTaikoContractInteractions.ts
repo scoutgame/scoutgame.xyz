@@ -3,6 +3,7 @@ import { taiko } from 'viem/chains';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getLogs } from '@packages/blockchain/provider/ankr/getLogs';
 import { getTransactionReceipt } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
+import { formatEther } from 'viem';
 import fs from 'fs';
 import { prettyPrint } from '@packages/utils/strings';
 type BlockchainClient = ReturnType<typeof createPublicClient>;
@@ -504,7 +505,58 @@ async function saveToDisk() {
   console.log('logs', allLogs.length);
 }
 
+async function writeMetricsToDisk() {
+  const contracts = await prisma.scoutProjectContract.findMany();
+  console.log('Analyzing metrics for', contracts.length, 'contracts...');
+
+  // Create CSV header
+  const csvRows = ['contract_address\tlogs\ttransactions\twallets\tgas fees\tgas fees (wei)'];
+
+  for (const contract of contracts) {
+    // Get log count and unique wallets
+    const logs = await prisma.scoutProjectContractLog.findMany({
+      where: {
+        contractId: contract.id
+      },
+      select: {
+        from: true
+      }
+    });
+    // const uniqueWallets = new Set(logs.map((log) => log.from)).size;
+
+    // Get transaction count and sum gas costs
+    const transactions = await prisma.scoutProjectContractTransaction.findMany({
+      where: {
+        contractId: contract.id
+      },
+      select: {
+        from: true,
+        gasCost: true
+      }
+    });
+    const uniqueWallets = new Set(transactions.map((log) => log.from)).size;
+    const totalGasCost = transactions.reduce((sum, tx) => sum + tx.gasCost, BigInt(0));
+
+    // Add row to CSV
+    csvRows.push(
+      `${contract.address}\t${logs.length}\t${transactions.length}\t${uniqueWallets}\t${
+        totalGasCost === BigInt(0)
+          ? 0
+          : parseFloat(formatEther(totalGasCost)).toLocaleString('en', { minimumFractionDigits: 4 })
+      }\t${totalGasCost}`
+    );
+
+    console.log(`Processed ${contract.address}: ${logs.length} logs, ${transactions.length} txs`);
+  }
+
+  // Write to file
+  fs.writeFileSync('contract_metrics.tsv', csvRows.join('\n'));
+  console.log('Wrote metrics to contract_metrics.tsv');
+}
+
 (async () => {
+  await writeMetricsToDisk();
+  return;
   // await saveToDisk();
   // return;
 

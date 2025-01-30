@@ -4,7 +4,7 @@ import type { SupportedChainId } from './client';
 import { ankrRequest } from './client';
 
 type GetLogsResult = {
-  address: Address;
+  address: Address; // the contract address
   topics: string[];
   data: string;
   blockNumber: string;
