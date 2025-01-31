@@ -2,10 +2,11 @@ import { arrayUtils } from '@charmverse/core/utilities';
 import { ChainId } from '@decent.xyz/box-common';
 import type { UserBalanceArgs } from '@decent.xyz/box-hooks';
 import { useUsersBalances } from '@decent.xyz/box-hooks';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { scoutProtocolChainId, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import type { Address } from 'viem';
 
-import { chainOptionsMainnet, ETH_NATIVE_ADDRESS, getChainOptions } from '../components/ChainSelector/chains';
+import { chainOptionsMainnet, getChainOptions } from '../components/ChainSelector/chains';
 
 export function useGetTokenBalances({ address, useScoutToken }: { address: Address; useScoutToken?: boolean }) {
   const args: UserBalanceArgs = {
@@ -21,9 +22,9 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
           chainOptionsMainnet
             .map((opt) => {
               if (opt.usdcAddress) {
-                return [ETH_NATIVE_ADDRESS, opt.usdcAddress];
+                return [NULL_EVM_ADDRESS, opt.usdcAddress];
               }
-              return [ETH_NATIVE_ADDRESS];
+              return [NULL_EVM_ADDRESS];
             })
             .flat()
         )
