@@ -6,10 +6,10 @@ const builderEventEASSchema = 'string description,string type,string season';
 
 const builderEventSchemaName = 'Scout Game Builder Event';
 
-export const builderEventSchemaDefinition: EASSchema = {
+export const builderEventSchemaDefinition = {
   schema: builderEventEASSchema,
   name: builderEventSchemaName
-};
+} as const satisfies EASSchema;
 
 export type BuilderEventAttestationType = 'registered' | 'banned' | 'unbanned';
 

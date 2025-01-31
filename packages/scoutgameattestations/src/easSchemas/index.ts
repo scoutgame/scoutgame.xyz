@@ -9,8 +9,10 @@ export * from './scoutGameUserProfileSchema';
 export * from './builderEventSchema';
 export * from './types';
 
-export const allSchemas: EASSchema[] = [
+export const allSchemas = [
   contributionSchemaDefinition,
   scoutGameUserProfileSchemaDefinition,
   builderEventSchemaDefinition
-];
+] satisfies EASSchema[];
+
+export type EASSchemaNames = (typeof allSchemas)[number]['name'];

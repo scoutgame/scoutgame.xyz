@@ -6,10 +6,10 @@ const scoutGameUserProfileEASSchema = 'string id,string metadataUrl';
 
 const scoutGameUserProfileSchemaName = 'Scout Game User Profile';
 
-export const scoutGameUserProfileSchemaDefinition: EASSchema = {
+export const scoutGameUserProfileSchemaDefinition = {
   schema: scoutGameUserProfileEASSchema,
   name: scoutGameUserProfileSchemaName
-};
+} as const satisfies EASSchema;
 
 export type ScoutGameUserProfileAttestation = {
   id: string;

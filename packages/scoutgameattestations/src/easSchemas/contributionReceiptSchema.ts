@@ -6,10 +6,10 @@ const contributionReceiptEASSchema = 'string description,string url,string metad
 
 const contributionReceiptSchemaName = 'Scout Game Contribution Receipt';
 
-export const contributionSchemaDefinition: EASSchema = {
+export const contributionSchemaDefinition = {
   schema: contributionReceiptEASSchema,
   name: contributionReceiptSchemaName
-};
+} as const satisfies EASSchema;
 
 export type ContributionReceiptAttestation = {
   description: string;
