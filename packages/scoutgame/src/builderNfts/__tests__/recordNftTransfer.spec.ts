@@ -1,7 +1,7 @@
 import type { BuilderEvent, NFTPurchaseEvent, ScoutNft } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { jest } from '@jest/globals';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
 import { randomLargeInt, randomWalletAddress } from '@packages/testing/generators';
 import type { Address } from 'viem';

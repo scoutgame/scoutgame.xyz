@@ -1,6 +1,9 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { encodeContributionReceiptAttestation, encodeScoutGameUserProfileAttestation } from '@charmverse/core/protocol';
+import {
+  encodeContributionReceiptAttestation,
+  encodeScoutGameUserProfileAttestation
+} from '@packages/scoutgameattestations/easSchemas/index';
 
 import { multiAttestOnchain, type ScoutGameAttestationInput } from './attestOnchain';
 import {
@@ -182,7 +185,6 @@ export async function attestGemReceipts(): Promise<void> {
         value: ev.value,
         type: ev.type,
         metadataUrl,
-        userRefUID: ev.event.builder.onchainProfileAttestationUid as `0x${string}`,
         description: getDescription(ev),
         url: getUrl(ev)
       })

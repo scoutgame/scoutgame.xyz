@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getENSDetails, getENSName } from '@packages/blockchain/getENSName';
 import { getFarcasterUsersByAddresses } from '@packages/farcaster/getFarcasterUsersByAddresses';
 import { getAddress } from 'viem';

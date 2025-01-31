@@ -1,10 +1,10 @@
-import { contributionSchemaDefinition, scoutGameUserProfileSchemaDefinition } from '@charmverse/core/protocol';
-import { Box, Button, Divider, Grid2, IconButton, Typography } from '@mui/material';
-import { ScoutProtocolImplementationClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
-import { scoutGameAttestationChain } from '@packages/scoutgameattestations/constants';
+import { Box, Divider, Grid2, IconButton, Typography } from '@mui/material';
+import {
+  contributionSchemaDefinition,
+  scoutGameUserProfileSchemaDefinition
+} from '@packages/scoutgameattestations/easSchemas/index';
 import Link from 'next/link';
 import { MdLaunch } from 'react-icons/md';
-import { useWalletClient } from 'wagmi';
 
 import type { ProtocolData } from 'lib/contract/aggregateProtocolData';
 

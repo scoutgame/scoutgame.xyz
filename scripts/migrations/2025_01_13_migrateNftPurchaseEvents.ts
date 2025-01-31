@@ -1,14 +1,12 @@
+import { log } from '@charmverse/core/log';
 import { NFTPurchaseEvent, prisma } from '@charmverse/core/prisma-client';
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
-import { getRevertedMintTransactionAttestations } from '@packages/safetransactions/getRevertedMintTransactionAttestations';
-import {  TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { optimism } from 'viem/chains';
-import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
-import { log } from '@charmverse/core/log';
-import { prettyPrint } from '@packages/utils/strings';
 
 async function migrateNftPurchaseEvents() {
 

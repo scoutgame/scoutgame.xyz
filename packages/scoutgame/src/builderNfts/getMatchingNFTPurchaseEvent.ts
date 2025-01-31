@@ -1,6 +1,6 @@
 import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { prefix0x } from '@packages/utils/prefix0x';
 import type { Address } from 'viem';

@@ -831,6 +831,10 @@ export async function mockScoutProject({
     data: {
       name,
       path,
+      avatar: 'https://placehold.co/600x400',
+      description: 'Test description',
+      website: 'https://test.com',
+      github: `https://github.com/test-${Math.random().toString(36).substring(2, 15)}`,
       scoutProjectDeployers: deployerAddress
         ? {
             create: {

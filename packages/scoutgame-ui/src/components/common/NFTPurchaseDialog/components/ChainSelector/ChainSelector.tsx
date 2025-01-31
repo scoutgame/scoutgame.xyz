@@ -1,16 +1,16 @@
 import { MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
-import { baseSepolia } from 'viem/chains';
 
 import { useGetTokenBalances } from '../../hooks/useGetTokenBalances';
 
 import { ChainComponent } from './ChainComponent';
-import type { ChainOption, ChainWithCurrency } from './chains';
-import { ETH_NATIVE_ADDRESS, getChainOptions } from './chains';
+import type { ChainWithCurrency } from './chains';
+import { getChainOptions } from './chains';
 
 export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'SCOUT' };
 
@@ -94,7 +94,7 @@ function SelectField(
           (t) =>
             t.chainId === _chain.id &&
             (_chain.currency === 'ETH'
-              ? t.address === ETH_NATIVE_ADDRESS
+              ? t.address === NULL_EVM_ADDRESS
               : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase())
         );
         let _balance = Number(_tokenBalanceInfo?.balance);
