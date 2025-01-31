@@ -19,6 +19,7 @@ describe('findOrCreateWalletUser', () => {
     expect(scoutWallet).toBeDefined();
     expect(scoutWallet.scoutId).toBe(user.id);
     expect(scoutWallet.address).toBe(wallet);
+    expect(scoutWallet.primary).toBe(true);
   });
 
   it('should return an existing user if the wallet address already exists, and be case-insensitive', async () => {

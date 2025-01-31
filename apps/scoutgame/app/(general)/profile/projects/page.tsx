@@ -1,6 +1,6 @@
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { getUserScoutProjects } from '@packages/scoutgame/projects/getUserScoutProjects';
+import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { ProjectsPage } from '@packages/scoutgame-ui/components/projects/ProjectsPage';
 
 export default async function ProjectsPageContainer() {
@@ -11,7 +11,7 @@ export default async function ProjectsPageContainer() {
     return null;
   }
 
-  const allPromises = [getUserScoutProjects({ userId: scoutId })] as const;
+  const allPromises = [getUserScoutProjectsInfo({ userId: scoutId })] as const;
 
   const [error, data] = await safeAwaitSSRData(Promise.all(allPromises));
 

@@ -1,11 +1,17 @@
 import * as yup from 'yup';
 
 export const createScoutProjectSchema = yup.object({
-  avatar: yup.string().required('Avatar is required'),
+  avatar: yup.string().nullable(),
   name: yup.string().required('Name is required'),
-  description: yup.string().required('Description is required'),
-  website: yup.string().url('Invalid website URL').required('Website is required'),
-  github: yup.string().required('Github is required'),
+  description: yup.string().nullable(),
+  website: yup.string().url('Invalid website URL').nullable(),
+  github: yup
+    .string()
+    .test('github', 'Invalid github URL', (value) => {
+      if (!value) return true;
+      return value.startsWith('https://github.com/') || value.startsWith('https://github.com/');
+    })
+    .nullable(),
   contracts: yup
     .array()
     .of(
@@ -21,9 +27,15 @@ export const createScoutProjectSchema = yup.object({
     .of(
       yup.object({
         address: yup.string().required('Deployer address is required'),
-        verifiedAt: yup.date().required('Verified at is required')
+        signature: yup.string().required('Signature is required'),
+        verified: yup.boolean().required()
       })
     )
+    .test('deployer-signature', 'Every deployer must have a signature', (deployers) => {
+      return deployers
+        ? deployers.filter((deployer) => !deployer.verified).every((deployer) => deployer.signature)
+        : true;
+    })
     .when('contracts', {
       is: (contracts: any[]) => contracts && contracts.length > 0,
       then: (schema) => schema.min(1, 'At least one deployer is required when contracts are provided'),
@@ -35,10 +47,11 @@ export const createScoutProjectSchema = yup.object({
       yup.object({
         scoutId: yup.string().uuid().required(),
         role: yup.string().required('Role is required').oneOf(['owner', 'member']),
-        avatar: yup.string().required('Avatar is required'),
+        avatar: yup.string(),
         displayName: yup.string().required('Display name is required')
       })
     )
+    .min(1, 'At least one team member is required')
     .required('Team members are required')
 });
 

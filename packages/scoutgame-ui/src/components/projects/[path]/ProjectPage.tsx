@@ -1,7 +1,8 @@
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import { stringUtils } from '@charmverse/core/utilities';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
-import { Container, Stack, Typography } from '@mui/material';
+import { Box, Container, Stack, Typography } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,10 +10,16 @@ import Link from 'next/link';
 import { BackButton } from '../../common/Button/BackButton';
 import { chainRecords, ProjectRoleText } from '../constants';
 
+import { EditProjectIcon } from './components/EditProjectIcon';
+import { LeaveProjectButton } from './components/LeaveProjectButton';
+
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>
+        <Typography variant='h4' color='secondary' fontWeight={600}>
+          Projects
+        </Typography>
         <Stack
           gap={{
             xs: 0.5,
@@ -32,19 +39,32 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
           borderRadius={1}
         >
           <BackButton />
-          <Image src={project.avatar} alt={project.name} width={100} height={100} style={{ objectFit: 'cover' }} />
-          <Stack gap={1} ml={1}>
+          <Image
+            src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
+            alt={project.name}
+            width={100}
+            height={100}
+            style={{ objectFit: 'cover' }}
+          />
+          <Stack gap={1} ml={1} flex={1}>
             <Stack flexDirection='row' alignItems='center' gap={1}>
               <Typography variant='h5'>{project.name}</Typography>
-              <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
-                <GitHubIcon />
-              </Link>
-              <Link href={project.website} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
-                <LanguageIcon />
-              </Link>
+              {project.github && (
+                <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
+                  <GitHubIcon />
+                </Link>
+              )}
+              {project.website && (
+                <Link href={project.website} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
+                  <LanguageIcon />
+                </Link>
+              )}
             </Stack>
-            <Typography>{project.description}</Typography>
+            <Typography sx={{ whiteSpace: 'pre-wrap' }}>{project.description}</Typography>
           </Stack>
+          <Box sx={{ alignSelf: 'flex-start' }}>
+            <EditProjectIcon path={project.path} teamMembers={project.teamMembers} />
+          </Box>
         </Stack>
         <Stack gap={1}>
           <Typography color='secondary' variant='h6'>
@@ -65,7 +85,6 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                   py={1}
                   borderRadius={1}
                 >
-                  <Typography>{contract.address}</Typography>
                   <Image
                     src={chainRecords[contract.chainId].image}
                     alt={chainRecords[contract.chainId].name}
@@ -73,6 +92,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                     height={20}
                     style={{ borderRadius: '50%' }}
                   />
+                  <Typography>{stringUtils.shortenHex(contract.address)}</Typography>
                 </Stack>
               ))
             )}
@@ -111,6 +131,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             ))}
           </Stack>
         </Stack>
+        <LeaveProjectButton project={project} />
       </Stack>
     </Container>
   );

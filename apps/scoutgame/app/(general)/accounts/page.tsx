@@ -29,6 +29,7 @@ export default async function Accounts() {
         wallets: {
           select: {
             address: true,
+            primary: true,
             scoutedNfts: {
               where: {
                 builderNft: {
@@ -63,7 +64,10 @@ export default async function Accounts() {
         sendMarketing: currentUserAccountsMetadata.sendMarketing,
         telegramId: currentUserAccountsMetadata.telegramId,
         telegramName: currentUserAccountsMetadata.telegramName || null,
-        wallets: currentUserAccountsMetadata.wallets.map((wallet) => wallet.address),
+        wallets: currentUserAccountsMetadata.wallets.map((wallet) => ({
+          address: wallet.address,
+          primary: wallet.primary
+        })),
         avatar: user.avatar as string,
         starterPackNftCount: currentUserAccountsMetadata.wallets
           .flatMap((wallet) => wallet.scoutedNfts.length)

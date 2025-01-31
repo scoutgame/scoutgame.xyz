@@ -1,13 +1,23 @@
-import type { ScoutProject, ScoutProjectContract, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import type {
+  ScoutProject,
+  ScoutProjectContract,
+  ScoutProjectMemberRole,
+  Prisma
+} from '@charmverse/core/prisma-client';
 
-import { projectInfoSelect, projectSelect } from './projectSelect';
+export const projectMinimalSelect = {
+  id: true,
+  name: true,
+  avatar: true,
+  path: true
+} satisfies Prisma.ScoutProjectSelect;
 
 export type ScoutProjectDetailed = Pick<
   ScoutProject,
   'id' | 'path' | 'avatar' | 'name' | 'description' | 'website' | 'github'
 > & {
-  contracts: Pick<ScoutProjectContract, 'id' | 'address' | 'chainId'>[];
+  contracts: Pick<ScoutProjectContract, 'id' | 'address' | 'chainId' | 'deployerId'>[];
   teamMembers: {
     id: string;
     path: string;
@@ -15,40 +25,13 @@ export type ScoutProjectDetailed = Pick<
     displayName: string;
     role: ScoutProjectMemberRole;
   }[];
+  deployers: {
+    id: string;
+    address: string;
+  }[];
 };
 
-export type ScoutProjectMinimal = {
-  id: string;
-  path: string;
-  avatar: string;
-  name: string;
-};
-
-export async function getUserScoutProjects({ userId }: { userId: string }): Promise<ScoutProjectDetailed[]> {
-  const scoutProjects = await prisma.scoutProject.findMany({
-    where: {
-      scoutProjectMembers: {
-        some: {
-          userId
-        }
-      },
-      deletedAt: null
-    },
-    select: projectSelect
-  });
-
-  return scoutProjects.map((project) => ({
-    ...project,
-    contracts: project.scoutProjectContracts,
-    teamMembers: project.scoutProjectMembers.map((member) => ({
-      id: member.user.id,
-      avatar: member.user.avatar ?? '',
-      displayName: member.user.displayName,
-      role: member.role,
-      path: member.user.path
-    }))
-  }));
-}
+export type ScoutProjectMinimal = Pick<ScoutProject, 'id' | 'path' | 'avatar' | 'name'>;
 
 export async function getUserScoutProjectsInfo({ userId }: { userId: string }): Promise<ScoutProjectMinimal[]> {
   const projects = await prisma.scoutProject.findMany({
@@ -60,7 +43,7 @@ export async function getUserScoutProjectsInfo({ userId }: { userId: string }): 
       },
       deletedAt: null
     },
-    select: projectInfoSelect
+    select: projectMinimalSelect
   });
 
   return projects;
