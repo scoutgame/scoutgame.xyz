@@ -50,7 +50,8 @@
     "agents": "dotenv -e .env.local -- npm run start -w=apps/agents",
     "agents:staging": "npm run start:prod:node18 -w apps/agents",
     "agents:prod": "npm run start:prod:node18 -w apps/agents",
-    "agents:test": "dotenv -e .env.test.local -- npm test -w apps/agents"
+    "agents:test": "dotenv -e .env.test.local -- npm test -w apps/agents",
+    "seed:staging": "dotenv -e .env.staging -- tsx apps/cron/src/scripts/seeder/seedWithRealCharmverseGithubData.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -59,7 +60,7 @@
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.110.3",
+    "@charmverse/core": "^0.111.0",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",

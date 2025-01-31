@@ -1,20 +1,24 @@
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
-import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import Image from 'next/image';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import * as yup from 'yup';
 
-import { useS3UploadInput } from '../../../../hooks/useS3UploadInput';
+import { useS3UploadInput } from '../../../hooks/useS3UploadInput';
+
+const avatarSchema = yup.object({
+  avatar: yup.string().notRequired()
+});
 
 type ProjectAvatarFieldProps = {
-  control: Control<CreateScoutProjectFormValues>;
+  control: Control<yup.InferType<typeof avatarSchema>>;
   avatarSize?: number;
-  isLoading?: boolean;
+  disabled?: boolean;
   onAvatarChange?: (url: string) => void;
 };
 
-export function ProjectAvatarField({ control, avatarSize = 150, isLoading, onAvatarChange }: ProjectAvatarFieldProps) {
+export function ProjectAvatarField({ control, avatarSize = 150, disabled, onAvatarChange }: ProjectAvatarFieldProps) {
   const {
     field: avatarField,
     fieldState: { error }
@@ -46,7 +50,7 @@ export function ProjectAvatarField({ control, avatarSize = 150, isLoading, onAva
       }}
     >
       <input
-        disabled={isUploading || isLoading}
+        disabled={isUploading || disabled}
         type='file'
         accept='image/*'
         ref={inputRef}
@@ -74,7 +78,7 @@ export function ProjectAvatarField({ control, avatarSize = 150, isLoading, onAva
             objectFit: 'cover'
           }}
           onClick={() => {
-            if (isLoading) return;
+            if (disabled) return;
             inputRef.current?.click();
           }}
         />
