@@ -1,5 +1,5 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
