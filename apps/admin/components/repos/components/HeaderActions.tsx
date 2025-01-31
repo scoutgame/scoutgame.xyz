@@ -84,6 +84,17 @@ export function HeaderActions() {
             fullWidth
             sx={{ justifyContent: 'flex-start' }}
             size='small'
+            filename={`Octant Weekly Report (${lastWeek}).tsv`}
+            src='/api/partners/octant'
+          >
+            Octant
+          </FileDownloadButton>
+        </MenuItem>
+        <MenuItem>
+          <FileDownloadButton
+            fullWidth
+            sx={{ justifyContent: 'flex-start' }}
+            size='small'
             filename={`Optimism Weekly Report (${lastWeek}).tsv`}
             src='/api/partners/optimism'
           >
