@@ -171,7 +171,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     onError({ error, input }) {
       scoutgameMintsLogger.error('Error purchasing with points', { input, error, userId: user?.id });
       setSubmitError(error.serverError?.message || 'Something went wrong');
-      toast.success('Error while purchasing with points');
     },
     onExecute() {
       setSubmitError(null);

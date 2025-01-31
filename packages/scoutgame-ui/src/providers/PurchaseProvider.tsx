@@ -64,12 +64,8 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
     result: transactionResult,
     executeAsync: checkDecentTransaction
   } = useAction(checkDecentTransactionAction, {
-    onSuccess({ input }) {
-      toast.success(`Transaction ${input.txHash || ''} was successful`);
-    },
     onError({ error, input }) {
       scoutgameMintsLogger.error(`Error checking Decent transaction`, { error, input });
-      toast.error(error.serverError?.message || 'Something went wrong');
     }
   });
 
@@ -84,10 +80,19 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         // Refresh the congrats image without awaiting it since we don't want to slow down the process
         refreshShareImage({ builderId: res.input.user.id });
 
-        const checkResult = await checkDecentTransaction({
+        const checkResultPromise = checkDecentTransaction({
           pendingTransactionId: res.data.id,
           txHash: res.data.txHash
         });
+
+        toast.promise(checkResultPromise, {
+          loading: 'Transaction is being settled...',
+          success: () => `Transaction ${res?.data?.txHash || ''} was successful`,
+          error: (data) => `Transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
+        });
+
+        const checkResult = await checkResultPromise;
+
         await refreshUser();
 
         if (checkResult?.serverError) {
@@ -182,7 +187,6 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
               txMetadata: input.txMetadata,
               error: err
             });
-            toast.error('Creating a mint transaction failed');
           }
         }
       );
