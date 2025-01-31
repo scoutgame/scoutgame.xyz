@@ -144,6 +144,11 @@ export function Header() {
                       <MenuItem component={Link} href='/accounts'>
                         Accounts
                       </MenuItem>
+                      {user.builderStatus === 'approved' ? (
+                        <MenuItem component={Link} href='/profile/projects'>
+                          Projects
+                        </MenuItem>
+                      ) : null}
                       {platform === 'webapp' && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out

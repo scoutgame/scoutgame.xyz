@@ -78,7 +78,7 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
         <Typography>
           {signedIn
             ? "Apply to be a Developer by connecting your GitHub. You'll be in the game once you make your first qualified contribution."
-            : 'Sign up to apply.'}
+            : null}
         </Typography>
         {signedIn ? (
           <Suspense>

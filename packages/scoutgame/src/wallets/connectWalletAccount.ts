@@ -11,10 +11,14 @@ export async function connectWalletAccount({ address, userId }: { address: strin
     return existingWalletUser;
   }
 
+  const wallets = await prisma.scoutWallet.findMany({ where: { scoutId: userId } });
+  const primary = wallets.length === 0;
+
   await prisma.scoutWallet.create({
     data: {
       address: address.toLowerCase(),
-      scoutId: userId
+      scoutId: userId,
+      primary
     }
   });
 }

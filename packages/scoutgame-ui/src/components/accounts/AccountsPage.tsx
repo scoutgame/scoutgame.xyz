@@ -11,7 +11,7 @@ import { WalletConnect } from './components/WalletConnect';
 export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   telegramId: bigint | null;
   telegramName: string | null;
-  wallets: string[];
+  wallets: { address: string; primary: boolean }[];
   avatar: string;
   builderStatus: BuilderStatus | null;
   starterPackNftCount: number;

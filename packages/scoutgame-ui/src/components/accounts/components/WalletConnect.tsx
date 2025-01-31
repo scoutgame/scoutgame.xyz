@@ -2,15 +2,20 @@
 
 import { log } from '@charmverse/core/log';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { LoadingButton } from '@mui/lab';
-import { Paper, Stack, Typography } from '@mui/material';
+import { Chip, IconButton, Menu, MenuItem, Paper, Stack, Typography } from '@mui/material';
 import { connectWalletAccountAction } from '@packages/scoutgame/wallets/connectWalletAccountAction';
 import type { WalletAuthData } from '@packages/scoutgame/wallets/connectWalletAccountSchema';
+import { deleteWalletAction } from '@packages/scoutgame/wallets/deleteWalletAction';
 import { mergeUserWalletAccountAction } from '@packages/scoutgame/wallets/mergeUserWalletAccountAction';
+import { updatePrimaryWalletAction } from '@packages/scoutgame/wallets/updatePrimaryWalletAction';
 import { RainbowKitProvider, useConnectModal } from '@rainbow-me/rainbowkit';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import { useAction } from 'next-safe-action/hooks';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
+import { toast } from 'sonner';
 import { getAddress } from 'viem';
 import { useAccount, useSignMessage } from 'wagmi';
 
@@ -54,10 +59,31 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
   const { executeAsync: connectWalletAccount, isExecuting: isConnectingWalletAccount } = useAction(
     connectWalletAccountAction,
     {
-      onSuccess: ({ data }) => connectAccountOnSuccess(data?.connectedUser),
+      onSuccess: ({ data }) => connectAccountOnSuccess(data?.connectedUser || undefined),
       onError: connectAccountOnError
     }
   );
+
+  const { executeAsync: updatePrimaryWallet, isExecuting: isUpdatingPrimaryWallet } = useAction(
+    updatePrimaryWalletAction,
+    {
+      onSuccess: () => {
+        toast.success('You updated your primary wallet with success.');
+      },
+      onError: () => {
+        toast.error('Failed to update your primary wallet.');
+      }
+    }
+  );
+
+  const { executeAsync: deleteWallet, isExecuting: isDeletingWallet } = useAction(deleteWalletAction, {
+    onSuccess: () => {
+      toast.success('Wallet deleted successfully');
+    },
+    onError: (err) => {
+      toast.error(`Failed. ${err.error?.serverError?.message || "Can't delete wallet"}`);
+    }
+  });
 
   function onClick() {
     if (!address) {
@@ -116,6 +142,7 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
   );
 
   const isConnecting = isRevalidatingPath || isMergingUserAccount || isConnectingWalletAccount;
+  const isLoading = isConnecting || isUpdatingPrimaryWallet || isDeletingWallet;
 
   return (
     <Paper elevation={2} sx={{ p: 2 }}>
@@ -124,16 +151,69 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
           <AccountBalanceWalletOutlinedIcon />
           <Typography variant='h6'>Wallets</Typography>
         </Stack>
-        <Stack gap={1}>
-          {user.wallets.map((wallet) => (
-            <Typography sx={{ overflowWrap: 'break-word' }} key={wallet}>
-              {wallet}
-            </Typography>
-          ))}
+        <Stack gap={1.5} flexDirection='column' display='grid' gridTemplateColumns='auto 1fr' justifyItems='start'>
+          {user.wallets
+            .sort((a, b) => (a.primary ? -1 : b.primary ? 1 : 0))
+            .map(({ address: wallet, primary }) => (
+              <Fragment key={wallet}>
+                <Stack direction='row' gap={1}>
+                  <Typography sx={{ wordBreak: 'break-word' }} component='span'>
+                    {wallet}
+                  </Typography>
+                  {primary && <Chip label='Primary' color='secondary' size='small' />}
+                </Stack>
+                <Stack>
+                  {user.wallets.length > 1 && (
+                    <PopupState variant='popover' popupId={`dropdown-menu-${wallet}`}>
+                      {(popupState) => (
+                        <>
+                          <IconButton disabled={isLoading || primary} sx={{ p: 0 }} {...bindTrigger(popupState)}>
+                            <MoreVertIcon />
+                          </IconButton>
+                          <Menu
+                            {...bindMenu(popupState)}
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'center'
+                            }}
+                            transformOrigin={{
+                              vertical: 'top',
+                              horizontal: 'right'
+                            }}
+                          >
+                            <MenuItem
+                              disabled={isLoading || primary}
+                              onClick={() => {
+                                updatePrimaryWallet({ address: wallet });
+                                popupState.close();
+                              }}
+                            >
+                              Set Primary
+                            </MenuItem>
+                            <MenuItem
+                              disabled={isLoading || primary}
+                              onClick={() => {
+                                deleteWallet({ address: wallet });
+                                popupState.close();
+                              }}
+                            >
+                              Delete
+                            </MenuItem>
+                          </Menu>
+                        </>
+                      )}
+                    </PopupState>
+                  )}
+                </Stack>
+              </Fragment>
+            ))}
         </Stack>
+        <Typography variant='body2'>
+          <sup>*</sup>The primary wallet will receive rewards at the end of each week.
+        </Typography>
         <LoadingButton
-          disabled={isConnecting}
-          loading={isConnecting}
+          disabled={isLoading}
+          loading={isLoading}
           sx={{ width: 'fit-content' }}
           onClick={onClick}
           variant='contained'

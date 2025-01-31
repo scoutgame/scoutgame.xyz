@@ -150,8 +150,9 @@ export async function findOrCreateUser({
       id: userId,
       wallets: lowercaseAddresses?.length
         ? {
-            create: lowercaseAddresses?.map((address) => ({
-              address
+            create: lowercaseAddresses?.map((address, index) => ({
+              address,
+              primary: index === 0
             }))
           }
         : undefined,

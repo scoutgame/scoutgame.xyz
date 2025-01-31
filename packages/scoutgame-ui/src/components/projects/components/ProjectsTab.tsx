@@ -17,9 +17,15 @@ export function ProjectsTab({ scoutProjects }: { scoutProjects: ScoutProjectMini
         borderRadius={1}
       >
         {scoutProjects.map((project) => (
-          <Link key={project.id} href={`/projects/${project.path}`}>
+          <Link key={project.id} href={`/p/${project.path}`}>
             <Stack flexDirection='row' gap={0.75} alignItems='center'>
-              <Image src={project.avatar} alt={project.name} width={20} height={20} style={{ objectFit: 'cover' }} />
+              <Image
+                src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
+                alt={project.name}
+                width={20}
+                height={20}
+                style={{ objectFit: 'cover' }}
+              />
               <Typography>{project.name}</Typography>
             </Stack>
           </Link>

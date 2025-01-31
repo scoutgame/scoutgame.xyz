@@ -18,10 +18,10 @@ import type { BuilderSearchResult } from '@packages/scoutgame/builders/searchBui
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { useCallback, useMemo, useState } from 'react';
 
-import { useSearchBuilders } from '../../../../hooks/api/builders';
-import { useDebouncedValue } from '../../../../hooks/useDebouncedValue';
-import { Avatar } from '../../../common/Avatar';
-import { Dialog } from '../../../common/Dialog';
+import { useSearchBuilders } from '../../../hooks/api/builders';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
+import { Avatar } from '../../common/Avatar';
+import { Dialog } from '../../common/Dialog';
 
 const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult, true>)({
   '& .MuiAutocomplete-popper': {
@@ -64,7 +64,10 @@ export function SearchProjectTeamMember({
         role: 'member'
       }))
     );
-  }, [selectedMembers, onProjectMembersAdd]);
+    setOpen(false);
+    setSearchTerm('');
+    setSelectedMembers([]);
+  }, [selectedMembers, onProjectMembersAdd, setOpen, setSearchTerm, setSelectedMembers]);
 
   const filteredSearchResults = useMemo(() => {
     return searchResults?.filter((option) => !filteredMemberIds.includes(option.id)) ?? [];
@@ -119,13 +122,13 @@ export function SearchProjectTeamMember({
             );
           }}
           value={selectedMembers}
-          onChange={(event, newValue) => setSelectedMembers(newValue)}
+          onChange={(_, newValue) => setSelectedMembers(newValue)}
           multiple
           fullWidth
           open={open && filteredSearchResults.length > 0}
           options={filteredSearchResults}
           getOptionLabel={(option) => option.displayName}
-          onInputChange={(event, value) => setSearchTerm(value)}
+          onInputChange={(_, value) => setSearchTerm(value)}
           renderTags={(tagValue, getTagProps) =>
             tagValue.map((option, index) => (
               <Chip
