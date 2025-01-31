@@ -1,4 +1,4 @@
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { transactionInfoAttestationSchemaUid } from '@packages/scoutgameattestations/constants';
 import { OperationType } from '@safe-global/types-kit';
 import { encodeFunctionData } from 'viem';
