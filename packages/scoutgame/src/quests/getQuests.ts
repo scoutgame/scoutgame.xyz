@@ -30,8 +30,9 @@ export async function getQuests(userId: string, season = getCurrentSeasonStart()
   });
 
   const starterPackCardPurchases = nftPurchaseEvents.filter((event) => event.builderNft.nftType === 'starter_pack');
+  const fullSeasonCardPurchases = nftPurchaseEvents.filter((event) => event.builderNft.nftType === 'default');
 
-  const uniqueCardPurchases = new Set(nftPurchaseEvents.map((event) => event.builderNftId)).size;
+  const uniqueCardPurchases = new Set(fullSeasonCardPurchases.map((event) => event.builderNftId)).size;
 
   return (
     (Object.keys(questsRecord) as QuestType[])
