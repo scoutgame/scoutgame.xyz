@@ -3,7 +3,7 @@ import {
   decodeScoutGameUserProfileAttestation,
   encodeScoutGameUserProfileAttestation,
   type ScoutGameUserProfileAttestation
-} from '@charmverse/core/protocol';
+} from '@packages/scoutgameattestations/easSchemas/scoutGameUserProfileSchema';
 
 import { attestOnchain } from './attestOnchain';
 import { scoutGameAttestationChainId, scoutGameUserProfileSchemaUid } from './constants';
