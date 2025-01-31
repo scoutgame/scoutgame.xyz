@@ -8,6 +8,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useRef, useState } from 'react';
 
 import { useOnboardingRoutes } from '../../providers/OnboardingRoutes';
+import { useUser } from '../../providers/UserProvider';
 import { LoadingComponent } from '../common/Loading/LoadingComponent';
 
 export function BuilderSetupPage({
@@ -23,8 +24,10 @@ export function BuilderSetupPage({
   const router = useRouter();
   const { getNextRoute } = useOnboardingRoutes();
   const ref = useRef(0);
+  const { refreshUser } = useUser();
   const { execute: setupBuilderProfile, status } = useAction(setupBuilderProfileAction, {
-    onSuccess: () => {
+    onSuccess: async () => {
+      await refreshUser();
       router.push(getNextRoute());
     },
     onError: (error) => {
