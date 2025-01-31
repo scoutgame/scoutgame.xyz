@@ -18,17 +18,21 @@ export function getActivityLabel(activity: BuilderActivity, shorten = false) {
         : 'First contribution!'
       : activity.contributionType === 'regular_pr'
         ? shorten
-          ? 'Regular PR!'
-          : 'Contribution accepted!'
-        : activity.contributionType === 'third_pr_in_streak'
+          ? 'Verified PR!'
+          : 'Verified contribution!'
+        : activity.contributionType === 'regular_pr_unreviewed'
           ? shorten
-            ? 'PR Streak!'
-            : 'Contribution streak!'
-          : activity.contributionType === 'daily_commit'
+            ? 'Regular PR!'
+            : 'Contribution accepted!'
+          : activity.contributionType === 'third_pr_in_streak'
             ? shorten
-              ? 'Commit!'
-              : 'Daily commit!'
-            : null
+              ? 'PR Streak!'
+              : 'Contribution streak!'
+            : activity.contributionType === 'daily_commit'
+              ? shorten
+                ? 'Commit!'
+                : 'Daily commit!'
+              : null
     : activity.type === 'nft_purchase'
       ? 'Scouted by'
       : null;
