@@ -40,7 +40,6 @@ import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokens
 import {
   scoutProtocolChainId,
   scoutProtocolBuilderNftContractAddress,
-  scoutProtocolChain,
   scoutTokenErc20ContractAddress,
   scoutTokenDecimals,
   getScoutProtocolBuilderNFTContract
@@ -51,6 +50,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
@@ -116,7 +116,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { error: addressError } = useUserWalletAddress(address);
   const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
     usePurchase();
-  const { showMessage } = useSnackbar();
   const trackEvent = useTrackEvent();
 
   const { switchChainAsync } = useSwitchChain();
@@ -175,6 +174,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     },
     onExecute() {
       setSubmitError(null);
+    },
+    onSuccess() {
+      toast.success('NFT purchase with points was successful');
     }
   });
 
@@ -314,7 +316,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           { chainId: selectedPaymentOption.chainId },
           {
             onError() {
-              showMessage('Failed to switch chain');
+              toast.error('Failed to switch chain');
             }
           }
         );
