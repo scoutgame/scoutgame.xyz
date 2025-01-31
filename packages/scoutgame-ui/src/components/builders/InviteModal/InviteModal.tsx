@@ -1,4 +1,4 @@
-import { Button, Divider, Stack, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import Image from 'next/image';
 import { Suspense } from 'react';
@@ -10,6 +10,7 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
   return (
     <Dialog open={open} onClose={onClose} maxWidth='xs'>
       <Stack
+        alignItems='center'
         gap={{
           xs: 1,
           md: 2
@@ -18,6 +19,7 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
           xs: 1,
           md: 2
         }}
+        sx={{ '& a': { width: 'auto', px: 4 } }}
       >
         <Typography variant='h6' color='secondary' textAlign='center'>
           Be a Scout Game Developer
