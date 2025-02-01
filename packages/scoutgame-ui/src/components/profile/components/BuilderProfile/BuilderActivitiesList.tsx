@@ -38,11 +38,11 @@ export function getActivityLabel(activity: BuilderActivity, shorten = false) {
       : null;
 }
 
-export function BuilderActivityLabel({ activity }: { activity: BuilderActivity }) {
+function BuilderActivityLabel({ activity }: { activity: BuilderActivity }) {
   return <Typography component='span'>{getActivityLabel(activity)}</Typography>;
 }
 
-export function BuilderActivityDetail({ activity }: { activity: BuilderActivity }) {
+function BuilderActivityDetail({ activity }: { activity: BuilderActivity }) {
   return (
     <Stack component='span' flexDirection='row' gap={0.5} alignItems='center'>
       {activity.type === 'nft_purchase' ? (
@@ -79,7 +79,7 @@ export function BuilderActivityGems({
   );
 }
 
-export function BuilderActivityBonusPartner({
+function BuilderActivityBonusPartner({
   activity,
   showEmpty = false
 }: {
