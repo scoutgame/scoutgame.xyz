@@ -15,7 +15,7 @@ export const bonusPartnersRecord = {
   },
   game7: {
     name: 'Game7',
-    icon: 'https://yt3.googleusercontent.com/KHNdF-AtNsZDH0efEdZnVA4O4BjLKAkgeszsZ11mTUgjtbmc0EYfp23Y5MnIK9-tQ94M7Lu4nQ=s160-c-k-c0x00ffffff-no-rj'
+    icon: 'https://scoutgame.xyz/images/crypto/game7.png'
   },
   lit_protocol: {
     name: 'Lit Protocol',
