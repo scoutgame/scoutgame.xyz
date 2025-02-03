@@ -3,7 +3,7 @@ import { log } from '@charmverse/core/log';
 import { builderNftChain, builderSmartContractMinterKey } from '@packages/scoutgame/builderNfts/constants';
 import { sleep } from '@packages/utils/sleep';
 import type { WalletClient } from 'viem';
-import { createWalletClient, http, publicActions, parseEther } from 'viem';
+import { createWalletClient, http, publicActions, nonceManager } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
 import { optimism } from 'viem/chains';
 
@@ -32,8 +32,10 @@ export function getWalletClient({
   }
 
   const account = mnemonic
-    ? mnemonicToAccount(mnemonic)
-    : privateKeyToAccount((privateKey!.startsWith('0x') ? privateKey : `0x${privateKey}`) as `0x${string}`);
+    ? mnemonicToAccount(mnemonic, { nonceManager })
+    : privateKeyToAccount((privateKey!.startsWith('0x') ? privateKey : `0x${privateKey}`) as `0x${string}`, {
+        nonceManager
+      });
 
   let rpcUrl = chain.rpcUrls[0];
 
@@ -82,8 +84,8 @@ export function getWalletClient({
         const isNonceError = errorAsString.match(nonceErrorExpression);
         const isReplacementTransactionUnderpriced = errorAsString.match(replacementTransactionUnderpriced);
 
-        console.log('isNonceError', isNonceError);
-        console.log('isReplacementTransactionUnderpriced', isReplacementTransactionUnderpriced);
+        // console.log('isNonceError', isNonceError);
+        // console.log('isReplacementTransactionUnderpriced', isReplacementTransactionUnderpriced);
 
         if (isNonceError || isReplacementTransactionUnderpriced) {
           if (i >= MAX_TX_RETRIES) {
