@@ -73,6 +73,14 @@ describe('getQuests', () => {
     });
 
     await mockNFTPurchaseEvent({
+      builderId: builders[1].id,
+      scoutId: scout.id,
+      season: currentSeason,
+      week: currentSeason,
+      nftType: 'default'
+    });
+
+    await mockNFTPurchaseEvent({
       builderId: builders[0].id,
       scoutId: scout.id,
       season: currentSeason,
