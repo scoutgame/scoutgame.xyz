@@ -62,6 +62,7 @@ export function PartnerRewardsCarousel() {
       <Carousel
         height={isDesktop ? 300 : 145}
         slidesPerView={1}
+        autoplay
         pagination={{
           clickable: true,
           renderBullet: (index, className) =>
