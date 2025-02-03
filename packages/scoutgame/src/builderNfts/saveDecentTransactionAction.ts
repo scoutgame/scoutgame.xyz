@@ -1,7 +1,6 @@
 'use server';
 
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
@@ -33,8 +32,8 @@ export const saveDecentTransactionAction = authActionClient
       })
     })
   )
-  .action(async ({ parsedInput }) => {
-    const userId = await getUserFromSession().then((u) => u?.id);
+  .action(async ({ parsedInput, ctx }) => {
+    const userId = ctx.session.scoutId;
 
     if (!userId) {
       throw new Error('User not found');
