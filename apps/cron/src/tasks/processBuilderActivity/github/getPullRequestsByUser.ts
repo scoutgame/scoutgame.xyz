@@ -152,6 +152,9 @@ export async function getPullRequestsByUser({
         const approvals = node.latestReviews.nodes.filter((review) => review.state === 'APPROVED');
         if (approvals.length > 0) {
           effectiveReviewDecision = 'APPROVED';
+          log.info(`Overriding review decision for ${node.title} to APPROVED`, {
+            url: node.url
+          });
         }
       }
 
