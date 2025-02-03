@@ -1,9 +1,23 @@
 import { jest } from '@jest/globals';
-import { builderCreatorAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { createContext } from '@packages/testing/koa/context';
+import { generatePrivateKey } from 'viem/accounts';
+import { baseSepolia } from 'viem/chains';
 
 jest.unstable_mockModule('@packages/utils/http', () => ({
   POST: jest.fn()
+}));
+
+const privateKey = generatePrivateKey();
+
+const client = getWalletClient({
+  chainId: baseSepolia.id,
+  privateKey
+});
+
+jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
+  builderNftChain: { id: 1 },
+  builderSmartContractMinterKey: privateKey
 }));
 
 jest.unstable_mockModule('../getWalletGasBalanceInUSD', () => ({
@@ -21,12 +35,14 @@ describe('alertLowWalletGasBalance', () => {
     jest.resetAllMocks();
   });
 
+  const walletAddress = client.account.address;
+
   it('should call the webhook when balance is below threshold', async () => {
     (getWalletGasBalanceInUSD as jest.Mock<typeof getWalletGasBalanceInUSD>).mockResolvedValue(20); // Below threshold of 25
 
     await alertLowWalletGasBalance(createContext(), discordWebhook);
 
-    expect(getWalletGasBalanceInUSD).toHaveBeenCalledWith(builderCreatorAddress);
+    expect(getWalletGasBalanceInUSD).toHaveBeenCalledWith(walletAddress);
     expect(POST).toHaveBeenCalledWith(
       discordWebhook,
       expect.objectContaining({
@@ -40,7 +56,7 @@ describe('alertLowWalletGasBalance', () => {
 
     await alertLowWalletGasBalance(createContext(), discordWebhook);
 
-    expect(getWalletGasBalanceInUSD).toHaveBeenCalledWith(builderCreatorAddress);
+    expect(getWalletGasBalanceInUSD).toHaveBeenCalledWith(walletAddress);
     expect(POST).not.toHaveBeenCalled();
   });
 
