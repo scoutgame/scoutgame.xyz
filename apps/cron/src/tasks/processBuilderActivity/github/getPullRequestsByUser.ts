@@ -29,6 +29,15 @@ type GraphQLPullRequest = {
       name: string;
     };
   };
+  latestReviews?: {
+    nodes: {
+      state: 'APPROVED' | 'CHANGES_REQUESTED' | 'COMMENTED' | 'DISMISSED';
+      author: {
+        login: string;
+      };
+      submittedAt: string;
+    }[];
+  };
 };
 
 // we convert the author id to a number consistently to simplify consuming code
@@ -67,6 +76,15 @@ const prSearchQuery = `
           state
           mergedAt
           reviewDecision
+          latestReviews(first: 10) {
+            nodes {
+              state
+              author {
+                login
+              }
+              submittedAt
+            }
+          }
           closedAt
           createdAt
           number
@@ -129,8 +147,20 @@ export async function getPullRequestsByUser({
 
   return allItems
     .map((node) => {
+      let effectiveReviewDecision = node.reviewDecision;
+      if (node.state === 'MERGED' && !effectiveReviewDecision && node.latestReviews?.nodes) {
+        const approvals = node.latestReviews.nodes.filter((review) => review.state === 'APPROVED');
+        if (approvals.length > 0) {
+          effectiveReviewDecision = 'APPROVED';
+          log.info(`Overriding review decision for ${node.title} to APPROVED`, {
+            url: node.url
+          });
+        }
+      }
+
       return {
         ...node,
+        reviewDecision: effectiveReviewDecision,
         author: {
           id: githubUserId || (node.author.id as number),
           login: node.author.login
