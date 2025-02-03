@@ -45,6 +45,7 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
 
       if (pathname.includes('builder-registration-callback')) {
         urlParams.set('step', '3');
+        urlParams.set('type', 'builder');
         return `${baseRoute}?${urlParams.toString()}`;
       }
 
