@@ -5,7 +5,7 @@ import { sleep } from '@packages/utils/sleep';
 import type { WalletClient } from 'viem';
 import { createWalletClient, http, publicActions, nonceManager } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
-import { optimism } from 'viem/chains';
+import { optimism, baseSepolia } from 'viem/chains';
 
 import { getChainById } from './chains';
 import { getAlchemyBaseUrl } from './provider/alchemy/client';
@@ -84,9 +84,6 @@ export function getWalletClient({
         const isNonceError = errorAsString.match(nonceErrorExpression);
         const isReplacementTransactionUnderpriced = errorAsString.match(replacementTransactionUnderpriced);
 
-        // console.log('isNonceError', isNonceError);
-        // console.log('isReplacementTransactionUnderpriced', isReplacementTransactionUnderpriced);
-
         if (isNonceError || isReplacementTransactionUnderpriced) {
           if (i >= MAX_TX_RETRIES) {
             log.error(`Max retries reached for sending transaction, ${i}`, { e, args });
@@ -114,34 +111,3 @@ export function getWalletClient({
 
   return client;
 }
-
-const client = getWalletClient({
-  chainId: optimism.id,
-  privateKey: builderSmartContractMinterKey
-});
-
-// console.log('Address', client.account.address);
-
-// async function test() {
-//   await Promise.all(
-//     Array.from({ length: 5 }, async (_, i) => {
-//       const multiplier = BigInt(1000000000000);
-
-//       const value = multiplier * BigInt(i + 1);
-
-//       // console.log('Value', value);
-
-//       const first = '0x518AF6fA5eEC4140e4283f7BDDaB004D45177946';
-//       const second = '0xA0e2928705304a6e554166251C1E8f4340b81547';
-
-//       const tx = await client.sendTransaction({
-//         to: second,
-//         value: multiplier * BigInt(i + 1)
-//       });
-//     })
-//   );
-// }
-
-// test().then(console.log);
-
-// client.getBlockNumber().then(console.log);
