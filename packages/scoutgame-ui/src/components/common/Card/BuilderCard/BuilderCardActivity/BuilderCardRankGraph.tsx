@@ -9,7 +9,7 @@ export function BuilderCardRankGraph({ last14DaysRank }: { last14DaysRank: (numb
         data={[
           ...(missingDays === 0
             ? last14DaysRank
-            : last14DaysRank.concat(Array.from({ length: missingDays }, () => null)))
+            : Array.from<number, number | null>({ length: missingDays }, () => null).concat(last14DaysRank))
         ].map((rank) => ({
           value: rank ? 100 - rank : 0
         }))}
