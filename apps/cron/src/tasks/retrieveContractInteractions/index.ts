@@ -1,11 +1,14 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getChainById } from '@packages/blockchain/chains';
 import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
+import type { SupportedChainId } from '@packages/blockchain/provider/ankr/client';
+import { getLogs } from '@packages/blockchain/provider/ankr/getLogs';
+import { getTransactionReceipt } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
 import { toJson } from '@packages/utils/json';
 import type Koa from 'koa';
 import { createPublicClient, http } from 'viem';
 import type { Address } from 'viem';
-import { taiko } from 'viem/chains';
 
 const log = getLogger('cron-retrieve-contract-interactions');
 
@@ -13,12 +16,6 @@ const log = getLogger('cron-retrieve-contract-interactions');
 const defaultPageSize = BigInt(900);
 
 export async function retrieveContractInteractions(ctx: Koa.Context) {
-  const client = createPublicClient({
-    chain: taiko,
-    transport: http()
-  });
-
-  const latestBlock = await client.getBlockNumber();
   const contracts = await prisma.scoutProjectContract.findMany();
   log.info('Analyzing interactions for', contracts.length, 'contracts...');
 
@@ -28,6 +25,17 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
   const windowStarts: Record<string, bigint> = {};
 
   for (const contract of contracts) {
+    const chain = getChainById(contract.chainId);
+    if (!chain) {
+      throw new Error(`Chain not found for network: ${contract.chainId}`);
+    }
+
+    const client = createPublicClient({
+      chain: chain.viem,
+      transport: http()
+    });
+
+    const latestBlock = await client.getBlockNumber();
     try {
       const chainId = contract.chainId;
       const firstBlock = windowStarts[chainId] || (await getBlockByDate({ date: windowStart, chainId })).number;
@@ -50,7 +58,8 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
         address: contract.address as Address,
         fromBlock,
         toBlock: latestBlock,
-        contractId: contract.id
+        contractId: contract.id,
+        chainId: contract.chainId as SupportedChainId
       });
 
       // Record this poll event
@@ -69,29 +78,28 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
   }
 }
 
+// retrieve txs using ankr
 async function retrieveContractLogs({
   address,
   fromBlock,
   toBlock,
   contractId,
-  pageSize = defaultPageSize
+  pageSize = defaultPageSize,
+  chainId
 }: {
   address: Address;
   fromBlock: bigint;
   toBlock: bigint;
   contractId: string;
   pageSize?: bigint;
+  chainId: SupportedChainId;
 }) {
-  const client = createPublicClient({
-    chain: taiko,
-    transport: http()
-  });
-
   for (let currentBlock = fromBlock; currentBlock <= toBlock; currentBlock += pageSize) {
     const nextStep = currentBlock + (pageSize - BigInt(1));
     const endBlock = nextStep > toBlock ? toBlock : nextStep;
 
-    const logs = await client.getLogs({
+    const logs = await getLogs({
+      chainId,
       address,
       fromBlock: currentBlock,
       toBlock: endBlock
@@ -104,7 +112,7 @@ async function retrieveContractLogs({
     }
 
     const txData = await Promise.all(
-      Array.from(txHashes).map((txHash) => client.getTransactionReceipt({ hash: txHash as `0x${string}` }))
+      Array.from(txHashes).map((txHash) => getTransactionReceipt({ chainId, txHash: txHash as `0x${string}` }))
     );
 
     if (logs.length > 0) {
