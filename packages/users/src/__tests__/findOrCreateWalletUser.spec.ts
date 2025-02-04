@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { randomWalletAddress } from '@packages/testing/generators';
 import { getAddress } from 'viem';
 

@@ -1,10 +1,11 @@
 'use server';
 
+import type { DecentTxFailedPermanently } from '@packages/blockchain/waitForDecentTransactionSettlement';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { getSession } from '@packages/nextjs/session/getSession';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
 
+import { handleEmailFailedTransaction } from './handleEmailFailedTransaction';
 import { handlePendingTransaction } from './handlePendingTransaction';
 
 export const checkDecentTransactionAction = authActionClient
@@ -15,16 +16,19 @@ export const checkDecentTransactionAction = authActionClient
       txHash: yup.string()
     })
   )
-  .action(async ({ parsedInput }) => {
-    const session = await getSession();
-    const userId = session?.scoutId;
-
-    if (!userId) {
-      throw new Error('User not found');
-    }
+  .action(async ({ parsedInput, ctx }) => {
+    const userId = ctx.session.scoutId;
 
     await handlePendingTransaction({
       pendingTransactionId: parsedInput.pendingTransactionId
+    }).catch(async (err: Error | DecentTxFailedPermanently) => {
+      await handleEmailFailedTransaction({
+        userId,
+        pendingTransactionId: parsedInput.pendingTransactionId,
+        errorMessage: err.message || undefined
+      });
+
+      throw err;
     });
 
     revalidatePath('/', 'layout');

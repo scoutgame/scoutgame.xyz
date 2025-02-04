@@ -45,6 +45,7 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
 
       if (pathname.includes('builder-registration-callback')) {
         urlParams.set('step', '3');
+        urlParams.set('type', 'builder');
         return `${baseRoute}?${urlParams.toString()}`;
       }
 
@@ -70,11 +71,8 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
         case '3': {
           if (profileRedirect === 'true') {
             return '/profile';
-          } else if (user?.builderStatus) {
-            return redirectUrl;
           } else {
-            urlParams.set('step', '4');
-            return `${baseRoute}?${urlParams.toString()}`;
+            return redirectUrl;
           }
         }
         // How it works

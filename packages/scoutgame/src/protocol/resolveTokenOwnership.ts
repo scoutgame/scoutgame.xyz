@@ -1,3 +1,4 @@
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import type { ISOWeek } from '@packages/dates/config';
 import type { Address } from 'viem';
@@ -41,7 +42,7 @@ export async function resolveTokenOwnership({
     const ownershipForToken = tokenOwnership[id.toString()];
 
     // Subtract tokens from sender (if not minting)
-    if (from !== '0x0000000000000000000000000000000000000000') {
+    if (from !== NULL_EVM_ADDRESS) {
       const currentFromBalance = ownershipForToken[from.toLowerCase() as Address] || 0;
       const newFromBalance = currentFromBalance - Number(value);
       if (newFromBalance === 0) {
@@ -52,7 +53,7 @@ export async function resolveTokenOwnership({
     }
 
     // Add tokens to receiver (if not burning)
-    if (to !== '0x0000000000000000000000000000000000000000') {
+    if (to !== NULL_EVM_ADDRESS) {
       const currentToBalance = ownershipForToken[to.toLowerCase() as Address] || 0;
       ownershipForToken[to.toLowerCase() as Address] = currentToBalance + Number(value);
     }

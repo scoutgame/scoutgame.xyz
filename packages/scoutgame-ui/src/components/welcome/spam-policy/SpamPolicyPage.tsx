@@ -24,7 +24,7 @@ export function SpamPolicyPage() {
 
   return (
     <SinglePageLayout data-test='spam-policy-page'>
-      <SinglePageWrapper bgcolor='background.default'>
+      <SinglePageWrapper bgcolor='background.default' height='auto' hasBorder maxWidth='400px'>
         <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
           Spam Policy
         </Typography>

@@ -10,7 +10,8 @@ import { Carousel } from '../../common/Carousel/Carousel';
 const partnerInfos = [
   { logo: 'celo.png', name: 'celo', infoPath: 'celo' },
   { logo: 'game7.png', name: 'game7', infoPath: 'game7' },
-  { logo: 'lit.png', name: 'lit', infoPath: 'lit' }
+  { logo: 'lit.png', name: 'lit', infoPath: 'lit' },
+  { logo: 'octant.svg', name: 'octant', infoPath: 'octant', skipRoundedBorder: true }
 ];
 
 export function PartnerRewardsCarousel() {
@@ -30,6 +31,9 @@ export function PartnerRewardsCarousel() {
             md: 25
           },
           borderRadius: '50%',
+          '&.skip-rounded-border': {
+            borderRadius: 0
+          },
           marginRight: {
             xs: '10px !important',
             md: '20px !important'
@@ -49,6 +53,9 @@ export function PartnerRewardsCarousel() {
         '& .swiper-pagination': {
           position: 'relative',
           bottom: 5
+        },
+        '& .swiper-pagination-bullet-active': {
+          backgroundColor: 'transparent'
         }
       }}
     >
@@ -59,7 +66,7 @@ export function PartnerRewardsCarousel() {
         pagination={{
           clickable: true,
           renderBullet: (index, className) =>
-            `<img src="/images/crypto/${partnerInfos[index].logo}" class="${className}"/>`
+            `<img src="/images/crypto/${partnerInfos[index].logo}" class="${className}${partnerInfos[index].skipRoundedBorder ? ' skip-rounded-border' : ''}"/>`
         }}
         slotProps={{ boxProps: { width: { xs: '100%', md: '95%' } } }}
       >

@@ -1,6 +1,6 @@
-import { NULL_EVM_ADDRESS } from '@charmverse/core/protocol';
 import { EAS } from '@ethereum-attestation-service/eas-sdk';
 import { getChainById } from '@packages/blockchain/chains';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { Network, Wallet, JsonRpcProvider } from 'ethers';
 import type { Address } from 'viem';
 

@@ -1,12 +1,25 @@
 'use client';
 
 import { Box, Button, Paper, Stack, Typography } from '@mui/material';
+import { builderLoginUrl } from '@packages/scoutgame/constants';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { useGlobalModal } from '../../../providers/ModalProvider';
+import { useUser } from '../../../providers/UserProvider';
 
 export function BuilderPageInviteCard() {
   const { openModal } = useGlobalModal();
+  const { user } = useUser();
+  const router = useRouter();
+
+  const handleButtonClick = () => {
+    if (user) {
+      openModal('newBuilder');
+    } else {
+      router.push(builderLoginUrl);
+    }
+  };
 
   return (
     <Paper
@@ -42,7 +55,7 @@ export function BuilderPageInviteCard() {
         repositories.
       </Typography>
       <Button
-        onClick={() => openModal('newBuilder')}
+        onClick={handleButtonClick}
         color='primary'
         sx={{ cursor: 'pointer', width: 200, textAlign: 'center', fontWeight: 400, margin: '0 auto' }}
       >

@@ -12,7 +12,8 @@ export async function importReposByUser(githubLogin: string) {
     select: {
       id: true,
       owner: true,
-      name: true
+      name: true,
+      bonusPartner: true
     }
   });
   // if (reposInDBByOwner.length > 0) {
@@ -41,12 +42,36 @@ export async function importReposByUser(githubLogin: string) {
         defaultBranch: repo.default_branch,
         name: repo.name,
         ownerType: isOrg ? 'org' : 'user',
-        fork: repo.fork
+        fork: repo.fork,
+        bonusPartner: 'octant'
       }))
     });
     log.info(
       `Imported new repos from ${githubLogin}:`,
       notSaved.map((r) => r.name)
     );
+  }
+  if (reposInDB.length > 0) {
+    const alreadyHaveBonus = reposInDB.filter((r) => !!r.bonusPartner);
+    log.info(
+      `Updated existing repos for ${githubLogin}`,
+      await prisma.githubRepo.updateMany({
+        where: {
+          id: {
+            in: reposInDB.map((r) => r.id)
+          },
+          bonusPartner: null
+        },
+        data: {
+          bonusPartner: 'octant'
+        }
+      })
+    );
+    if (alreadyHaveBonus.length > 0) {
+      log.info(
+        'Some PRs already have bonus partner:',
+        alreadyHaveBonus.map((r) => `${r.owner}/${r.name} - ${r.bonusPartner}`)
+      );
+    }
   }
 }

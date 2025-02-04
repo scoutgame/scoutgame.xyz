@@ -1,9 +1,23 @@
 import { jest } from '@jest/globals';
-import { builderCreatorAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getWalletClient } from '@packages/blockchain/getWalletClient';
+import { generatePrivateKey } from 'viem/accounts';
+import { baseSepolia } from 'viem/chains';
 
 jest.unstable_mockModule('@packages/utils/http', () => ({
   POST: jest.fn(),
   GET: jest.fn()
+}));
+
+const privateKey = generatePrivateKey();
+
+const client = getWalletClient({
+  chainId: baseSepolia.id,
+  privateKey
+});
+
+jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
+  builderNftChain: { id: 1 },
+  builderSmartContractMinterKey: privateKey
 }));
 
 const { POST, GET } = await import('@packages/utils/http');
@@ -21,7 +35,7 @@ describe('getWalletGasBalanceInUSD', () => {
       ethereum: { usd: 0.025 } // $0.025 per ETH
     });
 
-    const balance = await getWalletGasBalanceInUSD(builderCreatorAddress, 'test-api-key');
+    const balance = await getWalletGasBalanceInUSD(client.account.address, 'test-api-key');
 
     expect(balance).toBeCloseTo(25, 2); // $25 with 2 decimal places precision
     expect(POST).toHaveBeenCalledWith(

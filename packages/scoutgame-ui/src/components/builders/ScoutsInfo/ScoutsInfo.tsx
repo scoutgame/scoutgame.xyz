@@ -1,15 +1,28 @@
 'use client';
 
 import { Button, Stack, Typography } from '@mui/material';
+import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { InfoPageFooter } from '@packages/scoutgame-ui/components/info/components/InfoPageFooter';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { useGlobalModal } from '../../../providers/ModalProvider';
+import { useUser } from '../../../providers/UserProvider';
 import { HowToPlaySection } from '../../partners/PartnerLandingPage';
 
 function FooterSection() {
   const { openModal } = useGlobalModal();
+  const { user } = useUser();
+  const router = useRouter();
+
+  const handleButtonClick = () => {
+    if (user) {
+      openModal('newBuilder');
+    } else {
+      router.push(builderLoginUrl);
+    }
+  };
 
   return (
     <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }} mb={{ xs: 4, md: 0 }}>
@@ -43,7 +56,7 @@ function FooterSection() {
           Write code & earn rewards! <br /> Join Scout Game.
         </Typography>
         <Button
-          onClick={() => openModal('newBuilder')}
+          onClick={handleButtonClick}
           color='primary'
           sx={{ cursor: 'pointer', width: 200, textAlign: 'center', fontWeight: 400, margin: '0 auto' }}
         >

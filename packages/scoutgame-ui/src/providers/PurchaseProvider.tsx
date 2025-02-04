@@ -12,12 +12,12 @@ import {
 import { useAction } from 'next-safe-action/hooks';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { useSendTransaction } from 'wagmi';
 
 import { useRefreshShareImage } from '../hooks/api/builders';
 
-import { useSnackbar } from './SnackbarContext';
 import { useUser } from './UserProvider';
 
 type MintTransactionInput = {
@@ -52,7 +52,6 @@ type PurchaseContext = {
 export const PurchaseContext = createContext<Readonly<PurchaseContext | null>>(null);
 
 export function PurchaseProvider({ children }: { children: ReactNode }) {
-  const { showMessage } = useSnackbar();
   const { trigger: refreshShareImage } = useRefreshShareImage();
   const { refreshUser } = useUser();
   const { sendTransactionAsync } = useSendTransaction();
@@ -65,12 +64,8 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
     result: transactionResult,
     executeAsync: checkDecentTransaction
   } = useAction(checkDecentTransactionAction, {
-    onSuccess({ input }) {
-      showMessage(`Transaction ${input.txHash || ''} was successful`, 'success');
-    },
     onError({ error, input }) {
       scoutgameMintsLogger.error(`Error checking Decent transaction`, { error, input });
-      showMessage(error.serverError?.message || 'Something went wrong', 'error');
     }
   });
 
@@ -85,10 +80,19 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         // Refresh the congrats image without awaiting it since we don't want to slow down the process
         refreshShareImage({ builderId: res.input.user.id });
 
-        const checkResult = await checkDecentTransaction({
+        const checkResultPromise = checkDecentTransaction({
           pendingTransactionId: res.data.id,
           txHash: res.data.txHash
         });
+
+        toast.promise(checkResultPromise, {
+          loading: 'Transaction is being settled...',
+          success: () => `Transaction ${res?.data?.txHash || ''} was successful`,
+          error: (data) => `Transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
+        });
+
+        const checkResult = await checkResultPromise;
+
         await refreshUser();
 
         if (checkResult?.serverError) {
@@ -145,6 +149,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         {
           onSuccess: async (_data) => {
             setPurchaseSuccess(true);
+            toast.info('NFT purchase is sent and will be confirmed shortly');
             const output = await saveDecentTransaction({
               user: {
                 id: builderId,
