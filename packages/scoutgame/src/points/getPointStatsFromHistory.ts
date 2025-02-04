@@ -127,15 +127,16 @@ export async function getPointStatsFromHistory({
 
   const pointsSpent = pointsSpentRecords.reduce((acc, { value }) => acc + value, 0);
 
-  const pointsReceivedAsBuilder = pointsReceivedAsBuilderRecords.reduce((acc, { value }) => acc + value, 0);
   const pointsReceivedForSellingNFTs = pointsReceivedForSellingNFTsRecords.reduce((acc, { value }) => acc + value, 0);
+
+  const pointsReceivedAsBuilder =
+    pointsReceivedAsBuilderRecords.reduce((acc, { value }) => acc + value, 0) + pointsReceivedForSellingNFTs;
   const pointsReceivedAsScout = pointsReceivedAsScoutRecords.reduce((acc, { value }) => acc + value, 0);
   const bonusPointsReceived = bonusPointsReceivedRecords.reduce((acc, { value }) => acc + value, 0);
 
   const allPointsReceived = allPointsReceivedRecords.reduce((acc, { value }) => acc + value, 0);
 
-  const allPointsReceivedSum =
-    pointsReceivedAsBuilder + pointsReceivedForSellingNFTs + pointsReceivedAsScout + bonusPointsReceived;
+  const allPointsReceivedSum = pointsReceivedAsBuilder + pointsReceivedAsScout + bonusPointsReceived;
 
   const claimedPoints = allPointsReceivedRecords
     .filter((record) => !!record.claimedAt)

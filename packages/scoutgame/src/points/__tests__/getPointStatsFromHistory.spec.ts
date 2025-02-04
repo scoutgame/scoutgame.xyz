@@ -260,6 +260,193 @@ describe('getPointStatsFromHistory', () => {
     });
   });
 
+  it('should count points from all supported categories', async () => {
+    const testedBuilder = await mockBuilder();
+
+    const otherBuilder = await mockBuilder();
+
+    // Create test data for each category
+    const builderGemsPayoutEvent = await prisma.builderEvent.create({
+      data: {
+        season,
+        week: season,
+        builderId: testedBuilder.id,
+        type: 'gems_payout'
+      }
+    });
+
+    const nftEvent = await prisma.builderEvent.create({
+      data: {
+        type: 'nft_purchase',
+        season,
+        week: season,
+        builderId: testedBuilder.id
+      }
+    });
+
+    const spentPointsBuilderEvent = await prisma.builderEvent.create({
+      data: {
+        type: 'nft_purchase',
+        season,
+        week: season,
+        builderId: otherBuilder.id
+      }
+    });
+
+    const scoutGemsPayoutEvent = await prisma.builderEvent.create({
+      data: {
+        type: 'gems_payout',
+        season,
+        week: season,
+        builderId: otherBuilder.id
+      }
+    });
+
+    const builderGemsPayoutPoints = await prisma.pointsReceipt.create({
+      data: {
+        value: 100,
+        season,
+        recipientId: testedBuilder.id,
+        eventId: builderGemsPayoutEvent.id,
+        activities: {
+          create: {
+            userId: testedBuilder.id,
+            type: 'points',
+            recipientType: 'builder'
+          }
+        }
+      }
+    });
+
+    const nftPoints = await prisma.pointsReceipt.create({
+      data: {
+        value: 75,
+        season,
+        recipientId: testedBuilder.id,
+        eventId: nftEvent.id
+      }
+    });
+
+    const scoutPoints = await prisma.pointsReceipt.create({
+      data: {
+        value: 200,
+        season,
+        recipientId: testedBuilder.id,
+        eventId: scoutGemsPayoutEvent.id,
+        activities: {
+          create: {
+            recipientType: 'scout',
+            type: 'points',
+            userId: testedBuilder.id
+          }
+        }
+      }
+    });
+
+    const spentPoints = await prisma.pointsReceipt.create({
+      data: {
+        value: 50,
+        season,
+        senderId: testedBuilder.id,
+        recipientId: otherBuilder.id,
+        eventId: spentPointsBuilderEvent.id
+      }
+    });
+
+    const bonusEvents = await Promise.all([
+      prisma.builderEvent.create({
+        data: {
+          type: 'daily_claim',
+          season,
+          week: season,
+          builderId: testedBuilder.id
+        }
+      }),
+      prisma.builderEvent.create({
+        data: {
+          type: 'social_quest',
+          season,
+          week: season,
+          builderId: testedBuilder.id
+        }
+      }),
+      prisma.builderEvent.create({
+        data: {
+          type: 'daily_claim_streak',
+          season,
+          week: season,
+          builderId: testedBuilder.id
+        }
+      }),
+      prisma.builderEvent.create({
+        data: {
+          type: 'referral',
+          season,
+          week: season,
+          builderId: testedBuilder.id
+        }
+      }),
+      prisma.builderEvent.create({
+        data: {
+          type: 'misc_event',
+          season,
+          week: season,
+          builderId: testedBuilder.id
+        }
+      })
+    ]);
+
+    const bonusPoints = await Promise.all([
+      prisma.pointsReceipt.create({
+        data: {
+          value: 10,
+          season,
+          recipientId: testedBuilder.id,
+          eventId: bonusEvents[0].id
+        }
+      }),
+      prisma.pointsReceipt.create({
+        data: {
+          value: 20,
+          season,
+          recipientId: testedBuilder.id,
+          eventId: bonusEvents[1].id
+        }
+      }),
+      prisma.pointsReceipt.create({
+        data: {
+          value: 30,
+          season,
+          recipientId: testedBuilder.id,
+          eventId: bonusEvents[2].id
+        }
+      }),
+      prisma.pointsReceipt.create({
+        data: {
+          value: 40,
+          season,
+          recipientId: testedBuilder.id,
+          eventId: bonusEvents[3].id
+        }
+      }),
+      prisma.pointsReceipt.create({
+        data: {
+          value: 50,
+          season,
+          recipientId: testedBuilder.id,
+          eventId: bonusEvents[4].id
+        }
+      })
+    ]);
+
+    const stats = await getPointStatsFromHistory({ userIdOrPath: testedBuilder.id, season });
+
+    expect(stats.pointsSpent).toBe(50);
+    expect(stats.pointsReceivedAsScout).toBe(200);
+    expect(stats.pointsReceivedAsBuilder).toBe(175);
+    expect(stats.bonusPointsReceived).toBe(150); // Sum of all bonus points (10+20+30+40+50)
+  });
+
   it('should return detailed point stats, with a balance calculated based on points claimed minus claimed points (unclaimed points not in balance), and only take points stats from the provided season', async () => {
     const pointsSpentRecords = [{ value: 100 }, { value: 50 }];
 
