@@ -25,18 +25,18 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
   const windowStarts: Record<string, bigint> = {};
 
   for (const contract of contracts) {
-    const chain = getChainById(contract.chainId);
-    if (!chain) {
-      throw new Error(`Chain not found for network: ${contract.chainId}`);
-    }
-
-    const client = createPublicClient({
-      chain: chain.viem,
-      transport: http()
-    });
-
-    const latestBlock = await client.getBlockNumber();
     try {
+      const chain = getChainById(contract.chainId);
+      if (!chain) {
+        throw new Error(`Chain not found for network: ${contract.chainId}`);
+      }
+
+      const client = createPublicClient({
+        chain: chain.viem,
+        transport: http()
+      });
+
+      const latestBlock = await client.getBlockNumber();
       const chainId = contract.chainId;
       const firstBlock = windowStarts[chainId] || (await getBlockByDate({ date: windowStart, chainId })).number;
       // Get the last poll event for this contract
@@ -73,7 +73,11 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
         }
       });
     } catch (error) {
-      log.error('Error processing contract:', { error, address: contract.address });
+      log.error('Error processing contract:', {
+        error,
+        chainId: contract.chainId,
+        address: contract.address
+      });
     }
   }
 }
