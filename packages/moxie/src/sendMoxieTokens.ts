@@ -12,6 +12,7 @@ type Candidate = {
 };
 
 export async function sendMoxieTokens({ week, candidates }: { week: string; candidates: MoxieBonusRow[] }) {
+  const season = getCurrentSeasonStart(week);
   const data: Candidate[] = candidates.map(({ 'Scout FID': fid, 'Moxie tokens earned': amount }) => ({
     entityType: 'USER',
     entityId: fid.toString(),
@@ -40,7 +41,7 @@ export async function sendMoxieTokens({ week, candidates }: { week: string; cand
       },
       week,
       partner: 'moxie',
-      season: getCurrentSeasonStart(),
+      season,
       userId
     }))
   });
