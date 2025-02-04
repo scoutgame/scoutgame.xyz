@@ -15,8 +15,7 @@ export async function detectBalanceIssues() {
     select: {
       id: true,
       farcasterId: true,
-      farcasterName: true,
-      currentBalance: true
+      farcasterName: true
     }
   });
   const totalScouts = scouts.length;
@@ -36,15 +35,15 @@ export async function detectBalanceIssues() {
       season: getCurrentSeasonStart()
     });
 
-    if (balances.balance !== scout.currentBalance) {
+    if (balances.balance !== balances.balanceOnScoutProfile) {
       log.error(
-        `Scout (id: ${scout.id})  (fid:${scout.farcasterId}) has a balance discrepancy: ${balances.balance} (computed) vs ${scout.currentBalance} (current)`
+        `Scout (id: ${scout.id})  (fid:${scout.farcasterId}) has a balance discrepancy: ${balances.balance} (computed) vs ${balances.balanceOnScoutProfile} (current)`
       );
       scoutsWithBalanceIssues.push({
         farcasterId: scout.farcasterId,
         scoutId: scout.id,
         expectedBalance: balances.balance,
-        currentBalance: scout.currentBalance,
+        currentBalance: balances.balanceOnScoutProfile,
         pointDetails: balances
       });
     }

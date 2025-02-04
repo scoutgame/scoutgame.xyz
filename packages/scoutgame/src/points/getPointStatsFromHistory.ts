@@ -14,6 +14,7 @@ export type PointStats = {
   claimedPoints: number;
   unclaimedPoints: number;
   balance: number;
+  balanceOnScoutProfile: number;
 };
 
 const include: Prisma.PointsReceiptInclude = {
@@ -34,18 +35,20 @@ export async function getPointStatsFromHistory({
     throw new InvalidInputError('userIdOrPath is required');
   }
 
-  const userId = await tx.scout
-    .findUniqueOrThrow({
-      where: isUuid(userIdOrPath) ? { id: userIdOrPath } : { path: userIdOrPath },
-      select: {
-        id: true
-      }
-    })
-    .then((user) => user.id);
+  const user = await tx.scout.findUniqueOrThrow({
+    where: isUuid(userIdOrPath) ? { id: userIdOrPath } : { path: userIdOrPath },
+    select: {
+      id: true,
+      currentBalance: true
+    }
+  });
+
+  const userId = user.id;
 
   const [
     pointsSpentRecords,
     pointsReceivedAsBuilderRecords,
+    pointsReceivedForSellingNFTsRecords,
     pointsReceivedAsScoutRecords,
     bonusPointsReceivedRecords,
     allPointsReceivedRecords
@@ -73,6 +76,15 @@ export async function getPointStatsFromHistory({
         }
       },
       include
+    }),
+    tx.pointsReceipt.findMany({
+      where: {
+        season,
+        recipientId: userId,
+        event: {
+          type: 'nft_purchase'
+        }
+      }
     }),
     // Points received as scout
     tx.pointsReceipt.findMany({
@@ -116,12 +128,14 @@ export async function getPointStatsFromHistory({
   const pointsSpent = pointsSpentRecords.reduce((acc, { value }) => acc + value, 0);
 
   const pointsReceivedAsBuilder = pointsReceivedAsBuilderRecords.reduce((acc, { value }) => acc + value, 0);
+  const pointsReceivedForSellingNFTs = pointsReceivedForSellingNFTsRecords.reduce((acc, { value }) => acc + value, 0);
   const pointsReceivedAsScout = pointsReceivedAsScoutRecords.reduce((acc, { value }) => acc + value, 0);
   const bonusPointsReceived = bonusPointsReceivedRecords.reduce((acc, { value }) => acc + value, 0);
 
   const allPointsReceived = allPointsReceivedRecords.reduce((acc, { value }) => acc + value, 0);
 
-  const allPointsReceivedSum = pointsReceivedAsBuilder + pointsReceivedAsScout + bonusPointsReceived;
+  const allPointsReceivedSum =
+    pointsReceivedAsBuilder + pointsReceivedForSellingNFTs + pointsReceivedAsScout + bonusPointsReceived;
 
   const claimedPoints = allPointsReceivedRecords
     .filter((record) => !!record.claimedAt)
@@ -134,7 +148,7 @@ export async function getPointStatsFromHistory({
   const balance = claimedPoints - pointsSpent;
 
   if (allPointsReceived !== allPointsReceivedSum) {
-    log.warn(`All points received sum does not match breakdown`, {
+    log.error(`All points received sum does not match breakdown`, {
       userId,
       allPointsReceived,
       allPointsReceivedSum,
@@ -152,6 +166,7 @@ export async function getPointStatsFromHistory({
     pointsReceivedAsScout,
     bonusPointsReceived,
     pointsSpent,
-    userId
+    userId,
+    balanceOnScoutProfile: user.currentBalance
   };
 }

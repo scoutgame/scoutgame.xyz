@@ -226,7 +226,8 @@ describe('getPointStatsFromHistory', () => {
       pointsReceivedAsScout: 120,
       pointsSpent: 50,
       unclaimedPoints: 0,
-      userId: mockUser.id
+      userId: mockUser.id,
+      balanceOnScoutProfile: mockUser.currentBalance
     });
 
     const currentSeasonStats = await getPointStatsFromHistory({ userIdOrPath: mockUser.id, season: currentSeason });
@@ -239,7 +240,8 @@ describe('getPointStatsFromHistory', () => {
       pointsReceivedAsScout: 180,
       bonusPointsReceived: 210,
       claimedPoints: 440,
-      unclaimedPoints: 0
+      unclaimedPoints: 0,
+      balanceOnScoutProfile: mockUser.currentBalance
     });
   });
 
