@@ -1,10 +1,16 @@
-import { log } from '@charmverse/core/log';
+import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 import { toJson } from '@packages/utils/json';
 import type Koa from 'koa';
 import { createPublicClient, http } from 'viem';
 import type { Address } from 'viem';
 import { taiko } from 'viem/chains';
+
+const log = getLogger('cron-retrieve-contract-interactions');
+
+// retrieve 900 logs at a time
+const defaultPageSize = BigInt(900);
 
 export async function retrieveContractInteractions(ctx: Koa.Context) {
   const client = createPublicClient({
@@ -16,18 +22,27 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
   const contracts = await prisma.scoutProjectContract.findMany();
   log.info('Analyzing interactions for', contracts.length, 'contracts...');
 
+  // keep track of the window start per chain, so we reduce lookups
+  // look back 30 days
+  const windowStart = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30);
+  const windowStarts: Record<string, bigint> = {};
+
   for (const contract of contracts) {
     try {
-      const earliestBlock = await prisma.scoutProjectContractLog.findFirst({
+      const chainId = contract.chainId;
+      const firstBlock = windowStarts[chainId] || (await getBlockByDate({ date: windowStart, chainId })).number;
+      // Get the last poll event for this contract
+      const lastPollEvent = await prisma.scoutProjectContractPollEvent.findFirst({
         where: {
           contractId: contract.id
         },
         orderBy: {
-          blockNumber: 'desc'
+          toBlockNumber: 'desc'
         }
       });
+      const pollStart = Date.now();
 
-      const fromBlock = earliestBlock ? earliestBlock.blockNumber + BigInt(1) : BigInt(0);
+      const fromBlock = lastPollEvent ? lastPollEvent.toBlockNumber + BigInt(1) : firstBlock;
 
       log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
@@ -35,8 +50,18 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
         address: contract.address as Address,
         fromBlock,
         toBlock: latestBlock,
-        contractId: contract.id,
-        pageSize: BigInt(900)
+        contractId: contract.id
+      });
+
+      // Record this poll event
+      await prisma.scoutProjectContractPollEvent.create({
+        data: {
+          contractId: contract.id,
+          fromBlockNumber: fromBlock,
+          toBlockNumber: latestBlock,
+          processedAt: new Date(),
+          processTime: Date.now() - pollStart
+        }
       });
     } catch (error) {
       log.error('Error processing contract:', { error, address: contract.address });
@@ -49,7 +74,7 @@ async function retrieveContractLogs({
   fromBlock,
   toBlock,
   contractId,
-  pageSize = BigInt(900)
+  pageSize = defaultPageSize
 }: {
   address: Address;
   fromBlock: bigint;
@@ -112,7 +137,7 @@ async function retrieveContractLogs({
 
     const progress = Number(((currentBlock - fromBlock) * BigInt(100)) / (toBlock - fromBlock));
     if (progress % 10 === 0) {
-      log.info(`Processed up to block ${endBlock} (${progress}% complete)`);
+      log.debug(`Processed up to block ${endBlock} (${progress}% complete)`);
     }
   }
 }

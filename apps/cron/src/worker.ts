@@ -1,4 +1,4 @@
-import { log } from '@charmverse/core/log';
+import { getLogger } from '@charmverse/core/log';
 import Router from '@koa/router';
 import Koa from 'koa';
 import { DateTime } from 'luxon';
@@ -22,6 +22,8 @@ const router = new Router();
 
 // add a task endpoint which will be configured in cron.yml
 function addTask(path: string, handler: (ctx: Koa.Context) => any) {
+  const log = getLogger(`cron-${path}`);
+
   router.post(path, async (ctx) => {
     // just in case we need to disable cron in production
     if (process.env.DISABLE_CRON === 'true') {
@@ -48,7 +50,7 @@ function addTask(path: string, handler: (ctx: Koa.Context) => any) {
 }
 
 addTask('/hello-world', (ctx) => {
-  log.info('Hello World triggered', { body: ctx.body, headers: ctx.headers });
+  getLogger('hello-world').info('Hello World triggered', { body: ctx.body, headers: ctx.headers });
 });
 
 addTask('/process-builder-activity', processAllBuilderActivity);
