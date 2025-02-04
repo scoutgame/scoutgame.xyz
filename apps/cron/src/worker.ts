@@ -12,6 +12,7 @@ import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
 import { refreshShareImagesTask } from './tasks/refreshShareImages';
 import { resolveBalanceIssues } from './tasks/resolveBalanceIssues/resolveBalanceIssues';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
+import { retrieveContractInteractions } from './tasks/retrieveContractInteractions';
 import { syncExternalUserProfilesTask } from './tasks/syncExternalUserProfiles/syncExternalUserProfilesTask';
 import { updateAllBuildersCardActivities } from './tasks/updateBuildersCardActivity';
 import { updateTalentMoxieProfiles } from './tasks/updateTalentMoxieProfiles';
@@ -71,6 +72,8 @@ addTask('/resolve-balance-issues', resolveBalanceIssues);
 addTask('/refresh-nft-share-images', refreshShareImagesTask);
 
 addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
+
+addTask('/retrieve-contract-interactions', retrieveContractInteractions);
 
 // Standard health check used by Beanstalk
 router.get('/api/health', middleware.healthCheck);

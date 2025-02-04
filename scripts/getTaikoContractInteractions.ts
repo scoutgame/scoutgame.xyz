@@ -555,8 +555,8 @@ async function writeMetricsToDisk() {
 }
 
 (async () => {
-  await writeMetricsToDisk();
-  return;
+  // await writeMetricsToDisk();
+  // return;
   // await saveToDisk();
   // return;
 
