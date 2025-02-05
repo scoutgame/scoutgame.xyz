@@ -1,17 +1,36 @@
-import { Buffer } from 'buffer';
-
-import FormData from 'form-data';
-import { erc20Abi, nonceManager, parseAbi, parseUnits } from 'viem';
+import { erc20Abi, nonceManager, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { optimism, optimismSepolia, taiko } from 'viem/chains';
 
-import { getPublicClient } from './getPublicClient';
-import { getWalletClient } from './getWalletClient';
+import { getPublicClient } from '../getPublicClient';
+import { getWalletClient } from '../getWalletClient';
 
 // Contract ABI
-const sablierAirdropFactoryAbi = parseAbi([
-  'function createMerkleInstant(tuple(address token, uint40 expiration, address initialAdmin, string ipfsCID, bytes32 merkleRoot, string campaignName, string shape) baseParams, uint256 aggregateAmount, uint256 recipientCount) external returns (address)'
-]);
+const sablierAirdropFactoryAbi = [
+  {
+    type: 'function',
+    name: 'createMerkleInstant',
+    inputs: [
+      {
+        name: 'baseParams',
+        type: 'tuple',
+        components: [
+          { name: 'token', type: 'address' },
+          { name: 'expiration', type: 'uint40' },
+          { name: 'initialAdmin', type: 'address' },
+          { name: 'ipfsCID', type: 'string' },
+          { name: 'merkleRoot', type: 'bytes32' },
+          { name: 'campaignName', type: 'string' },
+          { name: 'shape', type: 'string' }
+        ]
+      },
+      { name: 'aggregateAmount', type: 'uint256' },
+      { name: 'recipientCount', type: 'uint256' }
+    ],
+    outputs: [{ type: 'address' }],
+    stateMutability: 'external'
+  }
+] as const;
 
 const SablierAirdropFactoryContractRecords: Record<number, `0x${string}`> = {
   [optimismSepolia.id]: '0x2934A7aDDC3000D1625eD1E8D21C070a89073702',
@@ -25,10 +44,12 @@ type Recipient = {
 };
 
 function createCsvContent(recipients: Recipient[]) {
-  return recipients.reduce((acc, { address, amount }) => {
-    acc += `${address},${amount}\n`;
-    return acc;
-  }, 'address,amount\n');
+  let csvContent = 'address,amount\n';
+  recipients.forEach(({ address, amount }) => {
+    csvContent += `${address.toLowerCase()},${amount}\n`;
+  });
+
+  return csvContent;
 }
 
 export async function createSablierAirdropCampaign({
@@ -57,28 +78,23 @@ export async function createSablierAirdropCampaign({
     privateKey: adminPrivateKey
   });
 
-  // Create CSV content and prepare for upload
   const csvContent = createCsvContent(recipients);
-  const formData = new FormData();
 
-  // Create a Buffer from the CSV content and append to FormData
-  const buffer = Buffer.from(csvContent, 'utf-8');
-  formData.append('data', buffer, {
-    filename: 'airdrop.csv',
-    contentType: 'text/csv'
+  const file = new File([csvContent], 'airdrop.csv', {
+    type: 'text/csv'
   });
 
-  // Upload to Merkle API using fetch instead of axios
+  const formData = new FormData();
+  formData.append('data', file);
+
   const merkleResponse = await fetch(`https://sablier-merkle-api.vercel.app/api/create?decimals=${tokenDecimals}`, {
     method: 'POST',
-    body: formData,
-    headers: {
-      ...Object.fromEntries(formData.getHeaders())
-    }
+    body: formData
   });
 
   if (!merkleResponse.ok) {
-    throw new Error(`HTTP error! status: ${merkleResponse.status}`);
+    const errorText = await merkleResponse.text();
+    throw new Error(`HTTP error! status: ${merkleResponse.status}, details: ${errorText}`);
   }
 
   const merkleData = (await merkleResponse.json()) as { root: `0x${string}`; cid: string };
@@ -114,7 +130,6 @@ export async function createSablierAirdropCampaign({
 
   await walletClient.writeContract(approveRequest);
 
-  // Create the Merkle Instant distribution
   const { request } = await publicClient.simulateContract({
     address: sablierAirdropFactoryAddress,
     abi: sablierAirdropFactoryAbi,
@@ -124,7 +139,28 @@ export async function createSablierAirdropCampaign({
   });
 
   const hash = await walletClient.writeContract(request);
-  // Wait for transaction receipt
+
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
-  return receipt;
+
+  // Get the created campaign address from the logs
+  const createdCampaignAddress = receipt.logs[0].address as `0x${string}`;
+
+  // Approve the campaign contract to spend tokens
+  const { request: approveCampaignRequest } = await publicClient.simulateContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: 'approve',
+    args: [createdCampaignAddress, aggregateAmount],
+    account
+  });
+
+  await walletClient.writeContract(approveCampaignRequest);
+
+  return {
+    receipt,
+    hash,
+    root,
+    cid,
+    contractAddress: createdCampaignAddress
+  };
 }
