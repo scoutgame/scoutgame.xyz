@@ -1,5 +1,5 @@
-import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { mockGemPayoutEvent, mockScout, mockBuilder } from '@packages/testing/database';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
+import { mockGemPayoutEvent, mockScout, mockBuilder, mockWeeklyClaims } from '@packages/testing/database';
 
 import { expect, test } from './test';
 
@@ -18,6 +18,7 @@ test.describe('Claim points', () => {
       season: getCurrentSeasonStart()
     });
 
+    await mockWeeklyClaims({ week: getLastWeek(), season: getCurrentSeasonStart() });
     await page.goto('/claim');
 
     await claimPage.claimPointsButton.click();
