@@ -52,7 +52,7 @@ function createCsvContent(recipients: Recipient[]) {
   return csvContent;
 }
 
-export async function createSablierAirdropCampaign({
+export async function createSablierAirdropContract({
   adminPrivateKey,
   tokenAddress,
   chainId,
@@ -118,17 +118,6 @@ export async function createSablierAirdropCampaign({
   if (!sablierAirdropFactoryAddress) {
     throw new Error(`Sablier airdrop factory address not found for chainId ${chainId}`);
   }
-
-  // Approve tokens first
-  const { request: approveRequest } = await publicClient.simulateContract({
-    address: tokenAddress,
-    abi: erc20Abi,
-    functionName: 'approve',
-    args: [sablierAirdropFactoryAddress, aggregateAmount],
-    account
-  });
-
-  await walletClient.writeContract(approveRequest);
 
   const { request } = await publicClient.simulateContract({
     address: sablierAirdropFactoryAddress,

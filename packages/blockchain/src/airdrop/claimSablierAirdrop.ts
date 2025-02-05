@@ -1,5 +1,6 @@
 import { type Address, type Hash } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import { optimismSepolia } from 'viem/chains';
 
 import { getPublicClient } from '../getPublicClient';
 import { getWalletClient } from '../getWalletClient';
@@ -40,7 +41,7 @@ export async function claimSablierAirdrop({
   });
 
   // Ensure amount fits within uint128
-  const amount = BigInt(status.amount!);
+  const amount = BigInt(status.amount);
   if (amount > BigInt('0xffffffffffffffffffffffffffffffff')) {
     throw new Error('Amount exceeds uint128 maximum value');
   }
@@ -48,7 +49,36 @@ export async function claimSablierAirdrop({
   try {
     const { request } = await publicClient.simulateContract({
       address: contractAddress,
-      abi: sablierAirdropAbi,
+      abi: [
+        {
+          type: 'function',
+          name: 'claim',
+          inputs: [
+            {
+              name: 'index',
+              type: 'uint256',
+              internalType: 'uint256'
+            },
+            {
+              name: 'recipient',
+              type: 'address',
+              internalType: 'address'
+            },
+            {
+              name: 'amount',
+              type: 'uint128',
+              internalType: 'uint128'
+            },
+            {
+              name: 'merkleProof',
+              type: 'bytes32[]',
+              internalType: 'bytes32[]'
+            }
+          ],
+          outputs: [],
+          stateMutability: 'payable'
+        }
+      ],
       functionName: 'claim',
       args: [BigInt(status.index), recipientAddress, amount, status.proof],
       value: 0n,
@@ -80,7 +110,6 @@ export async function claimSablierAirdrop({
       } else if (error.message.includes('SablierMerkleBase_FeeTransferFail')) {
         throw new Error('Failed to transfer claim fee');
       }
-      // If it's some other error, throw the original
       throw error;
     }
     throw error;
