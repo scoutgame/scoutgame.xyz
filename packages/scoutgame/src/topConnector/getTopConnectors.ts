@@ -127,7 +127,8 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
               createdAt: 'asc'
             },
             select: {
-              address: true
+              address: true,
+              primary: true
             },
             take: 1
           }
@@ -151,7 +152,7 @@ type PartialUser = {
   avatar: string | null;
   displayName: string;
   path: string;
-  wallets?: { address: string }[];
+  wallets?: { address: string; primary: boolean }[];
 };
 
 /**
@@ -190,7 +191,7 @@ function groupBuilderEvents(
         avatar: event.builder.avatar,
         displayName: event.builder.displayName,
         path: event.builder.path,
-        address: event.builder.wallets?.[0]?.address as string,
+        address: event.builder.wallets?.find((w) => w.primary)?.address as string,
         earliestEventDate: event.createdAt
       };
     }
