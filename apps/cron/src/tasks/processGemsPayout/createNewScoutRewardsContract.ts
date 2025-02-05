@@ -14,7 +14,7 @@ export async function createNewScoutRewardsContract({ week, season }: { week: st
   const newScouts = await getRankedNewScoutsForPastWeek({ week });
   const top10Scouts = newScouts.slice(0, 10);
   const { hash, contractAddress } = await createSablierAirdropContract({
-    adminPrivateKey: process.env.SABLIER_OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
+    adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `New Scout Rewards Season: ${season}, Week: ${week}`,
     chainId: optimism.id,
     recipients: top10Scouts.map((scout, index) => ({

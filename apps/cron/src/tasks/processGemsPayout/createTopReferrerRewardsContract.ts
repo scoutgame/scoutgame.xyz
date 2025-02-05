@@ -26,7 +26,7 @@ export async function createTopReferrerRewardsContract() {
   }
 
   const { hash, contractAddress } = await createSablierAirdropContract({
-    adminPrivateKey: process.env.SABLIER_OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
+    adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Top Referrer Rewards Season: ${season}, Week: ${week}`,
     chainId: optimism.id,
     tokenAddress: optimismTokenAddress,
