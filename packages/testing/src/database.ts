@@ -4,6 +4,7 @@ import type {
   BuilderNftType,
   GithubRepo,
   Scout,
+  ScoutProjectContract,
   ScoutProjectMemberRole
 } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
@@ -821,12 +822,17 @@ export async function mockScoutProject({
   contractAddresses = []
 }: {
   name?: string;
-  userId: string;
+  userId?: string;
   memberIds?: string[];
   deployerAddress?: string;
   contractAddresses?: string[];
 }) {
   const path = randomString();
+  const createdBy = userId ?? (await mockScout()).id;
+
+  // always set deployerAddress if contract addresses are provided
+  deployerAddress = (deployerAddress ?? contractAddresses.length) ? '0x1234' : undefined;
+
   const scoutProject = await prisma.scoutProject.create({
     data: {
       name,
@@ -847,14 +853,14 @@ export async function mockScoutProject({
         createMany: {
           data: [
             {
-              userId,
+              userId: createdBy,
               role: 'owner',
-              createdBy: userId
+              createdBy
             },
             ...memberIds.map((memberId) => ({
               userId: memberId,
               role: 'member' as ScoutProjectMemberRole,
-              createdBy: userId
+              createdBy
             }))
           ]
         }
@@ -867,6 +873,7 @@ export async function mockScoutProject({
   });
 
   const deployer = scoutProject.scoutProjectDeployers[0];
+  let contracts: ScoutProjectContract[] = [];
   if (contractAddresses.length && deployer) {
     await prisma.scoutProjectContract.createMany({
       data: contractAddresses.map((address) => ({
@@ -876,11 +883,19 @@ export async function mockScoutProject({
         deployerId: deployer.id,
         deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
         deployedAt: new Date(),
-        createdBy: userId,
+        createdBy,
         blockNumber: 1
       }))
     });
+    contracts = await prisma.scoutProjectContract.findMany({
+      where: {
+        projectId: scoutProject.id
+      }
+    });
   }
 
-  return scoutProject;
+  return {
+    ...scoutProject,
+    contracts
+  };
 }

@@ -2,12 +2,12 @@ import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getChainById } from '@packages/blockchain/chains';
 import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
+import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import type { SupportedChainId } from '@packages/blockchain/provider/ankr/client';
 import { getLogs } from '@packages/blockchain/provider/ankr/getLogs';
 import { getTransactionReceipt } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
 import { toJson } from '@packages/utils/json';
 import type Koa from 'koa';
-import { createPublicClient, http } from 'viem';
 import type { Address } from 'viem';
 
 const log = getLogger('cron-retrieve-contract-interactions');
@@ -15,8 +15,18 @@ const log = getLogger('cron-retrieve-contract-interactions');
 // retrieve 900 logs at a time
 const defaultPageSize = BigInt(900);
 
-export async function retrieveContractInteractions(ctx: Koa.Context) {
-  const contracts = await prisma.scoutProjectContract.findMany();
+export async function retrieveContractInteractions(ctx: Koa.Context, { contractIds }: { contractIds?: string[] } = {}) {
+  const contracts = await prisma.scoutProjectContract.findMany(
+    contractIds
+      ? {
+          where: {
+            id: {
+              in: contractIds
+            }
+          }
+        }
+      : undefined
+  );
   log.info('Analyzing interactions for', contracts.length, 'contracts...');
 
   // keep track of the window start per chain, so we reduce lookups
@@ -26,16 +36,9 @@ export async function retrieveContractInteractions(ctx: Koa.Context) {
 
   for (const contract of contracts) {
     try {
-      const chain = getChainById(contract.chainId);
-      if (!chain) {
-        throw new Error(`Chain not found for network: ${contract.chainId}`);
-      }
-
-      const client = createPublicClient({
-        chain: chain.viem,
-        transport: http()
+      const client = getWalletClient({
+        chainId: contract.chainId
       });
-
       const latestBlock = await client.getBlockNumber();
       const chainId = contract.chainId;
       const firstBlock = windowStarts[chainId] || (await getBlockByDate({ date: windowStart, chainId })).number;

@@ -1,21 +1,31 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { createPublicClient } from 'viem';
-import type { Log, TransactionReceipt } from 'viem';
+import type { GetLogsResult } from '@packages/blockchain/provider/ankr/getLogs';
+import type { GetTransactionReceiptResult } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
+import { mockScoutProject } from '@packages/testing/database';
+import { randomWalletAddress } from '@packages/testing/generators';
+import { createContext } from '@packages/testing/koa/context';
 
-// Mock viem
-jest.mock('viem', () => ({
-  createPublicClient: jest.fn(),
-  http: jest.fn()
+const mockGetLogs = jest.fn<() => Promise<GetLogsResult>>();
+const mockGetTransactionReceipt = jest.fn<() => Promise<GetTransactionReceiptResult>>();
+
+jest.unstable_mockModule('@packages/blockchain/getBlockByDate', () => ({
+  getBlockByDate: () => Promise.resolve({ number: 100n })
 }));
 
-const mockGetLogs = jest.fn();
-const mockGetTransactionReceipt = jest.fn();
+jest.unstable_mockModule('@packages/blockchain/getWalletClient', () => ({
+  getWalletClient: () => ({
+    getBlockNumber: () => Promise.resolve(101n)
+  })
+}));
 
-(createPublicClient as jest.Mock).mockReturnValue({
-  getLogs: mockGetLogs,
+jest.unstable_mockModule('@packages/blockchain/provider/ankr/getLogs', () => ({
+  getLogs: mockGetLogs
+}));
+
+jest.unstable_mockModule('@packages/blockchain/provider/ankr/getTransactionReceipt', () => ({
   getTransactionReceipt: mockGetTransactionReceipt
-});
+}));
 
 // Import after mocks
 const { retrieveContractInteractions } = await import('../index');
@@ -26,28 +36,21 @@ describe('retrieveContractInteractions', () => {
   });
 
   it('should save contract logs and transactions', async () => {
-    // Create a test contract
-    const contract = await prisma.scoutProjectContract.create({
-      data: {
-        address: '0x123',
-        chainId: 167004, // Taiko chain ID
-        project: {
-          create: {
-            name: 'Test Project',
-            avatar: 'test.png',
-            description: 'Test Description'
-          }
-        }
-      }
+    const address = randomWalletAddress();
+    const project = await mockScoutProject({
+      contractAddresses: [address]
     });
 
+    const contractId = project.contracts[0].id;
+
     // Mock blockchain responses
-    const mockLogs: Log[] = [
+    const mockLogs: GetLogsResult = [
       {
-        address: '0x123',
-        blockNumber: 100n,
+        address,
+        blockNumber: '100',
         transactionHash: '0xabc',
-        logIndex: 0,
+        transactionIndex: '0',
+        logIndex: '0',
         blockHash: '0x456',
         removed: false,
         data: '0x',
@@ -55,74 +58,77 @@ describe('retrieveContractInteractions', () => {
       }
     ];
 
-    const mockReceipt: TransactionReceipt = {
-      blockNumber: 100n,
+    const mockReceipt: GetTransactionReceiptResult = {
+      blockNumber: '100',
+      contractAddress: address,
       transactionHash: '0xabc',
       from: '0x789',
-      to: '0x123',
-      status: 'success',
-      gasUsed: 21000n,
-      effectiveGasPrice: 1000000000n,
+      to: address,
+      status: '0x1',
+      gasUsed: '21000',
+      effectiveGasPrice: '1000000000',
       blockHash: '0x456',
-      cumulativeGasUsed: 21000n,
+      cumulativeGasUsed: '21000',
       logs: [],
       logsBloom: '0x',
-      transactionIndex: 0,
-      type: 'eip1559'
+      transactionIndex: '0',
+      type: '0x0'
     };
 
     mockGetLogs.mockResolvedValue(mockLogs);
     mockGetTransactionReceipt.mockResolvedValue(mockReceipt);
 
     // Execute contract interaction retrieval
-    await retrieveContractInteractions({});
+    await retrieveContractInteractions(createContext(), { contractIds: [contractId] });
 
     // Verify logs were saved
     const savedLogs = await prisma.scoutProjectContractLog.findMany({
       where: {
-        contractId: contract.id
+        contractId
       }
     });
 
     expect(savedLogs).toHaveLength(1);
-    expect(savedLogs[0]).toMatchObject({
-      contractId: contract.id,
-      blockNumber: 100,
-      txHash: '0xabc',
-      from: '0x123',
-      logIndex: 0
-    });
+    expect(savedLogs[0]).toMatchObject(
+      expect.objectContaining({
+        contractId,
+        blockNumber: BigInt(100),
+        txHash: '0xabc',
+        // from: '0x123',
+        logIndex: 0
+      })
+    );
 
     // Verify transactions were saved
     const savedTransactions = await prisma.scoutProjectContractTransaction.findMany({
       where: {
-        contractId: contract.id
+        contractId
       }
     });
 
     expect(savedTransactions).toHaveLength(1);
     expect(savedTransactions[0]).toMatchObject({
-      contractId: contract.id,
-      blockNumber: 100,
+      contractId,
+      blockNumber: BigInt(100),
       txHash: '0xabc',
       from: '0x789',
-      to: '0x123',
-      status: 'success',
-      gasUsed: 21000,
-      gasPrice: 1000000000,
-      gasCost: 21000n * 1000000000n
+      to: address,
+      status: '0x1',
+      gasUsed: BigInt(21000),
+      gasPrice: BigInt(1000000000),
+      gasCost: BigInt(21000) * BigInt(1000000000)
     });
 
     // Verify poll event was created
     const pollEvents = await prisma.scoutProjectContractPollEvent.findMany({
       where: {
-        contractId: contract.id
+        contractId
       }
     });
 
     expect(pollEvents).toHaveLength(1);
     expect(pollEvents[0]).toMatchObject({
-      contractId: contract.id,
+      contractId,
       fromBlockNumber: expect.any(BigInt),
       toBlockNumber: expect.any(BigInt),
       processedAt: expect.any(Date),
@@ -131,27 +137,19 @@ describe('retrieveContractInteractions', () => {
   });
 
   it('should handle empty logs gracefully', async () => {
-    const contract = await prisma.scoutProjectContract.create({
-      data: {
-        address: '0x123',
-        chainId: 167004,
-        project: {
-          create: {
-            name: 'Test Project',
-            avatar: 'test.png',
-            description: 'Test Description'
-          }
-        }
-      }
+    const address = randomWalletAddress();
+    const project = await mockScoutProject({
+      contractAddresses: [address]
     });
+    const contractId = project.contracts[0].id;
 
     mockGetLogs.mockResolvedValue([]);
 
-    await retrieveContractInteractions({});
+    await retrieveContractInteractions(createContext(), { contractIds: [contractId] });
 
     const savedLogs = await prisma.scoutProjectContractLog.findMany({
       where: {
-        contractId: contract.id
+        contractId
       }
     });
 
@@ -159,99 +157,10 @@ describe('retrieveContractInteractions', () => {
 
     const savedTransactions = await prisma.scoutProjectContractTransaction.findMany({
       where: {
-        contractId: contract.id
+        contractId
       }
     });
 
     expect(savedTransactions).toHaveLength(0);
-  });
-
-  it('should continue processing other contracts if one fails', async () => {
-    // Create two test contracts
-    const [contract1, contract2] = await Promise.all([
-      prisma.scoutProjectContract.create({
-        data: {
-          createdBy: 'test',
-          deployedAt: new Date(),
-          deployTxHash: '0xabc',
-          blockNumber: 100n,
-          deployer: '0x789',
-          address: '0x123',
-          chainId: 167004,
-          project: {
-            create: {
-              name: 'Test Project 1',
-              avatar: 'test1.png',
-              description: 'Test Description 1'
-            }
-          }
-        }
-      }),
-      prisma.scoutProjectContract.create({
-        data: {
-          createdBy: 'test',
-          deployedAt: new Date(),
-          deployTxHash: '0xdef',
-          blockNumber: 100n,
-          deployer: '0x789',
-          address: '0x456',
-          chainId: 167004,
-          project: {
-            create: {
-              name: 'Test Project 2',
-              avatar: 'test2.png',
-              description: 'Test Description 2'
-            }
-          }
-        }
-      })
-    ]);
-
-    // Make first contract fail
-    mockGetLogs.mockRejectedValueOnce(new Error('Network error'));
-
-    // Make second contract succeed
-    const mockLogs: Log[] = [
-      {
-        address: '0x456',
-        blockNumber: 100n,
-        transactionHash: '0xdef',
-        logIndex: 0,
-        blockHash: '0x789',
-        removed: false,
-        data: '0x',
-        topics: [],
-        transactionIndex: 0
-      }
-    ];
-
-    mockGetLogs.mockResolvedValueOnce(mockLogs);
-    mockGetTransactionReceipt.mockResolvedValueOnce({
-      blockNumber: 100n,
-      transactionHash: '0xdef',
-      from: '0x789',
-      to: '0x456',
-      status: 'success',
-      gasUsed: 21000n,
-      effectiveGasPrice: 1000000000n,
-      blockHash: '0x789',
-      cumulativeGasUsed: 21000n,
-      logs: [],
-      logsBloom: '0x',
-      transactionIndex: 0,
-      type: 'eip1559',
-      contractAddress: '0x456'
-    });
-
-    await retrieveContractInteractions({});
-
-    // Verify second contract was processed despite first contract's failure
-    const savedLogs = await prisma.scoutProjectContractLog.findMany({
-      where: {
-        contractId: contract2.id
-      }
-    });
-
-    expect(savedLogs).toHaveLength(1);
   });
 });

@@ -3,7 +3,7 @@ import type { Address } from 'viem';
 import type { SupportedChainId } from './client';
 import { ankrRequest } from './client';
 
-type GetLogsResult = {
+export type GetLogsResult = {
   address: Address; // the contract address
   topics: string[];
   data: string;

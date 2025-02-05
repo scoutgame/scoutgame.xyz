@@ -36,6 +36,7 @@ runs:
         cp apps/${{ inputs.app_config_override || inputs.app_name }}/.env.ebstalk .env.ebstalk
         cp -r apps/${{ inputs.app_config_override || inputs.app_name }}/.ebextensions .ebextensions
         cp -r apps/${{ inputs.app_config_override || inputs.app_name }}/.platform .platform 2>/dev/null || :
+        cp -r apps/${{ inputs.app_config_override || inputs.app_name }}/.platform/* .platform/ 2>/dev/null || :
         cp apps/${{ inputs.app_config_override || inputs.app_name }}/cron.yml cron.yaml 2>/dev/null || :
 
     - name: Set the docker compose env variables
