@@ -5,8 +5,6 @@ import { DateTime } from 'luxon';
 
 import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
-import { deployNewScoutRewardsContract } from './tasks/deployNewScoutRewardsContract/deployNewScoutRewardsContract';
-import { deployTopReferrerRewardsContract } from './tasks/deployTopReferrerRewardsContract/deployTopReferrerRewardsContract';
 import { processAllBuilderActivity } from './tasks/processBuilderActivity';
 import { processGemsPayout } from './tasks/processGemsPayout';
 import { processNftMints } from './tasks/processNftMints';
@@ -73,10 +71,6 @@ addTask('/resolve-balance-issues', resolveBalanceIssues);
 addTask('/refresh-nft-share-images', refreshShareImagesTask);
 
 addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
-
-addTask('/deploy-new-scout-rewards-contract', deployNewScoutRewardsContract);
-
-addTask('/deploy-top-referrer-rewards-contract', deployTopReferrerRewardsContract);
 
 // Standard health check used by Beanstalk
 router.get('/api/health', middleware.healthCheck);

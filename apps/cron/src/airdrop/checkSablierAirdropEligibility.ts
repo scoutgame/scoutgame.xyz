@@ -1,8 +1,7 @@
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { MerkleTree } from 'merkletreejs';
 import type { Address } from 'viem';
 import { keccak256, encodeAbiParameters, parseAbiParameters } from 'viem';
-
-import { getPublicClient } from '../getPublicClient';
 
 // @ts-ignore
 import { abi as sablierAirdropAbi } from './SablierMerkleInstant.json';
@@ -71,7 +70,6 @@ export async function checkSablierAirdropEligibility({
     throw new Error('Address is not eligible for this airdrop');
   }
 
-  // Check if already claimed
   const hasClaimed = await publicClient.readContract({
     address: contractAddress,
     abi: sablierAirdropAbi,
@@ -83,25 +81,22 @@ export async function checkSablierAirdropEligibility({
     throw new Error('Recipient has already claimed this airdrop');
   }
 
-  // Create leaves for Merkle tree
   const leaves = campaignData.recipients.map((recipient, index) =>
     hashLeaf(index, recipient.address, recipient.amount)
   );
 
-  // Create Merkle tree with the same parameters as the contract
   const tree = new MerkleTree(leaves, keccak256, {
     sort: true,
     hashLeaves: false
   });
 
-  // Get proof for the recipient
   const leaf = hashLeaf(
     recipientIndex,
     campaignData.recipients[recipientIndex].address,
     campaignData.recipients[recipientIndex].amount
   );
 
-  const proof = tree.getHexProof(leaf);
+  const proof = tree.getHexProof(leaf) as `0x${string}`[];
 
   const isValid = tree.verify(proof, leaf, tree.getHexRoot());
   if (!isValid) {

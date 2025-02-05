@@ -1,13 +1,9 @@
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { type Address, type Hash } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { optimismSepolia } from 'viem/chains';
-
-import { getPublicClient } from '../getPublicClient';
-import { getWalletClient } from '../getWalletClient';
 
 import { checkSablierAirdropEligibility } from './checkSablierAirdropEligibility';
-// @ts-ignore
-import { abi as sablierAirdropAbi } from './SablierMerkleInstant.json';
 
 export async function claimSablierAirdrop({
   chainId,
@@ -22,10 +18,6 @@ export async function claimSablierAirdrop({
   cid: string;
   adminPrivateKey: `0x${string}`;
 }): Promise<{ hash: Hash }> {
-  if (!adminPrivateKey) {
-    throw new Error('Admin private key is required');
-  }
-
   const publicClient = getPublicClient(chainId);
   const account = privateKeyToAccount(adminPrivateKey);
   const walletClient = getWalletClient({

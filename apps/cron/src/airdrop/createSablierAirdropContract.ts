@@ -1,11 +1,9 @@
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { erc20Abi, nonceManager, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { optimism, optimismSepolia, taiko } from 'viem/chains';
 
-import { getPublicClient } from '../getPublicClient';
-import { getWalletClient } from '../getWalletClient';
-
-// Contract ABI
 const sablierAirdropFactoryAbi = [
   {
     type: 'function',
@@ -131,10 +129,8 @@ export async function createSablierAirdropContract({
 
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
-  // Get the created campaign address from the logs
   const createdCampaignAddress = receipt.logs[0].address as `0x${string}`;
 
-  // Approve the campaign contract to spend tokens
   const { request: approveCampaignRequest } = await publicClient.simulateContract({
     address: tokenAddress,
     abi: erc20Abi,

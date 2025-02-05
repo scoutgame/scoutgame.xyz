@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getLastWeek } from '@packages/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
@@ -7,6 +8,8 @@ import { DateTime } from 'luxon';
 
 import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
 
+import { createNewScoutRewardsContract } from './createNewScoutRewardsContract';
+import { createTopReferrerRewardsContract } from './createTopReferrerRewardsContract';
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
 export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: { now?: DateTime } = {}) {
@@ -58,6 +61,19 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     } catch (error) {
       scoutgameMintsLogger.error(`Error processing scout points payout for builder ${builder.id}: ${error}`);
     }
+  }
+
+  try {
+    const [newScoutRewards, topReferrerRewards] = await Promise.all([
+      createNewScoutRewardsContract({ week, season }),
+      createTopReferrerRewardsContract()
+    ]);
+    log.info('Rewards contract deployed', {
+      newScoutRewards,
+      topReferrerRewards
+    });
+  } catch (error) {
+    log.error('Error deploying new scout contract', { error });
   }
 
   const emailsSent = await sendGemsPayoutEmails({ week });
