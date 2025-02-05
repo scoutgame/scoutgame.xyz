@@ -2,14 +2,17 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
 import { DateTime } from 'luxon';
+import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
 import { createSablierAirdropContract } from '../../airdrop/createSablierAirdropContract';
 
-const TOP_REFERRER_REWARDS_AMOUNT = 25;
+import { optimismTokenDecimals, optimismTokenAddress } from './createNewScoutRewardsContract';
+
+const TOP_REFERRER_REWARDS_AMOUNT = parseUnits('25', optimismTokenDecimals);
 
 export async function createTopReferrerRewardsContract() {
-  const topConnectorsAddress: string[] = [];
+  const topConnectors: { address: string; date: DateTime }[] = [];
   const week = getLastWeek();
   const season = getCurrentSeasonStart(week);
 
@@ -18,7 +21,7 @@ export async function createTopReferrerRewardsContract() {
     const topConnector = await getTopConnectorOfTheDay({ date });
 
     if (topConnector) {
-      topConnectorsAddress.push(topConnector.address);
+      topConnectors.push({ address: topConnector.address, date });
     }
   }
 
@@ -26,9 +29,9 @@ export async function createTopReferrerRewardsContract() {
     adminPrivateKey: process.env.SABLIER_OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Top Referrer Rewards Season: ${season}, Week: ${week}`,
     chainId: optimism.id,
-    tokenAddress: '0x4200000000000000000000000000000000000042',
-    tokenDecimals: optimism.nativeCurrency.decimals,
-    recipients: topConnectorsAddress.map((address) => ({ address: address as `0x${string}`, amount: 25 }))
+    tokenAddress: optimismTokenAddress,
+    tokenDecimals: optimismTokenDecimals,
+    recipients: topConnectors.map(({ address }) => ({ address: address as `0x${string}`, amount: 25 }))
   });
 
   await prisma.partnerRewardPayoutContract.create({
@@ -37,14 +40,18 @@ export async function createTopReferrerRewardsContract() {
       contractAddress,
       season,
       week,
-      tokenAddress: '0x4200000000000000000000000000000000000042',
-      partner: 'optimism:top_referrer_rewards',
+      tokenAddress: optimismTokenAddress,
+      tokenDecimals: optimismTokenDecimals,
+      partner: 'optimism_top_referrer',
       deployTxHash: hash,
       rewardPayouts: {
         createMany: {
-          data: topConnectorsAddress.map((address) => ({
+          data: topConnectors.map(({ address, date }) => ({
             amount: TOP_REFERRER_REWARDS_AMOUNT,
-            userId: address
+            userId: address,
+            meta: {
+              date: date.toJSDate()
+            }
           }))
         }
       }

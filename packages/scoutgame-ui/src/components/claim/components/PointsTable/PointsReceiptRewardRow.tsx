@@ -1,5 +1,9 @@
 import { Stack, TableCell, TableRow, Typography } from '@mui/material';
-import { seasons } from '@packages/dates/config';
+import type {
+  OptimismNewScoutPartnerReward,
+  OptimismTopReferrerReward,
+  PartnerReward
+} from '@packages/scoutgame/points/getPartnerRewards';
 import type {
   BuilderPointsReceiptReward,
   LeaderboardRankPointsReceiptReward,
@@ -7,6 +11,7 @@ import type {
   SeasonPointsReceiptsReward,
   SoldNftsPointsReceiptReward
 } from '@packages/scoutgame/points/getPointsReceiptsRewards';
+import { DateTime } from 'luxon';
 import Image from 'next/image';
 
 import { PointsCell } from '../common/PointsCell';
@@ -88,7 +93,49 @@ function SeasonRewardRow({ seasonReward }: { seasonReward: SeasonPointsReceiptsR
   );
 }
 
-export function PointsReceiptRewardRow({ pointsReceiptReward }: { pointsReceiptReward: PointsReceiptReward }) {
+function NewScoutPartnerRewardRow({ newScoutPartnerReward }: { newScoutPartnerReward: OptimismNewScoutPartnerReward }) {
+  return (
+    <TableRow>
+      <TableCell align='left'>
+        <Typography>New Scout {newScoutPartnerReward.position}</Typography>
+      </TableCell>
+      <TableCell align='center'>
+        <Typography>{newScoutPartnerReward.week}</Typography>
+      </TableCell>
+      <TableCell align='right'>
+        <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
+          <Typography>{newScoutPartnerReward.points}</Typography>
+          <Image alt='crypto icon' src='/images/crypto/op.png' width={20} height={20} />
+        </Stack>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function TopReferrerRewardRow({ topReferrerReward }: { topReferrerReward: OptimismTopReferrerReward }) {
+  return (
+    <TableRow>
+      <TableCell align='left'>
+        <Typography>Referrals {DateTime.fromJSDate(new Date(topReferrerReward.date)).toFormat('d/MM/yy')}</Typography>
+      </TableCell>
+      <TableCell align='center'>
+        <Typography>{topReferrerReward.week}</Typography>
+      </TableCell>
+      <TableCell align='right'>
+        <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
+          <Typography>{topReferrerReward.points}</Typography>
+          <Image alt='crypto icon' src='/images/crypto/op.png' width={20} height={20} />
+        </Stack>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+export function PointsReceiptRewardRow({
+  pointsReceiptReward
+}: {
+  pointsReceiptReward: PointsReceiptReward | PartnerReward;
+}) {
   if (pointsReceiptReward.type === 'builder') {
     return <BuilderRewardRow builderReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'leaderboard_rank') {
@@ -97,6 +144,10 @@ export function PointsReceiptRewardRow({ pointsReceiptReward }: { pointsReceiptR
     return <SoldNftsRewardRow soldNftsReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'season') {
     return <SeasonRewardRow seasonReward={pointsReceiptReward} />;
+  } else if (pointsReceiptReward.type === 'optimism_new_scout_partner') {
+    return <NewScoutPartnerRewardRow newScoutPartnerReward={pointsReceiptReward} />;
+  } else if (pointsReceiptReward.type === 'optimism_top_referrer') {
+    return <TopReferrerRewardRow topReferrerReward={pointsReceiptReward} />;
   }
 
   return null;

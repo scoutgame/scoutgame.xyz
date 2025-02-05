@@ -18,6 +18,7 @@ export type UnclaimedPointsSource = {
   points: number;
   bonusPartners: BonusPartner[];
   repos: string[];
+  partnerRewardPayoutCount: number;
 };
 
 export async function getClaimablePointsWithSources(userId: string): Promise<UnclaimedPointsSource> {
@@ -117,10 +118,21 @@ export async function getClaimablePointsWithSources(userId: string): Promise<Unc
 
   const uniqueRepos = Array.from(new Set(repos.map((repo) => `${repo.repo.owner}/${repo.repo.name}`)));
 
+  const partnerRewardPayoutCount = await prisma.partnerRewardPayout.count({
+    where: {
+      payoutContract: {
+        season: getCurrentSeasonStart()
+      },
+      claimedAt: null,
+      userId
+    }
+  });
+
   return {
     builders: buildersWithFarcaster,
     points,
     bonusPartners,
-    repos: uniqueRepos.slice(0, 3)
+    repos: uniqueRepos.slice(0, 3),
+    partnerRewardPayoutCount
   };
 }

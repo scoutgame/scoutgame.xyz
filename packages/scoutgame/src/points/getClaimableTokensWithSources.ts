@@ -24,6 +24,7 @@ export type ClaimData = {
 
 export type UnclaimedTokensSource = UnclaimedPointsSource & {
   claimData: ClaimData;
+  partnerRewardPayoutCount: number;
 };
 
 export async function getClaimableTokensWithSources(userId: string): Promise<UnclaimedTokensSource> {
@@ -151,6 +152,16 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }))
     .filter((proof) => proof.amount > 0 && proof.proofs.length > 0 && !claimedWeeks.includes(proof.week));
 
+  const partnerRewardPayoutCount = await prisma.partnerRewardPayout.count({
+    where: {
+      payoutContract: {
+        season: getCurrentSeasonStart()
+      },
+      claimedAt: null,
+      userId
+    }
+  });
+
   return {
     builders: buildersWithFarcaster,
     points: claimProofs.reduce((acc, proof) => acc + proof.amount, 0),
@@ -159,6 +170,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     claimData: {
       address: scoutWallets[0].address as Address,
       weeklyProofs: claimProofs
-    }
+    },
+    partnerRewardPayoutCount
   };
 }

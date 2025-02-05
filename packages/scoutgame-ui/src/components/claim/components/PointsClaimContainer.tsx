@@ -31,7 +31,7 @@ export async function PointsClaimContainer() {
     return null;
   }
 
-  const { bonusPartners, points, builders, repos } = data;
+  const { bonusPartners, points, builders, repos, partnerRewardPayoutCount } = data;
 
   const claimData = isOnchainApp ? (data as UnclaimedTokensSource).claimData : undefined;
 
@@ -44,7 +44,7 @@ export async function PointsClaimContainer() {
         repos={repos}
         onchainClaimData={claimData}
       />
-      {points === 0 ? null : (
+      {points === 0 && partnerRewardPayoutCount === 0 ? null : (
         <Suspense fallback={<LoadingTable />}>
           <UnclaimedPointsTable />
         </Suspense>
