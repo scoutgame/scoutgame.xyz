@@ -30,7 +30,8 @@ export function PointsClaimScreen({
   bonusPartners,
   builders,
   repos,
-  onchainClaimData
+  onchainClaimData,
+  processingPayouts
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
@@ -40,6 +41,7 @@ export function PointsClaimScreen({
   }[];
   repos: string[];
   onchainClaimData?: ClaimData;
+  processingPayouts: boolean;
 }) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
   const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction, {
@@ -55,7 +57,6 @@ export function PointsClaimScreen({
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
 
   const { data: walletClient } = useWalletClient();
-  const { switchChainAsync } = useSwitchChain();
 
   const handleClaim = async () => {
     await claimPoints();
@@ -79,8 +80,6 @@ export function PointsClaimScreen({
         id: scoutProtocolChainId
       });
     }
-
-    const extendedClient = walletClient.extend(publicActions);
 
     const protocolClient = getProtocolReadonlyClient();
 
@@ -125,7 +124,17 @@ export function PointsClaimScreen({
         flexDirection: 'column'
       }}
     >
-      {totalUnclaimedPoints ? (
+      {processingPayouts && (
+        <>
+          <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
+            Processing payouts
+          </Typography>
+          <Typography variant='body1' textAlign='center'>
+            We are currently processing payouts for last week. Please check back in a few minutes.
+          </Typography>
+        </>
+      )}
+      {totalUnclaimedPoints && !processingPayouts ? (
         <>
           <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
             Congratulations!
@@ -177,7 +186,8 @@ export function PointsClaimScreen({
             </Box>
           </Stack>
         </>
-      ) : (
+      ) : null}
+      {!totalUnclaimedPoints && !processingPayouts ? (
         <>
           <Typography textAlign='center' color='secondary' variant='h5'>
             Hey {user?.displayName},
@@ -188,7 +198,7 @@ export function PointsClaimScreen({
             Keep playing to earn more!
           </Typography>
         </>
-      )}
+      ) : null}
       <Dialog
         open={showModal}
         onClose={handleCloseModal}
