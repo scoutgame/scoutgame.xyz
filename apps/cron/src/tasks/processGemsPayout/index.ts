@@ -62,5 +62,20 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
 
   const emailsSent = await sendGemsPayoutEmails({ week });
 
+  await prisma.weeklyClaims.upsert({
+    where: {
+      week
+    },
+    create: {
+      merkleTreeRoot: '',
+      proofsMap: {},
+      season,
+      claims: [],
+      totalClaimable: totalPoints,
+      week
+    },
+    update: {}
+  });
+
   scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
 }
