@@ -1,24 +1,17 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import {
-  encodeContributionReceiptAttestation,
-  encodeScoutGameUserProfileAttestation
-} from '@packages/scoutgameattestations/easSchemas/index';
 
 import { multiAttestOnchain, type ScoutGameAttestationInput } from './attestOnchain';
-import {
-  scoutGameAttestationChainId,
-  scoutGameContributionReceiptSchemaUid,
-  scoutGameUserProfileSchemaUid
-} from './constants';
+import { scoutGameAttestationChainId, scoutGameContributionReceiptSchemaUid } from './constants';
+import { createOrGetUserProfileAttestation } from './createOrGetUserProfileAttestation';
+import { encodeContributionReceiptAttestation } from './easSchemas/index';
 import { attestationLogger } from './logger';
 import { uploadContributionReceiptToS3 } from './uploadContributionReceiptToS3';
-import { uploadScoutProfileToS3 } from './uploadScoutProfileToS3';
 
 const minimumGemsDate = new Date('2024-11-04T00:00:00Z');
 
 export async function attestGemReceipts(): Promise<void> {
-  const gemsReceiptQuery: Prisma.GemsReceiptWhereInput = {
+  const gemsReceiptQuery = {
     createdAt: {
       gte: minimumGemsDate
     },
@@ -42,7 +35,7 @@ export async function attestGemReceipts(): Promise<void> {
         }
       }
     ]
-  };
+  } satisfies Prisma.GemsReceiptWhereInput;
 
   const usersWithoutProfile = await prisma.scout.findMany({
     where: {
@@ -68,58 +61,11 @@ export async function attestGemReceipts(): Promise<void> {
     const user = usersWithoutProfile[i];
     attestationLogger.info(`Populating profile attestion for user ${user.id} ${i + 1} / ${usersToProcess}`);
 
-    const { metadataUrl } = await uploadScoutProfileToS3({
-      scoutId: user.id,
-      metadata: {
-        displayName: user.displayName,
-        path: user.path
-      }
-    });
-
-    missingProfileInputs.push({
-      data: encodeScoutGameUserProfileAttestation({
-        id: user.id,
-        metadataUrl
-      })
-    });
+    await createOrGetUserProfileAttestation({ scoutId: user.id });
   }
-
-  const onchainProfileAttestationUids = await multiAttestOnchain({
-    schemaId: scoutGameUserProfileSchemaUid(),
-    records: missingProfileInputs
-  });
-
-  for (let i = 0; i < usersToProcess; i++) {
-    const user = usersWithoutProfile[i];
-    const attestationUid = onchainProfileAttestationUids[i];
-
-    await prisma.scout.update({
-      where: {
-        id: user.id
-      },
-      data: {
-        onchainProfileAttestationChainId: scoutGameAttestationChainId,
-        onchainProfileAttestationUid: attestationUid
-      }
-    });
-  }
-
-  const gemsReceiptWithValidUserQuery: Prisma.GemsReceiptWhereInput = {
-    ...gemsReceiptQuery,
-    event: {
-      ...gemsReceiptQuery.event,
-      builder: {
-        builderStatus: 'approved',
-        onchainProfileAttestationUid: {
-          not: null
-        },
-        onchainProfileAttestationChainId: scoutGameAttestationChainId
-      } as any
-    }
-  };
 
   const gemReceiptsWithoutAttestation = await prisma.gemsReceipt.findMany({
-    where: gemsReceiptWithValidUserQuery,
+    where: gemsReceiptQuery,
     select: {
       id: true,
       type: true,
