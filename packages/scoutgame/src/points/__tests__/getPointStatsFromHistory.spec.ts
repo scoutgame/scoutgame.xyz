@@ -452,6 +452,8 @@ describe('getPointStatsFromHistory', () => {
 
     const pointsSpent = 100 + 50;
 
+    const pointsFromSellingNftRecords = [{ value: 200, claimedAt: new Date() }];
+
     const pointsReceivedAsBuilderRecords = [
       { value: 80, claimedAt: new Date() },
       { value: 90, claimedAt: new Date() }
@@ -463,6 +465,7 @@ describe('getPointStatsFromHistory', () => {
 
     const allPointsReceivedRecords = [
       ...pointsReceivedAsBuilderRecords,
+      ...pointsFromSellingNftRecords,
       ...pointsReceivedAsScoutRecords,
       ...bonusPointsReceivedRecords
     ];
@@ -479,6 +482,8 @@ describe('getPointStatsFromHistory', () => {
     jest
       .spyOn(prisma.pointsReceipt, 'findMany')
       .mockResolvedValueOnce(pointsReceivedAsBuilderRecords as PointsReceipt[]);
+
+    jest.spyOn(prisma.pointsReceipt, 'findMany').mockResolvedValueOnce(pointsFromSellingNftRecords as PointsReceipt[]);
 
     jest.spyOn(prisma.pointsReceipt, 'findMany').mockResolvedValueOnce(pointsReceivedAsScoutRecords as PointsReceipt[]);
 
