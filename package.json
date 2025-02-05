@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.111.2-rc-feat-partner-re.3",
+    "@charmverse/core": "^0.111.2-rc-feat-partner-re.4",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",

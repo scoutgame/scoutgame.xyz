@@ -3,7 +3,7 @@ import { getRankedNewScoutsForPastWeek } from '@packages/scoutgame/scouts/getNew
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
-import { createSablierAirdropContract } from '../../airdrop/createSablierAirdropContract';
+import { createSablierAirdropContract } from './createSablierAirdropContract';
 
 const newScoutsRewards = [60, 50, 40, 35, 30, 25, 20, 15, 15, 10];
 
@@ -13,7 +13,7 @@ export const optimismTokenAddress = '0x4200000000000000000000000000000000000042'
 export async function createNewScoutRewardsContract({ week, season }: { week: string; season: string }) {
   const newScouts = await getRankedNewScoutsForPastWeek({ week });
   const top10Scouts = newScouts.slice(0, 10);
-  const { hash, contractAddress } = await createSablierAirdropContract({
+  const { hash, contractAddress, cid, root } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `New Scout Rewards Season: ${season}, Week: ${week}`,
     chainId: optimism.id,
@@ -35,6 +35,7 @@ export async function createNewScoutRewardsContract({ week, season }: { week: st
       partner: 'optimism_new_scout',
       deployTxHash: hash,
       tokenDecimals: optimismTokenDecimals,
+      cid,
       rewardPayouts: {
         createMany: {
           data: top10Scouts.map((scout, index) => ({

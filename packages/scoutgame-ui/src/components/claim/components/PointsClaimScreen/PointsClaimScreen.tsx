@@ -12,28 +12,35 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { publicActions } from 'viem';
-import { useSwitchChain, useWalletClient } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 
 import { claimPointsAction } from '../../../../actions/claimPointsAction';
 import { handleOnchainClaimAction } from '../../../../actions/handleOnchainClaimAction';
+import { handlePartnerRewardClaimAction } from '../../../../actions/handlePartnerRewardClaimAction';
 import { revalidateClaimPointsAction } from '../../../../actions/revalidateClaimPointsAction';
 import { useUser } from '../../../../providers/UserProvider';
 import { WalletLogin } from '../../../common/WalletLogin/WalletLogin';
 
 import { BonusPartnersDisplay } from './BonusPartnersDisplay';
+import { PartnerRewardClaimButton } from './PartnerRewardClaimButton';
 import { PointsClaimButton } from './PointsClaimButton';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
 
 export function PointsClaimScreen({
   totalUnclaimedPoints,
   bonusPartners,
+  partnerRewards,
   builders,
   repos,
   onchainClaimData
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
+  partnerRewards: {
+    id: string;
+    amount: bigint;
+    partner: string;
+  }[];
   builders: {
     farcasterHandle?: string;
     displayName: string;
@@ -50,12 +57,22 @@ export function PointsClaimScreen({
       toast.error(error.error.serverError?.message || 'There was an error while claiming');
     }
   });
+  const { executeAsync: handlePartnerRewardClaim, isExecuting: isPartnerRewardClaiming } = useAction(
+    handlePartnerRewardClaimAction,
+    {
+      onSuccess() {
+        toast.success('You claimed your partner reward successfully');
+      },
+      onError(error) {
+        toast.error(error.error.serverError?.message || 'There was an error while claiming');
+      }
+    }
+  );
   const { refreshUser, user } = useUser();
   const [showModal, setShowModal] = useState(false);
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
 
   const { data: walletClient } = useWalletClient();
-  const { switchChainAsync } = useSwitchChain();
 
   const handleClaim = async () => {
     await claimPoints();
@@ -79,8 +96,6 @@ export function PointsClaimScreen({
         id: scoutProtocolChainId
       });
     }
-
-    const extendedClient = walletClient.extend(publicActions);
 
     const protocolClient = getProtocolReadonlyClient();
 
@@ -125,57 +140,90 @@ export function PointsClaimScreen({
         flexDirection: 'column'
       }}
     >
-      {totalUnclaimedPoints ? (
+      {totalUnclaimedPoints || partnerRewards.length > 0 ? (
         <>
           <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
             Congratulations!
           </Typography>
-          <Typography variant='h5' textAlign='center'>
-            You have earned Scout {platform === 'onchain_webapp' ? 'Tokens' : 'Points'}!
-          </Typography>
-
-          <Stack
-            sx={{
-              flexDirection: {
-                xs: 'row',
-                md: 'column'
-              },
-              gap: 1,
-              justifyContent: 'space-between',
-              width: '100%',
-              alignItems: 'center'
-            }}
-          >
-            <Stack flexDirection='column' alignItems='center' gap={0.5}>
-              <Typography variant='h6'>
-                <b>{user?.displayName}</b> <span style={{ fontSize: '0.8em' }}>will receive</span>
+          {totalUnclaimedPoints ? (
+            <>
+              <Typography variant='h5' textAlign='center'>
+                You have earned Scout {platform === 'onchain_webapp' ? 'Tokens' : 'Points'}!
               </Typography>
-              <Stack flexDirection='row' alignItems='center' gap={1}>
-                <Typography variant='h4' fontWeight={500}>
-                  {totalUnclaimedPoints.toLocaleString()}
-                </Typography>
-                <Image
-                  width={35}
-                  height={35}
-                  style={{ marginRight: 10 }}
-                  src='/images/profile/scout-game-icon.svg'
-                  alt='Scouts'
-                />{' '}
-                {bonusPartners.length > 0 ? '+ ' : ''}
-                <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
+
+              <Stack
+                sx={{
+                  flexDirection: {
+                    xs: 'row',
+                    md: 'column'
+                  },
+                  gap: 1,
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  alignItems: 'center'
+                }}
+              >
+                <Stack flexDirection='column' alignItems='center' gap={0.5}>
+                  <Typography variant='h6'>
+                    <b>{user?.displayName}</b> <span style={{ fontSize: '0.8em' }}>will receive</span>
+                  </Typography>
+                  <Stack flexDirection='row' alignItems='center' gap={1}>
+                    <Typography variant='h4' fontWeight={500}>
+                      {totalUnclaimedPoints.toLocaleString()}
+                    </Typography>
+                    <Image
+                      width={35}
+                      height={35}
+                      style={{ marginRight: 10 }}
+                      src='/images/profile/scout-game-icon.svg'
+                      alt='Scouts'
+                    />{' '}
+                    {bonusPartners.length > 0 ? '+ ' : ''}
+                    <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
+                  </Stack>
+                </Stack>
+                <Box width={{ xs: 'fit-content', md: '100%' }}>
+                  {onchainClaimData ? (
+                    connectedAddress !== onchainClaimData.address.toLowerCase() ? (
+                      <WalletLogin />
+                    ) : (
+                      <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+                    )
+                  ) : null}
+                  {!onchainClaimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
+                </Box>
               </Stack>
-            </Stack>
-            <Box width={{ xs: 'fit-content', md: '100%' }}>
-              {onchainClaimData ? (
-                connectedAddress !== onchainClaimData.address.toLowerCase() ? (
-                  <WalletLogin />
-                ) : (
-                  <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
-                )
-              ) : null}
-              {!onchainClaimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
-            </Box>
-          </Stack>
+            </>
+          ) : null}
+          {partnerRewards.length > 0 ? (
+            <>
+              <Typography variant='h6' mt={1} textAlign='center' fontWeight={500} color='secondary'>
+                Partner Rewards
+              </Typography>
+              {partnerRewards.map((reward) => (
+                <Stack
+                  key={reward.id}
+                  flexDirection='row'
+                  width='100%'
+                  alignItems='center'
+                  justifyContent='space-between'
+                  gap={1}
+                >
+                  <Typography>
+                    {reward.partner === 'optimism_new_scout_partner' ? 'New Scout Partner' : 'Referral Champion'}
+                  </Typography>
+                  <Stack flexDirection='row' alignItems='center' gap={1}>
+                    <Typography>{reward.amount.toLocaleString()}</Typography>
+                    <Image width={25} height={25} src='/images/crypto/op.png' alt='Scouts' />
+                  </Stack>
+                  <PartnerRewardClaimButton
+                    isExecuting={isPartnerRewardClaiming}
+                    handleClaim={() => handlePartnerRewardClaim({ payoutId: reward.id })}
+                  />
+                </Stack>
+              ))}
+            </>
+          ) : null}
         </>
       ) : (
         <>

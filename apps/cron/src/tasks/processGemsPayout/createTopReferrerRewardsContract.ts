@@ -5,9 +5,8 @@ import { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
-import { createSablierAirdropContract } from '../../airdrop/createSablierAirdropContract';
-
 import { optimismTokenDecimals, optimismTokenAddress } from './createNewScoutRewardsContract';
+import { createSablierAirdropContract } from './createSablierAirdropContract';
 
 const TOP_REFERRER_REWARDS_AMOUNT = parseUnits('25', optimismTokenDecimals);
 
@@ -25,7 +24,7 @@ export async function createTopReferrerRewardsContract() {
     }
   }
 
-  const { hash, contractAddress } = await createSablierAirdropContract({
+  const { hash, contractAddress, cid } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Top Referrer Rewards Season: ${season}, Week: ${week}`,
     chainId: optimism.id,
@@ -40,6 +39,7 @@ export async function createTopReferrerRewardsContract() {
       contractAddress,
       season,
       week,
+      cid,
       tokenAddress: optimismTokenAddress,
       tokenDecimals: optimismTokenDecimals,
       partner: 'optimism_top_referrer',

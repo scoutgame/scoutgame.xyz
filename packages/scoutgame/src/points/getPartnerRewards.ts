@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 
 type PartnerRewardBase = {
   week: number;
@@ -22,6 +22,33 @@ export type OptimismTopReferrerReward = PartnerRewardBase & {
 };
 
 export type PartnerReward = OptimismNewScoutPartnerReward | OptimismTopReferrerReward;
+
+export async function getUnclaimedPartnerRewards({ userId }: { userId: string }) {
+  const partnerRewards = await prisma.partnerRewardPayout.findMany({
+    where: {
+      payoutContract: {
+        season: getCurrentSeasonStart()
+      },
+      userId,
+      claimedAt: null
+    },
+    select: {
+      id: true,
+      amount: true,
+      payoutContract: {
+        select: {
+          partner: true
+        }
+      }
+    }
+  });
+
+  return partnerRewards.map((payout) => ({
+    id: payout.id,
+    amount: payout.amount,
+    partner: payout.payoutContract.partner
+  }));
+}
 
 export async function getPartnerRewards({
   userId,
