@@ -1,4 +1,5 @@
 import { log } from '@charmverse/core/log';
+import { prisma } from '@charmverse/core/prisma-client';
 import { createSablierAirdropCampaign } from '@packages/blockchain/airdrop/createSablierAirdropCampaign';
 import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
@@ -27,6 +28,20 @@ export async function deployTopReferrerRewardsContract() {
       tokenAddress: '0x4200000000000000000000000000000000000042',
       tokenDecimals: optimism.nativeCurrency.decimals,
       recipients: topConnectorsAddress.map((address) => ({ address: address as `0x${string}`, amount: 25 }))
+    });
+
+    await prisma.partnerReward.createMany({
+      data: topConnectorsAddress.map((address) => ({
+        amount: 25,
+        season,
+        week,
+        userId: address,
+        contractAddress,
+        tokenAddress: '0x4200000000000000000000000000000000000042',
+        partner: 'optimism:top_referrer_rewards',
+        chainId: optimism.id,
+        txHash: hash
+      }))
     });
 
     log.info('Top referrer rewards contract deployed', { hash, contractAddress });
