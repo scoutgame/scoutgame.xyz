@@ -55,8 +55,6 @@ export async function attestGemReceipts(): Promise<void> {
 
   const usersToProcess = usersWithoutProfile.length;
 
-  const missingProfileInputs: Omit<ScoutGameAttestationInput, 'schemaId'>[] = [];
-
   for (let i = 0; i < usersToProcess; i++) {
     const user = usersWithoutProfile[i];
     attestationLogger.info(`Populating profile attestion for user ${user.id} ${i + 1} / ${usersToProcess}`);
