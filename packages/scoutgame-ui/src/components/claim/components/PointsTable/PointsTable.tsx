@@ -1,6 +1,7 @@
 'use client';
 
 import { Paper, Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
+import { getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import type { PartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
 import type { PointsReceiptReward } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 import { useMemo, type ReactNode } from 'react';
@@ -15,15 +16,23 @@ export function PointsTable({
   pointsReceiptRewards,
   partnerRewards,
   title,
-  emptyMessage
+  emptyMessage,
+  processingPayouts
 }: {
   pointsReceiptRewards: PointsReceiptReward[];
   title: ReactNode | string;
   partnerRewards: PartnerReward[];
   emptyMessage: string;
+  processingPayouts: boolean;
 }) {
-  const sortedRewards = useMemo(() => {
-    return [...pointsReceiptRewards, ...partnerRewards].sort((a, b) => {
+  const processedRewards = useMemo(() => {
+    const rewards = [...pointsReceiptRewards, ...partnerRewards];
+
+    return (
+      processingPayouts
+        ? rewards.filter((r) => (r.type !== 'season' ? r.week !== getCurrentSeasonWeekNumber() - 1 : true))
+        : rewards
+    ).sort((a, b) => {
       if (a.type === 'season' || b.type === 'season') {
         return b.points - a.points;
       }
@@ -39,9 +48,9 @@ export function PointsTable({
 
       return b.week - a.week;
     });
-  }, [pointsReceiptRewards, partnerRewards]);
+  }, [pointsReceiptRewards, partnerRewards, processingPayouts]);
 
-  if (sortedRewards.length === 0) {
+  if (processedRewards.length === 0) {
     return (
       <Stack gap={0.5} alignItems='center'>
         <Typography variant='h6' color='secondary'>
@@ -89,7 +98,7 @@ export function PointsTable({
             }
           }}
         >
-          {sortedRewards.map((pointsReceiptReward) => (
+          {processedRewards.map((pointsReceiptReward) => (
             <PointsReceiptRewardRow
               key={`${pointsReceiptReward.type === 'season' ? pointsReceiptReward.season : pointsReceiptReward.week}-${pointsReceiptReward.type}`}
               pointsReceiptReward={pointsReceiptReward}

@@ -1,11 +1,12 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 
 import type { BonusPartner } from '../bonus';
 
+import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
 import { getClaimablePoints } from './getClaimablePoints';
 
 export type UnclaimedPointsSource = {
@@ -18,6 +19,7 @@ export type UnclaimedPointsSource = {
   points: number;
   bonusPartners: BonusPartner[];
   repos: string[];
+  processingPayouts: boolean;
 };
 
 export async function getClaimablePointsWithSources(userId: string): Promise<UnclaimedPointsSource> {
@@ -25,6 +27,7 @@ export async function getClaimablePointsWithSources(userId: string): Promise<Unc
     season: getCurrentSeasonStart(),
     userId
   });
+
   const pointsReceipts = await prisma.pointsReceipt.findMany({
     where: {
       id: {
@@ -117,10 +120,13 @@ export async function getClaimablePointsWithSources(userId: string): Promise<Unc
 
   const uniqueRepos = Array.from(new Set(repos.map((repo) => `${repo.repo.owner}/${repo.repo.name}`)));
 
+  const isProcessing = await checkIsProcessingPayouts({ week: getLastWeek() });
+
   return {
     builders: buildersWithFarcaster,
     points,
     bonusPartners,
-    repos: uniqueRepos.slice(0, 3)
+    repos: uniqueRepos.slice(0, 3),
+    processingPayouts: isProcessing
   };
 }

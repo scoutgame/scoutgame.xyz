@@ -884,3 +884,16 @@ export async function mockScoutProject({
 
   return scoutProject;
 }
+
+export async function mockWeeklyClaims({ week, season }: { week: string; season: string }) {
+  return prisma.weeklyClaims.create({
+    data: {
+      week,
+      season,
+      claims: [],
+      proofsMap: {},
+      totalClaimable: 0,
+      merkleTreeRoot: ''
+    }
+  });
+}

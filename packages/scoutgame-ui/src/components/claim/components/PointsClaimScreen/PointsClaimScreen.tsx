@@ -31,13 +31,14 @@ export function PointsClaimScreen({
   partnerRewards,
   builders,
   repos,
-  onchainClaimData
+  onchainClaimData,
+  processingPayouts
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
   partnerRewards: {
     id: string;
-    amount: bigint;
+    amount: number;
     partner: string;
   }[];
   builders: {
@@ -46,6 +47,7 @@ export function PointsClaimScreen({
   }[];
   repos: string[];
   onchainClaimData?: ClaimData;
+  processingPayouts: boolean;
 }) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
   const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction, {
@@ -139,7 +141,17 @@ export function PointsClaimScreen({
         flexDirection: 'column'
       }}
     >
-      {totalUnclaimedPoints || partnerRewards.length > 0 ? (
+      {processingPayouts && (
+        <>
+          <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
+            Processing payouts
+          </Typography>
+          <Typography variant='body1' textAlign='center'>
+            We are currently processing payouts for last week. Please check back in a few minutes.
+          </Typography>
+        </>
+      )}
+      {(totalUnclaimedPoints || partnerRewards.length > 0) && !processingPayouts ? (
         <>
           <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
             Congratulations!
@@ -224,7 +236,8 @@ export function PointsClaimScreen({
             </>
           ) : null}
         </>
-      ) : (
+      ) : null}
+      {!totalUnclaimedPoints && !processingPayouts ? (
         <>
           <Typography textAlign='center' color='secondary' variant='h5'>
             Hey {user?.displayName},
@@ -235,7 +248,7 @@ export function PointsClaimScreen({
             Keep playing to earn more!
           </Typography>
         </>
-      )}
+      ) : null}
       <Dialog
         open={showModal}
         onClose={handleCloseModal}

@@ -1,6 +1,7 @@
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
+import { checkIsProcessingPayouts } from '@packages/scoutgame/points/checkIsProcessingPayouts';
 import { getPartnerRewards } from '@packages/scoutgame/points/getPartnerRewards';
 import { getPointsReceiptsRewards } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 
@@ -24,7 +25,8 @@ export async function UnclaimedPointsTable() {
         userId: scoutId,
         isClaimed: false,
         season: getCurrentSeasonStart()
-      })
+      }),
+      checkIsProcessingPayouts({ week: getLastWeek() })
     ])
   );
 
@@ -32,7 +34,7 @@ export async function UnclaimedPointsTable() {
     return null;
   }
 
-  const [pointsReceiptRewards, partnerRewards] = data;
+  const [pointsReceiptRewards, partnerRewards, processingPayouts = false] = data;
 
   return (
     <PointsTable
@@ -40,6 +42,7 @@ export async function UnclaimedPointsTable() {
       pointsReceiptRewards={pointsReceiptRewards}
       partnerRewards={partnerRewards}
       title='Unclaimed'
+      processingPayouts={processingPayouts}
     />
   );
 }

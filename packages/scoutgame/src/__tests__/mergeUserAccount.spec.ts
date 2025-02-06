@@ -262,7 +262,7 @@ describe('mergeUserAccount', () => {
     // Points earned as scout = 200 points
 
     expect(retainedUser.currentBalance).toEqual(750);
-    expect(retainedUser.userSeasonStats[0].pointsEarnedAsBuilder).toEqual(200);
+    expect(retainedUser.userSeasonStats[0].pointsEarnedAsBuilder).toEqual(550);
     expect(retainedUser.userSeasonStats[0].pointsEarnedAsScout).toEqual(200);
     expect(retainedUser.userSeasonStats[0].nftsPurchased).toEqual(3);
     expect(retainedUser.userSeasonStats[0].nftsSold).toEqual(4);

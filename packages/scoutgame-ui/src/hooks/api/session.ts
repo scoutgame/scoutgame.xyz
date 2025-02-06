@@ -17,7 +17,7 @@ export function useUserWalletAddress(address?: string) {
 }
 
 export function useGetClaimablePoints() {
-  return useGETImmutable<{ points: number }>(
+  return useGETImmutable<{ points: number; processingPayouts: boolean }>(
     '/api/session/claimable-points',
     {},
     {

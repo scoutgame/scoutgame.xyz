@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
@@ -9,6 +9,7 @@ import type { Address } from 'viem';
 import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
 import type { WeeklyClaimsTyped } from '../protocol/generateWeeklyClaims';
 
+import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
 import type { UnclaimedPointsSource } from './getClaimablePointsWithSources';
 
 export type ClaimInput = {
@@ -151,15 +152,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }))
     .filter((proof) => proof.amount > 0 && proof.proofs.length > 0 && !claimedWeeks.includes(proof.week));
 
-  const partnerRewardPayoutCount = await prisma.partnerRewardPayout.count({
-    where: {
-      payoutContract: {
-        season: getCurrentSeasonStart()
-      },
-      claimedAt: null,
-      userId
-    }
-  });
+  const isProcessing = await checkIsProcessingPayouts({ week: getLastWeek() });
 
   return {
     builders: buildersWithFarcaster,
@@ -169,6 +162,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     claimData: {
       address: scoutWallets[0].address as Address,
       weeklyProofs: claimProofs
-    }
+    },
+    processingPayouts: isProcessing
   };
 }
