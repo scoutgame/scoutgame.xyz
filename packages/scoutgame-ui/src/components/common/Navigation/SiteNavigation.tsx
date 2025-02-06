@@ -51,7 +51,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const { user } = useUser();
   const isAuthenticated = Boolean(user);
   const value = getActiveButton(pathname);
-  const { data: claimablePoints = { points: 0 } } = useGetClaimablePoints();
+  const { data: claimablePoints = { points: 0, processingPayouts: false } } = useGetClaimablePoints();
   const { data: dailyClaims = [] } = useGetQuests();
   const todaysClaim = dailyClaims?.find((claim) => {
     const currentWeekDay = DateTime.fromJSDate(new Date()).weekday;
@@ -92,7 +92,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           label='Claim'
           href={isAuthenticated ? '/claim' : '#'}
           value='claim'
-          icon={<ClaimIcon animate={claimablePoints.points > 0} />}
+          icon={<ClaimIcon animate={claimablePoints.points > 0 && !claimablePoints.processingPayouts} />}
           onClick={(e) => {
             if (!isAuthenticated) {
               setAuthPopup({ open: true, path: 'claim' });

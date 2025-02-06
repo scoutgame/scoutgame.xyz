@@ -27,6 +27,7 @@ export async function ClaimedPointsTable() {
           Claimed
         </Stack>
       }
+      processingPayouts={false}
     />
   );
 }
