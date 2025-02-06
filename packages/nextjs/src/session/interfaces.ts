@@ -31,4 +31,6 @@ export type SessionUser = Pick<
   | 'bio'
   | 'referralCode'
   | 'deletedAt'
->;
+> & {
+  primaryWalletAddress: string;
+};

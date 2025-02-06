@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/platform';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { getProtocolReadonlyClient } from '@packages/scoutgame/builderNfts/clients/protocol/getProtocolReadonlyClient';
@@ -25,6 +25,14 @@ import { BonusPartnersDisplay } from './BonusPartnersDisplay';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
 import { RewardsClaimButton } from './RewardsClaimButton';
 
+type PartnerReward = {
+  id: string;
+  amount: number;
+  partner: string;
+  tokenDecimals: number;
+  tokenSymbol: string;
+};
+
 export function PointsClaimScreen({
   totalUnclaimedPoints,
   bonusPartners,
@@ -36,11 +44,7 @@ export function PointsClaimScreen({
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
-  partnerRewards: {
-    id: string;
-    amount: number;
-    partner: string;
-  }[];
+  partnerRewards: PartnerReward[];
   builders: {
     farcasterHandle?: string;
     displayName: string;
@@ -49,6 +53,8 @@ export function PointsClaimScreen({
   onchainClaimData?: ClaimData;
   processingPayouts: boolean;
 }) {
+  const [showPartnerRewardModal, setShowPartnerRewardModal] = useState(false);
+
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
   const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction, {
     onSuccess() {
@@ -58,6 +64,7 @@ export function PointsClaimScreen({
       toast.error(error.error.serverError?.message || 'There was an error while claiming points');
     }
   });
+
   const { executeAsync: handlePartnerRewardClaim, isExecuting: isPartnerRewardClaiming } = useAction(
     handlePartnerRewardClaimAction,
     {
@@ -66,11 +73,16 @@ export function PointsClaimScreen({
       },
       onError(error) {
         toast.error(error.error.serverError?.message || 'There was an error while claiming partner reward');
+      },
+      onSettled() {
+        setShowPartnerRewardModal(false);
       }
     }
   );
   const { refreshUser, user } = useUser();
   const [showModal, setShowModal] = useState(false);
+  const [selectedPartnerReward, setSelectedPartnerReward] = useState<PartnerReward | null>(null);
+
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
 
   const { data: walletClient } = useWalletClient();
@@ -229,7 +241,11 @@ export function PointsClaimScreen({
                   </Stack>
                   <RewardsClaimButton
                     isExecuting={isPartnerRewardClaiming}
-                    handleClaim={() => handlePartnerRewardClaim({ payoutId: reward.id })}
+                    handleClaim={() => {
+                      setSelectedPartnerReward(reward);
+                      setShowPartnerRewardModal(true);
+                    }}
+                    sx={{ width: 'fit-content' }}
                   />
                 </Stack>
               ))}
@@ -237,7 +253,7 @@ export function PointsClaimScreen({
           ) : null}
         </>
       ) : null}
-      {!totalUnclaimedPoints && !processingPayouts ? (
+      {!totalUnclaimedPoints && partnerRewards.length === 0 && !processingPayouts ? (
         <>
           <Typography textAlign='center' color='secondary' variant='h5'>
             Hey {user?.displayName},
@@ -249,6 +265,43 @@ export function PointsClaimScreen({
           </Typography>
         </>
       ) : null}
+      {showPartnerRewardModal && selectedPartnerReward && (
+        <Dialog
+          open={showPartnerRewardModal}
+          onClose={() => setShowPartnerRewardModal(false)}
+          PaperProps={{
+            sx: {
+              width: '100%'
+            }
+          }}
+        >
+          <Stack
+            sx={{
+              p: 2,
+              gap: 1,
+              width: '100%',
+              height: 'fit-content',
+              maxWidth: 600,
+              position: 'relative'
+            }}
+          >
+            <Typography variant='h6'>Receive partner rewards</Typography>
+            <Typography variant='body1'>
+              Send {selectedPartnerReward.amount} {selectedPartnerReward.tokenSymbol} to {user?.primaryWalletAddress}
+            </Typography>
+            <Stack flexDirection='row' alignItems='center' gap={1}>
+              <RewardsClaimButton
+                sx={{ width: 'fit-content' }}
+                isExecuting={isPartnerRewardClaiming}
+                handleClaim={() => handlePartnerRewardClaim({ payoutId: selectedPartnerReward.id })}
+              />
+              <Button disabled={isPartnerRewardClaiming} color='error' onClick={() => setShowPartnerRewardModal(false)}>
+                Cancel
+              </Button>
+            </Stack>
+          </Stack>
+        </Dialog>
+      )}
       <Dialog
         open={showModal}
         onClose={handleCloseModal}

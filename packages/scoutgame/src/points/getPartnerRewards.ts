@@ -7,16 +7,19 @@ type PartnerRewardBase = {
   week: number;
   points: number;
   season: Season;
+  tokenDecimals: number;
 };
 
 export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
   type: 'optimism_new_scout';
   position: number;
+  tokenSymbol: string;
 };
 
 export type OptimismTopReferrerReward = PartnerRewardBase & {
   type: 'optimism_top_referrer';
   date: Date;
+  tokenSymbol: string;
 };
 
 export type PartnerReward = OptimismNewScoutPartnerReward | OptimismTopReferrerReward;
@@ -35,7 +38,8 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
       amount: true,
       payoutContract: {
         select: {
-          partner: true
+          partner: true,
+          tokenDecimals: true
         }
       }
     }
@@ -43,8 +47,10 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
 
   return partnerRewards.map((payout) => ({
     id: payout.id,
-    amount: Number(formatUnits(BigInt(payout.amount), 18)),
-    partner: payout.payoutContract.partner
+    amount: Number(formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)),
+    partner: payout.payoutContract.partner,
+    tokenDecimals: payout.payoutContract.tokenDecimals,
+    tokenSymbol: 'OP'
   }));
 }
 
@@ -87,20 +93,23 @@ export async function getPartnerRewards({
       week: getSeasonWeekFromISOWeek({
         season,
         week: payout.payoutContract.week
-      })
+      }),
+      tokenDecimals: payout.payoutContract.tokenDecimals
     };
 
     if (payout.payoutContract.partner === 'optimism_new_scout') {
       partnerRewards.push({
         ...partnerReward,
         type: 'optimism_new_scout' as const,
-        position: (payout.meta as { position: number }).position
+        position: (payout.meta as { position: number }).position,
+        tokenSymbol: 'OP'
       });
     } else if (payout.payoutContract.partner === 'optimism_top_referrer') {
       partnerRewards.push({
         ...partnerReward,
         type: 'optimism_top_referrer' as const,
-        date: (payout.meta as unknown as { date: Date }).date
+        date: (payout.meta as unknown as { date: Date }).date,
+        tokenSymbol: 'OP'
       });
     }
   });

@@ -1,8 +1,17 @@
 'use client';
 
 import { LoadingButton } from '@mui/lab';
+import type { SxProps } from '@mui/material';
 
-export function RewardsClaimButton({ isExecuting, handleClaim }: { isExecuting: boolean; handleClaim: VoidFunction }) {
+export function RewardsClaimButton({
+  isExecuting,
+  handleClaim,
+  sx
+}: {
+  isExecuting: boolean;
+  handleClaim: VoidFunction;
+  sx?: SxProps;
+}) {
   return (
     <LoadingButton
       variant='contained'
@@ -11,7 +20,8 @@ export function RewardsClaimButton({ isExecuting, handleClaim }: { isExecuting: 
         width: {
           xs: 'fit-content',
           md: '100%'
-        }
+        },
+        ...sx
       }}
       loading={isExecuting}
       data-test='claim-points-button'

@@ -1,10 +1,11 @@
 'use server';
 
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { claimSablierAirdrop } from '@packages/blockchain/airdrop/claimSablierAirdrop';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import type { Address } from 'viem';
-import { optimism } from 'viem/chains';
+import { optimism, optimismSepolia } from 'viem/chains';
 import * as yup from 'yup';
 
 // This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package
@@ -25,9 +26,11 @@ export const handlePartnerRewardClaimAction = authActionClient
         claimedAt: null
       },
       select: {
+        claimedAt: true,
         payoutContract: {
           select: {
             contractAddress: true,
+            chainId: true,
             cid: true
           }
         },
@@ -46,22 +49,30 @@ export const handlePartnerRewardClaimAction = authActionClient
       }
     });
 
-    const { hash: txHash } = await claimSablierAirdrop({
-      adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
-      chainId: optimism.id,
-      cid: payout.payoutContract.cid,
-      contractAddress: payout.payoutContract.contractAddress as Address,
-      recipientAddress: payout.user.wallets[0].address as Address
-    });
+    if (payout.claimedAt) {
+      throw new Error('Partner reward payout already claimed');
+    }
 
-    await prisma.partnerRewardPayout.update({
-      where: {
-        id: parsedInput.payoutId
-      },
-      data: {
-        claimedAt: new Date(),
-        txHash
-      }
-    });
-    return { success: true };
+    try {
+      const { hash: txHash } = await claimSablierAirdrop({
+        chainId: payout.payoutContract.chainId,
+        cid: payout.payoutContract.cid,
+        contractAddress: payout.payoutContract.contractAddress as Address,
+        recipientAddress: payout.user.wallets[0].address as Address
+      });
+
+      await prisma.partnerRewardPayout.update({
+        where: {
+          id: parsedInput.payoutId
+        },
+        data: {
+          claimedAt: new Date(),
+          txHash
+        }
+      });
+      return { success: true };
+    } catch (error) {
+      log.error('Error claiming partner reward payout', { error, userId, payoutId: parsedInput.payoutId });
+      throw new Error('Error claiming partner reward payout');
+    }
   });

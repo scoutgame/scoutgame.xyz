@@ -37,7 +37,8 @@ export async function PointsClaimContainer() {
           claimedAt: null,
           userId: scoutId
         }
-      })
+      }),
+      getUnclaimedPartnerRewards({ userId: scoutId })
     ])
   );
 
@@ -45,18 +46,10 @@ export async function PointsClaimContainer() {
     return null;
   }
 
-  const [claimablePoints, partnerRewardPayoutCount] = data;
+  const [claimablePoints, partnerRewardPayoutCount, unclaimedPartnerRewards] = data;
   const { bonusPartners, points, builders, repos, processingPayouts } = claimablePoints;
 
   const claimData = isOnchainApp ? (claimablePoints as UnclaimedTokensSource).claimData : undefined;
-
-  const [unclaimedPartnerRewardsErr, unclaimedPartnerRewards] = await safeAwaitSSRData(
-    getUnclaimedPartnerRewards({ userId: scoutId })
-  );
-
-  if (unclaimedPartnerRewardsErr) {
-    return null;
-  }
 
   return (
     <>
