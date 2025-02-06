@@ -1,11 +1,9 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getChainById } from '@packages/blockchain/chains';
 import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
-import { getWalletClient } from '@packages/blockchain/getWalletClient';
-import type { SupportedChainId } from '@packages/blockchain/provider/ankr/client';
-import { getLogs } from '@packages/blockchain/provider/ankr/getLogs';
-import { getTransactionReceipt } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getLogs, getTransactionReceipt, getBlock } from '@packages/blockchain/provider/ankr/client';
+import type { SupportedChainId } from '@packages/blockchain/provider/ankr/request';
 import { toJson } from '@packages/utils/json';
 import type Koa from 'koa';
 import type { Address } from 'viem';
@@ -44,11 +42,8 @@ export async function retrieveContractInteractions(ctx: Koa.Context, { contractI
   for (const contract of contracts) {
     try {
       const pollStart = Date.now();
-      const client = getWalletClient({
-        chainId: contract.chainId
-      });
+      const client = getPublicClient(contract.chainId);
       const latestBlock = await client.getBlockNumber();
-      const chainId = contract.chainId;
       // Get the last poll event for this contract
       const lastPollEvent = await prisma.scoutProjectContractPollEvent.findFirst({
         where: {
@@ -121,24 +116,29 @@ async function retrieveContractLogs({
       log.info('Found', logs.length, 'logs and', txHashes.size, 'transactions...');
     }
 
-    const txData = await Promise.all(
-      Array.from(txHashes).map((txHash) => getTransactionReceipt({ chainId, txHash: txHash as `0x${string}` }))
+    const transactions = await Promise.all(
+      Array.from(txHashes).map(async (txHash) => {
+        const receipt = await getTransactionReceipt({ chainId, txHash: txHash as `0x${string}` });
+        const block = await getBlock({ chainId, blockNumber: receipt.blockNumber });
+        return { block, receipt };
+      })
     );
 
     if (logs.length > 0) {
       await Promise.all([
         prisma.scoutProjectContractTransaction.createMany({
-          data: txData.map((tx) => ({
+          data: transactions.map(({ receipt, block }) => ({
             contractId,
-            blockNumber: Number(tx.blockNumber),
-            txHash: tx.transactionHash,
-            txData: JSON.parse(toJson(tx) || '{}'),
-            gasUsed: Number(tx.gasUsed),
-            gasPrice: Number(tx.effectiveGasPrice),
-            gasCost: Number(tx.gasUsed) * Number(tx.effectiveGasPrice),
-            from: tx.from.toLowerCase(),
-            to: tx.to ? tx.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
-            status: tx.status
+            blockNumber: Number(receipt.blockNumber),
+            txHash: receipt.transactionHash,
+            txData: JSON.parse(toJson(receipt) || '{}'),
+            gasUsed: Number(receipt.gasUsed),
+            gasPrice: Number(receipt.effectiveGasPrice),
+            gasCost: Number(receipt.gasUsed) * Number(receipt.effectiveGasPrice),
+            from: receipt.from.toLowerCase(),
+            to: receipt.to ? receipt.to.toLowerCase() : '0x0000000000000000000000000000000000000000',
+            createdAt: new Date(Number(block.timestamp) * 1000),
+            status: receipt.status
           }))
         }),
         // prisma.scoutProjectContractLog.createMany({

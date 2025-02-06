@@ -1,7 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import type { GetLogsResult } from '@packages/blockchain/provider/ankr/getLogs';
-import type { GetTransactionReceiptResult } from '@packages/blockchain/provider/ankr/getTransactionReceipt';
+import type { GetLogsResult, GetTransactionReceiptResult } from '@packages/blockchain/provider/ankr/client';
 import { mockScoutProject } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 import { createContext } from '@packages/testing/koa/context';

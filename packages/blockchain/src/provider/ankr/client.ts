@@ -1,67 +1,53 @@
-import { log } from '@charmverse/core/log';
-import { paginatedCall } from '@packages/utils/async';
-import { POST } from '@packages/utils/http';
-import { RateLimit } from 'async-sema';
+import type { Address, Block, TransactionReceipt } from 'viem';
 
-let _nextId = 133782;
+import type { SupportedChainId } from './request';
+import { ankrRequest } from './request';
 
-// Find all supported chains:  https://www.ankr.com/docs/advanced-api/overview/#chains-supported
-const supportedChains = {
-  // 56: 'bsc',
-  // 1101: 'polygon_zkevm',
-  // 250: 'fantom',
-  // 43114: 'avalanche',
-  // 5000: 'mantle',
-  // 137: 'polygon',
-  167000: 'taiko',
-  167009: 'taiko_hekla'
-} as const;
+export type GetLogsResult = {
+  address: Address; // the contract address
+  topics: string[];
+  data: string;
+  blockNumber: string;
+  blockHash: string;
+  transactionHash: string;
+  transactionIndex: string;
+  removed: boolean;
+  logIndex: string;
+}[];
 
-export type SupportedChainId = keyof typeof supportedChains;
-
-// ≈1800 requests/minute for Public tier - https://www.ankr.com/docs/rpc-service/service-plans/#rate-limits
-// Note: if ankr is used heavily on multiple instances/apps, we might want to reduce the rate limit
-const rateLimiter = RateLimit(1500, { timeUnit: 60 * 1000, uniformDistribution: true });
-
-export function getAnkrBaseUrl(chainId: SupportedChainId) {
-  const chainPath = supportedChains[chainId];
-  if (!chainPath) throw new Error(`Chain id "${chainId}" not supported by Ankr`);
-  return `https://rpc.ankr.com/${chainPath}/${process.env.ANKR_API_ID}`; /// ${process.env.ANKR_API_ID}`;
-}
-
-export type ResponseError = {
-  error: { code: number; message: string };
-};
-
-export type AnkrResponse<T> = {
-  result: T;
-  id: number;
-  jsonrpc: string;
-};
-
-export async function ankrRequest<T>({
+// see supported APIs by taiko: https://www.ankr.com/docs/rpc-service/chains/chains-api/taiko/#eth_gettransactionbyhash
+export async function getLogs({
   chainId,
-  method,
-  params
+  address,
+  fromBlock,
+  toBlock
 }: {
   chainId: SupportedChainId;
-  method: string;
-  params: any;
-}): Promise<T> {
-  const baseUrl = getAnkrBaseUrl(chainId);
-  await rateLimiter();
-  _nextId += 1;
-  return POST<AnkrResponse<T> | ResponseError>(baseUrl, {
-    id: _nextId,
-    method,
-    params
-  }).then((r) => {
-    // console.log('res', r);
-    if ((r as ResponseError).error) {
-      log.error('Ankr error', { error: (r as ResponseError).error });
-      throw new Error((r as ResponseError).error.message);
-    }
-    // console.log('ankrRequest response', JSON.stringify(r, null, 2));
-    return (r as AnkrResponse<T>).result;
+  address: string | string[];
+  fromBlock?: bigint;
+  toBlock?: bigint;
+}) {
+  return ankrRequest<GetLogsResult>({
+    chainId,
+    method: 'eth_getLogs',
+    params: [
+      {
+        address,
+        fromBlock: fromBlock ? `0x${fromBlock.toString(16)}` : undefined,
+        toBlock: toBlock ? `0x${toBlock.toString(16)}` : undefined
+      }
+    ]
   });
+}
+
+// note: the generic types are: TransactionReceipt<quantity, index, status, type>
+export type GetTransactionReceiptResult = TransactionReceipt<string, string, '0x1', '0x0'>;
+
+export function getTransactionReceipt({ chainId, txHash }: { chainId: SupportedChainId; txHash: string }) {
+  return ankrRequest<GetTransactionReceiptResult>({ chainId, method: 'eth_getTransactionReceipt', params: [txHash] });
+}
+
+// ref: https://www.ankr.com/docs/rpc-service/chains/chains-api/ethereum/#eth_getblockbynumber
+export function getBlock({ chainId, blockNumber }: { chainId: SupportedChainId; blockNumber: string }) {
+  return ankrRequest<Block>({ chainId, method: 'eth_getBlockByNumber', params: [blockNumber] });
 }
