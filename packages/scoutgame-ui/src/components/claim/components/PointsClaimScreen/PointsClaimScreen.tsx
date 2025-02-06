@@ -2,11 +2,12 @@
 
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import { Box, Button, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/platform';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { getProtocolReadonlyClient } from '@packages/scoutgame/builderNfts/clients/protocol/getProtocolReadonlyClient';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
+import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -16,22 +17,14 @@ import { useWalletClient } from 'wagmi';
 
 import { claimPointsAction } from '../../../../actions/claimPointsAction';
 import { handleOnchainClaimAction } from '../../../../actions/handleOnchainClaimAction';
-import { handlePartnerRewardClaimAction } from '../../../../actions/handlePartnerRewardClaimAction';
 import { revalidateClaimPointsAction } from '../../../../actions/revalidateClaimPointsAction';
 import { useUser } from '../../../../providers/UserProvider';
 import { WalletLogin } from '../../../common/WalletLogin/WalletLogin';
 
 import { BonusPartnersDisplay } from './BonusPartnersDisplay';
+import { PartnerRewardsClaimButton } from './PartnerRewardsClaimButton/PartnerRewardsClaimButton';
+import { PointsClaimButton } from './PointsClaimButton';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
-import { RewardsClaimButton } from './RewardsClaimButton';
-
-type PartnerReward = {
-  id: string;
-  amount: number;
-  partner: string;
-  tokenDecimals: number;
-  tokenSymbol: string;
-};
 
 export function PointsClaimScreen({
   totalUnclaimedPoints,
@@ -44,7 +37,7 @@ export function PointsClaimScreen({
 }: {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
-  partnerRewards: PartnerReward[];
+  partnerRewards: UnclaimedPartnerReward[];
   builders: {
     farcasterHandle?: string;
     displayName: string;
@@ -53,8 +46,6 @@ export function PointsClaimScreen({
   onchainClaimData?: ClaimData;
   processingPayouts: boolean;
 }) {
-  const [showPartnerRewardModal, setShowPartnerRewardModal] = useState(false);
-
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
   const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction, {
     onSuccess() {
@@ -65,23 +56,8 @@ export function PointsClaimScreen({
     }
   });
 
-  const { executeAsync: handlePartnerRewardClaim, isExecuting: isPartnerRewardClaiming } = useAction(
-    handlePartnerRewardClaimAction,
-    {
-      onSuccess() {
-        toast.success('You claimed your partner reward successfully');
-      },
-      onError(error) {
-        toast.error(error.error.serverError?.message || 'There was an error while claiming partner reward');
-      },
-      onSettled() {
-        setShowPartnerRewardModal(false);
-      }
-    }
-  );
   const { refreshUser, user } = useUser();
   const [showModal, setShowModal] = useState(false);
-  const [selectedPartnerReward, setSelectedPartnerReward] = useState<PartnerReward | null>(null);
 
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
 
@@ -210,10 +186,10 @@ export function PointsClaimScreen({
                     connectedAddress !== onchainClaimData.address.toLowerCase() ? (
                       <WalletLogin />
                     ) : (
-                      <RewardsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+                      <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
                     )
                   ) : null}
-                  {!onchainClaimData && <RewardsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
+                  {!onchainClaimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
                 </Box>
               </Stack>
             </>
@@ -239,14 +215,7 @@ export function PointsClaimScreen({
                     <Typography>{reward.amount.toLocaleString()}</Typography>
                     <Image width={25} height={25} src='/images/crypto/op.png' alt='Scouts' />
                   </Stack>
-                  <RewardsClaimButton
-                    isExecuting={isPartnerRewardClaiming}
-                    handleClaim={() => {
-                      setSelectedPartnerReward(reward);
-                      setShowPartnerRewardModal(true);
-                    }}
-                    sx={{ width: 'fit-content' }}
-                  />
+                  <PartnerRewardsClaimButton partnerReward={reward} />
                 </Stack>
               ))}
             </>
@@ -265,43 +234,7 @@ export function PointsClaimScreen({
           </Typography>
         </>
       ) : null}
-      {showPartnerRewardModal && selectedPartnerReward && (
-        <Dialog
-          open={showPartnerRewardModal}
-          onClose={() => setShowPartnerRewardModal(false)}
-          PaperProps={{
-            sx: {
-              width: '100%'
-            }
-          }}
-        >
-          <Stack
-            sx={{
-              p: 2,
-              gap: 1,
-              width: '100%',
-              height: 'fit-content',
-              maxWidth: 600,
-              position: 'relative'
-            }}
-          >
-            <Typography variant='h6'>Receive partner rewards</Typography>
-            <Typography variant='body1'>
-              Send {selectedPartnerReward.amount} {selectedPartnerReward.tokenSymbol} to {user?.primaryWalletAddress}
-            </Typography>
-            <Stack flexDirection='row' alignItems='center' gap={1}>
-              <RewardsClaimButton
-                sx={{ width: 'fit-content' }}
-                isExecuting={isPartnerRewardClaiming}
-                handleClaim={() => handlePartnerRewardClaim({ payoutId: selectedPartnerReward.id })}
-              />
-              <Button disabled={isPartnerRewardClaiming} color='error' onClick={() => setShowPartnerRewardModal(false)}>
-                Cancel
-              </Button>
-            </Stack>
-          </Stack>
-        </Dialog>
-      )}
+
       <Dialog
         open={showModal}
         onClose={handleCloseModal}

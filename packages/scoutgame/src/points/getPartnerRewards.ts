@@ -24,7 +24,18 @@ export type OptimismTopReferrerReward = PartnerRewardBase & {
 
 export type PartnerReward = OptimismNewScoutPartnerReward | OptimismTopReferrerReward;
 
-export async function getUnclaimedPartnerRewards({ userId }: { userId: string }) {
+export type UnclaimedPartnerReward = {
+  id: string;
+  amount: number;
+  partner: string;
+  tokenDecimals: number;
+  tokenSymbol: string;
+  cid: string;
+  chainId: number;
+  contractAddress: string;
+};
+
+export async function getUnclaimedPartnerRewards({ userId }: { userId: string }): Promise<UnclaimedPartnerReward[]> {
   const partnerRewards = await prisma.partnerRewardPayout.findMany({
     where: {
       payoutContract: {
@@ -39,18 +50,24 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
       payoutContract: {
         select: {
           partner: true,
-          tokenDecimals: true
+          tokenDecimals: true,
+          contractAddress: true,
+          cid: true,
+          chainId: true
         }
       }
     }
   });
 
-  return partnerRewards.map((payout) => ({
-    id: payout.id,
-    amount: Number(formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)),
-    partner: payout.payoutContract.partner,
-    tokenDecimals: payout.payoutContract.tokenDecimals,
-    tokenSymbol: 'OP'
+  return partnerRewards.map(({ payoutContract, id, amount }) => ({
+    id,
+    amount: Number(formatUnits(BigInt(amount), payoutContract.tokenDecimals)),
+    partner: payoutContract.partner,
+    tokenDecimals: payoutContract.tokenDecimals,
+    tokenSymbol: 'OP',
+    contractAddress: payoutContract.contractAddress,
+    cid: payoutContract.cid,
+    chainId: payoutContract.chainId
   }));
 }
 

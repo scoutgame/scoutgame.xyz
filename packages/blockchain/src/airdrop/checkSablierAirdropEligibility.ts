@@ -4,7 +4,9 @@ import type { Address } from 'viem';
 import { keccak256, encodeAbiParameters, parseAbiParameters } from 'viem';
 
 // @ts-ignore
-import { abi as sablierAirdropAbi } from './SablierMerkleInstant.json';
+import sablierMerkleInstantAbi from './SablierMerkleInstant.json' assert { type: 'json' };
+
+const sablierAirdropAbi = sablierMerkleInstantAbi.abi;
 
 type PersistentCampaignDto = {
   total_amount: string;
@@ -18,7 +20,6 @@ type PersistentCampaignDto = {
 };
 
 type EligibilityResponse = {
-  address: Address;
   amount: string;
   index: number;
   proof: Address[];
@@ -36,14 +37,14 @@ function hashLeaf(index: number, address: string, amount: string): Address {
 }
 
 export async function checkSablierAirdropEligibility({
-  address,
+  recipientAddress,
   cid,
   contractAddress,
   chainId
 }: {
   contractAddress: Address;
   chainId: number;
-  address: Address;
+  recipientAddress: Address;
   cid: string;
 }): Promise<EligibilityResponse> {
   const publicClient = getPublicClient(chainId);
@@ -64,7 +65,9 @@ export async function checkSablierAirdropEligibility({
 
   const campaignData = (await response.json()) as PersistentCampaignDto;
 
-  const recipientIndex = campaignData.recipients.findIndex((r) => r.address.toLowerCase() === address.toLowerCase());
+  const recipientIndex = campaignData.recipients.findIndex(
+    (r) => r.address.toLowerCase() === recipientAddress.toLowerCase()
+  );
 
   if (recipientIndex === -1) {
     throw new Error('Address is not eligible for this airdrop');
@@ -104,7 +107,6 @@ export async function checkSablierAirdropEligibility({
   }
 
   return {
-    address,
     amount: campaignData.recipients[recipientIndex].amount,
     index: recipientIndex,
     proof

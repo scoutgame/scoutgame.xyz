@@ -1,5 +1,3 @@
-import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getPlatform } from '@packages/mixpanel/platform';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
@@ -29,15 +27,6 @@ export async function PointsClaimContainer() {
   const [err, data] = await safeAwaitSSRData(
     Promise.all([
       (isOnchainApp ? getClaimableTokensWithSources : getClaimablePointsWithSources)(scoutId),
-      prisma.partnerRewardPayout.count({
-        where: {
-          payoutContract: {
-            season: getCurrentSeasonStart()
-          },
-          claimedAt: null,
-          userId: scoutId
-        }
-      }),
       getUnclaimedPartnerRewards({ userId: scoutId })
     ])
   );
@@ -46,7 +35,7 @@ export async function PointsClaimContainer() {
     return null;
   }
 
-  const [claimablePoints, partnerRewardPayoutCount, unclaimedPartnerRewards] = data;
+  const [claimablePoints, unclaimedPartnerRewards] = data;
   const { bonusPartners, points, builders, repos, processingPayouts } = claimablePoints;
 
   const claimData = isOnchainApp ? (claimablePoints as UnclaimedTokensSource).claimData : undefined;
@@ -62,7 +51,7 @@ export async function PointsClaimContainer() {
         partnerRewards={unclaimedPartnerRewards}
         processingPayouts={processingPayouts}
       />
-      {points === 0 && partnerRewardPayoutCount === 0 ? null : (
+      {points === 0 && unclaimedPartnerRewards.length === 0 ? null : (
         <Suspense fallback={<LoadingTable />}>
           <UnclaimedPointsTable />
         </Suspense>
