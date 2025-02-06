@@ -66,7 +66,7 @@ function Document() {
         own. Following these guidelines will help ensure that your pull request (PR) gets approved.
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
-        Do the Work
+        Find the Work
       </Typography>
       <CustomList listStyleType='decimal'>
         <ListItem>
