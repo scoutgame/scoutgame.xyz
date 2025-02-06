@@ -1,24 +1,22 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { formatUnits } from 'viem';
 
 type PartnerRewardBase = {
   week: number;
   points: number;
-  type: 'optimism_new_scout_partner' | 'optimism_top_referrer';
   season: Season;
 };
 
 export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
-  type: 'optimism_new_scout_partner';
-  partner: string;
+  type: 'optimism_new_scout';
   position: number;
 };
 
 export type OptimismTopReferrerReward = PartnerRewardBase & {
   type: 'optimism_top_referrer';
-  partner: string;
-  date: string;
+  date: Date;
 };
 
 export type PartnerReward = OptimismNewScoutPartnerReward | OptimismTopReferrerReward;
@@ -45,7 +43,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
 
   return partnerRewards.map((payout) => ({
     id: payout.id,
-    amount: payout.amount,
+    amount: Number(formatUnits(BigInt(payout.amount), 18)),
     partner: payout.payoutContract.partner
   }));
 }
@@ -59,60 +57,55 @@ export async function getPartnerRewards({
   isClaimed: boolean;
   season: string;
 }) {
-  const optimismNewScoutPartnerRewards: OptimismNewScoutPartnerReward[] = [];
-  const optimismTopReferrerRewards: OptimismTopReferrerReward[] = [];
+  const partnerRewards: PartnerReward[] = [];
 
   const partnerRewardPayouts = await prisma.partnerRewardPayout.findMany({
     where: {
       userId,
       claimedAt: isClaimed ? { not: null } : { equals: null },
       payoutContract: {
-        partner: {
-          in: ['optimism_new_scout', 'optimism_top_referrer']
-        },
         season
       }
     },
     select: {
       amount: true,
+      meta: true,
       payoutContract: {
         select: {
           week: true,
-          partner: true
+          partner: true,
+          tokenDecimals: true
         }
       }
     }
   });
 
   partnerRewardPayouts.forEach((payout) => {
-    if (payout.payoutContract.partner === 'optimism_new_scout') {
-      optimismNewScoutPartnerRewards.push({
-        partner: payout.payoutContract.partner,
-        points: Number(payout.amount),
-        type: 'optimism_new_scout_partner',
+    const partnerReward: PartnerRewardBase = {
+      points: Number(formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)),
+      season,
+      week: getSeasonWeekFromISOWeek({
         season,
-        position: 1,
-        week: getSeasonWeekFromISOWeek({
-          season,
-          week: payout.payoutContract.week
-        })
+        week: payout.payoutContract.week
+      })
+    };
+
+    if (payout.payoutContract.partner === 'optimism_new_scout') {
+      partnerRewards.push({
+        ...partnerReward,
+        type: 'optimism_new_scout' as const,
+        position: (payout.meta as { position: number }).position
       });
     } else if (payout.payoutContract.partner === 'optimism_top_referrer') {
-      optimismTopReferrerRewards.push({
-        partner: payout.payoutContract.partner,
-        points: Number(payout.amount),
-        type: 'optimism_top_referrer',
-        season,
-        date: new Date().toISOString(),
-        week: getSeasonWeekFromISOWeek({
-          season,
-          week: payout.payoutContract.week
-        })
+      partnerRewards.push({
+        ...partnerReward,
+        type: 'optimism_top_referrer' as const,
+        date: (payout.meta as unknown as { date: Date }).date
       });
     }
   });
 
-  return [...optimismNewScoutPartnerRewards, ...optimismTopReferrerRewards].sort((a, b) => {
+  return partnerRewards.sort((a, b) => {
     if (a.week === b.week) {
       return b.points - a.points;
     }

@@ -10,7 +10,7 @@ const newScoutsRewards = [60, 50, 40, 35, 30, 25, 20, 15, 15, 10];
 export const optimismTokenDecimals = 18;
 export const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
 
-export async function createNewScoutRewardsContract({ week, season }: { week: string; season: string }) {
+export async function deployNewScoutRewardsContract({ week, season }: { week: string; season: string }) {
   const newScouts = await getRankedNewScoutsForPastWeek({ week });
   const top10Scouts = newScouts.slice(0, 10);
   const { hash, contractAddress, cid, root } = await createSablierAirdropContract({

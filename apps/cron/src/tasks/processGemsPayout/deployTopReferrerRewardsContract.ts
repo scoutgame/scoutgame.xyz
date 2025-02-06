@@ -5,12 +5,12 @@ import { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
-import { optimismTokenDecimals, optimismTokenAddress } from './createNewScoutRewardsContract';
 import { createSablierAirdropContract } from './createSablierAirdropContract';
+import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRewardsContract';
 
 const TOP_REFERRER_REWARDS_AMOUNT = parseUnits('25', optimismTokenDecimals);
 
-export async function createTopReferrerRewardsContract() {
+export async function deployTopReferrerRewardsContract() {
   const topConnectors: { address: string; date: DateTime }[] = [];
   const week = getLastWeek();
   const season = getCurrentSeasonStart(week);

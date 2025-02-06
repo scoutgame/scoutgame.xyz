@@ -2,7 +2,7 @@
 
 import { LoadingButton } from '@mui/lab';
 
-export function PointsClaimButton({ isExecuting, handleClaim }: { isExecuting: boolean; handleClaim: VoidFunction }) {
+export function RewardsClaimButton({ isExecuting, handleClaim }: { isExecuting: boolean; handleClaim: VoidFunction }) {
   return (
     <LoadingButton
       variant='contained'

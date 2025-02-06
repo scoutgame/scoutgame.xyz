@@ -22,9 +22,8 @@ import { useUser } from '../../../../providers/UserProvider';
 import { WalletLogin } from '../../../common/WalletLogin/WalletLogin';
 
 import { BonusPartnersDisplay } from './BonusPartnersDisplay';
-import { PartnerRewardClaimButton } from './PartnerRewardClaimButton';
-import { PointsClaimButton } from './PointsClaimButton';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
+import { RewardsClaimButton } from './RewardsClaimButton';
 
 export function PointsClaimScreen({
   totalUnclaimedPoints,
@@ -54,7 +53,7 @@ export function PointsClaimScreen({
       toast.success('You claimed your points successfully');
     },
     onError(error) {
-      toast.error(error.error.serverError?.message || 'There was an error while claiming');
+      toast.error(error.error.serverError?.message || 'There was an error while claiming points');
     }
   });
   const { executeAsync: handlePartnerRewardClaim, isExecuting: isPartnerRewardClaiming } = useAction(
@@ -64,7 +63,7 @@ export function PointsClaimScreen({
         toast.success('You claimed your partner reward successfully');
       },
       onError(error) {
-        toast.error(error.error.serverError?.message || 'There was an error while claiming');
+        toast.error(error.error.serverError?.message || 'There was an error while claiming partner reward');
       }
     }
   );
@@ -187,10 +186,10 @@ export function PointsClaimScreen({
                     connectedAddress !== onchainClaimData.address.toLowerCase() ? (
                       <WalletLogin />
                     ) : (
-                      <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+                      <RewardsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
                     )
                   ) : null}
-                  {!onchainClaimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
+                  {!onchainClaimData && <RewardsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
                 </Box>
               </Stack>
             </>
@@ -216,7 +215,7 @@ export function PointsClaimScreen({
                     <Typography>{reward.amount.toLocaleString()}</Typography>
                     <Image width={25} height={25} src='/images/crypto/op.png' alt='Scouts' />
                   </Stack>
-                  <PartnerRewardClaimButton
+                  <RewardsClaimButton
                     isExecuting={isPartnerRewardClaiming}
                     handleClaim={() => handlePartnerRewardClaim({ payoutId: reward.id })}
                   />

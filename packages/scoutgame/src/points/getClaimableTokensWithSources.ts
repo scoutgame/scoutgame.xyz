@@ -24,7 +24,6 @@ export type ClaimData = {
 
 export type UnclaimedTokensSource = UnclaimedPointsSource & {
   claimData: ClaimData;
-  partnerRewardPayoutCount: number;
 };
 
 export async function getClaimableTokensWithSources(userId: string): Promise<UnclaimedTokensSource> {
@@ -170,7 +169,6 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     claimData: {
       address: scoutWallets[0].address as Address,
       weeklyProofs: claimProofs
-    },
-    partnerRewardPayoutCount
+    }
   };
 }

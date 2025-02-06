@@ -32,11 +32,7 @@ export async function claimSablierAirdrop({
     cid
   });
 
-  // Ensure amount fits within uint128
   const amount = BigInt(status.amount);
-  if (amount > BigInt('0xffffffffffffffffffffffffffffffff')) {
-    throw new Error('Amount exceeds uint128 maximum value');
-  }
 
   try {
     const { request } = await publicClient.simulateContract({

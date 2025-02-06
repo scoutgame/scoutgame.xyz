@@ -8,8 +8,8 @@ import { DateTime } from 'luxon';
 
 import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
 
-import { createNewScoutRewardsContract } from './createNewScoutRewardsContract';
-import { createTopReferrerRewardsContract } from './createTopReferrerRewardsContract';
+import { deployNewScoutRewardsContract } from './deployNewScoutRewardsContract';
+import { deployTopReferrerRewardsContract } from './deployTopReferrerRewardsContract';
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
 export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: { now?: DateTime } = {}) {
@@ -65,15 +65,15 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
 
   try {
     const [newScoutRewards, topReferrerRewards] = await Promise.all([
-      createNewScoutRewardsContract({ week, season }),
-      createTopReferrerRewardsContract()
+      deployNewScoutRewardsContract({ week, season }),
+      deployTopReferrerRewardsContract()
     ]);
-    log.info('Rewards contract deployed', {
+    log.info('Partner rewards contracts deployed', {
       newScoutRewards,
       topReferrerRewards
     });
   } catch (error) {
-    log.error('Error deploying new scout contract', { error });
+    log.error('Error deploying partner rewards contracts', { error, week, season });
   }
 
   const emailsSent = await sendGemsPayoutEmails({ week });

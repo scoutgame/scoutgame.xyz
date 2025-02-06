@@ -108,7 +108,7 @@ export async function createSablierAirdropContract({
     shape: ''
   };
 
-  const aggregateAmount = parseUnits(recipients.reduce((acc, { amount }) => acc + amount, 0).toString(), 18);
+  const aggregateAmount = parseUnits(recipients.reduce((acc, { amount }) => acc + amount, 0).toString(), tokenDecimals);
   const recipientCount = recipients.length;
 
   const sablierAirdropFactoryAddress = SablierAirdropFactoryContractRecords[chainId];

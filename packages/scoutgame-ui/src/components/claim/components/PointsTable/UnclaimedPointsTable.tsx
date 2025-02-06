@@ -14,20 +14,25 @@ export async function UnclaimedPointsTable() {
     return null;
   }
 
-  const [, pointsReceiptRewards = []] = await safeAwaitSSRData(
-    getPointsReceiptsRewards({
-      userId: scoutId,
-      isClaimed: false
-    })
+  const [err, data] = await safeAwaitSSRData(
+    Promise.all([
+      getPointsReceiptsRewards({
+        userId: scoutId,
+        isClaimed: false
+      }),
+      getPartnerRewards({
+        userId: scoutId,
+        isClaimed: false,
+        season: getCurrentSeasonStart()
+      })
+    ])
   );
 
-  const [, partnerRewards = []] = await safeAwaitSSRData(
-    getPartnerRewards({
-      userId: scoutId,
-      isClaimed: false,
-      season: getCurrentSeasonStart()
-    })
-  );
+  if (err) {
+    return null;
+  }
+
+  const [pointsReceiptRewards, partnerRewards] = data;
 
   return (
     <PointsTable

@@ -9,22 +9,7 @@ import { StyledTableBody, StyledTableHead } from '../common/StyledTable';
 
 import { PointsReceiptRewardRow } from './PointsReceiptRewardRow';
 
-const getTypeOrder = (type: string): number => {
-  switch (type) {
-    case 'leaderboard_rank':
-      return 0;
-    case 'sold_nfts':
-      return 1;
-    case 'builder':
-      return 2;
-    case 'optimism_new_scout_partner':
-      return 3;
-    case 'optimism_top_referrer':
-      return 4;
-    default:
-      return 5;
-  }
-};
+const rewardTypes = ['leaderboard_rank', 'sold_nfts', 'builder', 'optimism_new_scout_partner', 'optimism_top_referrer'];
 
 export function PointsTable({
   pointsReceiptRewards,
@@ -44,8 +29,8 @@ export function PointsTable({
       }
 
       if (a.week === b.week) {
-        const typeOrderA = getTypeOrder(a.type);
-        const typeOrderB = getTypeOrder(b.type);
+        const typeOrderA = rewardTypes.indexOf(a.type);
+        const typeOrderB = rewardTypes.indexOf(b.type);
         if (typeOrderA !== typeOrderB) {
           return typeOrderA - typeOrderB;
         }
