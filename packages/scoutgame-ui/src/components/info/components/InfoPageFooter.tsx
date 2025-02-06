@@ -80,6 +80,9 @@ export function InfoPageFooter() {
           <MuiLink href='/info/contribution-guide'>
             <Typography>Open-Source Contribution Guide</Typography>
           </MuiLink>
+          <MuiLink href='/info/core-maintainer-guide'>
+            <Typography>Core Maintainer Guide</Typography>
+          </MuiLink>
           <MuiLink href='/info/privacy-policy'>
             <Typography>Privacy Policy</Typography>
           </MuiLink>
