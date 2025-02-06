@@ -34,14 +34,21 @@ export async function retrieveContractInteractions(ctx: Koa.Context, { contractI
   const windowStart = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30);
   const windowStarts: Record<string, bigint> = {};
 
+  async function getWindowStart(chainId: SupportedChainId) {
+    if (!windowStarts[chainId]) {
+      windowStarts[chainId] = (await getBlockByDate({ date: windowStart, chainId })).number;
+    }
+    return windowStarts[chainId];
+  }
+
   for (const contract of contracts) {
     try {
+      const pollStart = Date.now();
       const client = getWalletClient({
         chainId: contract.chainId
       });
       const latestBlock = await client.getBlockNumber();
       const chainId = contract.chainId;
-      const firstBlock = windowStarts[chainId] || (await getBlockByDate({ date: windowStart, chainId })).number;
       // Get the last poll event for this contract
       const lastPollEvent = await prisma.scoutProjectContractPollEvent.findFirst({
         where: {
@@ -51,11 +58,12 @@ export async function retrieveContractInteractions(ctx: Koa.Context, { contractI
           toBlockNumber: 'desc'
         }
       });
-      const pollStart = Date.now();
 
-      const fromBlock = lastPollEvent ? lastPollEvent.toBlockNumber + BigInt(1) : firstBlock;
+      const fromBlock = lastPollEvent
+        ? lastPollEvent.toBlockNumber + BigInt(1)
+        : await getWindowStart(contract.chainId as SupportedChainId);
 
-      log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
+      // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
       await retrieveContractLogs({
         address: contract.address as Address,
@@ -65,16 +73,10 @@ export async function retrieveContractInteractions(ctx: Koa.Context, { contractI
         chainId: contract.chainId as SupportedChainId
       });
 
-      // Record this poll event
-      await prisma.scoutProjectContractPollEvent.create({
-        data: {
-          contractId: contract.id,
-          fromBlockNumber: fromBlock,
-          toBlockNumber: latestBlock,
-          processedAt: new Date(),
-          processTime: Date.now() - pollStart
-        }
-      });
+      const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);
+      log.info(
+        `Processed contract ${contract.address} from block ${fromBlock} to ${latestBlock} in ${durationMins} minutes`
+      );
     } catch (error) {
       log.error('Error processing contract:', {
         error,
@@ -104,6 +106,7 @@ async function retrieveContractLogs({
   for (let currentBlock = fromBlock; currentBlock <= toBlock; currentBlock += pageSize) {
     const nextStep = currentBlock + (pageSize - BigInt(1));
     const endBlock = nextStep > toBlock ? toBlock : nextStep;
+    const pollStart = Date.now();
 
     const logs = await getLogs({
       chainId,
@@ -138,14 +141,24 @@ async function retrieveContractLogs({
             status: tx.status
           }))
         }),
-        prisma.scoutProjectContractLog.createMany({
-          data: logs.map((l) => ({
+        // prisma.scoutProjectContractLog.createMany({
+        //   data: logs.map((l) => ({
+        //     contractId,
+        //     blockNumber: Number(l.blockNumber),
+        //     txHash: l.transactionHash,
+        //     from: l.address.toLowerCase(),
+        //     logIndex: Number(l.logIndex)
+        //   }))
+        // }),
+        // Record this poll event
+        prisma.scoutProjectContractPollEvent.create({
+          data: {
             contractId,
-            blockNumber: Number(l.blockNumber),
-            txHash: l.transactionHash,
-            from: l.address.toLowerCase(),
-            logIndex: Number(l.logIndex)
-          }))
+            fromBlockNumber: currentBlock,
+            toBlockNumber: endBlock,
+            processedAt: new Date(),
+            processTime: Date.now() - pollStart
+          }
         })
       ]);
     }
