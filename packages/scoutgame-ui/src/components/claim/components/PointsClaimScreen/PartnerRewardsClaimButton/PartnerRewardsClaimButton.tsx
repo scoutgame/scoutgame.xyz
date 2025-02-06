@@ -3,20 +3,27 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Dialog, Stack, Typography } from '@mui/material';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
+import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import type { Address } from 'viem';
 
+import { revalidateClaimPointsAction } from '../../../../../actions/revalidateClaimPointsAction';
 import { useUser } from '../../../../../providers/UserProvider';
 
 import { useClaimPartnerReward } from './useClaimPartnerReward';
 
 export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: UnclaimedPartnerReward }) {
   const [showPartnerRewardModal, setShowPartnerRewardModal] = useState(false);
+  const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
   const { user } = useUser();
   const { claimPartnerReward, isClaiming } = useClaimPartnerReward({
     payoutId: partnerReward.id,
     contractAddress: partnerReward.contractAddress as Address,
-    rewardChainId: partnerReward.chainId
+    rewardChainId: partnerReward.chainId,
+    onSuccess: () => {
+      setShowPartnerRewardModal(false);
+      revalidateClaimPoints();
+    }
   });
 
   return (
@@ -44,7 +51,7 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
           <Stack
             sx={{
               p: 2,
-              gap: 1,
+              gap: 1.5,
               width: '100%',
               height: 'fit-content',
               maxWidth: 600,
