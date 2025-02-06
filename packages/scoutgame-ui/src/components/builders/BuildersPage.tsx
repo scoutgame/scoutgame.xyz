@@ -78,7 +78,7 @@ export async function BuildersMainContent({ week, tab, builderSort, builderOrder
       {/* Builder desktop */}
       <Stack display={{ xs: 'none', md: 'block' }}>
         <Typography variant='h5' color='secondary' textAlign='center' my={1}>
-          Scout Game for Developers
+          Leaderboard
         </Typography>
         <Suspense key='leaderboard' fallback={<LoadingTable />}>
           <BuilderPageTable
