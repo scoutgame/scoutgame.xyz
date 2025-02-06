@@ -10,7 +10,9 @@ on:
       - '.github/workflows/deploy_onchain_cron.yml'
       - 'package.json'
       - 'package-lock.json'
+      # If something happens in cron, we should also redeploy onchain-cron
       - 'apps/onchain-cron/**'
+      - 'apps/cron/**'
       - 'packages/**'
   pull_request:
     types: [labeled, opened, synchronize]
@@ -22,7 +24,9 @@ on:
       - '.github/workflows/deploy_onchain_cron.yml'
       - 'package.json'
       - 'package-lock.json'
+      # If something happens in cron, we should also redeploy onchain-cron
       - 'apps/onchain-cron/**'
+      - 'apps/cron/**'
       - 'packages/**'
 
 concurrency:
@@ -64,7 +68,8 @@ jobs:
       - name: Build app
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
+          # Build cron app since that's what we use
+          app_name: cron
 
   test:
     name: Test apps
@@ -104,7 +109,7 @@ jobs:
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Typecheck onchain-cron app
         run: npm run typecheck -w apps/onchain-cron
@@ -119,7 +124,7 @@ jobs:
 
       - name: Run tests
         # jest only works once the cache has been created for some reason
-        run: npm run onchain-cron:test
+        run: npm run cron:test
 
   upload-docker:
     name: Upload Docker image
