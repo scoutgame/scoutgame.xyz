@@ -131,15 +131,15 @@ export async function createSablierAirdropContract({
 
   const createdCampaignAddress = receipt.logs[0].address as `0x${string}`;
 
-  const { request: approveCampaignRequest } = await publicClient.simulateContract({
+  const { request: transferRequest } = await publicClient.simulateContract({
     address: tokenAddress,
     abi: erc20Abi,
-    functionName: 'approve',
+    functionName: 'transfer',
     args: [createdCampaignAddress, aggregateAmount],
     account
   });
 
-  await walletClient.writeContract(approveCampaignRequest);
+  await walletClient.writeContract(transferRequest);
 
   return {
     receipt,

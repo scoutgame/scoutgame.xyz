@@ -221,7 +221,7 @@ export function PointsClaimScreen({
                   gap={1}
                 >
                   <Typography>
-                    {reward.partner === 'optimism_new_scout_partner' ? 'New Scout Partner' : 'Referral Champion'}
+                    {reward.partner === 'optimism_new_scout' ? 'New Scout Partner' : 'Referral Champion'}
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography>{reward.amount.toLocaleString()}</Typography>

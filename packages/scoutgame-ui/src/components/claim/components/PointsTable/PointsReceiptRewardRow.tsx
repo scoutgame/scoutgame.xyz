@@ -144,7 +144,7 @@ export function PointsReceiptRewardRow({
     return <SoldNftsRewardRow soldNftsReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'season') {
     return <SeasonRewardRow seasonReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'optimism_new_scout_partner') {
+  } else if (pointsReceiptReward.type === 'optimism_new_scout') {
     return <NewScoutPartnerRewardRow newScoutPartnerReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'optimism_top_referrer') {
     return <TopReferrerRewardRow topReferrerReward={pointsReceiptReward} />;
