@@ -49,5 +49,10 @@ export function getTransactionReceipt({ chainId, txHash }: { chainId: SupportedC
 
 // ref: https://www.ankr.com/docs/rpc-service/chains/chains-api/ethereum/#eth_getblockbynumber
 export function getBlock({ chainId, blockNumber }: { chainId: SupportedChainId; blockNumber: string }) {
-  return ankrRequest<Block>({ chainId, method: 'eth_getBlockByNumber', params: [blockNumber] });
+  const transactionDetailFlag = false;
+  return ankrRequest<Block>({
+    chainId,
+    method: 'eth_getBlockByNumber',
+    params: [blockNumber, transactionDetailFlag]
+  });
 }
