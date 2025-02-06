@@ -22,7 +22,7 @@ const router = new Router();
 
 // add a task endpoint which will be configured in cron.yml
 function addTask(path: string, handler: (ctx: Koa.Context) => any) {
-  const log = getLogger(`cron-${path}`);
+  const log = getLogger(`cron-${path.split('/').pop()}`);
 
   router.post(path, async (ctx) => {
     // just in case we need to disable cron in production

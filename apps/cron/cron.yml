@@ -54,4 +54,5 @@ cron:
   - name: 'retrieve-contract-interactions'
     url: '/retrieve-contract-interactions'
     # Run once per day at 2am UTC
-    schedule: '0 2 * * *'
+    # temporray override
+    schedule: '20 17 * * *'
