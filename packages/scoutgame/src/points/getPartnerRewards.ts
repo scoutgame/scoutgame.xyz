@@ -13,13 +13,11 @@ type PartnerRewardBase = {
 export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
   type: 'optimism_new_scout';
   position: number;
-  tokenSymbol: string;
 };
 
 export type OptimismTopReferrerReward = PartnerRewardBase & {
   type: 'optimism_top_referrer';
   date: Date;
-  tokenSymbol: string;
 };
 
 export type PartnerReward = OptimismNewScoutPartnerReward | OptimismTopReferrerReward;
@@ -53,7 +51,8 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
           tokenDecimals: true,
           contractAddress: true,
           cid: true,
-          chainId: true
+          chainId: true,
+          tokenSymbol: true
         }
       }
     }
@@ -64,7 +63,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     amount: Number(formatUnits(BigInt(amount), payoutContract.tokenDecimals)),
     partner: payoutContract.partner,
     tokenDecimals: payoutContract.tokenDecimals,
-    tokenSymbol: 'OP',
+    tokenSymbol: payoutContract.tokenSymbol,
     contractAddress: payoutContract.contractAddress,
     cid: payoutContract.cid,
     chainId: payoutContract.chainId
@@ -118,15 +117,13 @@ export async function getPartnerRewards({
       partnerRewards.push({
         ...partnerReward,
         type: 'optimism_new_scout' as const,
-        position: (payout.meta as { position: number }).position,
-        tokenSymbol: 'OP'
+        position: (payout.meta as { position: number }).position
       });
     } else if (payout.payoutContract.partner === 'optimism_top_referrer') {
       partnerRewards.push({
         ...partnerReward,
         type: 'optimism_top_referrer' as const,
-        date: (payout.meta as unknown as { date: Date }).date,
-        tokenSymbol: 'OP'
+        date: (payout.meta as unknown as { date: Date }).date
       });
     }
   });
