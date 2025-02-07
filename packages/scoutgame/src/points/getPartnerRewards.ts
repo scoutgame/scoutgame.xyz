@@ -45,6 +45,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
           id: userId
         }
       },
+      deletedAt: null,
       claimedAt: null
     },
     select: {
