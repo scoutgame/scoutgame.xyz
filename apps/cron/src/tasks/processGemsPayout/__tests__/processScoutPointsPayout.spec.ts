@@ -1,13 +1,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentWeek } from '@packages/dates/utils';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import { builderRewardsPool } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
-import type { PartialNftPurchaseEvent } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/testing/database';
 
 import { processScoutPointsPayout } from '../processScoutPointsPayout';
 
-const scoutRewardsPool = 0.7;
+// const scoutRewardsPool = 0.7;
 
 describe('processScoutPointsPayout', () => {
   it('should not create gems payout event, points receipt and builder event for a builder with no NFT purchases', async () => {
@@ -86,6 +84,7 @@ describe('processScoutPointsPayout', () => {
 
   it('should distribute points correctly among NFT holders and builder, respecting scout builder splits, and proportionally to NFTs owned', async () => {
     const builder = await mockBuilder();
+    const expectedScoutRewardsPool = 0.8; // .8 when starter_pack supply is 0
     const rank = 1;
     const gemsCollected = 10;
     const mockSeason = '2025-W02';
@@ -156,7 +155,8 @@ describe('processScoutPointsPayout', () => {
       }
     });
 
-    expect(Math.floor(scout1PointReceipt.value)).toEqual(Math.floor(scoutRewardsPool * totalPoints * (3 / 10)));
+    // 3 is the # of tokens purchased by scout 1 and 10 is the total
+    expect(Math.floor(scout1PointReceipt.value)).toEqual(Math.floor(expectedScoutRewardsPool * totalPoints * (3 / 10)));
 
     const scout1Stats = await getStats({ userId: scout1.id, season: mockSeason });
     expect(scout1Stats.season?.pointsEarnedAsScout).toBe(scout1PointReceipt.value);
@@ -168,7 +168,8 @@ describe('processScoutPointsPayout', () => {
       }
     });
 
-    expect(Math.floor(scout2PointReceipt.value)).toEqual(Math.floor(scoutRewardsPool * totalPoints * (7 / 10)));
+    // 7 is the # of tokens purchased by scout 2
+    expect(Math.floor(scout2PointReceipt.value)).toEqual(Math.floor(expectedScoutRewardsPool * totalPoints * (7 / 10)));
 
     const scout2Stats = await getStats({ userId: scout2.id, season: mockSeason });
     expect(scout2Stats.season?.pointsEarnedAsScout).toBe(scout2PointReceipt.value);
