@@ -17,6 +17,5 @@ export const checkPartnerRewardEligibilityAction = authActionClient
       payoutContractId,
       scoutId: ctx.session.scoutId
     });
-
     return eligibilityResult;
   });

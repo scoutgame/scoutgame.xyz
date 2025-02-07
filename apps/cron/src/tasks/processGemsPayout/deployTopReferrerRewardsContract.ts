@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentSeasonWeekNumber, getLastWeek } from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
@@ -22,6 +23,14 @@ export async function deployTopReferrerRewardsContract() {
     if (topConnector) {
       topConnectors.push({ address: topConnector.address, date });
     }
+  }
+
+  if (topConnectors.length === 0) {
+    log.info('No top connectors found for the week', {
+      week,
+      season
+    });
+    return;
   }
 
   const { hash, contractAddress, cid } = await createSablierAirdropContract({

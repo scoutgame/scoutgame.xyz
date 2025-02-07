@@ -94,7 +94,8 @@ export async function createSablierAirdropContract({
   const csvContent = createCsvContent(
     Object.entries(normalizedRecipients).map(([address, amount]) => ({
       address: address as `0x${string}`,
-      amount: Number(amount)
+      // Keep it in decimal format the merkle api will convert it to the correct amount
+      amount
     }))
   );
 
