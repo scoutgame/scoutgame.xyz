@@ -1,5 +1,5 @@
 import * as yup from 'yup';
 
-export const checkAirdropEligibilitySchema = yup.object({
+export const checkPartnerRewardEligibilitySchema = yup.object({
   payoutContractId: yup.string().required().uuid()
 });

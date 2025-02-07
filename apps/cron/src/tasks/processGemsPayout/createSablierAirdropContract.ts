@@ -76,6 +76,12 @@ export async function createSablierAirdropContract({
     privateKey: adminPrivateKey
   });
 
+  const sablierAirdropFactoryAddress = SablierAirdropFactoryContractRecords[chainId];
+
+  if (!sablierAirdropFactoryAddress) {
+    throw new Error(`Sablier airdrop factory address not found for chainId ${chainId}`);
+  }
+
   const normalizedRecipients: Record<`0x${string}`, number> = {};
 
   for (const recipient of recipients) {
@@ -124,12 +130,6 @@ export async function createSablierAirdropContract({
 
   const aggregateAmount = parseUnits(recipients.reduce((acc, { amount }) => acc + amount, 0).toString(), tokenDecimals);
   const recipientCount = recipients.length;
-
-  const sablierAirdropFactoryAddress = SablierAirdropFactoryContractRecords[chainId];
-
-  if (!sablierAirdropFactoryAddress) {
-    throw new Error(`Sablier airdrop factory address not found for chainId ${chainId}`);
-  }
 
   const { request } = await publicClient.simulateContract({
     address: sablierAirdropFactoryAddress,

@@ -1,14 +1,12 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { checkAirdropEligibilityAction } from '@packages/scoutgame/airdrop/checkAirdropEligibilityAction';
+import { checkPartnerRewardEligibilityAction } from '@packages/scoutgame/partnerReward/checkPartnerRewardEligibilityAction';
+import { updatePartnerRewardPayoutAction } from '@packages/scoutgame/partnerReward/updatePartnerRewardPayoutAction';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Address, Hash, WalletClient } from 'viem';
 import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
-
-import { updatePartnerRewardPayoutAction } from '../../../../../actions/updatePartnerRewardPayoutAction';
-import { useUser } from '../../../../../providers/UserProvider';
 
 const sablierAirdropAbi = [
   {
@@ -114,7 +112,7 @@ export function useClaimPartnerReward({
 }) {
   const { isConnected, chainId } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { executeAsync: checkAirdropEligibility } = useAction(checkAirdropEligibilityAction);
+  const { executeAsync: checkPartnerRewardEligibility } = useAction(checkPartnerRewardEligibilityAction);
   const [isClaiming, setIsClaiming] = useState(false);
   const { executeAsync: updatePartnerRewardPayout } = useAction(updatePartnerRewardPayoutAction);
   const { switchChainAsync } = useSwitchChain();
@@ -141,7 +139,7 @@ export function useClaimPartnerReward({
     }
 
     setIsClaiming(true);
-    const eligibilityResult = await checkAirdropEligibility({ payoutContractId });
+    const eligibilityResult = await checkPartnerRewardEligibility({ payoutContractId });
 
     if (!eligibilityResult || eligibilityResult.serverError || !eligibilityResult.data) {
       toast.error(eligibilityResult?.serverError?.message || 'Failed to check airdrop eligibility');
@@ -164,7 +162,7 @@ export function useClaimPartnerReward({
 
       await updatePartnerRewardPayout({ payoutContractId, txHash: hash });
 
-      toast.success('Airdrop claimed successfully');
+      toast.success('Partner reward claimed successfully');
       setIsClaiming(false);
       onSuccess?.();
     } catch (error) {

@@ -897,3 +897,31 @@ export async function mockWeeklyClaims({ week, season }: { week: string; season:
     }
   });
 }
+
+export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: string }) {
+  const scoutWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { scoutId } });
+
+  return prisma.partnerRewardPayoutContract.create({
+    data: {
+      chainId: 1,
+      contractAddress: randomWalletAddress(),
+      cid: randomString(),
+      deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
+      season: mockSeason,
+      week: getCurrentWeek(),
+      tokenAddress: randomWalletAddress(),
+      tokenDecimals: 18,
+      tokenSymbol: 'TEST',
+      partner: 'Test Partner',
+      rewardPayouts: {
+        create: {
+          amount: '100',
+          walletAddress: scoutWallet.address
+        }
+      }
+    },
+    include: {
+      rewardPayouts: true
+    }
+  });
+}

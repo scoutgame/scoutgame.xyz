@@ -59,6 +59,7 @@ export async function checkSablierAirdropEligibility({
   }
 
   const response = await fetch(`https://ipfs.io/ipfs/${cid}`);
+
   if (!response.ok) {
     throw new Error(`Failed to fetch IPFS data: ${response.statusText}`);
   }
