@@ -64,8 +64,7 @@ export async function claimSablierAirdrop({
       abi: sablierAirdropAbi,
       functionName: 'claim',
       args: [BigInt(index), recipientAddress, BigInt(amount), proof],
-      account: recipientAddress,
-      value: 0n
+      account: recipientAddress
     });
 
     const hash = await walletClient.writeContract(request);
@@ -156,7 +155,7 @@ export function useClaimPartnerReward({
         recipientAddress,
         walletClient,
         index,
-        proof,
+        proof: proof as `0x${string}`[],
         amount
       });
 
