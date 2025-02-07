@@ -96,10 +96,22 @@ function SeasonRewardRow({ seasonReward }: { seasonReward: SeasonPointsReceiptsR
 }
 
 function NewScoutPartnerRewardRow({ newScoutPartnerReward }: { newScoutPartnerReward: OptimismNewScoutPartnerReward }) {
+  const blockExplorerUrl = getChainById(newScoutPartnerReward.chainId)?.blockExplorerUrls[0];
   return (
     <TableRow>
       <TableCell align='left'>
-        <Typography>New Scout {getOrdinal(newScoutPartnerReward.position)}</Typography>
+        <Stack direction='row' alignItems='center' justifyContent='flex-start' gap={0.5}>
+          <Typography>New Scout {getOrdinal(newScoutPartnerReward.position)}</Typography>
+          {newScoutPartnerReward.txHash && blockExplorerUrl ? (
+            <Link
+              href={`${blockExplorerUrl}/tx/${newScoutPartnerReward.txHash}`}
+              target='_blank'
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
+              <OpenInNewIcon sx={{ fontSize: 16 }} />
+            </Link>
+          ) : null}
+        </Stack>
       </TableCell>
       <TableCell align='center'>
         <Typography>{newScoutPartnerReward.week}</Typography>
