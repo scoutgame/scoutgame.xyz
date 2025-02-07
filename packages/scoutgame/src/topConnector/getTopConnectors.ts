@@ -51,7 +51,12 @@ export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnec
         select: {
           avatar: true,
           displayName: true,
-          path: true
+          path: true,
+          wallets: {
+            where: {
+              primary: true
+            }
+          }
         }
       },
       pointsReceipts: {
@@ -132,8 +137,7 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
             },
             select: {
               address: true
-            },
-            take: 1
+            }
           }
         }
       }
@@ -190,7 +194,7 @@ function groupBuilderEvents(
     } else if (recipientId) {
       const address = event.builder.wallets?.[0]?.address as string;
       if (!address) {
-        log.info('No primary address found for builder', {
+        log.info('No primary address found for user', {
           userId: recipientId
         });
         return acc;

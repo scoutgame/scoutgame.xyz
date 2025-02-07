@@ -69,8 +69,9 @@ export async function mockBuilder({
       wallets: wallets.length
         ? {
             createMany: {
-              data: wallets.map((wallet) => ({
-                address: wallet.address
+              data: wallets.map((wallet, index) => ({
+                address: wallet.address,
+                primary: index === 0
               }))
             }
           }

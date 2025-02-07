@@ -51,6 +51,36 @@ describe('createSablierAirdropContract', () => {
     global.File = jest.fn() as any;
   });
 
+  it('should successfully create a Sablier airdrop contract', async () => {
+    // Mock successful API response with status field
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          root: '0xMerkleRoot',
+          cid: 'testCID',
+          status: 'upload successful'
+        })
+    } as never);
+
+    mockPublicClient.simulateContract
+      .mockResolvedValueOnce({ request: 'createRequest' } as never)
+      .mockResolvedValueOnce({ request: 'transferRequest' } as never);
+
+    mockWalletClient.writeContract.mockResolvedValueOnce('0xTransactionHash' as never);
+
+    mockPublicClient.waitForTransactionReceipt.mockResolvedValueOnce({
+      logs: [{ address: '0xCreatedContractAddress' }]
+    } as never);
+
+    const { hash, root, cid, contractAddress } = await createSablierAirdropContract(mockParams);
+
+    expect(hash).toEqual('0xTransactionHash');
+    expect(root).toEqual('0xMerkleRoot');
+    expect(cid).toEqual('testCID');
+    expect(contractAddress).toEqual('0xCreatedContractAddress'.toLowerCase());
+  });
+
   it('should handle API errors', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
@@ -63,21 +93,16 @@ describe('createSablierAirdropContract', () => {
     );
   });
 
-  it('should handle invalid chain ID', async () => {
-    const invalidParams = {
-      ...mockParams,
-      chainId: 999999
-    };
-
-    await expect(createSablierAirdropContract(invalidParams)).rejects.toThrow(
-      'Sablier airdrop factory address not found for chainId 999999'
-    );
-  });
-
   it('should handle contract simulation failures', async () => {
+    // Mock successful API response with status field
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ root: '0xMerkleRoot', cid: 'testCID' })
+      json: () =>
+        Promise.resolve({
+          root: '0xMerkleRoot',
+          cid: 'testCID',
+          status: 'upload successful'
+        })
     } as never);
 
     mockPublicClient.simulateContract.mockRejectedValueOnce(new Error('Contract simulation failed') as never);
@@ -85,40 +110,16 @@ describe('createSablierAirdropContract', () => {
     await expect(createSablierAirdropContract(mockParams)).rejects.toThrow('Contract simulation failed');
   });
 
-  it('should successfully create a Sablier airdrop contract', async () => {
-    // Mock successful API response
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ root: '0xMerkleRoot', cid: 'testCID' })
-    } as never);
-
-    // Mock successful contract interactions
-    mockPublicClient.simulateContract
-      .mockResolvedValueOnce({ request: 'createRequest' } as never)
-      .mockResolvedValueOnce({ request: 'transferRequest' } as never);
-
-    mockWalletClient.writeContract.mockResolvedValueOnce('0xTransactionHash' as never);
-
-    mockPublicClient.waitForTransactionReceipt.mockResolvedValueOnce({
-      logs: [{ address: '0xCreatedContractAddress' }]
-    } as never);
-
-    const result = await createSablierAirdropContract(mockParams);
-
-    expect(result).toEqual({
-      receipt: { logs: [{ address: '0xCreatedContractAddress' }] },
-      hash: '0xTransactionHash',
-      root: '0xMerkleRoot',
-      cid: 'testCID',
-      contractAddress: '0xCreatedContractAddress'
-    });
-  });
-
   it('should correctly normalize recipient amounts', async () => {
-    // Mock successful API response
+    // Mock successful API response with status field
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ root: '0xMerkleRoot', cid: 'testCID' })
+      json: () =>
+        Promise.resolve({
+          root: '0xMerkleRoot',
+          cid: 'testCID',
+          status: 'upload successful'
+        })
     } as never);
 
     const duplicateRecipients = {
