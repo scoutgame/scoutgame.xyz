@@ -49,8 +49,14 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
         >
           <Stack
             sx={{
-              p: 2.5,
-              gap: 1.5,
+              p: {
+                xs: 1.5,
+                md: 2.5
+              },
+              gap: {
+                xs: 1,
+                md: 1.5
+              },
               width: '100%',
               height: 'fit-content',
               maxWidth: 600,
@@ -58,7 +64,13 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
             }}
           >
             <Typography variant='h6'>Receive partner rewards</Typography>
-            <Typography variant='body1'>
+            <Typography
+              variant='body1'
+              sx={{
+                wordBreak: 'break-all',
+                overflowWrap: 'break-word'
+              }}
+            >
               Send {partnerReward.amount} {partnerReward.tokenSymbol} to {partnerReward.recipientAddress}
             </Typography>
             <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
