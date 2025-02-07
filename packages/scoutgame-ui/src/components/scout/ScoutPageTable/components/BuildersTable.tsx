@@ -72,19 +72,6 @@ export function BuildersTable({
             DEVELOPER
           </TableCell>
           <TableCell
-            onClick={() => handleSort('week_gems')}
-            sx={{
-              fontSize: { xs: '9px', md: 'initial' },
-              cursor: 'pointer',
-              py: 1
-            }}
-          >
-            <Stack direction='row' alignItems='center' ml={1.5} justifyContent='flex-end' lineHeight={1.5}>
-              WEEK'S GEMS
-              <SortIcon columnName='week_gems' order={order} sort={sort} />
-            </Stack>
-          </TableCell>
-          <TableCell
             onClick={() => handleSort('level')}
             sx={{
               fontSize: { xs: '9px', md: 'initial' },
@@ -105,6 +92,20 @@ export function BuildersTable({
             }}
           >
             14D RANK
+          </TableCell>
+          <TableCell></TableCell>
+          <TableCell
+            onClick={() => handleSort('week_gems')}
+            sx={{
+              fontSize: { xs: '9px', md: 'initial' },
+              cursor: 'pointer',
+              py: 1
+            }}
+          >
+            <Stack direction='row' alignItems='center' ml={1.5} justifyContent='flex-end' lineHeight={1.5}>
+              WEEK'S GEMS
+              <SortIcon columnName='week_gems' order={order} sort={sort} />
+            </Stack>
           </TableCell>
           <TableCell
             onClick={() => handleSort('estimated_payout')}
@@ -146,7 +147,7 @@ export function BuildersTable({
         </CommonTableRow>
       </TableHead>
       <TableBody>
-        {builders.map((builder) => (
+        {builders.map((builder, index) => (
           <TableRow key={builder.path} sx={tableRowSx} onClick={() => router.push(`/u/${builder.path}?tab=builder`)}>
             <TableCell>
               <Stack
@@ -176,6 +177,23 @@ export function BuildersTable({
                 </Stack>
               </Stack>
             </TableCell>
+            <TableCell align='center' sx={{ display: 'table-cell' }}>
+              <TableCellText color='orange.main'>{builder.level}</TableCellText>
+            </TableCell>
+            <TableCell
+              sx={{
+                width: 150,
+                height: { xs: 35, md: 50 },
+                p: 0
+              }}
+            >
+              <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
+            </TableCell>
+            <TableCell width='10px' sx={{ px: 0 }}>
+              <TableCellText color='secondary' ml={1}>
+                {index + 1}
+              </TableCellText>
+            </TableCell>
             <TableCell align='center'>
               <Stack
                 alignItems='center'
@@ -192,20 +210,6 @@ export function BuildersTable({
                   alt='gem icon'
                 />
               </Stack>
-            </TableCell>
-            <TableCell align='center' sx={{ display: 'table-cell' }}>
-              <TableCellText color='orange.main'>{builder.level}</TableCellText>
-            </TableCell>
-            <TableCell
-              sx={{
-                width: 150,
-                height: { xs: 35, md: 50 },
-                p: {
-                  xs: 0
-                }
-              }}
-            >
-              <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
             </TableCell>
             <TableCell align='right' width={150}>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
