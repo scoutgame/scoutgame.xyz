@@ -8,6 +8,8 @@ type PartnerRewardBase = {
   points: number;
   season: Season;
   tokenDecimals: number;
+  txHash: string | null;
+  chainId: number;
 };
 
 export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
@@ -119,11 +121,13 @@ export async function getPartnerRewards({
     select: {
       amount: true,
       meta: true,
+      txHash: true,
       payoutContract: {
         select: {
           week: true,
           partner: true,
-          tokenDecimals: true
+          tokenDecimals: true,
+          chainId: true
         }
       }
     }
@@ -137,7 +141,9 @@ export async function getPartnerRewards({
         season,
         week: payout.payoutContract.week
       }),
-      tokenDecimals: payout.payoutContract.tokenDecimals
+      tokenDecimals: payout.payoutContract.tokenDecimals,
+      txHash: payout.txHash,
+      chainId: payout.payoutContract.chainId
     };
 
     if (payout.payoutContract.partner === 'optimism_new_scout') {

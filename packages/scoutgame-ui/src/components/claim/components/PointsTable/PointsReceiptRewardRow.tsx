@@ -1,4 +1,6 @@
-import { Stack, TableCell, TableRow, Typography } from '@mui/material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Link, Stack, TableCell, TableRow, Typography } from '@mui/material';
+import { getChainById } from '@packages/blockchain/chains';
 import type {
   OptimismNewScoutPartnerReward,
   OptimismTopReferrerReward,
@@ -113,10 +115,22 @@ function NewScoutPartnerRewardRow({ newScoutPartnerReward }: { newScoutPartnerRe
 }
 
 function TopReferrerRewardRow({ topReferrerReward }: { topReferrerReward: OptimismTopReferrerReward }) {
+  const blockExplorerUrl = getChainById(topReferrerReward.chainId)?.blockExplorerUrls[0];
   return (
     <TableRow>
       <TableCell align='left'>
-        <Typography>Referrals {DateTime.fromJSDate(new Date(topReferrerReward.date)).toFormat('d/MM/yy')}</Typography>
+        <Stack direction='row' alignItems='center' justifyContent='flex-start' gap={0.5}>
+          <Typography>Referrals {DateTime.fromJSDate(new Date(topReferrerReward.date)).toFormat('d/MM/yy')}</Typography>
+          {topReferrerReward.txHash && blockExplorerUrl ? (
+            <Link
+              href={`${blockExplorerUrl}/tx/${topReferrerReward.txHash}`}
+              target='_blank'
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
+              <OpenInNewIcon sx={{ fontSize: 16 }} />
+            </Link>
+          ) : null}
+        </Stack>
       </TableCell>
       <TableCell align='center'>
         <Typography>{topReferrerReward.week}</Typography>
