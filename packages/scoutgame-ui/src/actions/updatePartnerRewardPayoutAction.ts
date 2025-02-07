@@ -4,21 +4,20 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import * as yup from 'yup';
 
-// This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package
 export const updatePartnerRewardPayoutAction = authActionClient
   .metadata({ actionName: 'update_partner_reward_payout' })
   .schema(
     yup.object({
-      payoutId: yup.string().required(),
+      payoutContractId: yup.string().required().uuid(),
       txHash: yup.string().required()
     })
   )
   .action(async ({ ctx, parsedInput }) => {
     const userId = ctx.session.scoutId;
 
-    const payout = await prisma.partnerRewardPayout.findUniqueOrThrow({
+    const payout = await prisma.partnerRewardPayout.findFirstOrThrow({
       where: {
-        id: parsedInput.payoutId,
+        payoutContractId: parsedInput.payoutContractId,
         wallet: {
           scout: {
             id: userId
@@ -27,7 +26,8 @@ export const updatePartnerRewardPayoutAction = authActionClient
         claimedAt: null
       },
       select: {
-        claimedAt: true
+        claimedAt: true,
+        payoutContractId: true
       }
     });
 
@@ -35,9 +35,14 @@ export const updatePartnerRewardPayoutAction = authActionClient
       throw new Error('Partner reward payout already claimed');
     }
 
-    await prisma.partnerRewardPayout.update({
+    await prisma.partnerRewardPayout.updateMany({
       where: {
-        id: parsedInput.payoutId
+        payoutContractId: payout.payoutContractId,
+        wallet: {
+          scout: {
+            id: userId
+          }
+        }
       },
       data: {
         claimedAt: new Date(),

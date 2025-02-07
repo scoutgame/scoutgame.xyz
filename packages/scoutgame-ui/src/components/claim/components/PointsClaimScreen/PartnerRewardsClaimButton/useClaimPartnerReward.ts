@@ -100,19 +100,18 @@ export async function claimSablierAirdrop({
 }
 
 export function useClaimPartnerReward({
-  payoutId,
+  payoutContractId,
   contractAddress,
   rewardChainId,
   onSuccess,
   recipientAddress
 }: {
-  payoutId: string;
+  payoutContractId: string;
   contractAddress: Address;
   rewardChainId: number;
   onSuccess?: VoidFunction;
   recipientAddress: Address;
 }) {
-  const { user } = useUser();
   const { isConnected, chainId } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { executeAsync: checkAirdropEligibility } = useAction(checkAirdropEligibilityAction);
@@ -142,7 +141,7 @@ export function useClaimPartnerReward({
     }
 
     setIsClaiming(true);
-    const eligibilityResult = await checkAirdropEligibility({ payoutId });
+    const eligibilityResult = await checkAirdropEligibility({ payoutContractId });
 
     if (!eligibilityResult || eligibilityResult.serverError || !eligibilityResult.data) {
       toast.error(eligibilityResult?.serverError?.message || 'Failed to check airdrop eligibility');
@@ -163,7 +162,7 @@ export function useClaimPartnerReward({
         amount
       });
 
-      await updatePartnerRewardPayout({ payoutId, txHash: hash });
+      await updatePartnerRewardPayout({ payoutContractId, txHash: hash });
 
       toast.success('Airdrop claimed successfully');
       setIsClaiming(false);

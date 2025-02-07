@@ -199,25 +199,20 @@ export function PointsClaimScreen({
               <Typography variant='h6' mt={1} textAlign='center' fontWeight={500} color='secondary'>
                 Partner Rewards
               </Typography>
-              {partnerRewards.map((reward) => (
-                <Stack
-                  key={reward.id}
-                  flexDirection='row'
-                  width='100%'
-                  alignItems='center'
-                  justifyContent='space-between'
-                  gap={1}
-                >
-                  <Typography>
-                    {reward.partner === 'optimism_new_scout' ? 'New Scout Partner' : 'Referral Champion'}
-                  </Typography>
-                  <Stack flexDirection='row' alignItems='center' gap={1}>
-                    <Typography>{reward.amount.toLocaleString()}</Typography>
-                    <Image width={25} height={25} src='/images/crypto/op.png' alt='Scouts' />
+              <Stack gap={2} width='100%'>
+                {partnerRewards.map((reward) => (
+                  <Stack key={reward.id} flexDirection='row' alignItems='center' justifyContent='space-between'>
+                    <Typography>
+                      {reward.partner === 'optimism_new_scout' ? 'New Scout Partner' : 'Referral Champion'}
+                    </Typography>
+                    <Stack flexDirection='row' alignItems='center' gap={1}>
+                      <Typography>{reward.amount.toLocaleString()}</Typography>
+                      <Image width={25} height={25} src='/images/crypto/op.png' alt='Scouts' />
+                    </Stack>
+                    <PartnerRewardsClaimButton partnerReward={reward} />
                   </Stack>
-                  <PartnerRewardsClaimButton partnerReward={reward} />
-                </Stack>
-              ))}
+                ))}
+              </Stack>
             </>
           ) : null}
         </>

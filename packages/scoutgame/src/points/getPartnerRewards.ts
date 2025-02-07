@@ -32,6 +32,7 @@ export type UnclaimedPartnerReward = {
   chainId: number;
   contractAddress: string;
   recipientAddress: string;
+  payoutContractId: string;
 };
 
 export async function getUnclaimedPartnerRewards({ userId }: { userId: string }): Promise<UnclaimedPartnerReward[]> {
@@ -54,6 +55,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
       walletAddress: true,
       payoutContract: {
         select: {
+          id: true,
           partner: true,
           tokenDecimals: true,
           contractAddress: true,
@@ -65,7 +67,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     }
   });
 
-  return partnerRewards.map(({ payoutContract, id, amount, walletAddress }) => ({
+  const unclaimedPartnerRewards = partnerRewards.map(({ payoutContract, id, amount, walletAddress }) => ({
     id,
     amount: Number(formatUnits(BigInt(amount), payoutContract.tokenDecimals)),
     partner: payoutContract.partner,
@@ -74,8 +76,21 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     contractAddress: payoutContract.contractAddress,
     cid: payoutContract.cid,
     chainId: payoutContract.chainId,
-    recipientAddress: walletAddress
+    recipientAddress: walletAddress,
+    payoutContractId: payoutContract.id
   }));
+
+  const unclaimedPartnerRewardsByCid: Record<string, UnclaimedPartnerReward> = {};
+
+  // Combine rewards with the same cid since they are for the same week, just the amount is different
+  unclaimedPartnerRewards.forEach((reward) => {
+    unclaimedPartnerRewardsByCid[reward.cid] = {
+      ...reward,
+      amount: reward.amount + (unclaimedPartnerRewardsByCid[reward.cid]?.amount ?? 0)
+    };
+  });
+
+  return Object.values(unclaimedPartnerRewardsByCid);
 }
 
 export async function getPartnerRewards({

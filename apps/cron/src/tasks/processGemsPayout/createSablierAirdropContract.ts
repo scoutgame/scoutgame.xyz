@@ -76,7 +76,21 @@ export async function createSablierAirdropContract({
     privateKey: adminPrivateKey
   });
 
-  const csvContent = createCsvContent(recipients);
+  const normalizedRecipients: Record<`0x${string}`, number> = {};
+
+  for (const recipient of recipients) {
+    if (!normalizedRecipients[recipient.address]) {
+      normalizedRecipients[recipient.address] = 0;
+    }
+    normalizedRecipients[recipient.address] += recipient.amount;
+  }
+
+  const csvContent = createCsvContent(
+    Object.entries(normalizedRecipients).map(([address, amount]) => ({
+      address: address as `0x${string}`,
+      amount: Number(amount)
+    }))
+  );
 
   const file = new File([csvContent], 'airdrop.csv', {
     type: 'text/csv'
@@ -100,7 +114,7 @@ export async function createSablierAirdropContract({
 
   const baseParams = {
     token: tokenAddress,
-    expiration: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60), // 30 days
+    expiration: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60),
     initialAdmin: account.address,
     ipfsCID: cid,
     merkleRoot: root as `0x${string}`,

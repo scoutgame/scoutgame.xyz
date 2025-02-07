@@ -12,11 +12,11 @@ export const checkAirdropEligibilityAction = authActionClient
   })
   .schema(checkAirdropEligibilitySchema)
   .action(async ({ ctx, parsedInput }) => {
-    const { payoutId } = parsedInput;
+    const { payoutContractId } = parsedInput;
 
-    const payout = await prisma.partnerRewardPayout.findUniqueOrThrow({
+    const payout = await prisma.partnerRewardPayout.findFirstOrThrow({
       where: {
-        id: payoutId,
+        payoutContractId,
         wallet: {
           scout: {
             id: ctx.session.scoutId

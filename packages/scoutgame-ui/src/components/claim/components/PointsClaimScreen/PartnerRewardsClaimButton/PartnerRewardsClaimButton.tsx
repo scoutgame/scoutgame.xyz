@@ -15,7 +15,7 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
   const [showPartnerRewardModal, setShowPartnerRewardModal] = useState(false);
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
   const { claimPartnerReward, isClaiming } = useClaimPartnerReward({
-    payoutId: partnerReward.id,
+    payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
     rewardChainId: partnerReward.chainId,
     recipientAddress: partnerReward.recipientAddress as Address,
@@ -49,7 +49,7 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
         >
           <Stack
             sx={{
-              p: 2,
+              p: 2.5,
               gap: 1.5,
               width: '100%',
               height: 'fit-content',

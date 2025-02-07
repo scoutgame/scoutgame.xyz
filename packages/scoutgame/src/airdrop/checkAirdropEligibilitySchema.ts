@@ -1,5 +1,5 @@
 import * as yup from 'yup';
 
 export const checkAirdropEligibilitySchema = yup.object({
-  payoutId: yup.string().required().uuid()
+  payoutContractId: yup.string().required().uuid()
 });
