@@ -19,7 +19,11 @@ export const updatePartnerRewardPayoutAction = authActionClient
     const payout = await prisma.partnerRewardPayout.findUniqueOrThrow({
       where: {
         id: parsedInput.payoutId,
-        userId,
+        wallet: {
+          scout: {
+            id: userId
+          }
+        },
         claimedAt: null
       },
       select: {

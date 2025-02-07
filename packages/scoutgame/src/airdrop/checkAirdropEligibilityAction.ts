@@ -17,20 +17,17 @@ export const checkAirdropEligibilityAction = authActionClient
     const payout = await prisma.partnerRewardPayout.findUniqueOrThrow({
       where: {
         id: payoutId,
-        userId: ctx.session.scoutId
+        wallet: {
+          scout: {
+            id: ctx.session.scoutId
+          }
+        }
       },
       select: {
         claimedAt: true,
-        user: {
+        wallet: {
           select: {
-            wallets: {
-              where: {
-                primary: true
-              },
-              select: {
-                address: true
-              }
-            }
+            address: true
           }
         },
         payoutContract: {
@@ -48,7 +45,7 @@ export const checkAirdropEligibilityAction = authActionClient
     }
 
     const { amount, index, proof } = await checkSablierAirdropEligibility({
-      recipientAddress: payout.user.wallets[0].address as `0x${string}`,
+      recipientAddress: payout.wallet.address as `0x${string}`,
       cid: payout.payoutContract.cid,
       contractAddress: payout.payoutContract.contractAddress as `0x${string}`,
       chainId: payout.payoutContract.chainId
