@@ -20,6 +20,7 @@ export async function updatePartnerRewardPayout({
       }
     },
     select: {
+      deletedAt: true,
       claimedAt: true,
       payoutContractId: true,
       payoutContract: {
@@ -36,6 +37,11 @@ export async function updatePartnerRewardPayout({
     throw new Error('Partner reward payout already claimed');
   }
 
+  if (payout.deletedAt) {
+    throw new Error('Partner reward payout clawed back');
+  }
+
+  // Update all the payout for the user for the payout contract
   await prisma.partnerRewardPayout.updateMany({
     where: {
       payoutContractId: payout.payoutContractId,

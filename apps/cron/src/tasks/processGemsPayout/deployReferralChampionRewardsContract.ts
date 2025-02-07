@@ -42,12 +42,19 @@ export async function deployReferralChampionRewardsContract() {
   }
 
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
-    adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
-    campaignName: `Scoutgame Top Referrer S${season}W${getCurrentSeasonWeekNumber(week)} Rewards`,
+    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
+    campaignName: `Scoutgame Referral Champion S${season}W${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimismSepolia.id,
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,
     recipients: topConnectors.map(({ address }) => ({ address: address as `0x${string}`, amount: 25 }))
+  });
+
+  log.info('Referral champion rewards contract deployed', {
+    hash,
+    contractAddress,
+    week,
+    season
   });
 
   await prisma.partnerRewardPayoutContract.create({
@@ -76,13 +83,6 @@ export async function deployReferralChampionRewardsContract() {
         }
       }
     }
-  });
-
-  log.info('Referral champion rewards contract deployed', {
-    hash,
-    contractAddress,
-    week,
-    season
   });
 
   return {
