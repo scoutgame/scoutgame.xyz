@@ -6,6 +6,7 @@ import { scoutGameAttestationChainId, scoutGameBuilderEventSchemaUid } from './c
 import { createOrGetUserProfileAttestation } from './createOrGetUserProfileAttestation';
 import type { BuilderStatusEventAttestation } from './easSchemas/builderStatusEventSchema';
 import { encodeBuilderStatusEventAttestation } from './easSchemas/builderStatusEventSchema';
+import { attestationLogger } from './logger';
 
 export async function attestBuilderStatusEvent({
   builderId,
@@ -13,26 +14,30 @@ export async function attestBuilderStatusEvent({
 }: {
   builderId: string;
   event: BuilderStatusEventAttestation;
-}) {
-  const builderStatusEventAttestationData = encodeBuilderStatusEventAttestation(event);
+}): Promise<void> {
+  try {
+    const builderStatusEventAttestationData = encodeBuilderStatusEventAttestation(event);
 
-  const userAttestation = await createOrGetUserProfileAttestation({
-    scoutId: builderId
-  });
+    const userAttestation = await createOrGetUserProfileAttestation({
+      scoutId: builderId
+    });
 
-  const attestationUid = await attestOnchain({
-    schemaId: scoutGameBuilderEventSchemaUid(),
-    recipient: NULL_EVM_ADDRESS,
-    refUID: userAttestation.id as `0x${string}`,
-    data: builderStatusEventAttestationData
-  });
+    const attestationUid = await attestOnchain({
+      schemaId: scoutGameBuilderEventSchemaUid(),
+      recipient: NULL_EVM_ADDRESS,
+      refUID: userAttestation.id as `0x${string}`,
+      data: builderStatusEventAttestationData
+    });
 
-  await prisma.builderStatusEvent.create({
-    data: {
-      attestationUid,
-      chainId: scoutGameAttestationChainId,
-      status: event.type,
-      builderId
-    }
-  });
+    await prisma.builderStatusEvent.create({
+      data: {
+        attestationUid,
+        chainId: scoutGameAttestationChainId,
+        status: event.type,
+        builderId
+      }
+    });
+  } catch (err) {
+    attestationLogger.error('Error attesting builder status event', { error: err, builderId, event });
+  }
 }
