@@ -202,7 +202,7 @@ export function PointsClaimScreen({
               <Stack gap={2} width='100%'>
                 {partnerRewards.map((reward) => (
                   <Stack key={reward.id} flexDirection='row' alignItems='center' justifyContent='space-between'>
-                    <Typography>
+                    <Typography minWidth={150}>
                       {reward.partner === 'optimism_new_scout' ? 'New Scout' : 'Referral Champion'}
                     </Typography>
                     <Stack flexDirection='row' alignItems='center' gap={1}>

@@ -11,7 +11,7 @@ import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRew
 
 const REFERRAL_CHAMPION_REWARD_AMOUNT = parseUnits('25', optimismTokenDecimals).toString();
 
-export async function deployTopReferrerRewardsContract() {
+export async function deployReferralChampionRewardsContract() {
   const topConnectors: { address: string; date: DateTime }[] = [];
   const week = getLastWeek();
   const season = getCurrentSeasonStart(week);
@@ -41,7 +41,7 @@ export async function deployTopReferrerRewardsContract() {
     return;
   }
 
-  const { hash, contractAddress, cid, root, merkleTree } = await createSablierAirdropContract({
+  const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Scoutgame Top Referrer S${season}W${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimismSepolia.id,
@@ -78,7 +78,7 @@ export async function deployTopReferrerRewardsContract() {
     }
   });
 
-  log.info('Top referrer rewards contract deployed', {
+  log.info('Referral champion rewards contract deployed', {
     hash,
     contractAddress,
     week,

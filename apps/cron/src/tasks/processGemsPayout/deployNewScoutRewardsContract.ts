@@ -16,7 +16,7 @@ export const optimismTokenAddress = '0x9b5490ba86677049d9bBAb47CAE2a360726CE258'
 export async function deployNewScoutRewardsContract({ week, season }: { week: string; season: string }) {
   const newScouts = await getRankedNewScoutsForPastWeek({ week });
   const top10Scouts = newScouts.slice(0, 10);
-  const { hash, contractAddress, cid, root, merkleTree } = await createSablierAirdropContract({
+  const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Scoutgame New Scout S${season}W${getCurrentSeasonWeekNumber(season)} Rewards`,
     chainId: optimismSepolia.id,
