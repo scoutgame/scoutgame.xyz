@@ -502,16 +502,11 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           {nftStats ? (
             <Typography align='right' variant='caption' color='secondary'>
               {tokensToBuy} out of {nftStats.nftSupply.total + tokensToBuy} Cards. Reward:{' '}
-              {Math.floor(
-                100 *
-                  calculateRewardForScout({
-                    purchased: { default: tokensToBuy },
-                    supply: {
-                      ...nftStats.nftSupply,
-                      default: nftStats.nftSupply.default + tokensToBuy
-                    }
-                  })
-              )}
+              {calculateFutureReward({
+                ...nftStats.nftSupply,
+                nftType: builder.nftType,
+                tokensToBuy
+              })}
               %
             </Typography>
           ) : (
@@ -681,4 +676,36 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       )}
     </Stack>
   );
+}
+
+function calculateFutureReward({
+  nftStats,
+  nftType,
+  tokensToBuy
+}: {
+  nftStats: { nftSupply: { default: number; starterPack: number; total: number } };
+  nftType: BuilderNftType;
+  tokensToBuy: number;
+}) {
+  let rewardPercent: number;
+
+  if (nftType === 'starter_pack') {
+    rewardPercent = calculateRewardForScout({
+      purchased: { starterPack: tokensToBuy },
+      supply: {
+        ...nftStats.nftSupply,
+        starterPack: nftStats.nftSupply.starterPack + tokensToBuy
+      }
+    });
+  } else {
+    newSupply.default += tokensToBuy;
+    rewardPercent = calculateRewardForScout({
+      purchased: { default: tokensToBuy },
+      supply: {
+        ...nftStats.nftSupply,
+        default: nftStats.nftSupply.default + tokensToBuy
+      }
+    });
+  }
+  return Math.floor(100 * rewardPercent);
 }

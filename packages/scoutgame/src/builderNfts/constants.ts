@@ -85,9 +85,6 @@ export function getDecentApiKey() {
   return apiKey;
 }
 
-export const scoutPointsShare = 0.8;
-export const builderPointsShare = 0.2;
-
 // Selecting the top 100 builders
 export const weeklyRewardableBuilders = 100;
 

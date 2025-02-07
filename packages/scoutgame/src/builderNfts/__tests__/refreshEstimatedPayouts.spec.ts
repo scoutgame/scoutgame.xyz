@@ -3,13 +3,13 @@ import { jest } from '@jest/globals';
 import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 
-import { nftTypeMultipliers } from '../../points/divideTokensBetweenBuilderAndHolders';
-import { scoutPointsShare } from '../constants';
 import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 
 jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentSeasonStart: jest.fn((week) => week)
 }));
+
+const scoutPointsShare = 0.7;
 
 describe('refreshEstimatedPayouts', () => {
   it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {
@@ -214,31 +214,18 @@ describe('refreshEstimatedPayouts', () => {
     expect(builder1DefaultNftHoldersCount).toBe(2);
     expect(builder1StarterPackHoldersCount).toBe(1);
 
-    const builder1WeightedHolders =
-      builder1DefaultNftHoldersCount * nftTypeMultipliers.default +
-      builder1StarterPackHoldersCount * nftTypeMultipliers.starter_pack;
-
-    expect(builder1WeightedHolders).toBe(
-      builder1DefaultNftHoldersCount * nftTypeMultipliers.default +
-        builder1StarterPackHoldersCount * nftTypeMultipliers.starter_pack
-    );
+    const builder1WeightedHolders = builder1DefaultNftHoldersCount + builder1StarterPackHoldersCount;
 
     expect(Math.floor(builder1PointsAllocation)).toBe(2576);
 
-    const expectedNftPayout = Math.floor(
-      scoutPointsShare *
-        builder1PointsAllocation *
-        (nftTypeMultipliers.default / (builder1WeightedHolders + nftTypeMultipliers.default))
-    );
+    const expectedNftPayout = Math.floor((scoutPointsShare * builder1PointsAllocation) / (builder1WeightedHolders + 1));
 
     expect(Math.floor(builder1DefaultNftPayout!.estimatedPayout!)).toBe(expectedNftPayout);
 
     expect(expectedNftPayout).toBe(664);
 
     const expectedStarterPackPayout = Math.floor(
-      scoutPointsShare *
-        builder1PointsAllocation *
-        (nftTypeMultipliers.starter_pack / (builder1WeightedHolders + nftTypeMultipliers.starter_pack))
+      (scoutPointsShare * builder1PointsAllocation) / (builder1WeightedHolders + 1)
     );
 
     expect(expectedStarterPackPayout).toBe(93);
@@ -263,14 +250,7 @@ describe('refreshEstimatedPayouts', () => {
     expect(builder2DefaultNftHoldersCount).toBe(1);
     expect(builder2StarterPackHoldersCount).toBe(1);
 
-    const builder2WeightedHolders =
-      builder2DefaultNftHoldersCount * nftTypeMultipliers.default +
-      builder2StarterPackHoldersCount * nftTypeMultipliers.starter_pack;
-
-    expect(builder2WeightedHolders).toBe(
-      builder2DefaultNftHoldersCount * nftTypeMultipliers.default +
-        builder2StarterPackHoldersCount * nftTypeMultipliers.starter_pack
-    );
+    const builder2WeightedHolders = builder2DefaultNftHoldersCount + builder2StarterPackHoldersCount;
 
     const expectedBuilder2NftPayout = Math.floor(
       scoutPointsShare *
@@ -283,9 +263,7 @@ describe('refreshEstimatedPayouts', () => {
     expect(Math.floor(builder2DefaultNftPayout!.estimatedPayout!)).toBe(expectedBuilder2NftPayout);
 
     const expectedBuilder2StarterPackPayout = Math.floor(
-      scoutPointsShare *
-        builder2PointsAllocation *
-        (nftTypeMultipliers.starter_pack / (builder2WeightedHolders + nftTypeMultipliers.starter_pack))
+      (scoutPointsShare * builder2PointsAllocation) / (builder2WeightedHolders + 1)
     );
 
     expect(expectedBuilder2StarterPackPayout).toBe(166);
@@ -304,14 +282,12 @@ describe('refreshEstimatedPayouts', () => {
 
     expect(builder3DefaultNftHoldersCount).toBe(3);
 
-    const builder3WeightedHolders = builder3DefaultNftHoldersCount * nftTypeMultipliers.default;
+    const builder3WeightedHolders = builder3DefaultNftHoldersCount;
 
-    expect(builder3WeightedHolders).toBe(builder3DefaultNftHoldersCount * nftTypeMultipliers.default);
+    expect(builder3WeightedHolders).toBe(builder3DefaultNftHoldersCount);
 
     const expectedBuilder3NftPayout = Math.floor(
-      scoutPointsShare *
-        builder3PointsAllocation *
-        (nftTypeMultipliers.default / (builder3WeightedHolders + nftTypeMultipliers.default))
+      scoutPointsShare * builder3PointsAllocation * (1 / (builder3WeightedHolders + 1))
     );
 
     expect(expectedBuilder3NftPayout).toBe(484);
