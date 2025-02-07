@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { MerkleTreeDto } from '@packages/blockchain/airdrop/checkSablierAirdropEligibility';
 import { checkSablierAirdropEligibility } from '@packages/blockchain/airdrop/checkSablierAirdropEligibility';
 
 export async function checkPartnerRewardEligibility({
@@ -26,7 +27,8 @@ export async function checkPartnerRewardEligibility({
       },
       payoutContract: {
         select: {
-          cid: true,
+          ipfsCid: true,
+          merkleTreeJson: true,
           chainId: true,
           contractAddress: true
         }
@@ -40,7 +42,7 @@ export async function checkPartnerRewardEligibility({
 
   const { amount, index, proof } = await checkSablierAirdropEligibility({
     recipientAddress: payout.wallet.address as `0x${string}`,
-    cid: payout.payoutContract.cid,
+    merkleTree: payout.payoutContract.merkleTreeJson as MerkleTreeDto,
     contractAddress: payout.payoutContract.contractAddress as `0x${string}`,
     chainId: payout.payoutContract.chainId
   });

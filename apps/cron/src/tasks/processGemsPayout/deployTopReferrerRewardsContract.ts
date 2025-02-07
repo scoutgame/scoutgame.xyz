@@ -33,9 +33,17 @@ export async function deployTopReferrerRewardsContract() {
     return;
   }
 
-  const { hash, contractAddress, cid } = await createSablierAirdropContract({
+  if (topConnectors.length === 1) {
+    log.info('Only one top connector found for the week.', {
+      week,
+      season
+    });
+    return;
+  }
+
+  const { hash, contractAddress, cid, root } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
-    campaignName: `Top Referrer Rewards Season: ${season}, Week: ${getCurrentSeasonWeekNumber(week)}`,
+    campaignName: `Scoutgame Top Referrer S${season}W${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimismSepolia.id,
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,
@@ -48,7 +56,14 @@ export async function deployTopReferrerRewardsContract() {
       contractAddress,
       season,
       week,
-      cid,
+      ipfsCid: cid,
+      merkleTreeJson: {
+        root,
+        recipients: topConnectors.map(({ address }) => ({
+          address: address as `0x${string}`,
+          amount: TOP_REFERRER_REWARDS_AMOUNT
+        }))
+      },
       tokenAddress: optimismTokenAddress,
       tokenDecimals: optimismTokenDecimals,
       tokenSymbol: 'OP',
@@ -58,7 +73,7 @@ export async function deployTopReferrerRewardsContract() {
         createMany: {
           data: topConnectors.map(({ address, date }) => ({
             amount: TOP_REFERRER_REWARDS_AMOUNT,
-            walletAddress: address,
+            walletAddress: address.toLowerCase(),
             meta: {
               date: date.toJSDate()
             }
@@ -66,6 +81,13 @@ export async function deployTopReferrerRewardsContract() {
         }
       }
     }
+  });
+
+  log.info('Top referrer rewards contract deployed', {
+    hash,
+    contractAddress,
+    week,
+    season
   });
 
   return {

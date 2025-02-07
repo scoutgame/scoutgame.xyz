@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { DateTime } from 'luxon';
 
@@ -123,12 +124,14 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
           displayName: true,
           path: true,
           wallets: {
+            where: {
+              primary: true
+            },
             orderBy: {
               createdAt: 'asc'
             },
             select: {
-              address: true,
-              primary: true
+              address: true
             },
             take: 1
           }
@@ -152,7 +155,7 @@ type PartialUser = {
   avatar: string | null;
   displayName: string;
   path: string;
-  wallets?: { address: string; primary: boolean }[];
+  wallets?: { address: string }[];
 };
 
 /**
@@ -185,13 +188,21 @@ function groupBuilderEvents(
       recipientRecord.earliestEventDate =
         event.createdAt < recipientRecord.earliestEventDate ? event.createdAt : recipientRecord.earliestEventDate;
     } else if (recipientId) {
+      const address = event.builder.wallets?.[0]?.address as string;
+      if (!address) {
+        log.info('No primary address found for builder', {
+          userId: recipientId
+        });
+        return acc;
+      }
+
       acc[recipientId] = {
         builderId: recipientId,
         referralPoints: value,
         avatar: event.builder.avatar,
         displayName: event.builder.displayName,
         path: event.builder.path,
-        address: event.builder.wallets?.find((w) => w.primary)?.address as string,
+        address,
         earliestEventDate: event.createdAt
       };
     }

@@ -68,10 +68,6 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
       deployNewScoutRewardsContract({ week, season }),
       deployTopReferrerRewardsContract()
     ]);
-    log.info('Partner rewards contracts deployed', {
-      newScoutRewards,
-      topReferrerRewards
-    });
   } catch (error) {
     log.error('Error deploying partner rewards contracts', { error, week, season });
   }

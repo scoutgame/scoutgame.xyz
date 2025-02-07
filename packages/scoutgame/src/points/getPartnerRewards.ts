@@ -61,8 +61,8 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
           partner: true,
           tokenDecimals: true,
           contractAddress: true,
-          cid: true,
           chainId: true,
+          ipfsCid: true,
           tokenSymbol: true
         }
       }
@@ -76,7 +76,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     tokenDecimals: payoutContract.tokenDecimals,
     tokenSymbol: payoutContract.tokenSymbol,
     contractAddress: payoutContract.contractAddress,
-    cid: payoutContract.cid,
+    cid: payoutContract.ipfsCid,
     chainId: payoutContract.chainId,
     recipientAddress: walletAddress,
     payoutContractId: payoutContract.id

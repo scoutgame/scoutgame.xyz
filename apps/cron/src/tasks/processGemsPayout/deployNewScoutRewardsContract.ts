@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getRankedNewScoutsForPastWeek } from '@packages/scoutgame/scouts/getNewScouts';
@@ -15,9 +16,9 @@ export const optimismTokenAddress = '0x9b5490ba86677049d9bBAb47CAE2a360726CE258'
 export async function deployNewScoutRewardsContract({ week, season }: { week: string; season: string }) {
   const newScouts = await getRankedNewScoutsForPastWeek({ week });
   const top10Scouts = newScouts.slice(0, 10);
-  const { hash, contractAddress, cid } = await createSablierAirdropContract({
+  const { hash, contractAddress, cid, root } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
-    campaignName: `New Scout Rewards Season: ${season}, Week: ${getCurrentSeasonWeekNumber(season)}`,
+    campaignName: `Scoutgame New Scout S${season}W${getCurrentSeasonWeekNumber(season)} Rewards`,
     chainId: optimismSepolia.id,
     recipients: top10Scouts.map((scout, index) => ({
       address: scout.address as `0x${string}`,
@@ -38,12 +39,19 @@ export async function deployNewScoutRewardsContract({ week, season }: { week: st
       tokenDecimals: optimismTokenDecimals,
       partner: 'optimism_new_scout',
       deployTxHash: hash,
-      cid,
+      ipfsCid: cid,
+      merkleTreeJson: {
+        root,
+        recipients: top10Scouts.map((scout, index) => ({
+          address: scout.address as `0x${string}`,
+          amount: parseUnits(newScoutsRewards[index].toString(), optimismTokenDecimals).toString()
+        }))
+      },
       rewardPayouts: {
         createMany: {
           data: top10Scouts.map((scout, index) => ({
             amount: parseUnits(newScoutsRewards[index].toString(), optimismTokenDecimals).toString(),
-            walletAddress: scout.address as `0x${string}`,
+            walletAddress: (scout.address as `0x${string}`).toLowerCase(),
             meta: {
               position: index + 1
             }
@@ -51,6 +59,13 @@ export async function deployNewScoutRewardsContract({ week, season }: { week: st
         }
       }
     }
+  });
+
+  log.info('New scout rewards contract deployed', {
+    hash,
+    contractAddress,
+    week,
+    season
   });
 
   return { hash, contractAddress };

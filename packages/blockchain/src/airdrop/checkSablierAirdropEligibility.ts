@@ -1,28 +1,20 @@
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { MerkleTree } from 'merkletreejs';
 import type { Address } from 'viem';
 import { keccak256, encodeAbiParameters, parseAbiParameters } from 'viem';
+
+import { getPublicClient } from '../getPublicClient';
 
 // @ts-ignore
 import sablierMerkleInstantAbi from './SablierMerkleInstant.json' assert { type: 'json' };
 
 const sablierAirdropAbi = sablierMerkleInstantAbi.abi;
 
-type PersistentCampaignDto = {
-  total_amount: string;
-  number_of_recipients: number;
-  merkle_tree: string;
+export type MerkleTreeDto = {
   root: string;
   recipients: {
     address: string;
     amount: string;
   }[];
-};
-
-type EligibilityResponse = {
-  amount: string;
-  index: number;
-  proof: Address[];
 };
 
 // Update the eligibility check to use the same hashing function as the contract
@@ -38,15 +30,19 @@ function hashLeaf(index: number, address: string, amount: string): Address {
 
 export async function checkSablierAirdropEligibility({
   recipientAddress,
-  cid,
   contractAddress,
-  chainId
+  chainId,
+  merkleTree
 }: {
   contractAddress: Address;
   chainId: number;
   recipientAddress: Address;
-  cid: string;
-}): Promise<EligibilityResponse> {
+  merkleTree: MerkleTreeDto;
+}): Promise<{
+  amount: string;
+  index: number;
+  proof: Address[];
+}> {
   const publicClient = getPublicClient(chainId);
   const hasExpired = await publicClient.readContract({
     address: contractAddress,
@@ -58,15 +54,7 @@ export async function checkSablierAirdropEligibility({
     throw new Error('Airdrop campaign has expired');
   }
 
-  const response = await fetch(`https://ipfs.io/ipfs/${cid}`);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch IPFS data: ${response.statusText}`);
-  }
-
-  const campaignData = (await response.json()) as PersistentCampaignDto;
-
-  const recipientIndex = campaignData.recipients.findIndex(
+  const recipientIndex = merkleTree.recipients.findIndex(
     (r) => r.address.toLowerCase() === recipientAddress.toLowerCase()
   );
 
@@ -85,9 +73,7 @@ export async function checkSablierAirdropEligibility({
     throw new Error('Recipient has already claimed this airdrop');
   }
 
-  const leaves = campaignData.recipients.map((recipient, index) =>
-    hashLeaf(index, recipient.address, recipient.amount)
-  );
+  const leaves = merkleTree.recipients.map((recipient, index) => hashLeaf(index, recipient.address, recipient.amount));
 
   const tree = new MerkleTree(leaves, keccak256, {
     sort: true,
@@ -96,8 +82,8 @@ export async function checkSablierAirdropEligibility({
 
   const leaf = hashLeaf(
     recipientIndex,
-    campaignData.recipients[recipientIndex].address,
-    campaignData.recipients[recipientIndex].amount
+    merkleTree.recipients[recipientIndex].address,
+    merkleTree.recipients[recipientIndex].amount
   );
 
   const proof = tree.getHexProof(leaf) as `0x${string}`[];
@@ -108,7 +94,7 @@ export async function checkSablierAirdropEligibility({
   }
 
   return {
-    amount: campaignData.recipients[recipientIndex].amount,
+    amount: merkleTree.recipients[recipientIndex].amount,
     index: recipientIndex,
     proof
   };

@@ -61,11 +61,16 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
             <Typography variant='body1'>
               Send {partnerReward.amount} {partnerReward.tokenSymbol} to {partnerReward.recipientAddress}
             </Typography>
-            <Stack flexDirection='row' alignItems='center' gap={1}>
+            <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
               <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claimPartnerReward}>
                 Claim
               </LoadingButton>
-              <Button disabled={isClaiming} color='error' onClick={() => setShowPartnerRewardModal(false)}>
+              <Button
+                variant='outlined'
+                disabled={isClaiming}
+                color='error'
+                onClick={() => setShowPartnerRewardModal(false)}
+              >
                 Cancel
               </Button>
             </Stack>

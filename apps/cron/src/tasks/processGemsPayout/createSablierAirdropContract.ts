@@ -116,8 +116,13 @@ export async function createSablierAirdropContract({
     throw new Error(`HTTP error! status: ${merkleResponse.status}, details: ${errorText}`);
   }
 
-  const merkleData = (await merkleResponse.json()) as { root: `0x${string}`; cid: string };
-  const { root, cid } = merkleData;
+  const merkleTree = (await merkleResponse.json()) as { root: `0x${string}`; cid: string; status: string };
+
+  if (!merkleTree.status.toLowerCase().includes('upload successful')) {
+    throw new Error(`Merkle tree upload failed: ${merkleTree.status}`);
+  }
+
+  const { root, cid } = merkleTree;
 
   const baseParams = {
     token: tokenAddress,
@@ -144,13 +149,13 @@ export async function createSablierAirdropContract({
 
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
-  const createdCampaignAddress = receipt.logs[0].address as `0x${string}`;
+  const createdContractAddress = receipt.logs[0].address as `0x${string}`;
 
   const { request: transferRequest } = await publicClient.simulateContract({
     address: tokenAddress,
     abi: erc20Abi,
     functionName: 'transfer',
-    args: [createdCampaignAddress, aggregateAmount],
+    args: [createdContractAddress, aggregateAmount],
     account
   });
 
@@ -161,6 +166,6 @@ export async function createSablierAirdropContract({
     hash,
     root,
     cid,
-    contractAddress: createdCampaignAddress
+    contractAddress: createdContractAddress.toLowerCase()
   };
 }
