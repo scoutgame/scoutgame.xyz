@@ -52,14 +52,12 @@ export async function clawbackAirdropTokens({
   });
 
   try {
-    // Get token address
     const tokenAddress = await publicClient.readContract({
       address: contractAddress,
       abi: sablierAirdropAbi,
       functionName: 'TOKEN'
     });
 
-    // Get contract balance
     const balance = await publicClient.readContract({
       address: tokenAddress,
       abi: erc20Abi,
@@ -71,7 +69,6 @@ export async function clawbackAirdropTokens({
       throw new Error('No tokens available to clawback');
     }
 
-    // Simulate clawback
     const { request } = await publicClient.simulateContract({
       address: contractAddress,
       abi: sablierAirdropAbi,
@@ -85,7 +82,6 @@ export async function clawbackAirdropTokens({
 
     return { hash };
   } catch (error) {
-    // Log the full error for debugging
     log.error('Clawback failed:', { error, contractAddress, chainId });
 
     if (error instanceof Error) {

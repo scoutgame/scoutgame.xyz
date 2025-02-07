@@ -97,7 +97,7 @@ function NewScoutPartnerRewardRow({ newScoutPartnerReward }: { newScoutPartnerRe
   return (
     <TableRow>
       <TableCell align='left'>
-        <Typography>New Scout {newScoutPartnerReward.position}</Typography>
+        <Typography>New Scout {getOrdinal(newScoutPartnerReward.position)}</Typography>
       </TableCell>
       <TableCell align='center'>
         <Typography>{newScoutPartnerReward.week}</Typography>
