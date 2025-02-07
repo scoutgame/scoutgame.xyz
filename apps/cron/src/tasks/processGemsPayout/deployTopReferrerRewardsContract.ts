@@ -3,7 +3,7 @@ import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
 import { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
-import { optimism } from 'viem/chains';
+import { optimism, optimismSepolia } from 'viem/chains';
 
 import { createSablierAirdropContract } from './createSablierAirdropContract';
 import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRewardsContract';
@@ -27,7 +27,7 @@ export async function deployTopReferrerRewardsContract() {
   const { hash, contractAddress, cid } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Top Referrer Rewards Season: ${season}, Week: ${week}`,
-    chainId: optimism.id,
+    chainId: optimismSepolia.id,
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,
     recipients: topConnectors.map(({ address }) => ({ address: address as `0x${string}`, amount: 25 }))
@@ -35,7 +35,7 @@ export async function deployTopReferrerRewardsContract() {
 
   await prisma.partnerRewardPayoutContract.create({
     data: {
-      chainId: optimism.id,
+      chainId: optimismSepolia.id,
       contractAddress,
       season,
       week,
