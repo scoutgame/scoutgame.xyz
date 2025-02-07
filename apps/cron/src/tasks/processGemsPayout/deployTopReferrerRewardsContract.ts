@@ -8,7 +8,7 @@ import { optimism } from 'viem/chains';
 import { createSablierAirdropContract } from './createSablierAirdropContract';
 import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRewardsContract';
 
-const TOP_REFERRER_REWARDS_AMOUNT = parseUnits('25', optimismTokenDecimals);
+const TOP_REFERRER_REWARDS_AMOUNT = parseUnits('25', optimismTokenDecimals).toString();
 
 export async function deployTopReferrerRewardsContract() {
   const topConnectors: { address: string; date: DateTime }[] = [];
@@ -42,13 +42,14 @@ export async function deployTopReferrerRewardsContract() {
       cid,
       tokenAddress: optimismTokenAddress,
       tokenDecimals: optimismTokenDecimals,
+      tokenSymbol: 'OP',
       partner: 'optimism_top_referrer',
       deployTxHash: hash,
       rewardPayouts: {
         createMany: {
           data: topConnectors.map(({ address, date }) => ({
             amount: TOP_REFERRER_REWARDS_AMOUNT,
-            userId: address,
+            walletAddress: address,
             meta: {
               date: date.toJSDate()
             }

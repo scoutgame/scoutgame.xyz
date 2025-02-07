@@ -8,18 +8,17 @@ import { useState } from 'react';
 import type { Address } from 'viem';
 
 import { revalidateClaimPointsAction } from '../../../../../actions/revalidateClaimPointsAction';
-import { useUser } from '../../../../../providers/UserProvider';
 
 import { useClaimPartnerReward } from './useClaimPartnerReward';
 
 export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: UnclaimedPartnerReward }) {
   const [showPartnerRewardModal, setShowPartnerRewardModal] = useState(false);
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
-  const { user } = useUser();
   const { claimPartnerReward, isClaiming } = useClaimPartnerReward({
     payoutId: partnerReward.id,
     contractAddress: partnerReward.contractAddress as Address,
     rewardChainId: partnerReward.chainId,
+    recipientAddress: partnerReward.recipientAddress as Address,
     onSuccess: () => {
       setShowPartnerRewardModal(false);
       revalidateClaimPoints();
@@ -60,7 +59,7 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
           >
             <Typography variant='h6'>Receive partner rewards</Typography>
             <Typography variant='body1'>
-              Send {partnerReward.amount} {partnerReward.tokenSymbol} to {user?.primaryWalletAddress}
+              Send {partnerReward.amount} {partnerReward.tokenSymbol} to {partnerReward.recipientAddress}
             </Typography>
             <Stack flexDirection='row' alignItems='center' gap={1}>
               <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claimPartnerReward}>

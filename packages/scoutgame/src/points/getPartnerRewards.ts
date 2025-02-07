@@ -31,6 +31,7 @@ export type UnclaimedPartnerReward = {
   cid: string;
   chainId: number;
   contractAddress: string;
+  recipientAddress: string;
 };
 
 export async function getUnclaimedPartnerRewards({ userId }: { userId: string }): Promise<UnclaimedPartnerReward[]> {
@@ -39,12 +40,17 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
       payoutContract: {
         season: getCurrentSeasonStart()
       },
-      userId,
+      wallet: {
+        scout: {
+          id: userId
+        }
+      },
       claimedAt: null
     },
     select: {
       id: true,
       amount: true,
+      walletAddress: true,
       payoutContract: {
         select: {
           partner: true,
@@ -58,7 +64,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     }
   });
 
-  return partnerRewards.map(({ payoutContract, id, amount }) => ({
+  return partnerRewards.map(({ payoutContract, id, amount, walletAddress }) => ({
     id,
     amount: Number(formatUnits(BigInt(amount), payoutContract.tokenDecimals)),
     partner: payoutContract.partner,
@@ -66,7 +72,8 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     tokenSymbol: payoutContract.tokenSymbol,
     contractAddress: payoutContract.contractAddress,
     cid: payoutContract.cid,
-    chainId: payoutContract.chainId
+    chainId: payoutContract.chainId,
+    recipientAddress: walletAddress
   }));
 }
 
@@ -83,7 +90,11 @@ export async function getPartnerRewards({
 
   const partnerRewardPayouts = await prisma.partnerRewardPayout.findMany({
     where: {
-      userId,
+      wallet: {
+        scout: {
+          id: userId
+        }
+      },
       claimedAt: isClaimed ? { not: null } : { equals: null },
       payoutContract: {
         season

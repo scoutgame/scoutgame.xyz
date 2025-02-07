@@ -95,7 +95,7 @@ export async function claimSablierAirdrop({
         throw new Error('Transaction rejected by user');
       }
     }
-    throw error;
+    throw new Error('Failed to claim airdrop');
   }
 }
 
@@ -103,12 +103,14 @@ export function useClaimPartnerReward({
   payoutId,
   contractAddress,
   rewardChainId,
-  onSuccess
+  onSuccess,
+  recipientAddress
 }: {
   payoutId: string;
   contractAddress: Address;
   rewardChainId: number;
   onSuccess?: VoidFunction;
+  recipientAddress: Address;
 }) {
   const { user } = useUser();
   const { isConnected, chainId } = useAccount();
@@ -119,14 +121,7 @@ export function useClaimPartnerReward({
   const { switchChainAsync } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
 
-  const primaryAddress = user?.primaryWalletAddress;
-
   const claimPartnerReward = async () => {
-    if (!primaryAddress) {
-      toast.error('No primary address found');
-      return;
-    }
-
     if (!isConnected) {
       openConnectModal?.();
       return;
@@ -161,7 +156,7 @@ export function useClaimPartnerReward({
       const { hash } = await claimSablierAirdrop({
         chainId: rewardChainId,
         contractAddress,
-        recipientAddress: primaryAddress as `0x${string}`,
+        recipientAddress,
         walletClient,
         index,
         proof,
