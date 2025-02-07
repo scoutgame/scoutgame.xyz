@@ -10,7 +10,7 @@ import { StyledTableBody, StyledTableHead } from '../common/StyledTable';
 
 import { PointsReceiptRewardRow } from './PointsReceiptRewardRow';
 
-const rewardTypes = ['leaderboard_rank', 'sold_nfts', 'builder', 'optimism_new_scout', 'optimism_top_referrer'];
+const rewardTypes = ['leaderboard_rank', 'sold_nfts', 'builder', 'optimism_new_scout', 'optimism_referral_champion'];
 
 export function PointsTable({
   pointsReceiptRewards,

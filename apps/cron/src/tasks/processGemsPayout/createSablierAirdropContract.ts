@@ -82,22 +82,21 @@ export async function createSablierAirdropContract({
     throw new Error(`Sablier airdrop factory address not found for chainId ${chainId}`);
   }
 
-  const normalizedRecipients: Record<`0x${string}`, number> = {};
+  const normalizedRecipientsRecord: Record<`0x${string}`, number> = {};
 
   for (const recipient of recipients) {
-    if (!normalizedRecipients[recipient.address]) {
-      normalizedRecipients[recipient.address] = 0;
+    if (!normalizedRecipientsRecord[recipient.address]) {
+      normalizedRecipientsRecord[recipient.address] = 0;
     }
-    normalizedRecipients[recipient.address] += recipient.amount;
+    normalizedRecipientsRecord[recipient.address] += recipient.amount;
   }
 
-  const csvContent = createCsvContent(
-    Object.entries(normalizedRecipients).map(([address, amount]) => ({
-      address: address as `0x${string}`,
-      // Keep it in decimal format the merkle api will convert it to the correct amount
-      amount
-    }))
-  );
+  const normalizedRecipients = Object.entries(normalizedRecipientsRecord).map(([address, amount]) => ({
+    address: address as `0x${string}`,
+    amount
+  }));
+
+  const csvContent = createCsvContent(normalizedRecipients);
 
   const file = new File([csvContent], 'airdrop.csv', {
     type: 'text/csv'
@@ -128,7 +127,7 @@ export async function createSablierAirdropContract({
     token: tokenAddress,
     expiration: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60),
     initialAdmin: account.address,
-    ipfsCID: cid,
+    cid,
     merkleRoot: root as `0x${string}`,
     campaignName,
     shape: ''
@@ -166,6 +165,13 @@ export async function createSablierAirdropContract({
     hash,
     root,
     cid,
+    merkleTree: {
+      root,
+      recipients: normalizedRecipients.map(({ address, amount }) => ({
+        address,
+        amount: parseUnits(amount.toString(), tokenDecimals).toString()
+      }))
+    },
     contractAddress: createdContractAddress.toLowerCase()
   };
 }

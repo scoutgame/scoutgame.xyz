@@ -3,7 +3,7 @@ import { Link, Stack, TableCell, TableRow, Typography } from '@mui/material';
 import { getChainById } from '@packages/blockchain/chains';
 import type {
   OptimismNewScoutPartnerReward,
-  OptimismTopReferrerReward,
+  OptimismReferralChampionReward,
   PartnerReward
 } from '@packages/scoutgame/points/getPartnerRewards';
 import type {
@@ -114,16 +114,22 @@ function NewScoutPartnerRewardRow({ newScoutPartnerReward }: { newScoutPartnerRe
   );
 }
 
-function TopReferrerRewardRow({ topReferrerReward }: { topReferrerReward: OptimismTopReferrerReward }) {
-  const blockExplorerUrl = getChainById(topReferrerReward.chainId)?.blockExplorerUrls[0];
+function ReferralChampionRewardRow({
+  referralChampionReward
+}: {
+  referralChampionReward: OptimismReferralChampionReward;
+}) {
+  const blockExplorerUrl = getChainById(referralChampionReward.chainId)?.blockExplorerUrls[0];
   return (
     <TableRow>
       <TableCell align='left'>
         <Stack direction='row' alignItems='center' justifyContent='flex-start' gap={0.5}>
-          <Typography>Referrals {DateTime.fromJSDate(new Date(topReferrerReward.date)).toFormat('d/MM/yy')}</Typography>
-          {topReferrerReward.txHash && blockExplorerUrl ? (
+          <Typography>
+            Referrals {DateTime.fromJSDate(new Date(referralChampionReward.date)).toFormat('d/MM/yy')}
+          </Typography>
+          {referralChampionReward.txHash && blockExplorerUrl ? (
             <Link
-              href={`${blockExplorerUrl}/tx/${topReferrerReward.txHash}`}
+              href={`${blockExplorerUrl}/tx/${referralChampionReward.txHash}`}
               target='_blank'
               sx={{ display: 'flex', alignItems: 'center' }}
             >
@@ -133,11 +139,11 @@ function TopReferrerRewardRow({ topReferrerReward }: { topReferrerReward: Optimi
         </Stack>
       </TableCell>
       <TableCell align='center'>
-        <Typography>{topReferrerReward.week}</Typography>
+        <Typography>{referralChampionReward.week}</Typography>
       </TableCell>
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
-          <Typography>{topReferrerReward.points}</Typography>
+          <Typography>{referralChampionReward.points}</Typography>
           <Image alt='crypto icon' src='/images/crypto/op.png' width={20} height={20} />
         </Stack>
       </TableCell>
@@ -160,8 +166,8 @@ export function PointsReceiptRewardRow({
     return <SeasonRewardRow seasonReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'optimism_new_scout') {
     return <NewScoutPartnerRewardRow newScoutPartnerReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'optimism_top_referrer') {
-    return <TopReferrerRewardRow topReferrerReward={pointsReceiptReward} />;
+  } else if (pointsReceiptReward.type === 'optimism_referral_champion') {
+    return <ReferralChampionRewardRow referralChampionReward={pointsReceiptReward} />;
   }
 
   return null;

@@ -203,7 +203,7 @@ export function PointsClaimScreen({
                 {partnerRewards.map((reward) => (
                   <Stack key={reward.id} flexDirection='row' alignItems='center' justifyContent='space-between'>
                     <Typography>
-                      {reward.partner === 'optimism_new_scout' ? 'New Scout Partner' : 'Referral Champion'}
+                      {reward.partner === 'optimism_new_scout' ? 'New Scout' : 'Referral Champion'}
                     </Typography>
                     <Stack flexDirection='row' alignItems='center' gap={1}>
                       <Typography>{reward.amount.toLocaleString()}</Typography>

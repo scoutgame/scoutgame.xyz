@@ -9,7 +9,7 @@ import { optimismSepolia } from 'viem/chains';
 import { createSablierAirdropContract } from './createSablierAirdropContract';
 import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRewardsContract';
 
-const TOP_REFERRER_REWARDS_AMOUNT = parseUnits('25', optimismTokenDecimals).toString();
+const REFERRAL_CHAMPION_REWARD_AMOUNT = parseUnits('25', optimismTokenDecimals).toString();
 
 export async function deployTopReferrerRewardsContract() {
   const topConnectors: { address: string; date: DateTime }[] = [];
@@ -41,7 +41,7 @@ export async function deployTopReferrerRewardsContract() {
     return;
   }
 
-  const { hash, contractAddress, cid, root } = await createSablierAirdropContract({
+  const { hash, contractAddress, cid, root, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OP_AIRDROP_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Scoutgame Top Referrer S${season}W${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimismSepolia.id,
@@ -57,22 +57,17 @@ export async function deployTopReferrerRewardsContract() {
       season,
       week,
       ipfsCid: cid,
-      merkleTreeJson: {
-        root,
-        recipients: topConnectors.map(({ address }) => ({
-          address: address as `0x${string}`,
-          amount: TOP_REFERRER_REWARDS_AMOUNT
-        }))
-      },
+      merkleTreeJson: merkleTree,
       tokenAddress: optimismTokenAddress,
       tokenDecimals: optimismTokenDecimals,
       tokenSymbol: 'OP',
-      partner: 'optimism_top_referrer',
+      partner: 'optimism_referral_champion',
       deployTxHash: hash,
       rewardPayouts: {
         createMany: {
+          // Dont rely on merkletree.recipients as it will be normalized
           data: topConnectors.map(({ address, date }) => ({
-            amount: TOP_REFERRER_REWARDS_AMOUNT,
+            amount: REFERRAL_CHAMPION_REWARD_AMOUNT,
             walletAddress: address.toLowerCase(),
             meta: {
               date: date.toJSDate()

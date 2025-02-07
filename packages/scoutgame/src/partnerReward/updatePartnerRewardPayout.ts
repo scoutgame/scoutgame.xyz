@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
 export async function updatePartnerRewardPayout({
   payoutContractId,
@@ -20,7 +21,14 @@ export async function updatePartnerRewardPayout({
     },
     select: {
       claimedAt: true,
-      payoutContractId: true
+      payoutContractId: true,
+      payoutContract: {
+        select: {
+          partner: true,
+          week: true,
+          season: true
+        }
+      }
     }
   });
 
@@ -41,5 +49,12 @@ export async function updatePartnerRewardPayout({
       claimedAt: new Date(),
       txHash
     }
+  });
+
+  trackUserAction('claim_partner_reward', {
+    userId,
+    partner: payout.payoutContract.partner,
+    week: payout.payoutContract.week,
+    season: payout.payoutContract.season
   });
 }

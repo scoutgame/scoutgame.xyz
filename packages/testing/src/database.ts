@@ -905,7 +905,16 @@ export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: st
     data: {
       chainId: 1,
       contractAddress: randomWalletAddress(),
-      cid: randomString(),
+      ipfsCid: randomString(),
+      merkleTreeJson: {
+        root: '0x1',
+        recipients: [
+          {
+            address: scoutWallet.address.toLowerCase() as `0x${string}`,
+            amount: '100'
+          }
+        ]
+      },
       deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
       season: mockSeason,
       week: getCurrentWeek(),
@@ -916,7 +925,7 @@ export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: st
       rewardPayouts: {
         create: {
           amount: '100',
-          walletAddress: scoutWallet.address
+          walletAddress: scoutWallet.address.toLowerCase()
         }
       }
     },

@@ -17,12 +17,12 @@ export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
   position: number;
 };
 
-export type OptimismTopReferrerReward = PartnerRewardBase & {
-  type: 'optimism_top_referrer';
+export type OptimismReferralChampionReward = PartnerRewardBase & {
+  type: 'optimism_referral_champion';
   date: Date;
 };
 
-export type PartnerReward = OptimismNewScoutPartnerReward | OptimismTopReferrerReward;
+export type PartnerReward = OptimismNewScoutPartnerReward | OptimismReferralChampionReward;
 
 export type UnclaimedPartnerReward = {
   id: string;
@@ -30,7 +30,7 @@ export type UnclaimedPartnerReward = {
   partner: string;
   tokenDecimals: number;
   tokenSymbol: string;
-  cid: string;
+  ipfsCid: string;
   chainId: number;
   contractAddress: string;
   recipientAddress: string;
@@ -76,7 +76,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     tokenDecimals: payoutContract.tokenDecimals,
     tokenSymbol: payoutContract.tokenSymbol,
     contractAddress: payoutContract.contractAddress,
-    cid: payoutContract.ipfsCid,
+    ipfsCid: payoutContract.ipfsCid,
     chainId: payoutContract.chainId,
     recipientAddress: walletAddress,
     payoutContractId: payoutContract.id
@@ -86,9 +86,9 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
 
   // Combine rewards with the same cid since they are for the same week, just the amount is different
   unclaimedPartnerRewards.forEach((reward) => {
-    unclaimedPartnerRewardsByCid[reward.cid] = {
+    unclaimedPartnerRewardsByCid[reward.contractAddress] = {
       ...reward,
-      amount: reward.amount + (unclaimedPartnerRewardsByCid[reward.cid]?.amount ?? 0)
+      amount: reward.amount + (unclaimedPartnerRewardsByCid[reward.contractAddress]?.amount ?? 0)
     };
   });
 
@@ -152,10 +152,10 @@ export async function getPartnerRewards({
         type: 'optimism_new_scout' as const,
         position: (payout.meta as { position: number }).position
       });
-    } else if (payout.payoutContract.partner === 'optimism_top_referrer') {
+    } else if (payout.payoutContract.partner === 'optimism_referral_champion') {
       partnerRewards.push({
         ...partnerReward,
-        type: 'optimism_top_referrer' as const,
+        type: 'optimism_referral_champion' as const,
         date: (payout.meta as unknown as { date: Date }).date
       });
     }
