@@ -24,5 +24,10 @@ export function scoutGameContributionReceiptSchemaUid() {
     process.env.REACT_APP_SCOUTPROTOCOL_CONTRIBUTION_RECEIPT_EAS_SCHEMAID) as `0x${string}`;
 }
 
+export function scoutGameBuilderEventSchemaUid() {
+  return (env('SCOUTPROTOCOL_BUILDER_EVENT_EAS_SCHEMAID') ||
+    process.env.REACT_APP_SCOUTPROTOCOL_BUILDER_EVENT_EAS_SCHEMAID) as `0x${string}`;
+}
+
 // Address valid for Base Mainnet and Base Sepolia  https://github.com/ethereum-attestation-service/eas-contracts/blob/master/README.md#base-sepolia
 export const scoutGameEasAttestationContractAddress = '0x4200000000000000000000000000000000000021';

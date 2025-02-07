@@ -38,7 +38,12 @@ async function setupEAS() {
   };
 }
 
-export async function attestOnchain({ data, schemaId, refUID, recipient }: ScoutGameAttestationInput): Promise<string> {
+export async function attestOnchain({
+  data,
+  schemaId,
+  refUID,
+  recipient
+}: ScoutGameAttestationInput): Promise<`0x${string}`> {
   const { eas, currentGasPrice } = await setupEAS();
 
   const attestationUid = await eas
@@ -64,7 +69,7 @@ export async function attestOnchain({ data, schemaId, refUID, recipient }: Scout
     }
   );
 
-  return attestationUid;
+  return attestationUid as `0x${string}`;
 }
 
 const maxPerBatch = 30;
