@@ -253,9 +253,7 @@ describe('refreshEstimatedPayouts', () => {
     const builder2WeightedHolders = builder2DefaultNftHoldersCount + builder2StarterPackHoldersCount;
 
     const expectedBuilder2NftPayout = Math.floor(
-      scoutPointsShare *
-        builder2PointsAllocation *
-        (nftTypeMultipliers.default / (builder2WeightedHolders + nftTypeMultipliers.default))
+      (scoutPointsShare * builder2PointsAllocation) / (builder2WeightedHolders + 1)
     );
 
     expect(expectedBuilder2NftPayout).toBe(952);

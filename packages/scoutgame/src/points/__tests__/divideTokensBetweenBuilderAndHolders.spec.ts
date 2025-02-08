@@ -1,4 +1,3 @@
-import { InvalidInputError } from '@charmverse/core/errors';
 import type { MockBuilder } from '@packages/testing/database';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';

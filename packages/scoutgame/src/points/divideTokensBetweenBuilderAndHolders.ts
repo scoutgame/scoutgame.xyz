@@ -1,4 +1,5 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
@@ -128,6 +129,10 @@ export function calculateRewardForScout({
   }
   if (purchased.default && purchased.default > supply.default) {
     throw new Error(`Purchased default NFTs: ${purchased.default} is greater than supply: ${supply.default}`);
+  }
+  if (purchased.starterPack && starterPackPool === 0) {
+    log.warn('Returning 0 for starter pack reward because starter pack pool is 0');
+    return 0;
   }
   if (purchased.starterPack && purchased.starterPack > supply.starterPack) {
     throw new Error(
