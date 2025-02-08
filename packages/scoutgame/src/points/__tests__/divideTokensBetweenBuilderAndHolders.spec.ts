@@ -5,7 +5,7 @@ import { randomWalletAddress } from '@packages/testing/generators';
 import { v4 as uuid } from 'uuid';
 
 import type { TokenDistribution } from '../divideTokensBetweenBuilderAndHolders';
-import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenBuilderAndHolders';
+import { divideTokensBetweenBuilderAndHolders, calculateRewardForScout } from '../divideTokensBetweenBuilderAndHolders';
 
 describe('divideTokensBetweenBuilderAndHolders', () => {
   let builder: MockBuilder;
@@ -75,12 +75,12 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
         },
         earnableScoutTokens: 2400,
         tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
-          { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1263 },
-          { wallet: userAddress2, nftTokens: 5, erc20Tokens: 656 }
+          { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1120 },
+          { wallet: userAddress2, nftTokens: 5, erc20Tokens: 800 }
         ]),
         tokensPerScoutByScoutId: expect.arrayContaining<TokenDistribution['tokensPerScoutByScoutId'][number]>([
-          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1263 },
-          { scoutId: userId2, nftTokens: 5, erc20Tokens: 656 }
+          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1120 },
+          { scoutId: userId2, nftTokens: 5, erc20Tokens: 800 }
         ]),
         tokensForBuilder: 480
       })

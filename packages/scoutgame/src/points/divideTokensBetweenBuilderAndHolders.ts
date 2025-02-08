@@ -126,6 +126,14 @@ export function calculateRewardForScout({
       `Default pool of ${defaultPool} is less than 0. Builder pool: ${builderPool}, starter pack pool: ${starterPackPool}`
     );
   }
+  if (purchased.default && purchased.default > supply.default) {
+    throw new Error(`Purchased default NFTs: ${purchased.default} is greater than supply: ${supply.default}`);
+  }
+  if (purchased.starterPack && purchased.starterPack > supply.starterPack) {
+    throw new Error(
+      `Purchased starter pack NFTs: ${purchased.starterPack} is greater than supply: ${supply.starterPack}`
+    );
+  }
 
   const shareOfDefault = supply.default <= 0 ? 0 : (purchased.default ?? 0) / supply.default;
   const shareOfStarterPack = supply.starterPack <= 0 ? 0 : (purchased.starterPack ?? 0) / supply.starterPack;
