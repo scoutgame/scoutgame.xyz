@@ -1,8 +1,13 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentSeasonWeekNumber, getLastWeek } from '@packages/dates/utils';
+import {
+  getCurrentSeasonStart,
+  getCurrentSeasonWeekNumber,
+  getCurrentWeek,
+  getDateFromISOWeek
+} from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
-import { DateTime } from 'luxon';
+import type { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
 import { optimismSepolia } from 'viem/chains';
 
@@ -11,13 +16,13 @@ import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRew
 
 const REFERRAL_CHAMPION_REWARD_AMOUNT = parseUnits('25', optimismTokenDecimals).toString();
 
-export async function deployReferralChampionRewardsContract() {
+export async function deployReferralChampionRewardsContract({ week }: { week: string }) {
   const topConnectors: { address: string; date: DateTime }[] = [];
-  const week = getLastWeek();
   const season = getCurrentSeasonStart(week);
+  const weekStart = getDateFromISOWeek(week).startOf('week');
 
-  for (let day = 1; day <= 7; day++) {
-    const date = DateTime.utc().minus({ days: day });
+  for (let day = 0; day <= 6; day++) {
+    const date = weekStart.plus({ days: day });
     const topConnector = await getTopConnectorOfTheDay({ date });
 
     if (topConnector) {

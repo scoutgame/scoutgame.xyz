@@ -63,11 +63,14 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     }
   }
 
-  try {
-    await Promise.all([deployNewScoutRewardsContract({ week, season }), deployReferralChampionRewardsContract()]);
-  } catch (error) {
-    log.error('Error deploying partner rewards contracts', { error, week, season });
-  }
+  await Promise.all([
+    deployNewScoutRewardsContract({ week, season }).catch((error) => {
+      log.error('Error deploying new scout rewards contract', { error, week, season });
+    }),
+    deployReferralChampionRewardsContract({ week }).catch((error) => {
+      log.error('Error deploying referral champion rewards contract', { error, week, season });
+    })
+  ]);
 
   const emailsSent = await sendGemsPayoutEmails({ week });
 

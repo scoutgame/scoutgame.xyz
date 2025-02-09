@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { checkPartnerRewardEligibilityAction } from '@packages/scoutgame/partnerReward/checkPartnerRewardEligibilityAction';
 import { updatePartnerRewardPayoutAction } from '@packages/scoutgame/partnerReward/updatePartnerRewardPayoutAction';
@@ -43,6 +44,7 @@ export async function claimSablierAirdrop({
 
     return { hash };
   } catch (error) {
+    log.error('Error claiming partner reward', { error });
     if (error instanceof Error) {
       if (error.message.includes('SablierMerkleBase_StreamClaimed')) {
         throw new Error('This airdrop has already been claimed');
@@ -63,7 +65,7 @@ export async function claimSablierAirdrop({
         throw new Error('Transaction rejected by user');
       }
     }
-    throw new Error('Failed to claim airdrop');
+    throw new Error('Failed to claim partner reward');
   }
 }
 

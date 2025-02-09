@@ -51,7 +51,7 @@ export async function clawbackAirdropTokens({
 
     const hash = await walletClient.writeContract(request);
     await publicClient.waitForTransactionReceipt({ hash });
-
+    log.info('Clawback successful:', { hash, contractAddress, chainId, recipientAddress, balance });
     return { hash, balance };
   } catch (error) {
     log.error('Clawback failed:', { error, contractAddress, chainId });
