@@ -1,13 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import {
-  getCurrentSeasonStart,
-  getCurrentSeasonWeekNumber,
-  getCurrentWeek,
-  getDateFromISOWeek
-} from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentSeasonWeekNumber, getDateFromISOWeek } from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
-import type { DateTime } from 'luxon';
+import { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
 import { optimismSepolia } from 'viem/chains';
 
@@ -37,6 +32,24 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     });
     return;
   }
+
+  topConnectors.push({
+    // Safwan demo address
+    address: '0xe808ffcFC59adbe91098B573D63d4EB1E5F8DafE',
+    date: DateTime.now().minus({ days: 1 })
+  });
+
+  topConnectors.push({
+    // chris demo address
+    address: '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F',
+    date: DateTime.now().minus({ days: 1 })
+  });
+
+  topConnectors.push({
+    // Matt demo address
+    address: '0x66525057AC951a0DB5C9fa7fAC6E056D6b8997E2',
+    date: DateTime.now().minus({ days: 1 })
+  });
 
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
@@ -76,7 +89,9 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
             walletAddress: address.toLowerCase(),
             meta: {
               date: date.toJSDate()
-            }
+            },
+            // TODO: Delete the reward payout after its deployed to hide from UI
+            deletedAt: new Date()
           }))
         }
       }
