@@ -1,19 +1,11 @@
 import { jest } from '@jest/globals';
 import { optimism } from 'viem/chains';
 
-const mockPublicClient = {
+const mockWalletClient = {
+  writeContract: jest.fn(),
   simulateContract: jest.fn(),
   waitForTransactionReceipt: jest.fn()
 };
-
-const mockWalletClient = {
-  writeContract: jest.fn()
-};
-
-// Mock the external dependencies using unstable_mockModule
-jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
-  getPublicClient: jest.fn().mockReturnValue(mockPublicClient)
-}));
 
 jest.unstable_mockModule('@packages/blockchain/getWalletClient', () => ({
   getWalletClient: jest.fn().mockReturnValue(mockWalletClient)
@@ -37,7 +29,8 @@ describe('createSablierAirdropContract', () => {
       { address: '0xRecipient2' as `0x${string}`, amount: 200 }
     ],
     campaignName: 'Test Campaign',
-    tokenDecimals: 18
+    tokenDecimals: 18,
+    nullAddressAmount: 0.001
   };
 
   beforeEach(() => {
@@ -63,13 +56,13 @@ describe('createSablierAirdropContract', () => {
         })
     } as never);
 
-    mockPublicClient.simulateContract
+    mockWalletClient.simulateContract
       .mockResolvedValueOnce({ request: 'createRequest' } as never)
       .mockResolvedValueOnce({ request: 'transferRequest' } as never);
 
     mockWalletClient.writeContract.mockResolvedValueOnce('0xTransactionHash' as never);
 
-    mockPublicClient.waitForTransactionReceipt.mockResolvedValueOnce({
+    mockWalletClient.waitForTransactionReceipt.mockResolvedValueOnce({
       logs: [{ address: '0xCreatedContractAddress' }]
     } as never);
 
@@ -105,7 +98,7 @@ describe('createSablierAirdropContract', () => {
         })
     } as never);
 
-    mockPublicClient.simulateContract.mockRejectedValueOnce(new Error('Contract simulation failed') as never);
+    mockWalletClient.simulateContract.mockRejectedValueOnce(new Error('Contract simulation failed') as never);
 
     await expect(createSablierAirdropContract(mockParams)).rejects.toThrow('Contract simulation failed');
   });
@@ -131,13 +124,13 @@ describe('createSablierAirdropContract', () => {
       ]
     };
 
-    mockPublicClient.simulateContract
+    mockWalletClient.simulateContract
       .mockResolvedValueOnce({ request: 'createRequest' } as never)
       .mockResolvedValueOnce({ request: 'transferRequest' } as never);
 
     mockWalletClient.writeContract.mockResolvedValueOnce('0xTransactionHash' as never);
 
-    mockPublicClient.waitForTransactionReceipt.mockResolvedValueOnce({
+    mockWalletClient.waitForTransactionReceipt.mockResolvedValueOnce({
       logs: [{ address: '0xCreatedContractAddress' }]
     } as never);
 

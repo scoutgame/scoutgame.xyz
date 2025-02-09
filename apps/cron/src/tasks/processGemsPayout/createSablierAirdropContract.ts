@@ -1,4 +1,3 @@
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { erc20Abi, nonceManager, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -56,7 +55,8 @@ export async function createSablierAirdropContract({
   chainId,
   recipients,
   campaignName,
-  tokenDecimals
+  tokenDecimals,
+  nullAddressAmount
 }: {
   chainId: number;
   adminPrivateKey: `0x${string}`;
@@ -64,9 +64,8 @@ export async function createSablierAirdropContract({
   tokenDecimals: number;
   recipients: Recipient[];
   campaignName: string;
+  nullAddressAmount: number;
 }) {
-  const publicClient = getPublicClient(chainId);
-
   const account = privateKeyToAccount(adminPrivateKey, {
     nonceManager
   });
@@ -80,6 +79,11 @@ export async function createSablierAirdropContract({
 
   if (!sablierAirdropFactoryAddress) {
     throw new Error(`Sablier airdrop factory address not found for chainId ${chainId}`);
+  }
+
+  if (recipients.length === 1) {
+    // Add the null address to the recipients to ensure there is atleast 2 recipients, otherwise the merkle tree will not be valid
+    recipients.push({ address: '0x0000000000000000000000000000000000000000', amount: nullAddressAmount });
   }
 
   const normalizedRecipientsRecord: Record<`0x${string}`, number> = {};
@@ -136,7 +140,7 @@ export async function createSablierAirdropContract({
   const aggregateAmount = parseUnits(recipients.reduce((acc, { amount }) => acc + amount, 0).toString(), tokenDecimals);
   const recipientCount = recipients.length;
 
-  const { request } = await publicClient.simulateContract({
+  const { request } = await walletClient.simulateContract({
     address: sablierAirdropFactoryAddress,
     abi: sablierAirdropFactoryAbi,
     functionName: 'createMerkleInstant',
@@ -146,11 +150,11 @@ export async function createSablierAirdropContract({
 
   const hash = await walletClient.writeContract(request);
 
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  const receipt = await walletClient.waitForTransactionReceipt({ hash });
 
   const createdContractAddress = receipt.logs[0].address as `0x${string}`;
 
-  const { request: transferRequest } = await publicClient.simulateContract({
+  const { request: transferRequest } = await walletClient.simulateContract({
     address: tokenAddress,
     abi: erc20Abi,
     functionName: 'transfer',

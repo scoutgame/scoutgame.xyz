@@ -8,36 +8,7 @@ import { toast } from 'sonner';
 import type { Address, Hash, WalletClient } from 'viem';
 import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 
-const sablierAirdropAbi = [
-  {
-    type: 'function',
-    name: 'claim',
-    inputs: [
-      {
-        name: 'index',
-        type: 'uint256',
-        internalType: 'uint256'
-      },
-      {
-        name: 'recipient',
-        type: 'address',
-        internalType: 'address'
-      },
-      {
-        name: 'amount',
-        type: 'uint128',
-        internalType: 'uint128'
-      },
-      {
-        name: 'merkleProof',
-        type: 'bytes32[]',
-        internalType: 'bytes32[]'
-      }
-    ],
-    outputs: [],
-    stateMutability: 'payable'
-  }
-];
+import sablierAirdropAbi from './SablierMerkleInstant.json';
 
 export async function claimSablierAirdrop({
   chainId,
@@ -61,7 +32,7 @@ export async function claimSablierAirdrop({
   try {
     const { request } = await publicClient.simulateContract({
       address: contractAddress,
-      abi: sablierAirdropAbi,
+      abi: sablierAirdropAbi.abi,
       functionName: 'claim',
       args: [BigInt(index), recipientAddress, BigInt(amount), proof],
       account: recipientAddress
@@ -131,8 +102,20 @@ export function useClaimPartnerReward({
     if (chainId !== rewardChainId) {
       try {
         await switchChainAsync({ chainId: rewardChainId });
+        await new Promise((resolve) => {
+          setTimeout(resolve, 1000);
+        });
+
+        const currentChainId = await walletClient.getChainId();
+        if (currentChainId !== rewardChainId) {
+          toast.error('Failed to switch to the correct network');
+          return;
+        }
+
+        toast.info('Switched to the correct network. Please try to claim again.');
+        return;
       } catch (error) {
-        toast.error('Failed to switch chain');
+        toast.error(error instanceof Error ? error.message : 'Failed to switch chain');
         return;
       }
     }

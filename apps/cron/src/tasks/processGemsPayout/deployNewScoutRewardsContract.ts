@@ -26,7 +26,8 @@ export async function deployNewScoutRewardsContract({ week, season }: { week: st
       amount: newScoutsRewards[index]
     })),
     tokenAddress: optimismTokenAddress,
-    tokenDecimals: optimismTokenDecimals
+    tokenDecimals: optimismTokenDecimals,
+    nullAddressAmount: 0.001
   });
 
   log.info('New scout rewards contract deployed', {
@@ -53,7 +54,7 @@ export async function deployNewScoutRewardsContract({ week, season }: { week: st
         createMany: {
           data: top10Scouts.map((scout, index) => ({
             amount: parseUnits(newScoutsRewards[index].toString(), optimismTokenDecimals).toString(),
-            walletAddress: (scout.address as `0x${string}`).toLowerCase(),
+            walletAddress: scout.address.toLowerCase(),
             meta: {
               position: index + 1
             },

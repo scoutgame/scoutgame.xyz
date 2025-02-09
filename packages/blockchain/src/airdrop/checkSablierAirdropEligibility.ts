@@ -4,8 +4,7 @@ import { keccak256, encodeAbiParameters, parseAbiParameters } from 'viem';
 
 import { getPublicClient } from '../getPublicClient';
 
-// @ts-ignore
-import sablierMerkleInstantAbi from './SablierMerkleInstant.json' assert { type: 'json' };
+import sablierMerkleInstantAbi from './SablierMerkleInstant.json';
 
 const sablierAirdropAbi = sablierMerkleInstantAbi.abi;
 
@@ -88,7 +87,7 @@ export async function checkSablierAirdropEligibility({
 
   const proof = tree.getHexProof(leaf) as `0x${string}`[];
 
-  const isValid = tree.verify(proof, leaf, tree.getHexRoot());
+  const isValid = tree.verify(proof, leaf, merkleTree.root);
   if (!isValid) {
     throw new Error('Failed to verify Merkle proof');
   }

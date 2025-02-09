@@ -1,38 +1,10 @@
 import { log } from '@charmverse/core/log';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { Address, Hash } from 'viem';
+import { erc20Abi, type Address, type Hash } from 'viem';
 
 import { getWalletClient } from '../getWalletClient';
 
-const sablierAirdropAbi = [
-  {
-    type: 'function',
-    name: 'clawback',
-    inputs: [
-      { name: 'to', type: 'address', internalType: 'address' },
-      { name: 'amount', type: 'uint128', internalType: 'uint128' }
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable'
-  },
-  {
-    type: 'function',
-    name: 'TOKEN',
-    inputs: [],
-    outputs: [{ name: '', type: 'address' }],
-    stateMutability: 'view'
-  }
-] as const;
-
-const erc20Abi = [
-  {
-    type: 'function',
-    name: 'balanceOf',
-    inputs: [{ name: 'account', type: 'address' }],
-    outputs: [{ name: '', type: 'uint256' }],
-    stateMutability: 'view'
-  }
-] as const;
+import sablierMerkleInstantAbi from './SablierMerkleInstant.json';
 
 export async function clawbackAirdropTokens({
   chainId,
@@ -54,12 +26,12 @@ export async function clawbackAirdropTokens({
   try {
     const tokenAddress = await publicClient.readContract({
       address: contractAddress,
-      abi: sablierAirdropAbi,
+      abi: sablierMerkleInstantAbi.abi,
       functionName: 'TOKEN'
     });
 
     const balance = await publicClient.readContract({
-      address: tokenAddress,
+      address: tokenAddress as `0x${string}`,
       abi: erc20Abi,
       functionName: 'balanceOf',
       args: [contractAddress]
@@ -71,7 +43,7 @@ export async function clawbackAirdropTokens({
 
     const { request } = await publicClient.simulateContract({
       address: contractAddress,
-      abi: sablierAirdropAbi,
+      abi: sablierMerkleInstantAbi.abi,
       functionName: 'clawback',
       args: [recipientAddress, balance],
       account: walletClient.account
@@ -85,7 +57,7 @@ export async function clawbackAirdropTokens({
     log.error('Clawback failed:', { error, contractAddress, chainId });
 
     if (error instanceof Error) {
-      if (error.message.includes('Errors_NotAdmin')) {
+      if (error.message.includes('CallerNotAdmin')) {
         throw new Error('Not authorized to clawback tokens');
       }
       if (error.message.includes('SablierMerkleBase_ClawbackNotAllowed')) {

@@ -33,21 +33,14 @@ export async function deployReferralChampionRewardsContract() {
     return;
   }
 
-  if (topConnectors.length === 1) {
-    log.info('Only one top connector found for the week.', {
-      week,
-      season
-    });
-    return;
-  }
-
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Scoutgame Referral Champion S${season}W${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimismSepolia.id,
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,
-    recipients: topConnectors.map(({ address }) => ({ address: address as `0x${string}`, amount: 25 }))
+    recipients: topConnectors.map(({ address }) => ({ address: address as `0x${string}`, amount: 25 })),
+    nullAddressAmount: 0.001
   });
 
   log.info('Referral champion rewards contract deployed', {
