@@ -104,6 +104,11 @@ export function getStartOfWeek(week: ISOWeek) {
   return getDateFromISOWeek(week);
 }
 
+export function getWeekStartEndSecondTimestamps(week: ISOWeek) {
+  const { start, end } = getWeekStartEnd(getStartOfWeek(week).toJSDate());
+  return { start: Math.round(start.toSeconds()), end: Math.round(end.toSeconds()) };
+}
+
 function _formatWeek(date: DateTime): ISOWeek {
   // token reference: https://moment.github.io/luxon/#/formatting?id=table-of-tokens
   return date.toFormat(`kkkk-'W'WW`);
