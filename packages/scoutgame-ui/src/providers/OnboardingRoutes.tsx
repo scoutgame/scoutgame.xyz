@@ -39,7 +39,7 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
       const redirectUrl = redirectUrlEncoded
         ? decodeURIComponent(redirectUrlEncoded)
         : type === 'builder'
-          ? '/builders'
+          ? '/developers'
           : '/scout';
       const profileRedirect = urlParams.get('profile-redirect') as 'true' | 'false' | undefined;
 

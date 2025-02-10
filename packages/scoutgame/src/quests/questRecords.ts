@@ -80,7 +80,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'scout-starter-card': {
     points: 5,
     label: 'Scout a Starter Card',
-    link: '/builders',
+    link: '/developers',
     tag: 'scout',
     resettable: true,
     verifiable: true
@@ -88,7 +88,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'scout-3-starter-cards': {
     label: 'Scout All 3 Starter Cards',
     points: 15,
-    link: '/builders',
+    link: '/developers',
     totalSteps: 3,
     tag: 'scout',
     resettable: true,
@@ -97,7 +97,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'scout-full-season-card': {
     label: 'Scout a Full Season Card',
     points: 15,
-    link: '/builders',
+    link: '/developers',
     tag: 'scout',
     resettable: true,
     verifiable: true
@@ -113,24 +113,24 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     verifiable: true
   },
   'scout-5-builders': {
-    label: 'Scout 5 Builders',
+    label: 'Scout 5 Developers',
     points: 10,
-    link: '/builders',
+    link: '/developers',
     totalSteps: 5,
     tag: 'scout',
     resettable: true,
     verifiable: true
   },
   'scout-share-builder': {
-    label: 'Scout & Share a Builder',
+    label: 'Scout & Share a Developer',
     points: 5,
-    link: '/builders',
+    link: '/developers',
     tag: 'scout',
     resettable: true,
     verifiable: true
   },
   'scout-moxie-builder': {
-    label: 'Scout a Moxie Builder',
+    label: 'Scout a Moxie Developer',
     points: 10,
     rewards: '$Moxie tokens',
     partner: 'Moxie',
@@ -166,7 +166,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'score-first-commit': {
     label: 'Score Your First Commit',
     points: 10,
-    link: '/info/builders',
+    link: '/info/developers',
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -174,7 +174,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'score-first-pr': {
     label: 'Score Your First PR',
     points: 15,
-    link: '/info/builders',
+    link: '/info/developers',
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -182,7 +182,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'score-streak': {
     label: 'Score a Streak',
     points: 20,
-    link: '/info/builders',
+    link: '/info/developers',
     tag: 'builder',
     resettable: true,
     verifiable: true
@@ -190,13 +190,13 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
   'first-repo-contribution': {
     label: 'First Contribution to a Repo',
     points: 25,
-    link: '/info/builders',
+    link: '/info/developers',
     tag: 'builder',
     resettable: true,
     verifiable: true
   },
   'share-builder-profile': {
-    label: 'Share a Builder Profile',
+    label: 'Share a Developer Profile',
     points: 25,
     link: '/profile?tab=scout-build',
     tag: 'builder',
