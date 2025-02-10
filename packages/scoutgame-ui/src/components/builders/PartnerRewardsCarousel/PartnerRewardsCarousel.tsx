@@ -10,7 +10,6 @@ import { Carousel } from '../../common/Carousel/Carousel';
 const partnerInfos = [
   { logo: 'celo.png', name: 'celo', infoPath: 'celo' },
   { logo: 'game7.png', name: 'game7', infoPath: 'game7' },
-  { logo: 'lit.png', name: 'lit', infoPath: 'lit' },
   { logo: 'octant.svg', name: 'octant', infoPath: 'octant', skipRoundedBorder: true }
 ];
 

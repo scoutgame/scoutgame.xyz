@@ -32,7 +32,7 @@ export type QuestType =
   | 'share-builder-profile'
   | 'contribute-celo-repo'
   | 'contribute-game7-repo'
-  | 'contribute-lit-repo'
+  // | 'contribute-lit-repo'
   | 'link-telegram-account'
   | 'link-farcaster-account';
 
