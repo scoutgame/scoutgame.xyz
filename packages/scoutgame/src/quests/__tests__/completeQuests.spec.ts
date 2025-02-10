@@ -7,7 +7,7 @@ import { questsRecord } from '../questRecords';
 describe('completeQuests', () => {
   it('should complete a resettable and non-resettable quest', async () => {
     const builder = await mockBuilder();
-    await completeQuests(builder.id, ['contribute-lit-repo', 'follow-x-account']);
+    await completeQuests(builder.id, ['contribute-celo-repo', 'follow-x-account']);
 
     const quests = await prisma.scoutSocialQuest.findMany({
       where: {
@@ -79,8 +79,8 @@ describe('completeQuests', () => {
     const previousSeason = '2024-W42';
     const newSeason = '2025-W02';
 
-    await completeQuests(builder.id, ['contribute-lit-repo'], true, previousSeason);
-    await completeQuests(builder.id, ['contribute-lit-repo'], true, newSeason);
+    await completeQuests(builder.id, ['contribute-celo-repo'], true, previousSeason);
+    await completeQuests(builder.id, ['contribute-celo-repo'], true, newSeason);
 
     const socialQuests = await prisma.scoutSocialQuest.findMany({
       where: {
@@ -100,6 +100,6 @@ describe('completeQuests', () => {
 
     expect(socialQuests.length).toBe(2);
     expect(socialQuests.map((q) => q.season).sort()).toEqual([previousSeason, newSeason].sort());
-    expect(user.currentBalance).toBe(questsRecord['contribute-lit-repo'].points * 2);
+    expect(user.currentBalance).toBe(questsRecord['contribute-celo-repo'].points * 2);
   });
 });
