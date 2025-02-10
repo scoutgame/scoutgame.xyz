@@ -13,7 +13,6 @@ export type ScoutGameAttestationInput = {
   recipient?: Address;
   refUID?: `0x${string}`;
   data: `0x${string}`;
-  chainId: EASSchemaChain;
 };
 
 async function setupEAS({ chainId }: { chainId: EASSchemaChain }) {
@@ -47,7 +46,7 @@ export async function attestOnchain({
   refUID,
   recipient,
   chainId
-}: ScoutGameAttestationInput): Promise<`0x${string}`> {
+}: ScoutGameAttestationInput & { chainId: EASSchemaChain }): Promise<`0x${string}`> {
   const { eas, currentGasPrice } = await setupEAS({ chainId });
 
   const attestationUid = await eas
@@ -77,10 +76,10 @@ const maxPerBatch = 30;
 
 export async function multiAttestOnchain(params: {
   schemaId: string;
+  chainId: EASSchemaChain;
   records: Omit<ScoutGameAttestationInput, 'schemaId'>[];
   onAttestSuccess?: (input: { attestationUid: string; data: `0x${string}`; index: number }) => Promise<void>;
   batchStartIndex?: number;
-  chainId: EASSchemaChain;
 }): Promise<`0x${string}`[]> {
   if (params.records.length === 0) {
     return [];

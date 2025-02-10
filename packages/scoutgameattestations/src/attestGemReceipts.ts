@@ -112,7 +112,7 @@ export async function attestGemReceipts(): Promise<void> {
       : `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/pull/${ev.event.githubEvent?.pullRequestNumber}`;
   }
 
-  const attestationInputs: Omit<ScoutGameAttestationInput, 'schemaId'>[] = [];
+  const attestationInputs: Omit<ScoutGameAttestationInput, 'schemaId' | 'chainId'>[] = [];
 
   for (const ev of gemReceiptsWithoutAttestation) {
     const { metadataUrl } = await uploadContributionReceiptToS3({
@@ -136,6 +136,7 @@ export async function attestGemReceipts(): Promise<void> {
   }
 
   await multiAttestOnchain({
+    chainId: scoutGameAttestationChainId,
     schemaId: scoutGameContributionReceiptSchemaUid(),
     records: attestationInputs,
     onAttestSuccess: async ({ attestationUid, index }) => {

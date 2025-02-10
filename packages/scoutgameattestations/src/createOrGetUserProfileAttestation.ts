@@ -26,7 +26,10 @@ export async function createOrGetUserProfileAttestation({
   });
 
   if (scout.onchainProfileAttestationUid && scout.onchainProfileAttestationChainId === scoutGameAttestationChainId) {
-    const attestation = await getAttestion({ attestationUid: scout.onchainProfileAttestationUid });
+    const attestation = await getAttestion({
+      attestationUid: scout.onchainProfileAttestationUid,
+      chainId: scoutGameAttestationChainId
+    });
 
     return decodeScoutGameUserProfileAttestation(attestation.data);
   }
@@ -46,7 +49,8 @@ export async function createOrGetUserProfileAttestation({
 
   const attestationUid = await attestOnchain({
     schemaId: scoutGameUserProfileSchemaUid(),
-    data: encodeScoutGameUserProfileAttestation(data)
+    data: encodeScoutGameUserProfileAttestation(data),
+    chainId: scoutGameAttestationChainId
   });
 
   await prisma.scout.update({

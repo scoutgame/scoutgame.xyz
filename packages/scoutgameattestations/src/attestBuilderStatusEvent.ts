@@ -26,7 +26,8 @@ export async function attestBuilderStatusEvent({
       schemaId: scoutGameBuilderEventSchemaUid(),
       recipient: NULL_EVM_ADDRESS,
       refUID: userAttestation.id as `0x${string}`,
-      data: builderStatusEventAttestationData
+      data: builderStatusEventAttestationData,
+      chainId: scoutGameAttestationChainId
     });
 
     await prisma.builderStatusEvent.create({
