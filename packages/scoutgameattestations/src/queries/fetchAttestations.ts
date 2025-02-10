@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getWeekStartEndSecondTimestamps } from '@packages/dates/utils';
+import { getSeasonStartEndSecondTimestamps, getWeekStartEndSecondTimestamps } from '@packages/dates/utils';
 
 import {
   scoutGameBuilderEventSchemaUid,
@@ -35,23 +35,39 @@ export type ScoutGameAttestation<T extends AttestationType = AttestationType> = 
 
 export async function fetchAttestations<T extends AttestationType = AttestationType>({
   week,
+  season,
   chainId,
   type,
   userRefUID
 }: {
-  week: ISOWeek;
+  week?: ISOWeek;
+  season?: ISOWeek;
   chainId: EASSchemaChain;
   type: T;
   userRefUID?: `0x${string}`;
 }): Promise<ScoutGameAttestation<T>[]> {
+  if (week && season) {
+    throw new Error('Cannot provide both week and season');
+  }
+
   const schemaId =
     type === 'contributionReceipt'
       ? scoutGameContributionReceiptSchemaUid()
-      : type === 'builderEvent'
+      : type === 'builderStatusEvent'
         ? scoutGameBuilderEventSchemaUid()
-        : scoutGameUserProfileSchemaUid();
+        : type === 'userProfile'
+          ? scoutGameUserProfileSchemaUid()
+          : null;
 
-  const { start, end } = getWeekStartEndSecondTimestamps(week);
+  if (!schemaId) {
+    throw new Error(`Invalid attestation type: ${type}`);
+  }
+
+  const dateRange = week
+    ? getWeekStartEndSecondTimestamps(week)
+    : season
+      ? getSeasonStartEndSecondTimestamps(season)
+      : undefined;
 
   const client = getEasGraphQlClient({ chainId });
 
@@ -78,18 +94,20 @@ export async function fetchAttestations<T extends AttestationType = AttestationT
           schemaId: {
             equals: schemaId
           },
-          AND: [
-            {
-              timeCreated: {
-                lte: end
-              }
-            },
-            {
-              timeCreated: {
-                gte: start
-              }
-            }
-          ]
+          AND: dateRange
+            ? [
+                {
+                  timeCreated: {
+                    gte: dateRange.start
+                  }
+                },
+                {
+                  timeCreated: {
+                    lte: dateRange.end
+                  }
+                }
+              ]
+            : undefined
         }
       }
     });

@@ -23,11 +23,11 @@ export const allSchemas = [
 
 export type EASSchemaNames = (typeof allSchemas)[number]['name'];
 
-export type AttestationType = 'contributionReceipt' | 'builderEvent' | 'userProfile';
+export type AttestationType = 'contributionReceipt' | 'builderStatusEvent' | 'userProfile';
 
 export type AttestationContentFromAttestationType = {
   contributionReceipt: ContributionReceiptAttestation;
-  builderEvent: BuilderStatusEventAttestation;
+  builderStatusEvent: BuilderStatusEventAttestation;
   userProfile: ScoutGameUserProfileAttestation;
 };
 
@@ -43,7 +43,7 @@ export function decodeAttestation<T extends AttestationType = AttestationType>({
     (rawData: string) => AttestationContentFromAttestationType[keyof AttestationContentFromAttestationType]
   > = {
     contributionReceipt: decodeContributionReceiptAttestation,
-    builderEvent: decodeBuilderStatusEventAttestation,
+    builderStatusEvent: decodeBuilderStatusEventAttestation,
     userProfile: decodeScoutGameUserProfileAttestation
   };
 
