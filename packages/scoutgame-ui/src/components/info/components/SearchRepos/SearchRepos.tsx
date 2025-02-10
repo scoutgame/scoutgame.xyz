@@ -4,6 +4,7 @@ import { Clear as ClearIcon } from '@mui/icons-material';
 import {
   Box,
   CircularProgress,
+  Divider,
   IconButton,
   InputAdornment,
   Link,
@@ -25,9 +26,6 @@ export function SearchRepos({ popularRepos }: { popularRepos: Repo[] }) {
 
   return (
     <>
-      <Typography variant='h6' color='secondary'>
-        {!filteredRepos && !filterString ? 'Popular' : 'Results'}
-      </Typography>
       <TextField
         label='Search'
         placeholder='Filter by name'
@@ -50,6 +48,10 @@ export function SearchRepos({ popularRepos }: { popularRepos: Repo[] }) {
           }
         }}
       />
+      <Typography variant='h6' color='secondary'>
+        {!filteredRepos && !filterString ? 'Popular' : 'Results'}
+      </Typography>
+      <Divider />
       <Stack gap={1} flexWrap='wrap' direction='row'>
         {isValidating || isLoading ? (
           <Skeleton variant='rounded' height={25} />
@@ -58,8 +60,13 @@ export function SearchRepos({ popularRepos }: { popularRepos: Repo[] }) {
         ) : (
           (filteredRepos || popularRepos).map((repo) => (
             <Box key={repo.id} flexBasis={{ xs: '100%', md: '49%' }}>
-              <Link href={`https://github.com/${repo.owner}/${repo.name}`} target='_blank'>
-                {repo.name}
+              <Link
+                color='text.primary'
+                href={`https://github.com/${repo.owner}/${repo.name}`}
+                target='_blank'
+                sx={{ fontSize: '14px' }}
+              >
+                {repo.owner}/{repo.name}
               </Link>
             </Box>
           ))
