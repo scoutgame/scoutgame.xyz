@@ -76,11 +76,32 @@ export async function getBuildersLeaderboardFromEAS({
   const builderValues: Record<`0x${string}`, number> = {};
 
   for (const [refUID, contributions] of Object.entries(builderHistory)) {
+    const builderEvents = seasonBuilderEvents[refUID as `0x${string}`];
+    const sortedEvents = [...builderEvents].sort((a, b) => b.timeCreated - a.timeCreated);
+
+    // Find all ban/unban events
+    const statusEvents = sortedEvents.filter(
+      (event) => event.content.type === 'banned' || event.content.type === 'unbanned'
+    );
+
     builderValues[refUID as `0x${string}`] = contributions.reduce((total, contribution) => {
       // Skip revoked attestations
       if (contribution.revoked) {
         return total;
       }
+
+      // For each contribution, check if it should be counted based on ban status
+      for (const statusEvent of statusEvents) {
+        if (statusEvent.content.type === 'banned' && contribution.timeCreated > statusEvent.timeCreated) {
+          // Skip contributions after ban
+          return total;
+        }
+        if (statusEvent.content.type === 'unbanned' && contribution.timeCreated < statusEvent.timeCreated) {
+          // Skip contributions before unban
+          return total;
+        }
+      }
+
       return total + contribution.content.value;
     }, 0);
   }
