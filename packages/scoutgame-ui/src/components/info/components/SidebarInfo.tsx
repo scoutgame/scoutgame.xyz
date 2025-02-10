@@ -26,7 +26,6 @@ const partners = [
   { href: '/info/partner-rewards/game7', text: 'Game7' },
   { href: '/info/partner-rewards/moxie', text: 'Moxie' },
   { href: '/info/partner-rewards/bountycaster', text: 'BountyCaster' },
-  { href: '/info/partner-rewards/lit', text: 'Lit Protocol' },
   { href: '/info/partner-rewards/optimism', text: 'Optimism' },
   { href: '/info/partner-rewards/octant', text: 'Octant' }
 ];

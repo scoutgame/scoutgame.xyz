@@ -223,16 +223,16 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     resettable: true,
     verifiable: true
   },
-  'contribute-lit-repo': {
-    label: 'Merge a PR in the Lit Protocol Repo',
-    points: 25,
-    rewards: '$50–$250 USDC',
-    partner: 'Lit',
-    link: '/info/partner-rewards/lit',
-    tag: 'builder',
-    resettable: true,
-    verifiable: true
-  },
+  // 'contribute-lit-repo': {
+  //   label: 'Merge a PR in the Lit Protocol Repo',
+  //   points: 25,
+  //   rewards: '$50–$250 USDC',
+  //   partner: 'Lit',
+  //   link: '/info/partner-rewards/lit',
+  //   tag: 'builder',
+  //   resettable: true,
+  //   verifiable: true
+  // },
   'link-farcaster-account': {
     label: 'Link your account with Farcaster',
     points: 10,
