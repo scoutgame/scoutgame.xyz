@@ -18,7 +18,7 @@ export type MerkleTreeDto = {
 
 // Update the eligibility check to use the same hashing function as the contract
 function hashLeaf(index: number, address: string, amount: string): Address {
-  const encoded = encodeAbiParameters(parseAbiParameters('uint256, address, uint256'), [
+  const encoded = encodeAbiParameters(parseAbiParameters('uint256, address, uint128'), [
     BigInt(index),
     address as Address,
     BigInt(amount)
