@@ -26,9 +26,21 @@ export async function getUser(userId?: string): Promise<SessionUser | null> {
       farcasterName: true,
       bio: true,
       referralCode: true,
-      deletedAt: true
+      deletedAt: true,
+      wallets: {
+        where: {
+          primary: true
+        },
+        select: {
+          address: true
+        }
+      }
     }
   });
+
+  if (!user) {
+    return null;
+  }
 
   if (user?.avatar) {
     user.avatar = replaceS3Domain(user.avatar);
