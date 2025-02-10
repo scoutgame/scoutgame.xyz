@@ -91,7 +91,7 @@ export function BuildersTable({
               lineHeight: 1.5
             }}
           >
-            14D RANK
+            RANK
           </TableCell>
           <TableCell></TableCell>
           <TableCell
@@ -213,22 +213,22 @@ export function BuildersTable({
             </TableCell>
             <TableCell align='right' width={150}>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
-                <TableCellText color='green.main'>{builder.estimatedPayout}</TableCellText>
+                <TableCellText color='text.primary'>{builder.estimatedPayout}</TableCellText>
                 {isMdScreen && (
-                  <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='green-icon' />
+                  <Image width={15} height={15} src='/images/profile/scout-game-icon.svg' alt='points icon' />
                 )}
               </Stack>
             </TableCell>
             <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
-                <TableCellText color='text.secondary'>
+                <TableCellText color='text.primary'>
                   {/* We need to migrate $SCOUT based NFT prices to numeric column. Until then, we are storing the price as the human friendly version */}
                   {platform === 'onchain_webapp'
                     ? Number(builder.price || 0)
                     : convertCostToPoints(builder.price || BigInt(0))}
                 </TableCellText>
                 {isMdScreen && (
-                  <Image width={15} height={15} src='/images/profile/scout-game-blue-icon.svg' alt='scout game icon ' />
+                  <Image width={15} height={15} src='/images/profile/scout-game-icon.svg' alt='points icon ' />
                 )}
               </Stack>
             </TableCell>
