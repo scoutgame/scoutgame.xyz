@@ -102,12 +102,9 @@ export async function createSablierAirdropContract({
 
   const csvContent = createCsvContent(normalizedRecipients);
 
-  const file = new File([csvContent], 'airdrop.csv', {
-    type: 'text/csv'
-  });
-
   const formData = new FormData();
-  formData.append('data', file);
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  formData.append('data', blob, 'airdrop.csv');
 
   const merkleResponse = await fetch(`https://sablier-merkle-api.vercel.app/api/create?decimals=${tokenDecimals}`, {
     method: 'POST',
