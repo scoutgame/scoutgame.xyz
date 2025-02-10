@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { scoutGameAttestationChainId } from '@packages/scoutgameattestations/constants';
@@ -26,6 +27,13 @@ export async function getBuildersLeaderboardFromEAS({
     events.reduce(
       (acc, event) => {
         const refUID = event.refUID;
+
+        // Don't process empty events
+        if (!refUID) {
+          log.warn('No refUID found for builder status event', { event });
+          return acc;
+        }
+
         if (!acc[refUID]) {
           acc[refUID] = [];
         }
