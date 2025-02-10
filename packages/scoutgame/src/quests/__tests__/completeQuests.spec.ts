@@ -41,7 +41,7 @@ describe('completeQuests', () => {
     expect(points.length).toBe(2);
 
     expect(scout.currentBalance).toBe(
-      questsRecord['contribute-lit-repo'].points + questsRecord['follow-x-account'].points
+      questsRecord['contribute-celo-repo'].points + questsRecord['follow-x-account'].points
     );
   });
 
@@ -85,7 +85,7 @@ describe('completeQuests', () => {
     const socialQuests = await prisma.scoutSocialQuest.findMany({
       where: {
         userId: builder.id,
-        type: 'contribute-lit-repo'
+        type: 'contribute-celo-repo'
       }
     });
 

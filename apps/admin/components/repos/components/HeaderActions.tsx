@@ -73,17 +73,6 @@ export function HeaderActions() {
             fullWidth
             sx={{ justifyContent: 'flex-start' }}
             size='small'
-            filename={`Lit Protocol Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/lit_protocol'
-          >
-            Lit Protocol
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
             filename={`Octant Weekly Report (${lastWeek}).tsv`}
             src='/api/partners/octant'
           >
