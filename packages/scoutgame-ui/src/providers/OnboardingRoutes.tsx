@@ -43,7 +43,7 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
           : '/scout';
       const profileRedirect = urlParams.get('profile-redirect') as 'true' | 'false' | undefined;
 
-      if (pathname.includes('builder-registration-callback')) {
+      if (pathname.includes('developer-registration-callback')) {
         urlParams.set('step', '3');
         urlParams.set('type', 'builder');
         return `${baseRoute}?${urlParams.toString()}`;
