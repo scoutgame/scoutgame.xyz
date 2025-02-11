@@ -600,4 +600,72 @@ describe('getBuildersLeaderboardFromEAS', () => {
       }
     ]);
   });
+
+  it('should query attestations within the week and seasontimestamps', async () => {
+    mockGraphQlClient.query.mockImplementation(({ variables }) => {
+      const schemaId = variables.where.schemaId.equals;
+
+      if (schemaId === builderEventSchema) {
+        return Promise.resolve({
+          data: {
+            attestations: [
+              {
+                id: '0x1',
+                refUID: builder01OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'registered',
+                  description: 'Registered',
+                  season
+                }),
+                timeCreated: 1,
+                revoked: false
+              }
+            ]
+          }
+        }) as Promise<{ data: QueryResult }>;
+      }
+
+      return Promise.resolve({ data: { attestations: [] } });
+    });
+
+    await getBuildersLeaderboardFromEAS({ week: '2025-W02' });
+
+    const seasonQueryCall = mockGraphQlClient.query.mock.calls[0][0];
+
+    const weeksQueryCall = mockGraphQlClient.query.mock.calls[1][0];
+
+    // Monday, 6 January 2025 00:00:00
+    const expectedSeasonGte = 1_736_121_600;
+    // Sunday, 6 April 2025 23:59:59
+    const expectedSeasonLte = 1_743_983_999;
+
+    // Monday, 13 January 2025 00:00:00
+    const expectedWeekGte = 1_736_121_600;
+    // Sunday, 19 January 2025 23:59:59
+    const expectedWeekLte = 1_736_726_399;
+
+    // Make sure we searched for builder status events within the season
+    expect(seasonQueryCall.variables.where).toMatchObject({
+      schemaId: {
+        equals: builderEventSchema
+      },
+      timeCreated: {
+        gte: expectedSeasonGte,
+        lte: expectedSeasonLte
+      }
+    });
+    // Make sure we searched for contribution receipts within the week
+    expect(weeksQueryCall.variables.where).toMatchObject({
+      schemaId: {
+        equals: contributionReceiptSchema
+      },
+      refUID: {
+        equals: builder01OnchainProfileAttestationUid
+      },
+      timeCreated: {
+        gte: expectedWeekGte,
+        lte: expectedWeekLte
+      }
+    });
+  });
 });

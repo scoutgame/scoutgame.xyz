@@ -74,7 +74,8 @@ export async function getBuildersLeaderboardFromEAS({
     const builderContributions = await fetchAttestations({
       userRefUID: refUID,
       chainId: scoutGameAttestationChainId,
-      type: 'contributionReceipt'
+      type: 'contributionReceipt',
+      week
     });
 
     builderHistory[refUID] = builderContributions;
