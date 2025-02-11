@@ -18,6 +18,7 @@ const links = [
   { href: '/info/builder-nfts', text: 'Developer NFTs' },
   { href: '/info/contribution-guide', text: 'Contribution Guide' },
   { href: '/info/core-maintainer-guide', text: 'Core Maintainer Guide' },
+  { href: '/info/repositories', text: 'Repositories' },
   { href: '/info/spam-policy', text: 'Spam Policy' }
 ];
 
