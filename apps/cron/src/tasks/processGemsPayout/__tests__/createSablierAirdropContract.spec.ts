@@ -33,6 +33,19 @@ describe('createSablierAirdropContract', () => {
     nullAddressAmount: 0.001
   };
 
+  const mockMerkleTreeJson = {
+    root: '0xMerkleRoot',
+    total_amount: '300',
+    merkle_tree: JSON.stringify({
+      format: 'standard-v1',
+      tree: ['0xroot'],
+      values: [],
+      leaf_encoding: ['uint', 'address', 'uint256']
+    }),
+    number_of_recipients: 2,
+    recipients: mockParams.recipients
+  };
+
   let mockFormDataAppend: jest.Mock;
 
   beforeEach(() => {
@@ -82,16 +95,22 @@ describe('createSablierAirdropContract', () => {
   });
 
   it('should handle contract simulation failures', async () => {
-    // Mock successful API response with status field
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          root: '0xMerkleRoot',
-          cid: 'testCID',
-          status: 'upload successful'
-        })
-    } as never);
+    // Mock both API calls
+    (global.fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            root: '0xMerkleRoot',
+            cid: 'testCID',
+            status: 'upload successful'
+          })
+      } as never)
+      // Add mock for Pinata gateway call
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockMerkleTreeJson)
+      } as never);
 
     mockWalletClient.simulateContract.mockRejectedValueOnce(new Error('Contract simulation failed') as never);
 
@@ -113,19 +132,7 @@ describe('createSablierAirdropContract', () => {
       // Mock successful Pinata IPFS response
       .mockResolvedValueOnce({
         ok: true,
-        json: () =>
-          Promise.resolve({
-            root: '0xMerkleRoot',
-            total_amount: '300',
-            merkle_tree: JSON.stringify({
-              format: 'standard-v1',
-              tree: ['0xroot'],
-              values: [],
-              leaf_encoding: ['uint', 'address', 'uint256']
-            }),
-            number_of_recipients: 2,
-            recipients: mockParams.recipients
-          })
+        json: () => Promise.resolve(mockMerkleTreeJson)
       } as never);
 
     mockWalletClient.simulateContract
@@ -161,19 +168,7 @@ describe('createSablierAirdropContract', () => {
       } as never)
       .mockResolvedValueOnce({
         ok: true,
-        json: () =>
-          Promise.resolve({
-            root: '0xMerkleRoot',
-            total_amount: '300',
-            merkle_tree: JSON.stringify({
-              format: 'standard-v1',
-              tree: ['0xroot'],
-              values: [],
-              leaf_encoding: ['uint', 'address', 'uint256']
-            }),
-            number_of_recipients: 2,
-            recipients: mockParams.recipients
-          })
+        json: () => Promise.resolve(mockMerkleTreeJson)
       } as never);
 
     const duplicateRecipients = {
