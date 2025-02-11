@@ -63,14 +63,13 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Build app
         uses: ./.github/actions/build_app
         with:
           # Build cron app since that's what we use
           app_name: cron
-
   test:
     name: Test apps
     runs-on: ubuntu-latest
@@ -101,7 +100,7 @@ jobs:
       - name: Restore dependencies from cache
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Setup test database
         run: npx dotenv -e .env.test.local -- npm run prisma:reset
@@ -111,8 +110,8 @@ jobs:
         with:
           app_name: cron
 
-      - name: Typecheck onchain-cron app
-        run: npm run typecheck -w apps/onchain-cron
+      - name: Typecheck cron app
+        run: npm run typecheck -w apps/cron
 
       - name: Run eslint on changed files
         uses: tj-actions/eslint-changed-files@v25
@@ -141,16 +140,16 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Update Dockerfile
         run: |
-          rm Dockerfile && mv apps/onchain-cron/Dockerfile Dockerfile
+          rm Dockerfile && mv apps/cron/Dockerfile Dockerfile
 
       - name: Build and Push Docker image
         id: docker_build_push
@@ -176,25 +175,25 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Calculate Build ID
         id: get_build_id
         run: |
-          build_id=${{ hashFiles('package-lock.json', 'apps/onchain-cron/*.[jt]s') }}
+          build_id=${{ hashFiles('package-lock.json', 'apps/cron/*.[jt]s') }}
           echo "build_id=$build_id" >> $GITHUB_OUTPUT
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Upload JS source maps to Datadog
         env:
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         run: |
           npm install -g @datadog/datadog-ci
-          datadog-ci sourcemaps upload apps/onchain-cron/dist       \
+          datadog-ci sourcemaps upload apps/cron/dist       \
             --service=onchain-cron                              \
             --release-version=${{ steps.get_build_id.outputs.build_id }}  \
             --minified-path-prefix=https://cdn.charmverse.io/_next/static

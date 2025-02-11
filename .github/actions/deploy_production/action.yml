@@ -11,6 +11,10 @@ inputs:
   stack:
     description: 'The name of the CDK stack'
     required: true
+  custom_cache_key_suffix:
+    description: 'Optional, custom cache key suffix.'
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
@@ -28,7 +32,7 @@ runs:
       uses: ./.github/actions/install
       with:
         app_name: ${{ inputs.app_name }}
-
+        custom_cache_key_suffix: ${{ inputs.custom_cache_key_suffix }}
     - name: Setup production config
       shell: bash
       # Note: "2>/dev/null || :" is a bash idiom that means "if the previous command fails, do nothing"
