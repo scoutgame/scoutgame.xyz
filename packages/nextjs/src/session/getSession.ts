@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { getPlatform } from '@packages/mixpanel/platform';
 import type { SessionOptions, IronSession } from 'iron-session';
 import { getIronSession } from 'iron-session';
@@ -17,7 +16,8 @@ export async function getSession<T extends object = SessionData>(cookieOptions?:
   const userOverride = process.env.NODE_ENV === 'development' ? process.env.DEV_USER_ID : undefined;
 
   if (userOverride) {
-    log.debug('Overriding session with user override', { userOverride });
+    // eslint-disable-next-line no-console
+    console.log('Overriding session with user override', { userOverride });
     return { scoutId: userOverride } as unknown as IronSession<T>;
   }
 
