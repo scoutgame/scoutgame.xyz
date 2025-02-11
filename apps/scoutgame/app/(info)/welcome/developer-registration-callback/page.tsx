@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   other: {
     robots: 'noindex'
   },
-  title: 'Builder Setup'
+  title: 'Developer Setup'
 };
 
 export default async function BuilderSetup({
