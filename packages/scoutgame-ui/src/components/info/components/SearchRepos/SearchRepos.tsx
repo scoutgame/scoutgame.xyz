@@ -14,7 +14,7 @@ import {
   Typography
 } from '@mui/material';
 import type { Repo } from '@packages/scoutgame/repos/getRepos';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import { useSearchRepos } from '../../../../hooks/api/repos';
 import { useDebouncedValue } from '../../../../hooks/useDebouncedValue';
@@ -51,24 +51,22 @@ export function SearchRepos({ popularRepos }: { popularRepos: Repo[] }) {
       <Typography variant='h6' color='secondary'>
         {!filteredRepos && !filterString ? 'Popular' : 'Results'}
       </Typography>
-      <Divider />
+      <Divider sx={{ display: { xs: 'block', md: 'none' } }} />
       <Stack gap={1} flexWrap='wrap' direction='row'>
         {isValidating || isLoading ? (
           <Skeleton variant='rounded' height={25} />
         ) : filteredRepos?.length === 0 ? (
           <Typography variant='caption'>No results found</Typography>
         ) : (
-          (filteredRepos || popularRepos).map((repo) => (
-            <Box key={repo.id} flexBasis={{ xs: '100%', md: '49%' }}>
-              <Link
-                color='text.primary'
-                href={`https://github.com/${repo.owner}/${repo.name}`}
-                target='_blank'
-                sx={{ fontSize: '14px' }}
-              >
-                {repo.owner}/{repo.name}
-              </Link>
-            </Box>
+          (filteredRepos || popularRepos).map((repo, i) => (
+            <Fragment key={repo.id}>
+              <Box flexBasis={{ xs: '100%', md: '49%' }}>
+                <Link href={`https://github.com/${repo.owner}/${repo.name}`} target='_blank' sx={{ fontSize: '14px' }}>
+                  {repo.owner}/{repo.name}
+                </Link>
+              </Box>
+              {i % 2 ? <Divider sx={{ width: '100%', display: { xs: 'none', md: 'block' } }} /> : null}
+            </Fragment>
           ))
         )}
       </Stack>
