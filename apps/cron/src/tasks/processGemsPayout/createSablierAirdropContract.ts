@@ -101,7 +101,7 @@ export async function createSablierAirdropContract({
 
   const { root, cid } = merkleTree;
 
-  const fullMerkleTree = await fetch(`https://ipfs.io/ipfs/${cid}`);
+  const fullMerkleTree = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
 
   if (!fullMerkleTree.ok) {
     throw new Error(`HTTP error! status: ${fullMerkleTree.status}, details: ${fullMerkleTree.statusText}`);
