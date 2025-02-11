@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getRankedNewScoutsForPastWeek } from '@packages/scoutgame/scouts/getNewScouts';
 import { parseUnits } from 'viem';
-import { optimismSepolia } from 'viem/chains';
+import { optimism } from 'viem/chains';
 
 import { createSablierAirdropContract } from './createSablierAirdropContract';
 
@@ -12,17 +12,17 @@ const newScoutsRewards = [60, 50, 40, 35, 30, 25, 20, 15, 15, 10];
 export const optimismTokenDecimals = 18;
 export const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
 
-export async function deployNewScoutRewardsContract({ week, season }: { week: string; season: string }) {
+export async function deployNewScoutRewardsContract({ week }: { week: string }) {
   const newScouts = (await getRankedNewScoutsForPastWeek({ week })) as { address: string }[];
 
   const top10Scouts = newScouts.slice(0, 10);
 
-  const currentSeason = getCurrentSeason();
+  const currentSeason = getCurrentSeason(week);
 
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.NEW_SCOUT_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
     campaignName: `Scoutgame New Scout ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
-    chainId: optimismSepolia.id,
+    chainId: optimism.id,
     recipients: top10Scouts.map((scout, index) => ({
       address: scout.address as `0x${string}`,
       amount: newScoutsRewards[index]
@@ -36,14 +36,14 @@ export async function deployNewScoutRewardsContract({ week, season }: { week: st
     hash,
     contractAddress,
     week,
-    season
+    season: currentSeason.start
   });
 
   await prisma.partnerRewardPayoutContract.create({
     data: {
-      chainId: optimismSepolia.id,
+      chainId: optimism.id,
       contractAddress,
-      season,
+      season: currentSeason.start,
       week,
       tokenAddress: optimismTokenAddress,
       tokenSymbol: 'OP',
