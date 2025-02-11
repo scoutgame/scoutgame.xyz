@@ -7,7 +7,7 @@ import {
   getDateFromISOWeek
 } from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
-import { DateTime } from 'luxon';
+import type { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
 import { optimismSepolia } from 'viem/chains';
 
@@ -17,7 +17,7 @@ import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRew
 const REFERRAL_CHAMPION_REWARD_AMOUNT = parseUnits('25', optimismTokenDecimals).toString();
 
 export async function deployReferralChampionRewardsContract({ week }: { week: string }) {
-  const topConnectors: { address: string; date: DateTime }[] = [];
+  const referralChampions: { address: string; date: DateTime }[] = [];
   const season = getCurrentSeasonStart(week);
   const weekStart = getDateFromISOWeek(week).startOf('week');
 
@@ -26,35 +26,17 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     const topConnector = await getTopConnectorOfTheDay({ date });
 
     if (topConnector) {
-      topConnectors.push({ address: topConnector.address, date });
+      referralChampions.push({ address: topConnector.address, date });
     }
   }
 
-  if (topConnectors.length === 0) {
+  if (referralChampions.length === 0) {
     log.info('No top connectors found for the week', {
       week,
       season
     });
     return;
   }
-
-  topConnectors.push({
-    // Safwan demo address
-    address: '0xe808ffcFC59adbe91098B573D63d4EB1E5F8DafE',
-    date: DateTime.now().minus({ days: 1 })
-  });
-
-  topConnectors.push({
-    // chris demo address
-    address: '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F',
-    date: DateTime.now().minus({ days: 1 })
-  });
-
-  topConnectors.push({
-    // Matt demo address
-    address: '0x66525057AC951a0DB5C9fa7fAC6E056D6b8997E2',
-    date: DateTime.now().minus({ days: 1 })
-  });
 
   const currentSeason = getCurrentSeason();
 
@@ -64,7 +46,7 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     chainId: optimismSepolia.id,
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,
-    recipients: topConnectors.map(({ address }) => ({ address: address as `0x${string}`, amount: 25 })),
+    recipients: referralChampions.map(({ address }) => ({ address: address as `0x${string}`, amount: 25 })),
     nullAddressAmount: 0.001
   });
 
@@ -90,15 +72,12 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
       deployTxHash: hash,
       rewardPayouts: {
         createMany: {
-          // Dont rely on merkletree.recipients as it will be normalized
-          data: topConnectors.map(({ address, date }) => ({
+          data: referralChampions.map(({ address, date }) => ({
             amount: REFERRAL_CHAMPION_REWARD_AMOUNT,
             walletAddress: address.toLowerCase(),
             meta: {
               date: date.toJSDate()
-            },
-            // TODO: Delete the reward payout after its deployed to hide from UI
-            deletedAt: new Date()
+            }
           }))
         }
       }
