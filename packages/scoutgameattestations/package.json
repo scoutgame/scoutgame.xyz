@@ -10,7 +10,6 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@apollo/client": "^3.12.11",
     "@ethereum-attestation-service/eas-sdk": "^2.7.0",
     "@packages/aws": "^0.0.0",
     "@packages/blockchain": "^0.0.0",

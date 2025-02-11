@@ -1,4 +1,6 @@
-import { gql } from '@apollo/client';
+// Import direct from index.js necessary to avoid a bug with jest
+// https://github.com/apollographql/apollo-feature-requests/issues/287#issuecomment-1192993207
+import { gql } from '@apollo/client/core/index.js';
 import type { ISOWeek } from '@packages/dates/config';
 import { getSeasonStartEndSecondTimestamps, getWeekStartEndSecondTimestamps } from '@packages/dates/utils';
 
@@ -21,7 +23,7 @@ type QueryAttestationData = {
   refUID: `0x${string}`;
 };
 
-type QueryResult = {
+export type QueryResult = {
   attestations: QueryAttestationData[];
 };
 
@@ -60,7 +62,7 @@ export async function fetchAttestations<T extends AttestationType = AttestationT
           : null;
 
   if (!schemaId) {
-    throw new Error(`Invalid attestation type: ${type}`);
+    throw new Error(`No schemaId found for type: ${type}`);
   }
 
   const dateRange = week
@@ -94,19 +96,11 @@ export async function fetchAttestations<T extends AttestationType = AttestationT
           schemaId: {
             equals: schemaId
           },
-          AND: dateRange
-            ? [
-                {
-                  timeCreated: {
-                    gte: dateRange.start
-                  }
-                },
-                {
-                  timeCreated: {
-                    lte: dateRange.end
-                  }
-                }
-              ]
+          timeCreated: dateRange
+            ? {
+                gte: dateRange.start,
+                lte: dateRange.end
+              }
             : undefined
         }
       }
@@ -136,12 +130,3 @@ export async function fetchAttestations<T extends AttestationType = AttestationT
     content: decodeAttestation({ rawData: attestation.data, type })
   }));
 }
-
-// fetchAttestations({
-//   week: '2025-W01',
-//   chainId: 84532,
-//   type: 'contributionReceipt'
-//   // userRefUID: '0x54ceda008195aac52000bd9d560b65dc3e69fcb4425735448d58a33b94f29333'
-// }).then((data) => {
-//   console.log(data.length);
-// });

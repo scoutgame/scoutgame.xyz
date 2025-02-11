@@ -1,4 +1,6 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+// Import direct from index.js necessary to avoid a bug with jest
+// https://github.com/apollographql/apollo-feature-requests/issues/287#issuecomment-1192993207
+import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js';
 import { base, baseSepolia } from 'viem/chains';
 
 import type { EASSchemaChain } from '../easSchemas/constants';
