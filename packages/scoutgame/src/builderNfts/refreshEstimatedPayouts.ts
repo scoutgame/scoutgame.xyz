@@ -111,5 +111,5 @@ export async function refreshEstimatedPayouts({
     }
   }
 
-  log.info('Estimated payouts refreshed', { week, builderId: builderIdToRefresh });
+  log.info('Estimated payouts refreshed', { week, userId: builderIdToRefresh });
 }
