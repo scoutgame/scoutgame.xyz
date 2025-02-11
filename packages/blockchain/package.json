@@ -10,7 +10,7 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@packages/utils": "^1.0.0",
-    "merkletreejs": "^0.4.1"
+    "@openzeppelin/merkle-tree": "^1.0.7",
+    "@packages/utils": "^1.0.0"
   }
 }

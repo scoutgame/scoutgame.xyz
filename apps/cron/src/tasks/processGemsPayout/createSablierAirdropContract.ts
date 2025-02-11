@@ -1,3 +1,4 @@
+import type { FullMerkleTree } from '@packages/blockchain/airdrop/checkSablierAirdropEligibility';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { erc20Abi, nonceManager, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -100,6 +101,21 @@ export async function createSablierAirdropContract({
 
   const { root, cid } = merkleTree;
 
+  const fullMerkleTree = await fetch(`https://ipfs.io/ipfs/${cid}`);
+
+  if (!fullMerkleTree.ok) {
+    throw new Error(`HTTP error! status: ${fullMerkleTree.status}, details: ${fullMerkleTree.statusText}`);
+  }
+
+  const downloadedMerkleTree = (await fullMerkleTree.json()) as Omit<FullMerkleTree, 'merkle_tree'> & {
+    merkle_tree: string;
+  };
+
+  const fullMerkleTreeJson = {
+    ...downloadedMerkleTree,
+    merkle_tree: JSON.parse(downloadedMerkleTree.merkle_tree)
+  };
+
   const baseParams = {
     token: tokenAddress,
     expiration: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60),
@@ -142,13 +158,7 @@ export async function createSablierAirdropContract({
     hash,
     root,
     cid,
-    merkleTree: {
-      root,
-      recipients: normalizedRecipients.map(({ address, amount }) => ({
-        address,
-        amount: parseUnits(amount.toString(), tokenDecimals).toString()
-      }))
-    },
+    merkleTree: fullMerkleTreeJson,
     contractAddress: createdContractAddress.toLowerCase()
   };
 }
