@@ -1,6 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentSeasonWeekNumber, getDateFromISOWeek } from '@packages/dates/utils';
+import {
+  getCurrentSeason,
+  getCurrentSeasonStart,
+  getCurrentSeasonWeekNumber,
+  getDateFromISOWeek
+} from '@packages/dates/utils';
 import { getTopConnectorOfTheDay } from '@packages/scoutgame/topConnector/getTopConnectors';
 import { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
@@ -51,9 +56,11 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     date: DateTime.now().minus({ days: 1 })
   });
 
+  const currentSeason = getCurrentSeason();
+
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
-    campaignName: `Scoutgame Referral Champion S${season}W${getCurrentSeasonWeekNumber(week)} Rewards`,
+    campaignName: `Scoutgame Referral Champion ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimismSepolia.id,
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,

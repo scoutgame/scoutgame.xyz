@@ -11,35 +11,43 @@ jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
   getPublicClient: jest.fn().mockReturnValue(mockPublicClient)
 }));
 
-// Mock MerkleTree
-jest.unstable_mockModule('merkletreejs', () => ({
-  MerkleTree: jest.fn().mockImplementation(() => ({
-    getHexProof: jest.fn().mockReturnValue(['0xproof1', '0xproof2']),
-    verify: jest.fn().mockReturnValue(true),
-    getHexRoot: jest.fn().mockReturnValue('0xroot')
-  }))
-}));
-
-jest.unstable_mockModule('viem', () => ({
-  keccak256: jest.fn().mockReturnValue('0xhash'),
-  encodeAbiParameters: jest.fn().mockReturnValue('0xencoded'),
-  parseAbiParameters: jest.fn().mockReturnValue('0xparsed')
+// Mock StandardMerkleTree instead of MerkleTree
+jest.unstable_mockModule('@openzeppelin/merkle-tree', () => ({
+  StandardMerkleTree: {
+    load: jest.fn().mockReturnValue({
+      getProof: jest.fn().mockReturnValue(['0xproof1', '0xproof2']),
+      verify: jest.fn().mockReturnValue(true)
+    })
+  }
 }));
 
 const { checkSablierAirdropEligibility } = await import('../checkSablierAirdropEligibility');
-const { MerkleTree } = await import('merkletreejs');
+const { StandardMerkleTree } = await import('@openzeppelin/merkle-tree');
 
 describe('checkSablierAirdropEligibility', () => {
   const mockParams = {
     recipientAddress: '0xRecipientAddress1' as Address,
-    ipfsCid: 'testCID',
     contractAddress: '0xContractAddress' as Address,
     chainId: 1,
-    merkleTree: {
-      total_amount: '1000',
-      number_of_recipients: 2,
-      merkle_tree: 'tree',
+    merkleTreeJson: {
       root: '0xroot',
+      total_amount: '1000',
+      merkle_tree: {
+        format: 'standard-v1',
+        tree: ['0xroot', '0xnode1', '0xnode2'],
+        values: [
+          {
+            value: ['0', '0xRecipientAddress1', '750'],
+            tree_index: 0
+          },
+          {
+            value: ['1', '0xRecipientAddress2', '250'],
+            tree_index: 1
+          }
+        ],
+        leaf_encoding: ['uint', 'address', 'uint256']
+      },
+      number_of_recipients: 2,
       recipients: [
         {
           address: '0xRecipientAddress1',
@@ -88,18 +96,16 @@ describe('checkSablierAirdropEligibility', () => {
       .mockResolvedValueOnce(false as never) // hasExpired
       .mockResolvedValueOnce(false as never); // hasClaimed
 
-    // Mock MerkleTree verify to return false
-    (MerkleTree as unknown as jest.Mock).mockImplementationOnce(() => ({
-      getHexProof: jest.fn().mockReturnValue(['0xproof1', '0xproof2']),
-      verify: jest.fn().mockReturnValue(false),
-      getHexRoot: jest.fn().mockReturnValue('0xroot')
-    }));
+    // Mock StandardMerkleTree verify to return false
+    (StandardMerkleTree.load as jest.Mock).mockReturnValueOnce({
+      getProof: jest.fn().mockReturnValue(['0xproof1', '0xproof2']),
+      verify: jest.fn().mockReturnValue(false)
+    });
 
     await expect(checkSablierAirdropEligibility(mockParams)).rejects.toThrow('Failed to verify Merkle proof');
   });
 
   it('should successfully check eligibility for valid recipient', async () => {
-    // Mock contract calls
     mockPublicClient.readContract
       .mockResolvedValueOnce(false as never) // hasExpired
       .mockResolvedValueOnce(false as never); // hasClaimed

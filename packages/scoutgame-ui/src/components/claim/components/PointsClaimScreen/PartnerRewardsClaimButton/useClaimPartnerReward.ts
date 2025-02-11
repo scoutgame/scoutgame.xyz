@@ -92,7 +92,11 @@ export function useClaimPartnerReward({
 
   const claimPartnerReward = async () => {
     if (!isConnected) {
-      openConnectModal?.();
+      if (openConnectModal) {
+        openConnectModal();
+      } else {
+        toast.error('Unable to open wallet connection modal');
+      }
       return;
     }
 
@@ -157,6 +161,7 @@ export function useClaimPartnerReward({
 
   return {
     isClaiming,
-    claimPartnerReward
+    claimPartnerReward,
+    isConnected
   };
 }

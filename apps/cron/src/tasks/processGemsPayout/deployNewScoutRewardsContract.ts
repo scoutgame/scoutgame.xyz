@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getRankedNewScoutsForPastWeek } from '@packages/scoutgame/scouts/getNewScouts';
 import { parseUnits } from 'viem';
 import { optimismSepolia } from 'viem/chains';
@@ -34,9 +34,11 @@ export async function deployNewScoutRewardsContract({ week, season }: { week: st
     address: '0x66525057AC951a0DB5C9fa7fAC6E056D6b8997E2'
   });
 
+  const currentSeason = getCurrentSeason();
+
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.NEW_SCOUT_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
-    campaignName: `Scoutgame New Scout S${season}W${getCurrentSeasonWeekNumber(season)} Rewards`,
+    campaignName: `Scoutgame New Scout ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimismSepolia.id,
     recipients: top10Scouts.map((scout, index) => ({
       address: scout.address as `0x${string}`,
