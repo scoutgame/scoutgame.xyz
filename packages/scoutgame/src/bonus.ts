@@ -17,10 +17,10 @@ export const bonusPartnersRecord = {
     name: 'Game7',
     icon: 'https://scoutgame.xyz/images/crypto/game7.png'
   },
-  lit_protocol: {
-    name: 'Lit Protocol',
-    icon: 'https://scoutgame.xyz/images/logos/lit-protocol.png'
-  },
+  // lit_protocol: {
+  //   name: 'Lit Protocol',
+  //   icon: 'https://scoutgame.xyz/images/logos/lit-protocol.png'
+  // },
   op_supersim: {
     name: 'OP Supersim',
     icon: 'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png'

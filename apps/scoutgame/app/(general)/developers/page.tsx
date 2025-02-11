@@ -2,8 +2,13 @@ import { getCurrentWeek, validateISOWeek } from '@packages/dates/utils';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { BuildersPage } from '@packages/scoutgame-ui/components/builders/BuildersPage';
+import type { Metadata } from 'next';
 
-export default async function Builders({
+export const metadata: Metadata = {
+  title: 'Developers'
+};
+
+export default async function Developers({
   searchParams
 }: {
   searchParams: { [key: string]: string | string[] | undefined };

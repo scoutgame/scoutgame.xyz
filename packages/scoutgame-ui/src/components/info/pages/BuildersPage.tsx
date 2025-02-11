@@ -1,4 +1,5 @@
-import { Link, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import Link from 'next/link';
 
 import { InfoCard } from '../../common/DocumentPageContainer/components/InfoCard';
 import { List, ListItem } from '../../common/List';
@@ -15,8 +16,6 @@ export function BuildersPage() {
     </InfoPageContainer>
   );
 }
-
-const googleDoc = 'https://docs.google.com/spreadsheets/d/1K7vxnjyWu1ylApuz6K2ZqKlbWZQV8cFwzmrPgDULsaI';
 
 function Document() {
   return (
@@ -40,14 +39,10 @@ function Document() {
         </List>
       </div>
       <div>
-        <Typography>Approved Open-Source Project Owners</Typography>
-        <List>
-          <ListItem>
-            <Link href={googleDoc} target='_blank' rel='noopener noreferrer' sx={{ wordBreak: 'break-word' }}>
-              {googleDoc}
-            </Link>
-          </ListItem>
-        </List>
+        <Typography mb={1}>Approved Open-Source Project Owners</Typography>
+        <Button variant='buy' LinkComponent={Link} href='/info/repositories' sx={{ px: 2 }}>
+          View Repos
+        </Button>
       </div>
     </InfoCard>
   );

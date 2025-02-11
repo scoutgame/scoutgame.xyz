@@ -1,33 +1,10 @@
+import type { FullMerkleTree } from '@packages/blockchain/airdrop/checkSablierAirdropEligibility';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { erc20Abi, nonceManager, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { optimism, optimismSepolia, taiko } from 'viem/chains';
 
-const sablierAirdropFactoryAbi = [
-  {
-    type: 'function',
-    name: 'createMerkleInstant',
-    inputs: [
-      {
-        name: 'baseParams',
-        type: 'tuple',
-        components: [
-          { name: 'token', type: 'address' },
-          { name: 'expiration', type: 'uint40' },
-          { name: 'initialAdmin', type: 'address' },
-          { name: 'ipfsCID', type: 'string' },
-          { name: 'merkleRoot', type: 'bytes32' },
-          { name: 'campaignName', type: 'string' },
-          { name: 'shape', type: 'string' }
-        ]
-      },
-      { name: 'aggregateAmount', type: 'uint256' },
-      { name: 'recipientCount', type: 'uint256' }
-    ],
-    outputs: [{ type: 'address' }],
-    stateMutability: 'external'
-  }
-] as const;
+import SablierAirdropFactoryAbi from './SablierMerkleFactory.json';
 
 const SablierAirdropFactoryContractRecords: Record<number, `0x${string}`> = {
   [optimismSepolia.id]: '0x2934A7aDDC3000D1625eD1E8D21C070a89073702',
@@ -102,12 +79,9 @@ export async function createSablierAirdropContract({
 
   const csvContent = createCsvContent(normalizedRecipients);
 
-  const file = new File([csvContent], 'airdrop.csv', {
-    type: 'text/csv'
-  });
-
   const formData = new FormData();
-  formData.append('data', file);
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  formData.append('data', blob, 'airdrop.csv');
 
   const merkleResponse = await fetch(`https://sablier-merkle-api.vercel.app/api/create?decimals=${tokenDecimals}`, {
     method: 'POST',
@@ -127,6 +101,21 @@ export async function createSablierAirdropContract({
 
   const { root, cid } = merkleTree;
 
+  const fullMerkleTree = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
+
+  if (!fullMerkleTree.ok) {
+    throw new Error(`HTTP error! status: ${fullMerkleTree.status}, details: ${fullMerkleTree.statusText}`);
+  }
+
+  const downloadedMerkleTree = (await fullMerkleTree.json()) as Omit<FullMerkleTree, 'merkle_tree'> & {
+    merkle_tree: string;
+  };
+
+  const fullMerkleTreeJson = {
+    ...downloadedMerkleTree,
+    merkle_tree: JSON.parse(downloadedMerkleTree.merkle_tree)
+  };
+
   const baseParams = {
     token: tokenAddress,
     expiration: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60),
@@ -142,7 +131,7 @@ export async function createSablierAirdropContract({
 
   const { request } = await walletClient.simulateContract({
     address: sablierAirdropFactoryAddress,
-    abi: sablierAirdropFactoryAbi,
+    abi: SablierAirdropFactoryAbi.abi,
     functionName: 'createMerkleInstant',
     args: [baseParams, aggregateAmount, recipientCount],
     account
@@ -169,13 +158,7 @@ export async function createSablierAirdropContract({
     hash,
     root,
     cid,
-    merkleTree: {
-      root,
-      recipients: normalizedRecipients.map(({ address, amount }) => ({
-        address,
-        amount: parseUnits(amount.toString(), tokenDecimals).toString()
-      }))
-    },
+    merkleTree: fullMerkleTreeJson,
     contractAddress: createdContractAddress.toLowerCase()
   };
 }

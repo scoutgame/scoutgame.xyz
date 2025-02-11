@@ -12,7 +12,7 @@ export function BuilderCardActivityTooltip() {
       </Stack>
 
       <Stack>
-        <Typography fontWeight='bold'>14D RANK</Typography>
+        <Typography fontWeight='bold'>RANK</Typography>
         <Typography>
           14 day rank history followed by today's rank. Vertical axis max is rank 1 and min is rank 100. Benchmark is
           set at rank = 50.

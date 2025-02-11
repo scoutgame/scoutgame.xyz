@@ -82,8 +82,8 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         />
         <BottomNavigationAction
           label='Developers'
-          href='/builders'
-          value='builders'
+          href='/developers'
+          value='developers'
           icon={<BuilderIcon />}
           LinkComponent={Link}
         />
@@ -133,8 +133,8 @@ function getActiveButton(pathname: string) {
     return 'scout';
   } else if (pathname.startsWith('/claim')) {
     return 'claim';
-  } else if (pathname.startsWith('/builders')) {
-    return 'builders';
+  } else if (pathname.startsWith('/developers')) {
+    return 'developers';
   } else if (pathname.startsWith('/quests')) {
     return 'quests';
   }

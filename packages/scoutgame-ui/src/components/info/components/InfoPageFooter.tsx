@@ -114,9 +114,6 @@ export function InfoPageFooter() {
           <MuiLink href='/info/partner-rewards/game7'>
             <Typography>Game7</Typography>
           </MuiLink>
-          <MuiLink href='/info/partner-rewards/lit'>
-            <Typography>Lit Protocol</Typography>
-          </MuiLink>
           <MuiLink href='/info/partner-rewards/moxie'>
             <Typography>Moxie</Typography>
           </MuiLink>
