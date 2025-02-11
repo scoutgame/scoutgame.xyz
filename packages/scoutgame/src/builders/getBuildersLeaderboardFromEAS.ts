@@ -98,16 +98,20 @@ export async function getBuildersLeaderboardFromEAS({
         return total;
       }
 
-      // For each contribution, check if it should be counted based on ban status
-      for (const statusEvent of statusEvents) {
-        if (statusEvent.content.type === 'banned' && contribution.timeCreated > statusEvent.timeCreated) {
-          // Skip contributions after ban
-          return total;
+      // For each contribution, check if it was made during a banned period
+      let isBannedAtContributionTime = false;
+
+      // Sort status events by time to track ban/unban sequence
+      const sortedStatusEvents = [...statusEvents].sort((a, b) => a.timeCreated - b.timeCreated);
+
+      for (const statusEvent of sortedStatusEvents) {
+        if (contribution.timeCreated >= statusEvent.timeCreated) {
+          isBannedAtContributionTime = statusEvent.content.type === 'banned';
         }
-        if (statusEvent.content.type === 'unbanned' && contribution.timeCreated < statusEvent.timeCreated) {
-          // Skip contributions before unban
-          return total;
-        }
+      }
+
+      if (isBannedAtContributionTime) {
+        return total;
       }
 
       return total + contribution.content.value;

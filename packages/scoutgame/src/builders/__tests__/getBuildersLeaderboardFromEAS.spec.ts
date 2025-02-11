@@ -63,6 +63,8 @@ const builder02Uuid = uuid();
 const builder03OnchainProfileAttestationUid = '0xbuilder03';
 const builder03Uuid = uuid();
 
+const season = '2025-W01';
+
 describe('getBuildersLeaderboardFromEAS', () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   let getBuildersLeaderboardFromEAS: typeof import('../getBuildersLeaderboardFromEAS').getBuildersLeaderboardFromEAS;
@@ -102,11 +104,6 @@ describe('getBuildersLeaderboardFromEAS', () => {
       const schemaId = variables.where.schemaId.equals;
       const userRefUID = variables.where.refUID?.equals;
 
-      console.log(`Query`, {
-        schemaId,
-        userRefUID
-      });
-
       if (schemaId === builderEventSchema) {
         return Promise.resolve({
           data: {
@@ -117,7 +114,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
                 data: encodeBuilderStatusEventAttestation({
                   description: 'Registered',
                   type: 'registered',
-                  season: '2025-W01'
+                  season
                 }),
                 timeCreated: 1,
                 revoked: false
@@ -128,7 +125,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
                 data: encodeBuilderStatusEventAttestation({
                   description: 'Registered',
                   type: 'registered',
-                  season: '2025-W01'
+                  season
                 }),
                 timeCreated: 2,
                 revoked: false
@@ -224,111 +221,383 @@ describe('getBuildersLeaderboardFromEAS', () => {
   it('should handle no builders registered', async () => {
     mockGraphQlClient.query.mockResolvedValue({ data: { attestations: [] } });
 
-    const result = await getBuildersLeaderboardFromEAS({ week: '2025-W01' });
+    const result = await getBuildersLeaderboardFromEAS({ week: season });
     expect(result).toEqual([]);
   });
 
-  it('should handle all builders banned', async () => {
-    mockGraphQlClient.query.mockImplementation(({ query }) => {
-      const queryString = query.loc.source.body;
-      if (queryString.includes('builderStatusEvent')) {
+  it('should handle banned and registered builders', async () => {
+    mockGraphQlClient.query.mockImplementation(({ variables }) => {
+      const schemaId = variables.where.schemaId.equals;
+      const userRefUID = variables.where.refUID?.equals;
+
+      if (schemaId === builderEventSchema) {
         return Promise.resolve({
           data: {
             attestations: [
-              { id: '1', refUID: '0x1', content: { type: 'registered' }, timeCreated: 1 },
-              { id: '2', refUID: '0x1', content: { type: 'banned' }, timeCreated: 2 }
+              {
+                id: '0x1',
+                refUID: builder01OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'registered',
+                  description: 'Registered',
+                  season
+                }),
+                timeCreated: 1,
+                revoked: false
+              },
+              {
+                id: '0x2',
+                refUID: builder01OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'banned',
+                  description: 'Banned',
+                  season
+                }),
+                timeCreated: 2,
+                revoked: false
+              },
+              {
+                id: '0x3',
+                refUID: builder02OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'registered',
+                  description: 'Registered',
+                  season
+                }),
+                timeCreated: 1,
+                revoked: false
+              }
             ]
           }
-        });
+        }) as Promise<{ data: QueryResult }>;
       }
+
+      if (schemaId === contributionReceiptSchema) {
+        if (userRefUID === builder01OnchainProfileAttestationUid) {
+          return Promise.resolve({
+            data: {
+              attestations: [
+                {
+                  id: '0x4',
+                  refUID: builder01OnchainProfileAttestationUid,
+                  data: encodeContributionReceiptAttestation({
+                    value: 50,
+                    description: 'Contribution',
+                    type: 'contribution',
+                    url: 'https://example.com',
+                    metadataUrl: 'https://example.com/metadata'
+                  }),
+                  timeCreated: 3,
+                  revoked: false
+                }
+              ]
+            }
+          }) as Promise<{ data: QueryResult }>;
+        }
+
+        if (userRefUID === builder02OnchainProfileAttestationUid) {
+          return Promise.resolve({
+            data: {
+              attestations: [
+                {
+                  id: '0x5',
+                  refUID: builder02OnchainProfileAttestationUid,
+                  data: encodeContributionReceiptAttestation({
+                    value: 20,
+                    description: 'Contribution',
+                    type: 'contribution',
+                    url: 'https://example.com',
+                    metadataUrl: 'https://example.com/metadata'
+                  }),
+                  timeCreated: 3,
+                  revoked: false
+                }
+              ]
+            }
+          }) as Promise<{ data: QueryResult }>;
+        }
+      }
+
+      return Promise.resolve({ data: { attestations: [] } });
+    });
+
+    const result = await getBuildersLeaderboardFromEAS({ week: season });
+    expect(result).toMatchObject<LeaderboardBuilder[]>([
+      {
+        builder: {
+          displayName: builder02.displayName,
+          id: builder02.id,
+          path: builder02.path
+        },
+        gemsCollected: 20,
+        rank: 1
+      }
+    ]);
+  });
+
+  it('should ignore contribution receipts during the banned period for a builder', async () => {
+    mockGraphQlClient.query.mockImplementation(({ variables }) => {
+      const schemaId = variables.where.schemaId.equals;
+      const userRefUID = variables.where.refUID?.equals;
+
+      if (schemaId === builderEventSchema) {
+        return Promise.resolve({
+          data: {
+            attestations: [
+              // Registered builder
+              {
+                id: '0x1',
+                refUID: builder01OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'registered',
+                  description: 'Registered',
+                  season
+                }),
+                timeCreated: 1,
+                revoked: false
+              },
+              // Banned builder
+              {
+                id: '0x2',
+                refUID: builder02OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'banned',
+                  description: 'Banned',
+                  season
+                }),
+                timeCreated: 2,
+                revoked: false
+              },
+              // Banned then unbanned builder
+              {
+                id: '0x3',
+                refUID: builder03OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'registered',
+                  description: 'Registered',
+                  season
+                }),
+                timeCreated: 1,
+                revoked: false
+              },
+              {
+                id: '0x4',
+                refUID: builder03OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'banned',
+                  description: 'Banned',
+                  season
+                }),
+                timeCreated: 3,
+                revoked: false
+              },
+              {
+                id: '0x5',
+                refUID: builder03OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'unbanned',
+                  description: 'Unbanned',
+                  season
+                }),
+                timeCreated: 5,
+                revoked: false
+              }
+            ]
+          }
+        }) as Promise<{ data: QueryResult }>;
+      }
+
+      if (schemaId === contributionReceiptSchema) {
+        if (userRefUID === builder01OnchainProfileAttestationUid) {
+          return Promise.resolve({
+            data: {
+              attestations: [
+                {
+                  id: '0x6',
+                  refUID: builder01OnchainProfileAttestationUid,
+                  data: encodeContributionReceiptAttestation({
+                    value: 50,
+                    description: 'Contribution',
+                    type: 'contribution',
+                    url: 'https://example.com',
+                    metadataUrl: 'https://example.com/metadata'
+                  }),
+                  timeCreated: 2,
+                  revoked: false
+                }
+              ]
+            }
+          }) as Promise<{ data: QueryResult }>;
+        }
+
+        if (userRefUID === builder02OnchainProfileAttestationUid) {
+          return Promise.resolve({
+            data: {
+              attestations: [
+                {
+                  id: '0x7',
+                  refUID: builder02OnchainProfileAttestationUid,
+                  data: encodeContributionReceiptAttestation({
+                    value: 75,
+                    description: 'Contribution',
+                    type: 'contribution',
+                    url: 'https://example.com',
+                    metadataUrl: 'https://example.com/metadata'
+                  }),
+                  timeCreated: 3,
+                  revoked: false
+                }
+              ]
+            }
+          }) as Promise<{ data: QueryResult }>;
+        }
+
+        if (userRefUID === builder03OnchainProfileAttestationUid) {
+          return Promise.resolve({
+            data: {
+              attestations: [
+                // Before ban
+                {
+                  id: '0x8',
+                  refUID: builder03OnchainProfileAttestationUid,
+                  data: encodeContributionReceiptAttestation({
+                    value: 100,
+                    description: 'Contribution',
+                    type: 'contribution',
+                    url: 'https://example.com',
+                    metadataUrl: 'https://example.com/metadata'
+                  }),
+                  timeCreated: 2,
+                  revoked: false
+                },
+                // During ban (between timeCreated 3 and 5)
+                {
+                  id: '0x9',
+                  refUID: builder03OnchainProfileAttestationUid,
+                  data: encodeContributionReceiptAttestation({
+                    value: 50,
+                    description: 'Contribution',
+                    type: 'contribution',
+                    url: 'https://example.com',
+                    metadataUrl: 'https://example.com/metadata'
+                  }),
+                  timeCreated: 4,
+                  revoked: false
+                },
+                // After unban
+                {
+                  id: '0x10',
+                  refUID: builder03OnchainProfileAttestationUid,
+                  data: encodeContributionReceiptAttestation({
+                    value: 300,
+                    description: 'Contribution',
+                    type: 'contribution',
+                    url: 'https://example.com',
+                    metadataUrl: 'https://example.com/metadata'
+                  }),
+                  timeCreated: 6,
+                  revoked: false
+                }
+              ]
+            }
+          }) as Promise<{ data: QueryResult }>;
+        }
+      }
+
       return Promise.resolve({ data: { attestations: [] } });
     });
 
     const result = await getBuildersLeaderboardFromEAS({ week: '2025-W01' });
-    expect(result).toEqual([]);
-  });
 
-  it('should handle mixed status events', async () => {
-    mockGraphQlClient.query.mockImplementation(({ query }) => {
-      const queryString = query.loc.source.body;
-      if (queryString.includes('builderStatusEvent')) {
-        return Promise.resolve({
-          data: {
-            attestations: [
-              { id: '1', refUID: '0x1', content: { type: 'registered' }, timeCreated: 1 },
-              { id: '2', refUID: '0x1', content: { type: 'banned' }, timeCreated: 2 },
-              { id: '3', refUID: '0x1', content: { type: 'unbanned' }, timeCreated: 3 }
-            ]
-          }
-        });
+    expect(result).toMatchObject<LeaderboardBuilder[]>([
+      {
+        builder: { displayName: builder03.displayName, id: builder03.id, path: builder03.path },
+        // 100 from timeCreated 2 + 300 from timeCreated 6 (skipping 200 during ban)
+        gemsCollected: 400,
+        rank: 1
+      },
+      {
+        builder: { displayName: builder01.displayName, id: builder01.id, path: builder01.path },
+        gemsCollected: 50,
+        rank: 2
       }
-      if (queryString.includes('contributionReceipt')) {
-        return Promise.resolve({
-          data: {
-            attestations: [{ id: '4', refUID: '0x1', content: { value: 100 }, revoked: false, timeCreated: 4 }]
-          }
-        });
-      }
-      return Promise.resolve({ data: { attestations: [] } });
-    });
-
-    const result = await getBuildersLeaderboardFromEAS({ week: '2025-W01' });
-    expect(result).toEqual([{ builder: expect.any(Object), gemsCollected: 100, rank: 1 }]);
+    ]);
   });
 
   it('should skip revoked contributions', async () => {
-    mockGraphQlClient.query.mockImplementation(({ query }) => {
-      const queryString = query.loc.source.body;
-      if (queryString.includes('builderStatusEvent')) {
+    mockGraphQlClient.query.mockImplementation(({ variables }) => {
+      const schemaId = variables.where.schemaId.equals;
+      const userRefUID = variables.where.refUID?.equals;
+
+      if (schemaId === builderEventSchema) {
         return Promise.resolve({
           data: {
-            attestations: [{ id: '1', refUID: '0x1', content: { type: 'registered' }, timeCreated: 1 }]
+            attestations: [
+              {
+                id: '0x1',
+                refUID: builder01OnchainProfileAttestationUid,
+                data: encodeBuilderStatusEventAttestation({
+                  type: 'registered',
+                  description: 'Registered',
+                  season
+                }),
+                timeCreated: 1,
+                revoked: false
+              }
+            ]
           }
-        });
+        }) as Promise<{ data: QueryResult }>;
       }
-      if (queryString.includes('contributionReceipt')) {
+
+      if (schemaId === contributionReceiptSchema && userRefUID === builder01OnchainProfileAttestationUid) {
         return Promise.resolve({
           data: {
-            attestations: [{ id: '2', refUID: '0x1', content: { value: 100 }, revoked: true, timeCreated: 2 }]
+            attestations: [
+              {
+                id: '0x2',
+                refUID: builder01OnchainProfileAttestationUid,
+                data: encodeContributionReceiptAttestation({
+                  value: 100,
+                  description: 'Contribution',
+                  type: 'contribution',
+                  url: 'https://example.com',
+                  metadataUrl: 'https://example.com/metadata'
+                }),
+                timeCreated: 2,
+                revoked: true
+              },
+              {
+                id: '0x3',
+                refUID: builder01OnchainProfileAttestationUid,
+                data: encodeContributionReceiptAttestation({
+                  value: 200,
+                  description: 'Contribution',
+                  type: 'contribution',
+                  url: 'https://example.com',
+                  metadataUrl: 'https://example.com/metadata'
+                }),
+                timeCreated: 3,
+                revoked: false
+              }
+            ]
           }
-        });
+        }) as Promise<{ data: QueryResult }>;
       }
+
       return Promise.resolve({ data: { attestations: [] } });
     });
 
     const result = await getBuildersLeaderboardFromEAS({ week: '2025-W01' });
-    expect(result).toEqual([]);
-  });
-
-  it('should handle contributions before/after ban/unban', async () => {
-    mockGraphQlClient.query.mockImplementation(({ query }) => {
-      const queryString = query.loc.source.body;
-      if (queryString.includes('builderStatusEvent')) {
-        return Promise.resolve({
-          data: {
-            attestations: [
-              { id: '1', refUID: '0x1', content: { type: 'registered' }, timeCreated: 1 },
-              { id: '2', refUID: '0x1', content: { type: 'banned' }, timeCreated: 3 },
-              { id: '3', refUID: '0x1', content: { type: 'unbanned' }, timeCreated: 5 }
-            ]
-          }
-        });
+    expect(result).toMatchObject<LeaderboardBuilder[]>([
+      {
+        builder: {
+          displayName: builder01.displayName,
+          id: builder01.id,
+          path: builder01.path
+        },
+        gemsCollected: 200,
+        rank: 1
       }
-      if (queryString.includes('contributionReceipt')) {
-        return Promise.resolve({
-          data: {
-            attestations: [
-              { id: '4', refUID: '0x1', content: { value: 100 }, revoked: false, timeCreated: 2 },
-              { id: '5', refUID: '0x1', content: { value: 200 }, revoked: false, timeCreated: 4 },
-              { id: '6', refUID: '0x1', content: { value: 300 }, revoked: false, timeCreated: 6 }
-            ]
-          }
-        });
-      }
-      return Promise.resolve({ data: { attestations: [] } });
-    });
-
-    const result = await getBuildersLeaderboardFromEAS({ week: '2025-W01' });
-    expect(result).toEqual([{ builder: expect.any(Object), gemsCollected: 400, rank: 1 }]);
+    ]);
   });
 });
