@@ -56,7 +56,7 @@ function Document() {
     <InfoCard>
       <Typography>
         Celo is partnering with Scout Game to support developer who contribute to the ecosystem. Celo has a prize pool
-        of 5000 cUSD to distribute to talented Developer!
+        of 5000 cUSD to distribute to talented Developers!
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         How it works
