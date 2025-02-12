@@ -10,6 +10,11 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentSeasonStart: jest.fn(() => mockSeason)
 }));
 
+// Mock this so we don't get an error in the dependency tree
+jest.unstable_mockModule('@packages/scoutgame/builders/getBuildersLeaderboardFromEAS', () => ({
+  getBuildersLeaderboardFromEAS: jest.fn()
+}));
+
 const { getNewScouts } = await import('../getNewScouts');
 
 describe('getNewScouts', () => {
