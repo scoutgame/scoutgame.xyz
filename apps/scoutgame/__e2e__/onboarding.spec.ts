@@ -134,7 +134,7 @@ test.describe('Onboarding flow', () => {
     await page.goto('/welcome?step=3&type=builder');
     await expect(welcomePage.spamPolicyPage).toBeVisible();
 
-    await Promise.all([page.waitForURL('**/builders', { waitUntil: 'load' }), welcomePage.continueButton.click()]);
+    await Promise.all([page.waitForURL('**/developers', { waitUntil: 'load' }), welcomePage.continueButton.click()]);
 
     await expect(buildersPage.container).toBeVisible();
   });

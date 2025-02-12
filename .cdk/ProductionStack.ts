@@ -140,7 +140,6 @@ export class ProductionStack extends Stack {
               value: `${workerTimeout + 1}`
             },
             {
-              // Visibility timeout higher than the Inactivity timeout
               namespace: 'aws:elasticbeanstalk:sqsd',
               optionName: 'MaxRetries',
               value: '1'

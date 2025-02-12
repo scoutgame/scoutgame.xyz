@@ -1,18 +1,38 @@
-import { prettyPrint } from '@packages/utils/strings';
+import type { BuilderNftType, ScoutWallet } from '@charmverse/core/prisma-client';
 
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import type { LeaderboardBuilder } from '../builders/getBuildersLeaderboard';
 import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
+import { getBuildersLeaderboardFromEAS } from '../builders/getBuildersLeaderboardFromEAS';
 
 import { calculateEarnableScoutPointsForRank } from './calculatePoints';
 
-export async function getPointsCountForWeekWithNormalisation({ week }: { week: string }): Promise<{
+export type PartialNftPurchaseEvent = {
+  tokensPurchased: number;
+  tokenId: number;
+  nftType: BuilderNftType;
+  from: null | Pick<ScoutWallet, 'address' | 'scoutId'>;
+  to: null | Pick<ScoutWallet, 'address' | 'scoutId'>;
+  builderNft: { nftType: BuilderNftType; builderId: string };
+};
+
+export async function getPointsCountForWeekWithNormalisation({
+  week,
+  useOnchainLeaderboard
+}: {
+  week: string;
+  useOnchainLeaderboard?: boolean;
+}): Promise<{
   totalPoints: number;
   normalisationFactor: number;
   normalisedBuilders: { builder: LeaderboardBuilder; normalisedPoints: number }[];
+  weeklyAllocatedPoints: number;
+  topWeeklyBuilders: LeaderboardBuilder[];
 }> {
-  const leaderboard = await getBuildersLeaderboard({ week, quantity: weeklyRewardableBuilders });
+  const leaderboard = useOnchainLeaderboard
+    ? await getBuildersLeaderboardFromEAS({ week, quantity: weeklyRewardableBuilders })
+    : await getBuildersLeaderboard({ week, quantity: weeklyRewardableBuilders });
 
   const weeklyAllocatedPoints = await getCurrentWeekPointsAllocation({ week });
 
@@ -35,6 +55,8 @@ export async function getPointsCountForWeekWithNormalisation({ week }: { week: s
     normalisedBuilders: pointsQuotas.map(({ builder, earnablePoints }) => ({
       builder,
       normalisedPoints: earnablePoints * normalisationFactor
-    }))
+    })),
+    weeklyAllocatedPoints,
+    topWeeklyBuilders: leaderboard
   };
 }

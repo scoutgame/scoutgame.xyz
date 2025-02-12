@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
 
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
-import { getWeeklyPointsPoolAndBuilders } from '../points/getWeeklyPointsPoolAndBuilders';
+import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
 import { getNftPurchaseEvents, computeTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 export type NewScout = {
@@ -24,7 +24,7 @@ export async function getRankedNewScoutsForCurrentWeek({
   const [{ pointsPerScout: _pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
     (async function calculatePointsPerScout() {
       const [{ normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints }, nftPurchaseEvents] = await Promise.all([
-        getWeeklyPointsPoolAndBuilders({
+        getPointsCountForWeekWithNormalisation({
           week
         }),
         getNftPurchaseEvents({ week })
@@ -117,10 +117,16 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
     sortedUsers
       // only include new scouts
       .filter((user) => newScouts.find((s) => s.id === user[0]))
-      .map((user) => ({
-        ...newScouts.find((u) => u.id === user[0]),
-        pointsEarned: pointsEarnedByUserId[user[0]]
-      }))
+      .map((user) => {
+        const scout = newScouts.find((s) => s.id === user[0]);
+        const address = scout?.wallets.find((w) => w.primary)?.address;
+        return {
+          ...scout,
+          address,
+          pointsEarned: pointsEarnedByUserId[user[0]]
+        };
+      })
+      .filter((scout) => scout.address)
   );
 }
 
@@ -168,7 +174,8 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
       avatar: true,
       wallets: {
         select: {
-          address: true
+          address: true,
+          primary: true
         }
       }
     }

@@ -2,6 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
+import { attestBuilderStatusEvent } from '@packages/scoutgameattestations/attestBuilderStatusEvent';
 import type { Address, Chain } from 'viem';
 
 import { getPreSeasonTwoBuilderNftContractMinterClient } from '../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
@@ -73,6 +74,15 @@ export async function registerBuilderNFT({
     log.info(`Registering builder token for builder`, { userId: builderId });
     await minterClient.registerBuilderToken({ args: { builderId } });
     tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } });
+
+    await attestBuilderStatusEvent({
+      builderId,
+      event: {
+        type: 'registered',
+        description: `${builder.displayName} Builder NFT registered for season ${season} with token id ${tokenId}`,
+        season
+      }
+    });
   }
 
   const builderNft = await createBuilderNft({

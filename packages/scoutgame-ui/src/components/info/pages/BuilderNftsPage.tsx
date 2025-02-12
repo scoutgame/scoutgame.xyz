@@ -6,7 +6,7 @@ import { InfoPageContainer } from '../components/InfoPageContainer';
 
 export function BuilderNftsPage() {
   return (
-    <InfoPageContainer data-test='builder-nfts-page' image='/images/info/info_banner.png' title='Developer NFTs'>
+    <InfoPageContainer data-test='developer-nfts-page' image='/images/info/info_banner.png' title='Developer NFTs'>
       <Document />
     </InfoPageContainer>
   );

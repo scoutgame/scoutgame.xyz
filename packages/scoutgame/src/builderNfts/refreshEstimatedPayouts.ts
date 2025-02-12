@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
@@ -15,16 +16,19 @@ import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';
  */
 export async function refreshEstimatedPayouts({
   week,
-  builderIdToRefresh
+  builderIdToRefresh,
+  useOnchainLeaderboard
 }: {
   week: ISOWeek;
   builderIdToRefresh?: string;
+  useOnchainLeaderboard?: boolean;
 }): Promise<void> {
   const season = getCurrentSeasonStart(week);
 
   const [{ normalisedBuilders }, data] = await Promise.all([
     getPointsCountForWeekWithNormalisation({
-      week
+      week,
+      useOnchainLeaderboard
     }),
     getAllSeasonNftsWithOwners({ season })
   ]);
@@ -97,4 +101,6 @@ export async function refreshEstimatedPayouts({
       }
     }
   }
+
+  log.info('Estimated payouts refreshed', { week, userId: builderIdToRefresh });
 }

@@ -4,6 +4,7 @@ import type {
   BuilderNftType,
   GithubRepo,
   Scout,
+  ScoutProjectContract,
   ScoutProjectMemberRole
 } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
@@ -36,7 +37,9 @@ export async function mockBuilder({
   farcasterId,
   farcasterName,
   wallets = [{ address: randomWalletAddress() }],
-  weeklyStats = []
+  weeklyStats = [],
+  onchainProfileAttestationChainId,
+  onchainProfileAttestationUid
 }: Partial<
   Scout & {
     githubUserId?: number;
@@ -66,11 +69,14 @@ export async function mockBuilder({
       farcasterId,
       referralCode,
       farcasterName,
+      onchainProfileAttestationUid,
+      onchainProfileAttestationChainId,
       wallets: wallets.length
         ? {
             createMany: {
-              data: wallets.map((wallet) => ({
-                address: wallet.address
+              data: wallets.map((wallet, index) => ({
+                address: wallet.address,
+                primary: index === 0
               }))
             }
           }
@@ -821,12 +827,17 @@ export async function mockScoutProject({
   contractAddresses = []
 }: {
   name?: string;
-  userId: string;
+  userId?: string;
   memberIds?: string[];
   deployerAddress?: string;
   contractAddresses?: string[];
 }) {
   const path = randomString();
+  const createdBy = userId ?? (await mockScout()).id;
+
+  // always set deployerAddress if contract addresses are provided
+  deployerAddress = (deployerAddress ?? contractAddresses.length) ? '0x1234' : undefined;
+
   const scoutProject = await prisma.scoutProject.create({
     data: {
       name,
@@ -847,14 +858,14 @@ export async function mockScoutProject({
         createMany: {
           data: [
             {
-              userId,
+              userId: createdBy,
               role: 'owner',
-              createdBy: userId
+              createdBy
             },
             ...memberIds.map((memberId) => ({
               userId: memberId,
               role: 'member' as ScoutProjectMemberRole,
-              createdBy: userId
+              createdBy
             }))
           ]
         }
@@ -867,6 +878,7 @@ export async function mockScoutProject({
   });
 
   const deployer = scoutProject.scoutProjectDeployers[0];
+  let contracts: ScoutProjectContract[] = [];
   if (contractAddresses.length && deployer) {
     await prisma.scoutProjectContract.createMany({
       data: contractAddresses.map((address) => ({
@@ -876,13 +888,21 @@ export async function mockScoutProject({
         deployerId: deployer.id,
         deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
         deployedAt: new Date(),
-        createdBy: userId,
+        createdBy,
         blockNumber: 1
       }))
     });
+    contracts = await prisma.scoutProjectContract.findMany({
+      where: {
+        projectId: scoutProject.id
+      }
+    });
   }
 
-  return scoutProject;
+  return {
+    ...scoutProject,
+    contracts
+  };
 }
 
 export async function mockWeeklyClaims({ week, season }: { week: string; season: string }) {
@@ -894,6 +914,43 @@ export async function mockWeeklyClaims({ week, season }: { week: string; season:
       proofsMap: {},
       totalClaimable: 0,
       merkleTreeRoot: ''
+    }
+  });
+}
+
+export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: string }) {
+  const scoutWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { scoutId } });
+
+  return prisma.partnerRewardPayoutContract.create({
+    data: {
+      chainId: 1,
+      contractAddress: randomWalletAddress(),
+      ipfsCid: randomString(),
+      merkleTreeJson: {
+        root: '0x1',
+        recipients: [
+          {
+            address: scoutWallet.address.toLowerCase() as `0x${string}`,
+            amount: '100'
+          }
+        ]
+      },
+      deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
+      season: mockSeason,
+      week: getCurrentWeek(),
+      tokenAddress: randomWalletAddress(),
+      tokenDecimals: 18,
+      tokenSymbol: 'TEST',
+      partner: 'Test Partner',
+      rewardPayouts: {
+        create: {
+          amount: '100',
+          walletAddress: scoutWallet.address.toLowerCase()
+        }
+      }
+    },
+    include: {
+      rewardPayouts: true
     }
   });
 }

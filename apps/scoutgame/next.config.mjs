@@ -51,6 +51,25 @@ const nextConfig = {
       ]
     });
     return _config;
+  },
+  async redirects() {
+    return [
+      {
+        source: '/builders',
+        destination: '/developers',
+        permanent: true
+      },
+      {
+        source: '/info/builders',
+        destination: '/info/developers',
+        permanent: true
+      },
+      {
+        source: '/info/builder-nfts',
+        destination: '/info/developer-nfts',
+        permanent: true
+      }
+    ];
   }
 };
 

@@ -33,9 +33,24 @@ export type ClickScoutButton = FrontendEvent & {
   builderPath: string;
 };
 
+export type ClaimPartnerRewardEvent = BaseEvent & {
+  partner: string;
+  week: string;
+  season: string;
+};
+
+type CreateProjectEvent = BaseEvent & {
+  name: string;
+  path: string;
+};
+
+type DeployerAddressSignEvent = BaseEvent & {
+  deployerAddress: string;
+  contractAddress: string;
+};
+
 export type EventType =
   | 'page_view'
-  | 'create_project'
   | 'click_dont_have_farcaster_account'
   | 'click_join_the_sunnys'
   | 'click_share_on_warpcast'
@@ -73,6 +88,9 @@ export type MixpanelEventMap = {
     mergedIdentity: 'telegram' | 'farcaster' | 'wallet';
   };
   verify_email: BaseEvent;
+  claim_partner_reward: ClaimPartnerRewardEvent;
+  create_project: CreateProjectEvent;
+  deployer_address_sign: DeployerAddressSignEvent;
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

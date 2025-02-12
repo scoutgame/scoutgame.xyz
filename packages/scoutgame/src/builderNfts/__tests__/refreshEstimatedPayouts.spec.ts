@@ -10,11 +10,17 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
 }));
 
 const scoutPointsShare = 0.7;
+// Mock this so we don't get an error in the dependency tree
+jest.unstable_mockModule('@packages/scoutgame/builders/getBuildersLeaderboardFromEAS', () => ({
+  getBuildersLeaderboardFromEAS: jest.fn()
+}));
 
 describe('refreshEstimatedPayouts', () => {
   it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {
     const { refreshEstimatedPayouts } = await import('../refreshEstimatedPayouts');
-    const { getWeeklyPointsPoolAndBuilders } = await import('../../points/getWeeklyPointsPoolAndBuilders');
+    const { getPointsCountForWeekWithNormalisation } = await import(
+      '../../points/getPointsCountForWeekWithNormalisation'
+    );
 
     const season = '2024-TEST78';
 
@@ -167,7 +173,7 @@ describe('refreshEstimatedPayouts', () => {
     const nftPayouts = await getAllSeasonNftsWithOwners({ season });
 
     const { topWeeklyBuilders, weeklyAllocatedPoints, totalPoints, normalisationFactor, normalisedBuilders } =
-      await getWeeklyPointsPoolAndBuilders({
+      await getPointsCountForWeekWithNormalisation({
         week: season
       });
 

@@ -6,7 +6,7 @@ import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/const
 import { isTruthy } from '@packages/utils/types';
 import { uniq } from 'lodash';
 
-import { airstackRequest } from './airstackRequest';
+import { getFanPortfolio } from './getFanPortfolio';
 
 export type MoxieBonusRow = {
   'Scout ID': string;
@@ -114,7 +114,7 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
   // retrieve balances from Moxie API
   const scoutBalances = await Promise.all(
     Array.from(scoutIds).map(async (scoutFid) => {
-      const balances = await getMoxieFanTokenAmounts({ scoutFid });
+      const balances = await getFanPortfolio({ scoutFid });
       return { scoutFid, balances };
     })
   );
@@ -168,43 +168,4 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
   });
 
   return Object.values(scoutMoxieAmounts);
-}
-
-// source: https://docs.airstack.xyz/airstack-docs-and-faqs/moxie/moxie-fan-token-balances#check-if-certain-user-hold-certain-fan-token
-async function getMoxieFanTokenAmounts({ scoutFid }: { scoutFid: number }): Promise<Record<string, number>> {
-  const query = `
-    query GetPortfolioInfo {
-      MoxieUserPortfolios(
-        input: {
-          filter: {
-            fid: {_eq: "${scoutFid}"}
-          }
-        }
-      ) {
-        MoxieUserPortfolio {
-          amount: totalUnlockedAmount
-          fanTokenSymbol
-        }
-      }
-    }
-  `;
-  const response = await airstackRequest<{
-    errors?: { message: string; path: any[] }[];
-    data: { MoxieUserPortfolios: null | { MoxieUserPortfolio: { amount: number; fanTokenSymbol: string }[] | null } };
-  }>(query);
-  if (response.errors?.length) {
-    log.warn('Errors fetching Moxie fan token balances', { scoutFid, errors: response.errors });
-    throw new Error(`Errors fetching Moxie fan token balances: ${response.errors[0].message}`);
-  } else if (response.data.MoxieUserPortfolios === null) {
-    log.warn('No Moxie fan token balances found', { scoutFid, response });
-    return {};
-  }
-  return (response.data.MoxieUserPortfolios.MoxieUserPortfolio || []).reduce<Record<string, number>>((acc, curr) => {
-    // fanTokenSymbol examples: "fid:2600",  "cid:mfers"
-    const symbolParts = curr.fanTokenSymbol.split(':');
-    if (symbolParts[0] === 'fid') {
-      acc[symbolParts[1]] = curr.amount;
-    }
-    return acc;
-  }, {});
 }

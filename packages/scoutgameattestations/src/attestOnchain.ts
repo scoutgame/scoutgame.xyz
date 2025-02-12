@@ -4,7 +4,8 @@ import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { Network, Wallet, JsonRpcProvider } from 'ethers';
 import type { Address } from 'viem';
 
-import { scoutGameAttestationChainId, scoutGameEasAttestationContractAddress } from './constants';
+import type { EASSchemaChain } from './easSchemas/constants';
+import { easConfig } from './easSchemas/constants';
 import { attestationLogger } from './logger';
 
 export type ScoutGameAttestationInput = {
@@ -14,19 +15,20 @@ export type ScoutGameAttestationInput = {
   data: `0x${string}`;
 };
 
-async function setupEAS() {
+async function setupEAS({ chainId }: { chainId: EASSchemaChain }) {
   const attesterWalletKey = process.env.SCOUTPROTOCOL_EAS_ATTESTER_PRIVKEY;
+  const easContractAddress = easConfig[chainId].easContractAddress;
 
-  const rpcUrl = getChainById(scoutGameAttestationChainId)?.rpcUrls[0] as string;
+  const rpcUrl = getChainById(chainId)?.rpcUrls[0] as string;
 
   // ethers v6 version of StaticJSONRPCProvider https://github.com/ethers-io/ethers.js/discussions/3994
   const provider = new JsonRpcProvider(rpcUrl, undefined, {
-    staticNetwork: Network.from(scoutGameAttestationChainId)
+    staticNetwork: Network.from(chainId)
   });
 
   const wallet = new Wallet(attesterWalletKey as string, provider);
 
-  const eas = new EAS(scoutGameEasAttestationContractAddress);
+  const eas = new EAS(easContractAddress);
 
   eas.connect(wallet);
 
@@ -38,8 +40,14 @@ async function setupEAS() {
   };
 }
 
-export async function attestOnchain({ data, schemaId, refUID, recipient }: ScoutGameAttestationInput): Promise<string> {
-  const { eas, currentGasPrice } = await setupEAS();
+export async function attestOnchain({
+  data,
+  schemaId,
+  refUID,
+  recipient,
+  chainId
+}: ScoutGameAttestationInput & { chainId: EASSchemaChain }): Promise<`0x${string}`> {
+  const { eas, currentGasPrice } = await setupEAS({ chainId });
 
   const attestationUid = await eas
     .attest(
@@ -56,21 +64,19 @@ export async function attestOnchain({ data, schemaId, refUID, recipient }: Scout
     )
     .then((tx) => tx.wait());
 
-  attestationLogger.info(
-    `Issued attestation for schema ${schemaId} on chain ${scoutGameAttestationChainId} with uid: ${attestationUid}`,
-    {
-      chainId: scoutGameAttestationChainId,
-      schemaId
-    }
-  );
+  attestationLogger.info(`Issued attestation for schema ${schemaId} on chain ${chainId} with uid: ${attestationUid}`, {
+    chainId,
+    schemaId
+  });
 
-  return attestationUid;
+  return attestationUid as `0x${string}`;
 }
 
 const maxPerBatch = 30;
 
 export async function multiAttestOnchain(params: {
   schemaId: string;
+  chainId: EASSchemaChain;
   records: Omit<ScoutGameAttestationInput, 'schemaId'>[];
   onAttestSuccess?: (input: { attestationUid: string; data: `0x${string}`; index: number }) => Promise<void>;
   batchStartIndex?: number;
@@ -86,7 +92,8 @@ export async function multiAttestOnchain(params: {
         schemaId: params.schemaId,
         records: params.records.slice(i, i + maxPerBatch),
         onAttestSuccess: params.onAttestSuccess,
-        batchStartIndex: i
+        batchStartIndex: i,
+        chainId: params.chainId
       });
       allUids.push(...uids);
     }
@@ -94,9 +101,9 @@ export async function multiAttestOnchain(params: {
     return allUids;
   }
 
-  const { schemaId, records, onAttestSuccess, batchStartIndex = 0 } = params;
+  const { schemaId, records, onAttestSuccess, batchStartIndex = 0, chainId } = params;
 
-  const { eas, currentGasPrice } = await setupEAS();
+  const { eas, currentGasPrice } = await setupEAS({ chainId });
 
   const attestationUids = await eas
     .multiAttest(
@@ -122,9 +129,9 @@ export async function multiAttestOnchain(params: {
   }
 
   attestationLogger.info(
-    `Issued ${attestationUids.length} attestations for schema ${schemaId} on chain ${scoutGameAttestationChainId} with uids: ${attestationUids.join(', ')}`,
+    `Issued ${attestationUids.length} attestations for schema ${schemaId} on chain ${chainId} with uids: ${attestationUids.join(', ')}`,
     {
-      chainId: scoutGameAttestationChainId,
+      chainId,
       schemaId
     }
   );

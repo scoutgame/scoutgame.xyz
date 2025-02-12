@@ -59,8 +59,9 @@
     ]
   },
   "dependencies": {
+    "@apollo/client": "^3.12.11",
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.111.2",
+    "@charmverse/core": "^0.112.1",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.4",
@@ -90,7 +91,7 @@
     "swr": "^2.2.5",
     "uuid": "^11.0.3",
     "viem": "^2.22.17",
-    "wagmi": "^2.14.9",
+    "wagmi": "^2.14.11",
     "yup": "^1.4.0"
   },
   "devDependencies": {
@@ -115,7 +116,7 @@
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
     "encoding": "^0.1.13",
-    "esbuild": "^0.19.5",
+    "esbuild": "^0.25.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "^14.2.15",

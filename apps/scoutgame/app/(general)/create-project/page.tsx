@@ -10,7 +10,7 @@ export default async function Page() {
   }
 
   if (user.builderStatus !== 'approved') {
-    return redirect('/builders');
+    return redirect('/developers');
   }
 
   return <CreateProjectPage user={user} />;

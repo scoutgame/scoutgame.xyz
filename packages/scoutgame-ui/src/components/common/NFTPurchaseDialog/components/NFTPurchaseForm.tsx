@@ -520,7 +520,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         <Stack flexDirection='row' alignItems='center' gap={0.5} mb={1}>
           <Typography color='secondary'>Total cost</Typography>
           {builder.nftType === 'default' && (
-            <Link href='/info#builder-nfts' target='_blank' title='Read how Builder cards are priced'>
+            <Link href='/info/developer-nfts' target='_blank' title='Read how Developer cards are priced'>
               <InfoIcon sx={{ color: 'secondary.main', fontSize: 16, opacity: 0.7 }} />
             </Link>
           )}
