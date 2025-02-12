@@ -1,8 +1,8 @@
 'use server';
 
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { delay } from '@packages/nextjs/utils/async';
 import { telegramClients } from '@packages/scoutgame-ui/actions/telegramClient';
+import { delay } from '@packages/utils/async';
 import type { TelegramClient } from 'telegram';
 import { Api } from 'telegram';
 import { UpdateConnectionState } from 'telegram/network';

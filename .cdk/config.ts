@@ -15,6 +15,7 @@ export const apps: { [key: string]: { stg?: Options; prd?: Options } } = {
   },
   scoutgamecron: {
     prd: {
+      workerTimeout: 36000, // 10 hours
       environmentTier: 'Worker'
     },
     stg: {

@@ -1,14 +1,14 @@
 
 
 import { log } from '@charmverse/core/log';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import type { Address } from 'viem';
 import { isAddress, parseEventLogs } from 'viem';
-import { easConfig, encodeNameSchemaAttestation, SupportedEASChain } from '../easSchemas/constants';
+import { easConfig, EASSchemaChain, encodeNameSchemaAttestation } from '../easSchemas/constants';
 import { allSchemas, EASSchemaNames } from '../easSchemas/index';
 
-import { NAME_SCHEMA_UID, NULL_EAS_REF_UID, NULL_EVM_ADDRESS } from '../easSchemas/constants';
-import { baseSepolia } from 'viem/chains';
+import { NAME_SCHEMA_UID, NULL_EAS_REF_UID } from '../easSchemas/constants';
 
 const PRIVATE_KEY = (
   process.env.PRIVATE_KEY?.startsWith('0x') ? process.env.PRIVATE_KEY : `0x${process.env.PRIVATE_KEY}`
@@ -161,7 +161,7 @@ const easAttestationAbi = [
 ] as const;
 
 
-async function deployEASSchemas({chainId, resolverAddress, selectedSchemas}: {chainId: SupportedEASChain; resolverAddress: Address, selectedSchemas?: EASSchemaNames[]}) {
+async function deployEASSchemas({chainId, resolverAddress, selectedSchemas}: {chainId: EASSchemaChain; resolverAddress: Address, selectedSchemas?: EASSchemaNames[]}) {
   const deployConfig = easConfig[chainId];
 
   const {chain, easContractAddress, easSchemaRegistryAddress} = deployConfig;
@@ -238,3 +238,9 @@ async function deployEASSchemas({chainId, resolverAddress, selectedSchemas}: {ch
   console.log('EAS Schemas deployed, view them on EAS');
   console.log(`https://base-sepolia.easscan.org/schemas`);
 }
+
+
+deployEASSchemas({
+  chainId: 84532,
+  resolverAddress: '0x0CF1faf544bF98b062995848cc03cC8714BBca52'
+})

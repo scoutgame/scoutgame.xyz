@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { generateMerkleTree } from '@charmverse/core/protocol';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
+import { getPointsCountForWeekWithNormalisation } from '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
 import { type Address } from 'viem';
@@ -44,9 +44,11 @@ export async function calculateWeeklyClaims({
   week: string;
   tokenBalances: TokenOwnership;
 }): Promise<WeeklyClaimsCalculated> {
-  const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } = await getWeeklyPointsPoolAndBuilders({
-    week
-  });
+  const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } =
+    await getPointsCountForWeekWithNormalisation({
+      week,
+      useOnchainLeaderboard: true
+    });
 
   const season = getCurrentSeasonStart(week);
 

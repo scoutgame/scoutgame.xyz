@@ -6,21 +6,7 @@
     "test": ""
   },
   "exports": {
-    "./browser": "./src/browser.ts",
-    "./numbers": "./src/numbers.ts",
-    "./react": "./src/react.ts",
-    "./types": "./src/types.ts",
-    "./dates": "./src/dates.ts",
-    "./http": "./src/http.ts",
-    "./sleep": "./src/sleep.ts",
-    "./env": "./src/env.ts",
-    "./strings": "./src/strings.ts",
-    "./uuid": "./src/uuid.ts",
-    "./constants": "./src/constants.ts",
-    "./url": "./src/url.ts",
-    "./file": "./src/file.ts",
-    "./array": "./src/array.ts",
-    "./prefix0x": "./src/prefix0x.ts"
+    "./*": "./src/*.ts"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2"

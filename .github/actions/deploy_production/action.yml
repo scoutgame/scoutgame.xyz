@@ -11,6 +11,10 @@ inputs:
   stack:
     description: 'The name of the CDK stack'
     required: true
+  custom_cache_key_suffix:
+    description: 'Optional, custom cache key suffix.'
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
@@ -28,13 +32,14 @@ runs:
       uses: ./.github/actions/install
       with:
         app_name: ${{ inputs.app_name }}
-
+        custom_cache_key_suffix: ${{ inputs.custom_cache_key_suffix }}
     - name: Setup production config
       shell: bash
       # Note: "2>/dev/null || :" is a bash idiom that means "if the previous command fails, do nothing"
       run: |
         cp apps/${{ inputs.app_config_override || inputs.app_name }}/.env.ebstalk .env.ebstalk
         cp -r apps/${{ inputs.app_config_override || inputs.app_name }}/.ebextensions .ebextensions
+        cp -r apps/${{ inputs.app_config_override || inputs.app_name }}/.platform/* .platform/ 2>/dev/null || :
         cp apps/${{ inputs.app_config_override || inputs.app_name }}/cron.yml cron.yaml 2>/dev/null || :
 
     - name: Set the docker compose env variables
