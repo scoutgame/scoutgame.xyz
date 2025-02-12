@@ -92,7 +92,7 @@ function AnimatedContent({
           gap={1}
         >
           <Image src='/images/quests/question-icon-dark.svg' alt='Daily quest lost icon' width={24} height={24} />
-          <Typography variant='body2' color='primary.dark'>
+          <Typography variant='body2' color='text.disabled'>
             {weekDay}
           </Typography>
         </Stack>
@@ -150,7 +150,7 @@ export function DailyClaimCard({
       whileTap={{ scale: canClaim ? 0.9 : 1 }}
       sx={{
         ...claimedBorder,
-        backgroundColor: canClaim ? 'primary.main' : 'background.dark',
+        backgroundColor: canClaim ? 'primary.main' : 'primary.dark',
         height: 60,
         paddingBottom: 0.25,
         borderRadius: 1,

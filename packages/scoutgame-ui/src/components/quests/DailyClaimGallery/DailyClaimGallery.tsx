@@ -25,7 +25,7 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
   const canClaimToday = dailyClaims.some((dailyClaim) => dailyClaim.day === currentWeekDay && !dailyClaim.claimed);
 
   return (
-    <Stack justifyContent='center' alignItems='center' gap={1} my={2} bgcolor='primary.dark' p={2}>
+    <Stack justifyContent='center' alignItems='center' gap={1} my={2} p={2}>
       <Typography variant='h4' color='secondary' fontWeight={600} zIndex={1}>
         Daily Claim
       </Typography>
