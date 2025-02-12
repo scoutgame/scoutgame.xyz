@@ -68,6 +68,7 @@ export async function searchBuilders({
           nftType: BuilderNftType.default
         },
         select: {
+          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
           nftSoldEvents: {
             select: {

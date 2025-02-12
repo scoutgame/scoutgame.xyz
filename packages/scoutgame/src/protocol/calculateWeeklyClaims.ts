@@ -191,6 +191,9 @@ export async function calculateWeeklyClaims({
           (scoutClaim) =>
             ({
               eventId: builderEventId,
+              // TODO: Multiple by 18 decimals when we move to $SCOUT
+              // Edge case. Decimal tokens value should be converted to int before adding decimals
+              // Example. 7.91 => 791 => Add 16 decimals since we already shifted by 2 decimal places
               value: scoutClaim.erc20Tokens,
               recipientWalletAddress: scoutClaim.wallet
             }) as Prisma.TokensReceiptCreateManyInput

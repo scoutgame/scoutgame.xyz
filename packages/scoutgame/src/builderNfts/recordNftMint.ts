@@ -279,6 +279,7 @@ export async function recordNftMint(
         builder_card_image: builderNft.imageUrl,
         scout_name: scout.displayName,
         scout_profile_link: `${baseUrl}/u/${scout.path}`,
+        // TODO: use currentPriceInScoutToken when we move to $SCOUT
         current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
       }
     });
