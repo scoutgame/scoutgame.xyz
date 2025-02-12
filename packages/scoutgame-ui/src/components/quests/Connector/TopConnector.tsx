@@ -12,14 +12,11 @@ export function Connector({ topConnectors }: { topConnectors: TopConnector[] }) 
         Today's Referral Champion
       </Typography>
       <Info />
-      {topConnectors.length > 0 ? (
-        <>
-          <Typography variant='subtitle1' fontWeight={600} zIndex={1}>
-            Today's Top 5
-          </Typography>
-          <ConnectorTable topConnectors={topConnectors} />
-        </>
-      ) : (
+      <Typography variant='subtitle1' fontWeight={600} zIndex={1}>
+        Today's Top 5
+      </Typography>
+      <ConnectorTable topConnectors={topConnectors} />
+      {topConnectors.length === 0 && (
         <>
           <Typography variant='body2'>
             Easy 25 OP up for grabs! All you have to do is invite a friend... and nag them until they actually sign up
