@@ -75,7 +75,7 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
       >
         {canClaimToday ? null : <NextClaimCountdown />}
       </Stack>
-      <Grid container spacing={1} width='350px'>
+      <Grid container spacing={1} width={300}>
         {dailyClaims.map((dailyClaim) => (
           <Grid size={3} key={`${dailyClaim.day}-${dailyClaim.isBonus}`}>
             <DailyClaimCard

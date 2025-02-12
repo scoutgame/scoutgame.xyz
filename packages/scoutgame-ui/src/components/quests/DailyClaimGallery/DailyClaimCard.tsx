@@ -148,11 +148,10 @@ export function DailyClaimCard({
     <Stack
       component={motion.div}
       whileTap={{ scale: canClaim ? 0.9 : 1 }}
-      p={0.5}
       sx={{
         ...claimedBorder,
         backgroundColor: canClaim ? 'primary.main' : 'background.dark',
-        height: 80,
+        height: 60,
         paddingBottom: 0.25,
         borderRadius: 1,
         alignItems: 'center',
