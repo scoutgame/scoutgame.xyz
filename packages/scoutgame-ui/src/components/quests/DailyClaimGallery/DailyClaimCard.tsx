@@ -35,7 +35,7 @@ function AnimatedContent({
         <Stack
           key='claimed'
           direction='column'
-          gap={1}
+          gap={0.5}
           alignItems='center'
           component={motion.div}
           initial={{ opacity: 0, scale: 0 }}
@@ -75,7 +75,7 @@ function AnimatedContent({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
           alignItems='center'
-          gap={1}
+          gap={0.5}
         >
           <Image src='/images/quests/question-icon.svg' alt='Daily quest unclaimedicon' width={24} height={24} />
           <Typography variant='body2'>{weekDay}</Typography>
@@ -89,7 +89,7 @@ function AnimatedContent({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
           alignItems='center'
-          gap={1}
+          gap={0.5}
         >
           <Image src='/images/quests/question-icon-dark.svg' alt='Daily quest lost icon' width={24} height={24} />
           <Typography variant='body2' color='text.disabled'>
