@@ -153,7 +153,7 @@ function Document() {
         ))}
       </List>
       <Typography variant='h6' color='secondary' mt={2}>
-        No new bounties (for now) :
+        No new bounties (for now):
       </Typography>
       <List>
         {previousProjects.map((project) => (
