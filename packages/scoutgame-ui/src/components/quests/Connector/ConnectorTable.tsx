@@ -6,6 +6,8 @@ import { StyledTableBody, StyledTableHead } from '../../claim/components/common/
 import { Avatar } from '../../common/Avatar';
 
 export function ConnectorTable({ topConnectors = [] }: { topConnectors: TopConnector[] }) {
+  const isEmpty = topConnectors.length === 0;
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -31,6 +33,17 @@ export function ConnectorTable({ topConnectors = [] }: { topConnectors: TopConne
               <TableCell align='center'>{user.referralPoints}</TableCell>
             </TableRow>
           ))}
+          {isEmpty && (
+            <TableRow>
+              <TableCell align='left'>
+                <Typography noWrap variant='caption'>
+                  ???
+                </Typography>
+              </TableCell>
+              <TableCell align='center'>1</TableCell>
+              <TableCell align='center'>???</TableCell>
+            </TableRow>
+          )}
         </StyledTableBody>
       </Table>
     </TableContainer>
