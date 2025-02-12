@@ -19,7 +19,9 @@ jest.unstable_mockModule('@packages/scoutgame/builders/getBuildersLeaderboardFro
 describe('refreshEstimatedPayouts', () => {
   it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {
     const { refreshEstimatedPayouts } = await import('../refreshEstimatedPayouts');
-    const { getWeeklyPointsPoolAndBuilders } = await import('../../points/getWeeklyPointsPoolAndBuilders');
+    const { getPointsCountForWeekWithNormalisation } = await import(
+      '../../points/getPointsCountForWeekWithNormalisation'
+    );
 
     const season = '2024-TEST78';
 
@@ -172,7 +174,7 @@ describe('refreshEstimatedPayouts', () => {
     const nftPayouts = await getAllSeasonNftsWithOwners({ season });
 
     const { topWeeklyBuilders, weeklyAllocatedPoints, totalPoints, normalisationFactor, normalisedBuilders } =
-      await getWeeklyPointsPoolAndBuilders({
+      await getPointsCountForWeekWithNormalisation({
         week: season
       });
 

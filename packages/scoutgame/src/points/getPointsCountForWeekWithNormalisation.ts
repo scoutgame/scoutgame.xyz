@@ -1,4 +1,4 @@
-import { prettyPrint } from '@packages/utils/strings';
+import type { BuilderNftType, ScoutWallet } from '@charmverse/core/prisma-client';
 
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
@@ -7,6 +7,15 @@ import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
 import { getBuildersLeaderboardFromEAS } from '../builders/getBuildersLeaderboardFromEAS';
 
 import { calculateEarnableScoutPointsForRank } from './calculatePoints';
+
+export type PartialNftPurchaseEvent = {
+  tokensPurchased: number;
+  tokenId: number;
+  nftType: BuilderNftType;
+  from: null | Pick<ScoutWallet, 'address' | 'scoutId'>;
+  to: null | Pick<ScoutWallet, 'address' | 'scoutId'>;
+  builderNft: { nftType: BuilderNftType; builderId: string };
+};
 
 export async function getPointsCountForWeekWithNormalisation({
   week,
@@ -19,6 +28,7 @@ export async function getPointsCountForWeekWithNormalisation({
   normalisationFactor: number;
   normalisedBuilders: { builder: LeaderboardBuilder; normalisedPoints: number }[];
   weeklyAllocatedPoints: number;
+  topWeeklyBuilders: LeaderboardBuilder[];
 }> {
   const leaderboard = useOnchainLeaderboard
     ? await getBuildersLeaderboardFromEAS({ week, quantity: weeklyRewardableBuilders })
@@ -46,6 +56,7 @@ export async function getPointsCountForWeekWithNormalisation({
       builder,
       normalisedPoints: earnablePoints * normalisationFactor
     })),
-    weeklyAllocatedPoints
+    weeklyAllocatedPoints,
+    topWeeklyBuilders: leaderboard
   };
 }
