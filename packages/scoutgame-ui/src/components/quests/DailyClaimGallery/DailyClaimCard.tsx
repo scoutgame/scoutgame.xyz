@@ -162,29 +162,7 @@ export function DailyClaimCard({
       data-test={`daily-claim-${canClaim ? 'enabled' : 'disabled'}`}
       onClick={handleClaim}
     >
-      <Stack
-        component={motion.div}
-        whileHover={{ scale: 1, rotate: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
-        variants={{
-          claim: {
-            scale: [1, 1.1, 1, 1.1, 1],
-            rotate: [0, -15, 0, 15, 0],
-            transition: {
-              duration: 2,
-              ease: 'easeInOut',
-              times: [0, 0.2, 0.4, 0.6, 0.8, 1],
-              repeat: Infinity
-            }
-          },
-          default: { scale: 1, rotate: 0 }
-        }}
-        animate={canClaim ? 'claim' : 'default'}
-        flex={1}
-        position='relative'
-        alignItems='center'
-        justifyContent='center'
-        width='100%'
-      >
+      <Stack flex={1} position='relative' alignItems='center' justifyContent='center' width='100%'>
         <AnimatedContent
           isClaimed={isClaimed}
           points={dailyClaim.points}

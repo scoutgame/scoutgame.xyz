@@ -1,7 +1,10 @@
+'use client';
+
 import { Grid2 as Grid, Skeleton, Stack, Typography } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
 import { DailyClaimCard } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimCard';
+import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 // A time based component needs to be rendered only on the client since the server and client will not match
@@ -27,8 +30,24 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
         Daily Claim
       </Typography>
       <Stack
-        width={220}
-        height={220}
+        component={motion.div}
+        whileHover={{ scale: 1, rotate: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
+        variants={{
+          claim: {
+            scale: [1, 1.1, 1, 1.1, 1],
+            rotate: [0, -15, 0, 15, 0],
+            transition: {
+              duration: 2,
+              ease: 'easeInOut',
+              times: [0, 0.2, 0.4, 0.6, 0.8, 1],
+              repeat: Infinity
+            }
+          },
+          default: { scale: 1, rotate: 0 }
+        }}
+        animate={canClaimToday ? 'claim' : 'default'}
+        width={200}
+        height={200}
         alignItems='center'
         justifyContent='center'
         m='auto'
@@ -44,7 +63,7 @@ export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }
             width: '100%',
             height: '100%',
             opacity: canClaimToday ? 1 : 0.2,
-            backgroundImage: 'url(/images/quests/mystery-box.png)',
+            backgroundImage: 'url(/images/quests/mystery-box.svg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat'
