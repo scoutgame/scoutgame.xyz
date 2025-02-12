@@ -138,6 +138,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
       select: {
         id: true,
         path: true,
+        name: true,
         scoutProjectDeployers: true
       }
     });
@@ -175,6 +176,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
 
   return {
     id: project.id,
-    path: project.path
+    path: project.path,
+    name: project.name
   };
 }

@@ -1,5 +1,6 @@
 'use server';
 
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 
@@ -15,6 +16,11 @@ export const createScoutProjectAction = authActionClient
     const userId = ctx.session.scoutId;
 
     const createdScoutProject = await createScoutProject(parsedInput, userId);
+    trackUserAction('create_project', {
+      name: createdScoutProject.name,
+      path: createdScoutProject.path,
+      userId
+    });
     revalidatePath('/projects');
 
     return createdScoutProject;

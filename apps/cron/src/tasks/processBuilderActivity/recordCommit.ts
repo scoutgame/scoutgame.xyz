@@ -2,12 +2,11 @@ import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GemsReceiptType, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getWeekFromDate, getStartOfWeek, getStartOfDay } from '@packages/dates/utils';
+import { getStartOfDay, getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { Commit } from '@packages/github/getCommitsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { isTruthy } from '@packages/utils/types';
-import { DateTime } from 'luxon';
 
 import { gemsValues } from './config';
 

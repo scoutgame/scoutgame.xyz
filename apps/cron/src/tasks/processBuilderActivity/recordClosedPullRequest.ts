@@ -1,8 +1,10 @@
 import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
+import { attestBuilderStatusEvent } from '@packages/scoutgameattestations/attestBuilderStatusEvent';
 import { isTruthy } from '@packages/utils/types';
 import { v4 as uuid } from 'uuid';
 
@@ -173,6 +175,15 @@ export async function recordClosedPullRequest({
         },
         data: {
           builderStatus: 'banned'
+        }
+      });
+
+      await attestBuilderStatusEvent({
+        builderId: builder.id,
+        event: {
+          type: 'banned',
+          description: `${builder.displayName} banned for season ${getCurrentSeasonStart()}`,
+          season: getCurrentSeasonStart()
         }
       });
 

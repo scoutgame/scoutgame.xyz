@@ -2,13 +2,14 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getLastWeek } from '@packages/dates/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { getWeeklyPointsPoolAndBuilders } from '@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders';
+import { getPointsCountForWeekWithNormalisation } from '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
 import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
 
 import { deployNewScoutRewardsContract } from './deployNewScoutRewardsContract';
+import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards';
 import { deployReferralChampionRewardsContract } from './deployReferralChampionRewardsContract';
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
@@ -35,7 +36,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
   }
 
   const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints } =
-    await getWeeklyPointsPoolAndBuilders({ week });
+    await getPointsCountForWeekWithNormalisation({ week });
 
   scoutgameMintsLogger.debug(`Allocation: ${weeklyAllocatedPoints} -- Total points for week ${week}: ${totalPoints}`, {
     topWeeklyBuilders: topWeeklyBuilders.length,
@@ -64,11 +65,14 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
   }
 
   await Promise.all([
-    deployNewScoutRewardsContract({ week, season }).catch((error) => {
+    deployNewScoutRewardsContract({ week }).catch((error) => {
       log.error('Error deploying new scout rewards contract', { error, week, season });
     }),
     deployReferralChampionRewardsContract({ week }).catch((error) => {
       log.error('Error deploying referral champion rewards contract', { error, week, season });
+    }),
+    deployOctantBasePartnerRewards({ week }).catch((error) => {
+      log.error('Error deploying octant & base partner rewards contract', { error, week, season });
     })
   ]);
 

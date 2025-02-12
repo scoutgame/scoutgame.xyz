@@ -42,19 +42,9 @@ export const easConfig = {
     chain: baseSepolia,
     easContractAddress: '0x4200000000000000000000000000000000000021',
     easSchemaRegistryAddress: '0x4200000000000000000000000000000000000020'
-  },
-  [optimism.id]: {
-    // Optimism Mainnet
-    chain: optimism,
-    easContractAddress: '0x4200000000000000000000000000000000000021',
-    easSchemaRegistryAddress: '0x4200000000000000000000000000000000000020'
-  },
-  [optimismSepolia.id]: {
-    // Optimism Sepolia Testnet
-    chain: optimismSepolia,
-    easContractAddress: '0x4200000000000000000000000000000000000021',
-    easSchemaRegistryAddress: '0x4200000000000000000000000000000000000020'
   }
 } satisfies Record<number, { chain: Chain; easContractAddress: Address; easSchemaRegistryAddress: Address }>;
 
-export type SupportedEASChain = keyof typeof easConfig;
+export type EASSchemaChain = keyof typeof easConfig;
+
+export const supportedEasChains = [baseSepolia.id, base.id];
