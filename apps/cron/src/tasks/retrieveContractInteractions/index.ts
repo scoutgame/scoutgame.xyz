@@ -123,7 +123,6 @@ async function retrieveContractLogs({
         return { block, receipt };
       })
     );
-
     if (logs.length > 0) {
       await Promise.all([
         prisma.scoutProjectContractTransaction.createMany({

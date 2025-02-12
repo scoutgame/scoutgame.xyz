@@ -4,26 +4,25 @@ import type { GetLogsResult, GetTransactionReceiptResult } from '@packages/block
 import { mockScoutProject } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 import { createContext } from '@packages/testing/koa/context';
+import type { Block } from 'viem';
 
 const mockGetLogs = jest.fn<() => Promise<GetLogsResult>>();
 const mockGetTransactionReceipt = jest.fn<() => Promise<GetTransactionReceiptResult>>();
-
+const mockGetBlock = jest.fn<() => Promise<Block>>();
 jest.unstable_mockModule('@packages/blockchain/getBlockByDate', () => ({
   getBlockByDate: () => Promise.resolve({ number: 100n })
 }));
 
-jest.unstable_mockModule('@packages/blockchain/getWalletClient', () => ({
-  getWalletClient: () => ({
+jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
+  getPublicClient: () => ({
     getBlockNumber: () => Promise.resolve(101n)
   })
 }));
 
-jest.unstable_mockModule('@packages/blockchain/provider/ankr/getLogs', () => ({
-  getLogs: mockGetLogs
-}));
-
-jest.unstable_mockModule('@packages/blockchain/provider/ankr/getTransactionReceipt', () => ({
-  getTransactionReceipt: mockGetTransactionReceipt
+jest.unstable_mockModule('@packages/blockchain/provider/ankr/client', () => ({
+  getLogs: mockGetLogs,
+  getTransactionReceipt: mockGetTransactionReceipt,
+  getBlock: mockGetBlock
 }));
 
 // Import after mocks
@@ -76,6 +75,9 @@ describe('retrieveContractInteractions', () => {
 
     mockGetLogs.mockResolvedValue(mockLogs);
     mockGetTransactionReceipt.mockResolvedValue(mockReceipt);
+    mockGetBlock.mockResolvedValue({
+      timestamp: 1718275200n
+    } as Block);
 
     // Execute contract interaction retrieval
     await retrieveContractInteractions(createContext(), { contractIds: [contractId] });
