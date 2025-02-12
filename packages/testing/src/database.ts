@@ -36,7 +36,9 @@ export async function mockBuilder({
   farcasterId,
   farcasterName,
   wallets = [{ address: randomWalletAddress() }],
-  weeklyStats = []
+  weeklyStats = [],
+  onchainProfileAttestationChainId,
+  onchainProfileAttestationUid
 }: Partial<
   Scout & {
     githubUserId?: number;
@@ -66,6 +68,8 @@ export async function mockBuilder({
       farcasterId,
       referralCode,
       farcasterName,
+      onchainProfileAttestationUid,
+      onchainProfileAttestationChainId,
       wallets: wallets.length
         ? {
             createMany: {

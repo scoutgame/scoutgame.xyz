@@ -119,7 +119,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['npm', 'run', 'onchain-cron:prod']
+    command: ['npm', 'run', 'cron:prod']
     profiles:
       - prd-onchain-scoutgamecron
 
@@ -128,7 +128,7 @@ services:
       service: defaults
     ports:
       - '80:3000'
-    command: ['npm', 'run', 'onchain-cron:staging']
+    command: ['npm', 'run', 'cron:staging']
     environment:
       - REACT_APP_APP_ENV=staging
     profiles:

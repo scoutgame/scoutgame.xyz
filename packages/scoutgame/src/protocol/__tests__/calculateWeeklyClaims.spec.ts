@@ -8,12 +8,14 @@ import type { WeeklyClaimsCalculated } from '../calculateWeeklyClaims';
 import { getScoutProtocolAddress, scoutProtocolChainId } from '../constants';
 import { generateWeeklyClaims } from '../generateWeeklyClaims';
 
-jest.unstable_mockModule('@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders', () => ({
-  getWeeklyPointsPoolAndBuilders: jest.fn()
+jest.unstable_mockModule('@packages/scoutgame/points/getPointsCountForWeekWithNormalisation', () => ({
+  getPointsCountForWeekWithNormalisation: jest.fn()
 }));
 
 const { calculateWeeklyClaims } = await import('../calculateWeeklyClaims');
-const { getWeeklyPointsPoolAndBuilders } = await import('@packages/scoutgame/points/getWeeklyPointsPoolAndBuilders');
+const { getPointsCountForWeekWithNormalisation } = await import(
+  '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation'
+);
 
 describe('calculateWeeklyClaims', () => {
   it('should generate the correct claims', async () => {
@@ -81,7 +83,9 @@ describe('calculateWeeklyClaims', () => {
       wallets: [scout5Wallet]
     });
 
-    (getWeeklyPointsPoolAndBuilders as jest.Mock<typeof getWeeklyPointsPoolAndBuilders>).mockResolvedValueOnce({
+    (
+      getPointsCountForWeekWithNormalisation as jest.Mock<typeof getPointsCountForWeekWithNormalisation>
+    ).mockResolvedValueOnce({
       normalisationFactor: 1,
       weeklyAllocatedPoints: 1000,
       nftPurchaseEvents: [],

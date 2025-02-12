@@ -17,12 +17,20 @@ export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
   position: number;
 };
 
-export type OptimismReferralChampionReward = PartnerRewardBase & {
+export type OptimismReferralChampionPartnerReward = PartnerRewardBase & {
   type: 'optimism_referral_champion';
   date: Date;
 };
 
-export type PartnerReward = OptimismNewScoutPartnerReward | OptimismReferralChampionReward;
+export type OctantBaseContributionPartnerReward = PartnerRewardBase & {
+  type: 'octant_base_contribution';
+  prLink: string;
+};
+
+export type PartnerReward =
+  | OptimismNewScoutPartnerReward
+  | OptimismReferralChampionPartnerReward
+  | OctantBaseContributionPartnerReward;
 
 export type UnclaimedPartnerReward = {
   id: string;
@@ -82,17 +90,17 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     payoutContractId: payoutContract.id
   }));
 
-  const unclaimedPartnerRewardsByCid: Record<string, UnclaimedPartnerReward> = {};
+  const unclaimedPartnerRewardsByContractAddress: Record<string, UnclaimedPartnerReward> = {};
 
   // Combine rewards with the same cid since they are for the same week, just the amount is different
   unclaimedPartnerRewards.forEach((reward) => {
-    unclaimedPartnerRewardsByCid[reward.contractAddress] = {
+    unclaimedPartnerRewardsByContractAddress[reward.contractAddress] = {
       ...reward,
-      amount: reward.amount + (unclaimedPartnerRewardsByCid[reward.contractAddress]?.amount ?? 0)
+      amount: reward.amount + (unclaimedPartnerRewardsByContractAddress[reward.contractAddress]?.amount ?? 0)
     };
   });
 
-  return Object.values(unclaimedPartnerRewardsByCid);
+  return Object.values(unclaimedPartnerRewardsByContractAddress);
 }
 
 export async function getPartnerRewards({
@@ -157,6 +165,12 @@ export async function getPartnerRewards({
         ...partnerReward,
         type: 'optimism_referral_champion' as const,
         date: (payout.meta as unknown as { date: Date }).date
+      });
+    } else if (payout.payoutContract.partner === 'octant_base_contribution') {
+      partnerRewards.push({
+        ...partnerReward,
+        type: 'octant_base_contribution' as const,
+        prLink: (payout.meta as unknown as { prLink: string }).prLink
       });
     }
   });

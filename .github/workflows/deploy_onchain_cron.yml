@@ -10,7 +10,9 @@ on:
       - '.github/workflows/deploy_onchain_cron.yml'
       - 'package.json'
       - 'package-lock.json'
+      # If something happens in cron, we should also redeploy onchain-cron
       - 'apps/onchain-cron/**'
+      - 'apps/cron/**'
       - 'packages/**'
   pull_request:
     types: [labeled, opened, synchronize]
@@ -22,7 +24,9 @@ on:
       - '.github/workflows/deploy_onchain_cron.yml'
       - 'package.json'
       - 'package-lock.json'
+      # If something happens in cron, we should also redeploy onchain-cron
       - 'apps/onchain-cron/**'
+      - 'apps/cron/**'
       - 'packages/**'
 
 concurrency:
@@ -59,13 +63,13 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Build app
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
-
+          # Build cron app since that's what we use
+          app_name: cron
   test:
     name: Test apps
     runs-on: ubuntu-latest
@@ -96,7 +100,7 @@ jobs:
       - name: Restore dependencies from cache
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Setup test database
         run: npx dotenv -e .env.test.local -- npm run prisma:reset
@@ -104,10 +108,10 @@ jobs:
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
+          app_name: cron
 
-      - name: Typecheck onchain-cron app
-        run: npm run typecheck -w apps/onchain-cron
+      - name: Typecheck cron app
+        run: npm run typecheck -w apps/cron
 
       - name: Run eslint on changed files
         uses: tj-actions/eslint-changed-files@v25
@@ -119,7 +123,7 @@ jobs:
 
       - name: Run tests
         # jest only works once the cache has been created for some reason
-        run: npm run onchain-cron:test
+        run: npm run cron:test
 
   upload-docker:
     name: Upload Docker image
@@ -136,16 +140,16 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Update Dockerfile
         run: |
-          rm Dockerfile && mv apps/onchain-cron/Dockerfile Dockerfile
+          rm Dockerfile && mv apps/cron/Dockerfile Dockerfile
 
       - name: Build and Push Docker image
         id: docker_build_push
@@ -171,25 +175,25 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Calculate Build ID
         id: get_build_id
         run: |
-          build_id=${{ hashFiles('package-lock.json', 'apps/onchain-cron/*.[jt]s') }}
+          build_id=${{ hashFiles('package-lock.json', 'apps/cron/*.[jt]s') }}
           echo "build_id=$build_id" >> $GITHUB_OUTPUT
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: onchain-cron
+          app_name: cron
 
       - name: Upload JS source maps to Datadog
         env:
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         run: |
           npm install -g @datadog/datadog-ci
-          datadog-ci sourcemaps upload apps/onchain-cron/dist       \
+          datadog-ci sourcemaps upload apps/cron/dist       \
             --service=onchain-cron                              \
             --release-version=${{ steps.get_build_id.outputs.build_id }}  \
             --minified-path-prefix=https://cdn.charmverse.io/_next/static
