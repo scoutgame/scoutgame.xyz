@@ -38,9 +38,9 @@ const tiers = [
 const qualifiedProjects = [
   'https://github.com/celo-org/faucet',
   'https://github.com/celo-org/celo-composer',
-  'https://github.com/celo-org/composer-kit/issues',
-  // 'https://github.com/mento-protocol/reserve-site',
-  // 'https://github.com/mento-protocol/mento-sdk',
+  'https://github.com/celo-org/composer-kit/issues'
+];
+const previousProjects = [
   'https://github.com/valora-inc/hooks',
   'https://github.com/GoodDollar/GoodWeb3-Mono',
   'https://github.com/GoodDollar/GoodCollective',
@@ -145,6 +145,18 @@ function Document() {
       </Typography>
       <List>
         {qualifiedProjects.map((project) => (
+          <ListItem key={project}>
+            <Link href={project} target='_blank' rel='noreferrer'>
+              {project}
+            </Link>
+          </ListItem>
+        ))}
+      </List>
+      <Typography variant='h6' color='secondary' mt={2}>
+        No new bounties (for now):
+      </Typography>
+      <List>
+        {previousProjects.map((project) => (
           <ListItem key={project}>
             <Link href={project} target='_blank' rel='noreferrer'>
               {project}
