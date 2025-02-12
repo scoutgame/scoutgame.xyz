@@ -117,10 +117,16 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
     sortedUsers
       // only include new scouts
       .filter((user) => newScouts.find((s) => s.id === user[0]))
-      .map((user) => ({
-        ...newScouts.find((u) => u.id === user[0]),
-        pointsEarned: pointsEarnedByUserId[user[0]]
-      }))
+      .map((user) => {
+        const scout = newScouts.find((s) => s.id === user[0]);
+        const address = scout?.wallets.find((w) => w.primary)?.address;
+        return {
+          ...scout,
+          address,
+          pointsEarned: pointsEarnedByUserId[user[0]]
+        };
+      })
+      .filter((scout) => scout.address)
   );
 }
 
@@ -168,7 +174,8 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
       avatar: true,
       wallets: {
         select: {
-          address: true
+          address: true,
+          primary: true
         }
       }
     }

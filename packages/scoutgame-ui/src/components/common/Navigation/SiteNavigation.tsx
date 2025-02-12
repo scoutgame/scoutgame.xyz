@@ -51,7 +51,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const { user } = useUser();
   const isAuthenticated = Boolean(user);
   const value = getActiveButton(pathname);
-  const { data: claimablePoints = { points: 0 } } = useGetClaimablePoints();
+  const { data: claimablePoints = { points: 0, processingPayouts: false } } = useGetClaimablePoints();
   const { data: dailyClaims = [] } = useGetQuests();
   const todaysClaim = dailyClaims?.find((claim) => {
     const currentWeekDay = DateTime.fromJSDate(new Date()).weekday;
@@ -82,8 +82,8 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         />
         <BottomNavigationAction
           label='Developers'
-          href='/builders'
-          value='builders'
+          href='/developers'
+          value='developers'
           icon={<BuilderIcon />}
           LinkComponent={Link}
         />
@@ -92,7 +92,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           label='Claim'
           href={isAuthenticated ? '/claim' : '#'}
           value='claim'
-          icon={<ClaimIcon animate={claimablePoints.points > 0} />}
+          icon={<ClaimIcon animate={claimablePoints.points > 0 && !claimablePoints.processingPayouts} />}
           onClick={(e) => {
             if (!isAuthenticated) {
               setAuthPopup({ open: true, path: 'claim' });
@@ -133,8 +133,8 @@ function getActiveButton(pathname: string) {
     return 'scout';
   } else if (pathname.startsWith('/claim')) {
     return 'claim';
-  } else if (pathname.startsWith('/builders')) {
-    return 'builders';
+  } else if (pathname.startsWith('/developers')) {
+    return 'developers';
   } else if (pathname.startsWith('/quests')) {
     return 'quests';
   }

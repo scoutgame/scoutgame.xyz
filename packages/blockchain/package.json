@@ -4,12 +4,13 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": ""
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest"
   },
   "exports": {
     "./*": "./src/*.ts"
   },
   "dependencies": {
+    "@openzeppelin/merkle-tree": "^1.0.7",
     "@packages/utils": "^1.0.0"
   }
 }

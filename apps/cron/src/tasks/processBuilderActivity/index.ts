@@ -91,9 +91,13 @@ export async function processAllBuilderActivity(
     }
   }
 
-  await updateBuildersRank({ week: getCurrentWeek() });
+  const week = getCurrentWeek();
+
+  await updateBuildersRank({ week });
 
   await refreshBuilderLevels({ season: getCurrentSeasonStart() });
 
-  await refreshEstimatedPayouts({ week: getCurrentWeek() });
+  await refreshEstimatedPayouts({ week }).catch((error) => {
+    log.error('Error refreshing estimated payouts', { error, week });
+  });
 }

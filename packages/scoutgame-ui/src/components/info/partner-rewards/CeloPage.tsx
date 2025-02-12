@@ -1,15 +1,4 @@
-import {
-  Alert,
-  Link,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography
-} from '@mui/material';
+import { Alert, Link, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 
 import { InfoCard } from '../../common/DocumentPageContainer/components/InfoCard';
 import { List, ListItem } from '../../common/List';
@@ -50,7 +39,6 @@ const qualifiedProjects = [
   'https://github.com/celo-org/faucet',
   'https://github.com/celo-org/celo-composer',
   'https://github.com/celo-org/composer-kit/issues',
-  'https://github.com/mento-protocol/mento-web',
   // 'https://github.com/mento-protocol/reserve-site',
   // 'https://github.com/mento-protocol/mento-sdk',
   'https://github.com/valora-inc/hooks',
@@ -58,10 +46,9 @@ const qualifiedProjects = [
   'https://github.com/GoodDollar/GoodCollective',
   'https://github.com/Glo-Foundation/glo-wallet',
   'https://github.com/Ubeswap/ubeswap-interface-v3',
-  'https://github.com/gitcoinco/grants-stack',
-  'https://github.com/capsule-org/awesome-capsule/issues',
   'https://github.com/capsule-org/examples-hub/issues',
-  'https://github.com/distroinfinity/superflow'
+  'https://github.com/distroinfinity/superflow',
+  'https://github.com/getpara/awesome-para'
 ];
 
 function Document() {
@@ -69,7 +56,7 @@ function Document() {
     <InfoCard>
       <Typography>
         Celo is partnering with Scout Game to support developer who contribute to the ecosystem. Celo has a prize pool
-        of 5000 cUSD to distribute to talented Developer!
+        of 5000 cUSD to distribute to talented Developers!
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         How it works

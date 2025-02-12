@@ -1,23 +1,56 @@
 'use client';
 
 import { Paper, Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
+import { getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import type { PartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
 import type { PointsReceiptReward } from '@packages/scoutgame/points/getPointsReceiptsRewards';
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 
 import { StyledTableBody, StyledTableHead } from '../common/StyledTable';
 
 import { PointsReceiptRewardRow } from './PointsReceiptRewardRow';
 
+const rewardTypes = ['leaderboard_rank', 'sold_nfts', 'builder', 'optimism_new_scout', 'optimism_referral_champion'];
+
 export function PointsTable({
   pointsReceiptRewards,
+  partnerRewards,
   title,
-  emptyMessage
+  emptyMessage,
+  processingPayouts
 }: {
   pointsReceiptRewards: PointsReceiptReward[];
   title: ReactNode | string;
+  partnerRewards: PartnerReward[];
   emptyMessage: string;
+  processingPayouts: boolean;
 }) {
-  if (pointsReceiptRewards.length === 0) {
+  const processedRewards = useMemo(() => {
+    const rewards = [...pointsReceiptRewards, ...partnerRewards];
+
+    return (
+      processingPayouts
+        ? rewards.filter((r) => (r.type !== 'season' ? r.week !== getCurrentSeasonWeekNumber() - 1 : true))
+        : rewards
+    ).sort((a, b) => {
+      if (a.type === 'season' || b.type === 'season') {
+        return b.points - a.points;
+      }
+
+      if (a.week === b.week) {
+        const typeOrderA = rewardTypes.indexOf(a.type);
+        const typeOrderB = rewardTypes.indexOf(b.type);
+        if (typeOrderA !== typeOrderB) {
+          return typeOrderA - typeOrderB;
+        }
+        return b.points - a.points;
+      }
+
+      return b.week - a.week;
+    });
+  }, [pointsReceiptRewards, partnerRewards, processingPayouts]);
+
+  if (processedRewards.length === 0) {
     return (
       <Stack gap={0.5} alignItems='center'>
         <Typography variant='h6' color='secondary'>
@@ -65,7 +98,7 @@ export function PointsTable({
             }
           }}
         >
-          {pointsReceiptRewards.map((pointsReceiptReward) => (
+          {processedRewards.map((pointsReceiptReward) => (
             <PointsReceiptRewardRow
               key={`${pointsReceiptReward.type === 'season' ? pointsReceiptReward.season : pointsReceiptReward.week}-${pointsReceiptReward.type}`}
               pointsReceiptReward={pointsReceiptReward}

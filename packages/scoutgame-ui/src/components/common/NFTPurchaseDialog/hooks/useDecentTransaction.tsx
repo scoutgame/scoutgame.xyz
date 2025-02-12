@@ -5,7 +5,6 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
   builderNftChain,
   getBuilderNftContractAddress,
-  getBuilderNftStarterPackContractAddress,
   getDecentApiKey,
   isPreseason01Contract,
   isStarterPackContract,

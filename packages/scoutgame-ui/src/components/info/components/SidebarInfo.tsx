@@ -12,11 +12,13 @@ const links = [
   { href: '/info', text: 'All about Scout Game' },
   { href: '/info/about-scoutgame', text: 'What is Scout Game?' },
   { href: '/info/scouts', text: 'How it works for Scouts' },
-  { href: '/info/builders', text: 'How it works for Developers' },
+  { href: '/info/developers', text: 'How it works for Developers' },
   { href: '/info/points', text: 'Scout Points' },
   { href: '/info/weekly-rewards', text: 'Weekly Developer Ranking & Rewards' },
-  { href: '/info/builder-nfts', text: 'Developer NFTs' },
+  { href: '/info/developer-nfts', text: 'Developer NFTs' },
   { href: '/info/contribution-guide', text: 'Contribution Guide' },
+  { href: '/info/core-maintainer-guide', text: 'Core Maintainer Guide' },
+  { href: '/info/repositories', text: 'Repositories' },
   { href: '/info/spam-policy', text: 'Spam Policy' }
 ];
 
@@ -25,7 +27,6 @@ const partners = [
   { href: '/info/partner-rewards/game7', text: 'Game7' },
   { href: '/info/partner-rewards/moxie', text: 'Moxie' },
   { href: '/info/partner-rewards/bountycaster', text: 'BountyCaster' },
-  { href: '/info/partner-rewards/lit', text: 'Lit Protocol' },
   { href: '/info/partner-rewards/optimism', text: 'Optimism' },
   { href: '/info/partner-rewards/octant', text: 'Octant' }
 ];

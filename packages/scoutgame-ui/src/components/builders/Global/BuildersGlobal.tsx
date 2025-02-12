@@ -16,11 +16,11 @@ export function BuildersGlobal() {
 
   useEffect(() => {
     if (!isBuilder && builderModal === 'newBuilder') {
-      router.replace('/builders');
+      router.replace('/developers');
       openModal('newBuilder');
     }
     if (builderModal) {
-      router.replace('/builders');
+      router.replace('/developers');
     }
   }, [isBuilder, builderModal]);
 

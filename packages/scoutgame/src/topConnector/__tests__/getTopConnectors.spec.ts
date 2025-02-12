@@ -1,4 +1,3 @@
-import { prisma } from '@charmverse/core/prisma-client';
 import { mockBuilder, mockScout } from '@packages/testing/database';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';

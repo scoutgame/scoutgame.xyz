@@ -1,15 +1,17 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { Link, Paper, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { setupBuilderProfileAction } from '@packages/scoutgame/builders/setupBuilderProfileAction';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useRef, useState } from 'react';
 
 import { useOnboardingRoutes } from '../../providers/OnboardingRoutes';
 import { useUser } from '../../providers/UserProvider';
-import { LoadingComponent } from '../common/Loading/LoadingComponent';
+import { SinglePageLayout } from '../common/Layout';
+import { SinglePageWrapper } from '../common/SinglePageWrapper';
 
 export function BuilderSetupPage({
   state,
@@ -51,23 +53,34 @@ export function BuilderSetupPage({
   const error = githubConnectError || githubRedirectError;
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
-        Setting up your developer profile...
-      </Typography>
-      <Typography mb={2}>
-        We are setting up your developer profile. This process usually takes a few seconds.
-      </Typography>
-      {!error && <LoadingComponent isLoading={status === 'executing'} />}
-      {error && (
-        <Typography variant='body2' component='em' sx={{ mt: 2 }}>
-          Something went wrong. Please try again or talk to{' '}
-          <Link href='https://warpcast.com/ccarella' target='_blank'>
-            @ccarella
-          </Link>
-          .
+    <SinglePageLayout data-test='registration-callback-page'>
+      <SinglePageWrapper bgcolor='background.default' height='auto' hasBorder maxWidth='400px'>
+        <Typography variant='h5' color='secondary' mb={2} textAlign='center'>
+          Setting up your developer profile...
         </Typography>
-      )}
-    </Paper>
+        <Typography mb={2}>This process usually takes a few seconds. In the meantime, here is a rainbow.</Typography>
+        {!error && (
+          <Box width='100%' display='flex' alignItems='center' justifyContent='center'>
+            <Image
+              src='/images/welcome/cloud-rainbow.png'
+              alt='Rainbow'
+              width={200}
+              height={200}
+              sizes='100vw'
+              style={{ margin: '0 auto', height: 200, width: 'auto' }}
+            />
+          </Box>
+        )}
+        {error && (
+          <Typography variant='body2' component='em' sx={{ mt: 2 }} color='error'>
+            Something went wrong. Please try again or talk to{' '}
+            <Link href='https://warpcast.com/ccarella' target='_blank'>
+              @ccarella
+            </Link>
+            .
+          </Typography>
+        )}
+      </SinglePageWrapper>
+    </SinglePageLayout>
   );
 }

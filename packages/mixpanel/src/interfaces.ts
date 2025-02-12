@@ -33,6 +33,12 @@ export type ClickScoutButton = FrontendEvent & {
   builderPath: string;
 };
 
+export type ClaimPartnerRewardEvent = BaseEvent & {
+  partner: string;
+  week: string;
+  season: string;
+};
+
 export type EventType =
   | 'page_view'
   | 'create_project'
@@ -73,6 +79,7 @@ export type MixpanelEventMap = {
     mergedIdentity: 'telegram' | 'farcaster' | 'wallet';
   };
   verify_email: BaseEvent;
+  claim_partner_reward: ClaimPartnerRewardEvent;
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

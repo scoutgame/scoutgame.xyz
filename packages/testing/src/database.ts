@@ -70,8 +70,9 @@ export async function mockBuilder({
       wallets: wallets.length
         ? {
             createMany: {
-              data: wallets.map((wallet) => ({
-                address: wallet.address
+              data: wallets.map((wallet, index) => ({
+                address: wallet.address,
+                primary: index === 0
               }))
             }
           }
@@ -898,4 +899,54 @@ export async function mockScoutProject({
     ...scoutProject,
     contracts
   };
+}
+
+export async function mockWeeklyClaims({ week, season }: { week: string; season: string }) {
+  return prisma.weeklyClaims.create({
+    data: {
+      week,
+      season,
+      claims: [],
+      proofsMap: {},
+      totalClaimable: 0,
+      merkleTreeRoot: ''
+    }
+  });
+}
+
+export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: string }) {
+  const scoutWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { scoutId } });
+
+  return prisma.partnerRewardPayoutContract.create({
+    data: {
+      chainId: 1,
+      contractAddress: randomWalletAddress(),
+      ipfsCid: randomString(),
+      merkleTreeJson: {
+        root: '0x1',
+        recipients: [
+          {
+            address: scoutWallet.address.toLowerCase() as `0x${string}`,
+            amount: '100'
+          }
+        ]
+      },
+      deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
+      season: mockSeason,
+      week: getCurrentWeek(),
+      tokenAddress: randomWalletAddress(),
+      tokenDecimals: 18,
+      tokenSymbol: 'TEST',
+      partner: 'Test Partner',
+      rewardPayouts: {
+        create: {
+          amount: '100',
+          walletAddress: scoutWallet.address.toLowerCase()
+        }
+      }
+    },
+    include: {
+      rewardPayouts: true
+    }
+  });
 }
