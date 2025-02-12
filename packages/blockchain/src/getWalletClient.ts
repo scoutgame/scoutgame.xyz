@@ -1,14 +1,27 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
-import { builderNftChain, builderSmartContractMinterKey } from '@packages/scoutgame/builderNfts/constants';
 import { sleep } from '@packages/utils/sleep';
-import type { WalletClient } from 'viem';
+import type { Account, Client, Chain, PublicActions, RpcSchema, Transport, WalletActions, WalletClient } from 'viem';
 import { createWalletClient, http, publicActions, nonceManager } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
-import { optimism, baseSepolia } from 'viem/chains';
+import { optimism } from 'viem/chains';
 
 import { getChainById } from './chains';
 import { getAlchemyBaseUrl } from './provider/alchemy/client';
+
+// origin for this type: https://github.com/wevm/viem/discussions/1463
+// source: https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBDAnmApnA3nAggYxxAVwDsYAaOAYQBtgUTyKALAQ2CPIAUCAjGnXGMAhEAzuQBKYHAGUcjFCGbkAKlGajIscgHVmVKihgChouAF84AMygQQcAEQA3WiHsBuAFAeUAD03wkVDhpAlQoXX1DaloSAB4POAQ1DWh4Xxg6ABMROFV1EX84AF5c5ILU0gS4OVYiOHSsnKZauAAfOGJMlEs2FEziyhY2No6iLp6iPsrE5jxCEnqfDLGc3HxieHbO7t7+krX5zdHx3cqAPgHouhh4xJgy-2nqofYq2fX6KskZOQUlKq4vGA-BwgmEIli93yj2etXI70OFwAZHAIgYjKCTBCamx4XMNmcPGdPB58KJ4DgaNcBugLMwciEwmiolSSF5KTEYAA6ERZPKiWZgogeAD0IsSEoAegB+dms7kAc0M-JEgpMovFErgMqAA
+type SuperWalletClient<
+  transport extends Transport = Transport,
+  chain extends Chain | undefined = Chain | undefined,
+  account extends Account | undefined = Account | undefined
+> = Client<
+  transport,
+  chain,
+  account,
+  RpcSchema,
+  PublicActions<transport, chain, account> & WalletActions<chain, account>
+>;
 
 const MAX_TX_RETRIES = 10;
 
@@ -20,7 +33,7 @@ export function getWalletClient({
   chainId: number;
   privateKey?: string;
   mnemonic?: string;
-}) {
+}): SuperWalletClient {
   const chain = getChainById(chainId);
 
   if (!chain?.viem) {
@@ -107,7 +120,7 @@ export function getWalletClient({
     throw new Error('Max retries reached for sending transaction');
   }
 
-  client.sendTransaction = overridenSendTransaction as any;
+  client.sendTransaction = overridenSendTransaction as WalletClient['sendTransaction'];
 
   return client;
 }
