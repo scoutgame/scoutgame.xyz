@@ -20,26 +20,58 @@ export function BuildersPage() {
 function Document() {
   return (
     <InfoCard>
-      <Typography>Join the Scout Game as a Developer and connect your GitHub account.</Typography>
+      <Typography>Join the Scout Game as a Developer by connecting your GitHub account.</Typography>
       <Typography>
-        Developers in the Scout Game gain recognition by actively contributing to approved projects. Each season lasts
-        three months, and Developers earn Scout Gems weekly by completing specific tasks tied to their contributions. At
-        the end of each week, Scout Gems are converted to Scout Points depending on the Developer's rank.
+        Developers gain recognition and earn Gems by contributing to approved open-source projects. Each season lasts
+        three months, and Developers receive weekly rewards based on their contributions. At the end of each week, Gems
+        are converted into Scout Points, with higher-ranked Developers earning more points per gem.
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
-        Key Developer Actions:
+        How to Earn Gems
       </Typography>
       <div>
-        <Typography>Collect Gems for completing qualified actions:</Typography>
+        <Typography mb={1}>Developers earn Gems for specific contribution milestones:</Typography>
         <List>
-          <ListItem>Commit code to an approved open-source project</ListItem>
-          <ListItem>Contribute to approved open-source projects with an accepted Pull Request</ListItem>
-          <ListItem>Make your mark with a first-time code contribution to an approved project</ListItem>
-          <ListItem>Hit a 3-Pull Request streak within 7 days</ListItem>
+          <ListItem>
+            <Typography mb={1}>Self-Reviewed Pull Request → 2 Gems</Typography>
+            <Typography mb={1}>
+              Awarded for each successfully merged pull request without a peer review. looking for someone to review
+              your PR? Checkout our <Link href='https://t.me/+J0dl4_uswBY2NTkx'>Telegram Group</Link>.
+            </Typography>
+          </ListItem>
+          <ListItem>
+            <Typography mb={1}>Peer-Reviewed Pull Request → 10 Gems</Typography>
+            <Typography mb={1}>
+              Awarded for each successfully merged pull request that has been reviewed and approved by another
+              contributor.
+            </Typography>
+          </ListItem>
+          <ListItem>
+            <Typography mb={1}>Pull Request Streak Bonus → 30 Gems</Typography>
+            <Typography mb={1}>Earned when you merge 3 peer-reviewed pull requests within a 7-day period.</Typography>
+            <Typography mb={1}>The streak is based on the merge date, not the submission date.</Typography>
+          </ListItem>
+          <ListItem>
+            <Typography mb={1}>New Contributor Bonus → 100 Gems</Typography>
+            <Typography mb={1}>
+              Awarded for your first peer-reviewed pull request that gets merged into an approved open-source
+              repository.
+            </Typography>
+          </ListItem>
         </List>
       </div>
       <div>
-        <Typography mb={1}>Approved Open-Source Project Owners</Typography>
+        <Typography variant='h6' color='secondary' mt={2}>
+          Getting Started
+        </Typography>
+        <Typography mb={1}>1. Connect your GitHub account and join the Scout Game.</Typography>
+        <Typography mb={1}>2. Start contributing to open-source projects from the approved project list.</Typography>
+        <Typography mb={1}>3. Earn Scout Gems by completing milestones. </Typography>
+        <Typography mb={1}>4. Watch your rank grow as your Gems convert to Scout Points weekly.</Typography>
+        <Typography mb={1}>Start building, get recognized, and climb the ranks! 🚀</Typography>
+      </div>
+      <div>
+        <Typography mb={1}>Approved Open-Source Projects</Typography>
         <Button variant='buy' LinkComponent={Link} href='/info/repositories' sx={{ px: 2 }}>
           View Repos
         </Button>
