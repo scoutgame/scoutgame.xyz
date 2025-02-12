@@ -7,9 +7,9 @@ import { optimism } from 'viem/chains';
 
 import { createSablierAirdropContract } from './createSablierAirdropContract';
 
-export const optimismTokenDecimals = 18;
-export const optimismUsdcTokenAddress = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
-const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', optimismTokenDecimals).toString();
+const usdcTokenDecimals = 6;
+const optimismUsdcTokenAddress = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
+const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', usdcTokenDecimals).toString();
 
 export async function deployOctantBasePartnerRewards({ week }: { week: string }) {
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
@@ -18,6 +18,14 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
     address: event.githubUser.builder!.wallets[0].address,
     prLink: event.url
   })) as { address: Address; prLink: string }[];
+
+  if (recipients.length === 0) {
+    log.info('No recipients found, skipping octant & base rewards contact deployment', {
+      season: currentSeason.start,
+      week
+    });
+    return;
+  }
 
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT as Address,
@@ -28,7 +36,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
       amount: 75
     })),
     tokenAddress: optimismUsdcTokenAddress,
-    tokenDecimals: optimismTokenDecimals,
+    tokenDecimals: usdcTokenDecimals,
     nullAddressAmount: 0.001
   });
 
@@ -47,7 +55,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
       week,
       tokenAddress: optimismUsdcTokenAddress,
       tokenSymbol: 'USDC',
-      tokenDecimals: optimismTokenDecimals,
+      tokenDecimals: usdcTokenDecimals,
       partner: 'octant_base_contribution',
       deployTxHash: hash,
       ipfsCid: cid,

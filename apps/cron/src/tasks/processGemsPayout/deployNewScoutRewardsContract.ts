@@ -16,8 +16,15 @@ export async function deployNewScoutRewardsContract({ week }: { week: string }) 
   const newScouts = (await getRankedNewScoutsForPastWeek({ week })) as { address: string }[];
 
   const top10Scouts = newScouts.slice(0, 10);
-
   const currentSeason = getCurrentSeason(week);
+
+  if (top10Scouts.length === 0) {
+    log.info('No new scouts found, skipping new scout rewards contract deployment', {
+      week,
+      season: currentSeason.start
+    });
+    return;
+  }
 
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.NEW_SCOUT_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,

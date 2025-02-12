@@ -26,7 +26,7 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
   }
 
   if (referralChampions.length === 0) {
-    log.info('No top connectors found for the week', {
+    log.info('No top connectors found for the week, skipping referral champion rewards contract deployment', {
       week,
       season: currentSeason.start
     });
