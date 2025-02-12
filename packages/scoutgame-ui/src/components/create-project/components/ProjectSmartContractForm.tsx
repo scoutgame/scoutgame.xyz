@@ -16,6 +16,7 @@ import { useFieldArray, type Control } from 'react-hook-form';
 import { verifyMessage } from 'viem';
 import { useSignMessage } from 'wagmi';
 
+import { useTrackEvent } from '../../../hooks/useTrackEvent';
 import { Dialog } from '../../common/Dialog';
 import { FormErrors } from '../../common/FormErrors';
 import { chainRecords } from '../../projects/constants';
@@ -37,7 +38,7 @@ export function ProjectSmartContractForm({
 
   const { signMessageAsync } = useSignMessage();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const trackEvent = useTrackEvent();
   const { executeAsync: getContractDeployerAddress, isExecuting } = useAction(getContractDeployerAddressAction, {
     onError: ({ error }) => {
       setErrorMessage(error.serverError?.message ?? 'Error adding contract');
@@ -148,6 +149,10 @@ export function ProjectSmartContractForm({
 
   const signWithDeployerAddress = useCallback(
     async (deployerAddress: `0x${string}`, contractAddress: `0x${string}`) => {
+      trackEvent('deployer_address_sign', {
+        deployerAddress,
+        contractAddress
+      });
       const { signature, isValid } = await verifyDeployerOwnership(deployerAddress);
       if (isValid) {
         const contractIndex = contracts.findIndex((f) => f.address === contractAddress);
