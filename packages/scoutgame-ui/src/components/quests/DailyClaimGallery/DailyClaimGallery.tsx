@@ -18,16 +18,47 @@ const NextClaimCountdown = dynamic(
 
 export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }) {
   const isSequential = isSequentialUpToToday(dailyClaims);
+  const currentWeekDay = getServerDate().weekday;
+  const canClaimToday = dailyClaims.some((dailyClaim) => dailyClaim.day === currentWeekDay && !dailyClaim.claimed);
 
   return (
-    <Stack justifyContent='center' alignItems='center' gap={1} my={2}>
+    <Stack justifyContent='center' alignItems='center' gap={1} my={2} bgcolor='primary.dark' p={2}>
       <Typography variant='h4' color='secondary' fontWeight={600} zIndex={1}>
         Daily Claim
       </Typography>
-      <NextClaimCountdown />
-      <Grid container spacing={1} width='100%'>
+      <Stack
+        width={220}
+        height={220}
+        alignItems='center'
+        justifyContent='center'
+        m='auto'
+        position='relative'
+        sx={{
+          opacity: 1,
+          '&:before': {
+            content: '""',
+            display: 'block',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            opacity: canClaimToday ? 1 : 0.2,
+            backgroundImage: 'url(/images/quests/mystery-box.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat'
+          },
+          '& > *': {
+            zIndex: 1
+          }
+        }}
+      >
+        {canClaimToday ? null : <NextClaimCountdown />}
+      </Stack>
+      <Grid container spacing={1} width='350px'>
         {dailyClaims.map((dailyClaim) => (
-          <Grid size={dailyClaim.isBonus ? 8 : 4} key={`${dailyClaim.day}-${dailyClaim.isBonus}`}>
+          <Grid size={3} key={`${dailyClaim.day}-${dailyClaim.isBonus}`}>
             <DailyClaimCard
               dailyClaim={dailyClaim}
               hasClaimedStreak={isSequential}
