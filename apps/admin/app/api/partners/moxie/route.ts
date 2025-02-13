@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getMoxieCandidates } from '@packages/moxie/getMoxieCandidates';
-import { sendMoxieTokens } from '@packages/moxie/sendMoxieTokens';
+import { sendMoxieRewards } from '@packages/moxie/sendMoxieRewards';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -25,7 +25,7 @@ export async function GET() {
   }
 
   try {
-    await sendMoxieTokens({
+    await sendMoxieRewards({
       week: lastWeek,
       candidates: candidatesNeedingPayment
     });

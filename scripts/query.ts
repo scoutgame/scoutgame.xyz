@@ -1,10 +1,18 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentWeek } from '@packages/dates/utils';
 import { prettyPrint } from '@packages/utils/strings';
+
+// console.log('current week', getCurrentWeek());
 
 async function query() {
   const scout = await prisma.scout.findFirst({
-    where: { path: 'matt' }
+    where: { farcasterId: 420564 }
+    // include: {
+    //   partnerRewardEvents: {
+    //     orderBy: {
+    //       week: 'desc'
+    //     }
+    //   }
+    // }
     // include: {
     //   nftPurchaseEvents: {
     //     select: {

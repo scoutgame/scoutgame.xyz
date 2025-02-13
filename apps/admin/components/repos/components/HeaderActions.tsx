@@ -18,7 +18,8 @@ export function HeaderActions() {
   function closeMenu() {
     setAnchorEl(null);
   }
-  const { trigger: sendMoxieTokens, isMutating } = useGETtrigger('/api/partners/moxie');
+  // extend the timeout since this takes a while to run
+  const { trigger: sendMoxieRewards, isMutating } = useGETtrigger('/api/partners/moxie', { timeout: 240_000 });
 
   const lastWeek = getWeekStartEndFormatted(getDateFromISOWeek(getLastWeek()).toJSDate());
   return (
@@ -116,8 +117,8 @@ export function HeaderActions() {
           <LoadingButton
             loading={isMutating}
             onClick={() => {
-              sendMoxieTokens().catch((error) => {
-                log.error('Error sending Moxie tokens', error);
+              sendMoxieRewards().catch((error) => {
+                log.error('Error sending Moxie rewards', error);
                 alert(`There was an error sending tokens. Please try again: ${(error as Error).message}`);
               });
             }}
