@@ -23,7 +23,7 @@ export function ProjectsPage({ projects }: { projects: ScoutProjectMinimal[] }) 
           <ProjectsList projects={projects} />
           <Button
             LinkComponent={Link}
-            href='/create-project'
+            href='/profile/projects/create'
             startIcon={<AddIcon />}
             variant='outlined'
             color='secondary'

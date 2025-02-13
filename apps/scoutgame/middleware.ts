@@ -4,16 +4,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 // These are the links that are only accessible to logged in users
-const privateLinks = [
-  '/profile',
-  '/notifications',
-  '/welcome',
-  '/claim',
-  '/builders-you-know',
-  '/quests',
-  '/accounts',
-  '/create-project'
-];
+const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();

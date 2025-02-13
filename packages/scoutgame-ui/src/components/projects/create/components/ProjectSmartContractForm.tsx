@@ -16,10 +16,10 @@ import { useFieldArray, type Control } from 'react-hook-form';
 import { verifyMessage } from 'viem';
 import { useSignMessage } from 'wagmi';
 
-import { useTrackEvent } from '../../../hooks/useTrackEvent';
-import { Dialog } from '../../common/Dialog';
-import { FormErrors } from '../../common/FormErrors';
-import { chainRecords } from '../../projects/constants';
+import { useTrackEvent } from '../../../../hooks/useTrackEvent';
+import { Dialog } from '../../../common/Dialog';
+import { FormErrors } from '../../../common/FormErrors';
+import { chainRecords } from '../../../projects/constants';
 
 export type Deployer = { address: string; verified: boolean; signature: string | null };
 
