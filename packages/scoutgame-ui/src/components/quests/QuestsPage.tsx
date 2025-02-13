@@ -33,7 +33,7 @@ export function QuestsPage({
         }}
       >
         <Box maxWidth='600px' margin='0 auto'>
-          <Box sx={{ px: 5 }}>
+          <Box>
             <DailyClaimGallery dailyClaims={dailyClaims} />
           </Box>
           <Box sx={{ px: 1, mb: 2 }}>
