@@ -1,20 +1,16 @@
 import { InvalidInputError } from '@charmverse/core/errors';
+import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 
-import {
-  builderPointsShare as builderTokensShare,
-  scoutPointsShare as scoutTokensShare
-} from '../builderNfts/constants';
 import type { TokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 import { calculateEarnableScoutPointsForRank as calculateEarnableScoutTokensForRank } from './calculatePoints';
 
-export const nftTypeMultipliers: Record<BuilderNftType, number> = {
-  starter_pack: 0.1,
-  default: 1
-};
+// percent of rewards that go to the builder
+export const defaultBuilderPool = 0.2;
+export const defaultStarterPackPool = 0.1;
 
 export type TokenDistribution = {
   nftSupply: {
@@ -74,26 +70,29 @@ export function divideTokensBetweenBuilderAndHolders({
   );
 
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
-    const scoutRewardShare = calculateRewardForScout({
+    const scoutReward = calculateRewardForScout({
+      builderPool: defaultBuilderPool,
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: starterPackSupply }
+      supply: { default: nftSupply, starterPack: starterPackSupply },
+      scoutsRewardPool: earnableScoutTokens
     });
-    const scoutTokens = Math.floor(scoutRewardShare * scoutTokensShare * earnableScoutTokens);
-
+    const scoutTokens = Math.floor(scoutReward);
     return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
   const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
-    const scoutRewardShare = calculateRewardForScout({
+    const scoutReward = calculateRewardForScout({
+      builderPool: defaultBuilderPool,
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: starterPackSupply }
+      supply: { default: nftSupply, starterPack: starterPackSupply },
+      scoutsRewardPool: earnableScoutTokens
     });
-    const scoutTokens = Math.floor(scoutRewardShare * scoutTokensShare * earnableScoutTokens);
+    const scoutTokens = Math.floor(scoutReward);
 
     return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
-  const tokensForBuilder = Math.floor(builderTokensShare * earnableScoutTokens);
+  const tokensForBuilder = Math.floor(defaultBuilderPool * earnableScoutTokens);
 
   return {
     nftSupply: {
@@ -108,14 +107,47 @@ export function divideTokensBetweenBuilderAndHolders({
   };
 }
 
-// returs the percentage of the total tokens that the scout should receive
+// Returns the percentage of the total weekly rewards that a scout should receive
+// Scout share percent = 0.7 * (owned default NFT / total default NFTs) + 0.1 * (owned starter pack NFT / total starter pack NFTs)
 export function calculateRewardForScout({
+  builderPool = defaultBuilderPool,
+  starterPackPool = defaultStarterPackPool,
   purchased,
-  supply
+  supply,
+  scoutsRewardPool
 }: {
-  purchased: { starterPack?: number; default: number };
+  builderPool?: number;
+  starterPackPool?: number;
+  purchased: { starterPack?: number; default?: number };
   supply: { starterPack: number; default: number };
-}) {
-  const rewardPerNft = 1 / (supply.starterPack * nftTypeMultipliers.starter_pack + supply.default);
-  return (purchased.default + (purchased.starterPack || 0) * nftTypeMultipliers.starter_pack) * rewardPerNft;
+  scoutsRewardPool: number;
+}): number {
+  const builderHasStarterPacks = supply.starterPack > 0;
+  // TODO: all builders will have starter packs in the future, and starterPackPool will always be .1
+  starterPackPool = builderHasStarterPacks ? starterPackPool : 0;
+  const defaultPool = 1 - builderPool - starterPackPool;
+
+  // sanity check
+  if (defaultPool <= 0) {
+    throw new Error(
+      `Default pool of ${defaultPool} is less than 0. Builder pool: ${builderPool}, starter pack pool: ${starterPackPool}`
+    );
+  }
+  if (purchased.default && purchased.default > supply.default) {
+    throw new Error(`Purchased default NFTs: ${purchased.default} is greater than supply: ${supply.default}`);
+  }
+  if (purchased.starterPack && starterPackPool === 0) {
+    log.debug('Returning 0 for starter pack reward because starter pack pool is 0');
+    return 0;
+  }
+  if (purchased.starterPack && purchased.starterPack > supply.starterPack) {
+    throw new Error(
+      `Purchased starter pack NFTs: ${purchased.starterPack} is greater than supply: ${supply.starterPack}`
+    );
+  }
+
+  const shareOfDefault = supply.default <= 0 ? 0 : (purchased.default ?? 0) / supply.default;
+  const shareOfStarterPack = supply.starterPack <= 0 ? 0 : (purchased.starterPack ?? 0) / supply.starterPack;
+  // Note: do as much multiplication as possible in one line to avoid precision loss
+  return (shareOfDefault * defaultPool + shareOfStarterPack * starterPackPool) * scoutsRewardPool;
 }

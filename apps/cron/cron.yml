@@ -50,3 +50,8 @@ cron:
     url: '/update-talent-moxie-profiles'
     # Every 12 hours
     schedule: '0 */12 * * *'
+
+  - name: 'retrieve-contract-interactions'
+    url: '/retrieve-contract-interactions'
+    # Run once per day at 2am UTC
+    schedule: '0 2 * * *'

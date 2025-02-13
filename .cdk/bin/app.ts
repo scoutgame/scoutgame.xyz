@@ -16,10 +16,17 @@ const app = new cdk.App();
 // Command example: cdk deploy --context name=stg-scoutgame
 const stackNameParam: string = app.node.getContext('name');
 const nameParamParts = stackNameParam.split('-');
-const env = nameParamParts.shift();
-const appName = nameParamParts.join('-'); // join the remaining parts in case an app name includes hyphens
+const env = nameParamParts.shift() as string;
+
+let appName = nameParamParts[0];
+// hack to allow for onchain- apps that have a hyphen in their name
+if (appName === 'onchain') {
+  appName += '-' + nameParamParts[1];
+}
 
 const stackOptions = apps[appName]?.[env];
+
+console.log('Deploying stack env: ' + env + ' app: ' + appName);
 
 if (env === 'prd') {
   new ProductionStack(app, stackNameParam, deployProps, stackOptions);

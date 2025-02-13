@@ -12,8 +12,8 @@ import type { FieldErrors } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
 import { useUser } from '../../../../../providers/UserProvider';
-import type { Deployer } from '../../../../create-project/components/ProjectSmartContractForm';
 import { ProjectForm } from '../../../components/ProjectForm/ProjectForm';
+import type { Deployer } from '../../../create/components/ProjectSmartContractForm';
 
 export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) {
   const [deployers, setDeployers] = useState<Deployer[]>(

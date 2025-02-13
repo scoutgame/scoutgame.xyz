@@ -1,19 +1,13 @@
 import { jest } from '@jest/globals';
-import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { createContext } from '@packages/testing/koa/context';
-import { generatePrivateKey } from 'viem/accounts';
-import { baseSepolia } from 'viem/chains';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 jest.unstable_mockModule('@packages/utils/http', () => ({
   POST: jest.fn()
 }));
 
 const privateKey = generatePrivateKey();
-
-const client = getWalletClient({
-  chainId: baseSepolia.id,
-  privateKey
-});
+const walletAddress = privateKeyToAccount(privateKey).address;
 
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   builderNftChain: { id: 1 },
@@ -34,8 +28,6 @@ describe('alertLowWalletGasBalance', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-
-  const walletAddress = client.account.address;
 
   it('should call the webhook when balance is below threshold', async () => {
     (getWalletGasBalanceInUSD as jest.Mock<typeof getWalletGasBalanceInUSD>).mockResolvedValue(20); // Below threshold of 25
