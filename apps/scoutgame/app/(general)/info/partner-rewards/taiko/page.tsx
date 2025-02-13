@@ -2,10 +2,13 @@ import type { StackProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { InfoPageFooter } from '../info/components/InfoPageFooter';
+export const metadata: Metadata = {
+  title: 'Taiko Partner Rewards'
+};
 
 function ContainerStack({ children, ...props }: { children: React.ReactNode } & StackProps) {
   return (
@@ -15,10 +18,6 @@ function ContainerStack({ children, ...props }: { children: React.ReactNode } & 
         p: {
           xs: 1,
           md: 4
-        },
-        my: {
-          xs: 2,
-          md: 3
         },
         width: '100%',
         bgcolor: 'background.dark',
@@ -38,22 +37,16 @@ function Step({
   title,
   description,
   iconSrc,
-  additionalContent,
   color
 }: {
   stepNumber: string;
   title: string;
   description: string | React.ReactNode;
   iconSrc: string;
-  additionalContent?: React.ReactNode;
   color?: string;
 }) {
   return (
-    <ContainerStack
-      sx={{
-        flexDirection: additionalContent ? 'column' : 'row'
-      }}
-    >
+    <ContainerStack>
       <Stack
         flexDirection='row'
         width='100%'
@@ -91,7 +84,6 @@ function Step({
           <Typography>{description}</Typography>
         </Stack>
       </Stack>
-      {additionalContent}
     </ContainerStack>
   );
 }
@@ -136,9 +128,9 @@ function HeroSection() {
             justifyContent='center'
           >
             <Typography
-              variant='h3'
+              variant='h4'
               color='secondary'
-              fontWeight={500}
+              fontWeight={600}
               textAlign={{
                 xs: 'center',
                 md: 'left'
@@ -152,7 +144,7 @@ function HeroSection() {
               </Typography>
             </Hidden>
             <Hidden mdDown>
-              <Typography variant='h5' textAlign='left'>
+              <Typography variant='h6' textAlign='left'>
                 Build an AI Agent on Taiko. <br /> Rack up rewards in Scout Game as your Agent rocks onchain!
               </Typography>
             </Hidden>
@@ -172,7 +164,7 @@ function HeroSection() {
             </Button>
           </Stack>
           <Hidden mdDown>
-            <Image src='/images/partner/taiko-hero.png' width={350} height={350} alt='Cool dev' />
+            <Image src='/images/partner/taiko-hero.png' width={300} height={300} alt='Cool dev' />
           </Hidden>
           <Hidden mdUp>
             <Image src='/images/partner/taiko-hero.png' width={250} height={250} alt='Cool dev' />
@@ -183,18 +175,13 @@ function HeroSection() {
   );
 }
 
-export function HowToPlaySection({ title = 'How to Play' }: { title?: string }) {
+export function HowToPlaySection() {
   return (
-    <Stack alignItems='center' mt={3}>
+    <Stack alignItems='center' my={3}>
       <Typography variant='h4' color='secondary' fontWeight={500}>
-        {title}
+        How to Play
       </Typography>
-      <Container
-        maxWidth='lg'
-        sx={{
-          p: 0
-        }}
-      >
+      <Stack gap={2.5}>
         <Step
           stepNumber='Step 1'
           title='Build an AI Agent on Taiko'
@@ -220,7 +207,7 @@ export function HowToPlaySection({ title = 'How to Play' }: { title?: string }) 
           description='Taiko will reward successful AI Agent projects each week based on their onchain activity tier: Common, Rare, or Epic! Mo’ activity, mo’ Taiko!'
           iconSrc='/images/home/taiko-icon.svg'
         />
-      </Container>
+      </Stack>
     </Stack>
   );
 }
@@ -231,13 +218,9 @@ function FooterSection() {
       position='relative'
       alignItems='center'
       gap={2}
-      py={{ xs: 0, md: 4 }}
-      mb={{ xs: 4, md: 0 }}
+      py={{ xs: 2, md: 4 }}
       sx={{
-        backgroundImage: {
-          xs: undefined,
-          md: 'url(/images/home/landing-bg.png)'
-        },
+        backgroundImage: 'url(/images/home/landing-bg.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}
@@ -254,13 +237,12 @@ function FooterSection() {
   );
 }
 
-export function TaikoLandingPage() {
+export default async function Taiko() {
   return (
     <Stack
       height='100%'
       overflow='hidden'
       sx={{
-        backgroundImage: 'url(/images/home/starry-bg.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}
@@ -269,7 +251,6 @@ export function TaikoLandingPage() {
         <HeroSection />
         <HowToPlaySection />
         <FooterSection />
-        <InfoPageFooter />
       </Stack>
     </Stack>
   );

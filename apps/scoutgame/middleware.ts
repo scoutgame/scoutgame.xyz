@@ -13,6 +13,10 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next(); // Create a response object to set cookies
   const platform = getPlatform();
 
+  if (path === '/taiko') {
+    return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
+  }
+
   if (!isLoggedIn && path !== '/home' && platform === 'telegram') {
     // eslint-disable-next-line no-console
     console.log('Redirecting to telegram loading screen', { path, platform, ...session });
