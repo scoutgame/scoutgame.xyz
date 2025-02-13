@@ -24,9 +24,9 @@ export function NextClaimCountdown() {
   }
 
   return (
-    <Stack flexDirection='row' alignItems='center' gap={1}>
+    <Stack flexDirection='column' alignItems='center' gap={1}>
       <Typography color='secondary' fontWeight={600}>
-        NEXT REWARD:
+        NEXT REWARD
       </Typography>
       <Stack flexDirection='row' alignItems='center' gap={0.5}>
         <Typography variant='h5' fontWeight={600}>

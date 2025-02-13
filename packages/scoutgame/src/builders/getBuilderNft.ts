@@ -12,6 +12,7 @@ export async function getBuilderNft(builderId: string) {
     },
     select: {
       imageUrl: true,
+      // TODO: use the currentPriceInScoutToken when we move to $SCOUT
       currentPrice: true
     }
   });

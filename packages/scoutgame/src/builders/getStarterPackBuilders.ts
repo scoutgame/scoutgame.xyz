@@ -40,6 +40,7 @@ export async function getStarterPackBuilders({
           nftType: BuilderNftType.starter_pack
         },
         select: {
+          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
           nftSoldEvents: userId
             ? {

@@ -60,6 +60,7 @@ export async function getLeaderboard({
               nftType: BuilderNftType.default
             },
             select: {
+              // TODO: use the currentPriceInScoutToken when we move to $SCOUT
               currentPrice: true,
               season: true,
               imageUrl: true,

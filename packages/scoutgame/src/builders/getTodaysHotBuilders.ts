@@ -38,6 +38,7 @@ const userSelect = (week: string, season: string, userId?: string) =>
         nftType: BuilderNftType.default
       },
       select: {
+        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
         currentPrice: true,
         imageUrl: true,
         congratsImageUrl: true,
