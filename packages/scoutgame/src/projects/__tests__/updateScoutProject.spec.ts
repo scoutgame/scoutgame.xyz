@@ -263,27 +263,27 @@ describe('updateScoutProject', () => {
       select: {
         name: true,
         description: true,
-        scoutProjectContracts: true,
-        scoutProjectDeployers: true,
-        scoutProjectMembers: true
+        contracts: true,
+        deployers: true,
+        members: true
       }
     });
 
     expect(updatedProjectData.name).toBe('Updated Project');
     expect(updatedProjectData.description).toBe(project.description);
 
-    const projectDeployers = updatedProjectData.scoutProjectDeployers;
+    const projectDeployers = updatedProjectData.deployers;
     expect(projectDeployers).toHaveLength(2);
     expect(projectDeployers[0].address).toBe(deployerAddress);
     expect(projectDeployers[1].address).toBe(deployer2Address);
 
-    const projectMembers = updatedProjectData.scoutProjectMembers;
+    const projectMembers = updatedProjectData.members;
     const deletedProjectMember = projectMembers.find((m) => m.deletedAt);
     expect(deletedProjectMember?.userId).toBe(member2.id);
     const builderMember = projectMembers.find((m) => m.userId === builder.id);
     expect(builderMember).toBeDefined();
 
-    const projectContracts = updatedProjectData.scoutProjectContracts;
+    const projectContracts = updatedProjectData.contracts;
     expect(projectContracts).toHaveLength(2);
     const deletedContract = projectContracts.find((c) => c.deletedAt);
     expect(deletedContract?.address).toBe(contractAddress);

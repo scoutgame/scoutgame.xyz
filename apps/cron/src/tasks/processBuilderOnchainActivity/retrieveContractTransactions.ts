@@ -14,7 +14,7 @@ const defaultPageSize = BigInt(900);
 export async function retrieveContractTransactions({
   address,
   fromBlock,
-  toBlock,
+  toBlock: originalToBlock,
   contractId,
   pageSize = defaultPageSize,
   chainId
@@ -26,16 +26,16 @@ export async function retrieveContractTransactions({
   pageSize?: bigint;
   chainId: SupportedChainId;
 }) {
-  for (let currentBlock = fromBlock; currentBlock <= toBlock; currentBlock += pageSize) {
+  for (let currentBlock = fromBlock; currentBlock <= originalToBlock; currentBlock += pageSize) {
     const nextStep = currentBlock + (pageSize - BigInt(1));
-    const endBlock = nextStep > toBlock ? toBlock : nextStep;
+    const toBlock = nextStep > originalToBlock ? originalToBlock : nextStep;
     const pollStart = Date.now();
 
     const logs = await getLogs({
       chainId,
       address,
       fromBlock: currentBlock,
-      toBlock: endBlock
+      toBlock
     });
 
     const txHashes = new Set<string>(logs.map((l) => l.transactionHash));
@@ -51,7 +51,7 @@ export async function retrieveContractTransactions({
         return { block, receipt };
       })
     );
-    if (logs.length > 0) {
+    if (transactions.length > 0) {
       await Promise.all([
         prisma.scoutProjectContractTransaction.createMany({
           data: transactions.map(({ receipt, block }) => ({
@@ -82,7 +82,7 @@ export async function retrieveContractTransactions({
           data: {
             contractId,
             fromBlockNumber: currentBlock,
-            toBlockNumber: endBlock,
+            toBlockNumber: toBlock,
             processedAt: new Date(),
             processTime: Date.now() - pollStart
           }
@@ -92,7 +92,7 @@ export async function retrieveContractTransactions({
 
     const progress = Number(((currentBlock - fromBlock) * BigInt(100)) / (toBlock - fromBlock));
     if (progress % 10 === 0) {
-      log.debug(`Processed up to block ${endBlock} (${progress}% complete)`);
+      log.debug(`Processed up to block ${toBlock} (${progress}% complete)`);
     }
   }
 }

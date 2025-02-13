@@ -135,7 +135,7 @@ async function findOrCreateProject() {
       description: 'Taiko is a decentralized blockchain platform that enables scalable and secure smart contracts.',
       website: 'https://taiko.xyz',
       github: 'https://github.com/taiko-network',
-      scoutProjectMembers: {
+      members: {
         create: {
           createdBy: creator.id,
           user: {

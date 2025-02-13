@@ -36,7 +36,7 @@ export type ScoutProjectMinimal = Pick<ScoutProject, 'id' | 'path' | 'avatar' | 
 export async function getUserScoutProjectsInfo({ userId }: { userId: string }): Promise<ScoutProjectMinimal[]> {
   const projects = await prisma.scoutProject.findMany({
     where: {
-      scoutProjectMembers: {
+      members: {
         some: {
           userId
         }

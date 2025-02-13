@@ -846,7 +846,7 @@ export async function mockScoutProject({
       description: 'Test description',
       website: 'https://test.com',
       github: `https://github.com/test-${Math.random().toString(36).substring(2, 15)}`,
-      scoutProjectDeployers: deployerAddress
+      deployers: deployerAddress
         ? {
             create: {
               address: deployerAddress,
@@ -854,7 +854,7 @@ export async function mockScoutProject({
             }
           }
         : undefined,
-      scoutProjectMembers: {
+      members: {
         createMany: {
           data: [
             {
@@ -872,12 +872,12 @@ export async function mockScoutProject({
       }
     },
     include: {
-      scoutProjectDeployers: true,
-      scoutProjectMembers: true
+      deployers: true,
+      members: true
     }
   });
 
-  const deployer = scoutProject.scoutProjectDeployers[0];
+  const deployer = scoutProject.deployers[0];
   let contracts: ScoutProjectContract[] = [];
   if (contractAddresses.length && deployer) {
     await prisma.scoutProjectContract.createMany({
@@ -889,7 +889,8 @@ export async function mockScoutProject({
         deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
         deployedAt: new Date(),
         createdBy,
-        blockNumber: 1
+        blockNumber: 1,
+        type: 'contract'
       }))
     });
     contracts = await prisma.scoutProjectContract.findMany({

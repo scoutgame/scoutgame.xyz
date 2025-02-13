@@ -240,20 +240,20 @@ describe('createScoutProject', () => {
       },
       select: {
         id: true,
-        scoutProjectMembers: {
+        members: {
           select: {
             role: true,
             userId: true
           }
         },
-        scoutProjectContracts: {
+        contracts: {
           select: {
             address: true,
             deployerId: true,
             deployTxHash: true
           }
         },
-        scoutProjectDeployers: {
+        deployers: {
           select: {
             id: true,
             address: true
@@ -263,7 +263,7 @@ describe('createScoutProject', () => {
     });
 
     expect(project).toBeDefined();
-    const projectMembers = project.scoutProjectMembers;
+    const projectMembers = project.members;
     expect(projectMembers).toHaveLength(2);
 
     const projectOwner = projectMembers.find((member) => member.role === 'owner');
@@ -272,15 +272,15 @@ describe('createScoutProject', () => {
     const projectMember = projectMembers.find((member) => member.role === 'member');
     expect(projectMember?.userId).toBe(builder.id);
 
-    const projectContracts = project.scoutProjectContracts;
+    const projectContracts = project.contracts;
     expect(projectContracts).toHaveLength(2);
 
     expect(projectContracts[0].address).toBe(contractAddress);
-    expect(projectContracts[0].deployerId).toBe(project.scoutProjectDeployers[0].id);
+    expect(projectContracts[0].deployerId).toBe(project.deployers[0].id);
     expect(projectContracts[0].deployTxHash).toBe(contract1TxHash);
 
     expect(projectContracts[1].address).toBe(contract2Address);
-    expect(projectContracts[1].deployerId).toBe(project.scoutProjectDeployers[1].id);
+    expect(projectContracts[1].deployerId).toBe(project.deployers[1].id);
     expect(projectContracts[1].deployTxHash).toBe(contract2TxHash);
   });
 });

@@ -53,23 +53,13 @@ export async function processBuilderOnchainActivity(
 
       // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
-      if (contract.type === 'contract') {
-        await retrieveContractTransactions({
-          address: contract.address as Address,
-          fromBlock,
-          toBlock: latestBlock,
-          contractId: contract.id,
-          chainId: contract.chainId as SupportedChainId
-        });
-      } else {
-        await retrieveWalletTransactions({
-          address: contract.address as Address,
-          fromBlock,
-          toBlock: latestBlock,
-          contractId: contract.id,
-          chainId: contract.chainId as SupportedChainId
-        });
-      }
+      await retrieveContractTransactions({
+        address: contract.address as Address,
+        fromBlock,
+        toBlock: latestBlock,
+        contractId: contract.id,
+        chainId: contract.chainId as SupportedChainId
+      });
 
       const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);
       log.info(
@@ -80,6 +70,51 @@ export async function processBuilderOnchainActivity(
         error,
         chainId: contract.chainId,
         address: contract.address
+      });
+    }
+  }
+
+  const wallets = await prisma.scoutProjectWallet.findMany();
+  log.info('Analyzing interactions for', wallets.length, 'wallets...', { windowStart });
+
+  for (const wallet of wallets) {
+    try {
+      const pollStart = Date.now();
+      const client = getPublicClient(wallet.chainId);
+      const latestBlock = await client.getBlockNumber();
+      // Get the last poll event for this contract
+      const lastPollEvent = await prisma.scoutProjectWalletPollEvent.findFirst({
+        where: {
+          walletId: wallet.id
+        },
+        orderBy: {
+          toBlockNumber: 'desc'
+        }
+      });
+
+      const fromBlock = lastPollEvent
+        ? lastPollEvent.toBlockNumber + BigInt(1)
+        : await getBlockNumberByDateCached({ date: windowStart, chainId: wallet.chainId });
+
+      // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
+
+      await retrieveWalletTransactions({
+        address: wallet.address as Address,
+        fromBlock,
+        toBlock: latestBlock,
+        walletId: wallet.id,
+        chainId: wallet.chainId as SupportedChainId
+      });
+
+      const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);
+      log.info(
+        `Processed wallet ${wallet.address} from block ${fromBlock} to ${latestBlock} in ${durationMins} minutes`
+      );
+    } catch (error) {
+      log.error('Error processing contract:', {
+        error,
+        chainId: wallet.chainId,
+        address: wallet.address
       });
     }
   }

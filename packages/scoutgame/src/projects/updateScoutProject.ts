@@ -34,18 +34,18 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       id: payload.projectId
     },
     select: {
-      scoutProjectMembers: {
+      members: {
         select: {
           userId: true,
           deletedAt: true
         }
       },
-      scoutProjectDeployers: {
+      deployers: {
         select: {
           address: true
         }
       },
-      scoutProjectContracts: {
+      contracts: {
         select: {
           address: true,
           deletedAt: true
@@ -58,9 +58,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     string,
     { chainId: number; txHash: string; blockNumber: number; blockTimestamp: number; deployerAddress: string }
   > = {};
-  const projectMemberIds = project.scoutProjectMembers.map((member) => member.userId);
-  const projectDeployerAddresses = project.scoutProjectDeployers.map((deployer) => deployer.address.toLowerCase());
-  const projectContractAddresses = project.scoutProjectContracts.map((contract) => contract.address.toLowerCase());
+  const projectMemberIds = project.members.map((member) => member.userId);
+  const projectDeployerAddresses = project.deployers.map((deployer) => deployer.address.toLowerCase());
+  const projectContractAddresses = project.contracts.map((contract) => contract.address.toLowerCase());
   const payloadProjectMemberIds = payload.teamMembers.map((member) => member.scoutId);
   const payloadProjectDeployerAddresses = payload.deployers.map((deployer) => deployer.address.toLowerCase());
   const payloadProjectContractAddresses = payload.contracts.map((contract) => contract.address.toLowerCase());
@@ -80,11 +80,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const projectMemberIdsToRemove = projectMemberIds.filter((scoutId) => !payloadProjectMemberIds.includes(scoutId));
 
-  const deletedProjectMemberIds = project.scoutProjectMembers
-    .filter((member) => member.deletedAt)
-    .map((member) => member.userId);
+  const deletedProjectMemberIds = project.members.filter((member) => member.deletedAt).map((member) => member.userId);
 
-  const deletedContractAddresses = project.scoutProjectContracts
+  const deletedContractAddresses = project.contracts
     .filter((contract) => contract.deletedAt)
     .map((contract) => contract.address.toLowerCase());
 

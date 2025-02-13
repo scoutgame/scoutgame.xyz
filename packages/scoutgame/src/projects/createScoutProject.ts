@@ -113,7 +113,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
         website: payload.website ?? '',
         github: payload.github ?? '',
         path,
-        scoutProjectDeployers:
+        deployers:
           payload.deployers && payload.deployers.length
             ? {
                 createMany: {
@@ -125,7 +125,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
                 }
               }
             : undefined,
-        scoutProjectMembers: {
+        members: {
           createMany: {
             data: payload.teamMembers.map((member) => ({
               userId: member.scoutId,
@@ -139,19 +139,17 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
         id: true,
         path: true,
         name: true,
-        scoutProjectDeployers: true
+        deployers: true
       }
     });
 
-    const scoutProjectDeployers = scoutProject.scoutProjectDeployers as ScoutProjectDeployer[];
+    const deployers = scoutProject.deployers as ScoutProjectDeployer[];
 
     if (payload.contracts && payload.contracts.length) {
       await tx.scoutProjectContract.createMany({
         data: payload.contracts
           .map((contract) => {
-            const deployer = scoutProjectDeployers.find(
-              (d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase()
-            );
+            const deployer = deployers.find((d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase());
             if (!deployer) {
               // This case will ideally never happen, its added to keep the type checker happy
               return null;
