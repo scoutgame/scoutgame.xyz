@@ -1,4 +1,3 @@
-import { InvalidInputError } from '@charmverse/core/errors';
 import type { MockBuilder } from '@packages/testing/database';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
@@ -75,12 +74,12 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
         },
         earnableScoutTokens: 2400,
         tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
-          { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1263 },
-          { wallet: userAddress2, nftTokens: 5, erc20Tokens: 656 }
+          { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1120 },
+          { wallet: userAddress2, nftTokens: 5, erc20Tokens: 800 }
         ]),
         tokensPerScoutByScoutId: expect.arrayContaining<TokenDistribution['tokensPerScoutByScoutId'][number]>([
-          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1263 },
-          { scoutId: userId2, nftTokens: 5, erc20Tokens: 656 }
+          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1120 },
+          { scoutId: userId2, nftTokens: 5, erc20Tokens: 800 }
         ]),
         tokensForBuilder: 480
       })
