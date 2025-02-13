@@ -38,6 +38,7 @@ export async function BuilderProfile({
             },
             select: {
               imageUrl: true,
+              // TODO: use the currentPriceInScoutToken when we move to $SCOUT
               currentPrice: true
             }
           }),
@@ -108,6 +109,7 @@ export async function BuilderProfile({
         builderPoints={builderStats?.seasonPoints}
         totalScouts={totalScouts}
         totalNftsSold={totalNftsSold}
+        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
         currentNftPrice={builderNft?.currentPrice}
       />
       <Stack gap={0.5}>

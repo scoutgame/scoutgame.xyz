@@ -66,6 +66,7 @@ export async function getBuilders({
               },
               select: {
                 estimatedPayout: true,
+                // TODO: use the currentPriceInScoutToken when we move to $SCOUT
                 currentPrice: true,
                 nftSoldEvents: userId
                   ? {
@@ -147,6 +148,7 @@ export async function getBuilders({
       },
       take: limit,
       select: {
+        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
         currentPrice: true,
         estimatedPayout: true,
         nftSoldEvents: userId
@@ -202,6 +204,7 @@ export async function getBuilders({
       path: builder.path,
       avatar: builder.avatar as string,
       displayName: builder.displayName,
+      // TODO: use the currentPriceInScoutToken when we move to $SCOUT
       price: currentPrice,
       estimatedPayout: estimatedPayout || 0,
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
@@ -279,6 +282,7 @@ export async function getBuilders({
       path: builder.path,
       avatar: builder.avatar as string,
       displayName: builder.displayName,
+      // TODO: use the currentPriceInScoutToken when we move to $SCOUT
       price: currentPrice,
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],

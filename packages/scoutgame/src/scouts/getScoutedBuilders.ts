@@ -95,6 +95,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
         select: {
           contractAddress: true,
           imageUrl: true,
+          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
           nftType: true,
           tokenId: true,
@@ -185,6 +186,7 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
         select: {
           contractAddress: true,
           imageUrl: true,
+          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
           nftType: true,
           nftSoldEvents: {

@@ -74,6 +74,7 @@ export async function getPaginatedBuilders({
               },
               select: {
                 contractAddress: true,
+                // TODO: use the currentPriceInScoutToken when we move to $SCOUT
                 currentPrice: true,
                 imageUrl: true,
                 nftType: true,

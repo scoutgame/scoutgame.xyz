@@ -39,7 +39,7 @@ export async function refreshScoutProtocolBuilderNftPrice({
         id: existingNft.id
       },
       data: {
-        currentPrice: currentPrice / scoutTokenDecimalsMultiplier
+        currentPriceInScoutToken: currentPrice.toString()
       }
     });
 
