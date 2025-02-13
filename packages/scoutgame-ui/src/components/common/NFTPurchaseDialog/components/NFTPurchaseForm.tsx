@@ -688,6 +688,7 @@ function calculateFutureReward({
   tokensToBuy: number;
 }) {
   let rewardPercent: number;
+  const scoutsRewardPool = 100;
 
   if (nftType === 'starter_pack') {
     rewardPercent = calculateRewardForScout({
@@ -695,7 +696,8 @@ function calculateFutureReward({
       supply: {
         ...nftSupply,
         starterPack: nftSupply.starterPack + tokensToBuy
-      }
+      },
+      scoutsRewardPool
     });
   } else {
     rewardPercent = calculateRewardForScout({
@@ -703,8 +705,9 @@ function calculateFutureReward({
       supply: {
         ...nftSupply,
         default: nftSupply.default + tokensToBuy
-      }
+      },
+      scoutsRewardPool
     });
   }
-  return Math.floor(100 * rewardPercent);
+  return Math.floor(rewardPercent);
 }

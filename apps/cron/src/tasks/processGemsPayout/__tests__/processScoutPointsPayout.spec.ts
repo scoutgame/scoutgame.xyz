@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
-import { builderRewardsPool } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
+import { defaultBuilderPool } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import { mockBuilder, mockBuilderNft, mockNFTPurchaseEvent, mockScout } from '@packages/testing/database';
 
 import { processScoutPointsPayout } from '../processScoutPointsPayout';
@@ -117,7 +117,7 @@ describe('processScoutPointsPayout', () => {
       })
     ]);
 
-    const totalPoints = calculateEarnableScoutPointsForRank({ weeklyAllocatedPoints: 1e5, rank });
+    const totalPoints = Math.floor(calculateEarnableScoutPointsForRank({ weeklyAllocatedPoints: 1e5, rank }));
 
     await prisma.pointsReceipt.deleteMany({
       where: {
@@ -126,6 +126,7 @@ describe('processScoutPointsPayout', () => {
         }
       }
     });
+
     await processScoutPointsPayout({
       builderId: builder.id,
       rank,
@@ -143,7 +144,7 @@ describe('processScoutPointsPayout', () => {
       }
     });
 
-    expect(Math.floor(builderPointReceipt.value)).toEqual(Math.floor(builderRewardsPool * totalPoints));
+    expect(Math.floor(builderPointReceipt.value)).toEqual(Math.floor(defaultBuilderPool * totalPoints));
 
     const builderStats = await getStats({ userId: builder.id, season: mockSeason });
     expect(builderStats.season?.pointsEarnedAsBuilder).toBe(builderPointReceipt.value);
@@ -169,7 +170,7 @@ describe('processScoutPointsPayout', () => {
     });
 
     // 7 is the # of tokens purchased by scout 2
-    expect(Math.floor(scout2PointReceipt.value)).toEqual(Math.floor(expectedScoutRewardsPool * totalPoints * (7 / 10)));
+    expect(Math.floor(scout2PointReceipt.value)).toEqual(Math.floor(expectedScoutRewardsPool * (7 / 10) * totalPoints));
 
     const scout2Stats = await getStats({ userId: scout2.id, season: mockSeason });
     expect(scout2Stats.season?.pointsEarnedAsScout).toBe(scout2PointReceipt.value);
@@ -183,7 +184,7 @@ describe('processScoutPointsPayout', () => {
         pointsReceiptId: builderPointReceipt.id
       }
     });
-    expect(Math.floor(builderPointReceipt.value)).toEqual(Math.floor(builderRewardsPool * totalPoints));
+    expect(Math.floor(builderPointReceipt.value)).toEqual(Math.floor(defaultBuilderPool * totalPoints));
 
     expect(builderActivities).toBe(1);
 

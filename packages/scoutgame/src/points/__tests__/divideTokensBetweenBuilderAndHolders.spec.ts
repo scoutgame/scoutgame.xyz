@@ -4,7 +4,7 @@ import { randomWalletAddress } from '@packages/testing/generators';
 import { v4 as uuid } from 'uuid';
 
 import type { TokenDistribution } from '../divideTokensBetweenBuilderAndHolders';
-import { divideTokensBetweenBuilderAndHolders, calculateRewardForScout } from '../divideTokensBetweenBuilderAndHolders';
+import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenBuilderAndHolders';
 
 describe('divideTokensBetweenBuilderAndHolders', () => {
   let builder: MockBuilder;

@@ -4,7 +4,8 @@ describe('calculateRewardForScout', () => {
   it('should calculate rewards with default pool values', () => {
     const result = calculateRewardForScout({
       purchased: { default: 1, starterPack: 1 },
-      supply: { default: 10, starterPack: 10 }
+      supply: { default: 10, starterPack: 10 },
+      scoutsRewardPool: 1
     });
 
     // Default NFT: 1/10 * 0.7 = 0.07
@@ -17,7 +18,8 @@ describe('calculateRewardForScout', () => {
       builderPool: 0.3,
       starterPackPool: 0.2,
       purchased: { default: 2, starterPack: 2 },
-      supply: { default: 10, starterPack: 10 }
+      supply: { default: 10, starterPack: 10 },
+      scoutsRewardPool: 1
     });
 
     // Default NFT: 2/10 * 0.5 = 0.1
@@ -28,7 +30,8 @@ describe('calculateRewardForScout', () => {
   it('should handle zero purchases', () => {
     const result = calculateRewardForScout({
       purchased: { default: 0, starterPack: 0 },
-      supply: { default: 10, starterPack: 10 }
+      supply: { default: 10, starterPack: 10 },
+      scoutsRewardPool: 1
     });
 
     expect(result).toBe(0);
@@ -37,7 +40,8 @@ describe('calculateRewardForScout', () => {
   it('should handle missing purchase types', () => {
     const result = calculateRewardForScout({
       purchased: { default: 1 },
-      supply: { default: 10, starterPack: 10 }
+      supply: { default: 10, starterPack: 10 },
+      scoutsRewardPool: 1
     });
 
     // Only default NFT: 1/10 * 0.7 = 0.07
@@ -48,7 +52,8 @@ describe('calculateRewardForScout', () => {
   it('should handle zero supply', () => {
     const result = calculateRewardForScout({
       purchased: { default: 0, starterPack: 0 },
-      supply: { default: 0, starterPack: 0 }
+      supply: { default: 0, starterPack: 0 },
+      scoutsRewardPool: 1
     });
 
     expect(result).toBe(0);
@@ -58,7 +63,8 @@ describe('calculateRewardForScout', () => {
     expect(() =>
       calculateRewardForScout({
         purchased: { default: 15, starterPack: 15 },
-        supply: { default: 10, starterPack: 10 }
+        supply: { default: 10, starterPack: 10 },
+        scoutsRewardPool: 1
       })
     ).toThrow();
   });
@@ -69,7 +75,8 @@ describe('calculateRewardForScout', () => {
         builderPool: 0.5,
         starterPackPool: 0.5,
         purchased: { default: 1, starterPack: 1 },
-        supply: { default: 1, starterPack: 1 }
+        supply: { default: 1, starterPack: 1 },
+        scoutsRewardPool: 1
       })
     ).toThrow();
   });

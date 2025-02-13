@@ -9,7 +9,8 @@ import type { TokenOwnershipForBuilder } from '../protocol/resolveTokenOwnership
 import { calculateEarnableScoutPointsForRank as calculateEarnableScoutTokensForRank } from './calculatePoints';
 
 // percent of rewards that go to the builder
-export const builderRewardsPool = 0.2;
+export const defaultBuilderPool = 0.2;
+export const defaultStarterPackPool = 0.1;
 
 export type TokenDistribution = {
   nftSupply: {
@@ -69,26 +70,29 @@ export function divideTokensBetweenBuilderAndHolders({
   );
 
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
-    const scoutRewardShare = calculateRewardForScout({
+    const scoutReward = calculateRewardForScout({
+      builderPool: defaultBuilderPool,
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: starterPackSupply }
+      supply: { default: nftSupply, starterPack: starterPackSupply },
+      scoutsRewardPool: earnableScoutTokens
     });
-    const scoutTokens = Math.floor(scoutRewardShare * earnableScoutTokens);
-
+    const scoutTokens = Math.floor(scoutReward);
     return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
   const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
-    const scoutRewardShare = calculateRewardForScout({
+    const scoutReward = calculateRewardForScout({
+      builderPool: defaultBuilderPool,
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: starterPackSupply }
+      supply: { default: nftSupply, starterPack: starterPackSupply },
+      scoutsRewardPool: earnableScoutTokens
     });
-    const scoutTokens = Math.floor(scoutRewardShare * earnableScoutTokens);
+    const scoutTokens = Math.floor(scoutReward);
 
     return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
-  const tokensForBuilder = Math.floor(builderRewardsPool * earnableScoutTokens);
+  const tokensForBuilder = Math.floor(defaultBuilderPool * earnableScoutTokens);
 
   return {
     nftSupply: {
@@ -106,15 +110,17 @@ export function divideTokensBetweenBuilderAndHolders({
 // Returns the percentage of the total weekly rewards that a scout should receive
 // Scout share percent = 0.7 * (owned default NFT / total default NFTs) + 0.1 * (owned starter pack NFT / total starter pack NFTs)
 export function calculateRewardForScout({
-  builderPool = 0.2,
-  starterPackPool = 0.1,
+  builderPool = defaultBuilderPool,
+  starterPackPool = defaultStarterPackPool,
   purchased,
-  supply
+  supply,
+  scoutsRewardPool
 }: {
   builderPool?: number;
   starterPackPool?: number;
   purchased: { starterPack?: number; default?: number };
   supply: { starterPack: number; default: number };
+  scoutsRewardPool: number;
 }): number {
   const builderHasStarterPacks = supply.starterPack > 0;
   // TODO: all builders will have starter packs in the future, and starterPackPool will always be .1
@@ -142,5 +148,6 @@ export function calculateRewardForScout({
 
   const shareOfDefault = supply.default <= 0 ? 0 : (purchased.default ?? 0) / supply.default;
   const shareOfStarterPack = supply.starterPack <= 0 ? 0 : (purchased.starterPack ?? 0) / supply.starterPack;
-  return shareOfDefault * defaultPool + shareOfStarterPack * starterPackPool;
+  // Note: do as much multiplication as possible in one line to avoid precision loss
+  return (shareOfDefault * defaultPool + shareOfStarterPack * starterPackPool) * scoutsRewardPool;
 }

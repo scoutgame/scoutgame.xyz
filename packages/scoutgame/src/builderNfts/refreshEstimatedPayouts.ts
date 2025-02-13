@@ -72,11 +72,19 @@ export async function refreshEstimatedPayouts({
         default: defaultNft.nftOwners.reduce((acc, nft) => acc + nft.balance, 0)
       };
 
-      const nextDefaultReward = calculateRewardForScout({ purchased: { default: 1 }, supply });
-      const expectedPayoutForNextNftPurchase = Math.floor(nextDefaultReward * normalisedPoints);
+      const nextDefaultReward = calculateRewardForScout({
+        purchased: { default: 1 },
+        supply,
+        scoutsRewardPool: normalisedPoints
+      });
+      const expectedPayoutForNextNftPurchase = Math.floor(nextDefaultReward);
 
-      const nextStarterPackReward = calculateRewardForScout({ purchased: { starterPack: 1 }, supply });
-      const expectedPayoutForNextStarterPackPurchase = Math.floor(nextStarterPackReward * normalisedPoints);
+      const nextStarterPackReward = calculateRewardForScout({
+        purchased: { starterPack: 1 },
+        supply,
+        scoutsRewardPool: normalisedPoints
+      });
+      const expectedPayoutForNextStarterPackPurchase = Math.floor(nextStarterPackReward);
 
       if (expectedPayoutForNextNftPurchase !== defaultNft.estimatedPayout) {
         await prisma.builderNft.update({
