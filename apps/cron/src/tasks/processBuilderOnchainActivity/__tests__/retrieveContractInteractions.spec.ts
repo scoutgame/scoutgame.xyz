@@ -26,9 +26,9 @@ jest.unstable_mockModule('@packages/blockchain/provider/ankr/client', () => ({
 }));
 
 // Import after mocks
-const { retrieveContractInteractions } = await import('../index');
+const { processBuilderOnchainActivity } = await import('../index');
 
-describe('retrieveContractInteractions', () => {
+describe('processBuilderOnchainActivity', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -80,7 +80,7 @@ describe('retrieveContractInteractions', () => {
     } as Block);
 
     // Execute contract interaction retrieval
-    await retrieveContractInteractions(createContext(), { contractIds: [contractId] });
+    await processBuilderOnchainActivity(createContext(), { contractIds: [contractId] });
 
     // Verify logs were saved
     // const savedLogs = await prisma.scoutProjectContractLog.findMany({
@@ -146,7 +146,7 @@ describe('retrieveContractInteractions', () => {
 
     mockGetLogs.mockResolvedValue([]);
 
-    await retrieveContractInteractions(createContext(), { contractIds: [contractId] });
+    await processBuilderOnchainActivity(createContext(), { contractIds: [contractId] });
 
     // const savedLogs = await prisma.scoutProjectContractLog.findMany({
     //   where: {

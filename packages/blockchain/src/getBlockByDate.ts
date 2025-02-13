@@ -1,3 +1,5 @@
+import { log } from '@charmverse/core/log';
+
 import { getPublicClient } from './getPublicClient';
 
 export async function getBlockByDate({ date, chainId }: { date: Date; chainId: number }) {
@@ -32,4 +34,19 @@ export async function getBlockByDate({ date, chainId }: { date: Date; chainId: n
   }
 
   return resultBlock;
+}
+
+// keep track of the window start per chain, so we reduce lookups
+let blockNumbersByDate: Record<string, bigint> = {};
+
+export async function getBlockNumberByDateCached({ date, chainId }: { date: Date; chainId: number }) {
+  if (!blockNumbersByDate[chainId]) {
+    blockNumbersByDate[chainId] = (await getBlockByDate({ date, chainId })).number;
+    if (Object.keys(blockNumbersByDate).length > 1000) {
+      log.debug('Clearing block numbers by date cache');
+      // clear the cache
+      blockNumbersByDate = {};
+    }
+  }
+  return blockNumbersByDate[chainId];
 }

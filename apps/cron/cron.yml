@@ -51,7 +51,7 @@ cron:
     # Every 12 hours
     schedule: '0 */12 * * *'
 
-  - name: 'retrieve-contract-interactions'
-    url: '/retrieve-contract-interactions'
+  - name: 'process-builder-onchain-activity'
+    url: '/process-builder-onchain-activity'
     # Run once per day at 2am UTC
     schedule: '0 2 * * *'
