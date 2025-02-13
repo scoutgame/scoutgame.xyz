@@ -37,6 +37,7 @@ export async function uploadShareImage({
     activities,
     stats,
     builderScouts,
+    // TODO: use currentPriceInScoutToken when we move to $SCOUT
     builderPrice: builderNft?.currentPrice || BigInt(0)
   });
 

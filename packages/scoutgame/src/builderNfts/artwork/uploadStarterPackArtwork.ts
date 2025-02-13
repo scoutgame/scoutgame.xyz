@@ -64,6 +64,7 @@ export async function uploadStarterPackArtworkCongrats({
     activities,
     stats,
     builderScouts,
+    // TODO: use currentPriceInScoutToken when we move to $SCOUT
     builderPrice: builderNft?.currentPrice || BigInt(0)
   });
 

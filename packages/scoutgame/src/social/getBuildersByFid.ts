@@ -51,6 +51,7 @@ export async function getBuildersByFid({
             contractAddress: true,
             imageUrl: true,
             congratsImageUrl: true,
+            // TODO: use the currentPriceInScoutToken when we move to $SCOUT
             currentPrice: true,
             nftSoldEvents: {
               distinct: 'walletAddress'

@@ -142,12 +142,14 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   })) as WeeklyClaimsTyped[];
 
-  const claimProofs = weeklyClaims
+  const claimProofs: ClaimInput[] = weeklyClaims
     .map((claim) => ({
       week: claim.week,
       amount:
-        claim.claims.leaves.find((leaf) => leaf.address.toLowerCase() === scoutWallets[0].address.toLowerCase())
-          ?.amount ?? 0,
+        parseInt(
+          claim.claims.leaves.find((leaf) => leaf.address.toLowerCase() === scoutWallets[0].address.toLowerCase())
+            ?.amount ?? '0'
+        ) ?? 0,
       proofs: claim.proofsMap[scoutWallets[0].address.toLowerCase()] ?? []
     }))
     .filter((proof) => proof.amount > 0 && proof.proofs.length > 0 && !claimedWeeks.includes(proof.week));
@@ -156,7 +158,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   return {
     builders: buildersWithFarcaster,
-    points: claimProofs.reduce((acc, proof) => acc + proof.amount, 0),
+    points: claimProofs.reduce((acc, proof) => acc + Number(proof.amount), 0),
     bonusPartners: [],
     repos: uniqueRepos.slice(0, 3),
     claimData: {

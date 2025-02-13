@@ -124,6 +124,7 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
       chainId: 10,
       contractAddress: `0x${season}-${Math.floor(Math.random() * 1000000)}`,
       tokenId: index + 1,
+      // TODO: use the currentPriceInScoutToken when we move to $SCOUT
       currentPrice: BigInt(20),
       imageUrl: `https://example.com/image-${index}.png`,
       season
