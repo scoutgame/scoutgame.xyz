@@ -17,7 +17,7 @@ export const leaveProjectAction = authActionClient
       projectId: parsedInput.projectId,
       userId
     });
-    revalidatePath('/projects');
+    revalidatePath('/profile/projects');
 
     return createdScoutProject;
   });

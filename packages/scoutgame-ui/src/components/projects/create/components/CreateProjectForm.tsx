@@ -11,7 +11,7 @@ import { useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import { ProjectForm } from '../../projects/components/ProjectForm/ProjectForm';
+import { ProjectForm } from '../../components/ProjectForm/ProjectForm';
 
 import type { Deployer } from './ProjectSmartContractForm';
 
@@ -84,7 +84,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       isExecuting={isExecuting}
       deployers={deployers}
       setDeployers={setDeployers}
-      cancelLink='/projects'
+      cancelLink='/profile/projects'
       showRemoveMemberConfirmation={false}
     />
   );

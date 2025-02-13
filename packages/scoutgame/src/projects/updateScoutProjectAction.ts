@@ -14,7 +14,7 @@ export const updateScoutProjectAction = authActionClient
   .action(async ({ parsedInput, ctx }) => {
     const userId = ctx.session.scoutId;
     const updatedProject = await updateScoutProject(parsedInput, userId);
-    revalidatePath('/projects');
+    revalidatePath('/profile/projects');
 
     return updatedProject;
   });

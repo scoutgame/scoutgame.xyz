@@ -21,7 +21,7 @@ export const createScoutProjectAction = authActionClient
       path: createdScoutProject.path,
       userId
     });
-    revalidatePath('/projects');
+    revalidatePath('/profile/projects');
 
     return createdScoutProject;
   });

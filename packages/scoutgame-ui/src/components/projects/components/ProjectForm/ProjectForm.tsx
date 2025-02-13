@@ -6,12 +6,12 @@ import Link from 'next/link';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
-import { ProjectAvatarField } from '../../../../components/create-project/components/ProjectAvatarField';
-import type { Deployer } from '../../../../components/create-project/components/ProjectSmartContractForm';
-import { ProjectSmartContractForm } from '../../../../components/create-project/components/ProjectSmartContractForm';
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { FormErrors } from '../../../common/FormErrors';
-import { ProjectTeamMemberForm } from '../../../create-project/components/ProjectTeamMemberForm';
+import { ProjectAvatarField } from '../../create/components/ProjectAvatarField';
+import type { Deployer } from '../../create/components/ProjectSmartContractForm';
+import { ProjectSmartContractForm } from '../../create/components/ProjectSmartContractForm';
+import { ProjectTeamMemberForm } from '../../create/components/ProjectTeamMemberForm';
 
 export function ProjectForm({
   control,

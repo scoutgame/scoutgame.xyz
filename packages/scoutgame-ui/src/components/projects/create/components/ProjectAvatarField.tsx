@@ -5,7 +5,7 @@ import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { useS3UploadInput } from '../../../hooks/useS3UploadInput';
+import { useS3UploadInput } from '../../../../hooks/useS3UploadInput';
 
 const avatarSchema = yup.object({
   avatar: yup.string().notRequired()
