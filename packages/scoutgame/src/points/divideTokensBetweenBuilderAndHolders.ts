@@ -137,7 +137,7 @@ export function calculateRewardForScout({
     throw new Error(`Purchased default NFTs: ${purchased.default} is greater than supply: ${supply.default}`);
   }
   if (purchased.starterPack && starterPackPool === 0) {
-    log.warn('Returning 0 for starter pack reward because starter pack pool is 0');
+    log.debug('Returning 0 for starter pack reward because starter pack pool is 0');
     return 0;
   }
   if (purchased.starterPack && purchased.starterPack > supply.starterPack) {

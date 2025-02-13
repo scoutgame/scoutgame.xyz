@@ -9,7 +9,8 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentSeasonStart: jest.fn((week) => week)
 }));
 
-const scoutPointsShare = 0.7;
+const defaultScoutShare = 0.7;
+const starterPackShare = 0.1;
 // Mock this so we don't get an error in the dependency tree
 jest.unstable_mockModule('@packages/scoutgame/builders/getBuildersLeaderboardFromEAS', () => ({
   getBuildersLeaderboardFromEAS: jest.fn()
@@ -220,21 +221,21 @@ describe('refreshEstimatedPayouts', () => {
     expect(builder1DefaultNftHoldersCount).toBe(2);
     expect(builder1StarterPackHoldersCount).toBe(1);
 
-    const builder1WeightedHolders = builder1DefaultNftHoldersCount + builder1StarterPackHoldersCount;
-
     expect(Math.floor(builder1PointsAllocation)).toBe(2576);
 
-    const expectedNftPayout = Math.floor((scoutPointsShare * builder1PointsAllocation) / (builder1WeightedHolders + 1));
+    const expectedNftPayout = Math.floor(
+      (defaultScoutShare * builder1PointsAllocation) / (builder1DefaultNftHoldersCount + 1)
+    );
 
     expect(Math.floor(builder1DefaultNftPayout!.estimatedPayout!)).toBe(expectedNftPayout);
 
-    expect(expectedNftPayout).toBe(664);
+    expect(expectedNftPayout).toBe(601);
 
     const expectedStarterPackPayout = Math.floor(
-      (scoutPointsShare * builder1PointsAllocation) / (builder1WeightedHolders + 1)
+      (starterPackShare * builder1PointsAllocation) / (builder1StarterPackHoldersCount + 1)
     );
 
-    expect(expectedStarterPackPayout).toBe(93);
+    expect(expectedStarterPackPayout).toBe(128);
 
     expect(Math.floor(builder1StarterPackPayout!.estimatedPayout!)).toBe(expectedStarterPackPayout);
 
@@ -256,21 +257,19 @@ describe('refreshEstimatedPayouts', () => {
     expect(builder2DefaultNftHoldersCount).toBe(1);
     expect(builder2StarterPackHoldersCount).toBe(1);
 
-    const builder2WeightedHolders = builder2DefaultNftHoldersCount + builder2StarterPackHoldersCount;
-
     const expectedBuilder2NftPayout = Math.floor(
-      (scoutPointsShare * builder2PointsAllocation) / (builder2WeightedHolders + 1)
+      (defaultScoutShare * builder2PointsAllocation) / (builder2DefaultNftHoldersCount + 1)
     );
 
-    expect(expectedBuilder2NftPayout).toBe(952);
+    expect(expectedBuilder2NftPayout).toBe(874);
 
     expect(Math.floor(builder2DefaultNftPayout!.estimatedPayout!)).toBe(expectedBuilder2NftPayout);
 
     const expectedBuilder2StarterPackPayout = Math.floor(
-      (scoutPointsShare * builder2PointsAllocation) / (builder2WeightedHolders + 1)
+      (starterPackShare * builder2PointsAllocation) / (builder2StarterPackHoldersCount + 1)
     );
 
-    expect(expectedBuilder2StarterPackPayout).toBe(166);
+    expect(expectedBuilder2StarterPackPayout).toBe(124);
 
     expect(Math.floor(builder2StarterPackPayout!.estimatedPayout!)).toBe(expectedBuilder2StarterPackPayout);
 
@@ -290,9 +289,7 @@ describe('refreshEstimatedPayouts', () => {
 
     expect(builder3WeightedHolders).toBe(builder3DefaultNftHoldersCount);
 
-    const expectedBuilder3NftPayout = Math.floor(
-      scoutPointsShare * builder3PointsAllocation * (1 / (builder3WeightedHolders + 1))
-    );
+    const expectedBuilder3NftPayout = Math.floor(0.8 * builder3PointsAllocation * (1 / (builder3WeightedHolders + 1)));
 
     expect(expectedBuilder3NftPayout).toBe(484);
 

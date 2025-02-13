@@ -72,6 +72,12 @@ export async function refreshEstimatedPayouts({
         default: defaultNft.nftOwners.reduce((acc, nft) => acc + nft.balance, 0)
       };
 
+      // add one to simulate the future state after purchasing a card
+      supply.default += 1;
+      if (supply.starterPack > 0) {
+        supply.starterPack += 1;
+      }
+
       const nextDefaultReward = calculateRewardForScout({
         purchased: { default: 1 },
         supply,
