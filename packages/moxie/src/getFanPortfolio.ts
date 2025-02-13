@@ -7,14 +7,13 @@ type Result = Record<string, number>;
 // source: https://docs.airstack.xyz/airstack-docs-and-faqs/moxie/moxie-fan-token-balances#check-if-certain-user-hold-certain-fan-token
 export async function getFanPortfolio({ scoutFid }: { scoutFid: number }): Promise<Record<string, number>> {
   const query = `
-    query GetPortfolioInfo($cursor: String) {
+    query GetPortfolioInfo {
       MoxieUserPortfolios(
         input: {
           filter: {
             fid: {_eq: "${scoutFid}"}
           },
-          limit: 200,
-          cursor: $cursor
+          limit: 200
         }
       ) {
         MoxieUserPortfolio {

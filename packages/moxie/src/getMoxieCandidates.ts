@@ -109,7 +109,7 @@ export async function getMoxieCandidates({ week }: { week: ISOWeek }): Promise<M
       .filter(isTruthy)
   );
 
-  log.debug(`Processing ${scoutIds.size} scouts from ${builders.length} builders on Moxie`);
+  log.debug(`Processing ${scoutIds.size} scouts from ${builders.length} builders on Moxie for week ${week}`);
 
   // retrieve balances from Moxie API
   const scoutBalances = await Promise.all(
