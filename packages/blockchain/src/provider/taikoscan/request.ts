@@ -8,14 +8,15 @@ const supportedChains = {
 
 export type SupportedChainId = keyof typeof supportedChains;
 
-const rateLimiter = RateLimit(1500, { timeUnit: 60 * 1000, uniformDistribution: true });
+// 5 req/sec
+const rateLimiter = RateLimit(5, { uniformDistribution: true });
 
 const apikey = process.env.TAIKO_API_KEY;
 const baseUrl = 'https://api.taikoscan.io/api';
 
-type Params = {
+export type Params = {
   module: 'account' | 'contract';
-  action: 'txlist' | 'getcontractcreation';
+  action: 'txlist' | 'getcontractcreation' | 'getsourcecode';
   address?: string;
   startblock?: bigint;
   endblock?: bigint;
@@ -26,7 +27,8 @@ type Params = {
 
 type Response<T> = { status: '0' | '1'; message: string; result: T | string };
 
-export async function taikoRequest<T, P = Params>(params: P) {
+export async function taikoRequest<T, P extends Params = Params>(params: P) {
+  await rateLimiter();
   const response = await GET<Response<T>>(baseUrl, {
     apikey,
     ...params

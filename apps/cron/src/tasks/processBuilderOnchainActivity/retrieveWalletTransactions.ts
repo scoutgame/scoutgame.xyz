@@ -1,16 +1,19 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getWalletTransactions } from '@packages/blockchain/provider/taikoscan/client';
+import { maxRecords, getWalletTransactions } from '@packages/blockchain/provider/taikoscan/client';
+import type { SupportedChainId } from '@packages/blockchain/provider/taikoscan/request';
 import type { Address } from 'viem';
 
 const log = getLogger('cron-retrieve-wallet-transactions');
 
 export async function retrieveWalletTransactions({
+  chainId,
   contractId,
   address,
   fromBlock,
   toBlock
 }: {
+  chainId: SupportedChainId;
   contractId: string;
   address: Address;
   fromBlock: bigint;
@@ -29,13 +32,18 @@ export async function retrieveWalletTransactions({
       });
 
       if (result.length > 0) {
-        log.info(`Retrieved ${result.length} transactions for wallet ${address} (page ${currentPage})`);
+        const lastBlock = result[result.length - 1].blockNumber;
+        log.info(
+          `Retrieved ${result.length} transactions for wallet ${address} (page ${currentPage}, block: ${lastBlock})`
+        );
         allTransactions.push(...result);
-      } else {
-        break;
       }
 
-      currentPage += 1;
+      if (allTransactions.length < maxRecords) {
+        break;
+      } else {
+        currentPage += 1;
+      }
     } catch (error) {
       log.error('Error retrieving wallet transactions', { error, address, currentPage });
       throw error;
