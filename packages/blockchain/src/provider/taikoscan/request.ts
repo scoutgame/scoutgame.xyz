@@ -1,7 +1,7 @@
 import { GET } from '@packages/utils/http';
 import { RateLimit } from 'async-sema';
 
-const supportedChains = {
+export const supportedChains = {
   167000: 'taiko',
   167009: 'taiko_hekla'
 } as const;

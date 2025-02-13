@@ -2,6 +2,7 @@ import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getLogs, getTransactionReceipt, getBlock } from '@packages/blockchain/provider/ankr/client';
 import type { SupportedChainId } from '@packages/blockchain/provider/ankr/request';
+import { supportedChains } from '@packages/blockchain/provider/ankr/request';
 import { toJson } from '@packages/utils/json';
 import type { Address } from 'viem';
 
@@ -17,15 +18,21 @@ export async function retrieveContractTransactions({
   toBlock: originalToBlock,
   contractId,
   pageSize = defaultPageSize,
-  chainId
+  chainId: _chainId
 }: {
   address: Address;
   fromBlock: bigint;
   toBlock: bigint;
   contractId: string;
   pageSize?: bigint;
-  chainId: SupportedChainId;
+  chainId: number;
 }) {
+  const chainId = _chainId as SupportedChainId;
+  if (!supportedChains[chainId]) {
+    log.error('Chain id', chainId, 'not supported by Ankr');
+    return;
+  }
+
   for (let currentBlock = fromBlock; currentBlock <= originalToBlock; currentBlock += pageSize) {
     const nextStep = currentBlock + (pageSize - BigInt(1));
     const toBlock = nextStep > originalToBlock ? originalToBlock : nextStep;

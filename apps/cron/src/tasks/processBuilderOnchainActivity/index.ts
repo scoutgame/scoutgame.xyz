@@ -2,9 +2,6 @@ import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getBlockNumberByDateCached } from '@packages/blockchain/getBlockByDate';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { getLogs, getTransactionReceipt, getBlock } from '@packages/blockchain/provider/ankr/client';
-import type { SupportedChainId } from '@packages/blockchain/provider/ankr/request';
-import { toJson } from '@packages/utils/json';
 import type Koa from 'koa';
 import type { Address } from 'viem';
 
@@ -57,7 +54,7 @@ export async function processBuilderOnchainActivity(
         fromBlock,
         toBlock: latestBlock,
         contractId: contract.id,
-        chainId: contract.chainId as SupportedChainId
+        chainId: contract.chainId
       });
 
       const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);
@@ -102,7 +99,7 @@ export async function processBuilderOnchainActivity(
         fromBlock,
         toBlock: latestBlock,
         walletId: wallet.id,
-        chainId: wallet.chainId as SupportedChainId
+        chainId: wallet.chainId
       });
 
       const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);

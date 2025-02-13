@@ -2,24 +2,31 @@ import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { maxRecords, getWalletTransactions } from '@packages/blockchain/provider/taikoscan/client';
 import type { SupportedChainId } from '@packages/blockchain/provider/taikoscan/request';
+import { supportedChains } from '@packages/blockchain/provider/taikoscan/request';
 import { toJson } from '@packages/utils/json';
 import type { Address } from 'viem';
 
 const log = getLogger('cron-retrieve-wallet-transactions');
 
 export async function retrieveWalletTransactions({
-  chainId,
+  chainId: _chainId,
   walletId,
   address,
   fromBlock,
   toBlock
 }: {
-  chainId: SupportedChainId;
+  chainId: number;
   walletId: string;
   address: Address;
   fromBlock: bigint;
   toBlock: bigint;
 }) {
+  const chainId = _chainId as SupportedChainId;
+  if (!supportedChains[chainId]) {
+    log.error('Chain id', chainId, 'not supported by Taikoscan');
+    return;
+  }
+
   const allTransactions: Awaited<ReturnType<typeof getWalletTransactions>> = [];
   let currentPage = 1;
 
