@@ -51,7 +51,7 @@ export async function generateWeeklyClaims({
   for (const claim of claims) {
     const proof = getMerkleProofs(weeklyClaimsCalculated.merkleProofs.tree, {
       address: claim.address,
-      amount: claim.amount
+      amount: claim.amount.toString()
     });
 
     proofsMap[claim.address] = proof;
@@ -94,7 +94,7 @@ export async function generateWeeklyClaims({
         week,
         merkleTreeRoot: rootHashWithNullByte,
         season: getCurrentSeasonStart(),
-        totalClaimable: claims.reduce((acc, claim) => acc + claim.amount, 0),
+        totalClaimable: claims.reduce((acc, claim) => acc + Number(claim.amount), 0),
         claims: claimsBody,
         proofsMap
       }

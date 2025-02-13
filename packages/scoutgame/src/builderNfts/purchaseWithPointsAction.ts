@@ -49,6 +49,7 @@ export const purchaseWithPointsAction = authActionClient
       throw new Error('Scout not found');
     }
 
+    // TODO: use the correct client for the season when we move to $SCOUT
     const currentPrice = await (parsedInput.nftType === 'starter_pack'
       ? getBuilderNftStarterPackReadonlyClient({
           chain: optimism,

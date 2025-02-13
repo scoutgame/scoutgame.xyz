@@ -170,35 +170,35 @@ describe('calculateWeeklyClaims', () => {
       claims: expect.arrayContaining([
         {
           address: builder1Wallet,
-          amount: 16
+          amount: '16'
         },
         {
           address: builder2Wallet,
-          amount: 13
+          amount: '13'
         },
         {
           address: builder3Wallet,
-          amount: 12
+          amount: '12'
         },
         {
           address: scout1Wallet,
-          amount: 9
+          amount: '9'
         },
         {
           address: scout2Wallet,
-          amount: 5
+          amount: '5'
         },
         {
           address: scout3Wallet,
-          amount: 7
+          amount: '7'
         },
         {
           address: scout4Wallet,
-          amount: 8
+          amount: '8'
         },
         {
           address: scout5Wallet,
-          amount: 8
+          amount: '8'
         }
       ]),
       weeklyClaimId,
@@ -300,7 +300,7 @@ describe('calculateWeeklyClaims', () => {
       ])
     });
 
-    const totalTokensInClaims = weeklyClaimsData.claims.reduce((sum, claim) => sum + claim.amount, 0);
+    const totalTokensInClaims = weeklyClaimsData.claims.reduce((sum, claim) => sum + Number(claim.amount), 0);
     const totalTokensInReceipts = weeklyClaimsData.tokenReceipts.reduce((sum, receipt) => sum + receipt.value, 0);
 
     expect(totalTokensInClaims).toBe(totalTokensInReceipts);

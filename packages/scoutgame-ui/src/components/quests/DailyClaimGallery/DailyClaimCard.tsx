@@ -13,41 +13,60 @@ import { useRef } from 'react';
 
 import { useGetQuests } from '../../../hooks/api/quests';
 import { useUser } from '../../../providers/UserProvider';
-import { DailyClaimGift } from '../../claim/components/common/DailyClaimGift';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 function AnimatedContent({
   isClaimed,
+  canClaim,
   points,
-  variant
+  weekDay,
+  canClaimNext
 }: {
   isClaimed: boolean;
+  canClaim: boolean;
+  canClaimNext: boolean;
   points: number;
-  variant: 'disabled' | 'secondary' | 'primary';
+  weekDay: string;
 }) {
   return (
     <AnimatePresence mode='wait' initial={false}>
       {isClaimed ? (
         <Stack
           key='claimed'
-          direction='row'
+          direction='column'
           gap={0.5}
           alignItems='center'
-          zIndex={1}
-          position='absolute'
-          top={18}
-          bottom={0}
           component={motion.div}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.5 }}
         >
-          <Typography fontWeight={600}>{points}</Typography>
-          <Image src='/images/profile/scout-game-profile-icon.png' alt='Scout game icon' width={15} height={8.5} />
+          <Stack direction='row' gap={0.5} alignItems='center'>
+            <Typography fontWeight={600}>+{points}</Typography>
+            <Image src='/images/profile/scout-game-profile-icon.png' alt='Scout game icon' width={15} height={8.5} />
+          </Stack>
+          <Stack direction='row' gap={0.5} alignItems='center'>
+            <CheckCircleIcon fontSize='small' color='secondary' data-test='claimed-icon' />
+            <Typography variant='body2'>{weekDay}</Typography>
+          </Stack>
         </Stack>
-      ) : variant !== 'disabled' ? (
+      ) : canClaim ? (
+        <Stack
+          key='can-claim'
+          component={motion.div}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          alignItems='center'
+        >
+          <Typography variant='body2' fontWeight={600}>
+            Claim
+          </Typography>
+        </Stack>
+      ) : canClaimNext ? (
         <Stack
           key='unclaimed'
           component={motion.div}
@@ -55,67 +74,27 @@ function AnimatedContent({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          zIndex={1}
-          top={30}
-          bottom={0}
-          position='absolute'
+          alignItems='center'
+          gap={0.5}
         >
-          <Image src='/images/quests/question-icon.svg' alt='Quest icon' width={24} height={24} />
+          <Image src='/images/quests/question-icon.svg' alt='Daily quest unclaimedicon' width={24} height={24} />
+          <Typography variant='body2'>{weekDay}</Typography>
         </Stack>
-      ) : null}
-    </AnimatePresence>
-  );
-}
-
-export function AnimatedGift({
-  isClaimed,
-  isBonus = false,
-  variant
-}: {
-  isClaimed: boolean;
-  isBonus?: boolean;
-  variant: 'disabled' | 'secondary' | 'primary';
-}) {
-  return (
-    <AnimatePresence initial={false}>
-      {!isClaimed && (
-        <Stack sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-          {isBonus && variant !== 'disabled' ? (
-            <Stack direction='row' gap={0.5} alignItems='flex-end'>
-              <DailyClaimGift variant={variant} size={44} />
-              <DailyClaimGift variant={variant} size={70} />
-              <DailyClaimGift variant={variant} size={44} />
-            </Stack>
-          ) : (
-            <DailyClaimGift variant={variant} size={64} />
-          )}
-        </Stack>
-      )}
-    </AnimatePresence>
-  );
-}
-
-export function AnimatedClaimedIcon({ isClaimed }: { isClaimed: boolean }) {
-  return (
-    <AnimatePresence>
-      {isClaimed && (
+      ) : (
         <Stack
+          key='lost'
           component={motion.div}
-          initial={{ opacity: 0 }}
-          exit={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, ease: 'easeInOut' }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          alignItems='center'
+          gap={0.5}
         >
-          <CheckCircleIcon
-            fontSize='small'
-            color='secondary'
-            data-test='claimed-icon'
-            sx={{
-              position: 'absolute',
-              top: 5,
-              right: 5
-            }}
-          />
+          <Image src='/images/quests/question-icon-dark.svg' alt='Daily quest lost icon' width={24} height={24} />
+          <Typography variant='body2' color='text.disabled'>
+            {weekDay}
+          </Typography>
         </Stack>
       )}
     </AnimatePresence>
@@ -148,27 +127,12 @@ export function DailyClaimCard({
   const isPastDay = currentWeekDay > dailyClaim.day;
   const isClaimToday = currentWeekDay === dailyClaim.day;
   const isClaimed = dailyClaim.claimed;
-  const canClaim = isClaimToday && ((dailyClaim.isBonus && canClaimBonus) || !dailyClaim.isBonus) && !isClaimed;
-
-  function getButtonLabel() {
-    if (dailyClaim.isBonus) {
-      return hasClaimedStreak ? 'Bonus' : 'Streak broken';
-    } else if (canClaim) {
-      return 'Claim';
-    } else {
-      return WEEKDAYS[dailyClaim.day - 1];
-    }
-  }
-
-  function getVariant() {
-    if (isPastDay || (dailyClaim.isBonus && !hasClaimedStreak)) {
-      return 'disabled';
-    } else if (canClaim) {
-      return 'secondary';
-    } else {
-      return 'primary';
-    }
-  }
+  const canClaim = isClaimToday && !isClaimed && ((dailyClaim.isBonus && canClaimBonus) || !dailyClaim.isBonus);
+  const canClaimNext = Boolean(
+    (!isClaimToday && !isPastDay && !isClaimed && !dailyClaim.isBonus) || (dailyClaim.isBonus && hasClaimedStreak)
+  );
+  const buttonLabel = dailyClaim.isBonus ? 'Bonus' : WEEKDAYS[dailyClaim.day - 1];
+  const claimedBorder = isClaimed ? { border: 'solid 1px', borderColor: 'secondary.main' } : {};
 
   async function handleClaim() {
     if (canClaim) {
@@ -179,22 +143,15 @@ export function DailyClaimCard({
       myConfetti({ origin: { x: 0.5, y: 1 }, particleCount: 150 });
     }
   }
-  const buttonLabel = getButtonLabel();
-  const variant = getVariant();
 
   return (
     <Stack
       component={motion.div}
       whileTap={{ scale: canClaim ? 0.9 : 1 }}
       sx={{
-        backgroundColor: isClaimed
-          ? 'background.light'
-          : isPastDay || (dailyClaim.isBonus && !hasClaimedStreak)
-            ? 'background.dark'
-            : canClaim
-              ? 'secondary.main'
-              : 'primary.dark',
-        height: 90,
+        ...claimedBorder,
+        backgroundColor: canClaim ? 'primary.main' : 'primary.dark',
+        height: 60,
         paddingBottom: 0.25,
         borderRadius: 1,
         alignItems: 'center',
@@ -204,47 +161,26 @@ export function DailyClaimCard({
       data-test={`daily-claim-${canClaim ? 'enabled' : 'disabled'}`}
       onClick={handleClaim}
     >
-      <Stack
-        component={motion.div}
-        whileHover={{ scale: 1, rotate: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
-        variants={{
-          claim: {
-            scale: [1, 1.1, 1, 1.1, 1],
-            rotate: [0, -15, 0, 15, 0],
-            transition: {
-              duration: 2,
-              ease: 'easeInOut',
-              times: [0, 0.2, 0.4, 0.6, 0.8, 1],
-              repeat: Infinity
-            }
-          },
-          default: { scale: 1, rotate: 0 }
-        }}
-        animate={canClaim ? 'claim' : 'default'}
-        flex={1}
-        position='relative'
-        alignItems='center'
-        justifyContent='center'
-        width='100%'
-      >
-        <AnimatedGift isClaimed={isClaimed} isBonus={dailyClaim.isBonus} variant={variant} />
-        <AnimatedClaimedIcon isClaimed={isClaimed} />
-        <AnimatedContent isClaimed={isClaimed} points={dailyClaim.points} variant={variant} />
+      <Stack flex={1} position='relative' alignItems='center' justifyContent='center' width='100%'>
+        <AnimatedContent
+          isClaimed={isClaimed}
+          points={dailyClaim.points}
+          weekDay={buttonLabel}
+          canClaim={canClaim}
+          canClaimNext={canClaimNext}
+        />
         {isClaimToday && (
           <Stack
             component='canvas'
             ref={canvasRef}
             position='absolute'
-            bottom={-150}
+            bottom={-50}
             zIndex={100}
             width={300}
             height={300}
           />
         )}
       </Stack>
-      <Typography variant='body2' color={canClaim ? 'secondary.dark' : 'text.primary'} fontWeight={600}>
-        {buttonLabel}
-      </Typography>
     </Stack>
   );
 }

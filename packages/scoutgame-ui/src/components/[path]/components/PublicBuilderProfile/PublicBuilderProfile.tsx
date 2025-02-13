@@ -46,6 +46,7 @@ export async function PublicBuilderProfile({
         level: level ?? 0,
         estimatedPayout: estimatedPayout ?? 0,
         nftImageUrl: builderNft?.imageUrl,
+        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
         price: builderNft?.currentPrice ?? BigInt(0)
       }}
       allTimePoints={allTimePoints}

@@ -1,7 +1,10 @@
+'use client';
+
 import { Grid2 as Grid, Skeleton, Stack, Typography } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
 import { DailyClaimCard } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimCard';
+import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 // A time based component needs to be rendered only on the client since the server and client will not match
@@ -18,16 +21,63 @@ const NextClaimCountdown = dynamic(
 
 export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }) {
   const isSequential = isSequentialUpToToday(dailyClaims);
+  const currentWeekDay = getServerDate().weekday;
+  const canClaimToday = dailyClaims.some((dailyClaim) => dailyClaim.day === currentWeekDay && !dailyClaim.claimed);
 
   return (
-    <Stack justifyContent='center' alignItems='center' gap={1} my={2}>
+    <Stack justifyContent='center' alignItems='center' gap={1} my={2} p={2}>
       <Typography variant='h4' color='secondary' fontWeight={600} zIndex={1}>
         Daily Claim
       </Typography>
-      <NextClaimCountdown />
-      <Grid container spacing={1} width='100%'>
+      <Stack
+        component={motion.div}
+        whileHover={{ scale: 1, rotate: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
+        variants={{
+          claim: {
+            scale: [1, 1.1, 1, 1.1, 1],
+            rotate: [0, -15, 0, 15, 0],
+            transition: {
+              duration: 2,
+              ease: 'easeInOut',
+              times: [0, 0.2, 0.4, 0.6, 0.8, 1],
+              repeat: Infinity
+            }
+          },
+          default: { scale: 1, rotate: 0 }
+        }}
+        animate={canClaimToday ? 'claim' : 'default'}
+        width={200}
+        height={200}
+        alignItems='center'
+        justifyContent='center'
+        m='auto'
+        position='relative'
+        sx={{
+          opacity: 1,
+          '&:before': {
+            content: '""',
+            display: 'block',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            opacity: canClaimToday ? 1 : 0.2,
+            backgroundImage: 'url(/images/quests/mystery-box.svg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat'
+          },
+          '& > *': {
+            zIndex: 1
+          }
+        }}
+      >
+        {canClaimToday ? null : <NextClaimCountdown />}
+      </Stack>
+      <Grid container spacing={1} width={280}>
         {dailyClaims.map((dailyClaim) => (
-          <Grid size={dailyClaim.isBonus ? 8 : 4} key={`${dailyClaim.day}-${dailyClaim.isBonus}`}>
+          <Grid size={3} key={`${dailyClaim.day}-${dailyClaim.isBonus}`}>
             <DailyClaimCard
               dailyClaim={dailyClaim}
               hasClaimedStreak={isSequential}
