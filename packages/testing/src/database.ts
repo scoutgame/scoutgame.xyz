@@ -821,11 +821,13 @@ export function mockUserWeeklyStats({
 
 export async function mockScoutProject({
   name = 'Test Project',
+  chainId = 1,
   userId,
   memberIds = [],
   deployerAddress,
   contractAddresses = []
 }: {
+  chainId?: number;
   name?: string;
   userId?: string;
   memberIds?: string[];
@@ -883,7 +885,7 @@ export async function mockScoutProject({
     await prisma.scoutProjectContract.createMany({
       data: contractAddresses.map((address) => ({
         address,
-        chainId: 1,
+        chainId,
         projectId: scoutProject.id,
         deployerId: deployer.id,
         deployTxHash: `0x${Math.random().toString(16).substring(2)}`,

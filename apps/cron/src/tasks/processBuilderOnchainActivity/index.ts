@@ -27,7 +27,7 @@ export async function processBuilderOnchainActivity(
         }
       : undefined
   );
-  log.info('Analyzing interactions for', contracts.length, 'contracts...', { windowStart });
+  log.info(`Analyzing interactions for ${contracts.length} contracts...`, { windowStart });
 
   for (const contract of contracts) {
     try {
@@ -71,7 +71,7 @@ export async function processBuilderOnchainActivity(
   }
 
   const wallets = await prisma.scoutProjectWallet.findMany();
-  log.info('Analyzing interactions for', wallets.length, 'wallets...', { windowStart });
+  log.info(`Analyzing interactions for ${wallets.length} wallets...`, { windowStart });
 
   for (const wallet of wallets) {
     try {
