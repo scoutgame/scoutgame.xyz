@@ -15,6 +15,7 @@ async function wipeTestData() {
     await prisma.githubEvent.deleteMany({});
     await prisma.githubRepo.deleteMany({});
     await prisma.githubUser.deleteMany({});
+    await prisma.scoutProject.deleteMany({});
     await prisma.scout.deleteMany({});
     // eslint-disable-next-line no-console
     log.debug('✅ Database wiped');

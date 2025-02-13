@@ -59,6 +59,5 @@ export async function getBlockNumberByDateCached({ date, chainId }: { date: Date
     // retrieve the block number
     blockNumbersByDate[chainId][dateKey] = (await getBlockByDate({ date, chainId })).number;
   }
-
   return blockNumbersByDate[chainId][dateKey];
 }

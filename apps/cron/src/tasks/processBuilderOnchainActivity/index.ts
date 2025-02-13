@@ -50,7 +50,6 @@ export async function processBuilderOnchainActivity(
       const fromBlock = lastPollEvent
         ? lastPollEvent.toBlockNumber + BigInt(1)
         : await getBlockNumberByDateCached({ date: windowStart, chainId: contract.chainId });
-
       // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
       await retrieveContractTransactions({

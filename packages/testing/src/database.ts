@@ -889,8 +889,7 @@ export async function mockScoutProject({
         deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
         deployedAt: new Date(),
         createdBy,
-        blockNumber: 1,
-        type: 'contract'
+        blockNumber: 1
       }))
     });
     contracts = await prisma.scoutProjectContract.findMany({
