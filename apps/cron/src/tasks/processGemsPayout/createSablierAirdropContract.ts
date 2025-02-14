@@ -6,6 +6,7 @@ import { base, optimism, optimismSepolia, taiko } from 'viem/chains';
 
 import SablierAirdropFactoryAbi from './SablierMerkleFactory.json';
 
+// Merkle Airdrops Deployment Addresses: https://docs.sablier.com/guides/airdrops/deployments
 const SablierAirdropFactoryContractRecords: Record<number, `0x${string}`> = {
   [optimismSepolia.id]: '0x2934A7aDDC3000D1625eD1E8D21C070a89073702',
   [taiko.id]: '0x39D4D8C60D3596B75bc09863605BBB4dcE8243F1',
