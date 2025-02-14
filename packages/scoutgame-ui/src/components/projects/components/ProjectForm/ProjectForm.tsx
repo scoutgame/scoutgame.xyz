@@ -21,19 +21,6 @@ export type TemporaryAddress = {
   chainId: number;
 };
 
-export type Contract = {
-  address: string;
-  chainId: number;
-  deployers: Deployer[];
-};
-
-export type Wallet = {
-  address: string;
-  chainId: number;
-  verified: boolean;
-  signature: string;
-};
-
 export function ProjectForm({
   control,
   isExecuting,
@@ -43,9 +30,7 @@ export function ProjectForm({
   deployers,
   setDeployers,
   cancelLink,
-  showRemoveMemberConfirmation,
-  contracts,
-  wallets
+  showRemoveMemberConfirmation
 }: {
   errors?: string[] | null;
   isDirty: boolean;
@@ -56,13 +41,9 @@ export function ProjectForm({
   setDeployers: React.Dispatch<React.SetStateAction<Deployer[]>>;
   cancelLink: string;
   showRemoveMemberConfirmation: boolean;
-  contracts: Contract[];
-  wallets: Wallet[];
 }) {
   const isMdScreen = useMdScreen();
   const [isAgentWalletFormOpen, setIsAgentWalletFormOpen] = useState(false);
-  const [isSmartContractFormOpen, setIsSmartContractFormOpen] = useState(false);
-  const [tempAddress, setTempAddress] = useState<TemporaryAddress | null>(null);
 
   return (
     <>
@@ -154,65 +135,11 @@ export function ProjectForm({
               Sign a message with the wallet that deployed your contracts to prove ownership.
             </Typography>
 
-            {(isSmartContractFormOpen || contracts.length > 0) && (
-              <ProjectSmartContractForm
-                onClose={() => {
-                  setIsSmartContractFormOpen(false);
-                  setTempAddress(null);
-                }}
-                control={control}
-                deployers={deployers}
-                setDeployers={setDeployers}
-                tempContract={tempAddress}
-                setTempContract={setTempAddress}
-              />
-            )}
-            {(isAgentWalletFormOpen || wallets.length > 0) && (
-              <ProjectAgentWalletForm
-                onClose={() => {
-                  setIsAgentWalletFormOpen(false);
-                  setTempAddress(null);
-                }}
-                control={control}
-                tempWallet={tempAddress}
-                setTempWallet={setTempAddress}
-              />
-            )}
-
-            {!isSmartContractFormOpen && !isAgentWalletFormOpen && (
-              <Stack direction='row' gap={2}>
-                <Button
-                  variant='outlined'
-                  color='secondary'
-                  sx={{ width: 'fit-content' }}
-                  startIcon={<AddCircleOutlineIcon />}
-                  onClick={() => {
-                    setTempAddress({
-                      address: '',
-                      chainId: 167000
-                    });
-                    setIsSmartContractFormOpen(true);
-                  }}
-                >
-                  Add dapp
-                </Button>
-                <Button
-                  variant='outlined'
-                  color='secondary'
-                  sx={{ width: 'fit-content' }}
-                  startIcon={<AddCircleOutlineIcon />}
-                  onClick={() => {
-                    setTempAddress({
-                      address: '',
-                      chainId: 167000
-                    });
-                    setIsAgentWalletFormOpen(true);
-                  }}
-                >
-                  Add agent
-                </Button>
-              </Stack>
-            )}
+            <Stack>
+              <ProjectSmartContractForm control={control} deployers={deployers} setDeployers={setDeployers} />
+              <Divider sx={{ my: 2 }} />
+              <ProjectAgentWalletForm control={control} />
+            </Stack>
           </Stack>
         </Stack>
         <Divider />

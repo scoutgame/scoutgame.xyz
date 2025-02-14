@@ -2,9 +2,20 @@
 
 import { log } from '@charmverse/core/log';
 import { stringUtils } from '@charmverse/core/utilities';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { Button, CircularProgress, FormLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  FormLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from '@packages/scoutgame/projects/constants';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { getContractDeployerAddressAction } from '@packages/scoutgame/projects/getContractDeployerAddressAction';
@@ -23,22 +34,18 @@ import type { TemporaryAddress } from '../../components/ProjectForm/ProjectForm'
 
 export type Deployer = { address: string; verified: boolean; signature: string | null };
 export function ProjectSmartContractForm({
-  onClose,
   control,
   deployers,
-  setDeployers,
-  tempContract,
-  setTempContract
+  setDeployers
 }: {
-  tempContract: TemporaryAddress | null;
-  setTempContract: React.Dispatch<React.SetStateAction<TemporaryAddress | null>>;
-  onClose: VoidFunction;
   control: Control<CreateScoutProjectFormValues>;
   deployers: Deployer[];
   setDeployers: React.Dispatch<React.SetStateAction<Deployer[]>>;
 }) {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState<`0x${string}` | null>(null);
+  const [tempContract, setTempContract] = useState<TemporaryAddress | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const { signMessageAsync } = useSignMessage();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -85,8 +92,8 @@ export function ProjectSmartContractForm({
   const onCancel = useCallback(() => {
     setErrorMessage(null);
     setTempContract(null);
-    onClose();
-  }, [setTempContract, onClose, setErrorMessage]);
+    setIsFormOpen(false);
+  }, [setTempContract, setIsFormOpen, setErrorMessage]);
 
   const onSave = useCallback(async () => {
     if (tempContract) {
@@ -112,11 +119,11 @@ export function ProjectSmartContractForm({
       });
 
       setTempContract(null);
-      onClose();
+      setIsFormOpen(false);
     }
-  }, [append, tempContract, getContractDeployerAddress, setTempContract, onClose, setDeployers, deployers]);
+  }, [append, tempContract, getContractDeployerAddress, setTempContract, setDeployers, deployers]);
 
-  const groupedContracts = useMemo(() => {
+  const _groupedContracts = useMemo(() => {
     return contracts.reduce(
       (acc, contract) => {
         const deployer = deployers.find((d) => d.address === contract.deployerAddress);
@@ -182,161 +189,198 @@ export function ProjectSmartContractForm({
     [contracts, remove, setErrorMessage]
   );
 
+  const groupedContracts = Object.values(_groupedContracts);
+
   return (
-    <Stack gap={2}>
-      {Object.values(groupedContracts).map((deployer) => (
-        <Stack gap={1} key={deployer.address}>
-          <Stack flexDirection='row' alignItems='center' gap={1} justifyContent='space-between'>
-            <Stack flexDirection='row' alignItems='center' gap={1}>
-              <Typography color='secondary'>Deployer Address: {stringUtils.shortenHex(deployer.address)}</Typography>
-              {deployer.verified && <CheckCircleIcon color='secondary' fontSize='small' />}
+    <Stack gap={1}>
+      <Typography color='secondary' fontWeight={600}>
+        dApps
+      </Typography>
+      {!groupedContracts.length && !isFormOpen ? (
+        <Paper sx={{ p: 1.5 }}>
+          <Typography textAlign='center'>No dApps added to the project</Typography>
+        </Paper>
+      ) : (
+        groupedContracts.map((deployer) => (
+          <Stack gap={1} key={deployer.address}>
+            <Stack flexDirection='row' alignItems='center' gap={1} justifyContent='space-between'>
+              <Stack flexDirection='row' alignItems='center' gap={1}>
+                <Typography color='secondary'>Deployer Address: {stringUtils.shortenHex(deployer.address)}</Typography>
+                {deployer.verified && <CheckCircleIcon color='secondary' fontSize='small' />}
+              </Stack>
+              {deployer.verified ? null : (
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='small'
+                  disabled={isExecuting}
+                  // Sending the first contract address as contract is grouped by deployer address
+                  onClick={() => signWithDeployerAddress(deployer.address, deployer.contracts[0].address)}
+                >
+                  Sign
+                </Button>
+              )}
             </Stack>
-            {deployer.verified ? null : (
+            <Stack gap={1}>
+              {deployer.contracts.map((contract) => (
+                <Stack
+                  key={contract.address}
+                  gap={1}
+                  justifyContent='space-between'
+                  flexDirection='row'
+                  alignItems='center'
+                >
+                  <Stack
+                    flexDirection='row'
+                    p={1}
+                    borderRadius={1}
+                    bgcolor='background.paper'
+                    alignItems='center'
+                    justifyContent='space-between'
+                    flex={1}
+                  >
+                    <Stack gap={1} flex={0.75} flexDirection='row'>
+                      <Image
+                        src={chainRecords[contract.chainId].image}
+                        width={25}
+                        height={25}
+                        alt={chainRecords[contract.chainId].name}
+                        style={{ borderRadius: '50%' }}
+                      />
+                      <Typography color={deployer.verified ? undefined : 'error'}>
+                        {stringUtils.shortenHex(contract.address)}
+                      </Typography>
+                    </Stack>
+                    {!deployer.verified && <Typography color='error'>Must sign with Deployer Address</Typography>}
+                  </Stack>
+                  <DeleteIcon
+                    fontSize='small'
+                    onClick={() => {
+                      setSelectedContract(contract.address);
+                      setIsConfirmModalOpen(true);
+                    }}
+                    color={isExecuting ? 'disabled' : 'error'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+        ))
+      )}
+
+      {isFormOpen ? (
+        <>
+          <Stack flexDirection='row' alignItems='center' gap={2}>
+            <Stack flex={0.75}>
+              <FormLabel>dApp Contract Address</FormLabel>
+              <TextField
+                disabled={isExecuting}
+                value={tempContract?.address}
+                onChange={(e) => setTempContract(tempContract ? { ...tempContract, address: e.target.value } : null)}
+                placeholder='0x0000000...'
+              />
+            </Stack>
+            <Stack flex={0.25}>
+              <FormLabel>Select chain</FormLabel>
+              <Stack flexDirection='row' alignItems='center' gap={1} flex={1}>
+                <Select
+                  value={tempContract?.chainId}
+                  onChange={(e) =>
+                    setTempContract(tempContract ? { ...tempContract, chainId: e.target.value as number } : null)
+                  }
+                  disabled={isExecuting}
+                  fullWidth
+                  displayEmpty
+                  renderValue={(chainId) =>
+                    chainId ? (
+                      <Stack flexDirection='row' alignItems='center' gap={1}>
+                        <Image
+                          width={25}
+                          height={25}
+                          src={chainRecords[chainId].image}
+                          alt={chainRecords[chainId].name}
+                          style={{ borderRadius: '50%' }}
+                        />
+                        <Typography>{chainRecords[chainId].name}</Typography>
+                      </Stack>
+                    ) : (
+                      <Typography>No options selected</Typography>
+                    )
+                  }
+                >
+                  {Object.entries(chainRecords).map(([chainId, chain]) => (
+                    <MenuItem key={chainId} value={chainId} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Image
+                        width={25}
+                        height={25}
+                        src={chain.image}
+                        alt={chain.name}
+                        style={{ borderRadius: '50%' }}
+                      />
+                      <Typography>{chain.name}</Typography>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Stack>
+            </Stack>
+          </Stack>
+          <Stack
+            flexDirection='row'
+            alignItems='center'
+            width='100%'
+            justifyContent={isExecuting || errorMessage ? 'space-between' : 'flex-end'}
+          >
+            {isExecuting && (
+              <Stack flexDirection='row' alignItems='center' gap={1}>
+                <CircularProgress size={20} />
+                <Typography>Fetching deployer address...</Typography>
+              </Stack>
+            )}
+            {errorMessage && !isExecuting && (
+              <Stack flexDirection='row' alignItems='center'>
+                <FormErrors errors={[errorMessage]} />
+              </Stack>
+            )}
+            <Stack flexDirection='row' alignItems='center' gap={1}>
+              <Button
+                variant='outlined'
+                color='primary'
+                sx={{ width: 'fit-content' }}
+                onClick={onCancel}
+                disabled={isExecuting}
+              >
+                Cancel
+              </Button>
               <Button
                 variant='contained'
                 color='primary'
-                size='small'
-                disabled={isExecuting}
-                // Sending the first contract address as contract is grouped by deployer address
-                onClick={() => signWithDeployerAddress(deployer.address, deployer.contracts[0].address)}
+                sx={{ width: 'fit-content' }}
+                onClick={onSave}
+                disabled={!tempContract || !tempContract.address || !tempContract.chainId || isExecuting}
               >
-                Sign
+                Save
               </Button>
-            )}
+            </Stack>
           </Stack>
-          <Stack gap={1}>
-            {deployer.contracts.map((contract) => (
-              <Stack
-                key={contract.address}
-                gap={1}
-                justifyContent='space-between'
-                flexDirection='row'
-                alignItems='center'
-              >
-                <Stack
-                  flexDirection='row'
-                  p={1}
-                  borderRadius={1}
-                  bgcolor='background.paper'
-                  alignItems='center'
-                  justifyContent='space-between'
-                  flex={1}
-                >
-                  <Stack gap={1} flex={0.75} flexDirection='row'>
-                    <Image
-                      src={chainRecords[contract.chainId].image}
-                      width={25}
-                      height={25}
-                      alt={chainRecords[contract.chainId].name}
-                      style={{ borderRadius: '50%' }}
-                    />
-                    <Typography color={deployer.verified ? undefined : 'error'}>
-                      {stringUtils.shortenHex(contract.address)}
-                    </Typography>
-                  </Stack>
-                  {!deployer.verified && <Typography color='error'>Must sign with Deployer Address</Typography>}
-                </Stack>
-                <DeleteIcon
-                  fontSize='small'
-                  onClick={() => {
-                    setSelectedContract(contract.address);
-                    setIsConfirmModalOpen(true);
-                  }}
-                  color={isExecuting ? 'disabled' : 'error'}
-                  sx={{ cursor: 'pointer' }}
-                />
-              </Stack>
-            ))}
-          </Stack>
-        </Stack>
-      ))}
-
-      <Stack flexDirection='row' alignItems='center' gap={2}>
-        <Stack flex={0.75}>
-          <FormLabel>dApp Contract Address</FormLabel>
-          <TextField
-            disabled={isExecuting}
-            value={tempContract?.address}
-            onChange={(e) => setTempContract(tempContract ? { ...tempContract, address: e.target.value } : null)}
-            placeholder='0x0000000...'
-          />
-        </Stack>
-        <Stack flex={0.25}>
-          <FormLabel>Select chain</FormLabel>
-          <Stack flexDirection='row' alignItems='center' gap={1} flex={1}>
-            <Select
-              value={tempContract?.chainId}
-              onChange={(e) =>
-                setTempContract(tempContract ? { ...tempContract, chainId: e.target.value as number } : null)
-              }
-              disabled={isExecuting}
-              fullWidth
-              displayEmpty
-              renderValue={(chainId) =>
-                chainId ? (
-                  <Stack flexDirection='row' alignItems='center' gap={1}>
-                    <Image
-                      width={25}
-                      height={25}
-                      src={chainRecords[chainId].image}
-                      alt={chainRecords[chainId].name}
-                      style={{ borderRadius: '50%' }}
-                    />
-                    <Typography>{chainRecords[chainId].name}</Typography>
-                  </Stack>
-                ) : (
-                  <Typography>No options selected</Typography>
-                )
-              }
-            >
-              {Object.entries(chainRecords).map(([chainId, chain]) => (
-                <MenuItem key={chainId} value={chainId} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Image width={25} height={25} src={chain.image} alt={chain.name} style={{ borderRadius: '50%' }} />
-                  <Typography>{chain.name}</Typography>
-                </MenuItem>
-              ))}
-            </Select>
-          </Stack>
-        </Stack>
-      </Stack>
-      <Stack
-        flexDirection='row'
-        alignItems='center'
-        width='100%'
-        justifyContent={isExecuting || errorMessage ? 'space-between' : 'flex-end'}
-      >
-        {isExecuting && (
-          <Stack flexDirection='row' alignItems='center' gap={1}>
-            <CircularProgress size={20} />
-            <Typography>Fetching deployer address...</Typography>
-          </Stack>
-        )}
-        {errorMessage && !isExecuting && (
-          <Stack flexDirection='row' alignItems='center'>
-            <FormErrors errors={[errorMessage]} />
-          </Stack>
-        )}
-        <Stack flexDirection='row' alignItems='center' gap={1}>
-          <Button
-            variant='outlined'
-            color='primary'
-            sx={{ width: 'fit-content' }}
-            onClick={onCancel}
-            disabled={isExecuting}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant='contained'
-            color='primary'
-            sx={{ width: 'fit-content' }}
-            onClick={onSave}
-            disabled={!tempContract || !tempContract.address || !tempContract.chainId || isExecuting}
-          >
-            Save
-          </Button>
-        </Stack>
-      </Stack>
+        </>
+      ) : (
+        <Button
+          variant='outlined'
+          color='secondary'
+          sx={{ width: 'fit-content' }}
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={() => {
+            setTempContract({
+              address: '',
+              chainId: 167000
+            });
+            setIsFormOpen(true);
+          }}
+        >
+          Add dapp
+        </Button>
+      )}
       <Dialog title='Remove Contract' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
         <Typography>Are you sure you want to remove this contract from the project?</Typography>
         <Stack flexDirection='row' alignItems='center' gap={1} mt={2}>

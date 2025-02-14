@@ -2,8 +2,19 @@
 
 import { log } from '@charmverse/core/log';
 import { stringUtils } from '@charmverse/core/utilities';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
-import { Button, CircularProgress, FormLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  FormLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import { AGENT_WALLET_SIGN_MESSAGE } from '@packages/scoutgame/projects/constants';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import Image from 'next/image';
@@ -20,23 +31,15 @@ import { chainRecords } from '../../constants';
 
 export type Deployer = { address: string; verified: boolean; signature: string | null };
 
-export function ProjectAgentWalletForm({
-  onClose,
-  control,
-  tempWallet,
-  setTempWallet
-}: {
-  onClose: VoidFunction;
-  control: Control<CreateScoutProjectFormValues>;
-  tempWallet: TemporaryAddress | null;
-  setTempWallet: React.Dispatch<React.SetStateAction<TemporaryAddress | null>>;
-}) {
+export function ProjectAgentWalletForm({ control }: { control: Control<CreateScoutProjectFormValues> }) {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState<`0x${string}` | null>(null);
   const [isVerifyingWallet, setIsVerifyingWallet] = useState(false);
   const { signMessageAsync } = useSignMessage();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const trackEvent = useTrackEvent();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [agentWallet, setAgentWallet] = useState<TemporaryAddress | null>(null);
 
   const {
     fields: wallets,
@@ -76,13 +79,13 @@ export function ProjectAgentWalletForm({
 
   const onCancel = useCallback(() => {
     setErrorMessage(null);
-    setTempWallet(null);
-    onClose();
-  }, [setTempWallet, onClose, setErrorMessage]);
+    setAgentWallet(null);
+    setIsFormOpen(false);
+  }, [setErrorMessage, setAgentWallet, setIsFormOpen]);
 
-  const onSave = useCallback(async () => {
-    if (tempWallet) {
-      const { signature, isValid } = await verifyWalletOwnership(tempWallet.address as `0x${string}`);
+  const onVerify = useCallback(async () => {
+    if (agentWallet) {
+      const { signature, isValid } = await verifyWalletOwnership(agentWallet.address as `0x${string}`);
 
       if (!isValid || !signature) {
         setErrorMessage('Wallet is not verified');
@@ -90,15 +93,16 @@ export function ProjectAgentWalletForm({
       }
 
       append({
-        address: tempWallet.address,
-        chainId: tempWallet.chainId,
+        address: agentWallet.address,
+        chainId: agentWallet.chainId,
         verified: true,
         signature
       });
 
-      setTempWallet(null);
+      setAgentWallet(null);
+      setIsFormOpen(false);
     }
-  }, [append, tempWallet, setTempWallet, verifyWalletOwnership]);
+  }, [append, agentWallet, verifyWalletOwnership, setIsFormOpen]);
 
   const signWithWalletAddress = useCallback(
     async (walletAddress: `0x${string}`) => {
@@ -119,13 +123,13 @@ export function ProjectAgentWalletForm({
             signature
           });
           setErrorMessage(null);
-          onClose();
+          setIsFormOpen(false);
         } else {
           setErrorMessage('Deployer address is not verified');
         }
       }
     },
-    [wallets, update, setErrorMessage, verifyWalletOwnership, trackEvent, onClose]
+    [wallets, update, setErrorMessage, verifyWalletOwnership, trackEvent, setIsFormOpen]
   );
 
   const removeWallet = useCallback(
@@ -148,8 +152,12 @@ export function ProjectAgentWalletForm({
   const totalWallets = verifiedWallets.length + unverifiedWallets.length;
 
   return (
-    <Stack gap={2}>
-      {totalWallets ? (
+    <Stack gap={1}>
+      <Typography color='secondary' fontWeight={600}>
+        Agent Wallets
+      </Typography>
+
+      {totalWallets || isFormOpen ? (
         unverifiedWallets.length ? (
           <Stack gap={1}>
             {unverifiedWallets.map((wallet) => (
@@ -217,92 +225,124 @@ export function ProjectAgentWalletForm({
             ))}
           </Stack>
         )
-      ) : null}
+      ) : (
+        <Paper sx={{ p: 1.5 }}>
+          <Typography textAlign='center'>No agent wallets added to the project</Typography>
+        </Paper>
+      )}
 
-      <Stack flexDirection='row' alignItems='center' gap={2}>
-        <Stack flex={0.75}>
-          <FormLabel>Agent Wallet Address</FormLabel>
-          <TextField
-            disabled={isVerifyingWallet}
-            value={tempWallet?.address}
-            onChange={(e) => setTempWallet(tempWallet ? { ...tempWallet, address: e.target.value } : null)}
-            placeholder='0x0000000...'
-          />
-        </Stack>
-        <Stack flex={0.25}>
-          <FormLabel>Select chain</FormLabel>
-          <Stack flexDirection='row' alignItems='center' gap={1} flex={1}>
-            <Select
-              value={tempWallet?.chainId}
-              onChange={(e) => setTempWallet(tempWallet ? { ...tempWallet, chainId: e.target.value as number } : null)}
-              disabled={isVerifyingWallet}
-              fullWidth
-              displayEmpty
-              renderValue={(chainId) =>
-                chainId ? (
-                  <Stack flexDirection='row' alignItems='center' gap={1}>
-                    <Image
-                      width={25}
-                      height={25}
-                      src={chainRecords[chainId].image}
-                      alt={chainRecords[chainId].name}
-                      style={{ borderRadius: '50%' }}
-                    />
-                    <Typography>{chainRecords[chainId].name}</Typography>
-                  </Stack>
-                ) : (
-                  <Typography>No options selected</Typography>
-                )
-              }
-            >
-              {Object.entries(chainRecords).map(([chainId, chain]) => (
-                <MenuItem key={chainId} value={chainId} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Image width={25} height={25} src={chain.image} alt={chain.name} style={{ borderRadius: '50%' }} />
-                  <Typography>{chain.name}</Typography>
-                </MenuItem>
-              ))}
-            </Select>
+      {isFormOpen ? (
+        <>
+          <Stack flexDirection='row' alignItems='center' gap={2}>
+            <Stack flex={0.75}>
+              <FormLabel>Agent Wallet Address</FormLabel>
+              <TextField
+                disabled={isVerifyingWallet}
+                value={agentWallet?.address}
+                onChange={(e) => setAgentWallet(agentWallet ? { ...agentWallet, address: e.target.value } : null)}
+                placeholder='0x0000000...'
+              />
+            </Stack>
+            <Stack flex={0.25}>
+              <FormLabel>Select chain</FormLabel>
+              <Stack flexDirection='row' alignItems='center' gap={1} flex={1}>
+                <Select
+                  value={agentWallet?.chainId}
+                  onChange={(e) =>
+                    setAgentWallet(agentWallet ? { ...agentWallet, chainId: e.target.value as number } : null)
+                  }
+                  disabled={isVerifyingWallet}
+                  fullWidth
+                  displayEmpty
+                  renderValue={(chainId) =>
+                    chainId ? (
+                      <Stack flexDirection='row' alignItems='center' gap={1}>
+                        <Image
+                          width={25}
+                          height={25}
+                          src={chainRecords[chainId].image}
+                          alt={chainRecords[chainId].name}
+                          style={{ borderRadius: '50%' }}
+                        />
+                        <Typography>{chainRecords[chainId].name}</Typography>
+                      </Stack>
+                    ) : (
+                      <Typography>No options selected</Typography>
+                    )
+                  }
+                >
+                  {Object.entries(chainRecords).map(([chainId, chain]) => (
+                    <MenuItem key={chainId} value={chainId} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Image
+                        width={25}
+                        height={25}
+                        src={chain.image}
+                        alt={chain.name}
+                        style={{ borderRadius: '50%' }}
+                      />
+                      <Typography>{chain.name}</Typography>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Stack>
+            </Stack>
           </Stack>
-        </Stack>
-      </Stack>
-      <Stack
-        flexDirection='row'
-        alignItems='center'
-        width='100%'
-        justifyContent={isVerifyingWallet || errorMessage ? 'space-between' : 'flex-end'}
-      >
-        {isVerifyingWallet && (
-          <Stack flexDirection='row' alignItems='center' gap={1}>
-            <CircularProgress size={20} />
-            <Typography>Verifying wallet ownership...</Typography>
-          </Stack>
-        )}
-        {errorMessage && !isVerifyingWallet && (
-          <Stack flexDirection='row' alignItems='center'>
-            <FormErrors errors={[errorMessage]} />
-          </Stack>
-        )}
-        <Stack flexDirection='row' alignItems='center' gap={1}>
-          <Button
-            variant='outlined'
-            color='primary'
-            sx={{ width: 'fit-content' }}
-            onClick={onCancel}
-            disabled={isVerifyingWallet}
+          <Stack
+            flexDirection='row'
+            alignItems='center'
+            width='100%'
+            justifyContent={isVerifyingWallet || errorMessage ? 'space-between' : 'flex-end'}
           >
-            Cancel
-          </Button>
-          <Button
-            variant='contained'
-            color='primary'
-            sx={{ width: 'fit-content' }}
-            onClick={onSave}
-            disabled={!tempWallet || !tempWallet.address || !tempWallet.chainId || isVerifyingWallet}
-          >
-            Verify
-          </Button>
-        </Stack>
-      </Stack>
+            {isVerifyingWallet && (
+              <Stack flexDirection='row' alignItems='center' gap={1}>
+                <CircularProgress size={20} />
+                <Typography>Verifying wallet ownership...</Typography>
+              </Stack>
+            )}
+            {errorMessage && !isVerifyingWallet && (
+              <Stack flexDirection='row' alignItems='center'>
+                <FormErrors errors={[errorMessage]} />
+              </Stack>
+            )}
+            <Stack flexDirection='row' alignItems='center' gap={1}>
+              <Button
+                variant='outlined'
+                color='primary'
+                sx={{ width: 'fit-content' }}
+                onClick={onCancel}
+                disabled={isVerifyingWallet}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant='contained'
+                color='primary'
+                sx={{ width: 'fit-content' }}
+                onClick={onVerify}
+                disabled={!agentWallet || !agentWallet.address || !agentWallet.chainId || isVerifyingWallet}
+              >
+                Verify
+              </Button>
+            </Stack>
+          </Stack>
+        </>
+      ) : (
+        <Button
+          variant='outlined'
+          color='secondary'
+          sx={{ width: 'fit-content' }}
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={() => {
+            setAgentWallet({
+              address: '',
+              chainId: 167000
+            });
+            setIsFormOpen(true);
+          }}
+        >
+          Add wallet
+        </Button>
+      )}
       <Dialog title='Remove Wallet' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
         <Typography>Are you sure you want to remove this wallet from the project?</Typography>
         <Stack flexDirection='row' alignItems='center' gap={1} mt={2}>

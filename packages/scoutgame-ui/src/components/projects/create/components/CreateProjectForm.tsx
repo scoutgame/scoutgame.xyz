@@ -76,8 +76,6 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
     handleSubmit(createProject, onInvalid)();
   };
 
-  const { contracts, wallets } = getValues();
-
   return (
     <ProjectForm
       control={control}
@@ -89,8 +87,6 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       setDeployers={setDeployers}
       cancelLink='/profile/projects'
       showRemoveMemberConfirmation={false}
-      contracts={contracts ?? []}
-      wallets={wallets ?? []}
     />
   );
 }
