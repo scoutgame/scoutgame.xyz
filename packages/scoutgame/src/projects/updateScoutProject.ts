@@ -122,22 +122,21 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const builderMemberIds = [...retainedProjectMemberIds, ...projectMemberIdsToRestore, ...projectMemberIdsToCreate];
 
-  const builderMembers = await prisma.scout.findMany({
+  const builderMembersCount = await prisma.scout.count({
     where: {
       id: {
         in: builderMemberIds
-      }
-    },
-    select: {
-      id: true,
-      utmCampaign: true,
-      builderStatus: true
+      },
+      OR: [
+        {
+          builderStatus: 'approved'
+        },
+        {
+          utmCampaign: 'taiko'
+        }
+      ]
     }
   });
-
-  const builderMembersCount = builderMembers.filter(
-    (member) => member.builderStatus === 'approved' || member.utmCampaign === 'taiko'
-  ).length;
 
   if (builderMembersCount !== builderMemberIds.length) {
     throw new Error('All project members must be builders');
@@ -336,7 +335,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           address: wallet.address.toLowerCase(),
           projectId: _updatedProject.id,
           createdBy: userId,
-          chainId: wallet.chainId
+          chainId: wallet.chainId,
+          verifiedBy: userId,
+          verifiedAt: new Date()
         }))
       });
     }

@@ -105,21 +105,21 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     }
   }
 
-  const builderMembers = await prisma.scout.findMany({
+  const builderMembersCount = await prisma.scout.count({
     where: {
       id: {
         in: payload.teamMembers.map((member) => member.scoutId)
-      }
-    },
-    select: {
-      utmCampaign: true,
-      builderStatus: true
+      },
+      OR: [
+        {
+          builderStatus: 'approved'
+        },
+        {
+          utmCampaign: 'taiko'
+        }
+      ]
     }
   });
-
-  const builderMembersCount = builderMembers.filter(
-    (member) => member.builderStatus === 'approved' || member.utmCampaign === 'taiko'
-  ).length;
 
   if (builderMembersCount !== payload.teamMembers.length) {
     throw new Error('All project members must be approved builders');
