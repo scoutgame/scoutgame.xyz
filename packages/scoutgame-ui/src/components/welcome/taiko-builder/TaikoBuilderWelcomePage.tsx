@@ -10,7 +10,7 @@ import { SinglePageWrapper } from '../../common/SinglePageWrapper';
 
 export function TaikoBuilderWelcomePage() {
   return (
-    <SinglePageLayout data-test='welcome-builders-page'>
+    <SinglePageLayout data-test='taiko-developers-github-connect-page'>
       <SinglePageWrapper bgcolor='background.default' height='auto'>
         <Box display='flex' flexDirection='column' alignItems='center' my={0} justifyContent='space-evenly' gap={2}>
           <Typography variant='h5' fontWeight='700' color='text.secondary'>

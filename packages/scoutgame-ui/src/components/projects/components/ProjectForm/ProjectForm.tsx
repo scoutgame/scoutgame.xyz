@@ -63,6 +63,7 @@ export function ProjectForm({
               name='name'
               render={({ field, fieldState }) => (
                 <TextField
+                  data-test='project-name-input'
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
                   placeholder='Example Project Title'
@@ -171,6 +172,7 @@ export function ProjectForm({
           loading={isExecuting}
           disabled={isExecuting || !isDirty}
           sx={{ width: 'fit-content' }}
+          data-test='project-form-save-button'
         >
           Save
         </LoadingButton>

@@ -7,7 +7,7 @@ import { SinglePageWrapper } from '../../../common/SinglePageWrapper';
 
 export function TaikoCreateProjectScreen() {
   return (
-    <SinglePageLayout data-test='welcome-builders-page'>
+    <SinglePageLayout data-test='taiko-developers-create-project-page'>
       <SinglePageWrapper bgcolor='background.default' height='auto'>
         <Box display='flex' flexDirection='column' my={0} justifyContent='space-evenly' gap={2}>
           <Typography variant='h5' alignSelf='center' fontWeight='700' color='text.secondary'>
@@ -31,7 +31,9 @@ export function TaikoCreateProjectScreen() {
               </Button>
             </Link>
             <Link href='/profile/projects/create'>
-              <Button color='primary'>Create</Button>
+              <Button data-test='taiko-developers-create-project-button' color='primary'>
+                Create
+              </Button>
             </Link>
           </Stack>
         </Box>

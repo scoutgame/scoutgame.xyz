@@ -6,8 +6,10 @@ import { HomePage } from './po/HomePage.po';
 import { InfoPage } from './po/InfoPage.po';
 import { LoginPage } from './po/LoginPage.po';
 import { ProfilePage } from './po/ProfilePage.po';
+import { ProjectPage } from './po/ProjectPage.po';
 import { QuestsPage } from './po/QuestsPage.po';
 import { ScoutPage } from './po/ScoutPage.po';
+import { TaikoDevelopersPage } from './po/TaikoDevelopersPage.po';
 import { UserPage } from './po/UserPage.po';
 import { Utilities } from './po/Utilities.po';
 import { WelcomePage } from './po/WelcomePage.po';
@@ -17,6 +19,8 @@ type Fixtures = {
   loginPage: LoginPage;
   profilePage: ProfilePage;
   welcomePage: WelcomePage;
+  taikoDevelopersPage: TaikoDevelopersPage;
+  projectPage: ProjectPage;
   utils: Utilities;
   infoPage: InfoPage;
   userPage: UserPage;
@@ -58,7 +62,9 @@ export const test = base.extend<Fixtures>({
   scoutPage: ({ page }, use) => use(new ScoutPage(page)),
   claimPage: ({ page }, use) => use(new ClaimPage(page)),
   questsPage: ({ page }, use) => use(new QuestsPage(page)),
-  buildersPage: ({ page }, use) => use(new BuildersPage(page))
+  buildersPage: ({ page }, use) => use(new BuildersPage(page)),
+  taikoDevelopersPage: ({ page }, use) => use(new TaikoDevelopersPage(page)),
+  projectPage: ({ page }, use) => use(new ProjectPage(page))
 });
 
 export { chromium, expect } from '@playwright/test';

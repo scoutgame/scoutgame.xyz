@@ -119,6 +119,7 @@ export async function mockScout({
   path = `user-${uuid()}`,
   displayName = 'Test Scout',
   nftWeek,
+  utmCampaign,
   agreedToTermsAt = new Date(),
   onboardedAt = new Date(),
   builderId,
@@ -157,6 +158,7 @@ export async function mockScout({
   farcasterId?: number;
   deletedAt?: Date;
   telegramId?: number;
+  utmCampaign?: string;
   stats?: {
     allTime?: {
       pointsEarnedAsScout?: number;
@@ -188,6 +190,7 @@ export async function mockScout({
       farcasterName,
       farcasterId,
       deletedAt,
+      utmCampaign,
       telegramId,
       wallets: {
         createMany: {

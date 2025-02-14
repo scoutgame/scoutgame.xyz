@@ -48,7 +48,9 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
           />
           <Stack gap={1} ml={1} flex={1}>
             <Stack flexDirection='row' alignItems='center' gap={1}>
-              <Typography variant='h5'>{project.name}</Typography>
+              <Typography data-test='project-name' variant='h5'>
+                {project.name}
+              </Typography>
               {project.github && (
                 <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
                   <GitHubIcon />
