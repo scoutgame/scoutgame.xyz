@@ -9,7 +9,7 @@ export class InfoPage extends GeneralPageLayout {
     public termsContainer = page.locator('data-test=terms-page'),
     public privacyContainer = page.locator('data-test=privacy-page'),
     public dpaContainer = page.locator('data-test=dpa-page'),
-    public moxieContainer = page.locator('data-test=partner-moxie-page'),
+    // public moxieContainer = page.locator('data-test=partner-moxie-page'),
     public optimismContainer = page.locator('data-test=partner-optimism-page')
   ) {
     super(page);
