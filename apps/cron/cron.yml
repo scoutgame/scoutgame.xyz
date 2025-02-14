@@ -53,5 +53,5 @@ cron:
 
   - name: 'process-builder-onchain-activity'
     url: '/process-builder-onchain-activity'
-    # Run once per day at 2am UTC
-    schedule: '0 2 * * *'
+    # every hour
+    schedule: '0 * * * *'
