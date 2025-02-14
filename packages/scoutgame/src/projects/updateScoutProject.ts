@@ -88,34 +88,34 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   > = {};
 
   const projectMemberIds = project.members.map((member) => member.userId);
-  const projectDeployerAddresses = project.deployers.map((deployer) => deployer.address);
-  const projectContractAddresses = project.contracts.map((contract) => contract.address);
-  const projectWalletAddresses = project.wallets.map((wallet) => wallet.address);
-  const payloadProjectMemberIds = payload.teamMembers.map((member) => member.scoutId);
-  const payloadProjectDeployerAddresses = payload.deployers.map((deployer) => deployer.address);
-  const payloadProjectContractAddresses = payload.contracts.map((contract) => contract.address);
-  const payloadProjectWalletAddresses = payload.wallets.map((wallet) => wallet.address);
+  const projectDeployerAddresses = project.deployers.map((deployer) => deployer.address.toLowerCase());
+  const projectContractAddresses = project.contracts.map((contract) => contract.address.toLowerCase());
+  const projectWalletAddresses = project.wallets.map((wallet) => wallet.address.toLowerCase());
+  const projectPayloadMemberIds = payload.teamMembers.map((member) => member.scoutId);
+  const projectPayloadDeployerAddresses = payload.deployers.map((deployer) => deployer.address);
+  const projectPayloadContractAddresses = payload.contracts.map((contract) => contract.address);
+  const projectPayloadWalletAddresses = payload.wallets.map((wallet) => wallet.address);
 
-  const contractAddressesToCreate = payloadProjectContractAddresses.filter(
+  const contractAddressesToCreate = projectPayloadContractAddresses.filter(
     (address) => !projectContractAddresses.includes(address)
   );
   const contractAddressesToRemove = projectContractAddresses.filter(
-    (address) => !payloadProjectContractAddresses.includes(address)
+    (address) => !projectPayloadContractAddresses.includes(address)
   );
 
   // Find deployer addresses that exist in payload but not in database (need to be created)
-  const deployerAddressesToCreate = payloadProjectDeployerAddresses.filter(
+  const deployerAddressesToCreate = projectPayloadDeployerAddresses.filter(
     (address) => !projectDeployerAddresses.includes(address)
   );
 
   const walletAddressesToCreate = payload.wallets.filter((wallet) => !projectWalletAddresses.includes(wallet.address));
   const walletAddressesToRemove = projectWalletAddresses.filter(
-    (address) => !payloadProjectWalletAddresses.includes(address)
+    (address) => !projectPayloadWalletAddresses.includes(address)
   );
 
-  const projectMemberIdsToCreate = payloadProjectMemberIds.filter((scoutId) => !projectMemberIds.includes(scoutId));
+  const projectMemberIdsToCreate = projectPayloadMemberIds.filter((scoutId) => !projectMemberIds.includes(scoutId));
 
-  const projectMemberIdsToRemove = projectMemberIds.filter((scoutId) => !payloadProjectMemberIds.includes(scoutId));
+  const projectMemberIdsToRemove = projectMemberIds.filter((scoutId) => !projectPayloadMemberIds.includes(scoutId));
 
   const deletedProjectMemberIds = project.members.filter((member) => member.deletedAt).map((member) => member.userId);
 
@@ -126,18 +126,18 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   const deletedWalletAddresses = project.wallets.filter((wallet) => wallet.deletedAt).map((wallet) => wallet.address);
 
   const projectMemberIdsToRestore = deletedProjectMemberIds.filter((scoutId) =>
-    payloadProjectMemberIds.includes(scoutId)
+    projectPayloadMemberIds.includes(scoutId)
   );
 
   const contractAddressesToRestore = deletedContractAddresses.filter((address) =>
-    payloadProjectContractAddresses.includes(address)
+    projectPayloadContractAddresses.includes(address)
   );
 
   const deletedWalletAddressesToRestore = deletedWalletAddresses.filter((address) =>
-    payloadProjectWalletAddresses.includes(address)
+    projectPayloadWalletAddresses.includes(address)
   );
 
-  const retainedProjectMemberIds = projectMemberIds.filter((scoutId) => payloadProjectMemberIds.includes(scoutId));
+  const retainedProjectMemberIds = projectMemberIds.filter((scoutId) => projectPayloadMemberIds.includes(scoutId));
 
   const builderMemberIds = [...retainedProjectMemberIds, ...projectMemberIdsToRestore, ...projectMemberIdsToCreate];
 

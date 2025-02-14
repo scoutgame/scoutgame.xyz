@@ -1,8 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
-import { mockBuilder, mockScout, mockScoutProject } from '@packages/testing/database';
-import { randomIntFromInterval } from '@packages/testing/generators';
+import { mockBuilder, mockScoutProject } from '@packages/testing/database';
 import { v4 } from 'uuid';
 
 const mockVerifyMessage = jest.fn();
@@ -34,7 +32,8 @@ describe('updateScoutProject', () => {
           name: 'Updated Project',
           teamMembers: [],
           contracts: [],
-          deployers: []
+          deployers: [],
+          wallets: []
         },
         nonOwner.id
       )
@@ -52,7 +51,8 @@ describe('updateScoutProject', () => {
           name: 'Updated Project',
           teamMembers: [],
           contracts: [],
-          deployers: []
+          deployers: [],
+          wallets: []
         },
         owner.id
       )
@@ -74,7 +74,8 @@ describe('updateScoutProject', () => {
             { displayName: 'Owner 2', scoutId: owner2.id, role: 'owner' }
           ],
           contracts: [],
-          deployers: []
+          deployers: [],
+          wallets: []
         },
         owner.id
       )
@@ -100,7 +101,8 @@ describe('updateScoutProject', () => {
               signature: '0x123',
               verified: true
             }
-          ]
+          ],
+          wallets: []
         },
         owner.id
       )
@@ -136,7 +138,8 @@ describe('updateScoutProject', () => {
               deployerAddress: '0x12345'
             }
           ],
-          deployers: []
+          deployers: [],
+          wallets: []
         },
         owner.id
       )
@@ -161,14 +164,15 @@ describe('updateScoutProject', () => {
             { displayName: 'Banned', scoutId: bannedBuilder.id, role: 'member' }
           ],
           contracts: [],
-          deployers: []
+          deployers: [],
+          wallets: []
         },
         owner.id
       )
     ).rejects.toThrow('All project members must be builders');
   });
 
-  it.only('should successfully change project owner', async () => {
+  it('should successfully change project owner', async () => {
     const owner = await mockBuilder();
     const newOwner = await mockBuilder();
     const project = await mockScoutProject({ userId: owner.id });
@@ -181,7 +185,8 @@ describe('updateScoutProject', () => {
           { displayName: 'Old Owner', scoutId: owner.id, role: 'member' }
         ],
         contracts: [],
-        deployers: []
+        deployers: [],
+        wallets: []
       },
       owner.id
     );
@@ -196,22 +201,25 @@ describe('updateScoutProject', () => {
     expect(projectOldOwner).toBeTruthy();
   });
 
-  it('should successfully update project with new members, contracts and deployers', async () => {
+  it('should successfully update project with new members, contracts, agent wallets and deployers', async () => {
     const owner = await mockBuilder();
     const member2 = await mockBuilder();
     const contractAddress = `0x${v4()}`;
     const builder = await mockBuilder();
     const deployerAddress = `0x${v4()}`;
+    const agentWalletAddress = `0x${v4()}`;
 
     const project = await mockScoutProject({
       userId: owner.id,
       deployerAddress,
       contractAddresses: [contractAddress],
-      memberIds: [member2.id]
+      memberIds: [member2.id],
+      wallets: [agentWalletAddress]
     });
 
     const deployer2Address = `0x${v4()}`;
     const contract2Address = `0x${v4()}`;
+    const agentWallet2Address = `0x${v4()}`;
 
     mockVerifyMessage.mockResolvedValue(true as never);
 
@@ -253,6 +261,15 @@ describe('updateScoutProject', () => {
             chainId: 1,
             deployerAddress: deployer2Address
           }
+        ],
+        wallets: [
+          // Add a new agent wallet
+          {
+            address: agentWallet2Address,
+            chainId: 1,
+            signature: '0x123',
+            verified: true
+          }
         ]
       },
       owner.id
@@ -265,7 +282,8 @@ describe('updateScoutProject', () => {
         description: true,
         contracts: true,
         deployers: true,
-        members: true
+        members: true,
+        wallets: true
       }
     });
 
@@ -287,5 +305,10 @@ describe('updateScoutProject', () => {
     expect(projectContracts).toHaveLength(2);
     const deletedContract = projectContracts.find((c) => c.deletedAt);
     expect(deletedContract?.address).toBe(contractAddress);
+
+    const projectWallets = updatedProjectData.wallets;
+    expect(projectWallets).toHaveLength(2);
+    const deletedWallet = projectWallets.find((w) => w.deletedAt);
+    expect(deletedWallet?.address).toBe(agentWalletAddress);
   });
 });
