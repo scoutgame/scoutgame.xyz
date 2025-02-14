@@ -27,7 +27,8 @@ export const authSchema = yup.object({
   message: yup.string().required(),
   signature: yup.string<Hex>().required(),
   inviteCode: yup.string().optional().nullable(),
-  referralCode: yup.string().optional().nullable()
+  referralCode: yup.string().optional().nullable(),
+  utmCampaign: yup.string().optional().nullable()
   // state: yup.string<'pending' | 'completed'>().defined().oneOf(['pending', 'completed']),
   // custody: yup.string<Hex>().required()
 });

@@ -3,6 +3,7 @@ import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs
 import { BuilderPage } from '@packages/scoutgame-ui/components/welcome/builder/BuilderWelcomePage';
 import { HowItWorksPage } from '@packages/scoutgame-ui/components/welcome/how-it-works/HowItWorksPage';
 import { SpamPolicyPage } from '@packages/scoutgame-ui/components/welcome/spam-policy/SpamPolicyPage';
+import { TaikoBuilderPage } from '@packages/scoutgame-ui/components/welcome/taiko-builder/BuilderWelcomePage';
 import { WelcomePage } from '@packages/scoutgame-ui/components/welcome/WelcomePage';
 import type { OnboardingStep } from '@packages/scoutgame-ui/providers/OnboardingRoutes';
 import type { Metadata } from 'next';
@@ -23,7 +24,6 @@ export default async function Welcome({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const scoutSort = (searchParams.step as OnboardingStep | undefined) || '1';
-  const type = (searchParams.type as 'scout' | 'builder' | undefined) || 'scout';
   const redirectUrl = searchParams.redirectUrl as string | undefined;
 
   const startingPagePath = redirectUrl || '/scout';
@@ -43,15 +43,16 @@ export default async function Welcome({
       }
       return <WelcomePage user={user} />;
     }
-    case '2':
+    case '2': {
       if (
         (user.onboardedAt && user.agreedToTermsAt && user.builderStatus !== 'rejected') ||
         user.builderStatus === null
       ) {
-        return <BuilderPage />;
+        return user.utmCampaign === 'taiko' ? <TaikoBuilderPage /> : <BuilderPage />;
       }
       log.debug('Redirect user to home page from Builder page', { userId: user.id });
       return redirect(startingPagePath);
+    }
     case '3': {
       if (user.builderStatus) {
         return <SpamPolicyPage />;

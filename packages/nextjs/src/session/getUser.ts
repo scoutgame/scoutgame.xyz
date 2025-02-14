@@ -27,6 +27,7 @@ export async function getUser(userId?: string): Promise<SessionUser | null> {
       bio: true,
       referralCode: true,
       deletedAt: true,
+      utmCampaign: true,
       wallets: {
         where: {
           primary: true
