@@ -5,7 +5,7 @@ import { RateLimit } from 'async-sema';
 let _nextId = 133782;
 
 // Find all supported chains:  https://www.ankr.com/docs/advanced-api/overview/#chains-supported
-const supportedChains = {
+export const supportedChains = {
   // 56: 'bsc',
   // 1101: 'polygon_zkevm',
   // 250: 'fantom',

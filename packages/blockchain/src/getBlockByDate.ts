@@ -1,3 +1,5 @@
+import { log } from '@charmverse/core/log';
+
 import { getPublicClient } from './getPublicClient';
 
 export async function getBlockByDate({ date, chainId }: { date: Date; chainId: number }) {

@@ -11,7 +11,7 @@ export const projectDetailedSelect = {
   description: true,
   website: true,
   github: true,
-  scoutProjectContracts: {
+  contracts: {
     where: {
       deletedAt: null
     },
@@ -22,7 +22,7 @@ export const projectDetailedSelect = {
       deployerId: true
     }
   },
-  scoutProjectMembers: {
+  members: {
     where: {
       deletedAt: null
     },
@@ -38,7 +38,7 @@ export const projectDetailedSelect = {
       role: true
     }
   },
-  scoutProjectDeployers: {
+  deployers: {
     select: {
       id: true,
       address: true
@@ -60,9 +60,9 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
 
   return {
     ...scoutProject,
-    contracts: scoutProject.scoutProjectContracts,
-    deployers: scoutProject.scoutProjectDeployers,
-    teamMembers: scoutProject.scoutProjectMembers.map((member) => ({
+    contracts: scoutProject.contracts,
+    deployers: scoutProject.deployers,
+    teamMembers: scoutProject.members.map((member) => ({
       id: member.user.id,
       avatar: member.user.avatar ?? '',
       displayName: member.user.displayName,
