@@ -8,7 +8,7 @@ import type { Address } from 'viem';
 
 const log = getLogger('cron-retrieve-wallet-transactions');
 
-export async function retrieveWalletTransactions({
+export async function retrieveAndSaveWalletTransactions({
   chainId: _chainId,
   walletId,
   address,

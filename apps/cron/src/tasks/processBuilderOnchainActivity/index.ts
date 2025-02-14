@@ -1,14 +1,26 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getBlockNumberByDateCached } from '@packages/blockchain/getBlockByDate';
+import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type Koa from 'koa';
+import memoize from 'lodash.memoize'; //
 import type { Address } from 'viem';
 
-import { retrieveContractTransactions } from './retrieveContractTransactions';
-import { retrieveWalletTransactions } from './retrieveWalletTransactions';
+import { retrieveAndSaveContractTransactions } from './retrieveAndSaveContractTransactions';
+import { retrieveAndSaveWalletTransactions } from './retrieveAndSaveWalletTransactions';
 
 const log = getLogger('cron-process-builder-onchain-activity');
+
+const getLatestBlockMemoized = memoize(async (chainId: number) => {
+  const client = getPublicClient(chainId);
+  return client.getBlockNumber();
+});
+
+const getBlockByDateMemoized = memoize(
+  getBlockByDate,
+  // define cache key
+  ({ date, chainId }) => `${date.toISOString()}-${chainId}`
+);
 
 export async function processBuilderOnchainActivity(
   ctx: Koa.Context,
@@ -32,8 +44,7 @@ export async function processBuilderOnchainActivity(
   for (const contract of contracts) {
     try {
       const pollStart = Date.now();
-      const client = getPublicClient(contract.chainId);
-      const latestBlock = await client.getBlockNumber();
+      const latestBlock = await getLatestBlockMemoized(contract.chainId);
       // Get the last poll event for this contract
       const lastPollEvent = await prisma.scoutProjectContractPollEvent.findFirst({
         where: {
@@ -46,10 +57,10 @@ export async function processBuilderOnchainActivity(
 
       const fromBlock = lastPollEvent
         ? lastPollEvent.toBlockNumber + BigInt(1)
-        : await getBlockNumberByDateCached({ date: windowStart, chainId: contract.chainId });
+        : (await getBlockByDateMemoized({ date: windowStart, chainId: contract.chainId })).number;
       // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
-      await retrieveContractTransactions({
+      await retrieveAndSaveContractTransactions({
         address: contract.address as Address,
         fromBlock,
         toBlock: latestBlock,
@@ -76,8 +87,7 @@ export async function processBuilderOnchainActivity(
   for (const wallet of wallets) {
     try {
       const pollStart = Date.now();
-      const client = getPublicClient(wallet.chainId);
-      const latestBlock = await client.getBlockNumber();
+      const latestBlock = await getLatestBlockMemoized(wallet.chainId);
       // Get the last poll event for this contract
       const lastPollEvent = await prisma.scoutProjectWalletPollEvent.findFirst({
         where: {
@@ -90,11 +100,11 @@ export async function processBuilderOnchainActivity(
 
       const fromBlock = lastPollEvent
         ? lastPollEvent.toBlockNumber + BigInt(1)
-        : await getBlockNumberByDateCached({ date: windowStart, chainId: wallet.chainId });
+        : (await getBlockByDateMemoized({ date: windowStart, chainId: wallet.chainId })).number;
 
       // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
-      await retrieveWalletTransactions({
+      await retrieveAndSaveWalletTransactions({
         address: wallet.address as Address,
         fromBlock,
         toBlock: latestBlock,

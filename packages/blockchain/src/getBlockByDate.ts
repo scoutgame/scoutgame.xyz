@@ -35,29 +35,3 @@ export async function getBlockByDate({ date, chainId }: { date: Date; chainId: n
 
   return resultBlock;
 }
-// keep track of the window start per chain and date, so we reduce lookups
-let blockNumbersByDate: Record<string, Record<string, bigint>> = {};
-
-export async function getBlockNumberByDateCached({ date, chainId }: { date: Date; chainId: number }) {
-  const dateKey = date.toISOString();
-
-  if (!blockNumbersByDate[chainId]) {
-    blockNumbersByDate[chainId] = {};
-  }
-
-  if (!blockNumbersByDate[chainId][dateKey]) {
-    // Clear cache if total entries across all chains exceeds 1000
-    const totalEntries = Object.values(blockNumbersByDate).reduce(
-      (sum, chainCache) => sum + Object.keys(chainCache).length,
-      0
-    );
-    if (totalEntries > 1000) {
-      log.debug('Clearing block numbers by date cache');
-      blockNumbersByDate = {};
-    }
-
-    // retrieve the block number
-    blockNumbersByDate[chainId][dateKey] = (await getBlockByDate({ date, chainId })).number;
-  }
-  return blockNumbersByDate[chainId][dateKey];
-}
