@@ -6,8 +6,8 @@ import type Koa from 'koa';
 import memoize from 'lodash.memoize'; //
 import type { Address } from 'viem';
 
-import { retrieveAndSaveContractTransactions } from './retrieveAndSaveContractTransactions';
-import { retrieveAndSaveWalletTransactions } from './retrieveAndSaveWalletTransactions';
+import { processSaveContractTransactions } from './processContractTransactions';
+import { processSaveWalletTransactions } from './processWalletTransactions';
 
 const log = getLogger('cron-process-builder-onchain-activity');
 
@@ -60,7 +60,7 @@ export async function processBuilderOnchainActivity(
         : (await getBlockByDateMemoized({ date: windowStart, chainId: contract.chainId })).number;
       // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
-      await retrieveAndSaveContractTransactions({
+      await processSaveContractTransactions({
         address: contract.address as Address,
         fromBlock,
         toBlock: latestBlock,
@@ -104,7 +104,7 @@ export async function processBuilderOnchainActivity(
 
       // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
-      await retrieveAndSaveWalletTransactions({
+      await processSaveWalletTransactions({
         address: wallet.address as Address,
         fromBlock,
         toBlock: latestBlock,

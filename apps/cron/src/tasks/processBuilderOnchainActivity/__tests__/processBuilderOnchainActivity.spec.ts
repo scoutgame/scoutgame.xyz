@@ -10,7 +10,7 @@ const mockGetLogs = jest.fn<() => Promise<GetLogsResult>>();
 const mockGetTransactionReceipt = jest.fn<() => Promise<GetTransactionReceiptResult>>();
 const mockGetBlock = jest.fn<() => Promise<Block>>();
 jest.unstable_mockModule('@packages/blockchain/getBlockByDate', () => ({
-  getBlockByDate: () => Promise.resolve(100n)
+  getBlockByDate: () => Promise.resolve({ number: 100n })
 }));
 
 jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
