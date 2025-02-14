@@ -46,6 +46,18 @@ export const updateScoutProjectSchema = yup.object({
       otherwise: (schema) => schema
     })
     .required('Contracts are required'),
+  wallets: yup
+    .array()
+    .of(
+      yup.object({
+        address: yup.string().required('Wallet address is required'),
+        chainId: yup.number().integer().required('Chain ID is required'),
+        signature: yup.string().required('Signature is required'),
+        verified: yup.boolean().required()
+      })
+    )
+    .min(0)
+    .required('Wallets are required'),
   teamMembers: yup
     .array()
     .of(

@@ -29,6 +29,10 @@ export type ScoutProjectDetailed = Pick<
     id: string;
     address: string;
   }[];
+  wallets: {
+    address: string;
+    chainId: number;
+  }[];
 };
 
 export type ScoutProjectMinimal = Pick<ScoutProject, 'id' | 'path' | 'avatar' | 'name'>;

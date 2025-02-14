@@ -23,8 +23,7 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
     control,
     formState: { isDirty },
     handleSubmit,
-    setValue,
-    getValues
+    setValue
   } = useForm({
     resolver: yupResolver(createScoutProjectSchema),
     mode: 'onChange',
@@ -36,7 +35,8 @@ export function CreateProjectForm({ user }: { user: SessionUser }) {
       github: '',
       teamMembers: [{ scoutId: user.id, role: 'owner', avatar: user.avatar ?? '', displayName: user.displayName }],
       contracts: [],
-      deployers: []
+      deployers: [],
+      wallets: []
     }
   });
 

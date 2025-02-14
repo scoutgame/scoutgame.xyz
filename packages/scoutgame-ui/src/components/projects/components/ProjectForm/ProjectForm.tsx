@@ -1,6 +1,5 @@
 'use client';
 
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
@@ -43,7 +42,6 @@ export function ProjectForm({
   showRemoveMemberConfirmation: boolean;
 }) {
   const isMdScreen = useMdScreen();
-  const [isAgentWalletFormOpen, setIsAgentWalletFormOpen] = useState(false);
 
   return (
     <>

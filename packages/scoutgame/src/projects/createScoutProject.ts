@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import type { ScoutProjectDeployer, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import {
   uploadUrlToS3,
@@ -12,7 +12,7 @@ import { isTruthy } from '@packages/utils/types';
 import sharp from 'sharp';
 import { verifyMessage } from 'viem';
 
-import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
+import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { CreateScoutProjectFormValues } from './createScoutProjectSchema';
 import { generateProjectPath } from './generateProjectPath';
 import { generateRandomAvatar } from './generateRandomAvatar';
@@ -41,6 +41,20 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
 
       if (!isValidSignature) {
         throw new Error(`Invalid signature for deployer ${deployer.address}`);
+      }
+    }
+  }
+
+  if (payload.wallets) {
+    for (const wallet of payload.wallets) {
+      const isValidSignature = await verifyMessage({
+        message: AGENT_WALLET_SIGN_MESSAGE,
+        signature: wallet.signature as `0x${string}`,
+        address: wallet.address as `0x${string}`
+      });
+
+      if (!isValidSignature) {
+        throw new Error(`Invalid signature for wallet ${wallet.address}`);
       }
     }
   }
@@ -91,14 +105,21 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     }
   }
 
-  const builderMembersCount = await prisma.scout.count({
+  const builderMembers = await prisma.scout.findMany({
     where: {
-      builderStatus: 'approved',
       id: {
         in: payload.teamMembers.map((member) => member.scoutId)
       }
+    },
+    select: {
+      utmCampaign: true,
+      builderStatus: true
     }
   });
+
+  const builderMembersCount = builderMembers.filter(
+    (member) => member.builderStatus === 'approved' || member.utmCampaign === 'taiko'
+  ).length;
 
   if (builderMembersCount !== payload.teamMembers.length) {
     throw new Error('All project members must be approved builders');
@@ -113,7 +134,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
         website: payload.website ?? '',
         github: payload.github ?? '',
         path,
-        scoutProjectDeployers:
+        deployers:
           payload.deployers && payload.deployers.length
             ? {
                 createMany: {
@@ -125,7 +146,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
                 }
               }
             : undefined,
-        scoutProjectMembers: {
+        members: {
           createMany: {
             data: payload.teamMembers.map((member) => ({
               userId: member.scoutId,
@@ -133,17 +154,31 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
               role: member.role as ScoutProjectMemberRole
             }))
           }
-        }
+        },
+        wallets:
+          payload.wallets && payload.wallets.length
+            ? {
+                createMany: {
+                  data: payload.wallets.map((wallet) => ({
+                    address: wallet.address.toLowerCase(),
+                    chainId: wallet.chainId,
+                    verifiedBy: userId,
+                    verifiedAt: new Date(),
+                    createdBy: userId
+                  }))
+                }
+              }
+            : undefined
       },
       select: {
         id: true,
         path: true,
         name: true,
-        scoutProjectDeployers: true
+        deployers: true
       }
     });
 
-    const scoutProjectDeployers = scoutProject.scoutProjectDeployers as ScoutProjectDeployer[];
+    const scoutProjectDeployers = scoutProject.deployers;
 
     if (payload.contracts && payload.contracts.length) {
       await tx.scoutProjectContract.createMany({

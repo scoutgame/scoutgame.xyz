@@ -2,7 +2,7 @@ import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
-import { Box, Container, Stack, Typography } from '@mui/material';
+import { Box, Chip, Container, Stack, Typography } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -68,15 +68,18 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
         </Stack>
         <Stack gap={1}>
           <Typography color='secondary' variant='h6'>
-            Contracts
+            dApps & Agent Wallets
           </Typography>
           <Stack gap={1}>
-            {project.contracts.length === 0 ? (
-              <Typography>No contracts added</Typography>
+            {project.contracts.length === 0 && project.wallets.length === 0 ? (
+              <Typography>No contracts or agent wallets added</Typography>
             ) : (
-              project.contracts.map((contract) => (
+              [
+                ...project.contracts.map((contract) => ({ ...contract, type: 'contract' })),
+                ...project.wallets.map((wallet) => ({ ...wallet, type: 'agent' }))
+              ].map((contract) => (
                 <Stack
-                  key={contract.id}
+                  key={contract.address}
                   flexDirection='row'
                   alignItems='center'
                   gap={1}
@@ -93,6 +96,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                     style={{ borderRadius: '50%' }}
                   />
                   <Typography>{stringUtils.shortenHex(contract.address)}</Typography>
+                  <Chip label={contract.type} size='small' color='primary' variant='outlined' />
                 </Stack>
               ))
             )}

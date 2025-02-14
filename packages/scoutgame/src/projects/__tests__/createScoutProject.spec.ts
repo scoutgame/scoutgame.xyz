@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import { mockBuilder, mockScout } from '@packages/testing/database';
 import { randomIntFromInterval } from '@packages/testing/generators';
 import { v4 } from 'uuid';
@@ -83,6 +82,24 @@ describe('createScoutProject', () => {
         owner.id
       )
     ).rejects.toThrow(`Invalid signature for deployer ${walletAddress}`);
+  });
+
+  it('should throw an error if the wallet signature is invalid', async () => {
+    const owner = await mockScout();
+    const walletAddress = '0x123';
+
+    mockVerifyMessage.mockResolvedValue(false as never);
+
+    await expect(
+      createScoutProject(
+        {
+          name: 'Test Project',
+          teamMembers: [{ displayName: 'Owner 1', scoutId: owner.id, role: 'owner' }],
+          wallets: [{ address: walletAddress, chainId: 1, signature: '0x123', verified: true }]
+        },
+        owner.id
+      )
+    ).rejects.toThrow(`Invalid signature for wallet ${walletAddress}`);
   });
 
   it('should throw an error if the contract deployer address is not the same as the deployer address', async () => {
@@ -240,20 +257,20 @@ describe('createScoutProject', () => {
       },
       select: {
         id: true,
-        scoutProjectMembers: {
+        members: {
           select: {
             role: true,
             userId: true
           }
         },
-        scoutProjectContracts: {
+        contracts: {
           select: {
             address: true,
             deployerId: true,
             deployTxHash: true
           }
         },
-        scoutProjectDeployers: {
+        deployers: {
           select: {
             id: true,
             address: true
@@ -263,7 +280,7 @@ describe('createScoutProject', () => {
     });
 
     expect(project).toBeDefined();
-    const projectMembers = project.scoutProjectMembers;
+    const projectMembers = project.members;
     expect(projectMembers).toHaveLength(2);
 
     const projectOwner = projectMembers.find((member) => member.role === 'owner');
@@ -272,15 +289,15 @@ describe('createScoutProject', () => {
     const projectMember = projectMembers.find((member) => member.role === 'member');
     expect(projectMember?.userId).toBe(builder.id);
 
-    const projectContracts = project.scoutProjectContracts;
+    const projectContracts = project.contracts;
     expect(projectContracts).toHaveLength(2);
 
     expect(projectContracts[0].address).toBe(contractAddress);
-    expect(projectContracts[0].deployerId).toBe(project.scoutProjectDeployers[0].id);
+    expect(projectContracts[0].deployerId).toBe(project.deployers[0].id);
     expect(projectContracts[0].deployTxHash).toBe(contract1TxHash);
 
     expect(projectContracts[1].address).toBe(contract2Address);
-    expect(projectContracts[1].deployerId).toBe(project.scoutProjectDeployers[1].id);
+    expect(projectContracts[1].deployerId).toBe(project.deployers[1].id);
     expect(projectContracts[1].deployTxHash).toBe(contract2TxHash);
   });
 });
