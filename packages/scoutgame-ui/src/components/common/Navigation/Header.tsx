@@ -144,7 +144,8 @@ export function Header() {
                       <MenuItem component={Link} href='/accounts'>
                         Accounts
                       </MenuItem>
-                      {user.builderStatus === 'approved' ? (
+                      {user.builderStatus === 'approved' ||
+                      (user.builderStatus === 'applied' && user.utmCampaign === 'taiko') ? (
                         <MenuItem component={Link} href='/profile/projects'>
                           Projects
                         </MenuItem>
