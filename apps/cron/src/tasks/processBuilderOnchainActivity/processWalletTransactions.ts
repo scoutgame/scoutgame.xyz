@@ -8,7 +8,7 @@ import type { Address } from 'viem';
 
 const log = getLogger('cron-retrieve-wallet-transactions');
 
-export async function processSaveWalletTransactions({
+export async function processWalletTransactions({
   chainId: _chainId,
   walletId,
   address,
@@ -63,15 +63,6 @@ export async function processSaveWalletTransactions({
               status: transaction.txreceipt_status
             }))
           }),
-          // prisma.scoutProjectContractLog.createMany({
-          //   data: logs.map((l) => ({
-          //     contractId,
-          //     blockNumber: Number(l.blockNumber),
-          //     txHash: l.transactionHash,
-          //     from: l.address.toLowerCase(),
-          //     logIndex: Number(l.logIndex)
-          //   }))
-          // }),
           // Record this poll event
           prisma.scoutProjectWalletPollEvent.create({
             data: {

@@ -12,7 +12,7 @@ const log = getLogger('cron-retrieve-contract-interactions');
 const defaultPageSize = BigInt(900);
 
 // retrieve txs using ankr
-export async function processSaveContractTransactions({
+export async function processContractTransactions({
   address,
   fromBlock,
   toBlock: originalToBlock,

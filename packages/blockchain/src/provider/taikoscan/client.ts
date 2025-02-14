@@ -3,7 +3,7 @@ import type { Address } from 'viem';
 import type { Params } from './request';
 import { taikoRequest } from './request';
 
-type WalletTransactionsResponse = {
+export type WalletTransaction = {
   blockNumber: string;
   timeStamp: string;
   hash: string;
@@ -40,7 +40,7 @@ export async function getWalletTransactions({
   toBlock: bigint;
   page?: number;
 }) {
-  return taikoRequest<WalletTransactionsResponse[]>({
+  return taikoRequest<WalletTransaction[]>({
     module: 'account',
     action: 'txlist',
     address,

@@ -151,4 +151,6 @@ async function findOrCreateProject() {
   return { id: result.id, createdBy: creator.id };
 }
 
-(async () => {})();
+(async () => {
+  await findOrCreateProject();
+})();
