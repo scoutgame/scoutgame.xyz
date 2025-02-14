@@ -32,6 +32,12 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   }
 
   if (payload.deployers) {
+    // Ensure all deployer addresses are in lowercase
+    payload.deployers = payload.deployers.map((d) => ({
+      ...d,
+      address: d.address.toLowerCase()
+    }));
+
     for (const deployer of payload.deployers) {
       const isValidSignature = await verifyMessage({
         message: CONTRACT_DEPLOYER_SIGN_MESSAGE,
@@ -46,6 +52,12 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   }
 
   if (payload.wallets) {
+    // Ensure all wallet addresses are in lowercase
+    payload.wallets = payload.wallets.map((w) => ({
+      ...w,
+      address: w.address.toLowerCase()
+    }));
+
     for (const wallet of payload.wallets) {
       const isValidSignature = await verifyMessage({
         message: AGENT_WALLET_SIGN_MESSAGE,
@@ -60,21 +72,28 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   }
 
   if (payload.contracts) {
+    // Ensure all contract addresses are in lowercase
+    payload.contracts = payload.contracts.map((c) => ({
+      ...c,
+      address: c.address.toLowerCase(),
+      deployerAddress: c.deployerAddress.toLowerCase()
+    }));
+
     for (const contract of payload.contracts) {
       const { block, transaction } = await getContractDeployerAddress({
-        contractAddress: contract.address.toLowerCase(),
+        contractAddress: contract.address,
         chainId: contract.chainId
       });
 
-      contractRecord[contract.address.toLowerCase()] = {
+      contractRecord[contract.address] = {
         txHash: transaction.hash,
         blockNumber: Number(block.number),
         blockTimestamp: Number(block.timestamp)
       };
 
-      if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
+      if (contract.deployerAddress !== transaction.from) {
         throw new Error(
-          `Contract ${contract.address.toLowerCase()} was not deployed by the provided deployer. Actual deployer: ${transaction.from.toLowerCase()}`
+          `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
         );
       }
     }
@@ -139,7 +158,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             ? {
                 createMany: {
                   data: payload.deployers.map((deployer) => ({
-                    address: deployer.address.toLowerCase(),
+                    address: deployer.address,
                     verifiedBy: userId,
                     verifiedAt: new Date()
                   }))
@@ -160,7 +179,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             ? {
                 createMany: {
                   data: payload.wallets.map((wallet) => ({
-                    address: wallet.address.toLowerCase(),
+                    address: wallet.address,
                     chainId: wallet.chainId,
                     verifiedBy: userId,
                     verifiedAt: new Date(),
@@ -184,7 +203,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
       await tx.scoutProjectContract.createMany({
         data: payload.contracts
           .map((contract) => {
-            const deployer = deployers.find((d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase());
+            const deployer = deployers.find((d) => d.address === contract.deployerAddress);
             if (!deployer) {
               // This case will ideally never happen, its added to keep the type checker happy
               return null;
@@ -192,12 +211,12 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             return {
               createdBy: userId,
               projectId: scoutProject.id,
-              address: contract.address.toLowerCase(),
+              address: contract.address,
               chainId: contract.chainId,
-              deployedAt: new Date(contractRecord[contract.address.toLowerCase()].blockTimestamp * 1000),
+              deployedAt: new Date(contractRecord[contract.address].blockTimestamp * 1000),
               deployerId: deployer.id,
-              deployTxHash: contractRecord[contract.address.toLowerCase()].txHash,
-              blockNumber: contractRecord[contract.address.toLowerCase()].blockNumber
+              deployTxHash: contractRecord[contract.address].txHash,
+              blockNumber: contractRecord[contract.address].blockNumber
             };
           })
           .filter(isTruthy)
