@@ -6,6 +6,7 @@ import { DateTime } from 'luxon';
 import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
 import { processAllBuilderActivity } from './tasks/processBuilderActivity';
+import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
 import { processGemsPayout } from './tasks/processGemsPayout';
 import { processNftMints } from './tasks/processNftMints';
 import { processOnchainGemsPayout } from './tasks/processOnchainGemsPayout';
@@ -13,7 +14,6 @@ import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
 import { refreshShareImagesTask } from './tasks/refreshShareImages';
 import { resolveBalanceIssues } from './tasks/resolveBalanceIssues/resolveBalanceIssues';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
-import { retrieveContractInteractions } from './tasks/retrieveContractInteractions';
 import { syncExternalUserProfilesTask } from './tasks/syncExternalUserProfiles/syncExternalUserProfilesTask';
 import { updateAllBuildersCardActivities } from './tasks/updateBuildersCardActivity';
 import { updateTalentMoxieProfiles } from './tasks/updateTalentMoxieProfiles';
@@ -76,7 +76,7 @@ addTask('/refresh-nft-share-images', refreshShareImagesTask);
 
 addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
 
-addTask('/retrieve-contract-interactions', retrieveContractInteractions);
+addTask('/process-builder-onchain-activity', processBuilderOnchainActivity);
 
 addTask('/process-onchain-gems-payout', processOnchainGemsPayout);
 

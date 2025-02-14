@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import type { ScoutProjectDeployer, ScoutProjectMemberRole } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import {
   uploadUrlToS3,
@@ -178,15 +178,13 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
       }
     });
 
-    const scoutProjectDeployers = scoutProject.deployers;
+    const deployers = scoutProject.deployers as ScoutProjectDeployer[];
 
     if (payload.contracts && payload.contracts.length) {
       await tx.scoutProjectContract.createMany({
         data: payload.contracts
           .map((contract) => {
-            const deployer = scoutProjectDeployers.find(
-              (d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase()
-            );
+            const deployer = deployers.find((d) => d.address.toLowerCase() === contract.deployerAddress.toLowerCase());
             if (!deployer) {
               // This case will ideally never happen, its added to keep the type checker happy
               return null;
