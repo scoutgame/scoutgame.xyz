@@ -32,7 +32,8 @@ export const loginWithWalletAction = actionClient
     const user = await findOrCreateWalletUser({
       wallet: walletAddress,
       newUserId,
-      referralCode: parsedInput.referralCode
+      referralCode: parsedInput.referralCode,
+      utmCampaign: parsedInput.utmCampaign
     });
     await saveSession(ctx, { scoutId: user.id });
     const sessionUser = (await getUserFromSession()) as SessionUser;

@@ -1,8 +1,8 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
+import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
 import { useProfile } from '@farcaster/auth-kit';
-import type { StatusAPIResponse, AuthClientError } from '@farcaster/auth-kit';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
@@ -10,8 +10,8 @@ import { loginWithFarcasterAction } from '@packages/scoutgame/session/loginWithF
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import { FarcasterLoginModal } from '@packages/scoutgame-ui/components/common/Warpcast/FarcasterModal';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { usePopupState, bindPopover } from 'material-ui-popup-state/hooks';
-import { useRouter } from 'next/navigation';
+import { bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
@@ -26,8 +26,9 @@ export function WarpcastLoginButton() {
   const { isAuthenticated } = useProfile();
   const { params, getNextPageLink } = useLoginSuccessHandler();
   const { inviteCode, referralCode } = params;
-
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
+  const searchParams = useSearchParams();
+  const utmCampaign = searchParams.get('utm_campaign');
 
   const {
     executeAsync: loginUser,
@@ -69,13 +70,14 @@ export function WarpcastLoginButton() {
           nonce: res.nonce,
           signature: res.signature,
           inviteCode,
-          referralCode
+          referralCode,
+          utmCampaign: utmCampaign as string
         });
       } else {
         log.error('Did not receive message or signature from Farcaster', res);
       }
     },
-    [inviteCode, referralCode]
+    [inviteCode, referralCode, utmCampaign]
   );
 
   const onClick = useCallback(() => {

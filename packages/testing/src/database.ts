@@ -119,6 +119,7 @@ export async function mockScout({
   path = `user-${uuid()}`,
   displayName = 'Test Scout',
   nftWeek,
+  utmCampaign,
   agreedToTermsAt = new Date(),
   onboardedAt = new Date(),
   builderId,
@@ -157,6 +158,7 @@ export async function mockScout({
   farcasterId?: number;
   deletedAt?: Date;
   telegramId?: number;
+  utmCampaign?: string;
   stats?: {
     allTime?: {
       pointsEarnedAsScout?: number;
@@ -188,6 +190,7 @@ export async function mockScout({
       farcasterName,
       farcasterId,
       deletedAt,
+      utmCampaign,
       telegramId,
       wallets: {
         createMany: {
@@ -825,7 +828,8 @@ export async function mockScoutProject({
   userId,
   memberIds = [],
   deployerAddress,
-  contractAddresses = []
+  contractAddresses = [],
+  wallets = []
 }: {
   chainId?: number;
   name?: string;
@@ -833,12 +837,13 @@ export async function mockScoutProject({
   memberIds?: string[];
   deployerAddress?: string;
   contractAddresses?: string[];
+  wallets?: string[];
 }) {
   const path = randomString();
   const createdBy = userId ?? (await mockScout()).id;
 
   // always set deployerAddress if contract addresses are provided
-  deployerAddress = (deployerAddress ?? contractAddresses.length) ? '0x1234' : undefined;
+  deployerAddress = deployerAddress || (contractAddresses.length ? '0x1234' : undefined);
 
   const scoutProject = await prisma.scoutProject.create({
     data: {
@@ -870,6 +875,11 @@ export async function mockScoutProject({
               createdBy
             }))
           ]
+        }
+      },
+      wallets: {
+        createMany: {
+          data: wallets.map((address) => ({ address, chainId, createdBy }))
         }
       }
     },

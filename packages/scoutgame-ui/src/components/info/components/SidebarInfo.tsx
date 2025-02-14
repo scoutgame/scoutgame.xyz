@@ -28,7 +28,8 @@ const partners = [
   { href: '/info/partner-rewards/moxie', text: 'Moxie' },
   { href: '/info/partner-rewards/bountycaster', text: 'BountyCaster' },
   { href: '/info/partner-rewards/optimism', text: 'Optimism' },
-  { href: '/info/partner-rewards/octant', text: 'Octant' }
+  { href: '/info/partner-rewards/octant', text: 'Octant' },
+  { href: '/info/partner-rewards/taiko', text: 'Taiko' }
 ];
 
 export function SidebarInfo({ handleClose }: Readonly<{ handleClose?: () => void }>) {

@@ -8,7 +8,7 @@ import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAct
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useConnectModal, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { Suspense, useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
@@ -36,6 +36,9 @@ function WalletLoginButton() {
   const { address, chainId, isConnected } = useAccount();
   const { params, getNextPageLink } = useLoginSuccessHandler();
   const { inviteCode, referralCode } = params;
+  const searchParams = useSearchParams();
+
+  const utmCampaign = searchParams.get('utm_campaign');
 
   const { refreshUser } = useUser();
   const router = useRouter();
@@ -79,7 +82,7 @@ function WalletLoginButton() {
     const message = siweMessage.prepareMessage();
     try {
       const signature = await signMessageAsync({ message });
-      await loginUser({ message, signature, inviteCode, referralCode });
+      await loginUser({ message, signature, inviteCode, referralCode, utmCampaign: utmCampaign as string });
     } catch (error) {
       // examples: user cancels signature, user rejects signature
       log.warn('Error signing message', { error });

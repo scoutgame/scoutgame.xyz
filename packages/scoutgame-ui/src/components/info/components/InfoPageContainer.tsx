@@ -2,7 +2,6 @@ import type { StackProps } from '@mui/material';
 import { Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
-import { InfoPageFooter } from './InfoPageFooter';
 import { SidebarInfoDrawer } from './SidebarInfoDrawer';
 
 export function InfoPageContainer({

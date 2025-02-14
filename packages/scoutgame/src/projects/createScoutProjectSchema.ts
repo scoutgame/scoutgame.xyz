@@ -12,6 +12,17 @@ export const createScoutProjectSchema = yup.object({
       return value.startsWith('https://github.com/') || value.startsWith('https://github.com/');
     })
     .nullable(),
+  wallets: yup
+    .array()
+    .of(
+      yup.object({
+        address: yup.string().required('Wallet address is required'),
+        chainId: yup.number().integer().required('Chain ID is required'),
+        signature: yup.string().required('Signature is required'),
+        verified: yup.boolean().required()
+      })
+    )
+    .min(0),
   contracts: yup
     .array()
     .of(

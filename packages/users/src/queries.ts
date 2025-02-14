@@ -18,7 +18,8 @@ export const BasicUserInfoSelect = {
     }
   },
   builderStatus: true,
-  deletedAt: true
+  deletedAt: true,
+  utmCampaign: true
 } satisfies Prisma.ScoutSelect;
 
 export const MinimalScoutInfoSelect = {

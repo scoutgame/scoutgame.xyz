@@ -12,11 +12,13 @@ import { createReferralEvent } from './referrals/createReferralEvent';
 export async function findOrCreateWalletUser({
   wallet,
   newUserId,
-  referralCode
+  referralCode,
+  utmCampaign
 }: {
   wallet: string;
   newUserId?: string;
   referralCode?: string | null;
+  utmCampaign?: string | null;
 }): Promise<FindOrCreateUserResult> {
   if (wallet === NULL_EVM_ADDRESS) {
     throw new Error('Cannot create a user for the null wallet address 0x00...00');
@@ -50,7 +52,8 @@ export async function findOrCreateWalletUser({
     displayName,
     path: displayName,
     farcasterName,
-    farcasterId
+    farcasterId,
+    utmCampaign: utmCampaign || undefined
   });
 
   if (user?.isNew && referralCode) {

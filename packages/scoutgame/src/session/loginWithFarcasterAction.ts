@@ -28,7 +28,8 @@ export const loginWithFarcasterAction = actionClient
     const user = await findOrCreateFarcasterUser({
       fid,
       newUserId: ctx.session.anonymousUserId,
-      referralCode: parsedInput.referralCode
+      referralCode: parsedInput.referralCode,
+      utmCampaign: parsedInput.utmCampaign
     });
     await saveSession(ctx, { scoutId: user.id });
 

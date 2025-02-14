@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import { mockBuilder, mockScout } from '@packages/testing/database';
 import { randomIntFromInterval } from '@packages/testing/generators';
 import { v4 } from 'uuid';
@@ -83,6 +82,24 @@ describe('createScoutProject', () => {
         owner.id
       )
     ).rejects.toThrow(`Invalid signature for deployer ${walletAddress}`);
+  });
+
+  it('should throw an error if the wallet signature is invalid', async () => {
+    const owner = await mockScout();
+    const walletAddress = '0x123';
+
+    mockVerifyMessage.mockResolvedValue(false as never);
+
+    await expect(
+      createScoutProject(
+        {
+          name: 'Test Project',
+          teamMembers: [{ displayName: 'Owner 1', scoutId: owner.id, role: 'owner' }],
+          wallets: [{ address: walletAddress, chainId: 1, signature: '0x123', verified: true }]
+        },
+        owner.id
+      )
+    ).rejects.toThrow(`Invalid signature for wallet ${walletAddress}`);
   });
 
   it('should throw an error if the contract deployer address is not the same as the deployer address', async () => {

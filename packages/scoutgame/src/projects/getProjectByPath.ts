@@ -43,6 +43,15 @@ export const projectDetailedSelect = {
       id: true,
       address: true
     }
+  },
+  wallets: {
+    where: {
+      deletedAt: null
+    },
+    select: {
+      address: true,
+      chainId: true
+    }
   }
 } satisfies Prisma.ScoutProjectSelect;
 
@@ -60,8 +69,6 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
 
   return {
     ...scoutProject,
-    contracts: scoutProject.contracts,
-    deployers: scoutProject.deployers,
     teamMembers: scoutProject.members.map((member) => ({
       id: member.user.id,
       avatar: member.user.avatar ?? '',

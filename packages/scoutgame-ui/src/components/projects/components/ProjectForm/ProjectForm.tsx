@@ -3,15 +3,22 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
+import { useState } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { FormErrors } from '../../../common/FormErrors';
+import { ProjectAgentWalletForm } from '../../create/components/ProjectAgentWalletForm';
 import { ProjectAvatarField } from '../../create/components/ProjectAvatarField';
 import type { Deployer } from '../../create/components/ProjectSmartContractForm';
 import { ProjectSmartContractForm } from '../../create/components/ProjectSmartContractForm';
 import { ProjectTeamMemberForm } from '../../create/components/ProjectTeamMemberForm';
+
+export type TemporaryAddress = {
+  address: string;
+  chainId: number;
+};
 
 export function ProjectForm({
   control,
@@ -56,6 +63,7 @@ export function ProjectForm({
               name='name'
               render={({ field, fieldState }) => (
                 <TextField
+                  data-test='project-name-input'
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}
                   placeholder='Example Project Title'
@@ -125,7 +133,12 @@ export function ProjectForm({
               <br />
               Sign a message with the wallet that deployed your contracts to prove ownership.
             </Typography>
-            <ProjectSmartContractForm control={control} deployers={deployers} setDeployers={setDeployers} />
+
+            <Stack>
+              <ProjectSmartContractForm control={control} deployers={deployers} setDeployers={setDeployers} />
+              <Divider sx={{ my: 2 }} />
+              <ProjectAgentWalletForm control={control} />
+            </Stack>
           </Stack>
         </Stack>
         <Divider />
@@ -159,6 +172,7 @@ export function ProjectForm({
           loading={isExecuting}
           disabled={isExecuting || !isDirty}
           sx={{ width: 'fit-content' }}
+          data-test='project-form-save-button'
         >
           Save
         </LoadingButton>

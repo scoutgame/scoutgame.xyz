@@ -3,7 +3,7 @@ import { getContractDeployerAddress } from '@packages/blockchain/getContractDepl
 import { isTruthy } from '@packages/utils/types';
 import { verifyMessage } from 'viem';
 
-import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
+import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { UpdateScoutProjectFormValues } from './updateScoutProjectSchema';
 
 export async function updateScoutProject(payload: UpdateScoutProjectFormValues, userId: string) {
@@ -29,6 +29,28 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     throw new Error('Project must have at least one owner');
   }
 
+  if (payload.deployers) {
+    payload.deployers = payload.deployers.map((d) => ({
+      ...d,
+      address: d.address.toLowerCase()
+    }));
+  }
+
+  if (payload.wallets) {
+    payload.wallets = payload.wallets.map((w) => ({
+      ...w,
+      address: w.address.toLowerCase()
+    }));
+  }
+
+  if (payload.contracts) {
+    payload.contracts = payload.contracts.map((c) => ({
+      ...c,
+      address: c.address.toLowerCase(),
+      deployerAddress: c.deployerAddress.toLowerCase()
+    }));
+  }
+
   const project = await prisma.scoutProject.findUniqueOrThrow({
     where: {
       id: payload.projectId
@@ -50,6 +72,12 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           address: true,
           deletedAt: true
         }
+      },
+      wallets: {
+        select: {
+          address: true,
+          deletedAt: true
+        }
       }
     }
   });
@@ -58,52 +86,74 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     string,
     { chainId: number; txHash: string; blockNumber: number; blockTimestamp: number; deployerAddress: string }
   > = {};
+
   const projectMemberIds = project.members.map((member) => member.userId);
   const projectDeployerAddresses = project.deployers.map((deployer) => deployer.address.toLowerCase());
   const projectContractAddresses = project.contracts.map((contract) => contract.address.toLowerCase());
-  const payloadProjectMemberIds = payload.teamMembers.map((member) => member.scoutId);
-  const payloadProjectDeployerAddresses = payload.deployers.map((deployer) => deployer.address.toLowerCase());
-  const payloadProjectContractAddresses = payload.contracts.map((contract) => contract.address.toLowerCase());
+  const projectWalletAddresses = project.wallets.map((wallet) => wallet.address.toLowerCase());
+  const projectPayloadMemberIds = payload.teamMembers.map((member) => member.scoutId);
+  const projectPayloadDeployerAddresses = payload.deployers.map((deployer) => deployer.address);
+  const projectPayloadContractAddresses = payload.contracts.map((contract) => contract.address);
+  const projectPayloadWalletAddresses = payload.wallets.map((wallet) => wallet.address);
 
-  const contractAddressesToCreate = payloadProjectContractAddresses.filter(
+  const contractAddressesToCreate = projectPayloadContractAddresses.filter(
     (address) => !projectContractAddresses.includes(address)
   );
   const contractAddressesToRemove = projectContractAddresses.filter(
-    (address) => !payloadProjectContractAddresses.includes(address)
+    (address) => !projectPayloadContractAddresses.includes(address)
   );
 
-  const deployerAddressesToCreate = payloadProjectDeployerAddresses.filter(
+  // Find deployer addresses that exist in payload but not in database (need to be created)
+  const deployerAddressesToCreate = projectPayloadDeployerAddresses.filter(
     (address) => !projectDeployerAddresses.includes(address)
   );
 
-  const projectMemberIdsToCreate = payloadProjectMemberIds.filter((scoutId) => !projectMemberIds.includes(scoutId));
+  const walletAddressesToCreate = payload.wallets.filter((wallet) => !projectWalletAddresses.includes(wallet.address));
+  const walletAddressesToRemove = projectWalletAddresses.filter(
+    (address) => !projectPayloadWalletAddresses.includes(address)
+  );
 
-  const projectMemberIdsToRemove = projectMemberIds.filter((scoutId) => !payloadProjectMemberIds.includes(scoutId));
+  const projectMemberIdsToCreate = projectPayloadMemberIds.filter((scoutId) => !projectMemberIds.includes(scoutId));
+
+  const projectMemberIdsToRemove = projectMemberIds.filter((scoutId) => !projectPayloadMemberIds.includes(scoutId));
 
   const deletedProjectMemberIds = project.members.filter((member) => member.deletedAt).map((member) => member.userId);
 
   const deletedContractAddresses = project.contracts
     .filter((contract) => contract.deletedAt)
-    .map((contract) => contract.address.toLowerCase());
+    .map((contract) => contract.address);
+
+  const deletedWalletAddresses = project.wallets.filter((wallet) => wallet.deletedAt).map((wallet) => wallet.address);
 
   const projectMemberIdsToRestore = deletedProjectMemberIds.filter((scoutId) =>
-    payloadProjectMemberIds.includes(scoutId)
+    projectPayloadMemberIds.includes(scoutId)
   );
 
   const contractAddressesToRestore = deletedContractAddresses.filter((address) =>
-    payloadProjectContractAddresses.includes(address)
+    projectPayloadContractAddresses.includes(address)
   );
 
-  const retainedProjectMemberIds = projectMemberIds.filter((scoutId) => payloadProjectMemberIds.includes(scoutId));
+  const deletedWalletAddressesToRestore = deletedWalletAddresses.filter((address) =>
+    projectPayloadWalletAddresses.includes(address)
+  );
+
+  const retainedProjectMemberIds = projectMemberIds.filter((scoutId) => projectPayloadMemberIds.includes(scoutId));
 
   const builderMemberIds = [...retainedProjectMemberIds, ...projectMemberIdsToRestore, ...projectMemberIdsToCreate];
 
   const builderMembersCount = await prisma.scout.count({
     where: {
-      builderStatus: 'approved',
       id: {
         in: builderMemberIds
-      }
+      },
+      OR: [
+        {
+          builderStatus: 'approved'
+        },
+        {
+          utmCampaign: 'taiko'
+        }
+      ]
     }
   });
 
@@ -113,14 +163,12 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   if (deployerAddressesToCreate.length) {
     for (const deployerAddress of deployerAddressesToCreate) {
-      const deployer = payload.deployers.find(
-        (_deployer) => _deployer.address.toLowerCase() === deployerAddress.toLowerCase()
-      );
+      const deployer = payload.deployers.find((_deployer) => _deployer.address === deployerAddress);
       if (deployer) {
         const isValidSignature = await verifyMessage({
           message: CONTRACT_DEPLOYER_SIGN_MESSAGE,
           signature: deployer.signature as `0x${string}`,
-          address: deployer.address.toLowerCase() as `0x${string}`
+          address: deployer.address as `0x${string}`
         });
         if (!isValidSignature) {
           throw new Error(`Invalid signature for deployer ${deployer.address}`);
@@ -129,26 +177,42 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
   }
 
+  if (walletAddressesToCreate.length) {
+    for (const walletAddress of walletAddressesToCreate) {
+      const wallet = payload.wallets.find((_wallet) => _wallet.address === walletAddress.address);
+
+      if (wallet) {
+        const isValidSignature = await verifyMessage({
+          message: AGENT_WALLET_SIGN_MESSAGE,
+          signature: wallet.signature as `0x${string}`,
+          address: wallet.address as `0x${string}`
+        });
+
+        if (!isValidSignature) {
+          throw new Error(`Invalid signature for wallet ${wallet.address}`);
+        }
+      }
+    }
+  }
+
   if (contractAddressesToCreate.length) {
     for (const contractAddress of contractAddressesToCreate) {
-      const contract = payload.contracts.find(
-        (_contract) => _contract.address.toLowerCase() === contractAddress.toLowerCase()
-      );
+      const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
       if (contract) {
         const { transaction, block } = await getContractDeployerAddress({
-          contractAddress: contract.address.toLowerCase(),
+          contractAddress: contract.address,
           chainId: contract.chainId
         });
-        contractTransactionRecord[contract.address.toLowerCase()] = {
+        contractTransactionRecord[contract.address] = {
           chainId: contract.chainId,
           txHash: transaction.hash,
           blockNumber: Number(block.number),
           blockTimestamp: Number(block.timestamp),
-          deployerAddress: transaction.from.toLowerCase()
+          deployerAddress: transaction.from
         };
-        if (contract.deployerAddress.toLowerCase() !== transaction.from.toLowerCase()) {
+        if (contract.deployerAddress !== transaction.from) {
           throw new Error(
-            `Contract ${contract.address.toLowerCase()} was not deployed by the provided deployer. Actual deployer: ${transaction.from.toLowerCase()}`
+            `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
           );
         }
       }
@@ -174,6 +238,20 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
         where: {
           address: {
             in: contractAddressesToRemove
+          },
+          projectId: _updatedProject.id
+        },
+        data: {
+          deletedAt: new Date()
+        }
+      });
+    }
+
+    if (walletAddressesToRemove.length) {
+      await tx.scoutProjectWallet.updateMany({
+        where: {
+          address: {
+            in: walletAddressesToRemove
           },
           projectId: _updatedProject.id
         },
@@ -225,6 +303,20 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       });
     }
 
+    if (deletedWalletAddressesToRestore.length) {
+      await tx.scoutProjectWallet.updateMany({
+        where: {
+          address: {
+            in: deletedWalletAddressesToRestore
+          },
+          projectId: _updatedProject.id
+        },
+        data: {
+          deletedAt: null
+        }
+      });
+    }
+
     if (projectMemberIdsToCreate.length) {
       await tx.scoutProjectMember.createMany({
         data: projectMemberIdsToCreate
@@ -242,8 +334,21 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     if (deployerAddressesToCreate.length) {
       await tx.scoutProjectDeployer.createMany({
         data: deployerAddressesToCreate.map((address) => ({
-          address: address.toLowerCase(),
+          address,
           projectId: _updatedProject.id,
+          verifiedBy: userId,
+          verifiedAt: new Date()
+        }))
+      });
+    }
+
+    if (walletAddressesToCreate.length) {
+      await tx.scoutProjectWallet.createMany({
+        data: walletAddressesToCreate.map((wallet) => ({
+          address: wallet.address,
+          projectId: _updatedProject.id,
+          createdBy: userId,
+          chainId: wallet.chainId,
           verifiedBy: userId,
           verifiedAt: new Date()
         }))
@@ -286,7 +391,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
         data: contractAddressesToCreate.map((address) => ({
           createdBy: userId,
           projectId: _updatedProject.id,
-          address: address.toLowerCase(),
+          address,
           chainId: contractTransactionRecord[address].chainId,
           deployedAt: new Date(contractTransactionRecord[address].blockTimestamp * 1000),
           deployTxHash: contractTransactionRecord[address].txHash,

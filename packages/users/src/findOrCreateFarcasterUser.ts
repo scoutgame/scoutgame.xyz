@@ -13,12 +13,14 @@ export async function findOrCreateFarcasterUser({
   fid,
   newUserId,
   tierOverride,
-  referralCode
+  referralCode,
+  utmCampaign
 }: {
   fid: number;
   newUserId?: string;
   tierOverride?: ConnectWaitlistTier;
   referralCode?: string | null;
+  utmCampaign?: string | null;
 }): Promise<FindOrCreateUserResult> {
   // check if user already exists to avoid api calls to neynar
   const existing = await prisma.scout.findUnique({
@@ -46,7 +48,8 @@ export async function findOrCreateFarcasterUser({
     displayName,
     path: profile?.username ?? displayName,
     tierOverride,
-    farcasterName: profile?.username
+    farcasterName: profile?.username,
+    utmCampaign: utmCampaign || undefined
   });
 
   if (user?.isNew && referralCode) {
