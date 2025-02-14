@@ -44,9 +44,13 @@ type CreateProjectEvent = BaseEvent & {
   path: string;
 };
 
-type DeployerAddressSignEvent = BaseEvent & {
+type ProjectDeployerAddressSignEvent = BaseEvent & {
   deployerAddress: string;
   contractAddress: string;
+};
+
+type ProjectWalletAddressSignEvent = BaseEvent & {
+  walletAddress: string;
 };
 
 export type EventType =
@@ -90,7 +94,8 @@ export type MixpanelEventMap = {
   verify_email: BaseEvent;
   claim_partner_reward: ClaimPartnerRewardEvent;
   create_project: CreateProjectEvent;
-  deployer_address_sign: DeployerAddressSignEvent;
+  project_deployer_address_sign: ProjectDeployerAddressSignEvent;
+  project_wallet_address_sign: ProjectWalletAddressSignEvent;
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

@@ -1,17 +1,38 @@
 'use client';
 
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
+import { useState } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { FormErrors } from '../../../common/FormErrors';
+import { ProjectAgentWalletForm } from '../../create/components/ProjectAgentWalletForm';
 import { ProjectAvatarField } from '../../create/components/ProjectAvatarField';
 import type { Deployer } from '../../create/components/ProjectSmartContractForm';
 import { ProjectSmartContractForm } from '../../create/components/ProjectSmartContractForm';
 import { ProjectTeamMemberForm } from '../../create/components/ProjectTeamMemberForm';
+
+export type TemporaryAddress = {
+  address: string;
+  chainId: number;
+};
+
+export type Contract = {
+  address: string;
+  chainId: number;
+  deployers: Deployer[];
+};
+
+export type Wallet = {
+  address: string;
+  chainId: number;
+  verified: boolean;
+  signature: string;
+};
 
 export function ProjectForm({
   control,
@@ -22,7 +43,9 @@ export function ProjectForm({
   deployers,
   setDeployers,
   cancelLink,
-  showRemoveMemberConfirmation
+  showRemoveMemberConfirmation,
+  contracts,
+  wallets
 }: {
   errors?: string[] | null;
   isDirty: boolean;
@@ -33,8 +56,13 @@ export function ProjectForm({
   setDeployers: React.Dispatch<React.SetStateAction<Deployer[]>>;
   cancelLink: string;
   showRemoveMemberConfirmation: boolean;
+  contracts: Contract[];
+  wallets: Wallet[];
 }) {
   const isMdScreen = useMdScreen();
+  const [isAgentWalletFormOpen, setIsAgentWalletFormOpen] = useState(false);
+  const [isSmartContractFormOpen, setIsSmartContractFormOpen] = useState(false);
+  const [tempAddress, setTempAddress] = useState<TemporaryAddress | null>(null);
 
   return (
     <>
@@ -125,7 +153,66 @@ export function ProjectForm({
               <br />
               Sign a message with the wallet that deployed your contracts to prove ownership.
             </Typography>
-            <ProjectSmartContractForm control={control} deployers={deployers} setDeployers={setDeployers} />
+
+            {(isSmartContractFormOpen || contracts.length > 0) && (
+              <ProjectSmartContractForm
+                onClose={() => {
+                  setIsSmartContractFormOpen(false);
+                  setTempAddress(null);
+                }}
+                control={control}
+                deployers={deployers}
+                setDeployers={setDeployers}
+                tempContract={tempAddress}
+                setTempContract={setTempAddress}
+              />
+            )}
+            {(isAgentWalletFormOpen || wallets.length > 0) && (
+              <ProjectAgentWalletForm
+                onClose={() => {
+                  setIsAgentWalletFormOpen(false);
+                  setTempAddress(null);
+                }}
+                control={control}
+                tempWallet={tempAddress}
+                setTempWallet={setTempAddress}
+              />
+            )}
+
+            {!isSmartContractFormOpen && !isAgentWalletFormOpen && (
+              <Stack direction='row' gap={2}>
+                <Button
+                  variant='outlined'
+                  color='secondary'
+                  sx={{ width: 'fit-content' }}
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={() => {
+                    setTempAddress({
+                      address: '',
+                      chainId: 167000
+                    });
+                    setIsSmartContractFormOpen(true);
+                  }}
+                >
+                  Add dapp
+                </Button>
+                <Button
+                  variant='outlined'
+                  color='secondary'
+                  sx={{ width: 'fit-content' }}
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={() => {
+                    setTempAddress({
+                      address: '',
+                      chainId: 167000
+                    });
+                    setIsAgentWalletFormOpen(true);
+                  }}
+                >
+                  Add agent
+                </Button>
+              </Stack>
+            )}
           </Stack>
         </Stack>
         <Divider />
