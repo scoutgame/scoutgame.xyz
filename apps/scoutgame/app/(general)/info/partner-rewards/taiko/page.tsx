@@ -2,6 +2,7 @@ import type { StackProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { SidebarInfoDrawer } from '@packages/scoutgame-ui/components/info/components/SidebarInfoDrawer';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -92,10 +93,7 @@ function HeroSection() {
   return (
     <Stack
       sx={{
-        backgroundImage: {
-          xs: undefined,
-          md: 'url(/images/home/landing-bg.png)'
-        },
+        backgroundImage: 'url(/images/home/landing-bg.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
@@ -239,18 +237,31 @@ function FooterSection() {
 
 export default async function Taiko() {
   return (
-    <Stack
-      height='100%'
-      overflow='hidden'
-      sx={{
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}
-    >
-      <Stack height='100%' overflow='auto'>
-        <HeroSection />
-        <HowToPlaySection />
-        <FooterSection />
+    <Stack maxWidth='854px' width='100%' mx='auto' gap={{ xs: 2, md: 4 }}>
+      <Stack
+        flexDirection='row'
+        alignItems='center'
+        justifyContent={{ xs: 'space-between', md: 'center' }}
+        data-test='info-page'
+      >
+        <Typography variant='h4' textAlign='center' color='secondary'>
+          Taiko Partner Rewards
+        </Typography>
+        <SidebarInfoDrawer />
+      </Stack>
+      <Stack
+        height='100%'
+        overflow='hidden'
+        sx={{
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <Stack height='100%' overflow='auto'>
+          <HeroSection />
+          <HowToPlaySection />
+          <FooterSection />
+        </Stack>
       </Stack>
     </Stack>
   );
