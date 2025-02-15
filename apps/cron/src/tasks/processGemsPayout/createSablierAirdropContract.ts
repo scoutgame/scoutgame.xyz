@@ -2,14 +2,16 @@ import type { FullMerkleTree } from '@packages/blockchain/airdrop/checkSablierAi
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { erc20Abi, nonceManager, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { optimism, optimismSepolia, taiko } from 'viem/chains';
+import { base, optimism, optimismSepolia, taiko } from 'viem/chains';
 
 import SablierAirdropFactoryAbi from './SablierMerkleFactory.json';
 
+// Merkle Airdrops Deployment Addresses: https://docs.sablier.com/guides/airdrops/deployments
 const SablierAirdropFactoryContractRecords: Record<number, `0x${string}`> = {
   [optimismSepolia.id]: '0x2934A7aDDC3000D1625eD1E8D21C070a89073702',
   [taiko.id]: '0x39D4D8C60D3596B75bc09863605BBB4dcE8243F1',
-  [optimism.id]: '0x2455bff7a71E6e441b2d0B1b1e480fe36EbF6D1E'
+  [optimism.id]: '0x2455bff7a71E6e441b2d0B1b1e480fe36EbF6D1E',
+  [base.id]: '0xD9e108f26fe104CE1058D48070438deDB3aD826A'
 };
 
 type Recipient = {

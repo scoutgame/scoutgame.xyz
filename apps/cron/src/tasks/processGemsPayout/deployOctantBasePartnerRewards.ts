@@ -3,12 +3,12 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
 import { parseUnits, type Address } from 'viem';
-import { optimism } from 'viem/chains';
+import { base } from 'viem/chains';
 
 import { createSablierAirdropContract } from './createSablierAirdropContract';
 
 const usdcTokenDecimals = 6;
-const optimismUsdcTokenAddress = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
+const baseUsdcTokenAddress = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', usdcTokenDecimals).toString();
 
 export async function deployOctantBasePartnerRewards({ week }: { week: string }) {
@@ -30,12 +30,12 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT as Address,
     campaignName: `Scoutgame Octant & Base ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
-    chainId: optimism.id,
+    chainId: base.id,
     recipients: recipients.map((recipient) => ({
       address: recipient.address,
       amount: 75
     })),
-    tokenAddress: optimismUsdcTokenAddress,
+    tokenAddress: baseUsdcTokenAddress,
     tokenDecimals: usdcTokenDecimals,
     nullAddressAmount: 0.001
   });
@@ -49,11 +49,11 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
 
   await prisma.partnerRewardPayoutContract.create({
     data: {
-      chainId: optimism.id,
+      chainId: base.id,
       contractAddress,
       season: currentSeason.start,
       week,
-      tokenAddress: optimismUsdcTokenAddress,
+      tokenAddress: baseUsdcTokenAddress,
       tokenSymbol: 'USDC',
       tokenDecimals: usdcTokenDecimals,
       partner: 'octant_base_contribution',
