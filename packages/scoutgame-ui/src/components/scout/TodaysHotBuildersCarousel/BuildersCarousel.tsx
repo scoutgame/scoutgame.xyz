@@ -43,16 +43,16 @@ export function BuildersCarousel({
           }}
         />,
         ...builderCardsList.slice(0, promoInsertIndex),
-        <PromoCard
-          data-test='promo-card-moxie'
-          key='moxie-fan-reward-ad'
-          size={size}
-          path='/info/partner-rewards/moxie'
-          src='/images/home/moxie-fan-reward-ad.png'
-          onClick={() => {
-            trackEvent('click_moxie_promo');
-          }}
-        />,
+        // <PromoCard
+        //   data-test='promo-card-moxie'
+        //   key='moxie-fan-reward-ad'
+        //   size={size}
+        //   path='/info/partner-rewards/moxie'
+        //   src='/images/home/moxie-fan-reward-ad.png'
+        //   onClick={() => {
+        //     trackEvent('click_moxie_promo');
+        //   }}
+        // />,
         ...builderCardsList.slice(promoInsertIndex, promoInsertIndex * 2),
         ...builderCardsList.slice(promoInsertIndex * 2)
       ]

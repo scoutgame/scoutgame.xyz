@@ -72,6 +72,7 @@ function Document() {
             <PartnerReward name='Base' image='/images/crypto/base.svg' href='/info/partner-rewards/octant' />
             <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='paused' />
             <PartnerReward name='Talent Protocol' image='/images/crypto/talent.jpg' status='completed' />
+            <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
           </Stack>
         </Stack>
         <Stack flex={1} gap={2}>
@@ -80,7 +81,7 @@ function Document() {
           </Typography>
           <Stack gap={{ xs: 2, md: 3 }}>
             <PartnerReward name='Glo Dollar' image='/images/crypto/glo-dollar.png' status='completed' />
-            <PartnerReward name='Moxie' image='/images/crypto/moxie.png' href='/info/partner-rewards/moxie' />
+            <PartnerReward name='Moxie' image='/images/crypto/moxie.png' status='completed' />
             <PartnerReward name='Optimism' image='/images/crypto/op.png' href='/info/partner-rewards/optimism' />
           </Stack>
         </Stack>
