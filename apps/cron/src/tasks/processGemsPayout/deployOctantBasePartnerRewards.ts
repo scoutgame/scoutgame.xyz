@@ -14,13 +14,18 @@ const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', usdcTokenDecimal
 export async function deployOctantBasePartnerRewards({ week }: { week: string }) {
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
   const currentSeason = getCurrentSeason(week);
-  const recipients = builderEvents.map((event) => ({
-    address: event.githubUser.builder!.wallets[0].address,
-    prLink: event.url
-  })) as { address: Address; prLink: string }[];
+  const recipients = builderEvents
+    .map((event) => {
+      const address = event.githubUser.builder!.wallets[0]?.address;
+      return {
+        address: address ? address.toLowerCase() : null,
+        prLink: event.url
+      };
+    })
+    .filter((recipient) => recipient.address) as { address: Address; prLink: string }[];
 
   if (recipients.length === 0) {
-    log.info('No recipients found, skipping octant & base rewards contact deployment', {
+    log.info('No recipients found, skipping octant & base rewards contract deployment', {
       season: currentSeason.start,
       week
     });
@@ -64,7 +69,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
         createMany: {
           data: recipients.map((recipient) => ({
             amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT,
-            walletAddress: recipient.address.toLowerCase(),
+            walletAddress: recipient.address,
             meta: {
               prLink: recipient.prLink
             }
