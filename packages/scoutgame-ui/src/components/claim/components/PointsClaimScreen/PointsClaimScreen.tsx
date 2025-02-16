@@ -26,6 +26,21 @@ import { PartnerRewardsClaimButton } from './PartnerRewardsClaimButton/PartnerRe
 import { PointsClaimButton } from './PointsClaimButton';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
 
+const PartnerRewardRecord: Record<string, { label: string; icon: string }> = {
+  optimism_new_scout: {
+    label: 'New Scout',
+    icon: '/images/crypto/op.png'
+  },
+  optimism_referral_champion: {
+    label: 'Referral Champion',
+    icon: '/images/crypto/op.png'
+  },
+  octant_base_contribution: {
+    label: 'Octant Base Contribution',
+    icon: '/images/crypto/usdc.png'
+  }
+};
+
 export function PointsClaimScreen({
   totalUnclaimedPoints,
   bonusPartners,
@@ -202,12 +217,17 @@ export function PointsClaimScreen({
               <Stack gap={2} width='100%'>
                 {partnerRewards.map((reward) => (
                   <Stack key={reward.id} flexDirection='row' alignItems='center' justifyContent='space-between'>
-                    <Typography minWidth={150}>
-                      {reward.partner === 'optimism_new_scout' ? 'New Scout' : 'Referral Champion'}
+                    <Typography
+                      width={{
+                        xs: 150,
+                        md: 200
+                      }}
+                    >
+                      {PartnerRewardRecord[reward.partner].label}
                     </Typography>
                     <Stack flexDirection='row' alignItems='center' gap={1}>
                       <Typography>{reward.amount.toLocaleString()}</Typography>
-                      <Image width={25} height={25} src='/images/crypto/op.png' alt='Scouts' />
+                      <Image width={25} height={25} src={PartnerRewardRecord[reward.partner].icon} alt='Scouts' />
                     </Stack>
                     <PartnerRewardsClaimButton partnerReward={reward} />
                   </Stack>

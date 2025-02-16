@@ -96,6 +96,9 @@ function PartnerRewardsClaimButtonContent({
           >
             Send {partnerReward.amount} {partnerReward.tokenSymbol} to {partnerReward.recipientAddress}
           </Typography>
+          <Typography variant='body2'>
+            Note: You will be charged <strong>0.00036 ETH</strong> as fee for the airdrop
+          </Typography>
           <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
             <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claimPartnerReward}>
               {isConnected ? 'Claim' : 'Connect Wallet'}

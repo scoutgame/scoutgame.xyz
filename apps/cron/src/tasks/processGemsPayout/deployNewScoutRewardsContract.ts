@@ -31,7 +31,7 @@ export async function deployNewScoutRewardsContract({ week }: { week: string }) 
     campaignName: `Scoutgame New Scout ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: optimism.id,
     recipients: top10Scouts.map((scout, index) => ({
-      address: scout.address as `0x${string}`,
+      address: scout.address.toLowerCase() as `0x${string}`,
       amount: newScoutsRewards[index]
     })),
     tokenAddress: optimismTokenAddress,
