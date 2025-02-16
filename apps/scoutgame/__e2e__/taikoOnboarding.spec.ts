@@ -7,12 +7,12 @@ import { expect, test } from './test';
 test.describe('Taiko Developer Onboarding flow', () => {
   test('Open the app to taiko page, redirect to taiko partner rewards info page, click register and check utm campaign search params', async ({
     page,
-    homePage,
+    taikoDevelopersPage,
     loginPage
   }) => {
     await page.goto('/taiko');
-    await expect(homePage.getStartedButton).toBeVisible();
-    await homePage.getStartedButton.click();
+    await expect(taikoDevelopersPage.getStartedButton).toBeVisible();
+    await taikoDevelopersPage.getStartedButton.click();
     await page.waitForURL('**/login?**');
     await expect(loginPage.container).toBeVisible();
 
@@ -82,5 +82,30 @@ test.describe('Taiko Developer Onboarding flow', () => {
     const projectName = await projectPage.projectName.textContent();
 
     expect(projectName).toBe('Test Project');
+  });
+
+  test('Taiko register buttons should redirect to correct page', async ({ page, utils, taikoDevelopersPage }) => {
+    const newUser = await mockScout({
+      onboardedAt: new Date(),
+      agreedToTermsAt: new Date(),
+      utmCampaign: 'taiko',
+      displayName: 'Test Developer'
+    });
+
+    await utils.loginAsUserId(newUser.id);
+
+    await page.goto('/taiko');
+    await page.waitForURL('/info/partner-rewards/taiko');
+    const registerButtonBeforeGithub = taikoDevelopersPage.getStartedButton.locator('a');
+    expect(await registerButtonBeforeGithub.getAttribute('href')).toContain('/welcome?type=builder&step=2');
+
+    await mockGithubUser({
+      builderId: newUser.id
+    });
+
+    await page.goto('/taiko');
+    await page.waitForURL('/info/partner-rewards/taiko');
+    const registerButtonAfterGithub = taikoDevelopersPage.getStartedButton.locator('a');
+    expect(await registerButtonAfterGithub.getAttribute('href')).toContain('/welcome?type=builder&step=3');
   });
 });

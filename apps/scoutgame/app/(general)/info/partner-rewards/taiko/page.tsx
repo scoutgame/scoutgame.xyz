@@ -2,7 +2,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { StackProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { getSession } from '@packages/nextjs/session/getSession';
-import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { SidebarInfoDrawer } from '@packages/scoutgame-ui/components/info/components/SidebarInfoDrawer';
@@ -243,19 +242,21 @@ function FooterSection({ registerUrl }: { registerUrl: string }) {
 
 export default async function Taiko() {
   const session = await getSession();
-  const user = await prisma.scout.findFirst({
-    where: {
-      id: session.scoutId
-    },
-    select: {
-      githubUsers: true,
-      scoutProjectMembers: {
+  const user = session.scoutId
+    ? await prisma.scout.findFirst({
+        where: {
+          id: session.scoutId
+        },
         select: {
-          userId: true
+          githubUsers: true,
+          scoutProjectMembers: {
+            select: {
+              userId: true
+            }
+          }
         }
-      }
-    }
-  });
+      })
+    : null;
 
   const registerUrl = !user
     ? `${builderLoginUrl}&utm_source=partner&utm_campaign=taiko`

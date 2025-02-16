@@ -1,5 +1,3 @@
-import 'server-only';
-
 import { Box, Button, Link, Stack, Typography } from '@mui/material';
 
 import { SinglePageLayout } from '../../../common/Layout';
