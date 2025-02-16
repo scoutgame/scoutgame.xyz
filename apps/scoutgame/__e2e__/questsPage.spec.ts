@@ -1,4 +1,3 @@
-import { questsRecord } from '@packages/scoutgame/quests/questRecords';
 import { mockScout } from '@packages/testing/database';
 
 import { expect, test } from './test';
