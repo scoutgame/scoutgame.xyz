@@ -60,11 +60,6 @@ export async function createSablierAirdropContract({
     throw new Error(`Sablier airdrop factory address not found for chainId ${chainId}`);
   }
 
-  if (recipients.length === 1) {
-    // Add the null address to the recipients to ensure there is atleast 2 recipients, otherwise the merkle tree will not be valid
-    recipients.push({ address: '0x0000000000000000000000000000000000000000', amount: nullAddressAmount });
-  }
-
   const normalizedRecipientsRecord: Record<`0x${string}`, number> = {};
 
   for (const recipient of recipients) {
@@ -78,6 +73,11 @@ export async function createSablierAirdropContract({
     address: address as `0x${string}`,
     amount
   }));
+
+  if (normalizedRecipients.length === 1) {
+    // Add the null address to the recipients to ensure there is atleast 2 recipients, otherwise the merkle tree will not be valid
+    normalizedRecipients.push({ address: '0x0000000000000000000000000000000000000000', amount: nullAddressAmount });
+  }
 
   const csvContent = createCsvContent(normalizedRecipients);
 

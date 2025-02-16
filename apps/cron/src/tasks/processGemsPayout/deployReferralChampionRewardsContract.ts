@@ -21,7 +21,7 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     const topConnector = await getTopConnectorOfTheDay({ date });
 
     if (topConnector) {
-      referralChampions.push({ address: topConnector.address, date });
+      referralChampions.push({ address: topConnector.address.toLowerCase(), date });
     }
   }
 
@@ -67,7 +67,7 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
         createMany: {
           data: referralChampions.map(({ address, date }) => ({
             amount: REFERRAL_CHAMPION_REWARD_AMOUNT,
-            walletAddress: address.toLowerCase(),
+            walletAddress: address,
             meta: {
               date: date.toJSDate()
             }

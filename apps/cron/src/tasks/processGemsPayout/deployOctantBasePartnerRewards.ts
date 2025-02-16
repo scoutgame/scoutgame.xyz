@@ -33,7 +33,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
   }
 
   const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
-    adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT as Address,
+    adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY as Address,
     campaignName: `Scoutgame Octant & Base ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: base.id,
     recipients: recipients.map((recipient) => ({
