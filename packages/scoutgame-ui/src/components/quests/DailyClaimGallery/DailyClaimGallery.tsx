@@ -22,7 +22,12 @@ const NextClaimCountdown = dynamic(
 export function DailyClaimGallery({ dailyClaims }: { dailyClaims: DailyClaim[] }) {
   const isSequential = isSequentialUpToToday(dailyClaims);
   const currentWeekDay = getServerDate().weekday;
-  const canClaimToday = dailyClaims.some((dailyClaim) => dailyClaim.day === currentWeekDay && !dailyClaim.claimed);
+  const canClaimToday = dailyClaims.some(
+    (dailyClaim) =>
+      dailyClaim.day === currentWeekDay &&
+      !dailyClaim.claimed &&
+      ((dailyClaim.isBonus && isSequential) || !dailyClaim.isBonus)
+  );
 
   return (
     <Stack justifyContent='center' alignItems='center' gap={1} my={2} p={2}>
