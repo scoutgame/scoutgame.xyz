@@ -21,13 +21,15 @@ function AnimatedContent({
   canClaim,
   points,
   weekDay,
-  canClaimNext
+  canClaimNext,
+  isBonus
 }: {
   isClaimed: boolean;
   canClaim: boolean;
   canClaimNext: boolean;
   points: number;
   weekDay: string;
+  isBonus?: boolean;
 }) {
   return (
     <AnimatePresence mode='wait' initial={false}>
@@ -35,7 +37,6 @@ function AnimatedContent({
         <Stack
           key='claimed'
           direction='column'
-          gap={0.5}
           alignItems='center'
           component={motion.div}
           initial={{ opacity: 0, scale: 0 }}
@@ -48,8 +49,15 @@ function AnimatedContent({
             <Image src='/images/profile/scout-game-profile-icon.png' alt='Scout game icon' width={15} height={8.5} />
           </Stack>
           <Stack direction='row' gap={0.5} alignItems='center'>
-            <CheckCircleIcon fontSize='small' color='secondary' data-test='claimed-icon' />
-            <Typography variant='body2'>{weekDay}</Typography>
+            <CheckCircleIcon
+              fontSize='small'
+              sx={{ fontSize: isBonus ? 14 : undefined }}
+              color='secondary'
+              data-test='claimed-icon'
+            />
+            <Typography variant='body2' sx={{ fontSize: isBonus ? 12 : undefined }}>
+              {weekDay}
+            </Typography>
           </Stack>
         </Stack>
       ) : canClaim ? (
@@ -168,8 +176,9 @@ export function DailyClaimCard({
           weekDay={buttonLabel}
           canClaim={canClaim}
           canClaimNext={canClaimNext}
+          isBonus={dailyClaim.isBonus}
         />
-        {isClaimToday && (
+        {isClaimToday && !isClaimed && ((dailyClaim.isBonus && canClaimBonus) || !dailyClaim.isBonus) && (
           <Stack
             component='canvas'
             ref={canvasRef}
