@@ -194,7 +194,7 @@ function groupBuilderEvents(
     } else if (recipientId) {
       const address = event.builder.wallets?.[0]?.address as string;
       if (!address) {
-        log.info('No primary address found for user', {
+        log.info('No primary address found for referral champion', {
           userId: recipientId
         });
         return acc;
