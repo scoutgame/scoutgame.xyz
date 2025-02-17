@@ -12,6 +12,67 @@ export type TopConnector = {
   address: string;
 };
 
+export async function getTopConnectorsOfTheDay(options?: { date?: DateTime }) {
+  const date = options?.date || DateTime.utc();
+  const startOfDay = date.toUTC().startOf('day').toJSDate();
+  const endOfDay = date.toUTC().endOf('day').toJSDate();
+
+  const allPointsReceipts = await prisma.pointsReceipt.findMany({
+    where: {
+      createdAt: {
+        gte: startOfDay,
+        lte: endOfDay
+      },
+      event: {
+        type: {
+          in: ['referral', 'referral_bonus']
+        }
+      },
+      value: {
+        gt: 0
+      },
+      recipient: {
+        deletedAt: null
+      }
+    },
+    select: {
+      createdAt: true,
+      value: true,
+      recipientId: true,
+      event: {
+        select: {
+          builder: {
+            select: {
+              id: true,
+              avatar: true,
+              displayName: true,
+              path: true,
+              wallets: {
+                where: {
+                  primary: true
+                },
+                select: {
+                  address: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return groupBuilderEvents(
+    allPointsReceipts
+      .flatMap((receipt) => ({
+        builder: receipt.event.builder,
+        receipt,
+        createdAt: receipt.createdAt
+      }))
+      .filter((event) => event.builder.id === event.receipt.recipientId)
+  );
+}
+
 /**
  * Get top 5 connectors for today.
  *
@@ -24,141 +85,25 @@ export type TopConnector = {
  * @param userId - The user id to check if they are in the top 5.
  */
 export async function getTop5ConnectorsToday(userId?: string): Promise<TopConnector[]> {
-  const startOfDay = DateTime.utc().startOf('day').toJSDate();
+  const startOfDay = DateTime.utc().startOf('day');
 
-  const allBuilderEvents = await prisma.builderEvent.findMany({
-    where: {
-      createdAt: {
-        gte: startOfDay
-      },
-      type: {
-        in: ['referral', 'referral_bonus']
-      },
-      pointsReceipts: {
-        some: {
-          value: {
-            gt: 0
-          },
-          recipient: {
-            deletedAt: null
-          }
-        }
-      }
-    },
-    select: {
-      createdAt: true,
-      builder: {
-        select: {
-          avatar: true,
-          displayName: true,
-          path: true,
-          wallets: {
-            where: {
-              primary: true
-            }
-          }
-        }
-      },
-      pointsReceipts: {
-        select: {
-          value: true,
-          recipientId: true
-        }
-      }
-    }
-  });
-
-  // Group all builder events by builderId and sum points value
-  // Convert the object to an array, sort by points value in descending order
-  const sortedByBuilder = groupBuilderEvents(
-    allBuilderEvents.map((events) => ({
-      builder: events.builder,
-      receipt: events.pointsReceipts[0],
-      createdAt: events.createdAt
-    }))
-  );
+  const topConnectors = await getTopConnectorsOfTheDay({ date: startOfDay });
 
   // Check if user is below the 5th position
-  const userInSortedBuilderArray = sortedByBuilder.find((b, i) => b.builderId === userId && i > 4);
+  const userInSortedBuilderArray = topConnectors.find((b, i) => b.builderId === userId && i > 4);
 
   if (userInSortedBuilderArray) {
     // Return 5 top connectors with the user at the end but not in the top 5
-    return sortedByBuilder.slice(0, 4).concat(userInSortedBuilderArray);
+    return topConnectors.slice(0, 4).concat(userInSortedBuilderArray);
   } else {
     // Return 5 top connectors
-    return sortedByBuilder.slice(0, 5);
+    return topConnectors.slice(0, 5);
   }
 }
 
 export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
-  const date = options?.date || DateTime.utc();
-  const startOfDay = date.toUTC().startOf('day').toJSDate();
-  const endOfDay = date.toUTC().endOf('day').toJSDate();
-
-  const allBuilderEvents = await prisma.builderEvent.findMany({
-    where: {
-      createdAt: {
-        gte: startOfDay,
-        lte: endOfDay
-      },
-      type: {
-        in: ['referral', 'referral_bonus']
-      },
-      pointsReceipts: {
-        some: {
-          value: {
-            gt: 0
-          },
-          recipient: {
-            deletedAt: null
-          }
-        }
-      }
-    },
-    select: {
-      createdAt: true,
-      pointsReceipts: {
-        select: {
-          value: true,
-          recipientId: true
-        }
-      },
-      builder: {
-        select: {
-          id: true,
-          avatar: true,
-          displayName: true,
-          path: true,
-          wallets: {
-            where: {
-              primary: true
-            },
-            orderBy: {
-              createdAt: 'asc'
-            },
-            select: {
-              address: true
-            }
-          }
-        }
-      }
-    }
-  });
-
-  const sortedByBuilder = groupBuilderEvents(
-    allBuilderEvents
-      .flatMap((event) =>
-        event.pointsReceipts.map((receipt) => ({
-          builder: event.builder,
-          receipt,
-          createdAt: event.createdAt
-        }))
-      )
-      // Only include the referrers as only they can be referral champions
-      .filter((event) => event.builder.id === event.receipt.recipientId)
-  );
-
-  return sortedByBuilder.at(0);
+  const topConnectors = await getTopConnectorsOfTheDay(options);
+  return topConnectors.at(0);
 }
 
 type PartialUser = {
