@@ -69,6 +69,7 @@ export async function getTopConnectorsOfTheDay(options?: { date?: DateTime }) {
         receipt,
         createdAt: receipt.createdAt
       }))
+      // Only include the referrers as only they can be referral champions
       .filter((event) => event.builder.id === event.receipt.recipientId)
   );
 }

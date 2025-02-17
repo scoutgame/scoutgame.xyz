@@ -1,9 +1,11 @@
+import { prisma } from '@charmverse/core/prisma-client';
 import { mockBuilder, mockScout } from '@packages/testing/database';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
+import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 
-import { getTop5ConnectorsToday, getTopConnectorOfTheDay } from '../getTopConnectors';
+import { getTop5ConnectorsToday, getTopConnectorOfTheDay, getTopConnectorsOfTheDay } from '../getTopConnectors';
 
 describe('getTopConnectors', () => {
   describe('getTop5ConnectorsToday', () => {
@@ -42,6 +44,47 @@ describe('getTopConnectors', () => {
 
       const topConnector = await getTopConnectorOfTheDay();
       expect(topConnector).toBeDefined();
+    });
+  });
+
+  describe('getTopConnectorsOfTheDay', () => {
+    it('should return the top connectors when the referee onboarded time and builder scout time is different', async () => {
+      const referrer1 = await mockScout({ verifiedEmail: true });
+      const referrer2 = await mockScout({ verifiedEmail: true });
+
+      const builder = await mockBuilder({ createNft: true });
+      const referee1 = await mockScout({ verifiedEmail: true, builderId: builder.id });
+      const referee2 = await mockScout({ verifiedEmail: true, builderId: builder.id });
+
+      // Refer to referee1 using referrer1 referral code
+      const builderEvent = await createReferralEvent(referrer1.referralCode, referee1.id);
+
+      await updateReferralUsers(referee1.id);
+      // Update the points receipt to have a different createdAt date
+      await prisma.pointsReceipt.updateMany({
+        where: { eventId: builderEvent.id },
+        data: { createdAt: DateTime.now().plus({ days: 1 }).toJSDate() }
+      });
+
+      // Refer to referee2 using referrer2 referral code
+      await createReferralEvent(referrer2.referralCode, referee2.id);
+
+      await updateReferralUsers(referee2.id);
+
+      const topConnectors = await getTopConnectorsOfTheDay();
+
+      const referrerIds = topConnectors.map((connector) => connector.builderId);
+
+      expect(topConnectors.some((connector) => referrerIds.includes(connector.builderId))).toBe(true);
+
+      expect(
+        topConnectors.every(
+          (connector) =>
+            connector.builderId !== builder.id &&
+            connector.builderId !== referee1.id &&
+            connector.builderId !== referee2.id
+        )
+      ).toBe(true);
     });
   });
 });
