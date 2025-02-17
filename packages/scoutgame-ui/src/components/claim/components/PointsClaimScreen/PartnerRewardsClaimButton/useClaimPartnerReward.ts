@@ -94,7 +94,7 @@ export function useClaimPartnerReward({
   const { switchChainAsync } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
   const [ethPrice, setEthPrice] = useState<number | null>(null);
-  const [hasEnoughFee, setHasEnoughFee] = useState<boolean>(false);
+  const [feeAmount, setFeeAmount] = useState<bigint | null>(null);
 
   const { data: balance } = useBalance({
     address: recipientAddress,
@@ -114,8 +114,7 @@ export function useClaimPartnerReward({
           setEthPrice(_ethPrice);
         }
         if (balance?.value && _ethPrice) {
-          const feeAmount = parseEther((1 / _ethPrice).toFixed(18));
-          setHasEnoughFee(balance.value >= feeAmount);
+          setFeeAmount(parseEther((1 / _ethPrice).toFixed(18)));
         }
       } catch (error) {
         log.error('Failed to fetch ETH price', { error });
@@ -203,6 +202,7 @@ export function useClaimPartnerReward({
     isClaiming,
     claimPartnerReward,
     isConnected,
-    hasEnoughFee
+    hasEnoughFee: balance?.value && feeAmount ? balance.value >= feeAmount : false,
+    feeAmount
   };
 }

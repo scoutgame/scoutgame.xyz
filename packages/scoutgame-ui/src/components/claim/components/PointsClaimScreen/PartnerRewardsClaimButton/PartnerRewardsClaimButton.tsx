@@ -6,7 +6,7 @@ import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartn
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
-import type { Address } from 'viem';
+import { formatEther, type Address } from 'viem';
 
 import { revalidateClaimPointsAction } from '../../../../../actions/revalidateClaimPointsAction';
 
@@ -14,13 +14,20 @@ import { useClaimPartnerReward } from './useClaimPartnerReward';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: UnclaimedPartnerReward }) {
+export function PartnerRewardsClaimButton({
+  partnerReward,
+  chain
+}: {
+  partnerReward: UnclaimedPartnerReward;
+  chain: string;
+}) {
   const [showPartnerRewardModal, setShowPartnerRewardModal] = useState(false);
 
   return (
     <RainbowKitProvider>
       <PartnerRewardsClaimButtonContent
         partnerReward={partnerReward}
+        chain={chain}
         showPartnerRewardModal={showPartnerRewardModal}
         setShowPartnerRewardModal={setShowPartnerRewardModal}
       />
@@ -31,14 +38,16 @@ export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: Un
 function PartnerRewardsClaimButtonContent({
   partnerReward,
   showPartnerRewardModal,
-  setShowPartnerRewardModal
+  setShowPartnerRewardModal,
+  chain
 }: {
   partnerReward: UnclaimedPartnerReward;
   showPartnerRewardModal: boolean;
   setShowPartnerRewardModal: (show: boolean) => void;
+  chain: string;
 }) {
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
-  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee } = useClaimPartnerReward({
+  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee, feeAmount } = useClaimPartnerReward({
     payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
     rewardChainId: partnerReward.chainId,
@@ -86,7 +95,7 @@ function PartnerRewardsClaimButtonContent({
             position: 'relative'
           }}
         >
-          <Typography variant='h6'>Receive partner rewards</Typography>
+          <Typography variant='h6'>Claim Your Partner Rewards!</Typography>
           <Typography
             variant='body1'
             sx={{
@@ -97,7 +106,9 @@ function PartnerRewardsClaimButtonContent({
             Send {partnerReward.amount} {partnerReward.tokenSymbol} to {partnerReward.recipientAddress}
           </Typography>
           <Typography variant='body2'>
-            Note: You will be charged <strong>0.00036 ETH</strong> as fee for the airdrop
+            Important: You will be charged a fee of{' '}
+            <strong>{feeAmount ? Number(formatEther(feeAmount)).toFixed(10) : '0.00036'} ETH (approximately $1)</strong>{' '}
+            for the claim, plus a small Gas Fee using ETH on {chain}.
           </Typography>
           <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
             <Tooltip title={hasEnoughFee ? '' : 'You do not have enough ETH to claim the airdrop'}>
