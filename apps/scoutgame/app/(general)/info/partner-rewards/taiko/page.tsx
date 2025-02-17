@@ -1,5 +1,7 @@
+import { prisma } from '@charmverse/core/prisma-client';
 import type { StackProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
+import { getSession } from '@packages/nextjs/session/getSession';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { SidebarInfoDrawer } from '@packages/scoutgame-ui/components/info/components/SidebarInfoDrawer';
@@ -89,7 +91,7 @@ function Step({
   );
 }
 
-function HeroSection() {
+function HeroSection({ registerUrl }: { registerUrl: string }) {
   return (
     <Stack
       sx={{
@@ -154,11 +156,14 @@ function HeroSection() {
                 mx: {
                   xs: 'auto',
                   md: 0
-                }
+                },
+                py: 1,
+                fontSize: '1.15rem'
               }}
+              size='large'
               data-test='get-started-button'
             >
-              <Link href={`${builderLoginUrl}&utm_source=partner&utm_campaign=taiko`}>Register</Link>
+              <Link href={registerUrl}>Register</Link>
             </Button>
           </Stack>
           <Hidden mdDown>
@@ -210,7 +215,7 @@ export function HowToPlaySection() {
   );
 }
 
-function FooterSection() {
+function FooterSection({ registerUrl }: { registerUrl: string }) {
   return (
     <Stack
       position='relative'
@@ -227,8 +232,8 @@ function FooterSection() {
         <Typography variant='h6' textAlign='center'>
           Register your Taiko AI Agent in Scout Game. <br /> Earn rewards for your onchain activity!
         </Typography>
-        <Button variant='contained' sx={{ width: 'fit-content' }}>
-          <Link href={`${builderLoginUrl}&utm_source=partner&utm_campaign=taiko`}>Register</Link>
+        <Button variant='contained' sx={{ width: 'fit-content', py: 1, fontSize: '1.15rem' }}>
+          <Link href={registerUrl}>Register</Link>
         </Button>
       </Stack>
     </Stack>
@@ -236,6 +241,31 @@ function FooterSection() {
 }
 
 export default async function Taiko() {
+  const session = await getSession();
+  const user = session.scoutId
+    ? await prisma.scout.findFirst({
+        where: {
+          id: session.scoutId
+        },
+        select: {
+          githubUsers: true,
+          scoutProjectMembers: {
+            select: {
+              userId: true
+            }
+          }
+        }
+      })
+    : null;
+
+  const registerUrl = !user
+    ? `${builderLoginUrl}&utm_source=partner&utm_campaign=taiko`
+    : user.githubUsers.length === 0
+      ? '/welcome?type=builder&step=2'
+      : user.scoutProjectMembers.length === 0
+        ? '/welcome?type=builder&step=3'
+        : '/profile/projects/create';
+
   return (
     <Stack maxWidth='854px' width='100%' mx='auto' gap={{ xs: 2, md: 4 }}>
       <Stack
@@ -258,9 +288,9 @@ export default async function Taiko() {
         }}
       >
         <Stack height='100%' overflow='auto'>
-          <HeroSection />
+          <HeroSection registerUrl={registerUrl} />
           <HowToPlaySection />
-          <FooterSection />
+          <FooterSection registerUrl={registerUrl} />
         </Stack>
       </Stack>
     </Stack>
