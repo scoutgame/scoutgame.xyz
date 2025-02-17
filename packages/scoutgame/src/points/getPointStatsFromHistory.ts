@@ -110,7 +110,7 @@ export async function getPointStatsFromHistory({
         recipientId: userId,
         event: {
           type: {
-            in: ['misc_event', 'daily_claim', 'social_quest', 'daily_claim_streak', 'referral']
+            in: ['misc_event', 'daily_claim', 'social_quest', 'daily_claim_streak', 'referral', 'referral_bonus']
           }
         }
       }
