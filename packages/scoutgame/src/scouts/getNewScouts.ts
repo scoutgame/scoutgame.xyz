@@ -13,6 +13,7 @@ export type NewScout = {
   pointsPredicted: number;
   buildersScouted: number;
   nftsHeld: number;
+  latestPurchasedAt: Date | undefined;
 };
 
 // look at gems instead of points for current week
@@ -72,13 +73,34 @@ export async function getRankedNewScoutsForCurrentWeek({
           avatar: scout.avatar,
           buildersScouted: buildersScouted.length,
           pointsPredicted: _pointsPerScout[scout.id] ?? 0,
-          nftsHeld
+          nftsHeld,
+          latestPurchasedAt: scout.wallets
+            .sort(
+              (a, b) =>
+                (b.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0) -
+                (a.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0)
+            )
+            .at(0)
+            ?.purchaseEvents.at(0)?.createdAt
         };
       })
       // scouts may own NFT of builders that have no points yet
       // .filter((scout) => scout.pointsPredicted > 0)
       .sort((a, b) => {
-        return b.pointsPredicted - a.pointsPredicted;
+        const pointsA = a.pointsPredicted;
+        const pointsB = b.pointsPredicted;
+        if (pointsA === pointsB) {
+          const nftsHeldA = a.nftsHeld;
+          const nftsHeldB = b.nftsHeld;
+          if (nftsHeldA === nftsHeldB) {
+            const latestPurchasedAtA = a.latestPurchasedAt;
+            const latestPurchasedAtB = b.latestPurchasedAt;
+            // Sort by earliest purchase date
+            return (latestPurchasedAtA?.getTime() ?? 0) - (latestPurchasedAtB?.getTime() ?? 0);
+          }
+          return nftsHeldB - nftsHeldA;
+        }
+        return pointsB - pointsA;
       })
   );
 }
@@ -120,11 +142,37 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
       .map((user) => {
         const scout = newScouts.find((s) => s.id === user[0]);
         const address = scout?.wallets.find((w) => w.primary)?.address;
+        const latestPurchasedAt = scout?.wallets
+          .sort(
+            (a, b) =>
+              (b.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0) - (a.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0)
+          )
+          .at(0)
+          ?.purchaseEvents.at(0)?.createdAt;
         return {
           ...scout,
           address,
-          pointsEarned: pointsEarnedByUserId[user[0]]
+          pointsEarned: pointsEarnedByUserId[user[0]],
+          buildersScouted:
+            scout?.wallets.reduce(
+              (acc, w) => acc + w.purchaseEvents.reduce((_acc, e) => _acc + e.tokensPurchased, 0),
+              0
+            ) ?? 0,
+          latestPurchasedAt
         };
+      })
+      .sort((a, b) => {
+        const pointsA = a.pointsEarned;
+        const pointsB = b.pointsEarned;
+        if (pointsA === pointsB) {
+          const buildersScoutedA = a.buildersScouted;
+          const buildersScoutedB = b.buildersScouted;
+          if (buildersScoutedA === buildersScoutedB) {
+            return (a.latestPurchasedAt?.getTime() ?? 0) - (b.latestPurchasedAt?.getTime() ?? 0);
+          }
+          return buildersScoutedB - buildersScoutedA;
+        }
+        return pointsB - pointsA;
       })
       .filter((scout) => scout.address)
   );
@@ -175,7 +223,16 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
       wallets: {
         select: {
           address: true,
-          primary: true
+          primary: true,
+          purchaseEvents: {
+            orderBy: {
+              createdAt: 'desc'
+            },
+            select: {
+              tokensPurchased: true,
+              createdAt: true
+            }
+          }
         }
       }
     }
