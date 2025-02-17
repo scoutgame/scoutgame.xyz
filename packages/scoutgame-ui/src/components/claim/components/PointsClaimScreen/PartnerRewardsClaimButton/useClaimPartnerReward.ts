@@ -4,10 +4,11 @@ import { checkPartnerRewardEligibilityAction } from '@packages/scoutgame/partner
 import { updatePartnerRewardPayoutAction } from '@packages/scoutgame/partnerReward/updatePartnerRewardPayoutAction';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import type { Address, Hash, WalletClient } from 'viem';
-import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
+import { parseEther } from 'viem';
+import { useAccount, useSwitchChain, useWalletClient, useBalance } from 'wagmi';
 
 import sablierAirdropAbi from './SablierMerkleInstant.json';
 
@@ -18,7 +19,8 @@ export async function claimSablierAirdrop({
   walletClient,
   index,
   proof,
-  amount
+  amount,
+  fee
 }: {
   chainId: number;
   contractAddress: Address;
@@ -27,6 +29,7 @@ export async function claimSablierAirdrop({
   proof: `0x${string}`[];
   amount: string;
   walletClient: WalletClient;
+  fee: bigint;
 }): Promise<{ hash: Hash }> {
   const publicClient = getPublicClient(chainId);
 
@@ -37,7 +40,7 @@ export async function claimSablierAirdrop({
       functionName: 'claim',
       args: [BigInt(index), recipientAddress, BigInt(amount), proof],
       account: recipientAddress,
-      value: BigInt(360000000000000)
+      value: fee
     });
 
     const hash = await walletClient.writeContract(request);
@@ -45,7 +48,7 @@ export async function claimSablierAirdrop({
 
     return { hash };
   } catch (error) {
-    log.error('Error claiming partner reward', { error });
+    log.error('Error claiming partner reward', { error, contractAddress, chainId, recipientAddress });
     if (error instanceof Error) {
       if (error.message.includes('SablierMerkleBase_StreamClaimed')) {
         throw new Error('This airdrop has already been claimed');
@@ -90,6 +93,36 @@ export function useClaimPartnerReward({
   const { executeAsync: updatePartnerRewardPayout } = useAction(updatePartnerRewardPayoutAction);
   const { switchChainAsync } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
+  const [ethPrice, setEthPrice] = useState<number | null>(null);
+  const [feeAmount, setFeeAmount] = useState<bigint | null>(null);
+
+  const { data: balance } = useBalance({
+    address: recipientAddress,
+    chainId: rewardChainId,
+    unit: 'ether',
+    token: undefined
+  });
+
+  useEffect(() => {
+    async function fetchEthPrice() {
+      try {
+        let _ethPrice = ethPrice;
+        if (!_ethPrice) {
+          const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+          const data = await response.json();
+          _ethPrice = data.ethereum.usd;
+          setEthPrice(_ethPrice);
+        }
+        if (balance?.value && _ethPrice) {
+          setFeeAmount(parseEther((1 / _ethPrice).toFixed(18)));
+        }
+      } catch (error) {
+        log.error('Failed to fetch ETH price', { error });
+        toast.error('Something went wrong, please try again later');
+      }
+    }
+    fetchEthPrice();
+  }, [balance, ethPrice]);
 
   const claimPartnerReward = async () => {
     if (!isConnected) {
@@ -98,6 +131,10 @@ export function useClaimPartnerReward({
       } else {
         toast.error('Unable to open wallet connection modal');
       }
+      return;
+    }
+
+    if (!ethPrice) {
       return;
     }
 
@@ -146,7 +183,8 @@ export function useClaimPartnerReward({
         walletClient,
         index,
         proof: proof as `0x${string}`[],
-        amount
+        amount,
+        fee: BigInt(1) / BigInt(ethPrice)
       });
 
       await updatePartnerRewardPayout({ payoutContractId, txHash: hash });
@@ -163,6 +201,8 @@ export function useClaimPartnerReward({
   return {
     isClaiming,
     claimPartnerReward,
-    isConnected
+    isConnected,
+    hasEnoughFee: balance?.value && feeAmount ? balance.value >= feeAmount : false,
+    feeAmount
   };
 }

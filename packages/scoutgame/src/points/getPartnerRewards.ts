@@ -43,6 +43,7 @@ export type UnclaimedPartnerReward = {
   contractAddress: string;
   recipientAddress: string;
   payoutContractId: string;
+  week: number;
 };
 
 export async function getUnclaimedPartnerRewards({ userId }: { userId: string }): Promise<UnclaimedPartnerReward[]> {
@@ -71,7 +72,9 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
           contractAddress: true,
           chainId: true,
           ipfsCid: true,
-          tokenSymbol: true
+          tokenSymbol: true,
+          week: true,
+          season: true
         }
       }
     }
@@ -87,7 +90,9 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     ipfsCid: payoutContract.ipfsCid,
     chainId: payoutContract.chainId,
     recipientAddress: walletAddress,
-    payoutContractId: payoutContract.id
+    payoutContractId: payoutContract.id,
+    week: payoutContract.week,
+    season: payoutContract.season
   }));
 
   const unclaimedPartnerRewardsByContractAddress: Record<string, UnclaimedPartnerReward> = {};
@@ -96,7 +101,11 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
   unclaimedPartnerRewards.forEach((reward) => {
     unclaimedPartnerRewardsByContractAddress[reward.contractAddress] = {
       ...reward,
-      amount: reward.amount + (unclaimedPartnerRewardsByContractAddress[reward.contractAddress]?.amount ?? 0)
+      amount: reward.amount + (unclaimedPartnerRewardsByContractAddress[reward.contractAddress]?.amount ?? 0),
+      week: getSeasonWeekFromISOWeek({
+        season: reward.season,
+        week: reward.week
+      })
     };
   });
 

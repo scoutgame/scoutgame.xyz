@@ -26,18 +26,21 @@ import { PartnerRewardsClaimButton } from './PartnerRewardsClaimButton/PartnerRe
 import { PointsClaimButton } from './PointsClaimButton';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
 
-const PartnerRewardRecord: Record<string, { label: string; icon: string }> = {
+const PartnerRewardRecord: Record<string, { label: string; icon: string; chain: string }> = {
   optimism_new_scout: {
     label: 'New Scout',
-    icon: '/images/crypto/op.png'
+    icon: '/images/crypto/op.png',
+    chain: 'Optimism'
   },
   optimism_referral_champion: {
     label: 'Referral Champion',
-    icon: '/images/crypto/op.png'
+    icon: '/images/crypto/op.png',
+    chain: 'Optimism'
   },
   octant_base_contribution: {
     label: 'Octant Base Contribution',
-    icon: '/images/crypto/usdc.png'
+    icon: '/images/crypto/usdc.png',
+    chain: 'Base'
   }
 };
 
@@ -223,13 +226,16 @@ export function PointsClaimScreen({
                         md: 200
                       }}
                     >
-                      {PartnerRewardRecord[reward.partner].label}
+                      {PartnerRewardRecord[reward.partner].label} (Week {reward.week})
                     </Typography>
                     <Stack flexDirection='row' alignItems='center' gap={1}>
                       <Typography>{reward.amount.toLocaleString()}</Typography>
                       <Image width={25} height={25} src={PartnerRewardRecord[reward.partner].icon} alt='Scouts' />
                     </Stack>
-                    <PartnerRewardsClaimButton partnerReward={reward} />
+                    <PartnerRewardsClaimButton
+                      partnerReward={reward}
+                      chain={PartnerRewardRecord[reward.partner].chain}
+                    />
                   </Stack>
                 ))}
               </Stack>
