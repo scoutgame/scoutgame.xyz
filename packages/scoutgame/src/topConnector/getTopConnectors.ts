@@ -125,6 +125,7 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
       },
       builder: {
         select: {
+          id: true,
           avatar: true,
           displayName: true,
           path: true,
@@ -145,11 +146,16 @@ export async function getTopConnectorOfTheDay(options?: { date?: DateTime }) {
   });
 
   const sortedByBuilder = groupBuilderEvents(
-    allBuilderEvents.map((events) => ({
-      builder: events.builder,
-      receipt: events.pointsReceipts[0],
-      createdAt: events.createdAt
-    }))
+    allBuilderEvents
+      .flatMap((event) =>
+        event.pointsReceipts.map((receipt) => ({
+          builder: event.builder,
+          receipt,
+          createdAt: event.createdAt
+        }))
+      )
+      // Only include the referrers as only they can be referral champions
+      .filter((event) => event.builder.id === event.receipt.recipientId)
   );
 
   return sortedByBuilder.at(0);
