@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeason, getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
@@ -13,6 +13,7 @@ export type NewScout = {
   pointsPredicted: number;
   buildersScouted: number;
   nftsHeld: number;
+  earliestPurchasedAt: Date | undefined;
 };
 
 // look at gems instead of points for current week
@@ -65,6 +66,7 @@ export async function getRankedNewScoutsForCurrentWeek({
         const scoutTransactions = _nftPurchaseEvents.filter((event) => event.to?.scoutId === scout.id);
         const buildersScouted = Array.from(new Set(scoutTransactions.map((event) => event.builderNft.builderId)));
         const nftsHeld = scoutTransactions.reduce((acc, event) => acc + event.tokensPurchased, 0);
+
         return {
           id: scout.id,
           path: scout.path,
@@ -72,13 +74,35 @@ export async function getRankedNewScoutsForCurrentWeek({
           avatar: scout.avatar,
           buildersScouted: buildersScouted.length,
           pointsPredicted: _pointsPerScout[scout.id] ?? 0,
-          nftsHeld
+          nftsHeld,
+          // Check the first purchase event for each wallet as they are already sorted in ascending order
+          earliestPurchasedAt: scout.wallets
+            .sort(
+              (a, b) =>
+                (a.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0) -
+                (b.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0)
+            )
+            .at(0)
+            ?.purchaseEvents.at(0)?.createdAt
         };
       })
       // scouts may own NFT of builders that have no points yet
       // .filter((scout) => scout.pointsPredicted > 0)
       .sort((a, b) => {
-        return b.pointsPredicted - a.pointsPredicted;
+        const pointsA = a.pointsPredicted;
+        const pointsB = b.pointsPredicted;
+        if (pointsA === pointsB) {
+          const nftsHeldA = a.nftsHeld;
+          const nftsHeldB = b.nftsHeld;
+          if (nftsHeldA === nftsHeldB) {
+            const earliestPurchasedAtA = a.earliestPurchasedAt;
+            const earliestPurchasedAtB = b.earliestPurchasedAt;
+            // Sort by earliest purchase date
+            return (earliestPurchasedAtA?.getTime() ?? 0) - (earliestPurchasedAtB?.getTime() ?? 0);
+          }
+          return nftsHeldB - nftsHeldA;
+        }
+        return pointsB - pointsA;
       })
   );
 }
@@ -123,8 +147,35 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
         return {
           ...scout,
           address,
-          pointsEarned: pointsEarnedByUserId[user[0]]
+          pointsEarned: pointsEarnedByUserId[user[0]],
+          buildersScouted:
+            scout?.wallets.reduce(
+              (acc, w) => acc + w.purchaseEvents.reduce((_acc, e) => _acc + e.tokensPurchased, 0),
+              0
+            ) ?? 0,
+          earliestPurchasedAt: scout?.wallets
+            .sort(
+              (a, b) =>
+                // Check the first purchase event for each wallet as they are already sorted in ascending order
+                (a.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0) -
+                (b.purchaseEvents.at(0)?.createdAt?.getTime() ?? 0)
+            )
+            .at(0)
+            ?.purchaseEvents.at(0)?.createdAt
         };
+      })
+      .sort((a, b) => {
+        const pointsA = a.pointsEarned;
+        const pointsB = b.pointsEarned;
+        if (pointsA === pointsB) {
+          const buildersScoutedA = a.buildersScouted;
+          const buildersScoutedB = b.buildersScouted;
+          if (buildersScoutedA === buildersScoutedB) {
+            return (a.earliestPurchasedAt?.getTime() ?? 0) - (b.earliestPurchasedAt?.getTime() ?? 0);
+          }
+          return buildersScoutedB - buildersScoutedA;
+        }
+        return pointsB - pointsA;
       })
       .filter((scout) => scout.address)
   );
@@ -175,7 +226,21 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
       wallets: {
         select: {
           address: true,
-          primary: true
+          primary: true,
+          purchaseEvents: {
+            where: {
+              builderNft: {
+                season
+              }
+            },
+            orderBy: {
+              createdAt: 'asc'
+            },
+            select: {
+              tokensPurchased: true,
+              createdAt: true
+            }
+          }
         }
       }
     }
