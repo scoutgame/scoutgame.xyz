@@ -1,7 +1,7 @@
 'use client';
 
 import { LoadingButton } from '@mui/lab';
-import { Button, Dialog, Stack, Typography } from '@mui/material';
+import { Button, Dialog, Stack, Tooltip, Typography } from '@mui/material';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';
@@ -38,7 +38,7 @@ function PartnerRewardsClaimButtonContent({
   setShowPartnerRewardModal: (show: boolean) => void;
 }) {
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
-  const { claimPartnerReward, isClaiming, isConnected } = useClaimPartnerReward({
+  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee } = useClaimPartnerReward({
     payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
     rewardChainId: partnerReward.chainId,
@@ -100,9 +100,19 @@ function PartnerRewardsClaimButtonContent({
             Note: You will be charged <strong>0.00036 ETH</strong> as fee for the airdrop
           </Typography>
           <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
-            <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claimPartnerReward}>
-              {isConnected ? 'Claim' : 'Connect Wallet'}
-            </LoadingButton>
+            <Tooltip title={hasEnoughFee ? '' : 'You do not have enough ETH to claim the airdrop'}>
+              <span>
+                <LoadingButton
+                  variant='contained'
+                  color='primary'
+                  loading={isClaiming}
+                  onClick={claimPartnerReward}
+                  disabled={!hasEnoughFee}
+                >
+                  {isConnected ? 'Claim' : 'Connect Wallet'}
+                </LoadingButton>
+              </span>
+            </Tooltip>
             <Button
               variant='outlined'
               disabled={isClaiming}

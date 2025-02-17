@@ -223,7 +223,7 @@ export function PointsClaimScreen({
                         md: 200
                       }}
                     >
-                      {PartnerRewardRecord[reward.partner].label}
+                      {PartnerRewardRecord[reward.partner].label} (Week {reward.week})
                     </Typography>
                     <Stack flexDirection='row' alignItems='center' gap={1}>
                       <Typography>{reward.amount.toLocaleString()}</Typography>
