@@ -38,7 +38,11 @@ const tiers = [
 const qualifiedProjects = [
   'https://github.com/celo-org/faucet',
   'https://github.com/celo-org/celo-composer',
-  'https://github.com/celo-org/composer-kit/issues'
+  'https://github.com/celo-org/composer-kit/issues',
+  'https://github.com/celo-org/svelte-template',
+  'https://github.com/celo-org/celo-composer-react-native',
+  'https://github.com/celo-org/celo-composer-flutter',
+  'https://github.com/celo-org/celo-farcaster-frames'
 ];
 const previousProjects = [
   'https://github.com/valora-inc/hooks',
