@@ -24,10 +24,7 @@ import { PublicBuilderStats } from './PublicBuilderStats';
 export type BuilderProfileProps = {
   builder: BasicUserInfo & {
     builderStatus: BuilderStatus | null;
-    // price?: bigint;
-    // nftImageUrl?: string;
-    // congratsImageUrl?: string;
-  } & BuilderCardStats;
+  } & Omit<BuilderCardStats, 'starterPackSoldToScout'>;
   defaultNft: {
     imageUrl: string;
     // TODO: use the currentPriceInScoutToken when we move to $SCOUT

@@ -1,9 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { MAX_STARTER_PACK_PURCHASES as max } from '@packages/scoutgame/builderNfts/constants';
 
-export async function aggregateStarterPackTokensPurchased(scoutId?: string) {
+export async function countStarterPackTokensPurchased(scoutId?: string) {
   if (!scoutId) {
-    return 0;
+    return { max, purchased: 0, remaining: 0 };
   }
 
   const purchases = await prisma.nFTPurchaseEvent.aggregate({
@@ -14,5 +15,11 @@ export async function aggregateStarterPackTokensPurchased(scoutId?: string) {
     _sum: { tokensPurchased: true }
   });
 
-  return purchases._sum.tokensPurchased || 0;
+  const purchased = purchases._sum.tokensPurchased || 0;
+
+  return {
+    max,
+    purchased,
+    remaining: max - purchased
+  };
 }

@@ -2,9 +2,9 @@ import { Stack } from '@mui/material';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 
 import { Carousel } from '../../common/Carousel/Carousel';
-import { StarterPackInfo } from '../StarterPackCarousel/StarterPackInfo';
 
 import { StarterPackCard } from './StarterPackCard';
+import { StarterPackInfo } from './StarterPackInfo';
 
 export function StarterPackCarousel({
   builders,
