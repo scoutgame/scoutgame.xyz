@@ -24,10 +24,10 @@ export async function PublicBuilderProfile({
   const [
     defaultNft,
     starterPackNft,
-    { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 } = {},
-    builderActivities = [],
-    { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {},
-    { level, estimatedPayout, last14DaysRank, nftsSoldToScout } = {}
+    { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 },
+    builderActivities,
+    { scouts = [], totalNftsSold = 0, totalScouts = 0 },
+    { level, estimatedPayout, last14DaysRank, nftsSoldToScout, starterPackSoldToScout }
   ] = await Promise.all([
     getBuilderNft(builderId),
     getBuilderNft(builderId, 'starter_pack'),
@@ -48,6 +48,7 @@ export async function PublicBuilderProfile({
         level: level ?? 0,
         estimatedPayout: estimatedPayout ?? 0
       }}
+      starterPackSoldToScout={starterPackSoldToScout}
       defaultNft={defaultNft}
       starterPackNft={starterPackNft}
       allTimePoints={allTimePoints}

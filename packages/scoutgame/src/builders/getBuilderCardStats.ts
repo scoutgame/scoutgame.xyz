@@ -11,6 +11,7 @@ export type BuilderCardStats = {
   last14DaysRank?: (number | null)[];
   gemsCollected?: number;
   nftsSoldToScout?: number;
+  starterPackSoldToScout: boolean;
 };
 
 export async function getBuilderCardStats({
@@ -39,18 +40,15 @@ export async function getBuilderCardStats({
       },
       builderNfts: {
         where: {
-          season,
-          nftType: BuilderNftType.default
+          season
         },
         select: {
           estimatedPayout: true,
+          nftType: true,
           nftSoldEvents: scoutId
             ? {
                 where: {
                   ...validMintNftPurchaseEvent,
-                  builderEvent: {
-                    season
-                  },
                   scoutWallet: {
                     scoutId
                   }
@@ -72,15 +70,14 @@ export async function getBuilderCardStats({
       }
     }
   });
-
+  const defaultNft = builder.builderNfts.find((nft) => nft.nftType === BuilderNftType.default);
+  const starterPackNft = builder.builderNfts.find((nft) => nft.nftType === BuilderNftType.starter_pack);
   return {
     level: builder.userSeasonStats[0]?.level,
-    estimatedPayout: builder.builderNfts[0]?.estimatedPayout,
+    estimatedPayout: defaultNft?.estimatedPayout,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     gemsCollected: builder.userWeeklyStats[0]?.gemsCollected,
-    nftsSoldToScout: builder.builderNfts[0]?.nftSoldEvents?.reduce(
-      (acc, event) => acc + (event.tokensPurchased || 0),
-      0
-    )
+    nftsSoldToScout: defaultNft?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0),
+    starterPackSoldToScout: (starterPackNft?.nftSoldEvents || []).length > 0
   };
 }

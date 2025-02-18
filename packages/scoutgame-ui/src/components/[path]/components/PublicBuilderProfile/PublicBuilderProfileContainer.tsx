@@ -39,6 +39,7 @@ export type BuilderProfileProps = {
   } | null;
   builderActivities: BuilderActivity[];
   scoutProjects?: ScoutProjectMinimal[];
+  starterPackSoldToScout: boolean;
 } & BuilderStats &
   BuilderScouts;
 
@@ -70,7 +71,8 @@ export function PublicBuilderProfileContainer({
   builderActivities,
   gemsCollected,
   rank,
-  scoutProjects
+  scoutProjects,
+  starterPackSoldToScout
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
@@ -104,7 +106,7 @@ export function PublicBuilderProfileContainer({
                           price: starterPackNft.currentPrice
                         }}
                         showLabel
-                        // markStarterCardPurchased={markStarterCardPurchased}
+                        markStarterCardPurchased={starterPackSoldToScout}
                         type='starter_pack'
                       />
                     </Stack>
@@ -170,7 +172,7 @@ export function PublicBuilderProfileContainer({
                             price: starterPackNft.currentPrice
                           }}
                           showLabel
-                          // markStarterCardPurchased={markStarterCardPurchased}
+                          markStarterCardPurchased={starterPackSoldToScout}
                           type='starter_pack'
                         />
                       </Stack>
