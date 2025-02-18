@@ -15,8 +15,9 @@ describe('calculateRewardForScout', () => {
 
   it('should calculate rewards with custom pool values', () => {
     const result = calculateRewardForScout({
-      builderPool: 0.3,
-      starterPackPool: 0.2,
+      builderPool: 30,
+      starterPackPool: 20,
+      defaultPool: 50,
       purchased: { default: 2, starterPack: 2 },
       supply: { default: 10, starterPack: 10 },
       scoutsRewardPool: 1

@@ -8,9 +8,12 @@ import type { TokenOwnershipForBuilder } from '../protocol/resolveTokenOwnership
 
 import { calculateEarnableScoutPointsForRank as calculateEarnableScoutTokensForRank } from './calculatePoints';
 
-// percent of rewards that go to the builder
-export const defaultBuilderPool = 0.2;
-export const defaultStarterPackPool = 0.1;
+// percent that goes to the builder
+export const defaultBuilderPool = 20;
+// go to owners of starter pack
+export const defaultStarterPackPool = 10;
+// go to owners of default NFTs
+export const defaultScoutPool = 70;
 
 export type TokenDistribution = {
   nftSupply: {
@@ -71,7 +74,6 @@ export function divideTokensBetweenBuilderAndHolders({
 
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
     const scoutReward = calculateRewardForScout({
-      builderPool: defaultBuilderPool,
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
       supply: { default: nftSupply, starterPack: starterPackSupply },
       scoutsRewardPool: earnableScoutTokens
@@ -82,7 +84,6 @@ export function divideTokensBetweenBuilderAndHolders({
 
   const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
     const scoutReward = calculateRewardForScout({
-      builderPool: defaultBuilderPool,
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
       supply: { default: nftSupply, starterPack: starterPackSupply },
       scoutsRewardPool: earnableScoutTokens
@@ -92,7 +93,7 @@ export function divideTokensBetweenBuilderAndHolders({
     return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
-  const tokensForBuilder = Math.floor(defaultBuilderPool * earnableScoutTokens);
+  const tokensForBuilder = Math.floor((defaultBuilderPool * earnableScoutTokens) / 100);
 
   return {
     nftSupply: {
@@ -107,30 +108,27 @@ export function divideTokensBetweenBuilderAndHolders({
   };
 }
 
-// Returns the percentage of the total weekly rewards that a scout should receive
-// Scout share percent = 0.7 * (owned default NFT / total default NFTs) + 0.1 * (owned starter pack NFT / total starter pack NFTs)
+// Returns the total weekly rewards that a scout should receive
+// Note: We use whole numbers for pools to avoid issues with addition and subtraction of floating point numbers
 export function calculateRewardForScout({
   builderPool = defaultBuilderPool,
   starterPackPool = defaultStarterPackPool,
+  defaultPool = defaultScoutPool,
   purchased,
   supply,
   scoutsRewardPool
 }: {
   builderPool?: number;
   starterPackPool?: number;
+  defaultPool?: number;
   purchased: { starterPack?: number; default?: number };
   supply: { starterPack: number; default: number };
   scoutsRewardPool: number;
 }): number {
-  const builderHasStarterPacks = supply.starterPack > 0;
-  // TODO: all builders will have starter packs in the future, and starterPackPool will always be .1
-  starterPackPool = builderHasStarterPacks ? starterPackPool : 0;
-  const defaultPool = 1 - builderPool - starterPackPool;
-
   // sanity check
-  if (defaultPool <= 0) {
+  if (defaultPool + builderPool + starterPackPool !== 100) {
     throw new Error(
-      `Default pool of ${defaultPool} is less than 0. Builder pool: ${builderPool}, starter pack pool: ${starterPackPool}`
+      `Pool percentages must add up to 1. Builder pool: ${builderPool}, starter pack pool: ${starterPackPool}, default pool: ${defaultPool}`
     );
   }
   if (purchased.default && purchased.default > supply.default) {
@@ -149,5 +147,5 @@ export function calculateRewardForScout({
   const shareOfDefault = supply.default <= 0 ? 0 : (purchased.default ?? 0) / supply.default;
   const shareOfStarterPack = supply.starterPack <= 0 ? 0 : (purchased.starterPack ?? 0) / supply.starterPack;
   // Note: do as much multiplication as possible in one line to avoid precision loss
-  return (shareOfDefault * defaultPool + shareOfStarterPack * starterPackPool) * scoutsRewardPool;
+  return (shareOfDefault * (defaultPool / 100) + shareOfStarterPack * (starterPackPool / 100)) * scoutsRewardPool;
 }
