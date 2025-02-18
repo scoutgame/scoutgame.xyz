@@ -13,7 +13,7 @@ export const defaultBuilderPool = 20;
 // go to owners of starter pack
 export const defaultStarterPackPool = 10;
 // go to owners of default NFTs
-const defaultScoutPool = 70;
+export const defaultScoutPool = 70;
 
 export type TokenDistribution = {
   nftSupply: {
@@ -147,5 +147,5 @@ export function calculateRewardForScout({
   const shareOfDefault = supply.default <= 0 ? 0 : (purchased.default ?? 0) / supply.default;
   const shareOfStarterPack = supply.starterPack <= 0 ? 0 : (purchased.starterPack ?? 0) / supply.starterPack;
   // Note: do as much multiplication as possible in one line to avoid precision loss
-  return ((shareOfDefault * defaultPool) / 100 + (shareOfStarterPack * starterPackPool) / 100) * scoutsRewardPool;
+  return (shareOfDefault * (defaultPool / 100) + shareOfStarterPack * (starterPackPool / 100)) * scoutsRewardPool;
 }
