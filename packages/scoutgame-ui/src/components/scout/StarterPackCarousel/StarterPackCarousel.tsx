@@ -36,7 +36,7 @@ export function StarterPackCarousel({
         }}
       >
         {builders.map((builder) => (
-          <StarterPackCard builder={builder} key={builder.id} />
+          <StarterPackCard {...builder} key={builder.builder.id} />
         ))}
       </Carousel>
       <StarterPackInfo remainingStarterCards={remainingStarterCards} />

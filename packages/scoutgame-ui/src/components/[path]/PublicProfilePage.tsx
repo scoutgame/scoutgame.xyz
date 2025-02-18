@@ -54,14 +54,7 @@ export function PublicProfilePage({
         />
       </Box>
       {tab === 'builder' ? (
-        <PublicBuilderProfile
-          scoutId={scoutId}
-          builder={{
-            ...user,
-            nftType: BuilderNftType.default
-          }}
-          scoutProjects={scoutProjects}
-        />
+        <PublicBuilderProfile scoutId={scoutId} builder={user} scoutProjects={scoutProjects} />
       ) : (
         <PublicScoutProfile publicUser={user} scoutProjects={scoutProjects} />
       )}

@@ -8,7 +8,7 @@ import { ScoutButton } from '../../ScoutButton/ScoutButton';
 import { BuilderCardNftDisplay } from './BuilderCardNftDisplay';
 import { BuilderCardStats } from './BuilderCardStats';
 
-type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path' | 'nftType';
+type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path';
 
 export function BuilderCard({
   builder,
@@ -27,7 +27,7 @@ export function BuilderCard({
   showPurchaseButton?: boolean;
   disableProfileUrl?: boolean;
   markStarterCardPurchased?: boolean;
-  type?: 'default' | 'starter_pack';
+  type: 'default' | 'starter_pack';
 }) {
   return (
     <Card

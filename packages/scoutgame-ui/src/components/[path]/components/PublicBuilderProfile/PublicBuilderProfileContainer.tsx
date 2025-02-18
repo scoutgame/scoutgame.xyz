@@ -14,6 +14,7 @@ import { BackButton } from '../../../common/Button/BackButton';
 import { BuilderCard } from '../../../common/Card/BuilderCard/BuilderCard';
 import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
 import { UserProfile } from '../../../common/Profile/UserProfile';
+import { ScoutButton } from '../../../common/ScoutButton/ScoutButton';
 import { BuilderActivitiesList } from '../../../profile/components/BuilderProfile/BuilderActivitiesList';
 import { BuilderWeeklyStats } from '../../../profile/components/BuilderProfile/BuilderWeeklyStats';
 import { ProjectsTab } from '../../../projects/components/ProjectsTab';
@@ -23,11 +24,19 @@ import { PublicBuilderStats } from './PublicBuilderStats';
 export type BuilderProfileProps = {
   builder: BasicUserInfo & {
     builderStatus: BuilderStatus | null;
-    price?: bigint;
-    nftImageUrl?: string;
-    congratsImageUrl?: string;
-    nftType: BuilderNftType;
+    // price?: bigint;
+    // nftImageUrl?: string;
+    // congratsImageUrl?: string;
   } & BuilderCardStats;
+  defaultNft: {
+    imageUrl: string;
+    // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+    currentPrice: bigint;
+  } | null;
+  starterPackNft: {
+    imageUrl: string;
+    currentPrice: bigint;
+  } | null;
   builderActivities: BuilderActivity[];
   scoutProjects?: ScoutProjectMinimal[];
 } & BuilderStats &
@@ -51,6 +60,8 @@ const PaperContainer = styled(Paper)(({ theme }) => ({
 
 export function PublicBuilderProfileContainer({
   builder,
+  defaultNft,
+  starterPackNft,
   allTimePoints,
   seasonPoints,
   totalScouts,
@@ -63,7 +74,6 @@ export function PublicBuilderProfileContainer({
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
-
   return (
     <Box>
       <Stack
@@ -79,7 +89,25 @@ export function PublicBuilderProfileContainer({
               <BackButton />
               <Stack flexDirection='row' alignItems='center' gap={2}>
                 <Box minWidth='fit-content'>
-                  <BuilderCard type={builder.nftType} builder={builder} showPurchaseButton size='small' />
+                  <BuilderCard
+                    type='default'
+                    builder={{ ...builder, price: defaultNft?.currentPrice }}
+                    showPurchaseButton
+                    size='small'
+                  />
+                  {starterPackNft && (
+                    <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
+                      <ScoutButton
+                        builder={{
+                          ...builder,
+                          nftImageUrl: starterPackNft.imageUrl,
+                          price: starterPackNft.currentPrice
+                        }}
+                        // markStarterCardPurchased={markStarterCardPurchased}
+                        type='starter_pack'
+                      />
+                    </Stack>
+                  )}
                 </Box>
                 <Stack gap={1} pr={1}>
                   <UserProfile
@@ -125,12 +153,27 @@ export function PublicBuilderProfileContainer({
                     justifyContent: 'center'
                   }}
                 >
-                  <BuilderCard
-                    type={builder.nftType}
-                    builder={builder}
-                    showPurchaseButton
-                    size={isLgScreen ? 'large' : 'medium'}
-                  />
+                  <div>
+                    <BuilderCard
+                      type='default'
+                      builder={{ ...builder, price: defaultNft?.currentPrice }}
+                      showPurchaseButton
+                      size={isLgScreen ? 'large' : 'medium'}
+                    />
+                    {starterPackNft && (
+                      <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
+                        <ScoutButton
+                          builder={{
+                            ...builder,
+                            nftImageUrl: starterPackNft.imageUrl,
+                            price: starterPackNft.currentPrice
+                          }}
+                          // markStarterCardPurchased={markStarterCardPurchased}
+                          type='starter_pack'
+                        />
+                      </Stack>
+                    )}
+                  </div>
                   <PublicBuilderStats
                     seasonPoints={seasonPoints}
                     allTimePoints={allTimePoints}

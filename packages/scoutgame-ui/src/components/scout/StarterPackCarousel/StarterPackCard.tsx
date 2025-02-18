@@ -11,7 +11,7 @@ import { Dialog } from '../../common/Dialog';
 
 import { StarterPackCardDetails } from './StarterPackCardDetails';
 
-export function StarterPackCard({ builder }: { builder: StarterPackBuilder }) {
+export function StarterPackCard({ builder, hasPurchased }: StarterPackBuilder) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
   const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'small';
@@ -39,7 +39,7 @@ export function StarterPackCard({ builder }: { builder: StarterPackBuilder }) {
         <BuilderCard
           builder={builder}
           showPurchaseButton
-          markStarterCardPurchased={builder.purchased}
+          markStarterCardPurchased={hasPurchased}
           type='starter_pack'
           size={size}
         />

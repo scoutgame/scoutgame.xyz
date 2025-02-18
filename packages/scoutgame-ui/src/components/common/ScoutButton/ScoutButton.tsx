@@ -17,20 +17,12 @@ import type { NFTPurchaseProps } from '../NFTPurchaseDialog/components/NFTPurcha
 
 import { SignInModalMessage } from './SignInModalMessage';
 
-const NFTPurchaseDialog = dynamic(
-  () => import('../NFTPurchaseDialog/NFTPurchaseDialog').then((mod) => mod.NFTPurchaseDialog),
-  {
-    loading: LoadingComponent,
-    ssr: false
-  }
-);
-
 export function ScoutButton({
   builder,
   markStarterCardPurchased = false,
   type = 'default'
 }: {
-  builder: NFTPurchaseProps['builder'] & { builderStatus: BuilderStatus | null };
+  builder: Omit<NFTPurchaseProps['builder'], 'nftType'> & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
   type?: 'default' | 'starter_pack';
 }) {
@@ -50,7 +42,7 @@ export function ScoutButton({
   const handleClick = () => {
     trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });
     if (isAuthenticated) {
-      openModal('nftPurchase', builder);
+      openModal('nftPurchase', { ...builder, nftType: type });
     } else {
       setAuthPopup(true);
     }
@@ -72,7 +64,7 @@ export function ScoutButton({
   return (
     <div>
       <DynamicLoadingContext.Provider value={setDialogLoadingStatus}>
-        {builder.nftType === 'starter_pack' && markStarterCardPurchased ? (
+        {type === 'starter_pack' && markStarterCardPurchased ? (
           <Button variant='outlined' fullWidth disabled>
             Purchased
           </Button>
