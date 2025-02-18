@@ -90,7 +90,7 @@ export function PublicBuilderProfileContainer({
                 <Box minWidth='fit-content'>
                   <BuilderCard
                     type='default'
-                    builder={{ ...builder, price: defaultNft?.currentPrice }}
+                    builder={{ ...builder, nftImageUrl: defaultNft?.imageUrl, price: defaultNft?.currentPrice }}
                     showPurchaseButton
                     size='small'
                   />
@@ -156,7 +156,7 @@ export function PublicBuilderProfileContainer({
                   <div>
                     <BuilderCard
                       type='default'
-                      builder={{ ...builder, price: defaultNft?.currentPrice }}
+                      builder={{ ...builder, nftImageUrl: defaultNft?.imageUrl, price: defaultNft?.currentPrice }}
                       showPurchaseButton
                       size={isLgScreen ? 'large' : 'medium'}
                     />

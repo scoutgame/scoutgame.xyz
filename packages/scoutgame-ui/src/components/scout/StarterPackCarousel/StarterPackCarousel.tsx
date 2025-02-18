@@ -35,8 +35,8 @@ export function StarterPackCarousel({
           boxProps: { width: { xs: '100%', md: '70%' }, margin: '0 auto' }
         }}
       >
-        {builders.map((builder) => (
-          <StarterPackCard {...builder} key={builder.builder.id} />
+        {builders.map(({ builder, hasPurchased }) => (
+          <StarterPackCard key={builder.id} builder={builder} hasPurchased={hasPurchased} />
         ))}
       </Carousel>
       <StarterPackInfo remainingStarterCards={remainingStarterCards} />
