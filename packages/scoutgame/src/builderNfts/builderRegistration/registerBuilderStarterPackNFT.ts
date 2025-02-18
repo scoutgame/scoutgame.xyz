@@ -43,6 +43,7 @@ export async function registerBuilderStarterPackNFT({
   });
 
   if (existingBuilderNft) {
+    log.info(`Builder starter pack NFT already exists with token id ${existingBuilderNft.tokenId}`);
     return existingBuilderNft;
   }
 

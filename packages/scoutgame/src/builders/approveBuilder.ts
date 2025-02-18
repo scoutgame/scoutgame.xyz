@@ -5,6 +5,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
+import { registerBuilderStarterPackNFT } from '../builderNfts/builderRegistration/registerBuilderStarterPackNFT';
 
 const baseUrl = process.env.DOMAIN || 'https://scoutgame.xyz';
 
@@ -24,20 +25,18 @@ export async function approveBuilder({
       id: true,
       githubUsers: true,
       displayName: true,
-      path: true,
-      builderNfts: {
-        where: {
-          season: getCurrentSeasonStart()
-        },
-        select: {
-          imageUrl: true
-        }
-      }
+      path: true
     }
   });
 
   // Register an NFT for the builder
-  await registerBuilderNFT({
+  const builderNft = await registerBuilderNFT({
+    builderId,
+    season
+  });
+
+  // register starter pack NFT as well
+  await registerBuilderStarterPackNFT({
     builderId,
     season
   });
@@ -61,12 +60,12 @@ export async function approveBuilder({
       template: 'Builder Approved',
       templateVariables: {
         builder_name: scout.displayName,
-        builder_card_image: scout.builderNfts[0].imageUrl,
+        builder_card_image: builderNft.imageUrl,
         builder_profile_link: `${baseUrl}/u/${scout.path}`
       },
       senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
     });
   } catch (error) {
-    log.error('Error sending email', { error, userId: scout.id });
+    log.error('Error sending builder approval email', { error, userId: scout.id });
   }
 }
