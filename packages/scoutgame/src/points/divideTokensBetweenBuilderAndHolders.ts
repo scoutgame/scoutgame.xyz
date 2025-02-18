@@ -93,7 +93,7 @@ export function divideTokensBetweenBuilderAndHolders({
     return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
-  const tokensForBuilder = Math.floor(defaultBuilderPool * earnableScoutTokens);
+  const tokensForBuilder = Math.floor((defaultBuilderPool * earnableScoutTokens) / 100);
 
   return {
     nftSupply: {

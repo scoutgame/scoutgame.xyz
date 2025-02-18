@@ -289,9 +289,9 @@ describe('refreshEstimatedPayouts', () => {
 
     expect(builder3WeightedHolders).toBe(builder3DefaultNftHoldersCount);
 
-    const expectedBuilder3NftPayout = Math.floor(0.8 * builder3PointsAllocation * (1 / (builder3WeightedHolders + 1)));
+    const expectedBuilder3NftPayout = Math.floor(0.7 * builder3PointsAllocation * (1 / (builder3WeightedHolders + 1)));
 
-    expect(expectedBuilder3NftPayout).toBe(484);
+    expect(expectedBuilder3NftPayout).toBe(424);
 
     expect(Math.floor(builder3DefaultNftPayout!.estimatedPayout!)).toBe(expectedBuilder3NftPayout);
 
