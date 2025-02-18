@@ -52,8 +52,8 @@ export async function PublicBuilderProfile({
         estimatedPayout: estimatedPayout ?? 0
       }}
       starterPackSoldToScout={starterPackSoldToScout}
-      defaultNft={remainingStarterCards > 0 ? defaultNft : null}
-      starterPackNft={starterPackNft}
+      defaultNft={defaultNft}
+      starterPackNft={remainingStarterCards > 0 ? starterPackNft : null}
       allTimePoints={allTimePoints}
       seasonPoints={seasonPoints}
       totalScouts={totalScouts}

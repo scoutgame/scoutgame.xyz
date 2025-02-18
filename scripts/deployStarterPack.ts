@@ -23,6 +23,13 @@ async function deployStarterPack() {
       }
     }
   });
+  const starterNfts = await prisma.builderNft.findMany({
+    where: {
+      nftType: 'starter_pack',
+      season: getCurrentSeasonStart()
+    }
+  });
+  console.log('starter nfts', starterNfts.length);
   console.log('builders to mint starter pack nft', builders.length);
   for (const builder of builders) {
     await registerBuilderStarterPackNFT({
@@ -31,3 +38,4 @@ async function deployStarterPack() {
     });
   }
 }
+deployStarterPack().catch(console.error);
