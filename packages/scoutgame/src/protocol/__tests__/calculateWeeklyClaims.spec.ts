@@ -88,8 +88,8 @@ describe('calculateWeeklyClaims', () => {
     ).mockResolvedValueOnce({
       normalisationFactor: 1,
       weeklyAllocatedPoints: 1000,
-      nftPurchaseEvents: [],
       totalPoints: 1000,
+      normalisedBuilders: [],
       topWeeklyBuilders: [
         {
           builder: builder1,
@@ -170,19 +170,19 @@ describe('calculateWeeklyClaims', () => {
       claims: expect.arrayContaining([
         {
           address: builder1Wallet,
-          amount: '16'
+          amount: '15'
         },
         {
           address: builder2Wallet,
-          amount: '13'
-        },
-        {
-          address: builder3Wallet,
           amount: '12'
         },
         {
+          address: builder3Wallet,
+          amount: '11'
+        },
+        {
           address: scout1Wallet,
-          amount: '9'
+          amount: '7'
         },
         {
           address: scout2Wallet,
@@ -194,11 +194,11 @@ describe('calculateWeeklyClaims', () => {
         },
         {
           address: scout4Wallet,
-          amount: '8'
+          amount: '7'
         },
         {
           address: scout5Wallet,
-          amount: '8'
+          amount: '7'
         }
       ]),
       weeklyClaimId,
@@ -214,12 +214,12 @@ describe('calculateWeeklyClaims', () => {
         },
         {
           eventId: expect.any(String),
-          value: 10,
+          value: 9,
           recipientWalletAddress: builder1Wallet
         },
         {
           eventId: expect.any(String),
-          value: 5,
+          value: 4,
           recipientWalletAddress: scout1Wallet
         },
         {
@@ -244,7 +244,7 @@ describe('calculateWeeklyClaims', () => {
         },
         {
           eventId: expect.any(String),
-          value: 8,
+          value: 7,
           recipientWalletAddress: builder2Wallet
         },
         {
@@ -254,7 +254,7 @@ describe('calculateWeeklyClaims', () => {
         },
         {
           eventId: expect.any(String),
-          value: 4,
+          value: 3,
           recipientWalletAddress: scout4Wallet
         },
         {
@@ -274,12 +274,12 @@ describe('calculateWeeklyClaims', () => {
         },
         {
           eventId: expect.any(String),
-          value: 7,
+          value: 6,
           recipientWalletAddress: builder3Wallet
         },
         {
           eventId: expect.any(String),
-          value: 5,
+          value: 4,
           recipientWalletAddress: scout5Wallet
         },
         {
@@ -289,7 +289,7 @@ describe('calculateWeeklyClaims', () => {
         },
         {
           eventId: expect.any(String),
-          value: 2,
+          value: 1,
           recipientWalletAddress: scout1Wallet
         },
         {
