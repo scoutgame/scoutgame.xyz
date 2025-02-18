@@ -33,6 +33,7 @@ test.describe('Buy Nft', () => {
 
     await mockBuilderNft({
       builderId: builder.id,
+      season,
       chainId: 10,
       contractAddress: getBuilderNftContractAddress(season),
       tokenId: Math.floor(Math.random() * 1000000)
@@ -105,6 +106,7 @@ test.describe('Buy Nft', () => {
 
     await mockBuilderNft({
       builderId: builder.id,
+      season,
       chainId: 10,
       contractAddress: getBuilderNftContractAddress(season),
       tokenId: Math.floor(Math.random() * 1000000)
