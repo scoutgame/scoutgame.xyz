@@ -21,7 +21,6 @@ type DevUser = {
   id: number;
   avatar: string;
   farcasterId?: number;
-  createStarterPack?: boolean;
 };
 
 const devUsers: Record<string, DevUser> = {
@@ -162,9 +161,9 @@ async function seedBuilderNFTs(season: ISOWeek = getCurrentSeasonStart()) {
     log.info(`-- Processing builder ${login}`);
     const nft = await registerBuilderNFT({ builderId: builderId as string, season });
 
-    if (devUsers[login].createStarterPack) {
-      await registerBuilderStarterPackNFT({ builderId: nft.builderId, season });
-    }
+    await registerBuilderStarterPackNFT({ builderId: nft.builderId, season }).catch((error) => {
+      log.error(`Error registering starter pack for ${login}`, { error });
+    });
 
     await generateNftPurchaseEvents({ builderId: nft.builderId, amount: 4 });
 

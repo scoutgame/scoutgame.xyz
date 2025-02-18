@@ -5,6 +5,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
+import { registerBuilderStarterPackNFT } from '../builderNfts/builderRegistration/registerBuilderStarterPackNFT';
 
 const baseUrl = process.env.DOMAIN || 'https://scoutgame.xyz';
 
@@ -38,6 +39,12 @@ export async function approveBuilder({
 
   // Register an NFT for the builder
   await registerBuilderNFT({
+    builderId,
+    season
+  });
+
+  // register starter pack NFT as well
+  await registerBuilderStarterPackNFT({
     builderId,
     season
   });
