@@ -6,7 +6,7 @@ import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 
 async function query() {
   console.log(
-    await prisma.githubRepo.update({
+    await prisma.githubRepo.updateMany({
       where: { owner: 'gitcoinco', bonusPartner: 'octant' },
       data: {
         bonusPartner: null
@@ -14,7 +14,7 @@ async function query() {
     })
   );
   console.log(
-    await prisma.githubRepo.update({
+    await prisma.githubRepo.updateMany({
       where: { owner: 'AbundanceProtocol', bonusPartner: 'octant' },
       data: {
         bonusPartner: null
@@ -22,7 +22,7 @@ async function query() {
     })
   );
   console.log(
-    await prisma.githubRepo.update({
+    await prisma.githubRepo.updateMany({
       where: { owner: 'opensource-observer', bonusPartner: 'octant' },
       data: {
         bonusPartner: null
