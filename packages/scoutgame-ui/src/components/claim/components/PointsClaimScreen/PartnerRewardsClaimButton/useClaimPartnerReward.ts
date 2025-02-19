@@ -107,6 +107,8 @@ export function useClaimPartnerReward({
     const data = await response.json();
     return data.ethereum.usd as number;
   });
+
+  // feeAmount is one USD in wei units
   const feeAmount = useMemo(() => {
     if (!ethPrice) {
       return null;
