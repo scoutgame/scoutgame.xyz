@@ -1,6 +1,8 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getCurrentSeason } from '@packages/dates/utils';
 
+import { starterPackBuilders } from '../builderNfts/builderRegistration/starterPack/starterPackBuilders';
+
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -16,9 +18,12 @@ export async function getStarterPackBuilders({
   userId?: string;
 } = {}): Promise<StarterPackBuilder[]> {
   const season = getCurrentSeason(week).start;
-  const starterPackBuilders = await prisma.scout.findMany({
+  const result = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
+      farcasterId: {
+        in: starterPackBuilders.map((builder) => builder.fid)
+      },
       builderNfts: {
         some: {
           season,
@@ -81,7 +86,7 @@ export async function getStarterPackBuilders({
     }
   });
 
-  return starterPackBuilders.map((builder) => ({
+  return result.map((builder) => ({
     hasPurchased: !!builder.builderNfts[0]?.nftSoldEvents?.length,
     builder: {
       id: builder.id,
