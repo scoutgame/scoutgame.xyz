@@ -10,6 +10,16 @@ export function getRelativeTime(date: Date | string) {
     ?.replace(' ago', '');
 }
 
+export function getShortenedRelativeTime(date: Date | string) {
+  return getRelativeTime(date)
+    ?.replace(' days', 'd')
+    ?.replace(' day', 'd')
+    ?.replace(' hrs.', 'h')
+    ?.replace(' hr.', 'h')
+    ?.replace(' min.', 'm')
+    ?.replace(' sec.', 's');
+}
+
 export function timeUntilFuture(date?: number) {
   if (!date) {
     return null; // No future dates available

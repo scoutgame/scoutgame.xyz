@@ -5,14 +5,13 @@ import TableCell from '@mui/material/TableCell';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { bonusPartnersRecord } from '@packages/scoutgame/bonus';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
-import { getRelativeTime } from '@packages/utils/dates';
+import { getShortenedRelativeTime } from '@packages/utils/dates';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BiLike } from 'react-icons/bi';
 import { LuBookMarked } from 'react-icons/lu';
 
 import { secondaryTextColorDarkMode } from '../../../../theme/colors';
-import { Avatar } from '../../../common/Avatar';
 import { Hidden } from '../../../common/Hidden';
 import { GemsIcon } from '../../../common/Icons';
 import {
@@ -21,7 +20,7 @@ import {
 } from '../../../profile/components/BuilderProfile/BuilderActivitiesList';
 
 import { CommonTableRow } from './CommonTableRow';
-import { TableCellText } from './TableCellText';
+import { DeveloperCell } from './DeveloperCell';
 
 export function BuilderActivityAction({ activity }: { activity: BuilderActivity }) {
   return (
@@ -142,13 +141,7 @@ export function ActivityTable({ activities }: { activities: BuilderActivity[] })
       </TableHead>
       <TableBody>
         {activities.map((activity) => {
-          const relativeTime = getRelativeTime(activity.createdAt)
-            ?.replace(' days', 'd')
-            ?.replace(' day', 'd')
-            ?.replace(' hrs.', 'h')
-            ?.replace(' hr.', 'h')
-            ?.replace(' min.', 'm')
-            ?.replace(' sec.', 's');
+          const relativeTime = getShortenedRelativeTime(activity.createdAt);
 
           return (
             <CommonTableRow key={activity.id}>
@@ -161,10 +154,11 @@ export function ActivityTable({ activities }: { activities: BuilderActivity[] })
                   }
                 }}
               >
-                <Stack component={Link} href={`/u/${activity.path}`} alignItems='center' flexDirection='row' gap={1}>
-                  <Avatar src={activity.avatar} name={activity.displayName} size='small' />
-                  <TableCellText noWrap>{activity.displayName}</TableCellText>
-                </Stack>
+                <DeveloperCell
+                  displayName={activity.displayName}
+                  avatar={activity.avatar as string}
+                  path={activity.path}
+                />
               </TableCell>
               <TableCell
                 sx={{
