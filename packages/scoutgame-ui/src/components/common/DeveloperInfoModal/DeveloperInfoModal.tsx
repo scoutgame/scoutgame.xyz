@@ -49,9 +49,9 @@ export function DeveloperInfoModal({
     return null;
   }
 
-  const joinedAt = DateTime.fromISO(developer.joinedAt.toISOString());
-  const joinedAtMonth = joinedAt.monthShort;
-  const joinedAtYear = joinedAt.year;
+  const firstContributionDate = DateTime.fromISO(developer.firstContributionDate.toISOString());
+  const firstContributionDateMonth = firstContributionDate.monthShort;
+  const firstContributionDateYear = firstContributionDate.year;
 
   const githubConnectedAt = DateTime.fromISO(developer.githubConnectedAt.toISOString());
   const githubConnectedAtMonth = githubConnectedAt.monthShort;
@@ -160,7 +160,7 @@ export function DeveloperInfoModal({
                   height={isDesktop ? '24' : '18'}
                   alt='scoutgame icon'
                 />
-                {joinedAtMonth} {joinedAtYear}
+                {firstContributionDateMonth} {firstContributionDateYear}
               </Stack>
               {developer.githubLogin ? (
                 <IconButton

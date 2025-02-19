@@ -12,7 +12,7 @@ export type DeveloperInfo = {
   path: string;
   displayName: string;
   avatar: string;
-  joinedAt: Date;
+  firstContributionDate: Date;
   level: number;
   estimatedPayout: number;
   price: number;
@@ -47,6 +47,7 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
       }
     },
     select: {
+      id: true,
       displayName: true,
       avatar: true,
       path: true,
@@ -133,13 +134,27 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     return null;
   }
 
+  const firstContributionDate = await prisma.githubEvent.findFirst({
+    where: {
+      builderEvent: {
+        builderId: developer.id
+      }
+    },
+    orderBy: {
+      createdAt: 'asc'
+    },
+    select: {
+      createdAt: true
+    }
+  });
+
   const purchaseCostInPoints = convertCostToPoints(developer.builderNfts[0].currentPrice || BigInt(0));
 
   return {
     path: developer.path,
     avatar: developer.avatar as string,
     displayName: developer.displayName,
-    joinedAt: developer.createdAt,
+    firstContributionDate: firstContributionDate?.createdAt || developer.createdAt,
     level: developer.userSeasonStats[0].level,
     estimatedPayout: developer.builderNfts[0].estimatedPayout,
     price: purchaseCostInPoints,
