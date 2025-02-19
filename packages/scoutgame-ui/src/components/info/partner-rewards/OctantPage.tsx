@@ -17,7 +17,7 @@ export function OctantPage() {
 
 const repositories = [
   { name: '0xSplits', url: 'https://github.com/0xSplits' },
-  { name: 'Abundance Protocol', url: 'https://github.com/AbundanceProtocol' },
+  // { name: 'Abundance Protocol', url: 'https://github.com/AbundanceProtocol' },
   { name: 'Aestus', url: 'https://github.com/aestus-relay' },
   { name: 'Base / Coinbase', url: 'https://github.com/coinbase' },
   { name: 'Boring Security', url: 'https://github.com/BoringSecDAO' },
@@ -26,7 +26,7 @@ const repositories = [
   { name: 'Ethereum', url: 'https://github.com/ethereum' },
   { name: 'Ethereum Attestation Service', url: 'https://github.com/ethereum-attestation-service' },
   { name: 'Ethereum Privacy Scaling Explorations', url: 'https://github.com/privacy-scaling-explorations' },
-  { name: 'Gitcoin', url: 'https://github.com/gitcoinco' },
+  // { name: 'Gitcoin', url: 'https://github.com/gitcoinco' },
   { name: 'growthepie', url: 'https://github.com/growthepie' },
   { name: 'Hypercerts', url: 'https://github.com/hypercerts-org/hypercerts' },
   { name: 'L2BEAT', url: 'https://github.com/l2beat/l2beat' },
@@ -35,7 +35,7 @@ const repositories = [
 ];
 
 const repositories2 = [
-  { name: 'Open Source Observer', url: 'https://github.com/opensource-observer' },
+  // { name: 'Open Source Observer', url: 'https://github.com/opensource-observer' },
   { name: 'openZeppelin', url: 'https://github.com/OpenZeppelin/' },
   { name: 'Protocol Guild', url: 'https://github.com/protocolguild' },
   { name: 'Revoke.cash', url: 'https://github.com/RevokeCash/revoke.cash' },
