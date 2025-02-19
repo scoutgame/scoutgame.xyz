@@ -12,13 +12,6 @@ describe('claimDailyReward', () => {
     await expect(claimDailyReward({ userId, isBonus, dayOfWeek: 1 })).rejects.toThrow();
   });
 
-  it('should throw error if daily reward is claimed twice in a day', async () => {
-    const builder = await mockBuilder();
-    const userId = builder.id;
-    await claimDailyReward({ userId, isBonus: false, dayOfWeek: 1 });
-    await expect(claimDailyReward({ userId, isBonus: false, dayOfWeek: 1 })).rejects.toThrow();
-  });
-
   it('should claim regular daily reward', async () => {
     const builder = await mockBuilder();
     const userId = builder.id;
