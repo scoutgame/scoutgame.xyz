@@ -54,7 +54,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const { data: claimablePoints = { points: 0, processingPayouts: false } } = useGetClaimablePoints();
   const { data: dailyClaims = [] } = useGetQuests();
   const todaysClaim = dailyClaims?.find((claim) => {
-    const currentWeekDay = DateTime.fromJSDate(new Date()).weekday;
+    const currentWeekDay = DateTime.utc().weekday;
     const isClaimToday = currentWeekDay === claim.day;
     return isClaimToday;
   });
