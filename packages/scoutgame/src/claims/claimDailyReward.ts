@@ -70,23 +70,22 @@ export async function claimDailyReward({
     });
 
     if (existingEvent) {
-      log.warn('Daily reward already claimed', {
+      log.debug('Daily reward already claimed', {
         userId,
         week,
         dayOfWeek
       });
-      throw new Error('Daily reward already claimed');
+    } else {
+      await sendPointsForDailyClaim({
+        builderId: userId,
+        dayOfWeek,
+        week,
+        points
+      });
+      trackUserAction('daily_claim', {
+        userId
+      });
     }
-
-    await sendPointsForDailyClaim({
-      builderId: userId,
-      dayOfWeek,
-      week,
-      points
-    });
-    trackUserAction('daily_claim', {
-      userId
-    });
   }
 
   return { points };
