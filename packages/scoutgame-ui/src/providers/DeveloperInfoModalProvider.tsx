@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import { DeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModal';
+import { DeveloperInfoModal } from '../components/common/DeveloperInfoModal/DeveloperInfoModal';
 
 type DeveloperInfoModalContextType = {
   openModal: (path: string) => void;
@@ -26,10 +26,10 @@ export function DeveloperInfoModalProvider({ children }: { children: ReactNode }
 
   const openModal = useCallback((path: string) => {
     setIsLoading(true);
+    setIsOpen(true);
     getDeveloperInfo(path)
       .then((_developer) => {
         if (_developer) {
-          setIsOpen(true);
           setDeveloper(_developer);
         } else {
           router.push(`/u/${path}`);

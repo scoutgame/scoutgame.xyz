@@ -27,14 +27,15 @@ export function DeveloperInfoModal({
         onClose={onClose}
         sx={{
           '& .MuiDialog-paper': {
+            pt: 2,
             minWidth: 600,
             bgcolor: 'black.main',
             borderRadius: 2
           }
         }}
       >
-        <Stack alignItems='center' justifyContent='center' height='100%'>
-          <CircularProgress />
+        <Stack p={1} alignItems='center' justifyContent='center' height='100%' gap={1}>
+          <CircularProgress size={24} />
           <Typography>Loading developer info...</Typography>
         </Stack>
       </Dialog>
@@ -228,7 +229,7 @@ export function DeveloperInfoModal({
                     </Stack>
                   ))
                 ) : (
-                  <Typography>No activities found</Typography>
+                  <Typography>No activity in the last 30 days.</Typography>
                 )}
               </Stack>
             </Stack>

@@ -2,17 +2,17 @@
 
 import { Stack } from '@mui/material';
 
-import { useDeveloperInfoModal } from '../../../../hooks/useDeveloperInfoModal';
+import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
 import { Avatar } from '../../../common/Avatar';
 
 import { TableCellText } from './TableCellText';
 
 export function DeveloperCell({ displayName, avatar, path }: { displayName: string; avatar: string; path: string }) {
-  const { openDeveloperInfoModal, isLoading } = useDeveloperInfoModal();
+  const { openModal, isLoading } = useDeveloperInfoModal();
 
   return (
     <Stack
-      onClick={() => !isLoading && openDeveloperInfoModal(path)}
+      onClick={() => !isLoading && openModal(path)}
       alignItems='center'
       flexDirection='row'
       gap={1}

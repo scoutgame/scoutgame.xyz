@@ -2,6 +2,7 @@
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import { DateTime } from 'luxon';
 
 import { convertCostToPoints } from '../builderNfts/utils';
 
@@ -35,6 +36,7 @@ export type DeveloperInfo = {
 export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | null> {
   const season = getCurrentSeasonStart();
   const week = getCurrentWeek();
+  const oneMonthAgo = DateTime.now().minus({ months: 1 }).toJSDate();
 
   const developer = await prisma.scout.findUnique({
     where: {
@@ -95,6 +97,9 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
         },
         take: 3,
         where: {
+          createdAt: {
+            gt: oneMonthAgo
+          },
           type: {
             in: ['merged_pull_request', 'daily_commit']
           }
