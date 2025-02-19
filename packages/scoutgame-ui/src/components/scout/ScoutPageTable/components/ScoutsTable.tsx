@@ -53,7 +53,7 @@ export function ScoutsTable({ scouts, order, sort }: { scouts: ScoutInfo[]; orde
           backgroundColor: 'background.paper'
         }}
       >
-        <CommonTableRow>
+        <CommonTableRow sx={{ cursor: 'auto' }}>
           <TableCell align='left' sx={{ fontSize: { xs: '10px', md: 'initial' }, py: 1 }}>
             SCOUT
           </TableCell>

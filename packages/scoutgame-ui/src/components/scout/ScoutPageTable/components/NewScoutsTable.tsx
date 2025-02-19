@@ -42,7 +42,7 @@ export function NewScoutsTable({ scouts }: { scouts: NewScout[] }) {
             backgroundColor: 'background.paper'
           }}
         >
-          <CommonTableRow>
+          <CommonTableRow sx={{ cursor: 'auto' }}>
             <TableCell align='center'>RANK</TableCell>
             <TableCell align='left'>SCOUT</TableCell>
             <TableCell align='center' sx={{ display: { xs: 'none', md: 'table-cell' } }}>
