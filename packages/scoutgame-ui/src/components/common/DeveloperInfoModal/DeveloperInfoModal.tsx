@@ -59,35 +59,85 @@ export function DeveloperInfoModal({
       open
       onClose={onClose}
       sx={{
+        '& .MuiDialogContent-root': {
+          p: {
+            xs: 1
+          }
+        },
         '& .MuiDialog-paper': {
-          minWidth: 600,
+          minWidth: {
+            xs: '100%',
+            md: 600
+          },
           bgcolor: 'black.main',
           borderRadius: 2
         }
       }}
     >
-      <Stack pt={2.5} gap={2}>
+      <Stack
+        pt={{
+          xs: 1,
+          md: 2.5
+        }}
+        gap={2}
+      >
         <Stack direction='row' alignItems='center' gap={2}>
           <Stack position='relative'>
-            <Avatar src={developer.avatar} name={developer.displayName} size='xLarge' variant='circular' />
+            <Avatar
+              src={developer.avatar}
+              name={developer.displayName}
+              size={isDesktop ? 'xLarge' : 'large'}
+              variant='circular'
+            />
             <Stack
               sx={{
                 position: 'absolute',
-                width: 40,
-                height: 40,
-                bottom: -10,
-                right: -10,
-                justifyContent: 'center',
-                alignItems: 'center',
+                width: {
+                  xs: 32,
+                  md: 40
+                },
+                height: {
+                  xs: 32,
+                  md: 40
+                },
+                bottom: {
+                  xs: -8,
+                  md: -10
+                },
+                right: {
+                  xs: -8,
+                  md: -10
+                },
                 backgroundColor: 'orange.main',
                 borderRadius: '50%',
-                border: '1.5px solid #000'
+                border: '1.5px solid #000',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
-              <Typography fontFamily='Jura' fontSize={12} color='black.main' lineHeight={1} mb={0.25}>
+              <Typography
+                fontFamily='Jura'
+                fontSize={{
+                  xs: 10,
+                  md: 12
+                }}
+                color='black.main'
+                lineHeight={1}
+                mb={0.25}
+              >
                 lv
               </Typography>
-              <Typography fontFamily='Jura' fontSize={18} color='black.main' lineHeight={1}>
+              <Typography
+                fontFamily='Jura'
+                fontSize={{
+                  xs: 12,
+                  md: 18
+                }}
+                fontWeight='bold'
+                color='black.main'
+                lineHeight={1}
+              >
                 {developer.level}
               </Typography>
             </Stack>
@@ -148,59 +198,115 @@ export function DeveloperInfoModal({
         </Stack>
         <Stack gap={0.5}>
           <Stack direction='row' gap={0.5}>
-            <Stack bgcolor='primary.dark' p={1} borderRadius={1} gap={0.5} minWidth={125} width='25%'>
+            <Stack
+              bgcolor='primary.dark'
+              p={{
+                xs: 0.5,
+                md: 1
+              }}
+              borderRadius={1}
+              gap={0.5}
+              minWidth={125}
+              width='25%'
+            >
               <Stack>
                 <Typography color='green.main'>Est. Payout</Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
-                  <Typography color='green.main' variant='h6'>
+                  <Typography color='green.main' variant={isDesktop ? 'h6' : 'body1'}>
                     {developer.estimatedPayout}
                   </Typography>
-                  <Image src='/images/profile/scout-game-green-icon.svg' width={24} height={24} alt='scoutgame icon' />
+                  <Image
+                    src='/images/profile/scout-game-green-icon.svg'
+                    width={isDesktop ? '24' : '18'}
+                    height={isDesktop ? '24' : '18'}
+                    alt='scoutgame icon'
+                  />
                 </Stack>
               </Stack>
               <Stack>
                 <Typography color='secondary.main'>Price</Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
-                  <Typography color='secondary.main' variant='h6'>
+                  <Typography color='secondary.main' variant={isDesktop ? 'h6' : 'body1'}>
                     {developer.price}
                   </Typography>
-                  <Image src='/images/profile/scout-game-blue-icon.svg' width={24} height={24} alt='scoutgame icon' />
+                  <Image
+                    src='/images/profile/scout-game-blue-icon.svg'
+                    width={isDesktop ? '24' : '18'}
+                    height={isDesktop ? '24' : '18'}
+                    alt='scoutgame icon'
+                  />
                 </Stack>
               </Stack>
             </Stack>
-            <Stack bgcolor='primary.dark' p={1} borderRadius={1} gap={0.5} minWidth={125} width='25%'>
+            <Stack
+              bgcolor='primary.dark'
+              p={{
+                xs: 0.5,
+                md: 1
+              }}
+              borderRadius={1}
+              gap={0.5}
+              minWidth={125}
+              width='25%'
+            >
               <Stack>
                 <Typography color='secondary.main'>Current Rank</Typography>
-                <Typography variant='h6'>{developer.rank}</Typography>
+                <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.rank}</Typography>
               </Stack>
               <Stack>
                 <Typography color='secondary.main'>Week's Gems</Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
-                  <Typography variant='h6'>{developer.gemsCollected}</Typography>
-                  <Image src='/images/profile/icons/hex-gem-icon.svg' width={24} height={24} alt='gem icon' />
+                  <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.gemsCollected}</Typography>
+                  <Image
+                    src='/images/profile/icons/hex-gem-icon.svg'
+                    width={isDesktop ? '24' : '18'}
+                    height={isDesktop ? '24' : '18'}
+                    alt='gem icon'
+                  />
                 </Stack>
               </Stack>
             </Stack>
-            <Stack bgcolor='primary.dark' borderRadius={1} gap={0.5} minWidth={175} width='50%'>
-              <Typography color='secondary.main' p={1}>
+            <Stack bgcolor='primary.dark' borderRadius={1} gap={0.5} flex={1}>
+              <Typography
+                color='secondary.main'
+                p={{
+                  xs: 0.5,
+                  md: 1
+                }}
+              >
                 14D Rank
               </Typography>
               <BuilderCardRankGraph last14DaysRank={developer.last14DaysRank} />
             </Stack>
           </Stack>
           <Stack direction='row' gap={0.5}>
-            <Stack bgcolor='primary.dark' p={1} borderRadius={1} gap={0.5} minWidth={125} width='25%'>
+            <Stack
+              bgcolor='primary.dark'
+              p={{
+                xs: 0.5,
+                md: 1
+              }}
+              borderRadius={1}
+              gap={0.5}
+              minWidth={125}
+              width='25%'
+            >
               <Typography color='secondary.main'>This Season</Typography>
               <Stack>
                 <Stack direction='row' gap={0.5} alignItems='center'>
-                  <Typography variant='h6'>{developer.seasonPoints}</Typography>
-                  <Image src='/images/profile/scout-game-icon.svg' width={24} height={24} alt='gem icon' />
+                  <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.seasonPoints}</Typography>
+                  <Image
+                    src='/images/profile/scout-game-icon.svg'
+                    width={isDesktop ? '24' : '18'}
+                    height={isDesktop ? '24' : '18'}
+                    alt='gem icon'
+                  />
                 </Stack>
-                <Typography variant='h6'>{developer.scoutedBy} Scouts</Typography>
+                <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.scoutedBy} Scouts</Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
-                  <Typography variant='h6'>{developer.cardsSold}</Typography>
+                  <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.cardsSold}</Typography>
                   <Image src='/images/profile/icons/cards-white.svg' width={22} height={22} alt='cards sold icon' />
-                  <Typography variant='h6'>Sold</Typography>
+                  <Typography variant={isDesktop ? 'h6' : 'body1'}>Sold</Typography>
                 </Stack>
               </Stack>
             </Stack>
@@ -216,14 +322,41 @@ export function DeveloperInfoModal({
                       alignItems='center'
                       justifyContent='space-between'
                     >
-                      <Typography variant='h6' width='75%'>
+                      <Typography
+                        variant={isDesktop ? 'h6' : 'body1'}
+                        width={{
+                          xs: '65%',
+                          md: '75%'
+                        }}
+                      >
                         {activity.repo}
                       </Typography>
-                      <Stack width='15%' justifyContent='flex-end' direction='row' gap={0.5} alignItems='center'>
+                      <Stack
+                        width={{
+                          xs: '20%',
+                          md: '15%'
+                        }}
+                        justifyContent='flex-end'
+                        direction='row'
+                        gap={0.5}
+                        alignItems='center'
+                      >
                         <Typography>{activity.gems}</Typography>
-                        <Image src='/images/profile/icons/hex-gem-icon.svg' width={20} height={20} alt='gem icon' />
+                        <Image
+                          src='/images/profile/icons/hex-gem-icon.svg'
+                          width={isDesktop ? '20' : '16'}
+                          height={isDesktop ? '20' : '16'}
+                          alt='gem icon'
+                        />
                       </Stack>
-                      <Stack width='10%' justifyContent='flex-end' flexDirection='row'>
+                      <Stack
+                        width={{
+                          xs: '15%',
+                          md: '10%'
+                        }}
+                        justifyContent='flex-end'
+                        flexDirection='row'
+                      >
                         <Typography>{getShortenedRelativeTime(activity.createdAt)}</Typography>
                       </Stack>
                     </Stack>
