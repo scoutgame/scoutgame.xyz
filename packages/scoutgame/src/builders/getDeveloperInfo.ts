@@ -114,7 +114,6 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
           githubEvent: {
             select: {
               url: true,
-              pullRequestNumber: true,
               repo: {
                 select: {
                   name: true,

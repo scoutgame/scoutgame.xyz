@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
+import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
 import { Avatar } from '../../../common/Avatar';
 import { BuilderCardRankGraph } from '../../../common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 
@@ -38,7 +39,7 @@ export function BuildersTable({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isMdScreen = useMdScreen();
-
+  const { openModal } = useDeveloperInfoModal();
   const platform = getPlatform();
 
   const handleSort = (sortBy: string) => {
@@ -148,7 +149,12 @@ export function BuildersTable({
       </TableHead>
       <TableBody>
         {builders.map((builder, index) => (
-          <TableRow key={builder.path} sx={tableRowSx} onClick={() => router.push(`/u/${builder.path}?tab=builder`)}>
+          <TableRow
+            key={builder.path}
+            sx={tableRowSx}
+            onClick={() => openModal(builder.path)}
+            style={{ cursor: 'pointer' }}
+          >
             <TableCell>
               <Stack
                 alignItems='center'

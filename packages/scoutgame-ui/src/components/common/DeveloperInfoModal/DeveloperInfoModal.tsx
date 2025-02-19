@@ -3,6 +3,7 @@ import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInf
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { Avatar } from '../Avatar';
@@ -143,7 +144,7 @@ export function DeveloperInfoModal({
             </Stack>
           </Stack>
           <Stack>
-            <Typography variant='h5'>{developer.displayName}</Typography>
+            <Typography variant={isDesktop ? 'h5' : 'h6'}>{developer.displayName}</Typography>
             <Typography color='secondary'>Joined</Typography>
             <Stack direction='row' alignItems='center' gap={1.75}>
               <Stack direction='row' gap={1} alignItems='center'>
@@ -315,51 +316,53 @@ export function DeveloperInfoModal({
               <Stack>
                 {developer.githubActivities.length > 0 ? (
                   developer.githubActivities.map((activity) => (
-                    <Stack
-                      key={activity.url}
-                      direction='row'
-                      gap={0.5}
-                      alignItems='center'
-                      justifyContent='space-between'
-                    >
-                      <Typography
-                        variant={isDesktop ? 'h6' : 'body1'}
-                        width={{
-                          xs: '65%',
-                          md: '75%'
-                        }}
-                      >
-                        {activity.repo}
-                      </Typography>
+                    <Link href={activity.url} key={activity.url} target='_blank' rel='noopener noreferrer'>
                       <Stack
-                        width={{
-                          xs: '20%',
-                          md: '15%'
-                        }}
-                        justifyContent='flex-end'
+                        key={activity.url}
                         direction='row'
                         gap={0.5}
                         alignItems='center'
+                        justifyContent='space-between'
                       >
-                        <Typography>{activity.gems}</Typography>
-                        <Image
-                          src='/images/profile/icons/hex-gem-icon.svg'
-                          width={isDesktop ? '20' : '16'}
-                          height={isDesktop ? '20' : '16'}
-                          alt='gem icon'
-                        />
+                        <Typography
+                          variant={isDesktop ? 'h6' : 'body1'}
+                          width={{
+                            xs: '65%',
+                            md: '75%'
+                          }}
+                        >
+                          {activity.owner}/{activity.repo}
+                        </Typography>
+                        <Stack
+                          width={{
+                            xs: '20%',
+                            md: '15%'
+                          }}
+                          justifyContent='flex-end'
+                          direction='row'
+                          gap={0.5}
+                          alignItems='center'
+                        >
+                          <Typography>{activity.gems}</Typography>
+                          <Image
+                            src='/images/profile/icons/hex-gem-icon.svg'
+                            width={isDesktop ? '20' : '16'}
+                            height={isDesktop ? '20' : '16'}
+                            alt='gem icon'
+                          />
+                        </Stack>
+                        <Stack
+                          width={{
+                            xs: '15%',
+                            md: '10%'
+                          }}
+                          justifyContent='flex-end'
+                          flexDirection='row'
+                        >
+                          <Typography>{getShortenedRelativeTime(activity.createdAt)}</Typography>
+                        </Stack>
                       </Stack>
-                      <Stack
-                        width={{
-                          xs: '15%',
-                          md: '10%'
-                        }}
-                        justifyContent='flex-end'
-                        flexDirection='row'
-                      >
-                        <Typography>{getShortenedRelativeTime(activity.createdAt)}</Typography>
-                      </Stack>
-                    </Stack>
+                    </Link>
                   ))
                 ) : (
                   <Typography>No activity in the last 30 days.</Typography>

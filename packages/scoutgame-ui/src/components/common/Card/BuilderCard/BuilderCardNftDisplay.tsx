@@ -1,5 +1,9 @@
+'use client';
+
 import { CardActionArea, CardMedia, Typography, Box, Stack } from '@mui/material';
 import Link from 'next/link';
+
+import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
 
 import { BuilderCardLevel } from './BuilderCardLevel';
 
@@ -44,13 +48,12 @@ export function BuilderCardNftDisplay({
 }) {
   const width = nftDisplaySize[size].width;
   const height = nftDisplaySize[size].height;
-
+  const { openModal } = useDeveloperInfoModal();
   return (
     <Box overflow='hidden' width={width} height={height} sx={{ backgroundColor: 'black.dark', borderRadius: '4px' }}>
       <CardActionArea
         disabled={disableProfileUrl}
-        LinkComponent={Link}
-        href={`/u/${path}`}
+        onClick={() => openModal(path)}
         sx={{
           position: 'relative',
           width: '100%',
