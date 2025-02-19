@@ -1,4 +1,4 @@
-import { IconButton, Stack, Typography } from '@mui/material';
+import { CircularProgress, IconButton, Stack, Typography } from '@mui/material';
 import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
@@ -10,15 +10,36 @@ import { BuilderCardRankGraph } from '../Card/BuilderCard/BuilderCardActivity/Bu
 import { Dialog } from '../Dialog';
 
 export function DeveloperInfoModal({
-  open,
   onClose,
-  developer
+  developer,
+  isLoading
 }: {
-  open: boolean;
   onClose: () => void;
-  developer: DeveloperInfo;
+  developer: DeveloperInfo | null;
+  isLoading: boolean;
 }) {
   const isDesktop = useMdScreen();
+
+  if (isLoading) {
+    return (
+      <Dialog
+        open
+        onClose={onClose}
+        sx={{
+          '& .MuiDialog-paper': {
+            minWidth: 600,
+            bgcolor: 'black.main',
+            borderRadius: 2
+          }
+        }}
+      >
+        <Stack alignItems='center' justifyContent='center' height='100%'>
+          <CircularProgress />
+          <Typography>Loading developer info...</Typography>
+        </Stack>
+      </Dialog>
+    );
+  }
 
   if (!developer) {
     return null;
@@ -34,7 +55,7 @@ export function DeveloperInfoModal({
 
   return (
     <Dialog
-      open={open}
+      open
       onClose={onClose}
       sx={{
         '& .MuiDialog-paper': {
