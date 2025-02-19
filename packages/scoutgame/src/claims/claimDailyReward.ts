@@ -85,6 +85,11 @@ export async function claimDailyReward({
       trackUserAction('daily_claim', {
         userId
       });
+      log.debug('Daily reward claimed', {
+        userId,
+        week,
+        dayOfWeek
+      });
     }
   }
 
