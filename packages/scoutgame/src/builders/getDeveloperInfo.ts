@@ -9,6 +9,7 @@ import { convertCostToPoints } from '../builderNfts/utils';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type DeveloperInfo = {
+  path: string;
   displayName: string;
   avatar: string;
   joinedAt: Date;
@@ -48,6 +49,7 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     select: {
       displayName: true,
       avatar: true,
+      path: true,
       createdAt: true,
       farcasterName: true,
       githubUsers: {
@@ -134,6 +136,7 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
   const purchaseCostInPoints = convertCostToPoints(developer.builderNfts[0].currentPrice || BigInt(0));
 
   return {
+    path: developer.path,
     avatar: developer.avatar as string,
     displayName: developer.displayName,
     joinedAt: developer.createdAt,

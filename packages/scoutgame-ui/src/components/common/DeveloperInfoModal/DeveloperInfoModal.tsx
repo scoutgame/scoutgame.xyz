@@ -4,6 +4,7 @@ import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { Avatar } from '../Avatar';
@@ -20,6 +21,7 @@ export function DeveloperInfoModal({
   isLoading: boolean;
 }) {
   const isDesktop = useMdScreen();
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -76,6 +78,10 @@ export function DeveloperInfoModal({
       }}
     >
       <Stack
+        onClick={() => {
+          router.push(`/u/${developer.path}`);
+          onClose();
+        }}
         pt={{
           xs: 1,
           md: 2.5
@@ -159,6 +165,9 @@ export function DeveloperInfoModal({
               {developer.githubLogin ? (
                 <IconButton
                   href={`https://github.com/${developer.githubLogin}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                   target='_blank'
                   rel='noopener noreferrer'
                   sx={{ p: 0 }}
@@ -182,6 +191,9 @@ export function DeveloperInfoModal({
                   target='_blank'
                   rel='noopener noreferrer'
                   sx={{ px: 0 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
                   <Stack direction='row' gap={1} alignItems='center'>
                     <Image
@@ -316,7 +328,15 @@ export function DeveloperInfoModal({
               <Stack>
                 {developer.githubActivities.length > 0 ? (
                   developer.githubActivities.map((activity) => (
-                    <Link href={activity.url} key={activity.url} target='_blank' rel='noopener noreferrer'>
+                    <Link
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      href={activity.url}
+                      key={activity.url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
                       <Stack
                         key={activity.url}
                         direction='row'
