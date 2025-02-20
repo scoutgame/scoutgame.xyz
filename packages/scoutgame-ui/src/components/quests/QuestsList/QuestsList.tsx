@@ -1,14 +1,14 @@
 import { Stack, Typography } from '@mui/material';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 
 import { Hidden } from '../../common/Hidden';
 
+import type { Friend } from './FriendlyQuest/components/MyFriends';
 import { FriendlyQuest } from './FriendlyQuest/FriendlyQuest';
 import { QuestAccordion } from './QuestAccordion';
 import { QuestCard } from './QuestCard';
 
-export function QuestsList({ quests, friends }: { quests: QuestInfo[]; friends: SessionUser[] }) {
+export function QuestsList({ quests, friends }: { quests: QuestInfo[]; friends: Friend[] }) {
   const inviteFriendsQuest = quests.find((quest) => quest.type === 'invite-friend');
 
   const isFarcasterConnectQuestCompleted = quests.find((quest) => quest.type === 'link-farcaster-account')?.completed;

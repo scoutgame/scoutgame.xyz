@@ -13,10 +13,11 @@ import { LuCopy } from 'react-icons/lu';
 import { useTrackEvent } from '../../../../../hooks/useTrackEvent';
 import { Hidden } from '../../../../common/Hidden';
 
+import type { Friend } from './MyFriends';
 import { MyFriends } from './MyFriends';
 import { MyFriendsDialog } from './MyFriendsDialog';
 
-export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: SessionUser[] }) {
+export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: Friend[] }) {
   const { user } = useUser();
   const isTelegram = getPlatform() === 'telegram';
   const [copied, setCopied] = useState('');

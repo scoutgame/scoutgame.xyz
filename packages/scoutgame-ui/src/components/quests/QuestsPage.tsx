@@ -1,10 +1,10 @@
 import { Box, Grid2 as Grid } from '@mui/material';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 import { DailyClaimGallery } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimGallery';
 import { QuestsList } from '@packages/scoutgame-ui/components/quests/QuestsList/QuestsList';
 
+import type { Friend } from './QuestsList/FriendlyQuest/components/MyFriends';
 import { FriendlyQuest } from './QuestsList/FriendlyQuest/FriendlyQuest';
 
 export function QuestsPage({
@@ -14,7 +14,7 @@ export function QuestsPage({
 }: {
   dailyClaims: DailyClaim[];
   quests: QuestInfo[];
-  friends: SessionUser[];
+  friends: Friend[];
 }) {
   return (
     <Grid container data-test='quest-page' overflow='hidden'>

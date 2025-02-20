@@ -5,10 +5,11 @@ import { Hidden } from '../../../common/Hidden';
 
 import { Info } from './components/Info';
 import { InviteButtons } from './components/InviteButtons';
+import type { Friend } from './components/MyFriends';
 import { MyFriends } from './components/MyFriends';
 import { Stats } from './components/Stats';
 
-export function FriendlyQuest({ friends, title }: { friends: SessionUser[]; title?: string }) {
+export function FriendlyQuest({ friends, title }: { friends: Friend[]; title?: string }) {
   return (
     <Stack gap={2} py={{ md: 2 }} data-test='friendly-quest'>
       {title && (
@@ -17,7 +18,7 @@ export function FriendlyQuest({ friends, title }: { friends: SessionUser[]; titl
         </Typography>
       )}
       <Info />
-      <InviteButtons friends={friends} stats={<Stats friends={friends} />} />
+      <InviteButtons friends={friends} stats={<Stats friendsJoined={friends.length} />} />
       <Hidden mdDown>
         <MyFriends friends={friends} title='My Friends' />
       </Hidden>

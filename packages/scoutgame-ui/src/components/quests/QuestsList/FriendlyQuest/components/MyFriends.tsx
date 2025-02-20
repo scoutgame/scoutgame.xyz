@@ -13,7 +13,9 @@ import type { SessionUser } from '@packages/nextjs/session/interfaces';
 
 import { Avatar } from '../../../../common/Avatar';
 
-export function MyFriends({ friends, title }: { friends: SessionUser[]; title?: string }) {
+export type Friend = Pick<SessionUser, 'id' | 'avatar' | 'displayName' | 'currentBalance'>;
+
+export function MyFriends({ friends, title }: { friends: Friend[]; title?: string }) {
   const sorted = friends.sort((a, b) => b.currentBalance - a.currentBalance);
 
   if (friends.length === 0) {
