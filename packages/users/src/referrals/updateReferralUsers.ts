@@ -15,7 +15,12 @@ type Result =
   | 'no_nft_purchase'
   | 'success';
 
-export async function updateReferralUsers(refereeId: string): Promise<{ result: Result }> {
+export async function updateReferralUsers(
+  refereeId: string,
+  week = getCurrentWeek(),
+  now = new Date()
+): Promise<{ result: Result }> {
+  const season = getCurrentSeasonStart(week);
   const referee = await prisma.scout.findUniqueOrThrow({
     where: {
       id: refereeId,
@@ -130,7 +135,7 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
       const referrerPointsReceived = await tx.pointsReceipt.create({
         data: {
           value: rewardPoints,
-          season: getCurrentSeasonStart(),
+          season,
           claimedAt: new Date(),
           recipient: {
             connect: {
@@ -159,7 +164,7 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
               value: rewardPoints,
               claimedAt: new Date(),
               eventId: referrerPointsReceived.eventId,
-              season: getCurrentSeasonStart()
+              season
             }
           }
         }
@@ -170,16 +175,16 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
           id: referralCodeEvent.id
         },
         data: {
-          completedAt: new Date()
+          completedAt: now
         }
       });
 
       await tx.builderEvent.create({
         data: {
           type: 'referral_bonus',
-          season: getCurrentSeasonStart(),
+          season,
           description: 'Received points for a referred user scouting a builder',
-          week: getCurrentWeek(),
+          week,
           builder: {
             connect: {
               id: referrerId
@@ -199,7 +204,7 @@ export async function updateReferralUsers(refereeId: string): Promise<{ result: 
                   id: referrerId
                 }
               },
-              season: getCurrentSeasonStart()
+              season
             }
           }
         }
