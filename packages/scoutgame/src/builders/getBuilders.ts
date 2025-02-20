@@ -83,9 +83,7 @@ export async function getBuilders({
                         tokensPurchased: true
                       }
                     }
-                  : {
-                      where: validMintNftPurchaseEvent
-                    }
+                  : undefined
               }
             },
             userSeasonStats: {
@@ -166,9 +164,7 @@ export async function getBuilders({
                 tokensPurchased: true
               }
             }
-          : {
-              where: validMintNftPurchaseEvent
-            },
+          : undefined,
         builder: {
           select: {
             path: true,
@@ -243,9 +239,7 @@ export async function getBuilders({
                 tokensPurchased: true
               }
             }
-          : {
-              where: validMintNftPurchaseEvent
-            },
+          : undefined,
         builder: {
           select: {
             path: true,
@@ -335,9 +329,7 @@ export async function getBuilders({
                         tokensPurchased: true
                       }
                     }
-                  : {
-                      where: validMintNftPurchaseEvent
-                    }
+                  : undefined
               }
             },
             builderCardActivities: {
