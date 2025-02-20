@@ -9,7 +9,15 @@ import type { Friend } from './components/MyFriends';
 import { MyFriends } from './components/MyFriends';
 import { Stats } from './components/Stats';
 
-export function FriendlyQuest({ friends, title }: { friends: Friend[]; title?: string }) {
+export function FriendlyQuest({
+  friends,
+  tokensEarned,
+  title
+}: {
+  friends: Friend[];
+  tokensEarned: number;
+  title?: string;
+}) {
   return (
     <Stack gap={2} py={{ md: 2 }} data-test='friendly-quest'>
       {title && (
@@ -18,7 +26,7 @@ export function FriendlyQuest({ friends, title }: { friends: Friend[]; title?: s
         </Typography>
       )}
       <Info />
-      <InviteButtons friends={friends} stats={<Stats friendsJoined={friends.length} />} />
+      <InviteButtons friends={friends} stats={<Stats friendsJoined={friends.length} tokensEarned={tokensEarned} />} />
       <Hidden mdDown>
         <MyFriends friends={friends} title='My Friends' />
       </Hidden>

@@ -8,7 +8,15 @@ import { FriendlyQuest } from './FriendlyQuest/FriendlyQuest';
 import { QuestAccordion } from './QuestAccordion';
 import { QuestCard } from './QuestCard';
 
-export function QuestsList({ quests, friends }: { quests: QuestInfo[]; friends: Friend[] }) {
+export function QuestsList({
+  quests,
+  friends,
+  tokensEarnedFromFriends
+}: {
+  quests: QuestInfo[];
+  friends: Friend[];
+  tokensEarnedFromFriends: number;
+}) {
   const inviteFriendsQuest = quests.find((quest) => quest.type === 'invite-friend');
 
   const isFarcasterConnectQuestCompleted = quests.find((quest) => quest.type === 'link-farcaster-account')?.completed;
@@ -23,7 +31,7 @@ export function QuestsList({ quests, friends }: { quests: QuestInfo[]; friends: 
         <Hidden mdUp>
           {inviteFriendsQuest && (
             <QuestAccordion quest={inviteFriendsQuest}>
-              <FriendlyQuest friends={friends} />
+              <FriendlyQuest friends={friends} tokensEarned={tokensEarnedFromFriends} />
             </QuestAccordion>
           )}
         </Hidden>

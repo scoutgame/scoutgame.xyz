@@ -21,7 +21,9 @@ export default async function Quests() {
     return null;
   }
 
-  const [friends, dailyClaims, quests] = data;
+  const [{ friends, tokensEarned }, dailyClaims, quests] = data;
 
-  return <QuestsPage dailyClaims={dailyClaims} quests={quests} friends={friends} />;
+  return (
+    <QuestsPage dailyClaims={dailyClaims} quests={quests} friends={friends} tokensEarnedFromFriends={tokensEarned} />
+  );
 }

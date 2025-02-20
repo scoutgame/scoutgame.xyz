@@ -9,11 +9,9 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
+import type { Friend } from '@packages/users/getFriends';
 
 import { Avatar } from '../../../../common/Avatar';
-
-export type Friend = Pick<SessionUser, 'id' | 'avatar' | 'displayName' | 'currentBalance'>;
 
 export function MyFriends({ friends, title }: { friends: Friend[]; title?: string }) {
   const sorted = friends.sort((a, b) => b.currentBalance - a.currentBalance);
@@ -34,10 +32,12 @@ export function MyFriends({ friends, title }: { friends: Friend[]; title?: strin
           }
         }}
       >
-        <Typography variant='h5' textAlign='center'>
+        <Typography variant='h5' textAlign='center' gutterBottom>
           {title}
         </Typography>
-        <Typography textAlign='center'>No friends joined through your referral link</Typography>
+        <Typography variant='body2' textAlign='center'>
+          No friends joined through your referral link
+        </Typography>
       </Paper>
     );
   }
@@ -59,10 +59,12 @@ export function MyFriends({ friends, title }: { friends: Friend[]; title?: strin
         }
       }}
     >
-      <Typography variant='h5' textAlign='center'>
+      <Typography variant='h5' textAlign='center' gutterBottom>
         {title}
       </Typography>
-      <Typography textAlign='center'>See who's already playing!</Typography>
+      <Typography variant='body2' textAlign='center'>
+        See who's already playing!
+      </Typography>
       <TableContainer component={Paper}>
         <Table aria-label='Leaderboard table' size='small' sx={{ px: { md: 6 } }} data-test='friends-table'>
           <TableHead>

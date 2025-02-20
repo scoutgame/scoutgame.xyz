@@ -1,11 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
 
-import type { Friend } from './MyFriends';
-
-export function Stats({ friendsJoined }: { friendsJoined: number }) {
-  const pointsEarned = friendsJoined * 5;
-
+export function Stats({ friendsJoined, tokensEarned }: { friendsJoined: number; tokensEarned: number }) {
   return (
     <Stack flexDirection={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={{ xs: 0.5, md: 4 }}>
       <Box>
@@ -33,7 +28,7 @@ export function Stats({ friendsJoined }: { friendsJoined: number }) {
           borderRadius='30px'
         >
           <Typography variant='h5' component='p' fontWeight={600} textAlign='center' color='secondary'>
-            {pointsEarned}
+            {tokensEarned}
           </Typography>
           <img src='/images/crypto/op.png' alt='' width={20} height={20} />
         </Stack>

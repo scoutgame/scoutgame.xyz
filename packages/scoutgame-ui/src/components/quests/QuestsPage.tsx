@@ -3,18 +3,20 @@ import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 import { DailyClaimGallery } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimGallery';
 import { QuestsList } from '@packages/scoutgame-ui/components/quests/QuestsList/QuestsList';
+import type { Friend } from '@packages/users/getFriends';
 
-import type { Friend } from './QuestsList/FriendlyQuest/components/MyFriends';
 import { FriendlyQuest } from './QuestsList/FriendlyQuest/FriendlyQuest';
 
 export function QuestsPage({
   dailyClaims,
   quests,
-  friends
+  friends,
+  tokensEarnedFromFriends
 }: {
   dailyClaims: DailyClaim[];
   quests: QuestInfo[];
   friends: Friend[];
+  tokensEarnedFromFriends: number;
 }) {
   return (
     <Grid container data-test='quest-page' overflow='hidden'>
@@ -33,7 +35,7 @@ export function QuestsPage({
             <DailyClaimGallery dailyClaims={dailyClaims} />
           </Box>
           <Box sx={{ px: 1, mb: 2 }}>
-            <QuestsList quests={quests} friends={friends} />
+            <QuestsList quests={quests} friends={friends} tokensEarnedFromFriends={tokensEarnedFromFriends} />
           </Box>
         </Box>
       </Grid>
@@ -51,7 +53,7 @@ export function QuestsPage({
           px: 1
         }}
       >
-        <FriendlyQuest friends={friends} title='Friendly Quest' />
+        <FriendlyQuest friends={friends} tokensEarned={tokensEarnedFromFriends} title='Friendly Quest' />
       </Grid>
     </Grid>
   );
