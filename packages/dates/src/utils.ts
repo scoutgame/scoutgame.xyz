@@ -95,6 +95,11 @@ export function getWeekStartEnd(date: Date) {
   return { start: startOfWeek, end: endOfWeek };
 }
 
+export function getWeekStartEndFromISOWeek(week: ISOWeek) {
+  const date = getDateFromISOWeek(week);
+  return getWeekStartEnd(date.toJSDate());
+}
+
 export function getWeekStartEndFormatted(date: Date) {
   const { start, end } = getWeekStartEnd(date);
   return `${start.toFormat('MMM, dd')} - ${end.toFormat('MMM, dd')}`;
