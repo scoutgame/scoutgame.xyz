@@ -2,7 +2,7 @@
 
 import { AuthKitProvider } from '@farcaster/auth-kit';
 import { Link, Typography } from '@mui/material';
-import { getAuthConfig } from '@packages/scoutgame/farcaster/config';
+import { getAuthConfig } from '@packages/farcaster/config';
 import { Suspense } from 'react';
 
 import { useTrackEvent } from '../../../hooks/useTrackEvent';
