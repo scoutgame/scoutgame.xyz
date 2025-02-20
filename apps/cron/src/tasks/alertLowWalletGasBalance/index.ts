@@ -2,7 +2,7 @@ import { builderSmartContractMinterKey } from '@packages/scoutgame/builderNfts/c
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { POST } from '@packages/utils/http';
 import type Koa from 'koa';
-import type { Address } from 'viem';
+import type { Address } from 'viem/accounts';
 import { privateKeyToAccount } from 'viem/accounts';
 
 import { getWalletGasBalanceInUSD } from './getWalletGasBalanceInUSD';
@@ -17,7 +17,11 @@ export async function alertLowWalletGasBalance(
     throw new Error('No Discord webhook found');
   }
 
-  const builderCreatorAddress = privateKeyToAccount(builderSmartContractMinterKey as Address).address;
+  const builderCreatorAddress = privateKeyToAccount(
+    builderSmartContractMinterKey.startsWith('0x')
+      ? (builderSmartContractMinterKey as Address)
+      : `0x${builderSmartContractMinterKey}`
+  ).address;
 
   const balanceInUSD = await getWalletGasBalanceInUSD(builderCreatorAddress);
   scoutgameMintsLogger.info(`Admin wallet has a balance of ${balanceInUSD} USD`);

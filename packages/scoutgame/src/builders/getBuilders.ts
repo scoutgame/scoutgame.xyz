@@ -372,7 +372,7 @@ export async function getBuilders({
     }));
   }
 
-  log.error(`Invalid sortBy provided: ${sortBy}`);
+  log.error(`Invalid sortBy provided for getBuilders: ${sortBy}`);
 
   return [];
 }

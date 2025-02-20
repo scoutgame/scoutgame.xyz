@@ -2,36 +2,29 @@
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { LoadingButton } from '@mui/lab';
-import { Button } from '@mui/material';
+import { Stack, Button, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/platform';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useState } from 'react';
 
 import { useTrackEvent } from '../../../hooks/useTrackEvent';
 import { useGlobalModal } from '../../../providers/ModalProvider';
 import { useUser } from '../../../providers/UserProvider';
-import { DynamicLoadingContext, LoadingComponent } from '../Loading/DynamicLoading';
+import { DynamicLoadingContext } from '../Loading/DynamicLoading';
 import type { NFTPurchaseProps } from '../NFTPurchaseDialog/components/NFTPurchaseForm';
 
 import { SignInModalMessage } from './SignInModalMessage';
 
-const NFTPurchaseDialog = dynamic(
-  () => import('../NFTPurchaseDialog/NFTPurchaseDialog').then((mod) => mod.NFTPurchaseDialog),
-  {
-    loading: LoadingComponent,
-    ssr: false
-  }
-);
-
 export function ScoutButton({
   builder,
   markStarterCardPurchased = false,
+  showLabel = false,
   type = 'default'
 }: {
-  builder: NFTPurchaseProps['builder'] & { builderStatus: BuilderStatus | null };
+  builder: Omit<NFTPurchaseProps['builder'], 'nftType'> & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
+  showLabel?: boolean;
   type?: 'default' | 'starter_pack';
 }) {
   const trackEvent = useTrackEvent();
@@ -50,7 +43,7 @@ export function ScoutButton({
   const handleClick = () => {
     trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });
     if (isAuthenticated) {
-      openModal('nftPurchase', builder);
+      openModal('nftPurchase', { ...builder, nftType: type });
     } else {
       setAuthPopup(true);
     }
@@ -72,7 +65,7 @@ export function ScoutButton({
   return (
     <div>
       <DynamicLoadingContext.Provider value={setDialogLoadingStatus}>
-        {builder.nftType === 'starter_pack' && markStarterCardPurchased ? (
+        {type === 'starter_pack' && markStarterCardPurchased ? (
           <Button variant='outlined' fullWidth disabled>
             Purchased
           </Button>
@@ -83,16 +76,22 @@ export function ScoutButton({
             onClick={handleClick}
             data-test={isLoading ? '' : 'scout-button'}
             variant='buy'
-            sx={{ color, borderColor: color }}
+            sx={{
+              color,
+              borderColor: color
+            }}
           >
-            {purchaseCostInPoints}
-            <Image
-              src={image}
-              alt='Scout game points'
-              width={21}
-              height={12}
-              style={{ marginLeft: 4, marginRight: 4 }}
-            />
+            <Stack px={1} direction='row' alignItems='center' justifyContent='center' width='100%'>
+              {showLabel && (
+                <Typography variant='body2' color='inherit' sx={{ mr: 1, textTransform: 'uppercase' }}>
+                  Starter pack
+                </Typography>
+              )}{' '}
+              <div>
+                {purchaseCostInPoints}
+                <Image src={image} alt='' width={21} height={12} style={{ marginLeft: 4, marginRight: 4 }} />
+              </div>
+            </Stack>
           </LoadingButton>
         )}
         <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />

@@ -2,9 +2,9 @@ import { Stack } from '@mui/material';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 
 import { Carousel } from '../../common/Carousel/Carousel';
-import { StarterPackInfo } from '../StarterPackCarousel/StarterPackInfo';
 
 import { StarterPackCard } from './StarterPackCard';
+import { StarterPackInfo } from './StarterPackInfo';
 
 export function StarterPackCarousel({
   builders,
@@ -35,8 +35,8 @@ export function StarterPackCarousel({
           boxProps: { width: { xs: '100%', md: '70%' }, margin: '0 auto' }
         }}
       >
-        {builders.map((builder) => (
-          <StarterPackCard builder={builder} key={builder.id} />
+        {builders.map(({ builder, hasPurchased }) => (
+          <StarterPackCard key={builder.id} builder={builder} hasPurchased={hasPurchased} />
         ))}
       </Carousel>
       <StarterPackInfo remainingStarterCards={remainingStarterCards} />

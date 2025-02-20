@@ -80,7 +80,7 @@ export function LeaderboardTable({ data, week }: { data: LeaderBoardRow[]; week:
               </Stack>
             </TableCell>
             <TableCell sx={getSXProps({ mdDown: true, display: 'table-cell' })} width='200px'>
-              <ScoutButton builder={row} />
+              <ScoutButton builder={row} type='default' />
             </TableCell>
           </CommonTableRow>
         ))}

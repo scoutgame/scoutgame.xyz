@@ -180,6 +180,6 @@ export async function getScouts({
     }
   }
 
-  log.error(`Invalid sortBy provided: ${sortBy}`);
+  log.error(`Invalid sortBy provided for getScouts: ${sortBy}`);
   return [];
 }
