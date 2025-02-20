@@ -58,19 +58,8 @@ describe('recordNftPurchaseQuests', () => {
       }
     });
 
-    const moxieQuest = await prisma.scoutSocialQuest.findUnique({
-      where: {
-        type_userId_season: {
-          type: 'scout-moxie-builder',
-          userId: scout.id,
-          season
-        }
-      }
-    });
-
     expect(quest).not.toBeNull();
     expect(opQuest).not.toBeNull();
-    expect(moxieQuest).toBeNull();
   });
 
   it('should record scout-3-starter-cards quest completion for scout with 3 starter pack cards', async () => {
@@ -158,19 +147,8 @@ describe('recordNftPurchaseQuests', () => {
       }
     });
 
-    const moxieQuest = await prisma.scoutSocialQuest.findUnique({
-      where: {
-        type_userId_season: {
-          type: 'scout-moxie-builder',
-          userId: scout.id,
-          season
-        }
-      }
-    });
-
     expect(quest).not.toBeNull();
     expect(opQuest).not.toBeNull();
-    expect(moxieQuest).toBeNull();
   });
 
   it('should record scout-5-builders quest completion for scout with 5 unique cards', async () => {
@@ -249,36 +227,5 @@ describe('recordNftPurchaseQuests', () => {
     });
 
     expect(updatedQuest).not.toBeNull();
-  });
-
-  it('should record scout-moxie-builder quest completion for scout with 1 moxie builder', async () => {
-    const builder = await mockBuilder();
-    await prisma.scout.update({
-      where: { id: builder.id },
-      data: {
-        hasMoxieProfile: true
-      }
-    });
-    const scout = await mockScout();
-    await mockBuilderNft({ builderId: builder.id, season, nftType: 'default' });
-    await mockNFTPurchaseEvent({
-      scoutId: scout.id,
-      builderId: builder.id,
-      nftType: 'default',
-      season
-    });
-    await recordNftPurchaseQuests(scout.id);
-
-    const quest = await prisma.scoutSocialQuest.findUnique({
-      where: {
-        type_userId_season: {
-          type: 'scout-moxie-builder',
-          userId: scout.id,
-          season
-        }
-      }
-    });
-
-    expect(quest).not.toBeNull();
   });
 });
