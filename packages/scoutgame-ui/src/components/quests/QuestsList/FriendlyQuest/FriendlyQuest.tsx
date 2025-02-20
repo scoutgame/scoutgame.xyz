@@ -1,11 +1,10 @@
 import { Stack, Typography } from '@mui/material';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
+import type { Friend } from '@packages/users/getFriends';
 
 import { Hidden } from '../../../common/Hidden';
 
 import { Info } from './components/Info';
 import { InviteButtons } from './components/InviteButtons';
-import type { Friend } from './components/MyFriends';
 import { MyFriends } from './components/MyFriends';
 import { Stats } from './components/Stats';
 

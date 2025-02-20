@@ -1,9 +1,9 @@
 import { Stack, Typography } from '@mui/material';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
+import type { Friend } from '@packages/users/getFriends';
 
 import { Hidden } from '../../common/Hidden';
 
-import type { Friend } from './FriendlyQuest/components/MyFriends';
 import { FriendlyQuest } from './FriendlyQuest/FriendlyQuest';
 import { QuestAccordion } from './QuestAccordion';
 import { QuestCard } from './QuestCard';

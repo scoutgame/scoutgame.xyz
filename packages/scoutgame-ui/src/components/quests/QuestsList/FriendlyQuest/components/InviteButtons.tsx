@@ -4,6 +4,7 @@ import { Box, Button, IconButton, Link, Paper, Stack, Tooltip, Typography } from
 import { getPlatform } from '@packages/mixpanel/platform';
 import { telegramBotName } from '@packages/scoutgame/constants';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import type { Friend } from '@packages/users/getFriends';
 import WebApp from '@twa-dev/sdk';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
@@ -12,7 +13,6 @@ import { LuCopy } from 'react-icons/lu';
 import { useTrackEvent } from '../../../../../hooks/useTrackEvent';
 import { Hidden } from '../../../../common/Hidden';
 
-import type { Friend } from './MyFriends';
 import { MyFriends } from './MyFriends';
 import { MyFriendsDialog } from './MyFriendsDialog';
 
