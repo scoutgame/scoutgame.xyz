@@ -27,7 +27,7 @@ export async function createReferralEvent(referralCode: string, refereeId: strin
     data: {
       season,
       type: eventType,
-      description: `Received points for being a referrer`,
+      description: `Received reward for being a referrer`,
       week,
       builderId: referrerId,
       referralCodeEvent: {

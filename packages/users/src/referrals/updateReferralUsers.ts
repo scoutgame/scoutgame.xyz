@@ -5,8 +5,6 @@ import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { baseUrl } from '@packages/utils/constants';
 
-import { referralBonusPoints, rewardPoints } from '../constants';
-
 type Result =
   | 'already_referred'
   | 'already_referred_as_another_user'
@@ -76,7 +74,11 @@ export async function updateReferralUsers(
       }
     },
     include: {
-      builderEvent: true,
+      builderEvent: {
+        include: {
+          builder: true
+        }
+      },
       bonusBuilderEvent: true
     }
   });
@@ -114,62 +116,6 @@ export async function updateReferralUsers(
 
   const referrer = await prisma.$transaction(
     async (tx) => {
-      // Update referrer
-      const _referrer = await tx.scout.update({
-        where: {
-          id: referrerId
-        },
-        data: {
-          currentBalance: {
-            increment: rewardPoints + referralBonusPoints
-          }
-        },
-        select: {
-          id: true,
-          displayName: true,
-          path: true,
-          referralCode: true
-        }
-      });
-
-      const referrerPointsReceived = await tx.pointsReceipt.create({
-        data: {
-          value: rewardPoints,
-          season,
-          claimedAt: new Date(),
-          recipient: {
-            connect: {
-              id: referrerId
-            }
-          },
-          event: {
-            connect: {
-              id: referralCodeEvent.builderEvent.id
-            }
-          }
-        }
-      });
-
-      // Update referee
-      await tx.scout.update({
-        where: {
-          id: refereeId
-        },
-        data: {
-          currentBalance: {
-            increment: rewardPoints
-          },
-          pointsReceived: {
-            create: {
-              value: rewardPoints,
-              claimedAt: new Date(),
-              eventId: referrerPointsReceived.eventId,
-              season
-            }
-          }
-        }
-      });
-
       await tx.referralCodeEvent.update({
         where: {
           id: referralCodeEvent.id
@@ -179,44 +125,13 @@ export async function updateReferralUsers(
         }
       });
 
-      await tx.builderEvent.create({
-        data: {
-          type: 'referral_bonus',
-          season,
-          description: 'Received points for a referred user scouting a builder',
-          week,
-          builder: {
-            connect: {
-              id: referrerId
-            }
-          },
-          referralBonusEvent: {
-            connect: {
-              id: referralCodeEvent.id
-            }
-          },
-          pointsReceipts: {
-            create: {
-              value: referralBonusPoints,
-              claimedAt: new Date(),
-              recipient: {
-                connect: {
-                  id: referrerId
-                }
-              },
-              season
-            }
-          }
-        }
-      });
-
       trackUserAction('referral_link_used', {
         userId: refereeId,
-        referralCode: _referrer.referralCode,
-        referrerPath: _referrer.path
+        referralCode: referralCodeEvent.builderEvent.builder.referralCode,
+        referrerPath: referralCodeEvent.builderEvent.builder.path
       });
 
-      return _referrer;
+      return referralCodeEvent.builderEvent.builder;
     },
     {
       timeout: 10000
