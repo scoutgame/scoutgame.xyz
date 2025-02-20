@@ -266,7 +266,7 @@ export function DeveloperInfoModal({
           <Stack>
             <Stack direction='row' alignItems='center' gap={1}>
               <Typography variant={isDesktop ? 'h5' : 'h6'}>{developer.displayName}</Typography>
-              <Link href={`/u/${developer.path}`}>
+              <Link href={`/u/${developer.path}`} onClick={onClose}>
                 <Button
                   sx={{
                     '& .MuiButton-startIcon': {
