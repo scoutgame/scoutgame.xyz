@@ -70,7 +70,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     verifiable: false
   },
   'invite-friend': {
-    points: 50,
+    points: 0,
     link: '/quests',
     label: 'Refer a Friend',
     tag: 'scout',
