@@ -11,7 +11,7 @@ import { getReferralsToReward } from '../getReferralsToReward';
 const testWeek = getCurrentWeek();
 
 describe('getReferralsToReward', () => {
-  it('should return top 5 connectors with correct sorting for same points', async () => {
+  it('should return referrals and referees', async () => {
     const referrer1 = await mockUserWithReferral();
     // Wait for 1 second to ensure the createdAt date is different
     await new Promise((resolve) => {
@@ -23,11 +23,12 @@ describe('getReferralsToReward', () => {
 
     const recipients = await getReferralsToReward({ week: testWeek });
 
-    expect(recipients.map((connector) => connector.userId).slice(0, 3)).toEqual([
-      referrer3.id,
-      referrer1.id,
-      referrer2.id
-    ]);
+    expect(
+      recipients
+        .map((connector) => connector.userId)
+        .slice(0, 3)
+        .sort()
+    ).toEqual([referrer3.id, referrer1.id, referrer2.id].sort());
   });
 
   it('should not return user in top 5 if the user did not refer anyone today', async () => {

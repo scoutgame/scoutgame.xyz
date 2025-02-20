@@ -43,17 +43,17 @@ export async function getReferralsToReward(options: { week: string }): Promise<R
   });
 
   // count how many referrals there are for each builder
-  const referralCounts = referralEvents.reduce(
-    (acc, event) => {
-      acc[event.builder.id] = (acc[event.builder.id] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const referralCounts = referralEvents.reduce<Record<string, RewardRecipient>>((acc, event) => {
+    if (!acc[event.builder.id]) {
+      acc[event.builder.id] = {
+        userId: event.builder.id,
+        address: event.builder.wallets[0].address,
+        opAmount: 0
+      };
+    }
+    acc[event.builder.id].opAmount += REFERRAL_REWARD_AMOUNT;
+    return acc;
+  }, {});
 
-  return referralEvents.map((event) => ({
-    userId: event.builder.id,
-    address: event.builder.wallets[0].address,
-    opAmount: REFERRAL_REWARD_AMOUNT * referralCounts[event.builder.id]
-  }));
+  return Object.values(referralCounts);
 }
