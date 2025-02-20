@@ -8,7 +8,8 @@ import { Api } from 'telegram';
 import { UpdateConnectionState } from 'telegram/network';
 
 import { TELEGRAM_API_HASH, TELEGRAM_API_ID } from '../constants';
-import { encrypt } from '../utils/crypto';
+
+import { encrypt } from './crypto';
 
 const TIMEOUT_MS = 30000;
 

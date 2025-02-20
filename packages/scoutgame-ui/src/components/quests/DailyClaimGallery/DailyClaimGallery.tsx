@@ -2,8 +2,8 @@
 
 import { Grid2 as Grid, Skeleton, Stack, Typography } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
-import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
 import { DailyClaimCard } from '@packages/scoutgame-ui/components/quests/DailyClaimGallery/DailyClaimCard';
+import { getServerDate } from '@packages/utils/dates';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 

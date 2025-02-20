@@ -1,6 +1,5 @@
+import { getServerDate } from '@packages/utils/dates';
 import * as yup from 'yup';
-
-import { getServerDate } from '../utils/getServerDate';
 
 export const claimDailyRewardSchema = yup.object({
   isBonus: yup.boolean(),
