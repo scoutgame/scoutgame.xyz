@@ -1,17 +1,18 @@
+import { baseUrl } from '@packages/utils/constants';
 import type { Metadata } from 'next';
 
 import { LandingPage } from '../../components/home/LandingPage';
 
 const frame = {
   version: 'next',
-  imageUrl: `https://rnlxh-103-120-203-106.a.free.pinggy.link/favicon.ico`,
+  imageUrl: `https://${baseUrl}/images/scout-game-logo-square.png`,
   button: {
     title: 'Scout',
     action: {
       type: 'launch_frame',
-      name: 'Farcaster Frames v2 Demo',
-      url: 'https://rnlxh-103-120-203-106.a.free.pinggy.link',
-      splashImageUrl: `https://rnlxh-103-120-203-106.a.free.pinggy.link/images/scout-game-logo-square.png`,
+      name: 'Scout Game',
+      url: `https://${baseUrl}`,
+      splashImageUrl: `https://${baseUrl}/images/scout-game-logo-square.png`,
       splashBackgroundColor: '#000'
     }
   }
