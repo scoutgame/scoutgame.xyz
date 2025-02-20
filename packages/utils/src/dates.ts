@@ -1,5 +1,9 @@
 import { DateTime } from 'luxon';
 
+export function getServerDate(): DateTime {
+  return DateTime.utc();
+}
+
 export function getRelativeTime(date: Date | string) {
   return DateTime.fromISO(typeof date === 'string' ? date : date.toISOString())
     .toRelative({
