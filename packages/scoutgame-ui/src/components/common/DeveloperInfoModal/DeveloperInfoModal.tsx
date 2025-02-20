@@ -1,4 +1,4 @@
-import { CircularProgress, IconButton, Stack, Typography } from '@mui/material';
+import { IconButton, Skeleton, Stack, Typography } from '@mui/material';
 import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
@@ -23,23 +23,137 @@ export function DeveloperInfoModal({
   const isDesktop = useMdScreen();
   const router = useRouter();
 
-  if (isLoading) {
+  if (!isLoading) {
     return (
       <Dialog
         open
         onClose={onClose}
         sx={{
+          '& .MuiDialogContent-root': {
+            p: 1
+          },
           '& .MuiDialog-paper': {
-            pt: 2,
-            minWidth: 600,
+            pt: {
+              xs: 1,
+              md: 2
+            },
+            minWidth: {
+              xs: '100%',
+              md: 600
+            },
             bgcolor: 'black.main',
             borderRadius: 2
           }
         }}
       >
-        <Stack p={1} alignItems='center' justifyContent='center' height='100%' gap={1}>
-          <CircularProgress size={24} />
-          <Typography>Loading developer info...</Typography>
+        <Stack
+          gap={{
+            xs: 1,
+            md: 2
+          }}
+        >
+          <Stack
+            direction='row'
+            gap={{
+              xs: 1,
+              md: 2
+            }}
+          >
+            <Skeleton
+              variant='circular'
+              sx={{
+                width: {
+                  xs: 75,
+                  md: 100
+                },
+                height: {
+                  xs: 75,
+                  md: 100
+                }
+              }}
+            />
+            <Stack
+              gap={{
+                xs: 1,
+                md: 2
+              }}
+            >
+              <Skeleton variant='text' width={150} height={25} />
+              <Skeleton variant='text' width={50} height={15} />
+              <Stack
+                direction='row'
+                gap={{
+                  xs: 1,
+                  md: 2
+                }}
+              >
+                <Stack direction='row' gap={1}>
+                  <Skeleton variant='circular' width={20} height={20} />
+                  <Skeleton variant='text' width={100} height={20} />
+                </Stack>
+                <Stack direction='row' gap={1}>
+                  <Skeleton variant='circular' width={20} height={20} />
+                  <Skeleton variant='text' width={100} height={20} />
+                </Stack>
+              </Stack>
+            </Stack>
+          </Stack>
+          <Stack gap={0.5}>
+            <Stack direction='row' gap={0.5}>
+              <Skeleton
+                variant='text'
+                sx={{
+                  width: {
+                    xs: '33.33%',
+                    md: 150
+                  }
+                }}
+                height={125}
+              />
+              <Skeleton
+                variant='text'
+                sx={{
+                  width: {
+                    xs: '33.33%',
+                    md: 150
+                  }
+                }}
+                height={125}
+              />
+              <Skeleton
+                variant='text'
+                sx={{
+                  width: {
+                    xs: '33.33%',
+                    md: 150
+                  }
+                }}
+                height={125}
+              />
+            </Stack>
+            <Stack direction='row' gap={0.5}>
+              <Skeleton
+                variant='text'
+                sx={{
+                  width: {
+                    xs: '33.33%',
+                    md: 150
+                  }
+                }}
+                height={125}
+              />
+              <Skeleton
+                variant='text'
+                sx={{
+                  width: {
+                    xs: '66.66%',
+                    md: 150
+                  }
+                }}
+                height={125}
+              />
+            </Stack>
+          </Stack>
         </Stack>
       </Dialog>
     );

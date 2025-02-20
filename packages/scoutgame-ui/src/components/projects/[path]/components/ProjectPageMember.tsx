@@ -4,6 +4,7 @@ import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { Stack, Typography } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
 import { ProjectRoleText } from '../../constants';
@@ -13,7 +14,12 @@ export function ProjectPageMember({ member }: { member: ScoutProjectDetailed['te
 
   return (
     <Stack
-      onClick={() => openModal(member.path)}
+      component={Link}
+      href={`/u/${member.path}`}
+      onClick={(e) => {
+        e.preventDefault();
+        openModal(member.path);
+      }}
       key={member.id}
       flexDirection='row'
       alignItems='center'

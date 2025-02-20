@@ -7,6 +7,7 @@ import { getPlatform } from '@packages/mixpanel/platform';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
@@ -157,6 +158,11 @@ export function BuildersTable({
           >
             <TableCell>
               <Stack
+                component={Link}
+                href={`/u/${builder.path}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
                 alignItems='center'
                 flexDirection='row'
                 gap={{ xs: 0.75, md: 1.5 }}

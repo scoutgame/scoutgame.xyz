@@ -2,6 +2,7 @@
 
 import { Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
 import type { BuilderReward } from '@packages/scoutgame/builders/getBuilderRewards';
+import Link from 'next/link';
 
 import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
 import { Avatar } from '../../../common/Avatar';
@@ -14,7 +15,17 @@ function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
   return (
     <TableRow>
       <TableCell>
-        <Stack direction='row' alignItems='center' gap={1} onClick={() => openModal(reward.path)}>
+        <Stack
+          direction='row'
+          alignItems='center'
+          gap={1}
+          onClick={(e) => {
+            e.preventDefault();
+            openModal(reward.path);
+          }}
+          component={Link}
+          href={`/u/${reward.path}`}
+        >
           <Avatar src={reward.avatar} name={reward.path} size='small' />
           <Typography noWrap overflow='hidden'>
             {reward.displayName}

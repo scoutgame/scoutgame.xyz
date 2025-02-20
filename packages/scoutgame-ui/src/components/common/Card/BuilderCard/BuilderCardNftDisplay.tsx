@@ -53,7 +53,12 @@ export function BuilderCardNftDisplay({
     <Box overflow='hidden' width={width} height={height} sx={{ backgroundColor: 'black.dark', borderRadius: '4px' }}>
       <CardActionArea
         disabled={disableProfileUrl}
-        onClick={() => openModal(path)}
+        onClick={(e) => {
+          e.preventDefault();
+          openModal(path);
+        }}
+        component={Link}
+        href={`/u/${path}`}
         sx={{
           position: 'relative',
           width: '100%',
