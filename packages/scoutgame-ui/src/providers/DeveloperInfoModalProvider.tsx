@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import useSWR from 'swr';
 
 import { DeveloperInfoModal } from '../components/common/DeveloperInfoModal/DeveloperInfoModal';
 
@@ -20,33 +21,39 @@ const DeveloperInfoModalContext = createContext<DeveloperInfoModalContextType | 
 
 export function DeveloperInfoModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [developer, setDeveloper] = useState<DeveloperInfo | null>(null);
+  const [developerPath, setDeveloperPath] = useState<string | null>(null);
   const router = useRouter();
 
-  const openModal = useCallback((path: string) => {
-    setIsLoading(true);
-    setIsOpen(true);
-    getDeveloperInfo(path)
-      .then((_developer) => {
-        if (_developer) {
-          setDeveloper(_developer);
-        } else {
-          router.push(`/u/${path}`);
-        }
-      })
-      .catch((error) => {
-        log.error('Error fetching developer info', { error, path });
+  const { data: developer, isLoading } = useSWR(
+    isOpen ? `developer-${developerPath}` : null,
+    async () => {
+      if (!developerPath) {
+        return null;
+      }
+
+      const _developer = await getDeveloperInfo(developerPath);
+      if (!_developer) {
+        // If the developer doesn't exist, redirect to the user's profile
+        router.push(`/u/${developerPath}`);
+      }
+      return _developer;
+    },
+    {
+      onError: (error) => {
+        log.error('Error fetching developer info', { error, path: developerPath });
         toast.error('Error fetching developer info');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      }
+    }
+  );
+
+  const openModal = useCallback((path: string) => {
+    setIsOpen(true);
+    setDeveloperPath(path);
   }, []);
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
-    setDeveloper(null);
+    setDeveloperPath(null);
   }, []);
 
   const value = useMemo(
@@ -62,7 +69,7 @@ export function DeveloperInfoModalProvider({ children }: { children: ReactNode }
   return (
     <DeveloperInfoModalContext.Provider value={value}>
       {children}
-      {isOpen ? <DeveloperInfoModal developer={developer} onClose={closeModal} isLoading={isLoading} /> : null}
+      {isOpen ? <DeveloperInfoModal developer={developer ?? null} onClose={closeModal} isLoading={isLoading} /> : null}
     </DeveloperInfoModalContext.Provider>
   );
 }

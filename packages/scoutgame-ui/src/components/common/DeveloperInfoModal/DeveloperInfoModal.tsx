@@ -23,14 +23,17 @@ export function DeveloperInfoModal({
   const isDesktop = useMdScreen();
   const router = useRouter();
 
-  if (!isLoading) {
+  if (isLoading) {
     return (
       <Dialog
         open
         onClose={onClose}
         sx={{
           '& .MuiDialogContent-root': {
-            p: 1
+            p: {
+              xs: 1,
+              md: 2
+            }
           },
           '& .MuiDialog-paper': {
             pt: {
@@ -125,7 +128,7 @@ export function DeveloperInfoModal({
                 sx={{
                   width: {
                     xs: '33.33%',
-                    md: 150
+                    md: 'calc(100% - 300px)'
                   }
                 }}
                 height={125}
@@ -147,7 +150,7 @@ export function DeveloperInfoModal({
                 sx={{
                   width: {
                     xs: '66.66%',
-                    md: 150
+                    md: `calc(100% - 150px)`
                   }
                 }}
                 height={125}
