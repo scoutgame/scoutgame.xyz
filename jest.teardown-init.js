@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// We were having errors with typescript and ESM execution / loading during teardown
+
 export default async function wipeTestData() {
   if (process.env.NODE_ENV === 'test') {
     try {
