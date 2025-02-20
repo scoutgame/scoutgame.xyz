@@ -5,8 +5,7 @@ import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { TELEGRAM_API_HASH } from '@packages/scoutgame/constants';
 import { mergeUserAccount } from '@packages/scoutgame/mergeUserAccount';
 
-import { decrypt } from '../utils/crypto';
-
+import { decrypt } from './crypto';
 import { mergeUserTelegramAccountSchema } from './mergeUserTelegramAccountSchema';
 
 export const mergeUserTelegramAccountAction = authActionClient
