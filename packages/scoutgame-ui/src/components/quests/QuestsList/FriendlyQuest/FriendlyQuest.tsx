@@ -1,11 +1,12 @@
 import { Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 
-import { Hidden } from '../../common/Hidden';
-import { Info } from '../../friends/components/Info';
-import { InviteButtons } from '../../friends/components/InviteButtons';
-import { MyFriends } from '../../friends/components/MyFriends';
-import { Stats } from '../../friends/components/Stats';
+import { Hidden } from '../../../common/Hidden';
+
+import { Info } from './components/Info';
+import { InviteButtons } from './components/InviteButtons';
+import { MyFriends } from './components/MyFriends';
+import { Stats } from './components/Stats';
 
 export function FriendlyQuest({ friends, title }: { friends: SessionUser[]; title?: string }) {
   return (

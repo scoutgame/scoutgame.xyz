@@ -1,14 +1,14 @@
 import { Stack, Typography } from '@mui/material';
 
-import { DailyClaimGift } from '../../claim/components/common/DailyClaimGift';
+import { DailyClaimGift } from '../../../../claim/components/common/DailyClaimGift';
 
 export function Info() {
   return (
     <Stack borderRadius={1} alignItems='center' flexDirection='row' p={2} gap={1} bgcolor='primary.dark'>
       <DailyClaimGift size={50} />
       <Typography fontWeight={600}>
-        +50 <img src='/images/profile/scout-game-icon.svg' alt='points' /> for every player who signs up with your link
-        AND purchases a Developer Card.
+        +5 OP <img src='/images/crypto/op.png' alt='OP' width='14px' height='14px' /> for you and every player who signs
+        up with your link, verifies their email, AND purchases a Developer Card.
       </Typography>
     </Stack>
   );

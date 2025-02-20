@@ -4,9 +4,8 @@ import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 import type { TopConnector } from '@packages/scoutgame/topConnector/getTopConnectors';
 
 import { Hidden } from '../../common/Hidden';
-import { Connector } from '../Connector/TopConnector';
 
-import { FriendlyQuest } from './FriendlyQuest';
+import { FriendlyQuest } from './FriendlyQuest/FriendlyQuest';
 import { QuestAccordion } from './QuestAccordion';
 import { QuestCard } from './QuestCard';
 
@@ -34,7 +33,6 @@ export function QuestsList({
           {inviteFriendsQuest && (
             <QuestAccordion quest={inviteFriendsQuest}>
               <FriendlyQuest friends={friends} />
-              {topConnectors.length > 0 && <Connector topConnectors={topConnectors} />}
             </QuestAccordion>
           )}
         </Hidden>

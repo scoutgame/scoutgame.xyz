@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 
-import { Avatar } from '../../common/Avatar';
+import { Avatar } from '../../../../common/Avatar';
 
 export function MyFriends({ friends, title }: { friends: SessionUser[]; title?: string }) {
   const sorted = friends.sort((a, b) => b.currentBalance - a.currentBalance);

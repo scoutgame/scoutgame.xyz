@@ -10,8 +10,8 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { LuCopy } from 'react-icons/lu';
 
-import { useTrackEvent } from '../../../hooks/useTrackEvent';
-import { Hidden } from '../../common/Hidden';
+import { useTrackEvent } from '../../../../../hooks/useTrackEvent';
+import { Hidden } from '../../../../common/Hidden';
 
 import { MyFriends } from './MyFriends';
 import { MyFriendsDialog } from './MyFriendsDialog';
