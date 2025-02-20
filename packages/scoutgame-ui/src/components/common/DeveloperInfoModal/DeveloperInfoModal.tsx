@@ -1,4 +1,5 @@
-import { IconButton, Skeleton, Stack, Typography } from '@mui/material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Button, IconButton, Skeleton, Stack, Typography } from '@mui/material';
 import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
@@ -195,10 +196,6 @@ export function DeveloperInfoModal({
       }}
     >
       <Stack
-        onClick={() => {
-          router.push(`/u/${developer.path}`);
-          onClose();
-        }}
         pt={{
           xs: 1,
           md: 2.5
@@ -267,7 +264,26 @@ export function DeveloperInfoModal({
             </Stack>
           </Stack>
           <Stack>
-            <Typography variant={isDesktop ? 'h5' : 'h6'}>{developer.displayName}</Typography>
+            <Stack direction='row' alignItems='center' gap={1}>
+              <Typography variant={isDesktop ? 'h5' : 'h6'}>{developer.displayName}</Typography>
+              <Link href={`/u/${developer.path}`}>
+                <Button
+                  sx={{
+                    '& .MuiButton-startIcon': {
+                      mr: 0.5
+                    }
+                  }}
+                  variant='text'
+                  startIcon={<OpenInNewIcon sx={{ fontSize: 10 }} />}
+                  color='secondary'
+                  size='small'
+                >
+                  <Typography color='secondary' fontSize='12px'>
+                    View Profile
+                  </Typography>
+                </Button>
+              </Link>
+            </Stack>
             <Typography color='secondary'>Joined</Typography>
             <Stack direction='row' alignItems='center' gap={1.75}>
               <Stack direction='row' gap={1} alignItems='center'>

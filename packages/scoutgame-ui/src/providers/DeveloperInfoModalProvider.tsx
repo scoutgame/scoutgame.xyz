@@ -25,7 +25,7 @@ export function DeveloperInfoModalProvider({ children }: { children: ReactNode }
   const router = useRouter();
 
   const { data: developer, isLoading } = useSWR(
-    isOpen ? `developer-${developerPath}` : null,
+    developerPath ? `developer-${developerPath}` : null,
     async () => {
       if (!developerPath) {
         return null;
