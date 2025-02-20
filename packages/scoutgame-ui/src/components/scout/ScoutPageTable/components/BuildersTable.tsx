@@ -15,7 +15,7 @@ import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalP
 import { Avatar } from '../../../common/Avatar';
 import { BuilderCardRankGraph } from '../../../common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 
-import { CommonTableRow, tableRowSx } from './CommonTableRow';
+import { tableRowNoPaddingSx } from './CommonTableRow';
 import { TableCellText } from './TableCellText';
 
 function SortIcon({ columnName, order, sort }: { columnName: string; order: string; sort: string }) {
@@ -69,8 +69,8 @@ export function BuildersTable({
           backgroundColor: 'background.paper'
         }}
       >
-        <CommonTableRow sx={{ cursor: 'auto' }}>
-          <TableCell align='left' sx={{ fontSize: { xs: '10px', md: 'initial' }, py: 1 }}>
+        <TableRow sx={tableRowNoPaddingSx}>
+          <TableCell align='left' sx={{ fontSize: { xs: '9px', md: 'initial' }, py: 1 }}>
             DEVELOPER
           </TableCell>
           <TableCell
@@ -88,14 +88,13 @@ export function BuildersTable({
           </TableCell>
           <TableCell
             sx={{
-              fontSize: { xs: '10px', md: 'initial' },
+              fontSize: { xs: '9px', md: 'initial' },
               py: 1,
               lineHeight: 1.5
             }}
           >
             RANK
           </TableCell>
-          <TableCell></TableCell>
           <TableCell
             onClick={() => handleSort('week_gems')}
             sx={{
@@ -104,7 +103,7 @@ export function BuildersTable({
               py: 1
             }}
           >
-            <Stack direction='row' alignItems='center' ml={1.5} justifyContent='flex-end' lineHeight={1.5}>
+            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
               WEEK'S GEMS
               <SortIcon columnName='week_gems' order={order} sort={sort} />
             </Stack>
@@ -114,22 +113,11 @@ export function BuildersTable({
             sx={{
               fontSize: { xs: '9px', md: 'initial' },
               cursor: 'pointer',
-              whiteSpace: 'nowrap',
               py: 1
             }}
           >
             <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
-              <Stack
-                direction={{
-                  xs: 'column',
-                  md: 'row'
-                }}
-                alignItems='flex-start'
-                gap={0.5}
-              >
-                <Typography fontSize={{ xs: '10px', md: 'initial' }}>EST.</Typography>
-                <Typography fontSize={{ xs: '10px', md: 'initial' }}>PAYOUT</Typography>
-              </Stack>
+              EST. PAYOUT
               <SortIcon columnName='estimated_payout' order={order} sort={sort} />
             </Stack>
           </TableCell>
@@ -146,13 +134,13 @@ export function BuildersTable({
               <SortIcon columnName='price' order={order} sort={sort} />
             </Stack>
           </TableCell>
-        </CommonTableRow>
+        </TableRow>
       </TableHead>
       <TableBody>
         {builders.map((builder, index) => (
           <TableRow
             key={builder.path}
-            sx={tableRowSx}
+            sx={tableRowNoPaddingSx}
             onClick={() => openModal(builder.path)}
             style={{ cursor: 'pointer' }}
           >
@@ -169,7 +157,7 @@ export function BuildersTable({
                 maxWidth={{ xs: '65px', md: 'initial' }}
               >
                 <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
-                <Stack width='100%'>
+                <Stack maxWidth={{ xs: '50px', md: 'initial' }}>
                   {builder.nftsSoldToScout ? (
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography fontSize={{ xs: '10.5px', md: '14px' }} color='green.main' noWrap>
@@ -198,18 +186,16 @@ export function BuildersTable({
               <TableCellText color='orange.main'>{builder.level}</TableCellText>
             </TableCell>
             <TableCell
+              padding='none'
               sx={{
                 width: 150,
-                height: { xs: 35, md: 50 },
-                p: 0
+                height: { xs: 35, md: 50 }
               }}
             >
-              <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
-            </TableCell>
-            <TableCell width='10px' sx={{ px: 0 }}>
-              <TableCellText color='secondary' ml={1}>
-                {index + 1}
-              </TableCellText>
+              <Stack direction='row' alignItems='center' gap={1} height='100%'>
+                <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
+                <TableCellText color='secondary'>{builder.rank || '-'}</TableCellText>
+              </Stack>
             </TableCell>
             <TableCell align='center'>
               <Stack
@@ -228,7 +214,7 @@ export function BuildersTable({
                 />
               </Stack>
             </TableCell>
-            <TableCell align='right' width={150}>
+            <TableCell align='right' width={isMdScreen ? 150 : 'auto'}>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>{builder.estimatedPayout}</TableCellText>
                 {isMdScreen && (
