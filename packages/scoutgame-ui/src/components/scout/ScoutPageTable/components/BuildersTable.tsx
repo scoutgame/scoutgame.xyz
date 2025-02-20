@@ -172,10 +172,15 @@ export function BuildersTable({
                 <Stack width='100%'>
                   {builder.nftsSoldToScout ? (
                     <Stack direction='row' alignItems='center' gap={0.5}>
-                      <TableCellText color='green.main' noWrap>
+                      <Typography fontSize={{ xs: '10.5px', md: '14px' }} color='green.main' noWrap>
                         {builder.nftsSoldToScout}
-                      </TableCellText>
-                      <Image width={15} height={15} src='/images/profile/icons/cards-green.svg' alt='green-icon' />
+                      </Typography>
+                      <Image
+                        width={isMdScreen ? 15 : 13}
+                        height={isMdScreen ? 15 : 13}
+                        src='/images/profile/icons/cards-green.svg'
+                        alt='green-icon'
+                      />
                     </Stack>
                   ) : null}
                   <TableCellText
