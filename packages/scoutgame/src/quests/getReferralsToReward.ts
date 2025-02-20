@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getWeekStartEndFromISOWeek } from '@packages/dates/utils';
 
-type RewardRecipient = { userId: string; address: string; opAmount: number };
+type RewardRecipient = { path: string; address: string; opAmount: number; referrals: number };
 
 const REFERRAL_REWARD_AMOUNT = 5;
 
@@ -70,20 +70,25 @@ export async function getReferralsToReward(options: { week: string }): Promise<R
     const referrer = event.builderEvent.builder;
     if (!acc[referee.id]) {
       acc[referee.id] = {
-        userId: referee.id,
+        path: `https://scoutgame.xyz/u/${referee.path}`,
+        // userId: referee.id,
         address: referee.wallets[0].address,
+        referrals: 0,
         opAmount: 0
       };
     }
     if (!acc[referrer.id]) {
       acc[referrer.id] = {
-        userId: referrer.id,
+        path: `https://scoutgame.xyz/u/${referee.path}`,
+        // userId: referrer.id,
         address: referrer.wallets[0].address,
+        referrals: 0,
         opAmount: 0
       };
     }
     acc[referee.id].opAmount += REFERRAL_REWARD_AMOUNT;
     acc[referrer.id].opAmount += REFERRAL_REWARD_AMOUNT;
+    acc[referrer.id].referrals += 1;
     return acc;
   }, {});
 
