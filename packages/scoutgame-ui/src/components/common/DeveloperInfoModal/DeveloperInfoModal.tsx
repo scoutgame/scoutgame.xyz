@@ -285,15 +285,35 @@ export function DeveloperInfoModal({
               </Link>
             </Stack>
             <Typography color='secondary'>Joined</Typography>
-            <Stack direction='row' alignItems='center' gap={1.75}>
-              <Stack direction='row' gap={1} alignItems='center'>
+            <Stack
+              direction='row'
+              alignItems='center'
+              gap={{
+                xs: 1,
+                md: 1.75
+              }}
+            >
+              <Stack
+                direction='row'
+                gap={{
+                  xs: 0.5,
+                  md: 1
+                }}
+                alignItems='center'
+              >
                 <Image
                   src='/images/profile/scout-game-icon.svg'
                   width={isDesktop ? '24' : '18'}
                   height={isDesktop ? '24' : '18'}
                   alt='scoutgame icon'
                 />
-                {firstContributionDateMonth} {firstContributionDateYear}
+                <Typography
+                  fontSize={{
+                    xs: 14
+                  }}
+                >
+                  {firstContributionDateMonth} {firstContributionDateYear}
+                </Typography>
               </Stack>
               {developer.githubLogin ? (
                 <IconButton
@@ -312,7 +332,11 @@ export function DeveloperInfoModal({
                       height={isDesktop ? '18' : '14'}
                       alt='github icon'
                     />
-                    <Typography>
+                    <Typography
+                      fontSize={{
+                        xs: 14
+                      }}
+                    >
                       {githubConnectedAtMonth} {githubConnectedAtYear}
                     </Typography>
                   </Stack>
@@ -323,7 +347,7 @@ export function DeveloperInfoModal({
                   href={`https://warpcast.com/${developer.farcasterUsername}`}
                   target='_blank'
                   rel='noopener noreferrer'
-                  sx={{ px: 0 }}
+                  sx={{ p: 0 }}
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
@@ -335,7 +359,13 @@ export function DeveloperInfoModal({
                       height={isDesktop ? '18' : '14'}
                       alt='warpcast icon'
                     />
-                    <Typography>{developer.farcasterUsername}</Typography>
+                    <Typography
+                      fontSize={{
+                        xs: 14
+                      }}
+                    >
+                      {developer.farcasterUsername}
+                    </Typography>
                   </Stack>
                 </IconButton>
               ) : null}
