@@ -100,17 +100,7 @@ export async function getPaginatedBuilders({
                         tokensPurchased: true
                       }
                     }
-                  : {
-                      where: validMintNftPurchaseEvent,
-                      select: {
-                        scoutWallet: {
-                          select: {
-                            scoutId: true
-                          }
-                        },
-                        tokensPurchased: true
-                      }
-                    }
+                  : undefined
               }
             },
             builderCardActivities: {
