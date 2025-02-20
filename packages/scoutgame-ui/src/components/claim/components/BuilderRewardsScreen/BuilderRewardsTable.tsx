@@ -4,22 +4,33 @@ import { Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
 import type { BuilderReward } from '@packages/scoutgame/builders/getBuilderRewards';
 import Link from 'next/link';
 
+import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
 import { Avatar } from '../../../common/Avatar';
 import { PointsCell } from '../common/PointsCell';
 import { StyledTableBody, StyledTableHead } from '../common/StyledTable';
 
 function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
+  const { openModal } = useDeveloperInfoModal();
+
   return (
     <TableRow>
       <TableCell>
-        <Link href={`/u/${reward.path}`}>
-          <Stack direction='row' alignItems='center' gap={1}>
-            <Avatar src={reward.avatar} name={reward.path} size='small' />
-            <Typography noWrap overflow='hidden'>
-              {reward.displayName}
-            </Typography>
-          </Stack>
-        </Link>
+        <Stack
+          direction='row'
+          alignItems='center'
+          gap={1}
+          onClick={(e) => {
+            e.preventDefault();
+            openModal(reward.path);
+          }}
+          component={Link}
+          href={`/u/${reward.path}`}
+        >
+          <Avatar src={reward.avatar} name={reward.path} size='small' />
+          <Typography noWrap overflow='hidden'>
+            {reward.displayName}
+          </Typography>
+        </Stack>
       </TableCell>
       <TableCell align='center'>
         <Typography>{reward.cardsHeld}</Typography>

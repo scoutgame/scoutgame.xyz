@@ -1,4 +1,3 @@
-import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
@@ -8,10 +7,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { BackButton } from '../../common/Button/BackButton';
-import { chainRecords, ProjectRoleText } from '../constants';
+import { chainRecords } from '../constants';
 
 import { EditProjectIcon } from './components/EditProjectIcon';
 import { LeaveProjectButton } from './components/LeaveProjectButton';
+import { ProjectPageMember } from './components/ProjectPageMember';
 
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   return (
@@ -110,30 +110,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
           </Typography>
           <Stack gap={1}>
             {project.teamMembers.map((member) => (
-              <Link href={`/u/${member.path}`} key={member.id}>
-                <Stack
-                  key={member.id}
-                  flexDirection='row'
-                  alignItems='center'
-                  gap={1}
-                  bgcolor='background.paper'
-                  px={1.5}
-                  py={1}
-                  borderRadius={1}
-                >
-                  <Image
-                    src={member.avatar}
-                    alt={member.displayName}
-                    width={25}
-                    height={25}
-                    style={{ borderRadius: '50%' }}
-                  />
-                  <Typography>{member.displayName}</Typography>
-                  <Typography variant='caption' color='secondary'>
-                    {ProjectRoleText[member.role as ScoutProjectMemberRole]}
-                  </Typography>
-                </Stack>
-              </Link>
+              <ProjectPageMember key={member.id} member={member} />
             ))}
           </Stack>
         </Stack>

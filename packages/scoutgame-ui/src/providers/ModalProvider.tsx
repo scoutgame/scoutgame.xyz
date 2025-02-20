@@ -25,7 +25,7 @@ const ModalContext = createContext<ModalContextType | null>(null);
 
 export function ModalProvider({ children }: { children: ReactNode }) {
   const [modalState, setModalState] = useState<ModalState>({
-    newBuilder: { open: false },
+    newBuilder: { open: false, data: null },
     nftPurchase: { open: false, data: null }
   });
   const { user } = useUser();

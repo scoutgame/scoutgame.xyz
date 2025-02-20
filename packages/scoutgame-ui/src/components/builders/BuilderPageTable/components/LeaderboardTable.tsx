@@ -6,14 +6,13 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import type { ISOWeek } from '@packages/dates/config';
 import type { LeaderBoardRow } from '@packages/scoutgame/builders/getLeaderboard';
-import Link from 'next/link';
 
-import { Avatar } from '../../../common/Avatar';
 import { getSXProps } from '../../../common/Hidden';
 import { GemsIcon } from '../../../common/Icons';
 import { ScoutButton } from '../../../common/ScoutButton/ScoutButton';
 
 import { CommonTableRow } from './CommonTableRow';
+import { DeveloperCell } from './DeveloperCell';
 import { TableCellText } from './TableCellText';
 import { WeekTableHead } from './WeekTableHead';
 
@@ -60,17 +59,7 @@ export function LeaderboardTable({ data, week }: { data: LeaderBoardRow[]; week:
               <TableCellText color={index + 1 <= 3 ? 'text.secondary' : undefined}>{index + 1}</TableCellText>
             </TableCell>
             <TableCell>
-              <Stack
-                href={`/u/${row.path}`}
-                component={Link}
-                alignItems='center'
-                flexDirection='row'
-                gap={1}
-                maxWidth={{ xs: '120px', md: '200px' }}
-              >
-                <Avatar src={row.avatar} name={row.displayName} size='small' />
-                <TableCellText noWrap>{row.displayName}</TableCellText>
-              </Stack>
+              <DeveloperCell displayName={row.displayName} avatar={row.avatar as string} path={row.path} />
             </TableCell>
             <TableCell sx={{ width: { xs: '100%', md: '50%' } }}>
               <Box
