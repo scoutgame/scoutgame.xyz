@@ -1,11 +1,11 @@
 'use server';
 
 import { authSchema } from '@packages/farcaster/config';
+import { verifyFarcasterUser } from '@packages/farcaster/verifyFarcasterUser';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import type { UserProfile } from '@packages/users/getUserProfile';
 
 import { connectFarcasterAccount } from './connectFarcasterAccount';
-import { verifyFarcasterUser } from './verifyFarcasterUser';
 
 export const connectFarcasterAccountAction = authActionClient
   .schema(authSchema)

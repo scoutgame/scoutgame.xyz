@@ -3,10 +3,9 @@
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { TELEGRAM_API_HASH } from '@packages/scoutgame/constants';
 
-import { decrypt } from '../utils/crypto';
-
 import { connectTelegramAccount } from './connectTelegramAccount';
 import { connectTelegramAccountSchema } from './connectTelegramAccountSchema';
+import { decrypt } from './crypto';
 
 export const connectTelegramAccountAction = authActionClient
   .schema(connectTelegramAccountSchema)

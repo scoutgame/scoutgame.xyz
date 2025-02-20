@@ -1,12 +1,12 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
+import { verifyFarcasterUser } from '@packages/farcaster/verifyFarcasterUser';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { mergeUserAccount } from '@packages/scoutgame/mergeUserAccount';
 
 import { mergeUserFarcasterAccountSchema } from './mergeUserFarcasterAccountSchema';
-import { verifyFarcasterUser } from './verifyFarcasterUser';
 
 export const mergeUserFarcasterAccountAction = authActionClient
   .metadata({
