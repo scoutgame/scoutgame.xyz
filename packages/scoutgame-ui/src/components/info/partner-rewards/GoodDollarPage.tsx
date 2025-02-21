@@ -63,16 +63,16 @@ function Document() {
   return (
     <InfoCard>
       <Typography>
-        Celo is partnering with Scout Game to support developer who contribute to the ecosystem. Celo has a prize pool
-        of 5000 cUSD to distribute to talented Developers!
+        GoodDollar is collaborating with Scout Game to support developers contributing to the GoodDollar ecosystem.
+        Talented developers can earn rewards for their open source contributions to GoodDollar’s repositories!
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         How it works
       </Typography>
       <Typography>
-        Ecosystem projects, that you can find in the list below (link list below), will mark their issues with a Tier in
-        GitHub. The Tier determines the developer's reward offered by Celo for merging a PR that addresses the issue.
-        Unmarked issues will default to the Common Tier.
+        Developers who submit and merge Pull Requests (PRs) in eligible GoodDollar repositories will qualify for
+        rewards. Those who qualify will be notified via email and must sign up for the Quadratic Funding (QF) round to
+        receive their rewards. Donations and matching funds will be distributed at the end of the round.
       </Typography>
       <Table>
         <TableHead>
