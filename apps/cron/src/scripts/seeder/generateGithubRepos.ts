@@ -35,6 +35,7 @@ export async function generateGithubRepos(totalGithubRepos: number): Promise<[Gi
     githubRepos.push({
       ...githubRepoCreateInput,
       deletedAt: null,
+      avatar: null,
       ownerType: 'org',
       handPicked: false,
       fork: false,
