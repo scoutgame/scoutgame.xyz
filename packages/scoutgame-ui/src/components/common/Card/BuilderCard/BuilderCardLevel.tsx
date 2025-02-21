@@ -48,6 +48,7 @@ export function BuilderCardLevel({
             border: '3.5px solid #000'
           }}
           onClick={(e) => {
+            e.stopPropagation();
             e.preventDefault();
             setIsDialogOpen(true);
           }}
@@ -83,7 +84,7 @@ export function BuilderCardLevel({
       ) : null}
       <Dialog
         onClick={(e) => {
-          e.preventDefault();
+          e.stopPropagation();
         }}
         open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
