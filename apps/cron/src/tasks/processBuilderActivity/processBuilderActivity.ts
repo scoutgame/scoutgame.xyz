@@ -2,8 +2,8 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getWeekFromDate } from '@packages/dates/utils';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
+import { getPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
 import { getBuilderActivity } from './getBuilderActivity';

@@ -1,5 +1,5 @@
-import { getPlatform } from '@packages/mixpanel/platform';
 import { getSession } from '@packages/nextjs/session/getSession';
+import { getPlatform } from '@packages/utils/platform';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 

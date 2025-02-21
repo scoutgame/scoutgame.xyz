@@ -2,12 +2,12 @@
 
 import { log } from '@charmverse/core/log';
 import sdk from '@farcaster/frame-sdk';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useDatadogLogger } from '@packages/scoutgame-ui/hooks/useDatadogLogger';
 import { useInitTelegramData } from '@packages/scoutgame-ui/hooks/useInitTelegramData';
 import { useLoginSuccessHandler } from '@packages/scoutgame-ui/hooks/useLoginSuccessHandler';
 import { usePageView } from '@packages/scoutgame-ui/hooks/usePageView';
+import { getPlatform } from '@packages/utils/platform';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect } from 'react';
