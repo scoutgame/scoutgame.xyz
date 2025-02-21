@@ -36,7 +36,6 @@ export function BuilderCardActivity({
           md: 0.25
         }}
         onClick={(e) => {
-          e.preventDefault();
           e.stopPropagation();
           setIsDialogOpen(true);
         }}
@@ -128,7 +127,7 @@ export function BuilderCardActivity({
       </Stack>
       <Dialog
         onClick={(e) => {
-          e.preventDefault();
+          e.stopPropagation();
         }}
         open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
