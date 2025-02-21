@@ -17,6 +17,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
   }
 
+  if (path === '/good-dollar') {
+    return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
+  }
+
   if (!isLoggedIn && path !== '/home' && platform === 'telegram') {
     // eslint-disable-next-line no-console
     console.log('Redirecting to telegram loading screen', { path, platform, ...session });

@@ -26,6 +26,7 @@ export async function generateGithubRepos(totalGithubRepos: number): Promise<[Gi
         .join('-')
         .toLowerCase(),
       name: faker.internet.domainWord(),
+      avatar: null,
       ownerType: 'org' as const,
       defaultBranch: 'main'
     };
