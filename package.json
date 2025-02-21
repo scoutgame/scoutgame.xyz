@@ -64,7 +64,6 @@
     "@charmverse/core": "^0.113.2",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
-    "@farcaster/frame-wagmi-connector": "^0.0.16",
     "@mui/icons-material": "^6.1.4",
     "@mui/lab": "^6.0.0-beta.11",
     "@mui/material": "^6.1.4",
