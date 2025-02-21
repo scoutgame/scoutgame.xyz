@@ -1,7 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { mockBuilder, mockScout, mockScoutedNft } from '@packages/testing/database';
 
-import { referralBonusPoints, rewardPoints } from '../../constants';
 import { createVerificationCode, verifyEmail } from '../../verifyEmail';
 import { createReferralEvent } from '../createReferralEvent';
 import { updateReferralUsers } from '../updateReferralUsers';
@@ -55,28 +54,6 @@ describe('updateReferralUsers', () => {
     expect(!!event?.completedAt).toBeTruthy();
   });
 
-  it('should update the current balance of the referrer and referee', async () => {
-    const referrer = await mockBuilder({ currentBalance: 50, createNft: true });
-    const referee = await mockScout({ builderId: referrer.id, currentBalance: 0, verifiedEmail: true });
-
-    await createReferralEvent(referrer.referralCode, referee.id);
-
-    const result = await updateReferralUsers(referee.id);
-
-    expect(result.result).toBe('success');
-
-    const updatedReferralUser = await prisma.scout.findUniqueOrThrow({
-      where: { id: referrer.id }
-    });
-    const updatedRefereeUser = await prisma.scout.findUniqueOrThrow({
-      where: { id: referee.id }
-    });
-
-    expect(updatedReferralUser.id).toBe(referrer.id);
-    expect(updatedReferralUser.currentBalance).toBe(50 + rewardPoints + referralBonusPoints);
-    expect(updatedRefereeUser.id).toBe(referee.id);
-    expect(updatedRefereeUser.currentBalance).toBe(rewardPoints);
-  });
   it('should not give credit if referee has not verified their email', async () => {
     const referrer = await mockBuilder({ createNft: true });
     const referee = await mockScout({ builderId: referrer.id, currentBalance: 0 });

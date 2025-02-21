@@ -4,7 +4,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Stack, Typography } from '@mui/material';
 import { claimDailyRewardAction } from '@packages/scoutgame/claims/claimDailyRewardAction';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
-import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
+import { getServerDate } from '@packages/utils/dates';
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';

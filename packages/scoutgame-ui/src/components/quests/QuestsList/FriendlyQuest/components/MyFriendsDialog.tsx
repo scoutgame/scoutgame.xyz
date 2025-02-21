@@ -4,7 +4,7 @@ import { Box, Button } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-import { Dialog } from '../../../components/common/Dialog';
+import { Dialog } from '../../../../common/Dialog';
 
 export function MyFriendsDialog({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);

@@ -80,37 +80,22 @@ export async function getPaginatedBuilders({
                 nftType: true,
                 congratsImageUrl: true,
                 estimatedPayout: true,
-                nftSoldEvents: scoutId
-                  ? {
-                      where: {
-                        ...validMintNftPurchaseEvent,
-                        builderEvent: {
-                          season
-                        },
-                        scoutWallet: {
-                          scoutId
-                        }
-                      },
-                      select: {
-                        scoutWallet: {
-                          select: {
-                            scoutId: true
-                          }
-                        },
-                        tokensPurchased: true
-                      }
+                nftSoldEvents: {
+                  where: {
+                    ...validMintNftPurchaseEvent,
+                    builderEvent: {
+                      season
                     }
-                  : {
-                      where: validMintNftPurchaseEvent,
+                  },
+                  select: {
+                    scoutWallet: {
                       select: {
-                        scoutWallet: {
-                          select: {
-                            scoutId: true
-                          }
-                        },
-                        tokensPurchased: true
+                        scoutId: true
                       }
-                    }
+                    },
+                    tokensPurchased: true
+                  }
+                }
               }
             },
             builderCardActivities: {
@@ -166,8 +151,9 @@ export async function getPaginatedBuilders({
         estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0,
         gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
         nftsSoldToScout:
-          stat.user.builderNfts?.[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) ||
-          undefined
+          stat.user.builderNfts?.[0]?.nftSoldEvents
+            ?.filter((event) => event.scoutWallet?.scoutId === scoutId)
+            .reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || undefined
       }))
     );
   const userId = builders[builders.length - 1]?.id;

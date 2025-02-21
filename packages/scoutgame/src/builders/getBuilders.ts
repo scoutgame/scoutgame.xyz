@@ -18,6 +18,7 @@ export type BuilderMetadata = {
   estimatedPayout: number | null;
   last14Days: (number | null)[];
   nftsSoldToScout: number | null;
+  rank: number | null;
 };
 
 export async function getBuilders({
@@ -83,9 +84,7 @@ export async function getBuilders({
                         tokensPurchased: true
                       }
                     }
-                  : {
-                      where: validMintNftPurchaseEvent
-                    }
+                  : undefined
               }
             },
             userSeasonStats: {
@@ -106,7 +105,8 @@ export async function getBuilders({
                 week
               },
               select: {
-                gemsCollected: true
+                gemsCollected: true,
+                rank: true
               }
             }
           }
@@ -125,6 +125,7 @@ export async function getBuilders({
       gemsCollected: user.userWeeklyStats[0]?.gemsCollected || 0,
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
+      rank: user.userWeeklyStats[0]?.rank,
       nftsSoldToScout:
         user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
     }));
@@ -166,9 +167,7 @@ export async function getBuilders({
                 tokensPurchased: true
               }
             }
-          : {
-              where: validMintNftPurchaseEvent
-            },
+          : undefined,
         builder: {
           select: {
             path: true,
@@ -179,6 +178,7 @@ export async function getBuilders({
                 week
               },
               select: {
+                rank: true,
                 gemsCollected: true
               }
             },
@@ -210,6 +210,7 @@ export async function getBuilders({
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
       level: builder.userSeasonStats[0]?.level || 0,
+      rank: builder.userWeeklyStats[0]?.rank,
       nftsSoldToScout: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
     }));
   } else if (sortBy === 'price') {
@@ -243,9 +244,7 @@ export async function getBuilders({
                 tokensPurchased: true
               }
             }
-          : {
-              where: validMintNftPurchaseEvent
-            },
+          : undefined,
         builder: {
           select: {
             path: true,
@@ -269,6 +268,7 @@ export async function getBuilders({
                 week
               },
               select: {
+                rank: true,
                 gemsCollected: true
               }
             }
@@ -287,6 +287,7 @@ export async function getBuilders({
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
       level: builder.userSeasonStats[0]?.level || 0,
+      rank: builder.userWeeklyStats[0]?.rank,
       estimatedPayout: estimatedPayout || 0,
       nftsSoldToScout: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
     }));
@@ -306,6 +307,7 @@ export async function getBuilders({
       take: limit,
       select: {
         gemsCollected: true,
+        rank: true,
         user: {
           select: {
             id: true,
@@ -335,9 +337,7 @@ export async function getBuilders({
                         tokensPurchased: true
                       }
                     }
-                  : {
-                      where: validMintNftPurchaseEvent
-                    }
+                  : undefined
               }
             },
             builderCardActivities: {
@@ -358,7 +358,7 @@ export async function getBuilders({
       }
     });
 
-    return userWeeklyStats.map(({ user, gemsCollected }) => ({
+    return userWeeklyStats.map(({ user, gemsCollected, rank }) => ({
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
@@ -366,6 +366,7 @@ export async function getBuilders({
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       level: user.userSeasonStats[0]?.level || 0,
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
+      rank,
       nftsSoldToScout:
         user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null,
       price: (user.builderNfts[0]?.currentPrice || 0) as bigint

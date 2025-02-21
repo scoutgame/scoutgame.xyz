@@ -1,8 +1,7 @@
 'use client';
 
 import { Stack, Typography } from '@mui/material';
-import { getServerDate } from '@packages/scoutgame/utils/getServerDate';
-import { timeUntilFuture } from '@packages/utils/dates';
+import { getServerDate, timeUntilFuture } from '@packages/utils/dates';
 import { useEffect, useState } from 'react';
 
 export function NextClaimCountdown() {

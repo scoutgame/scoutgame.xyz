@@ -2,21 +2,21 @@
 
 import { Box, Button, IconButton, Link, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { getPlatform } from '@packages/mixpanel/platform';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { telegramBotName } from '@packages/scoutgame/constants';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import type { Friend } from '@packages/users/getFriends';
 import WebApp from '@twa-dev/sdk';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { LuCopy } from 'react-icons/lu';
 
-import { useTrackEvent } from '../../../hooks/useTrackEvent';
-import { Hidden } from '../../common/Hidden';
+import { useTrackEvent } from '../../../../../hooks/useTrackEvent';
+import { Hidden } from '../../../../common/Hidden';
 
 import { MyFriends } from './MyFriends';
 import { MyFriendsDialog } from './MyFriendsDialog';
 
-export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: SessionUser[] }) {
+export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: Friend[] }) {
   const { user } = useUser();
   const isTelegram = getPlatform() === 'telegram';
   const [copied, setCopied] = useState('');
@@ -83,7 +83,7 @@ export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: 
           </Button>
         ) : (
           <Paper sx={{ borderRadius: '10px', border: `1px solid`, width: '100%', borderColor: 'secondary.main', p: 1 }}>
-            <Typography sx={{ width: '100%' }} variant='caption'>
+            <Typography sx={{ width: '100%' }} variant='body2'>
               https://scoutgame.xyz/login?ref={referral}
             </Typography>
           </Paper>

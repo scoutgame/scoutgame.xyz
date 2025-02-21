@@ -195,13 +195,7 @@ export function DeveloperInfoModal({
         }
       }}
     >
-      <Stack
-        pt={{
-          xs: 1,
-          md: 2.5
-        }}
-        gap={2}
-      >
+      <Stack gap={2}>
         <Stack direction='row' alignItems='center' gap={2}>
           <Stack position='relative'>
             <Avatar
@@ -265,16 +259,35 @@ export function DeveloperInfoModal({
           </Stack>
           <Stack>
             <Stack direction='row' alignItems='center' gap={1}>
-              <Typography variant={isDesktop ? 'h5' : 'h6'}>{developer.displayName}</Typography>
+              <Typography
+                variant={isDesktop ? 'h5' : 'h6'}
+                maxWidth={{
+                  xs: 150,
+                  md: 250
+                }}
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {developer.displayName}
+              </Typography>
               <Link href={`/u/${developer.path}`} onClick={onClose}>
                 <Button
                   sx={{
                     '& .MuiButton-startIcon': {
                       mr: 0.5
+                    },
+                    '& .MuiSvgIcon-root': {
+                      fontSize: {
+                        xs: 12,
+                        md: 14
+                      }
                     }
                   }}
                   variant='text'
-                  startIcon={<OpenInNewIcon sx={{ fontSize: 10 }} />}
+                  startIcon={<OpenInNewIcon />}
                   color='secondary'
                   size='small'
                 >
@@ -347,7 +360,9 @@ export function DeveloperInfoModal({
                   href={`https://warpcast.com/${developer.farcasterUsername}`}
                   target='_blank'
                   rel='noopener noreferrer'
-                  sx={{ p: 0 }}
+                  sx={{
+                    p: 0
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
@@ -360,8 +375,16 @@ export function DeveloperInfoModal({
                       alt='warpcast icon'
                     />
                     <Typography
-                      fontSize={{
-                        xs: 14
+                      sx={{
+                        fontSize: {
+                          xs: 14
+                        },
+                        maxWidth: {
+                          xs: 90
+                        },
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
                       }}
                     >
                       {developer.farcasterUsername}
@@ -513,8 +536,13 @@ export function DeveloperInfoModal({
                             xs: '65%',
                             md: '75%'
                           }}
+                          sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
                         >
-                          {activity.owner}/{activity.repo}
+                          {activity.repo}
                         </Typography>
                         <Stack
                           width={{

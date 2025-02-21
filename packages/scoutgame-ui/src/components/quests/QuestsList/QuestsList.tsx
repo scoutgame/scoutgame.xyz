@@ -1,23 +1,21 @@
 import { Stack, Typography } from '@mui/material';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
-import type { TopConnector } from '@packages/scoutgame/topConnector/getTopConnectors';
+import type { Friend } from '@packages/users/getFriends';
 
 import { Hidden } from '../../common/Hidden';
-import { Connector } from '../Connector/TopConnector';
 
-import { FriendlyQuest } from './FriendlyQuest';
+import { FriendlyQuest } from './FriendlyQuest/FriendlyQuest';
 import { QuestAccordion } from './QuestAccordion';
 import { QuestCard } from './QuestCard';
 
 export function QuestsList({
   quests,
   friends,
-  topConnectors
+  tokensEarnedFromFriends
 }: {
   quests: QuestInfo[];
-  friends: SessionUser[];
-  topConnectors: TopConnector[];
+  friends: Friend[];
+  tokensEarnedFromFriends: number;
 }) {
   const inviteFriendsQuest = quests.find((quest) => quest.type === 'invite-friend');
 
@@ -33,8 +31,7 @@ export function QuestsList({
         <Hidden mdUp>
           {inviteFriendsQuest && (
             <QuestAccordion quest={inviteFriendsQuest}>
-              <FriendlyQuest friends={friends} />
-              {topConnectors.length > 0 && <Connector topConnectors={topConnectors} />}
+              <FriendlyQuest friends={friends} tokensEarned={tokensEarnedFromFriends} />
             </QuestAccordion>
           )}
         </Hidden>

@@ -10,7 +10,7 @@ import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
 
 import { deployNewScoutRewardsContract } from './deployNewScoutRewardsContract';
 import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards';
-import { deployReferralChampionRewardsContract } from './deployReferralChampionRewardsContract';
+import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
 export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: { now?: DateTime } = {}) {

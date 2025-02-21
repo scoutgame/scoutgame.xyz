@@ -21,7 +21,7 @@ export type QuestType =
   | 'enter-op-new-scout-competition'
   | 'scout-5-builders'
   | 'scout-share-builder'
-  | 'scout-moxie-builder'
+  // | 'scout-moxie-builder'
   | 'share-weekly-claim'
   | 'share-scout-profile'
   | 'verify-email'
@@ -70,7 +70,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     verifiable: false
   },
   'invite-friend': {
-    points: 50,
+    points: 0,
     link: '/quests',
     label: 'Refer a Friend',
     tag: 'scout',
@@ -129,16 +129,16 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     resettable: true,
     verifiable: true
   },
-  'scout-moxie-builder': {
-    label: 'Scout a Moxie Developer',
-    points: 10,
-    rewards: '$Moxie tokens',
-    partner: 'Moxie',
-    link: '/info/partner-rewards/moxie',
-    tag: 'scout',
-    resettable: true,
-    verifiable: true
-  },
+  // 'scout-moxie-builder': {
+  //   label: 'Scout a Moxie Developer',
+  //   points: 10,
+  //   rewards: '$Moxie tokens',
+  //   partner: 'Moxie',
+  //   link: '/info/partner-rewards/moxie',
+  //   tag: 'scout',
+  //   resettable: true,
+  //   verifiable: true
+  // },
   'share-weekly-claim': {
     label: 'Share a Weekly Claim',
     points: 10,

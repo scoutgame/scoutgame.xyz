@@ -4,7 +4,7 @@ import { compilerOptions } from './tsconfig.json';
 
 export default {
   // Teardown function after all tests run
-  globalTeardown: path.resolve(__dirname, '../../packages/scoutgame/src/testing/jest.teardown.ts'),
+  globalTeardown: path.resolve(__dirname, '../../jest.teardown-init.js'),
 
   transform: {
     '^.+\\.(t|j)sx?$': [

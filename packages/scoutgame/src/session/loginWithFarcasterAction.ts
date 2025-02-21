@@ -1,11 +1,11 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
+import { authSchema } from '@packages/farcaster/config';
+import { verifyFarcasterUser } from '@packages/farcaster/verifyFarcasterUser';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import { saveSession } from '@packages/nextjs/session/saveSession';
-import { authSchema } from '@packages/scoutgame/farcaster/config';
-import { verifyFarcasterUser } from '@packages/scoutgame/farcaster/verifyFarcasterUser';
 import { findOrCreateFarcasterUser } from '@packages/users/findOrCreateFarcasterUser';
 import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';

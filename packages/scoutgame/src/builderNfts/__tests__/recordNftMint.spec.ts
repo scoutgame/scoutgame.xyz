@@ -172,7 +172,7 @@ describe('recordNftMint', () => {
     expect(refreshBuilderNftPrice).not.toHaveBeenCalled();
   });
 
-  it.only('should create a referral bonus event if the scout has a referral code', async () => {
+  it('should record a completed referral if the scout has a referral code', async () => {
     const referrer = await mockScout();
     const mockWallet = randomWalletAddress().toLowerCase();
     const referee = await mockScout({ wallets: [mockWallet] });
@@ -209,15 +209,12 @@ describe('recordNftMint', () => {
       mintTxLogIndex: 0
     });
 
-    const referrerAfterReferralBonus = await prisma.scout.findUniqueOrThrow({
+    const referrerAfterReferralBonus = await prisma.referralCodeEvent.findFirstOrThrow({
       where: {
-        id: referrer.id
-      },
-      select: {
-        currentBalance: true
+        refereeId: referee.id
       }
     });
 
-    expect(referrerAfterReferralBonus.currentBalance).toBe(50);
+    expect(referrerAfterReferralBonus.completedAt).not.toBeNull();
   });
 });
