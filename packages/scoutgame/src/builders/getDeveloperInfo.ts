@@ -30,6 +30,7 @@ export type DeveloperInfo = {
     url: string;
     gems: number;
     createdAt: Date;
+    avatar?: string;
   }[];
   last14DaysRank: (number | null)[];
 };
@@ -120,7 +121,8 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
               repo: {
                 select: {
                   name: true,
-                  owner: true
+                  owner: true,
+                  avatar: true
                 }
               }
             }

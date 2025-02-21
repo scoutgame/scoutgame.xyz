@@ -37,6 +37,7 @@ export function BuilderCardActivity({
         }}
         onClick={(e) => {
           e.stopPropagation();
+          e.preventDefault();
           setIsDialogOpen(true);
         }}
       >
