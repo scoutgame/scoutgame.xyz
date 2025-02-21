@@ -530,6 +530,7 @@ export function DeveloperInfoModal({
                         alignItems='center'
                         justifyContent='space-between'
                       >
+                        <Avatar src={activity.avatar} name={activity.repo} size='small' variant='rounded' />
                         <Typography
                           variant={isDesktop ? 'h6' : 'body1'}
                           width={{
