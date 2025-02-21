@@ -73,6 +73,11 @@ function Document() {
             <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='paused' />
             <PartnerReward name='Talent Protocol' image='/images/crypto/talent.jpg' status='completed' />
             <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
+            <PartnerReward
+              name='Good Dollar'
+              image='/images/crypto/good-dollar.png'
+              href='/info/partner-rewards/good-dollar'
+            />
           </Stack>
         </Stack>
         <Stack flex={1} gap={2}>
