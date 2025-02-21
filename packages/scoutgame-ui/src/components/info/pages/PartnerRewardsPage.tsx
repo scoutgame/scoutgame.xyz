@@ -75,7 +75,7 @@ function Document() {
             <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
             <PartnerReward
               name='Good Dollar'
-              image='/images/crypto/good-dollar.png'
+              image='/images/logos/good-dollar.png'
               href='/info/partner-rewards/good-dollar'
             />
           </Stack>

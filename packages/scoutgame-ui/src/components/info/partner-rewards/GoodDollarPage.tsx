@@ -1,4 +1,4 @@
-import { Link, Typography } from '@mui/material';
+import { Link, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 
 import { InfoCard } from '../../common/DocumentPageContainer/components/InfoCard';
 import { List, ListItem } from '../../common/List';
@@ -15,6 +15,29 @@ export function GoodDollarPage() {
     </InfoPageContainer>
   );
 }
+
+const tiers = [
+  {
+    name: 'Common',
+    reward: '50 G$'
+  },
+  {
+    name: 'Rare',
+    reward: '150 G$'
+  },
+  {
+    name: 'Epic',
+    reward: '250 G$'
+  },
+  {
+    name: 'Mythic',
+    reward: '350 G$'
+  },
+  {
+    name: 'Legendary',
+    reward: '450 G$'
+  }
+];
 
 const qualifiedProjects = [
   'https://github.com/GoodDollar/GoodWeb3-Mono',
@@ -38,6 +61,22 @@ function Document() {
         rewards. Those who qualify will be notified via email and must sign up for the Quadratic Funding (QF) round to
         receive their rewards. Donations and matching funds will be distributed at the end of the round.
       </Typography>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>GitHub Issue Tier</TableCell>
+            <TableCell align='right'>Reward</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {tiers.map((tier) => (
+            <TableRow key={tier.name}>
+              <TableCell>{tier.name}</TableCell>
+              <TableCell align='right'>{tier.reward}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       <Typography variant='h6' color='secondary' mt={2}>
         Eligible GoodDollar Repositories
       </Typography>
