@@ -4,7 +4,7 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { registerScout as registerBeehiiv } from '@packages/beehiiv/registerScout';
 import { registerScout as registerLoops } from '@packages/loops/registerScout';
-import { getPlatform } from '@packages/mixpanel/platform';
+import { getPlatform } from '@packages/utils/platform';
 import { isValidEmail } from '@packages/utils/strings';
 
 import { sendVerificationEmail } from './verifyEmail';

@@ -1,10 +1,10 @@
-import { getPlatform } from '@packages/mixpanel/platform';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
 import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getUnclaimedPartnerRewards } from '@packages/scoutgame/points/getPartnerRewards';
+import { getPlatform } from '@packages/utils/platform';
 import { Suspense } from 'react';
 
 import { LoadingTable } from '../../common/Loading/LoadingTable';

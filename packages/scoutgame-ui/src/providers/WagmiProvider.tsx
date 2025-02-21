@@ -1,8 +1,8 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { getBrowserPath, isTouchDevice, isWebView } from '@packages/utils/browser';
+import { getPlatform } from '@packages/utils/platform';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { WagmiProvider as OriginalWagmiProvider, cookieToInitialState } from 'wagmi';

@@ -1,7 +1,7 @@
 'use client';
 
 import { BottomNavigation, BottomNavigationAction, styled } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/platform';
+import { getPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 import { usePathname } from 'next/navigation';
 import { Link } from 'next-view-transitions';

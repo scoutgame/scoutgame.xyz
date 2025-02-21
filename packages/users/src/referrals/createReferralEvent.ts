@@ -1,7 +1,7 @@
 import type { BuilderEventType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { getPlatform } from '@packages/mixpanel/platform';
+import { getPlatform } from '@packages/utils/platform';
 
 export async function createReferralEvent(referralCode: string, refereeId: string, week = getCurrentWeek()) {
   const season = getCurrentSeasonStart(week);

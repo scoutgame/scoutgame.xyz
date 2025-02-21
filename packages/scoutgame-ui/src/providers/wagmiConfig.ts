@@ -1,10 +1,12 @@
 'use client';
 
 import env from '@beam-australia/react-env';
+import farcasterConnector from '@farcaster/frame-wagmi-connector';
 import { getAlchemyBaseUrl } from '@packages/blockchain/provider/alchemy/client';
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { injectedWallet, rainbowWallet, walletConnectWallet, metaMaskWallet } from '@rainbow-me/rainbowkit/wallets';
 import type { Chain, Transport } from 'viem';
-import { http, cookieStorage, createStorage, fallback } from 'wagmi';
+import { http, cookieStorage, createStorage, fallback, createConfig } from 'wagmi';
 import {
   arbitrum,
   arbitrumSepolia,
@@ -18,7 +20,7 @@ import {
   baseSepolia
 } from 'wagmi/chains';
 
-export function getConfig(options?: Partial<Parameters<typeof getDefaultConfig>[0]>) {
+export function getConfig(options?: { projectId?: string }) {
   const projectId = options?.projectId || env('WALLETCONNECT_PROJECTID') || '';
 
   const wagmiChains = [
@@ -33,6 +35,7 @@ export function getConfig(options?: Partial<Parameters<typeof getDefaultConfig>[
     zora,
     zoraSepolia
   ] as [Chain, ...Chain[]];
+
   const transports = wagmiChains.reduce<Record<string, Transport>>((acc, chain) => {
     try {
       const rpcUrl = getAlchemyBaseUrl(chain.id);
@@ -44,13 +47,41 @@ export function getConfig(options?: Partial<Parameters<typeof getDefaultConfig>[
     }
   }, {});
 
-  const config = getDefaultConfig({
-    appName: 'Scout Game',
-    projectId,
+  const connectors = connectorsForWallets(
+    [
+      {
+        groupName: 'Recommended',
+        wallets: [metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet]
+      },
+      {
+        groupName: 'Other',
+        wallets: [
+          () => {
+            return {
+              createConnector: () => farcasterConnector(),
+              iconBackground: '#000000',
+              iconUrl: 'https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/055c25d6-7fe7-4a49-abf9-49772021cf00/original',
+              id: 'farcaster',
+              name: 'Farcaster Frame',
+              rdns: 'xyz.farcaster',
+              installed: true
+            };
+          }
+        ]
+      }
+    ],
+    {
+      appName: 'Scout Game',
+      projectId
+    }
+  );
+
+  const config = createConfig({
+    connectors,
     chains: wagmiChains,
+    transports,
     ssr: true,
-    storage: createStorage({ storage: cookieStorage }),
-    transports
+    storage: createStorage({ storage: cookieStorage })
   });
 
   return config;

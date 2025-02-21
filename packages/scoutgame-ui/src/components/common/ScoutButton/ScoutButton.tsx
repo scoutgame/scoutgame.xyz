@@ -3,8 +3,8 @@
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Button, Typography } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
+import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import { useState } from 'react';
 

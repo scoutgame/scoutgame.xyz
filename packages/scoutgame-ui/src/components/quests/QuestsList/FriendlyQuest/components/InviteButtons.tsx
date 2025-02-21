@@ -1,10 +1,10 @@
 'use client';
 
 import { Box, Button, IconButton, Link, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { telegramBotName } from '@packages/scoutgame/constants';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import type { Friend } from '@packages/users/getFriends';
+import { getPlatform } from '@packages/utils/platform';
 import WebApp from '@twa-dev/sdk';
 import type { ReactNode } from 'react';
 import { useState } from 'react';

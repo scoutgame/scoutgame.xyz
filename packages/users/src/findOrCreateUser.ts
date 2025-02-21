@@ -66,19 +66,32 @@ export async function findOrCreateUser({
     : undefined;
 
   const scout = await prisma.scout.findFirst({
-    where: lowercaseAddresses
-      ? { wallets: { some: { address: { in: lowercaseAddresses } } } }
-      : farcasterId
-        ? { farcasterId }
+    where: farcasterId
+      ? { farcasterId }
+      : lowercaseAddresses
+        ? { wallets: { some: { address: { in: lowercaseAddresses } } } }
         : { telegramId },
     select: {
+      wallets: {
+        select: {
+          address: true
+        }
+      },
       id: true,
       onboardedAt: true,
       agreedToTermsAt: true
     }
   });
 
+  const newAddresses = lowercaseAddresses?.filter((address) => !scout?.wallets.some((w) => w.address === address));
+
   if (scout) {
+    if (newAddresses?.length) {
+      await prisma.scout.update({
+        where: { id: scout.id },
+        data: { wallets: { create: newAddresses.map((address) => ({ address })) } }
+      });
+    }
     return { ...scout, isNew: false };
   }
 

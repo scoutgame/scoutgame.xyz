@@ -19,6 +19,7 @@
     "@datadog/browser-logs": "^5.33.0",
     "@farcaster/auth-client": "^0.3.0",
     "@farcaster/auth-kit": "^0.6.0",
+    "@farcaster/frame-sdk": "^0.0.28",
     "@hookform/resolvers": "^3.6.0",
     "@mui/lab": "^6.0.0-beta.10",
     "@packages/dates": "^0.0.0",

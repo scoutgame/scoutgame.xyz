@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { useInitTelegramUser } from '@packages/scoutgame-ui/hooks/api/session';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import { getPlatform } from '@packages/utils/platform';
 import WebApp from '@twa-dev/sdk';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

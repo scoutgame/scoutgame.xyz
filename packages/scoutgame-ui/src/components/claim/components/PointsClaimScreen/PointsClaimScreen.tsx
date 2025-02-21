@@ -3,12 +3,12 @@
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/platform';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { getProtocolReadonlyClient } from '@packages/scoutgame/builderNfts/clients/protocol/getProtocolReadonlyClient';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
+import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
