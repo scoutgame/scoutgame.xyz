@@ -7,12 +7,12 @@
   "frame": {
     "version": "1",
     "name": "Scout Game",
-    "iconUrl": "https://rnlxh-103-120-203-106.a.free.pinggy.link/favicon.ico",
-    "homeUrl": "https://rnlxh-103-120-203-106.a.free.pinggy.link",
-    "imageUrl": "https://rnlxh-103-120-203-106.a.free.pinggy.link/favicon.ico",
+    "iconUrl": "https://scoutgame.xyz/favicon.ico",
+    "homeUrl": "https://scoutgame.xyz",
+    "imageUrl": "https://scoutgame.xyz/favicon.ico",
     "buttonTitle": "Scout",
-    "splashImageUrl": "https://rnlxh-103-120-203-106.a.free.pinggy.link/images/scout-game-logo-square.png",
+    "splashImageUrl": "https://scoutgame.xyz/images/scout-game-logo-square.png",
     "splashBackgroundColor": "#000",
-    "webhookUrl": "https://rnlxh-103-120-203-106.a.free.pinggy.link/api/webhook"
+    "webhookUrl": "https://scoutgame.xyz/api/webhook"
   }
 }
