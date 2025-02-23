@@ -526,11 +526,11 @@ export function DeveloperInfoModal({
                       <Stack
                         key={activity.url}
                         direction='row'
-                        gap={0.5}
+                        gap={0.75}
                         alignItems='center'
                         justifyContent='space-between'
                       >
-                        <Avatar src={activity.avatar} name={activity.repo} size='small' variant='rounded' />
+                        <Avatar src={activity.avatar} name={activity.repo} size='xSmall' variant='rounded' />
                         <Typography
                           variant={isDesktop ? 'h6' : 'body1'}
                           width={{

@@ -1,4 +1,4 @@
-import { GithubRepo, prisma } from '@charmverse/core/prisma-client';
+import { prisma } from '@charmverse/core/prisma-client';
 import { log } from '@charmverse/core/log';
 import { isTruthy } from '@packages/utils/types';
 
@@ -17,35 +17,8 @@ export async function getOwnerAvatar(owner: string): Promise<string> {
   return data.avatar_url;
 }
 
-export async function processBatch(
-  items: Pick<GithubRepo, 'id' | 'owner' | 'name'>[],
-  batchSize: number,
-  processItem: (item: Pick<GithubRepo, 'id' | 'owner' | 'name'>) => Promise<string>,
-  delayMs: number = 1000
-): Promise<{id: number, avatar: string}[]> {
-  const results: {id: number, avatar: string}[] = [];
-  
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch.map(item => processItem(item).then(avatar => ({id: item.id, avatar})).catch(error => {
-      log.error(`Error processing item ${item.id}: ${item.owner}/${item.name}`, {
-        error
-      });
-      return null;
-    })));
-    results.push(...batchResults.filter(isTruthy));
-
-    if (i + batchSize < items.length) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-    }
-  }
-  
-  return results;
-}
-
 async function addGithubReposAvatar() {
   const githubRepos = await prisma.githubRepo.findMany({
-    take: 1,
     where: {
       avatar: null
     },
@@ -86,7 +59,7 @@ async function addGithubReposAvatar() {
       });
     })));
 
-    log.info(`Processed batch ${batchNumber + 1} of ${totalBatches} github repos`);
+    log.info(`Processed batch ${batchNumber + 1} of ${totalBatches} batches`);
     await new Promise(resolve => setTimeout(resolve, delayMs));
   }
 }

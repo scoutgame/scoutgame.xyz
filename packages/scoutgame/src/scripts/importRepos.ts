@@ -31,6 +31,7 @@ async function importRepos() {
           fork: data.fork,
           handPicked: true,
           name,
+          avatar: data.owner.avatar_url,
           defaultBranch: data.default_branch
         },
         update: {}
