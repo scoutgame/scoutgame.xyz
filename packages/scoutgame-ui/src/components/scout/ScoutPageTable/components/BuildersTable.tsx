@@ -192,9 +192,25 @@ export function BuildersTable({
                 height: { xs: 35, md: 50 }
               }}
             >
-              <Stack direction='row' alignItems='center' gap={1} height='100%'>
+              <Stack
+                direction='row'
+                alignItems='center'
+                gap={{
+                  xs: 0.5,
+                  md: 1
+                }}
+                height='100%'
+              >
                 <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
-                <TableCellText color='secondary'>{builder.rank || '-'}</TableCellText>
+                <TableCellText
+                  color='secondary'
+                  minWidth={{
+                    xs: 20,
+                    md: 25
+                  }}
+                >
+                  {builder.rank || '-'}
+                </TableCellText>
               </Stack>
             </TableCell>
             <TableCell align='center'>
