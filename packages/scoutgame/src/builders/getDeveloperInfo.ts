@@ -30,6 +30,7 @@ export type DeveloperInfo = {
     url: string;
     gems: number;
     createdAt: Date;
+    avatar?: string | null;
   }[];
   last14DaysRank: (number | null)[];
 };
@@ -120,7 +121,8 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
               repo: {
                 select: {
                   name: true,
-                  owner: true
+                  owner: true,
+                  avatar: true
                 }
               }
             }
@@ -170,6 +172,7 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
       .filter((event) => event.githubEvent && event.gemsReceipt)
       .map((event) => ({
         createdAt: event.createdAt,
+        avatar: event.githubEvent!.repo.avatar,
         gems: event.gemsReceipt!.value,
         url: event.githubEvent!.url,
         repo: event.githubEvent!.repo.name,
