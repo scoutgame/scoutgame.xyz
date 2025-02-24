@@ -5,7 +5,7 @@ import { Clear as ClearIcon } from '@mui/icons-material';
 import {
   Stack,
   Card,
-  CircularProgress,
+  Grid2 as Grid,
   Container,
   InputAdornment,
   TextField,
@@ -34,15 +34,16 @@ const allWeeks = getAllISOWeeksFromSeasonStart();
 
 export function PartnersDashboard() {
   return (
-    <Container maxWidth='md'>
-      <Stack spacing={3}>
-        <Stack spacing={2}>
-          <PartnerCard partner='celo' partnerName='Celo' />
-          <PartnerCard partner='game7' partnerName='Game7' />
-          <PartnerCard partner='octant' partnerName='Octant' />
-          <PartnerCard partner='optimism' partnerName='Optimism' />
-          <PartnerCard partner='op_supersim' partnerName='OP Supersim' />
-        </Stack>
+    <Container maxWidth='lg'>
+      <Stack spacing={3} justifyContent='center'>
+        <PartnerCard partner='celo' partnerName='Celo' />
+        <PartnerCard partner='game7' partnerName='Game7' />
+        <PartnerCard partner='octant' partnerName='Octant' />
+        <PartnerCard partner='optimism' partnerName='Optimism' />
+        <PartnerCard partner='op_supersim' partnerName='OP Supersim' />
+        <PartnerCard partner='referrals' partnerName='Referral Rewards' />
+        <PartnerCard partner='talent' partnerName='Talent Protocol' />
+        <PartnerCard partner='moxie' partnerName='Moxie' />
       </Stack>
     </Container>
   );
