@@ -40,6 +40,9 @@ export async function findOrCreateWalletUser({
     const farcasterUser = response[address]?.[0];
     farcasterName = farcasterUser?.username;
     farcasterId = farcasterUser?.fid;
+    const user = await findOrCreateFarcasterUser({});
+    // add the wallet address to the user
+    return user;
   } catch (error) {
     log.warn('Could not retrieve Farcaster user', { error, wallet });
   }
