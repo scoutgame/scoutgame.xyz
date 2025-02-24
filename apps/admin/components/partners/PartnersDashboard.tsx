@@ -6,8 +6,7 @@ import React, { Suspense } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
 
-import { CeloMetrics } from './components/CeloMetrics';
-import { Game7Metrics } from './components/Game7Metrics';
+import { GithubMetrics } from './components/GithubMetrics';
 import { MoxieMetrics } from './components/MoxieMetrics';
 import { PartnerCard } from './components/PartnerCard';
 
@@ -17,14 +16,14 @@ export function PartnersDashboard() {
       <Stack spacing={3} justifyContent='center'>
         <PartnerCard partner='celo' partnerName='Celo'>
           <Suspense fallback={<LoadingComponent isLoading />}>
-            <CeloMetrics />
+            <GithubMetrics partner='celo' />
           </Suspense>
         </PartnerCard>
         <PartnerCard partner='game7' partnerName='Game7'>
-          {/* <Game7Metrics /> */}
+          <GithubMetrics partner='game7' />
         </PartnerCard>
         <PartnerCard partner='octant' partnerName='Octant'>
-          {/* <OctantMetrics /> */}
+          <GithubMetrics partner='octant' />
         </PartnerCard>
         <PartnerCard partner='optimism' partnerName='Optimism'>
           {/* <OptimismMetrics /> */}

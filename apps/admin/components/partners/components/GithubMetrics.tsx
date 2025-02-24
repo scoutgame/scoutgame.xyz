@@ -2,29 +2,24 @@ import 'server-only';
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { Card, Stack, Typography } from '@mui/material';
+import type { BonusPartner } from '@packages/scoutgame/bonus';
 
-interface CeloMetrics {
-  totalBuilders: number;
-  totalPoints: number;
-  averagePoints: number;
-}
-
-export async function CeloMetrics() {
+export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
   const [repos, totalPoints, uniqueBuilders] = await Promise.all([
     prisma.githubRepo.count({
       where: {
-        bonusPartner: 'celo'
+        bonusPartner: partner
       }
     }),
     prisma.builderEvent.count({
       where: {
-        bonusPartner: 'celo'
+        bonusPartner: partner
       }
     }),
     prisma.builderEvent
       .findMany({
         where: {
-          bonusPartner: 'celo'
+          bonusPartner: partner
         },
         select: {
           builderId: true
