@@ -6,16 +6,17 @@ import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 
 async function query() {
   // write a query to return all the bonus partners from the github repo table
-  const bonusPartners = await prisma.githubRepo.updateMany({
-    where: {
-      bonusPartner: 'op_supersim'
+  const bonusPartners = await prisma.partnerRewardPayoutContract.findMany({
+    select: {
+      partner: true
     },
-    data: {
-      bonusPartner: null
-    }
+    distinct: ['partner']
   });
-  // get a listo f uniq bonus partners
-  console.log(bonusPartners);
+
+  console.log(
+    'Unique bonus partners:',
+    bonusPartners.map((p) => p.partner)
+  );
 }
 
 query();

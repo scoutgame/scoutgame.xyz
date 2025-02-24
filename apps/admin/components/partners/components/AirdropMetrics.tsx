@@ -4,38 +4,39 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { Card, Stack, Typography } from '@mui/material';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 
-export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
-  const [repos, totalPoints, uniqueBuilders] = await Promise.all([
-    prisma.githubRepo.count({
+export async function AirdropMetrics({ partner }: { partner: BonusPartner }) {
+  const [airdrops, totalPayouts, uniqueWallets] = await Promise.all([
+    prisma.partnerRewardPayoutContract.count({
       where: {
-        bonusPartner: partner
+        partner
       }
     }),
-    prisma.builderEvent.count({
+    prisma.partnerRewardPayout.count({
       where: {
-        bonusPartner: partner
+        payoutContract: {
+          partner
+        }
       }
     }),
-    prisma.builderEvent
+    prisma.partnerRewardPayout
       .findMany({
         where: {
-          bonusPartner: partner
+          payoutContract: {
+            partner
+          }
         },
-        select: {
-          builderId: true
-        },
-        distinct: ['builderId']
+        distinct: ['walletAddress']
       })
-      .then((builders) => builders.length)
+      .then((wallets) => wallets.length)
   ]);
 
   return (
     <>
-      <Typography variant='h6'>Activity</Typography>
+      <Typography variant='h6'>Payouts</Typography>
       <Stack direction='row' spacing={2} mt={2}>
-        <MetricCard title='Active Repos' value={repos} />
-        <MetricCard title='Total PRs' value={totalPoints} />
-        <MetricCard title='Unique Builders' value={uniqueBuilders} />
+        <MetricCard title='Total airdrops' value={airdrops} />
+        <MetricCard title='Total payouts' value={totalPayouts} />
+        <MetricCard title='Unique wallets' value={uniqueWallets} />
       </Stack>
     </>
   );

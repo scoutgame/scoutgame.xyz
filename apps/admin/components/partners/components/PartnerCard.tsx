@@ -30,7 +30,7 @@ export function PartnerCard({
   return (
     <Card sx={{ p: 3, display: 'flex' }}>
       <Stack flex={1}>
-        <Typography variant='h6'>{partnerName}</Typography>
+        <Typography variant='h5'>{partnerName}</Typography>
         {children}
       </Stack>
 
@@ -54,7 +54,7 @@ export function PartnerCard({
             filename={`${partnerName} Export - Week ${allWeeks.indexOf(selectedWeek) + 1} - ${getWeekStartEndFormatted(getDateFromISOWeek(selectedWeek).toJSDate())}.tsv`}
             src={`/api/partners/${partner}?week=${selectedWeek}`}
           >
-            Export
+            Export winners
           </FileDownloadButton>
         </div>
       </Stack>

@@ -6,6 +6,7 @@ import React, { Suspense } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
 
+import { AirdropMetrics } from './components/AirdropMetrics';
 import { GithubMetrics } from './components/GithubMetrics';
 import { MoxieMetrics } from './components/MoxieMetrics';
 import { PartnerCard } from './components/PartnerCard';
@@ -23,16 +24,26 @@ export function PartnersDashboard() {
           <GithubMetrics partner='game7' />
         </PartnerCard>
         <PartnerCard partner='octant' partnerName='Octant'>
-          <GithubMetrics partner='octant' />
+          <Suspense fallback={<LoadingComponent isLoading />}>
+            <GithubMetrics partner='octant' />
+            <AirdropMetrics partner='octant_base_contribution' />
+          </Suspense>
         </PartnerCard>
         <PartnerCard partner='optimism' partnerName='Optimism'>
-          {/* <OptimismMetrics /> */}
+          <Suspense fallback={<LoadingComponent isLoading />}>
+            <AirdropMetrics partner='optimism_new_scout' />
+          </Suspense>
         </PartnerCard>
         <PartnerCard partner='op_supersim' partnerName='OP Supersim'>
-          {/* <SupersimMetrics /> */}
+          <Suspense fallback={<LoadingComponent isLoading />}>
+            <GithubMetrics partner='op_supersim' />
+          </Suspense>
         </PartnerCard>
         <PartnerCard partner='referrals' partnerName='Referral Rewards'>
           {/* <ReferralMetrics /> */}
+          <Suspense fallback={<LoadingComponent isLoading />}>
+            <AirdropMetrics partner='optimism_referral_champion' />
+          </Suspense>
         </PartnerCard>
         <PartnerCard partner='talent' partnerName='Talent Protocol'>
           {/* <TalentMetrics /> */}
