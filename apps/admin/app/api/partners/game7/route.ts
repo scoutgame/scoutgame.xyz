@@ -5,11 +5,17 @@ import { getBuildersForPartner } from 'lib/partners/getBuildersForPartner';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
-  const lastWeek = getLastWeek();
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const week = searchParams.get('week');
+
+  if (!week) {
+    return new Response('Week parameter is required', { status: 400 });
+  }
+
   const rows = await getBuildersForPartner({
-    week: lastWeek,
+    week,
     bonusPartner: 'game7'
   });
-  return respondWithTSV(rows, `partners-export_game7_${lastWeek}.tsv`);
+  return respondWithTSV(rows, `partners-export_game7_${week}.tsv`);
 }
