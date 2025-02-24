@@ -21,37 +21,41 @@ export async function reviewAppliedBuilders() {
   });
 
   for (const builder of builders) {
-    const githubUser = builder.githubUsers.at(0);
+    try {
+      const githubUser = builder.githubUsers.at(0);
 
-    if (githubUser?.login) {
-      // Get the activity of the builder in the last 28 days
-      const { commits, pullRequests } = await getBuilderActivity({
-        login: githubUser.login,
-        githubUserId: githubUser.id,
-        after: last28Days
-      });
-
-      // If the builder has activity in the last 28 days approve it
-      if (commits.length > 0 || pullRequests.length > 0) {
-        await approveBuilder({ builderId: builder.id });
-        log.info('Builder approved due to activity', {
-          commits: commits.map((c) => `${c.repository.full_name} - ${c.sha}`),
-          pullRequests: pullRequests.map((pr) => `${pr.repository.nameWithOwner} - PR# ${pr.number}`),
-          userId: builder.id
-        });
-        // If the builder has no activity in the last 28 days reject it
-      } else if (builder.createdAt < last28Days) {
-        await prisma.scout.update({
-          where: {
-            id: builder.id
-          },
-          data: {
-            builderStatus: 'rejected'
-          }
+      if (githubUser?.login) {
+        // Get the activity of the builder in the last 28 days
+        const { commits, pullRequests } = await getBuilderActivity({
+          login: githubUser.login,
+          githubUserId: githubUser.id,
+          after: last28Days
         });
 
-        log.info('Builder rejected after 28 days of no activity', { userId: builder.id });
+        // If the builder has activity in the last 28 days approve it
+        if (commits.length > 0 || pullRequests.length > 0) {
+          await approveBuilder({ builderId: builder.id });
+          log.info('Builder approved due to activity', {
+            commits: commits.map((c) => `${c.repository.full_name} - ${c.sha}`),
+            pullRequests: pullRequests.map((pr) => `${pr.repository.nameWithOwner} - PR# ${pr.number}`),
+            userId: builder.id
+          });
+          // If the builder has no activity in the last 28 days reject it
+        } else if (builder.createdAt < last28Days) {
+          await prisma.scout.update({
+            where: {
+              id: builder.id
+            },
+            data: {
+              builderStatus: 'rejected'
+            }
+          });
+
+          log.info('Builder rejected after 28 days of no activity', { userId: builder.id });
+        }
       }
+    } catch (error) {
+      log.error('Error approving builder', { error, userId: builder.id });
     }
   }
 }
