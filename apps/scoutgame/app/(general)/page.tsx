@@ -1,18 +1,17 @@
-import { baseUrl } from '@packages/utils/constants';
 import type { Metadata } from 'next';
 
 import { LandingPage } from '../../components/home/LandingPage';
 
 const frame = {
   version: 'next',
-  imageUrl: `https://${baseUrl}/images/scout-game-logo-square.png`,
+  imageUrl: `https://scoutgame.xyz/images/farcaster/fc_frame.png`,
   button: {
     title: 'Scout',
     action: {
       type: 'launch_frame',
       name: 'Scout Game',
-      url: `https://${baseUrl}`,
-      splashImageUrl: `https://${baseUrl}/images/scout-game-logo-square.png`,
+      url: `https://scoutgame.xyz`,
+      splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
       splashBackgroundColor: '#000'
     }
   }
