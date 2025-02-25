@@ -4,7 +4,14 @@ import env from '@beam-australia/react-env';
 import farcasterConnector from '@farcaster/frame-wagmi-connector';
 import { getAlchemyBaseUrl } from '@packages/blockchain/provider/alchemy/client';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
-import { injectedWallet, rainbowWallet, walletConnectWallet, metaMaskWallet } from '@rainbow-me/rainbowkit/wallets';
+import {
+  injectedWallet,
+  rainbowWallet,
+  walletConnectWallet,
+  metaMaskWallet,
+  safeWallet,
+  coinbaseWallet
+} from '@rainbow-me/rainbowkit/wallets';
 import type { Chain, Transport } from 'viem';
 import { http, cookieStorage, createStorage, fallback, createConfig } from 'wagmi';
 import {
@@ -49,9 +56,10 @@ export function getConfig(options?: { projectId?: string }) {
 
   const connectors = connectorsForWallets(
     [
+      // Reference: node_modules/@rainbow-me/rainbowkit/dist/index.js
       {
-        groupName: 'Recommended',
-        wallets: [metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet]
+        groupName: 'Popular',
+        wallets: [metaMaskWallet, rainbowWallet, safeWallet, coinbaseWallet, walletConnectWallet, injectedWallet]
       },
       {
         groupName: 'Other',
@@ -72,10 +80,20 @@ export function getConfig(options?: { projectId?: string }) {
     ],
     {
       appName: 'Scout Game',
-      projectId
+      projectId,
+      appDescription: 'Scout Game',
+      appUrl: 'https://scoutgame.xyz',
+      appIcon: 'https://scoutgame.xyz/images/farcaster/fc_icon.png',
+      walletConnectParameters: {
+        metadata: {
+          name: 'Scout Game',
+          description: 'Scout Game',
+          url: 'https://scoutgame.xyz',
+          icons: ['https://scoutgame.xyz/images/farcaster/fc_icon.png']
+        }
+      }
     }
   );
-
   const config = createConfig({
     connectors,
     chains: wagmiChains,
