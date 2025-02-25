@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { Clear as ClearIcon } from '@mui/icons-material';
-import { Stack, Card, Grid2 as Grid, Container, Skeleton } from '@mui/material';
+import { Stack, Card, Grid2 as Grid, Container, Skeleton, Typography } from '@mui/material';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import React, { Suspense } from 'react';
 
@@ -34,11 +34,6 @@ export function PartnersDashboard() {
             <AirdropMetrics partner='optimism_new_scout' />
           </Suspense>
         </PartnerCard>
-        <PartnerCard partner='op_supersim' partnerName='OP Supersim'>
-          <Suspense fallback={<LoadingComponent isLoading />}>
-            <GithubMetrics partner='op_supersim' />
-          </Suspense>
-        </PartnerCard>
         <PartnerCard partner='referrals' partnerName='Referral Rewards'>
           {/* <ReferralMetrics /> */}
           <Suspense fallback={<LoadingComponent isLoading />}>
@@ -47,6 +42,16 @@ export function PartnersDashboard() {
         </PartnerCard>
         <PartnerCard partner='talent' partnerName='Talent Protocol'>
           {/* <TalentMetrics /> */}
+        </PartnerCard>
+
+        <Typography variant='h4' align='center'>
+          Completed
+        </Typography>
+
+        <PartnerCard partner='op_supersim' partnerName='OP Supersim'>
+          <Suspense fallback={<LoadingComponent isLoading />}>
+            <GithubMetrics partner='op_supersim' />
+          </Suspense>
         </PartnerCard>
         <PartnerCard partner='moxie' partnerName='Moxie'>
           {/* <MoxieMetrics /> */}

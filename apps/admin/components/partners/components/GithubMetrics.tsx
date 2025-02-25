@@ -35,10 +35,10 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
         <Typography variant='h6' sx={{ mt: 0, flexGrow: 1 }}>
           Github
         </Typography>
-        <Stack direction='row'>
+        <Stack direction='row' gap={1}>
           <MetricCard title='Total PRs' value={totalPoints} />
-          <MetricCard title='Active Repos' value={repos} />
           <MetricCard title='Unique Builders' value={uniqueBuilders} />
+          <MetricCard title='Active Repos' value={repos} />
         </Stack>
       </Stack>
     </Card>

@@ -2,32 +2,31 @@ import 'server-only';
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { Box, Card, Stack, Typography } from '@mui/material';
+import { formatUnits } from 'viem';
 
 export async function AirdropMetrics({ partner }: { partner: string }) {
-  const [airdrops, totalPayouts, uniqueWallets] = await Promise.all([
-    prisma.partnerRewardPayoutContract.count({
-      where: {
-        partner
-      }
-    }),
-    prisma.partnerRewardPayout.count({
-      where: {
-        payoutContract: {
-          partner
+  const airdrops = await prisma.partnerRewardPayoutContract.findMany({
+    where: {
+      partner
+    },
+    select: {
+      tokenSymbol: true,
+      tokenDecimals: true,
+      rewardPayouts: {
+        select: {
+          amount: true,
+          walletAddress: true
         }
       }
-    }),
-    prisma.partnerRewardPayout
-      .findMany({
-        where: {
-          payoutContract: {
-            partner
-          }
-        },
-        distinct: ['walletAddress']
-      })
-      .then((wallets) => wallets.length)
-  ]);
+    }
+  });
+
+  const totalPayouts = airdrops.reduce(
+    (acc, airdrop) => acc + airdrop.rewardPayouts.reduce((_acc, payout) => _acc + parseInt(payout.amount), 0),
+    0
+  );
+  const totalPayoutsValue = formatUnits(totalPayouts, airdrops[0].tokenDecimals);
+  const uniqueWallets = airdrops.reduce((acc, airdrop) => acc + airdrop.rewardPayouts.length, 0);
 
   return (
     <Card>
@@ -35,9 +34,10 @@ export async function AirdropMetrics({ partner }: { partner: string }) {
         <Typography variant='h6' sx={{ mt: 0, flexGrow: 1 }}>
           Payouts
         </Typography>
-        <Stack direction='row'>
-          <MetricCard title='Total airdrops' value={airdrops} />
-          <MetricCard title='Total payouts' value={totalPayouts} />
+        <Stack direction='row' gap={1}>
+          <MetricCard title='Total value' value={`${totalPayoutsValue} ${airdrops[0].tokenSymbol}`} />
+          <MetricCard title='Weekly airdrops' value={airdrops.length} />
+          {/* <MetricCard title='Total payouts' value={totalPayouts} /> */}
           <MetricCard title='Unique wallets' value={uniqueWallets} />
         </Stack>
       </Stack>
@@ -45,18 +45,13 @@ export async function AirdropMetrics({ partner }: { partner: string }) {
   );
 }
 
-function MetricCard({ title, value, decimals = 0 }: { title: string; value: number; decimals?: number }) {
+function MetricCard({ title, value }: { title: string; value: number }) {
   return (
     <Box minWidth={150}>
       <Typography variant='subtitle2' color='text.secondary'>
         {title}
       </Typography>
-      <Typography variant='h6'>
-        {value.toLocaleString(undefined, {
-          minimumFractionDigits: decimals,
-          maximumFractionDigits: decimals
-        })}
-      </Typography>
+      <Typography variant='h6'>{value.toLocaleString()}</Typography>
     </Box>
   );
 }
