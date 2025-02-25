@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaGithubAlt } from 'react-icons/fa';
 import { HiOutlineUsers } from 'react-icons/hi2';
-import { MdDocumentScanner } from 'react-icons/md';
+import { MdOutlineHandshake, MdDocumentScanner } from 'react-icons/md';
 import { SiFarcaster } from 'react-icons/si';
 
 const StyledBottomNavigation = styled(BottomNavigation, {
@@ -65,6 +65,13 @@ export function SiteNavigation({ topNav, isAuthenticated = false }: { topNav?: b
         href='/farcaster'
         value='farcaster'
         icon={<SiFarcaster size='24px' />}
+        LinkComponent={Link}
+      />
+      <BottomNavigationAction
+        label='Partners'
+        href='/partners'
+        value='partners'
+        icon={<MdOutlineHandshake size='24px' />}
         LinkComponent={Link}
       />
     </StyledBottomNavigation>

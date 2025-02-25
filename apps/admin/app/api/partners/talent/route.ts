@@ -1,6 +1,5 @@
 import type { Scout } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getLastWeek } from '@packages/dates/utils';
 import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
 import { getTalentProfile } from '@packages/scoutgame/talent/getTalentProfile';
 
@@ -10,11 +9,15 @@ export const dynamic = 'force-dynamic';
 
 const minimumTalentScore = 75;
 
-export async function GET() {
-  const lastWeek = getLastWeek();
-  const topBuilders = await getBuildersLeaderboard({
-    week: lastWeek
-  });
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const week = searchParams.get('week');
+
+  if (!week) {
+    return new Response('Week parameter is required', { status: 400 });
+  }
+
+  const topBuilders = await getBuildersLeaderboard({ week });
 
   const buildersWithTalent: {
     wallet: string;
@@ -94,5 +97,5 @@ export async function GET() {
     'Talent Score': score
   }));
 
-  return respondWithTSV(rows, `partners-export_talent_${lastWeek}.tsv`);
+  return respondWithTSV(rows, `partners-export_talent_${week}.tsv`);
 }
