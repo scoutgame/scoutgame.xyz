@@ -1,10 +1,9 @@
 import 'server-only';
 
 import { prisma } from '@charmverse/core/prisma-client';
-import { Card, Stack, Typography } from '@mui/material';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
+import { Box, Card, Stack, Typography } from '@mui/material';
 
-export async function AirdropMetrics({ partner }: { partner: BonusPartner }) {
+export async function AirdropMetrics({ partner }: { partner: string }) {
   const [airdrops, totalPayouts, uniqueWallets] = await Promise.all([
     prisma.partnerRewardPayoutContract.count({
       where: {
@@ -31,20 +30,24 @@ export async function AirdropMetrics({ partner }: { partner: BonusPartner }) {
   ]);
 
   return (
-    <>
-      <Typography variant='h6'>Payouts</Typography>
-      <Stack direction='row' spacing={2} mt={2}>
-        <MetricCard title='Total airdrops' value={airdrops} />
-        <MetricCard title='Total payouts' value={totalPayouts} />
-        <MetricCard title='Unique wallets' value={uniqueWallets} />
+    <Card>
+      <Stack direction='row' alignItems='flex-start' p={2}>
+        <Typography variant='h6' sx={{ mt: 0, flexGrow: 1 }}>
+          Payouts
+        </Typography>
+        <Stack direction='row'>
+          <MetricCard title='Total airdrops' value={airdrops} />
+          <MetricCard title='Total payouts' value={totalPayouts} />
+          <MetricCard title='Unique wallets' value={uniqueWallets} />
+        </Stack>
       </Stack>
-    </>
+    </Card>
   );
 }
 
 function MetricCard({ title, value, decimals = 0 }: { title: string; value: number; decimals?: number }) {
   return (
-    <Card sx={{ p: 2, minWidth: 150 }}>
+    <Box minWidth={150}>
       <Typography variant='subtitle2' color='text.secondary'>
         {title}
       </Typography>
@@ -54,6 +57,6 @@ function MetricCard({ title, value, decimals = 0 }: { title: string; value: numb
           maximumFractionDigits: decimals
         })}
       </Typography>
-    </Card>
+    </Box>
   );
 }

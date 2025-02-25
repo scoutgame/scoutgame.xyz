@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@charmverse/core/prisma-client';
-import { Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 
 export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
@@ -30,20 +30,24 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
   ]);
 
   return (
-    <>
-      <Typography variant='h6'>Activity</Typography>
-      <Stack direction='row' spacing={2} mt={2}>
-        <MetricCard title='Active Repos' value={repos} />
-        <MetricCard title='Total PRs' value={totalPoints} />
-        <MetricCard title='Unique Builders' value={uniqueBuilders} />
+    <Card>
+      <Stack direction='row' alignItems='flex-start' p={2}>
+        <Typography variant='h6' sx={{ mt: 0, flexGrow: 1 }}>
+          Github
+        </Typography>
+        <Stack direction='row'>
+          <MetricCard title='Total PRs' value={totalPoints} />
+          <MetricCard title='Active Repos' value={repos} />
+          <MetricCard title='Unique Builders' value={uniqueBuilders} />
+        </Stack>
       </Stack>
-    </>
+    </Card>
   );
 }
 
 function MetricCard({ title, value, decimals = 0 }: { title: string; value: number; decimals?: number }) {
   return (
-    <Card sx={{ p: 2, minWidth: 150 }}>
+    <Box minWidth={150}>
       <Typography variant='subtitle2' color='text.secondary'>
         {title}
       </Typography>
@@ -53,6 +57,6 @@ function MetricCard({ title, value, decimals = 0 }: { title: string; value: numb
           maximumFractionDigits: decimals
         })}
       </Typography>
-    </Card>
+    </Box>
   );
 }

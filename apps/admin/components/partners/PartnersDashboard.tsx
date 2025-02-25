@@ -13,8 +13,8 @@ import { PartnerCard } from './components/PartnerCard';
 
 export function PartnersDashboard() {
   return (
-    <Container maxWidth='lg'>
-      <Stack spacing={3} justifyContent='center'>
+    <Container maxWidth='md'>
+      <Stack spacing={3} justifyContent='center' mb={3}>
         <PartnerCard partner='celo' partnerName='Celo'>
           <Suspense fallback={<LoadingComponent isLoading />}>
             <GithubMetrics partner='celo' />

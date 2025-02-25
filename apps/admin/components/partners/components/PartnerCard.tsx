@@ -28,35 +28,37 @@ export function PartnerCard({
   const [selectedWeek, setSelectedWeek] = useState(lastWeek);
 
   return (
-    <Card sx={{ p: 3, display: 'flex' }}>
-      <Stack flex={1}>
-        <Typography variant='h5'>{partnerName}</Typography>
-        {children}
-      </Stack>
+    <Card sx={{ p: 2, display: 'flex' }}>
+      <Stack flex={1} gap={2}>
+        <Stack direction='row' justifyContent='space-between' alignItems='center'>
+          <Typography variant='h5'>{partnerName}</Typography>
 
-      <Stack direction='row' spacing={2}>
-        <FormControl size='small'>
-          <Select value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} sx={{ minWidth: 120 }}>
-            {allWeeks.map((week, index) => (
-              <MenuItem key={week} value={week}>
-                <Stack width='100%' gap={1} direction='row' justifyContent='space-between'>
-                  <Typography>{week === currentWeek ? 'Current Week' : `Week ${index + 1}`}</Typography>
-                  <Typography color='secondary'>{`${getDateFromISOWeek(week).toFormat('MMM d')}`}</Typography>
-                </Stack>
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <div>
-          <FileDownloadButton
-            variant='contained'
-            size='small'
-            filename={`${partnerName} Export - Week ${allWeeks.indexOf(selectedWeek) + 1} - ${getWeekStartEndFormatted(getDateFromISOWeek(selectedWeek).toJSDate())}.tsv`}
-            src={`/api/partners/${partner}?week=${selectedWeek}`}
-          >
-            Export winners
-          </FileDownloadButton>
-        </div>
+          <Stack direction='row' spacing={2}>
+            <FormControl size='small'>
+              <Select value={selectedWeek} onChange={(e) => setSelectedWeek(e.target.value)} sx={{ minWidth: 120 }}>
+                {allWeeks.map((week, index) => (
+                  <MenuItem key={week} value={week}>
+                    <Stack width='100%' gap={1} direction='row' justifyContent='space-between'>
+                      <Typography>{week === currentWeek ? 'Current Week' : `Week ${index + 1}`}</Typography>
+                      <Typography color='secondary'>{`${getDateFromISOWeek(week).toFormat('MMM d')}`}</Typography>
+                    </Stack>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <div>
+              <FileDownloadButton
+                variant='contained'
+                size='small'
+                filename={`${partnerName} Export - Week ${allWeeks.indexOf(selectedWeek) + 1} - ${getWeekStartEndFormatted(getDateFromISOWeek(selectedWeek).toJSDate())}.tsv`}
+                src={`/api/partners/${partner}?week=${selectedWeek}`}
+              >
+                Export winners
+              </FileDownloadButton>
+            </div>
+          </Stack>
+        </Stack>
+        {children}
       </Stack>
     </Card>
   );
