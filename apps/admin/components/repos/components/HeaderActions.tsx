@@ -48,72 +48,6 @@ export function HeaderActions() {
           <Box px={0.5}>Partner exports ({lastWeek})</Box>
         </MenuItemNoAction>
         <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Celo Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/celo'
-          >
-            Celo
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Game7 Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/game7'
-          >
-            Game7
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Octant Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/octant'
-          >
-            Octant
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Optimism Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/optimism'
-          >
-            Optimism
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`OP Supersim Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/op_supersim'
-          >
-            OP Supersim
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Referral Rewards Report (${lastWeek}).tsv`}
-            src='/api/partners/referrals'
-          >
-            Referral Rewards
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
           <LoadingButton
             loading={isMutating}
             onClick={() => {
@@ -128,29 +62,6 @@ export function HeaderActions() {
           >
             Send Moxie Tokens
           </LoadingButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Moxie Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/moxie/export'
-            onComplete={closeMenu}
-          >
-            Export Moxie Report
-          </FileDownloadButton>
-        </MenuItem>
-        <MenuItem>
-          <FileDownloadButton
-            fullWidth
-            sx={{ justifyContent: 'flex-start' }}
-            size='small'
-            filename={`Talent Protocol Weekly Report (${lastWeek}).tsv`}
-            src='/api/partners/talent'
-          >
-            Talent Protocol
-          </FileDownloadButton>
         </MenuItem>
       </Menu>
     </Stack>
