@@ -18,11 +18,29 @@ export function useInitFarcasterData() {
         return;
       }
 
-      router.push(getNextPageLink({ onboarded: data?.onboarded }));
-      // Wait for the router to push the page
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1000);
+      const targetPath = getNextPageLink({ onboarded: data.onboarded });
+      router.push(targetPath);
+
+      let retries = 0;
+
+      // Wait for navigation to complete
+      const retryPromise = new Promise<void>((resolve) => {
+        const checkNavigation = () => {
+          // Get current pathname directly from window.location
+          const currentPath = window.location.pathname;
+          // If we're not on the home page, we're done or we've retried too many times
+          if (currentPath !== '/' || retries > 10) {
+            resolve();
+          } else {
+            retries += 1;
+            setTimeout(checkNavigation, 1000);
+          }
+        };
+
+        checkNavigation();
       });
+
+      await retryPromise;
     },
     onError(err) {
       log.error('Error on farcaster frames login', { error: err.error.serverError });
