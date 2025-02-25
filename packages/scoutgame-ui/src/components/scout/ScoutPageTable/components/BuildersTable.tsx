@@ -3,9 +3,9 @@
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
+import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -192,9 +192,25 @@ export function BuildersTable({
                 height: { xs: 35, md: 50 }
               }}
             >
-              <Stack direction='row' alignItems='center' gap={1} height='100%'>
+              <Stack
+                direction='row'
+                alignItems='center'
+                gap={{
+                  xs: 0.5,
+                  md: 1
+                }}
+                height='100%'
+              >
                 <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
-                <TableCellText color='secondary'>{builder.rank || '-'}</TableCellText>
+                <TableCellText
+                  color='secondary'
+                  minWidth={{
+                    xs: 20,
+                    md: 25
+                  }}
+                >
+                  {builder.rank || '-'}
+                </TableCellText>
               </Stack>
             </TableCell>
             <TableCell align='center'>

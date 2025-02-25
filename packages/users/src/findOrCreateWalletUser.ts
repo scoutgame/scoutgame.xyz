@@ -4,6 +4,7 @@ import { getENSDetails, getENSName } from '@packages/blockchain/getENSName';
 import { getFarcasterUsersByAddresses } from '@packages/farcaster/getFarcasterUsersByAddresses';
 import { getAddress } from 'viem';
 
+import { findOrCreateFarcasterUser } from './findOrCreateFarcasterUser';
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
 import { generateRandomName } from './generateRandomName';
@@ -32,17 +33,19 @@ export async function findOrCreateWalletUser({
     log.warn('Could not retrieve ENS details while creating a user', { error, wallet });
   });
   const displayName = ens || generateRandomName();
-  let farcasterName: string | undefined;
-  let farcasterId: number | undefined;
   try {
     const address = getAddress(wallet).toLowerCase();
     const response = await getFarcasterUsersByAddresses({ addresses: [address] });
     const farcasterUser = response[address]?.[0];
-    farcasterName = farcasterUser?.username;
-    farcasterId = farcasterUser?.fid;
-    const user = await findOrCreateFarcasterUser({});
-    // add the wallet address to the user
-    return user;
+    const farcasterId = farcasterUser?.fid;
+    const verifications = farcasterUser?.verifications;
+    return await findOrCreateFarcasterUser({
+      fid: farcasterId,
+      newUserId,
+      referralCode,
+      utmCampaign,
+      verifications
+    });
   } catch (error) {
     log.warn('Could not retrieve Farcaster user', { error, wallet });
   }
@@ -54,8 +57,6 @@ export async function findOrCreateWalletUser({
     walletAddresses: [wallet],
     displayName,
     path: displayName,
-    farcasterName,
-    farcasterId,
     utmCampaign: utmCampaign || undefined
   });
 

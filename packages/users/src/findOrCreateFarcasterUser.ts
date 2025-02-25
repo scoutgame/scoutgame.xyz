@@ -14,13 +14,15 @@ export async function findOrCreateFarcasterUser({
   newUserId,
   tierOverride,
   referralCode,
-  utmCampaign
+  utmCampaign,
+  verifications
 }: {
   fid: number;
   newUserId?: string;
   tierOverride?: ConnectWaitlistTier;
   referralCode?: string | null;
   utmCampaign?: string | null;
+  verifications?: string[];
 }): Promise<FindOrCreateUserResult> {
   // check if user already exists to avoid api calls to neynar
   const existing = await prisma.scout.findUnique({
@@ -28,10 +30,23 @@ export async function findOrCreateFarcasterUser({
     select: {
       id: true,
       onboardedAt: true,
-      agreedToTermsAt: true
+      agreedToTermsAt: true,
+      wallets: {
+        select: {
+          address: true
+        }
+      }
     }
   });
   if (existing) {
+    const scoutWalletAddresses = existing.wallets.map((w) => w.address.toLowerCase()) ?? [];
+    const newAddresses = verifications?.filter((address) => !scoutWalletAddresses.includes(address)) ?? [];
+    if (newAddresses.length) {
+      await prisma.scout.update({
+        where: { id: existing.id },
+        data: { wallets: { create: newAddresses.map((address) => ({ address })) } }
+      });
+    }
     return { isNew: false, ...existing };
   }
   const profile = await getFarcasterUserById(fid).catch((error) => {

@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjgyODg4OCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDNFNTQzYzAxMzZiYTY2ZTJGYTAxQ2M5NWExODU5Q2FGNDFkYzExQ2UifQ",
+    "payload": "eyJkb21haW4iOiJzY291dGdhbWUueHl6In0",
+    "signature": "MHg5NmIxNDZlNTljZjQ2MDFhNDYzNTljMTRlMDM3YjEwZDI5NWVmMzUxNjFlOWUzZjk2OGEzYTQxMjcwZTAzZWEzNGQ4ZjkyMzEwMTJiMTUwOTRhMTc0MzVmNWRlZmVmZDBiNmRkZDk0N2MxNjAzN2ZiNzlkZjFlOGY4Yjk1NDJlYTFi"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Scout Game",
+    "iconUrl": "https://scoutgame.xyz/images/farcaster/fc_icon.png",
+    "homeUrl": "https://scoutgame.xyz",
+    "imageUrl": "https://scoutgame.xyz/images/farcaster/fc_frame.png",
+    "buttonTitle": "Scout",
+    "splashImageUrl": "https://scoutgame.xyz/images/farcaster/fc_splash.png",
+    "splashBackgroundColor": "#000",
+    "webhookUrl": "https://scoutgame.xyz/api/farcaster/webhook"
+  }
+}

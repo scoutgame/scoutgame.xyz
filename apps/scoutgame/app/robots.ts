@@ -1,4 +1,4 @@
-import { getPlatform } from '@packages/mixpanel/platform';
+import { getPlatform } from '@packages/utils/platform';
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {

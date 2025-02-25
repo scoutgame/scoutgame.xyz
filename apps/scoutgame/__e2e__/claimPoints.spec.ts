@@ -23,6 +23,14 @@ test.describe('Claim points', () => {
 
     await claimPage.claimPointsButton.click();
     await expect(claimPage.successModal).toBeVisible();
-    await expect(await claimPage.headerPointsBalance.textContent()).toEqual('10');
+
+    // Retry mechanism to wait for points balance to update
+    await expect(async () => {
+      const balance = await claimPage.headerPointsBalance.textContent();
+      expect(balance).toEqual('10');
+    }).toPass({
+      timeout: 10000,
+      intervals: [1000]
+    });
   });
 });

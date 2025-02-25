@@ -3,13 +3,13 @@
 import { log } from '@charmverse/core/log';
 import InfoIcon from '@mui/icons-material/Info';
 import { Box, Container, Menu, MenuItem, Toolbar, AppBar, Button, Typography, Stack, IconButton } from '@mui/material';
-import { getPlatform } from '@packages/mixpanel/platform';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { SiteNavigation } from '@packages/scoutgame-ui/components/common/Navigation/SiteNavigation';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
