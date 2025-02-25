@@ -1,4 +1,4 @@
-import { getPlatform } from '@packages/mixpanel/platform';
+import { getPlatform } from '@packages/utils/platform';
 import type { SessionOptions, IronSession } from 'iron-session';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';

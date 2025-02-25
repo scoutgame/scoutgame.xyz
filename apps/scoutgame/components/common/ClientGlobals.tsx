@@ -1,9 +1,10 @@
 'use client';
 
-import { getPlatform } from '@packages/mixpanel/platform';
 import { useDatadogLogger } from '@packages/scoutgame-ui/hooks/useDatadogLogger';
+import { useInitFarcasterData } from '@packages/scoutgame-ui/hooks/useInitFarcasterData';
 import { useInitTelegramData } from '@packages/scoutgame-ui/hooks/useInitTelegramData';
 import { usePageView } from '@packages/scoutgame-ui/hooks/usePageView';
+import { getPlatform } from '@packages/utils/platform';
 
 import WelcomeModal from './WelcomeModal';
 
@@ -15,6 +16,7 @@ export function ClientGlobals({ userId }: { userId?: string }) {
   useDatadogLogger({ service, userId });
   usePageView();
   useInitTelegramData();
+  useInitFarcasterData();
 
   return <WelcomeModal userId={userId} />;
 }

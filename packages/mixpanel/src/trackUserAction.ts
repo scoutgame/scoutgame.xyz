@@ -1,8 +1,8 @@
 import { log } from '@charmverse/core/log';
+import { getPlatform } from '@packages/utils/platform';
 
 import type { MixpanelEventMap, MixpanelEventName, MixpanelTrackBase } from './interfaces';
 import { mixpanel } from './mixpanel';
-import { getPlatform } from './platform';
 import type { UTMParams } from './utils';
 import { eventNameToHumanFormat, paramsToHumanFormat } from './utils';
 
