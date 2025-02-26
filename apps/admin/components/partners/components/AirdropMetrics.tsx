@@ -89,7 +89,6 @@ export async function AirdropMetrics({
           maximumFractionDigits: 2
         });
   };
-
   return (
     <Card>
       <Stack direction='row' alignItems='flex-start' p={2}>
@@ -101,7 +100,7 @@ export async function AirdropMetrics({
             <MetricCard
               title={
                 <>
-                  Wallet / <WalletAddress address={walletAddress ?? ''} />
+                  Wallet <WalletAddress address={walletAddress ?? ''} chainId={chainId ?? 1} />
                 </>
               }
               value={`${toEth(walletBalance)} ${tokenSymbol}`}
