@@ -805,8 +805,8 @@ describe('recordMergedPullRequest', () => {
     });
 
     expect(gemsReceipts).toHaveLength(2);
-    expect(gemsReceipts[0].value).toBe(100); // First PR in a new repo should award 100 points
-    expect(gemsReceipts[1].value).toBe(10); // Second PR in a new repo (in the last 7 days) should award only 10 points
+    expect(gemsReceipts[0].value).toBe(gemsValues.first_pr); // First PR in a new repo should award 100 points
+    expect(gemsReceipts[1].value).toBe(gemsValues.regular_pr); // Second PR in a new repo (in the last 7 days) should award only 10 points
   });
 
   it('should award full points for PRs in different repos when created more than 7 days apart', async () => {
@@ -861,7 +861,7 @@ describe('recordMergedPullRequest', () => {
     });
 
     expect(gemsReceipts).toHaveLength(2);
-    expect(gemsReceipts[0].value).toBe(100); // First PR should award 100 points
-    expect(gemsReceipts[1].value).toBe(100); // Second PR should also award 100 points since it's after 7 days
+    expect(gemsReceipts[0].value).toBe(gemsValues.first_pr); // First PR should award 100 points
+    expect(gemsReceipts[1].value).toBe(gemsValues.first_pr); // Second PR should also award 100 points since it's after 7 days
   });
 });
