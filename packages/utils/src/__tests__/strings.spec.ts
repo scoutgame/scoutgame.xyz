@@ -1,4 +1,4 @@
-import { concatenateStringValues, isValidEmail } from '../strings';
+import { concatenateStringValues, isValidEmail, shortenHex } from '../strings';
 
 describe('concatenateStringValues', () => {
   it('should concatenate all string values from the object into an array', () => {
@@ -92,5 +92,14 @@ describe('isValidEmail', () => {
 
   it('should return false for a string with a space', () => {
     expect(isValidEmail('test@ example.com')).toBe(false);
+  });
+});
+
+describe('shortenHex', () => {
+  it('should shorten valid wallet addresses', () => {
+    const address = '0x35b058273Bd953189e29BE6fbBe57C0b66D79a04';
+    const shortAddress = shortenHex(address);
+    expect(shortAddress).toBe(shortenHex(address));
+    expect(shortAddress.length).toBe(11);
   });
 });

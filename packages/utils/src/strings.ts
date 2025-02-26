@@ -118,3 +118,10 @@ export function conditionalPlural({
 export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+export function shortenHex(hex: string = '', length = 4): string {
+  if (hex.length <= length * 2) {
+    return hex;
+  }
+  return `${hex.substring(0, length + 2)}…${hex.substring(hex.length - length)}`;
+}

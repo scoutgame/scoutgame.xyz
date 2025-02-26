@@ -1,9 +1,22 @@
 import 'server-only';
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { Box, Card, Stack, Typography, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import {
+  Box,
+  Card,
+  Stack,
+  Typography,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton
+} from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { formatUnits } from 'viem';
+
+import { WalletAddress } from 'components/common/WalletAddress';
 
 export async function AirdropMetrics({
   partner,
@@ -80,7 +93,14 @@ export async function AirdropMetrics({
             Rewards
           </Typography>
           <Stack direction='row' gap={1}>
-            <MetricCard title='Wallet balance' value={`${toEth(walletBalance)} ${tokenSymbol}`} />
+            <MetricCard
+              title={
+                <>
+                  Wallet / <WalletAddress address={walletAddress ?? ''} />
+                </>
+              }
+              value={`${toEth(walletBalance)} ${tokenSymbol}`}
+            />
             {/* <MetricCard title='Total paid' value={`${toEth(totalPayouts)} ${tokenSymbol}`} /> */}
           </Stack>
         </Box>
@@ -161,7 +181,7 @@ export async function AirdropMetrics({
   );
 }
 
-function MetricCard({ title, value }: { title: string; value: number | string }) {
+function MetricCard({ title, value }: { title: string | React.ReactNode; value: number | string }) {
   return (
     <Box minWidth={150}>
       <Typography variant='subtitle2' color='text.secondary'>
