@@ -71,7 +71,7 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
               title='Repositories'
               value={
                 <>
-                  {repos}{' '}
+                  {repos.toLocaleString()}{' '}
                   {/* <Chip label='View' size='small' variant='outlined' color='secondary' clickable sx={{ ml: 1 }} /> */}
                 </>
               }

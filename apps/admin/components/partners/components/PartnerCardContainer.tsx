@@ -24,7 +24,7 @@ export function PartnerCardContainer({
       {(hasGithubRepos || airdropPartner) && (
         <Suspense fallback={<LoadingComponent isLoading />}>
           {airdropPartner && <AirdropMetrics partner={airdropPartner} walletAddress={airdropWalletAddress} />}
-          <GithubMetrics partner={partner as BonusPartner} />
+          {hasGithubRepos && <GithubMetrics partner={partner as BonusPartner} />}
         </Suspense>
       )}
     </PartnerCard>
