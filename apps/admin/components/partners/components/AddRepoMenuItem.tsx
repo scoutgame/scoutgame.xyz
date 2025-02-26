@@ -2,6 +2,7 @@
 
 import type { MenuItemProps } from '@mui/material';
 import { MenuItem } from '@mui/material';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { useState } from 'react';
 
 import { AddRepoModal } from 'components/repos/components/AddRepoButton/AddRepoModal';
@@ -25,7 +26,11 @@ export function AddRepoMenuItem({
           onComplete();
         }}
         partner={partner}
-        onAdd={onComplete}
+        onAdd={() => {
+          revalidatePathAction();
+          setIsModalOpen(false);
+          onComplete();
+        }}
       />
     </>
   );
