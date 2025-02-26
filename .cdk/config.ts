@@ -27,11 +27,6 @@ export const apps: { [key: string]: { stg?: Options; prd?: Options } } = {
       sslCert: scoutgameCert
     }
   },
-  scoutgamefarcaster: {
-    prd: {
-      sslCert: scoutgameCert
-    }
-  },
   'onchain-scoutgamecron': {
     prd: {
       environmentTier: 'Worker'

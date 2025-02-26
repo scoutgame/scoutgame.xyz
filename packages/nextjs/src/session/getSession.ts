@@ -7,6 +7,7 @@ import type { SessionData } from './interfaces';
 
 export async function getSession<T extends object = SessionData>(cookieOptions?: SessionOptions['cookieOptions']) {
   const options = getIronOptions({
+    // Add same site none to allow telegram and farcaster frames to access the session
     sameSite: 'none',
     ...cookieOptions
   });

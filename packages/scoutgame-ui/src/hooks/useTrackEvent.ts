@@ -8,20 +8,12 @@ import { isValidURL } from '@packages/utils/url';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useIsFarcasterFrame } from './useIsFarcasterFrame';
+
 export function useTrackEvent() {
   const { execute } = useAction(trackEventAction);
   const platform = getPlatform();
-  const [isFarcasterFrameContext, setIsFarcasterFrameContext] = useState(false);
-
-  useEffect(() => {
-    async function checkFarcasterFrameContext() {
-      const context = await sdk.context;
-      if (context) {
-        setIsFarcasterFrameContext(true);
-      }
-    }
-    checkFarcasterFrameContext();
-  }, []);
+  const isFarcasterFrame = useIsFarcasterFrame();
 
   return useCallback(
     function trackEvent(event: MixpanelEventName, properties?: Record<string, string | number | boolean>) {
@@ -41,10 +33,10 @@ export function useTrackEvent() {
         $screen_height: String(window.screen.height),
         $referrer: referrer,
         $referring_domain: referrerDomain,
-        platform: isFarcasterFrameContext ? 'farcaster' : platform,
+        platform: isFarcasterFrame ? 'farcaster' : platform,
         ...properties
       });
     },
-    [execute, platform, isFarcasterFrameContext]
+    [execute, platform, isFarcasterFrame]
   );
 }
