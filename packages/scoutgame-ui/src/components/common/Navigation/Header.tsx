@@ -169,7 +169,7 @@ export function Header() {
                       <InfoIcon color='secondary' />
                     </IconButton>
                   </Link>
-                  {platform === 'webapp' && (
+                  {platform === 'webapp' && !isFarcasterFrame && (
                     <Button variant='gradient' href='/login' data-test='sign-in-button'>
                       Sign in
                     </Button>
