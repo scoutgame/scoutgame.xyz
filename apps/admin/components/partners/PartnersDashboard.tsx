@@ -25,19 +25,25 @@ export function PartnersDashboard() {
         </PartnerCard>
         <PartnerCard partner='octant' partnerName='Octant'>
           <Suspense fallback={<LoadingComponent isLoading />}>
+            <AirdropMetrics
+              partner='octant_base_contribution'
+              walletAddress={process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_ADDRESS}
+            />
             <GithubMetrics partner='octant' />
-            <AirdropMetrics partner='octant_base_contribution' />
           </Suspense>
         </PartnerCard>
         <PartnerCard partner='optimism' partnerName='Optimism'>
           <Suspense fallback={<LoadingComponent isLoading />}>
-            <AirdropMetrics partner='optimism_new_scout' />
+            <AirdropMetrics partner='optimism_new_scout' walletAddress={process.env.NEW_SCOUT_REWARD_ADMIN_ADDRESS} />
           </Suspense>
         </PartnerCard>
         <PartnerCard partner='referrals' partnerName='Referral Rewards'>
           {/* <ReferralMetrics /> */}
           <Suspense fallback={<LoadingComponent isLoading />}>
-            <AirdropMetrics partner='optimism_referral_champion' />
+            <AirdropMetrics
+              partner='optimism_referral_champion'
+              walletAddress={process.env.REFERRAL_CHAMPION_REWARD_ADMIN_ADDRESS}
+            />
           </Suspense>
         </PartnerCard>
         <PartnerCard partner='talent' partnerName='Talent Protocol'>

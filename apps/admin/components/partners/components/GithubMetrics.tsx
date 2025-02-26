@@ -33,7 +33,7 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
     <Card>
       <Stack direction='row' alignItems='flex-start' p={2}>
         <Typography variant='h6' sx={{ mt: 0, flexGrow: 1 }}>
-          Github
+          Activity
         </Typography>
         <Stack direction='row' gap={1}>
           <MetricCard title='Total PRs' value={totalPoints} />
