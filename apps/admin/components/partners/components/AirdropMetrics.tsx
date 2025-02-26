@@ -5,7 +5,13 @@ import { Box, Card, Stack, Typography, Table, TableHead, TableRow, TableCell, Ta
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { formatUnits } from 'viem';
 
-export async function AirdropMetrics({ partner, walletAddress }: { partner: string; walletAddress: string }) {
+export async function AirdropMetrics({
+  partner,
+  walletAddress
+}: {
+  partner: string;
+  walletAddress: string | undefined;
+}) {
   const airdrops = await prisma.partnerRewardPayoutContract.findMany({
     where: {
       partner
