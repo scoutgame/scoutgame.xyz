@@ -52,7 +52,7 @@ function Document() {
           </TableRow>
           <TableRow>
             <TableCell>First Pull Request in a Qualified GitHub Repository</TableCell>
-            <TableCell align='center'>100</TableCell>
+            <TableCell align='center'>20</TableCell>
           </TableRow>
         </TableBody>
       </Table>
