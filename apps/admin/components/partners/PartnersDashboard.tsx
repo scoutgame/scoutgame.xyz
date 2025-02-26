@@ -32,7 +32,7 @@ export function PartnersDashboard() {
             <GithubMetrics partner='octant' />
           </Suspense>
         </PartnerCard>
-        <PartnerCard partner='optimism' partnerName='Optimism'>
+        <PartnerCard partner='optimism' partnerName='Optimism (Top New Scouts)'>
           <Suspense fallback={<LoadingComponent isLoading />}>
             <AirdropMetrics partner='optimism_new_scout' walletAddress={process.env.NEW_SCOUT_REWARD_ADMIN_ADDRESS} />
           </Suspense>
