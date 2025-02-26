@@ -52,7 +52,6 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const { user } = useUser();
   const isAuthenticated = Boolean(user);
   const value = getActiveButton(pathname);
-  const [isFarcasterFrameContext, setIsFarcasterFrameContext] = useState(false);
   const { data: claimablePoints = { points: 0, processingPayouts: false } } = useGetClaimablePoints();
   const { data: dailyClaims = [] } = useGetQuests();
   const todaysClaim = dailyClaims?.find((claim) => {
@@ -66,16 +65,6 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
     path: 'scout'
   });
 
-  useEffect(() => {
-    async function checkFarcasterFrameContext() {
-      const context = await sdk.context;
-      if (context) {
-        setIsFarcasterFrameContext(true);
-      }
-    }
-    checkFarcasterFrameContext();
-  }, []);
-
   return (
     <>
       <StyledBottomNavigation
@@ -83,7 +72,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         value={value}
         data-test='site-navigation'
         topNav={topNav}
-        largerNavbar={platform === 'telegram' || isFarcasterFrameContext}
+        largerNavbar={platform === 'telegram' || platform === 'farcaster'}
       >
         <BottomNavigationAction
           label='Scout'

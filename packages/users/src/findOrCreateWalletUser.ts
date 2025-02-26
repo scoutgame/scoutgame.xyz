@@ -37,15 +37,17 @@ export async function findOrCreateWalletUser({
     const address = getAddress(wallet).toLowerCase();
     const response = await getFarcasterUsersByAddresses({ addresses: [address] });
     const farcasterUser = response[address]?.[0];
-    const farcasterId = farcasterUser?.fid;
-    const verifications = farcasterUser?.verifications;
-    return await findOrCreateFarcasterUser({
-      fid: farcasterId,
-      newUserId,
-      referralCode,
-      utmCampaign,
-      verifications
-    });
+    if (farcasterUser) {
+      const farcasterId = farcasterUser?.fid;
+      const verifications = farcasterUser?.verifications;
+      return await findOrCreateFarcasterUser({
+        fid: farcasterId,
+        newUserId,
+        referralCode,
+        utmCampaign,
+        verifications
+      });
+    }
   } catch (error) {
     log.warn('Could not retrieve Farcaster user', { error, wallet });
   }

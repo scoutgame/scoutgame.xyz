@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   const platform = getPlatform();
-  const disallowRobots = platform === 'telegram';
+  const disallowRobots = platform === 'telegram' || platform === 'farcaster';
 
   return {
     rules: {

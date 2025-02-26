@@ -21,9 +21,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
   }
 
-  if (!isLoggedIn && path !== '/home' && platform === 'telegram') {
+  if (!isLoggedIn && path !== '/home' && (platform === 'telegram' || platform === 'farcaster')) {
     // eslint-disable-next-line no-console
-    console.log('Redirecting to telegram loading screen', { path, platform, ...session });
+    console.log(`Redirecting to ${platform} loading screen`, { path, platform, ...session });
     return NextResponse.redirect(new URL('/home', request.url));
   }
 

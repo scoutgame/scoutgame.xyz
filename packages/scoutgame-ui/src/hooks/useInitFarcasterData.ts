@@ -1,15 +1,22 @@
 import { log } from '@charmverse/core/log';
 import sdk from '@farcaster/frame-sdk';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
+import { getPlatform } from '@packages/utils/platform';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect } from 'react';
+
+import { useUser } from '../providers/UserProvider';
 
 import { useLoginSuccessHandler } from './useLoginSuccessHandler';
 
 export function useInitFarcasterData() {
   const router = useRouter();
+  const platform = getPlatform();
   const { getNextPageLink } = useLoginSuccessHandler();
+  const { refreshUser, user } = useUser();
+  const { executeAsync: revalidatePath } = useAction(revalidatePathAction);
 
   const { executeAsync: loginUser } = useAction(loginWithWalletAction, {
     onSuccess: async ({ data }) => {
@@ -18,29 +25,15 @@ export function useInitFarcasterData() {
         return;
       }
 
+      await refreshUser();
+
+      await revalidatePath();
+
       const targetPath = getNextPageLink({ onboarded: data.onboarded });
+
+      log.info('Farcaster frames login successful', { userId: data.user.id, targetPath });
+
       router.push(targetPath);
-
-      let retries = 0;
-
-      // Wait for navigation to complete
-      const retryPromise = new Promise<void>((resolve) => {
-        const checkNavigation = () => {
-          // Get current pathname directly from window.location
-          const currentPath = window.location.pathname;
-          // If we're not on the home page, we're done or we've retried too many times
-          if (currentPath !== '/' || retries > 10) {
-            resolve();
-          } else {
-            retries += 1;
-            setTimeout(checkNavigation, 1000);
-          }
-        };
-
-        checkNavigation();
-      });
-
-      await retryPromise;
     },
     onError(err) {
       log.error('Error on farcaster frames login', { error: err.error.serverError });
@@ -55,22 +48,29 @@ export function useInitFarcasterData() {
     const load = async () => {
       const context = await sdk.context;
       // If context is not present we are not inside a farcaster client
-      if (context) {
+      if (!context) {
+        return;
+      }
+      // If the user is not logged in, auto trigger wallet login
+      if (!user) {
         const { signature, message } = await sdk.actions.signIn({
           nonce: Math.random().toString(36).substring(2, 10),
           // 1 hour expiration time
           expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString()
         });
+
         // Auto login user if they have a wallet connected
         await loginUser({
           signature,
           message
         });
+      } else {
+        await sdk.actions.ready({});
       }
     };
 
-    if (sdk) {
+    if (sdk && platform === 'farcaster') {
       load();
     }
-  }, []);
+  }, [user, loginUser, platform]);
 }

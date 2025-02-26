@@ -8,7 +8,10 @@ import type { SessionData } from './interfaces';
 
 export async function getSession<T extends object = SessionData>(cookieOptions?: SessionOptions['cookieOptions']) {
   const platform = getPlatform();
-  const options = getIronOptions({ sameSite: platform === 'telegram' ? 'none' : undefined, ...cookieOptions });
+  const options = getIronOptions({
+    sameSite: platform === 'telegram' || platform === 'farcaster' ? 'none' : undefined,
+    ...cookieOptions
+  });
 
   const session = await getIronSession<T>(cookies(), options);
 
