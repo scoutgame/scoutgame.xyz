@@ -15,15 +15,15 @@ export function PartnersDashboard() {
   return (
     <Container maxWidth='md'>
       <Stack spacing={3} justifyContent='center' mb={3}>
-        <PartnerCard partner='celo' partnerName='Celo'>
+        <PartnerCard partner='celo' partnerName='Celo' hasGithubRepos>
           <Suspense fallback={<LoadingComponent isLoading />}>
             <GithubMetrics partner='celo' />
           </Suspense>
         </PartnerCard>
-        <PartnerCard partner='game7' partnerName='Game7'>
+        <PartnerCard partner='game7' partnerName='Game7' hasGithubRepos>
           <GithubMetrics partner='game7' />
         </PartnerCard>
-        <PartnerCard partner='octant' partnerName='Octant'>
+        <PartnerCard partner='octant' partnerName='Octant' hasGithubRepos>
           <Suspense fallback={<LoadingComponent isLoading />}>
             <AirdropMetrics
               partner='octant_base_contribution'
@@ -54,7 +54,7 @@ export function PartnersDashboard() {
           Completed
         </Typography>
 
-        <PartnerCard partner='op_supersim' partnerName='OP Supersim'>
+        <PartnerCard partner='op_supersim' partnerName='OP Supersim' hasGithubRepos>
           <Suspense fallback={<LoadingComponent isLoading />}>
             <GithubMetrics partner='op_supersim' />
           </Suspense>

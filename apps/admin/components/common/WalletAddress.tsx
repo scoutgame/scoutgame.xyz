@@ -47,7 +47,7 @@ export function WalletAddress({ address, chainId }: { address: string; chainId: 
       </Tooltip>
       <Tooltip title='Copy address'>
         <span>
-          <IconButton onClick={() => copyToClipboard(address)} target='_blank' size='small' color='secondary'>
+          <IconButton onClick={() => copyToClipboard(address)} size='small' color='secondary'>
             <ContentCopyIcon fontSize='inherit' />
           </IconButton>
         </span>

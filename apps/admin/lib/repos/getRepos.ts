@@ -16,8 +16,9 @@ export type Repo = {
 export async function getRepos({
   searchString,
   limit,
-  includeInactive // include repos that have no activity
-}: { searchString?: string; limit?: number; includeInactive?: boolean } = {}): Promise<Repo[]> {
+  includeInactive, // include repos that have no activity
+  partner
+}: { searchString?: string; limit?: number; includeInactive?: boolean; partner?: string } = {}): Promise<Repo[]> {
   if (typeof searchString === 'string' && searchString.length < 2) {
     return [];
   }
@@ -40,6 +41,7 @@ export async function getRepos({
       : { createdAt: 'desc' },
     where: ownerAndName
       ? {
+          bonusPartner: partner,
           owner: {
             contains: ownerAndName[0],
             mode: 'insensitive'
@@ -47,8 +49,11 @@ export async function getRepos({
           name: ownerAndName[1] ? { contains: ownerAndName[1], mode: 'insensitive' } : undefined
         }
       : includeInactive
-        ? {}
+        ? {
+            bonusPartner: partner
+          }
         : {
+            bonusPartner: partner,
             // filter for repos that have activity by default
             OR: [
               {
