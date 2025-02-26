@@ -86,5 +86,3 @@ jobs:
         with:
           token: ${{ steps.get-token.outputs.token }}
           environment: ${{ steps.destroy_aws_stack.outputs.scoutgametelegram_env }}
-
-          
