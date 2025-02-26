@@ -1,3 +1,4 @@
+import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import React, { Suspense } from 'react';
 
@@ -23,7 +24,7 @@ export function PartnerCardContainer({
       {(hasGithubRepos || airdropPartner) && (
         <Suspense fallback={<LoadingComponent isLoading />}>
           {airdropPartner && <AirdropMetrics partner={airdropPartner} walletAddress={airdropWalletAddress} />}
-          <GithubMetrics partner={partner} />
+          <GithubMetrics partner={partner as BonusPartner} />
         </Suspense>
       )}
     </PartnerCard>
