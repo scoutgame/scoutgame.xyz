@@ -3,7 +3,6 @@
 import { log } from '@charmverse/core/log';
 import { getUTMParamsFromSearch } from '@packages/mixpanel/utils';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
-import { getPlatform } from '@packages/utils/platform';
 import { v4 as uuid } from 'uuid';
 
 import { eventSchema } from './trackEventActionSchema';
@@ -13,7 +12,7 @@ export const trackEventAction = actionClient
   .metadata({ actionName: 'mixpanel_event' })
   .schema(eventSchema)
   .action(async ({ parsedInput, ctx }) => {
-    const { event: eventName, ...eventPayload } = parsedInput;
+    const { event: eventName, platform, ...eventPayload } = parsedInput;
 
     let userId = ctx.session.scoutId || ctx.session.anonymousUserId;
 
@@ -42,7 +41,7 @@ export const trackEventAction = actionClient
       userId: event.userId,
       path: event.currentUrlPath,
       utmParams,
-      platform: getPlatform()
+      platform
     });
 
     return { success: true };

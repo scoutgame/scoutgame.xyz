@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
 
   if (!isLoggedIn && path !== '/home' && platform === 'telegram') {
     // eslint-disable-next-line no-console
-    console.log('Redirecting to telegram loading screen', { path, platform, ...session });
+    console.log(`Redirecting to telegram loading screen`, { path, platform, ...session });
     return NextResponse.redirect(new URL('/home', request.url));
   }
 

@@ -26,11 +26,11 @@ export async function GET(request: Request) {
     }
   });
 
-  const sealedSession = await sealData({ ...user, user, scoutId: user.id }, getIronOptions());
+  const sealedSession = await sealData({ ...user, user, scoutId: user.id }, getIronOptions({ sameSite: 'none' }));
 
   const response = new Response(JSON.stringify({ user }));
 
-  const cookieName = process.env.AUTH_COOKIE || getIronOptions().cookieName;
+  const cookieName = process.env.AUTH_COOKIE || getIronOptions({ sameSite: 'none' }).cookieName;
 
   response.headers.set('Set-Cookie', `${cookieName}=${sealedSession}; HttpOnly; Secure; SameSite=Lax; Path=/`);
 

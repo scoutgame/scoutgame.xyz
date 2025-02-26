@@ -11,6 +11,7 @@ export const eventSchema = yup.object().shape({
   $referrer: yup.string().url(),
   $referring_domain: yup.string(),
   $screen_height: yup.string(),
-  $screen_width: yup.string()
+  $screen_width: yup.string(),
+  platform: yup.string()
 });
 export type Payload = yup.InferType<typeof eventSchema>;

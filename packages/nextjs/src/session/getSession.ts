@@ -1,4 +1,3 @@
-import { getPlatform } from '@packages/utils/platform';
 import type { SessionOptions, IronSession } from 'iron-session';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
@@ -7,8 +6,11 @@ import { getIronOptions } from './getIronOptions';
 import type { SessionData } from './interfaces';
 
 export async function getSession<T extends object = SessionData>(cookieOptions?: SessionOptions['cookieOptions']) {
-  const platform = getPlatform();
-  const options = getIronOptions({ sameSite: platform === 'telegram' ? 'none' : undefined, ...cookieOptions });
+  const options = getIronOptions({
+    // Add same site none to allow telegram and farcaster frames to access the session
+    sameSite: 'none',
+    ...cookieOptions
+  });
 
   const session = await getIronSession<T>(cookies(), options);
 
