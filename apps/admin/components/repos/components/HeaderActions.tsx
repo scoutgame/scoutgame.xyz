@@ -38,11 +38,12 @@ export function HeaderActions() {
           <FileDownloadButton
             fullWidth
             size='small'
+            variant='contained'
             filename='github_repos.tsv'
             src='/api/repos/export'
             onComplete={handleClose}
           >
-            Download as TSV
+            Download TSV
           </FileDownloadButton>
         </DialogContent>
       </Dialog>

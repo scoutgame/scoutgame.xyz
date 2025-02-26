@@ -10,14 +10,17 @@ export type GitHubAPIRepo = {
   owner: { login: string; type: string };
 };
 
-export async function getReposByOwner(owner: string) {
+export async function getReposByOwner(ownerInput: string) {
   let allRepos: GitHubAPIRepo[] = [];
   let page = 1;
   const perPage = 100; // GitHub's max per page
   let hasNextPage = true;
+  const ownerAndName = ownerInput.split('/');
+  const owner = ownerAndName[0];
+  const name = ownerAndName[1]; // name is optional
 
-  while (hasNextPage) {
-    const response = await fetch(`https://api.github.com/users/${owner}/repos?page=${page}&per_page=${perPage}`, {
+  if (name) {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${name}`, {
       headers: {
         Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
       }
@@ -27,18 +30,33 @@ export async function getReposByOwner(owner: string) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const repos = await response.json();
-    allRepos = allRepos.concat(repos);
+    const repo = await response.json();
+    return [repo];
+  } else {
+    while (hasNextPage) {
+      const response = await fetch(`https://api.github.com/users/${owner}/repos?page=${page}&per_page=${perPage}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
+        }
+      });
 
-    // Check if there's a next page
-    const linkHeader = response.headers.get('Link');
-    hasNextPage = !!linkHeader && linkHeader.includes('rel="next"');
-    page += 1;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    // Add a small delay to avoid hitting rate limits
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
+      const repos = await response.json();
+      allRepos = allRepos.concat(repos);
+
+      // Check if there's a next page
+      const linkHeader = response.headers.get('Link');
+      hasNextPage = !!linkHeader && linkHeader.includes('rel="next"');
+      page += 1;
+
+      // Add a small delay to avoid hitting rate limits
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+    }
   }
 
   return allRepos;
