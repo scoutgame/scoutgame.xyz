@@ -33,7 +33,7 @@ export async function AirdropMetrics({ partner, walletAddress }: { partner: stri
   const tokenDecimals = airdrops[0]?.tokenDecimals;
   const tokenSymbol = airdrops[0]?.tokenSymbol;
 
-  let walletBalance = 0;
+  let walletBalance = BigInt(0);
   if (walletAddress && tokenAddress && chainId) {
     const publicClient = getPublicClient(chainId);
 
@@ -53,25 +53,18 @@ export async function AirdropMetrics({ partner, walletAddress }: { partner: stri
         args: [walletAddress as `0x${string}`]
       });
 
-      walletBalance = Number(balance);
+      walletBalance = balance;
     } catch (error) {
       log.error('Error fetching wallet balance:', { error });
     }
   }
 
-  const totalPayouts = airdrops.reduce(
-    (acc, airdrop) => acc + airdrop.rewardPayouts.reduce((_acc, payout) => _acc + parseInt(payout.amount), 0),
-    0
-  );
+  const zero = BigInt(0);
+
   const toEth = (v: bigint) => {
     const num = Number(formatUnits(v, tokenDecimals));
     return Number.isInteger(num) ? num.toString() : num.toFixed(2);
   };
-  const uniqueWallets = airdrops.reduce((acc, airdrop) => acc + airdrop.rewardPayouts.length, 0);
-  const unclaimedPayouts = airdrops.reduce(
-    (acc, airdrop) => acc + airdrop.rewardPayouts.filter((payout) => !payout.claimedAt).length,
-    0
-  );
 
   return (
     <Card>
@@ -103,12 +96,12 @@ export async function AirdropMetrics({ partner, walletAddress }: { partner: stri
               {airdrops.map((airdrop) => {
                 const claimed = airdrop.rewardPayouts
                   .filter((p) => p.claimedAt)
-                  .reduce((sum, p) => sum + BigInt(p.amount), 0n);
+                  .reduce((sum, p) => sum + BigInt(p.amount), zero);
                 const unclaimed = airdrop.rewardPayouts
                   .filter((p) => !p.claimedAt)
-                  .reduce((sum, p) => sum + BigInt(p.amount), 0n);
+                  .reduce((sum, p) => sum + BigInt(p.amount), zero);
                 return (
-                  <TableRow key={airdrop.id}>
+                  <TableRow key={airdrop.createdAt.toISOString()}>
                     <TableCell>{new Date(airdrop.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell align='right'>
                       {new Set(airdrop.rewardPayouts.map((p) => p.walletAddress)).size}
@@ -130,8 +123,8 @@ export async function AirdropMetrics({ partner, walletAddress }: { partner: stri
                     airdrops.reduce(
                       (sum, a) =>
                         sum +
-                        a.rewardPayouts.filter((p) => p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), 0n),
-                      0n
+                        a.rewardPayouts.filter((p) => p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), zero),
+                      zero
                     )
                   )}
                 </TableCell>
@@ -140,16 +133,16 @@ export async function AirdropMetrics({ partner, walletAddress }: { partner: stri
                     airdrops.reduce(
                       (sum, a) =>
                         sum +
-                        a.rewardPayouts.filter((p) => !p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), 0n),
-                      0n
+                        a.rewardPayouts.filter((p) => !p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), zero),
+                      zero
                     )
                   )}
                 </TableCell>
                 <TableCell align='right'>
                   {toEth(
                     airdrops.reduce(
-                      (sum, a) => sum + a.rewardPayouts.reduce((pSum, p) => pSum + BigInt(p.amount), 0n),
-                      0n
+                      (sum, a) => sum + a.rewardPayouts.reduce((pSum, p) => pSum + BigInt(p.amount), zero),
+                      zero
                     )
                   )}
                 </TableCell>
@@ -162,7 +155,7 @@ export async function AirdropMetrics({ partner, walletAddress }: { partner: stri
   );
 }
 
-function MetricCard({ title, value }: { title: string; value: number }) {
+function MetricCard({ title, value }: { title: string; value: number | string }) {
   return (
     <Box minWidth={150}>
       <Typography variant='subtitle2' color='text.secondary'>
