@@ -21,10 +21,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
   }
 
-  if (!isLoggedIn && path !== '/home' && (platform === 'telegram' || platform === 'farcaster')) {
+  if (!isLoggedIn && path !== '/home' && platform === 'telegram') {
     // eslint-disable-next-line no-console
-    console.log(`Redirecting to ${platform} loading screen`, { path, platform, ...session });
+    console.log(`Redirecting to telegram loading screen`, { path, platform, ...session });
     return NextResponse.redirect(new URL('/home', request.url));
+  }
+
+  if (!isLoggedIn && path !== '/' && platform === 'farcaster') {
+    // eslint-disable-next-line no-console
+    console.log(`Redirecting to farcaster loading screen`, { path, platform, ...session });
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   // Redirect to login if anonymous user clicks on private links

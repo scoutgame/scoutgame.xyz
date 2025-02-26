@@ -37,10 +37,6 @@ export function useInitFarcasterData() {
     },
     onError(err) {
       log.error('Error on farcaster frames login', { error: err.error.serverError });
-    },
-    onSettled: async () => {
-      // Signal that the frame is ready and hide the splash screen, regardless of whether the login was successful or not
-      await sdk.actions.ready({});
     }
   });
 
@@ -51,6 +47,9 @@ export function useInitFarcasterData() {
       if (!context) {
         return;
       }
+
+      // Immediately signal that the frame is ready and hide the splash screen
+      await sdk.actions.ready({});
       // If the user is not logged in, auto trigger wallet login
       if (!user) {
         const { signature, message } = await sdk.actions.signIn({
@@ -64,8 +63,6 @@ export function useInitFarcasterData() {
           signature,
           message
         });
-      } else {
-        await sdk.actions.ready({});
       }
     };
 
