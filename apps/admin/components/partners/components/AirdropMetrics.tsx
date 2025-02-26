@@ -11,7 +11,8 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  IconButton
+  IconButton,
+  TableContainer
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { formatUnits } from 'viem';
@@ -111,74 +112,78 @@ export async function AirdropMetrics({
         {/* <MetricCard title='Unique wallets' value={uniqueWallets} />
           <MetricCard title='Unclaimed payouts' value={unclaimedPayouts} /> */}
 
-        <Box sx={{ maxHeight: '300px', overflow: 'auto' }}>
-          <Table size='small'>
-            <TableHead>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell align='right'>Wallets</TableCell>
-                <TableCell align='right'>Claimed </TableCell>
-                <TableCell align='right'>Unclaimed </TableCell>
-                <TableCell align='right'>Total </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {airdrops.map((airdrop) => {
-                const claimed = airdrop.rewardPayouts
-                  .filter((p) => p.claimedAt)
-                  .reduce((sum, p) => sum + BigInt(p.amount), zero);
-                const unclaimed = airdrop.rewardPayouts
-                  .filter((p) => !p.claimedAt)
-                  .reduce((sum, p) => sum + BigInt(p.amount), zero);
-                return (
-                  <TableRow key={airdrop.createdAt.toISOString()}>
-                    <TableCell>{new Date(airdrop.createdAt).toLocaleDateString()}</TableCell>
-                    <TableCell align='right'>
-                      {new Set(airdrop.rewardPayouts.map((p) => p.walletAddress)).size}
-                    </TableCell>
-                    <TableCell align='right'>{toEth(claimed)}</TableCell>
-                    <TableCell align='right'>{toEth(unclaimed)}</TableCell>
-                    <TableCell align='right'>{toEth(claimed + unclaimed)}</TableCell>
-                  </TableRow>
-                );
-              })}
-              {/* sum all the values */}
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell>Total</TableCell>
-                <TableCell align='right'>
-                  {new Set(airdrops.flatMap((a) => a.rewardPayouts.map((p) => p.walletAddress))).size}
-                </TableCell>
-                <TableCell align='right'>
-                  {toEth(
-                    airdrops.reduce(
-                      (sum, a) =>
-                        sum +
-                        a.rewardPayouts.filter((p) => p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), zero),
-                      zero
-                    )
-                  )}
-                </TableCell>
-                <TableCell align='right'>
-                  {toEth(
-                    airdrops.reduce(
-                      (sum, a) =>
-                        sum +
-                        a.rewardPayouts.filter((p) => !p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), zero),
-                      zero
-                    )
-                  )}
-                </TableCell>
-                <TableCell align='right'>
-                  {toEth(
-                    airdrops.reduce(
-                      (sum, a) => sum + a.rewardPayouts.reduce((pSum, p) => pSum + BigInt(p.amount), zero),
-                      zero
-                    )
-                  )}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+        <Box sx={{ flexGrow: 1 }}>
+          <TableContainer sx={{ maxHeight: '300px' }}>
+            <Table stickyHeader size='small'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  <TableCell align='right'>Wallets</TableCell>
+                  <TableCell align='right'>Claimed </TableCell>
+                  <TableCell align='right'>Unclaimed </TableCell>
+                  <TableCell align='right'>Total </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {airdrops.map((airdrop) => {
+                  const claimed = airdrop.rewardPayouts
+                    .filter((p) => p.claimedAt)
+                    .reduce((sum, p) => sum + BigInt(p.amount), zero);
+                  const unclaimed = airdrop.rewardPayouts
+                    .filter((p) => !p.claimedAt)
+                    .reduce((sum, p) => sum + BigInt(p.amount), zero);
+                  return (
+                    <TableRow key={airdrop.createdAt.toISOString()}>
+                      <TableCell>{new Date(airdrop.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell align='right'>
+                        {new Set(airdrop.rewardPayouts.map((p) => p.walletAddress)).size}
+                      </TableCell>
+                      <TableCell align='right'>{toEth(claimed)}</TableCell>
+                      <TableCell align='right'>{toEth(unclaimed)}</TableCell>
+                      <TableCell align='right'>{toEth(claimed + unclaimed)}</TableCell>
+                    </TableRow>
+                  );
+                })}
+                {/* sum all the values */}
+                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell>Total</TableCell>
+                  <TableCell align='right'>
+                    {new Set(airdrops.flatMap((a) => a.rewardPayouts.map((p) => p.walletAddress))).size}
+                  </TableCell>
+                  <TableCell align='right'>
+                    {toEth(
+                      airdrops.reduce(
+                        (sum, a) =>
+                          sum +
+                          a.rewardPayouts.filter((p) => p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), zero),
+                        zero
+                      )
+                    )}
+                  </TableCell>
+                  <TableCell align='right'>
+                    {toEth(
+                      airdrops.reduce(
+                        (sum, a) =>
+                          sum +
+                          a.rewardPayouts
+                            .filter((p) => !p.claimedAt)
+                            .reduce((pSum, p) => pSum + BigInt(p.amount), zero),
+                        zero
+                      )
+                    )}
+                  </TableCell>
+                  <TableCell align='right'>
+                    {toEth(
+                      airdrops.reduce(
+                        (sum, a) => sum + a.rewardPayouts.reduce((pSum, p) => pSum + BigInt(p.amount), zero),
+                        zero
+                      )
+                    )}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </Stack>
     </Card>
