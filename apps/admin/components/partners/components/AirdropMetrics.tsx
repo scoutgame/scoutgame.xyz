@@ -100,10 +100,17 @@ export async function AirdropMetrics({
             <MetricCard
               title={
                 <>
-                  Wallet <WalletAddress address={walletAddress ?? ''} chainId={chainId ?? 1} />
+                  Wallet{' '}
+                  {walletAddress ? (
+                    <WalletAddress address={walletAddress} chainId={chainId} />
+                  ) : (
+                    <Typography component='span' fontSize='inherit' color='error'>
+                      (missing env var)
+                    </Typography>
+                  )}
                 </>
               }
-              value={`${toEth(walletBalance)} ${tokenSymbol}`}
+              value={tokenSymbol ? `${toEth(walletBalance)} ${tokenSymbol}` : ''}
             />
             {/* <MetricCard title='Total paid' value={`${toEth(totalPayouts)} ${tokenSymbol}`} /> */}
           </Stack>
