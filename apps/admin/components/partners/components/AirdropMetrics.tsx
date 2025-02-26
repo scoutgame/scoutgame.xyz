@@ -113,10 +113,10 @@ export async function AirdropMetrics({
           <MetricCard title='Unclaimed payouts' value={unclaimedPayouts} /> */}
 
         <Box sx={{ flexGrow: 1 }}>
-          <TableContainer sx={{ maxHeight: '300px' }}>
+          <TableContainer sx={{ maxHeight: '200px' }}>
             <Table stickyHeader size='small'>
               <TableHead>
-                <TableRow>
+                <TableRow sx={{ '.MuiTableCell-root': { backgroundColor: 'background.paper' } }}>
                   <TableCell>Date</TableCell>
                   <TableCell align='right'>Wallets</TableCell>
                   <TableCell align='right'>Claimed </TableCell>
@@ -145,7 +145,17 @@ export async function AirdropMetrics({
                   );
                 })}
                 {/* sum all the values */}
-                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableRow
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 },
+                    position: 'sticky',
+                    bottom: 0,
+                    backgroundColor: 'background.default',
+                    // backgroundColor: 'var(--mui-palette-grey-000)',
+                    borderTop: '1px solid',
+                    borderColor: 'divider'
+                  }}
+                >
                   <TableCell>Total</TableCell>
                   <TableCell align='right'>
                     {new Set(airdrops.flatMap((a) => a.rewardPayouts.map((p) => p.walletAddress))).size}

@@ -83,10 +83,10 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
         </Box>
 
         <Box sx={{ flexGrow: 1 }}>
-          <TableContainer sx={{ maxHeight: '250px' }}>
+          <TableContainer sx={{ maxHeight: '200px' }}>
             <Table stickyHeader size='small'>
               <TableHead>
-                <TableRow>
+                <TableRow sx={{ '.MuiTableCell-root': { backgroundColor: 'background.paper' } }}>
                   <TableCell>Week</TableCell>
                   <TableCell align='right'>Builders</TableCell>
                   <TableCell align='right'>PRs</TableCell>
