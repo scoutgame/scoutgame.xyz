@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { importReposByUser } from '@packages/scoutgame/importReposByUser';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
@@ -13,9 +12,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { owner } = await request.json();
+  const { owner, partner } = await request.json();
 
-  await importReposByUser(owner);
+  await importReposByUser(owner, partner);
 
   return NextResponse.json({ success: true });
 }
