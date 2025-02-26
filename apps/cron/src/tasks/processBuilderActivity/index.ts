@@ -1,4 +1,4 @@
-import { log } from '@charmverse/core/log';
+import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentWeek, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
@@ -14,6 +14,8 @@ type ProcessPullRequestsOptions = {
   createdAfter?: Date;
   season?: Season;
 };
+
+const log = getLogger('cron-process-builder-activity');
 
 export async function processAllBuilderActivity(
   ctx: Koa.Context | null,

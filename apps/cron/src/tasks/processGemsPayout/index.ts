@@ -1,7 +1,6 @@
-import { log } from '@charmverse/core/log';
+import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getLastWeek } from '@packages/dates/utils';
-import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getPointsCountForWeekWithNormalisation } from '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
@@ -13,13 +12,15 @@ import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards
 import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
+const log = getLogger('cron-process-gems-payout');
+
 export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: { now?: DateTime } = {}) {
   const week = getLastWeek(now);
   const season = getCurrentSeason(week).start;
 
   // run for the first few hours every Monday at midnight UTC
   if (now.weekday !== 1 || now.hour > 3) {
-    scoutgameMintsLogger.info('Gems Payout: It is not yet Sunday at 12:00 AM UTC, skipping');
+    log.info('Gems Payout: It is not yet Sunday at 12:00 AM UTC, skipping');
     return;
   }
 
@@ -31,14 +32,14 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
   });
 
   if (existingPayoutCount > 0) {
-    scoutgameMintsLogger.info('Gems Payout: Payout already exists for this week, skipping');
+    log.info('Gems Payout: Payout already exists for this week, skipping');
     return;
   }
 
   const { normalisationFactor, topWeeklyBuilders, totalPoints, weeklyAllocatedPoints } =
     await getPointsCountForWeekWithNormalisation({ week });
 
-  scoutgameMintsLogger.debug(`Allocation: ${weeklyAllocatedPoints} -- Total points for week ${week}: ${totalPoints}`, {
+  log.debug(`Allocation: ${weeklyAllocatedPoints} -- Total points for week ${week}: ${totalPoints}`, {
     topWeeklyBuilders: topWeeklyBuilders.length,
     week,
     season,
@@ -49,7 +50,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
 
   for (const { builder, gemsCollected, rank } of topWeeklyBuilders) {
     try {
-      scoutgameMintsLogger.info(`Processing scout points payout for builder ${builder.id}`);
+      log.info(`Processing scout points payout for builder ${builder.id}`);
       await processScoutPointsPayout({
         builderId: builder.id,
         rank,
@@ -60,7 +61,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
         weeklyAllocatedPoints
       });
     } catch (error) {
-      scoutgameMintsLogger.error(`Error processing scout points payout for builder ${builder.id}: ${error}`);
+      log.error(`Error processing scout points payout for builder ${builder.id}: ${error}`);
     }
   }
 
@@ -93,5 +94,5 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     update: {}
   });
 
-  scoutgameMintsLogger.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
+  log.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
 }
