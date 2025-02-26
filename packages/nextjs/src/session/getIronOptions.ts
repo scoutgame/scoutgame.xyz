@@ -1,4 +1,4 @@
-import { baseUrl, cookieName, authSecret } from '@packages/utils/constants';
+import { baseUrl, cookieName, authSecret, isTestEnv } from '@packages/utils/constants';
 import type { SessionOptions } from 'iron-session';
 
 // when running with ngrok or local tunnel
@@ -14,7 +14,8 @@ export function getIronOptions({
     cookieOptions: {
       sameSite: isLocalTunnel ? 'none' : sameSite,
       // secure: true should be used in production (HTTPS) but can't be used in development (HTTP)
-      secure: isLocalTunnel ? true : typeof baseUrl === 'string' && baseUrl.includes('https'),
+      // When same site is none secure must be true
+      secure: isLocalTunnel || isTestEnv ? true : typeof baseUrl === 'string' && baseUrl.includes('https'),
       ...restOptions
     }
   };
