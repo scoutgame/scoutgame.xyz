@@ -15,7 +15,12 @@ import {
   IconButton,
   TableContainer
 } from '@mui/material';
-import { getWeekFromDate, getAllISOWeeksFromSeasonStart } from '@packages/dates/utils';
+import {
+  getWeekFromDate,
+  getDateFromISOWeek,
+  getAllISOWeeksFromSeasonStart,
+  getCurrentWeek
+} from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 
 const currentSeasonWeeks = getAllISOWeeksFromSeasonStart();
@@ -86,7 +91,8 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
             <Table stickyHeader size='small'>
               <TableHead>
                 <TableRow sx={{ '.MuiTableCell-root': { backgroundColor: 'background.paper' } }}>
-                  <TableCell>Week</TableCell>
+                  <TableCell>Week start</TableCell>
+                  <TableCell align='right'>Week #</TableCell>
                   <TableCell align='right'>Builders</TableCell>
                   <TableCell align='right'>PRs</TableCell>
                 </TableRow>
@@ -96,6 +102,14 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
                   return (
                     <TableRow key={weeklyStat.week}>
                       <TableCell>
+                        <Stack direction='row' alignItems='center' gap={2} width='150px'>
+                          {`${getDateFromISOWeek(weeklyStat.week).toFormat('MMM d')}`}
+                          {weeklyStat.week === getCurrentWeek() && (
+                            <Chip label='Current' size='small' variant='outlined' color='secondary' />
+                          )}
+                        </Stack>
+                      </TableCell>
+                      <TableCell align='right'>
                         {currentSeasonWeeks.indexOf(weeklyStat.week) > -1
                           ? currentSeasonWeeks.indexOf(weeklyStat.week) + 1
                           : '-'}

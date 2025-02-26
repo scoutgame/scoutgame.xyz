@@ -15,6 +15,8 @@ import {
   TableContainer
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getDateFromISOWeek } from '@packages/dates/utils';
+import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
 import { WalletAddress } from 'components/common/WalletAddress';
@@ -34,7 +36,7 @@ export async function AirdropMetrics({
       createdAt: 'desc'
     },
     select: {
-      createdAt: true,
+      week: true,
       tokenAddress: true,
       chainId: true,
       tokenSymbol: true,
@@ -139,8 +141,8 @@ export async function AirdropMetrics({
                     .filter((p) => !p.claimedAt)
                     .reduce((sum, p) => sum + BigInt(p.amount), zero);
                   return (
-                    <TableRow key={airdrop.createdAt.toISOString()}>
-                      <TableCell>{new Date(airdrop.createdAt).toLocaleDateString()}</TableCell>
+                    <TableRow key={airdrop.week}>
+                      <TableCell>{getDateFromISOWeek(airdrop.week).toFormat('MMM d')}</TableCell>
                       <TableCell align='right'>
                         {new Set(airdrop.rewardPayouts.map((p) => p.walletAddress)).size}
                       </TableCell>
