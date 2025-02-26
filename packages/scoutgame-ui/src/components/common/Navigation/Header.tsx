@@ -17,14 +17,11 @@ import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
-import { useIsFarcasterFrame } from '../../../hooks/useIsFarcasterFrame';
-
 export function Header() {
   const router = useRouter();
   const platform = getPlatform();
   const { user, refreshUser } = useUser();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const isFarcasterFrame = useIsFarcasterFrame();
 
   const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction, {
     onSuccess: async () => {
@@ -153,7 +150,7 @@ export function Header() {
                           Projects
                         </MenuItem>
                       ) : null}
-                      {platform === 'webapp' && !isFarcasterFrame && (
+                      {platform === 'webapp' && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out
                         </MenuItem>
@@ -169,7 +166,7 @@ export function Header() {
                       <InfoIcon color='secondary' />
                     </IconButton>
                   </Link>
-                  {platform === 'webapp' && !isFarcasterFrame && (
+                  {platform === 'webapp' && (
                     <Button variant='gradient' href='/login' data-test='sign-in-button'>
                       Sign in
                     </Button>
