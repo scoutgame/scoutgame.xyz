@@ -47,7 +47,7 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
 
 function MetricCard({ title, value, decimals = 0 }: { title: string; value: number; decimals?: number }) {
   return (
-    <Box minWidth={150}>
+    <Box minWidth={135}>
       <Typography variant='subtitle2' color='text.secondary'>
         {title}
       </Typography>
