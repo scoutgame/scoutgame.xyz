@@ -1,5 +1,6 @@
 'use client';
 
+import { AddCircleOutline, Download } from '@mui/icons-material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {
   Stack,
@@ -13,7 +14,9 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Divider
+  Divider,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import {
   getLastWeek,
@@ -88,12 +91,18 @@ export function PartnerCard({
                   setAnchorEl(null);
                 }}
               >
-                Export winners
+                <ListItemIcon>
+                  <Download fontSize='small' />
+                </ListItemIcon>
+                <ListItemText>Export winners</ListItemText>
               </MenuItem>
               {hasGithubRepos && [
                 <Divider key='divider' />,
                 <AddRepoMenuItem key='add-repos' partner={partner} onComplete={() => setAnchorEl(null)}>
-                  + Add Repos
+                  <ListItemIcon>
+                    <AddCircleOutline fontSize='small' />
+                  </ListItemIcon>
+                  <ListItemText>Add repos</ListItemText>
                 </AddRepoMenuItem>,
                 <MenuItem
                   key='export-repos'
@@ -102,7 +111,10 @@ export function PartnerCard({
                     setAnchorEl(null);
                   }}
                 >
-                  Export repos
+                  <ListItemIcon>
+                    <Download fontSize='small' />
+                  </ListItemIcon>
+                  <ListItemText>Export repos</ListItemText>
                 </MenuItem>,
                 <MenuItem
                   key='export-pull-requests'
@@ -111,7 +123,10 @@ export function PartnerCard({
                     setAnchorEl(null);
                   }}
                 >
-                  Export pull requests
+                  <ListItemIcon>
+                    <Download fontSize='small' />
+                  </ListItemIcon>
+                  <ListItemText>Export pull requests</ListItemText>
                 </MenuItem>
               ]}
             </Menu>
