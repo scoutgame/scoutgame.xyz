@@ -8,11 +8,13 @@ export type RepoSearchResult = {
   url: string;
   fullName: string;
   exists: boolean;
+  hasPartner: boolean;
 };
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const owner = searchParams.get('owner');
+  const partner = searchParams.get('partner');
   if (!owner || owner.length < 2) {
     return NextResponse.json([]);
   }
@@ -25,12 +27,17 @@ export async function GET(request: NextRequest) {
         }
       }
     });
-    const result: RepoSearchResult[] = repos.map((repo) => ({
-      id: repo.id,
-      fullName: repo.full_name,
-      url: repo.html_url,
-      exists: existing.some((e) => e.id === repo.id)
-    }));
+    const result: RepoSearchResult[] = repos.map((repo) => {
+      const existingRepo = existing.find((e) => e.id === repo.id);
+      return {
+        id: repo.id,
+        fullName: repo.full_name,
+        url: repo.html_url,
+        exists: !!existingRepo,
+        // TODO: consider specific partner when we can allow multiple partners
+        hasPartner: partner ? !!existingRepo?.bonusPartner : false
+      };
+    });
     return NextResponse.json(result);
   } catch (error) {
     if ((error as Error).message?.includes('HTTP error! status: 404')) {

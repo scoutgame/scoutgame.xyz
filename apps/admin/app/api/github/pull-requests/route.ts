@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     .map((event) => ({
       builder: event.builder.displayName,
       builderProfile: `https://scoutgame.xyz/u/${event.builder.path}`,
-      repo: `${event.githubEvent!.repo.name}/${event.githubEvent!.repo.owner}`,
+      repo: `${event.githubEvent!.repo.owner}/${event.githubEvent!.repo.name}`,
       url: event.githubEvent!.url,
       title: event.githubEvent!.title,
       week: getWeekFromDate(event.createdAt),

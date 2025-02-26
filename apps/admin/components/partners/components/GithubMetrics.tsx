@@ -72,8 +72,7 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
               value={
                 <>
                   {repos}{' '}
-                  <Chip label='View' size='small' variant='outlined' color='secondary' clickable sx={{ ml: 1 }} />
-                  <Chip label='+ Add' size='small' variant='outlined' color='primary' clickable sx={{ ml: 1 }} />
+                  {/* <Chip label='View' size='small' variant='outlined' color='secondary' clickable sx={{ ml: 1 }} /> */}
                 </>
               }
             />
@@ -127,10 +126,6 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
             </Table>
           </TableContainer>
         </Box>
-        {/* <Stack direction='row' gap={1}>
-          <MetricCard title='Total PRs' value={totalPoints} />
-          <MetricCard title='Unique Builders' value={uniqueBuilders} />
-        </Stack> */}
       </Stack>
     </Card>
   );

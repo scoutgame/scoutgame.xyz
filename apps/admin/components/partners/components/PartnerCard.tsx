@@ -27,6 +27,8 @@ import React, { useState } from 'react';
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
 import { useFileDownload } from 'hooks/useFileDownload';
 
+import { AddRepoMenuItem } from './AddRepoMenuItem';
+
 const allWeeks = getAllISOWeeksFromSeasonStart();
 
 export function PartnerCard({
@@ -65,7 +67,7 @@ export function PartnerCard({
               onClick={(event) => setAnchorEl(event.currentTarget)}
               endIcon={<KeyboardArrowDownIcon />}
             >
-              Export
+              Actions
             </Button>
             <Menu
               anchorEl={anchorEl}
@@ -90,6 +92,9 @@ export function PartnerCard({
               </MenuItem>
               {hasGithubRepos && [
                 <Divider key='divider' />,
+                <AddRepoMenuItem key='add-repos' partner={partner} onComplete={() => setAnchorEl(null)}>
+                  + Add Repos
+                </AddRepoMenuItem>,
                 <MenuItem
                   key='export-repos'
                   onClick={() => {
