@@ -6,12 +6,13 @@ import { getPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 import { usePathname } from 'next/navigation';
 import { Link } from 'next-view-transitions';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ImGift as QuestsIcon } from 'react-icons/im';
 import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
 
 import { useGetQuests } from '../../../hooks/api/quests';
 import { useGetClaimablePoints } from '../../../hooks/api/session';
+import { useIsFarcasterFrame } from '../../../hooks/useIsFarcasterFrame';
 import { useUser } from '../../../providers/UserProvider';
 import { BuilderIcon } from '../Icons/BuilderIcon';
 import { ClaimIcon } from '../Icons/ClaimIcon';
@@ -59,23 +60,13 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
     const isClaimToday = currentWeekDay === claim.day;
     return isClaimToday;
   });
-  const [isFarcasterFrameContext, setIsFarcasterFrameContext] = useState(false);
+  const isFarcasterFrame = useIsFarcasterFrame();
 
   const canClaim = todaysClaim ? !todaysClaim?.claimed : false;
   const [authPopup, setAuthPopup] = useState({
     open: false,
     path: 'scout'
   });
-
-  useEffect(() => {
-    async function checkFarcasterFrameContext() {
-      const context = await sdk.context;
-      if (context) {
-        setIsFarcasterFrameContext(true);
-      }
-    }
-    checkFarcasterFrameContext();
-  }, []);
 
   return (
     <>
@@ -84,7 +75,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         value={value}
         data-test='site-navigation'
         topNav={topNav}
-        largerNavbar={platform === 'telegram' || isFarcasterFrameContext}
+        largerNavbar={platform === 'telegram' || isFarcasterFrame}
       >
         <BottomNavigationAction
           label='Scout'

@@ -2,12 +2,12 @@ import { Button, CircularProgress, Container, Stack, Typography } from '@mui/mat
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { InfoPageFooter } from '@packages/scoutgame-ui/components/info/components/InfoPageFooter';
 import { InfoPageContent } from '@packages/scoutgame-ui/components/info/InfoPage';
-import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { FarcasterLoginButton } from './FarcasterLoginButton';
+
 function HeroSection() {
-  const platform = getPlatform();
   return (
     <Stack sx={{ position: 'relative' }}>
       <Hidden mdDown>
@@ -79,28 +79,7 @@ function HeroSection() {
                 Everyone can play. No coding required!
               </Typography>
             </Hidden>
-
-            {platform === 'farcaster' ? (
-              <Stack flexDirection='row' gap={1} alignItems='center' justifyContent='center' width='100%'>
-                <CircularProgress size={20} />
-                <Typography variant='h6'>Logging in...</Typography>
-              </Stack>
-            ) : (
-              <Button
-                variant='contained'
-                sx={{
-                  my: 2,
-                  width: '50%',
-                  mx: {
-                    xs: 'auto',
-                    md: 0
-                  }
-                }}
-                data-test='get-started-button'
-              >
-                <Link href='/login'>Get started</Link>
-              </Button>
-            )}
+            <FarcasterLoginButton />
           </Stack>
           <Hidden mdDown>
             <Image src='/images/home/cool-dev.png' width={350} height={350} alt='Cool dev' />
@@ -135,7 +114,6 @@ function HowToPlaySection() {
 }
 
 function FooterSection() {
-  const platform = getPlatform();
   return (
     <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }} mb={{ xs: 4, md: 0 }}>
       <Hidden mdDown>
@@ -167,11 +145,9 @@ function FooterSection() {
         <Typography variant='h6' textAlign='center'>
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
-        {platform !== 'farcaster' ? (
-          <Button variant='contained' sx={{ width: '50%' }}>
-            <Link href='/login'>Get started</Link>
-          </Button>
-        ) : null}
+        <Button variant='contained' sx={{ width: '50%' }}>
+          <Link href='/login'>Get started</Link>
+        </Button>
       </Stack>
     </Stack>
   );
