@@ -82,7 +82,11 @@ export async function AirdropMetrics({
 
   const toEth = (v: bigint) => {
     const num = Number(formatUnits(v, tokenDecimals));
-    return Number.isInteger(num) ? num.toString() : num.toFixed(2);
+    return Number.isInteger(num)
+      ? num.toString()
+      : num.toLocaleString(undefined, {
+          maximumFractionDigits: 2
+        });
   };
 
   return (
