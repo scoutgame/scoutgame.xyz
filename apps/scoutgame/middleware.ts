@@ -27,12 +27,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  if (!isLoggedIn && path !== '/' && platform === 'farcaster') {
-    // eslint-disable-next-line no-console
-    console.log(`Redirecting to farcaster loading screen`, { path, platform, ...session });
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
   // Redirect to login if anonymous user clicks on private links
   if (!isLoggedIn && privateLinks.some((link) => path.startsWith(link))) {
     // eslint-disable-next-line no-console

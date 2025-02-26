@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import sdk from '@farcaster/frame-sdk';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
-import { getPlatform } from '@packages/utils/platform';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect } from 'react';
@@ -13,7 +12,6 @@ import { useLoginSuccessHandler } from './useLoginSuccessHandler';
 
 export function useInitFarcasterData() {
   const router = useRouter();
-  const platform = getPlatform();
   const { getNextPageLink } = useLoginSuccessHandler();
   const { refreshUser, user } = useUser();
   const { executeAsync: revalidatePath } = useAction(revalidatePathAction);
@@ -66,8 +64,8 @@ export function useInitFarcasterData() {
       }
     };
 
-    if (sdk && platform === 'farcaster') {
+    if (sdk) {
       load();
     }
-  }, [user, loginUser, platform]);
+  }, [user, loginUser]);
 }

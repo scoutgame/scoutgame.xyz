@@ -11,12 +11,7 @@ import WelcomeModal from './WelcomeModal';
 // instantiate global hooks for the client-side only
 export function ClientGlobals({ userId }: { userId?: string }) {
   const platform = getPlatform();
-  const service =
-    platform === 'telegram'
-      ? 'scoutgametelegram-browser'
-      : platform === 'farcaster'
-        ? 'scoutgamefarcaster-browser'
-        : 'scoutgame-browser';
+  const service = platform === 'telegram' ? 'scoutgametelegram-browser' : 'scoutgame-browser';
 
   useDatadogLogger({ service, userId });
   usePageView();

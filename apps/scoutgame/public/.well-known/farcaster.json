@@ -7,12 +7,12 @@
   "frame": {
     "version": "1",
     "name": "Scout Game",
-    "iconUrl": "https://farcaster.scoutgame.xyz/images/farcaster/fc_icon.png",
-    "homeUrl": "https://farcaster.scoutgame.xyz",
-    "imageUrl": "https://farcaster.scoutgame.xyz/images/farcaster/fc_frame.png",
+    "iconUrl": "https://scoutgame.xyz/images/farcaster/fc_icon.png",
+    "homeUrl": "https://scoutgame.xyz",
+    "imageUrl": "https://scoutgame.xyz/images/farcaster/fc_frame.png",
     "buttonTitle": "Scout",
-    "splashImageUrl": "https://farcaster.scoutgame.xyz/images/farcaster/fc_splash.png",
+    "splashImageUrl": "https://scoutgame.xyz/images/farcaster/fc_splash.png",
     "splashBackgroundColor": "#000",
-    "webhookUrl": "https://farcaster.scoutgame.xyz/api/farcaster/webhook"
+    "webhookUrl": "https://scoutgame.xyz/api/farcaster/webhook"
   }
 }

@@ -4,14 +4,14 @@ import { LandingPage } from '../../components/home/LandingPage';
 
 const frame = {
   version: 'next',
-  imageUrl: `https://farcaster.scoutgame.xyz/images/farcaster/fc_frame.png`,
+  imageUrl: `https://scoutgame.xyz/images/farcaster/fc_frame.png`,
   button: {
     title: 'Scout',
     action: {
       type: 'launch_frame',
       name: 'Scout Game',
-      url: `https://farcaster.scoutgame.xyz`,
-      splashImageUrl: `https://farcaster.scoutgame.xyz/images/farcaster/fc_splash.png`,
+      url: `https://scoutgame.xyz`,
+      splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
       splashBackgroundColor: '#000'
     }
   }

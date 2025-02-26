@@ -1,1 +1,0 @@
-# farcaster.scoutgame.xyz

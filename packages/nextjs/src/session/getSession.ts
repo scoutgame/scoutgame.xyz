@@ -1,4 +1,3 @@
-import { getPlatform } from '@packages/utils/platform';
 import type { SessionOptions, IronSession } from 'iron-session';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
@@ -7,9 +6,8 @@ import { getIronOptions } from './getIronOptions';
 import type { SessionData } from './interfaces';
 
 export async function getSession<T extends object = SessionData>(cookieOptions?: SessionOptions['cookieOptions']) {
-  const platform = getPlatform();
   const options = getIronOptions({
-    sameSite: platform === 'telegram' || platform === 'farcaster' ? 'none' : undefined,
+    sameSite: 'none',
     ...cookieOptions
   });
 

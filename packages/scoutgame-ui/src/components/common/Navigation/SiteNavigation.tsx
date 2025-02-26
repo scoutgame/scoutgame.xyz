@@ -59,11 +59,23 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
     const isClaimToday = currentWeekDay === claim.day;
     return isClaimToday;
   });
+  const [isFarcasterFrameContext, setIsFarcasterFrameContext] = useState(false);
+
   const canClaim = todaysClaim ? !todaysClaim?.claimed : false;
   const [authPopup, setAuthPopup] = useState({
     open: false,
     path: 'scout'
   });
+
+  useEffect(() => {
+    async function checkFarcasterFrameContext() {
+      const context = await sdk.context;
+      if (context) {
+        setIsFarcasterFrameContext(true);
+      }
+    }
+    checkFarcasterFrameContext();
+  }, []);
 
   return (
     <>
@@ -72,7 +84,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         value={value}
         data-test='site-navigation'
         topNav={topNav}
-        largerNavbar={platform === 'telegram' || platform === 'farcaster'}
+        largerNavbar={platform === 'telegram' || isFarcasterFrameContext}
       >
         <BottomNavigationAction
           label='Scout'
