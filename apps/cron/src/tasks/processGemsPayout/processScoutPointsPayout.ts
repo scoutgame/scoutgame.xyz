@@ -1,11 +1,13 @@
+import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateEarnableScoutPointsForRank } from '@packages/scoutgame/points/calculatePoints';
 import { divideTokensBetweenBuilderAndHolders } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import { incrementPointsEarnedStats } from '@packages/scoutgame/points/updatePointsEarned';
 import { resolveTokenOwnershipForBuilder } from '@packages/scoutgame/protocol/resolveTokenOwnershipForBuilder';
 import { v4 } from 'uuid';
 import { type Address } from 'viem';
+
+const log = getLogger('cron-process-scout-points-payout');
 
 export async function processScoutPointsPayout({
   builderId,
@@ -36,7 +38,7 @@ export async function processScoutPointsPayout({
   });
 
   if (existingGemsPayoutEvent) {
-    scoutgameMintsLogger.warn(`Gems payout event already exists for builder in week ${week}`, { userId: builderId });
+    log.warn(`Gems payout event already exists for builder in week ${week}`, { userId: builderId });
     return;
   }
 
@@ -54,7 +56,7 @@ export async function processScoutPointsPayout({
   });
 
   if (nftSupply.total === 0) {
-    scoutgameMintsLogger.warn(`No NFTs purchased for builder in season ${season}`, { userId: builderId });
+    log.warn(`No NFTs purchased for builder in season ${season}`, { userId: builderId });
     return;
   }
 

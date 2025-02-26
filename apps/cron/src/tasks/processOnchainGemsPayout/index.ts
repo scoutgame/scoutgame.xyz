@@ -1,4 +1,4 @@
-import { log } from '@charmverse/core/log';
+import { getLogger } from '@charmverse/core/log';
 import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
@@ -6,6 +6,8 @@ import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeekl
 import { resolveTokenOwnership } from '@packages/scoutgame/protocol/resolveTokenOwnership';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
+
+const log = getLogger('cron-process-onchain-gems-payout');
 
 export async function processOnchainGemsPayout(
   ctx: Context,
