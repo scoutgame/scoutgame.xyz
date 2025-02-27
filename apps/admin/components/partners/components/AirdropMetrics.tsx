@@ -125,7 +125,7 @@ export async function AirdropMetrics({
             <Table stickyHeader size='small'>
               <TableHead>
                 <TableRow sx={{ '.MuiTableCell-root': { backgroundColor: 'background.paper' } }}>
-                  <TableCell>Date</TableCell>
+                  <TableCell>Week start</TableCell>
                   <TableCell align='right'>Wallets</TableCell>
                   <TableCell align='right'>Claimed </TableCell>
                   <TableCell align='right'>Unclaimed </TableCell>
