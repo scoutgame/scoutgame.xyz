@@ -41,14 +41,14 @@ export function AnnouncementBanner() {
     setHiddenBanners({ ...hiddenBanners, [bannerId]: true });
   };
 
-  const currentBanner = Object.values(banners).find((banner) => banner.expiration > new Date().toISOString());
+  const currentBanner = Object.entries(banners).find(([_, banner]) => banner.expiration > new Date().toISOString());
 
   if (!currentBanner) {
     return null;
   }
 
   // seen by user already
-  if (hiddenBanners[currentBanner.id]) {
+  if (hiddenBanners[currentBanner[0]]) {
     return null;
   }
 
@@ -56,7 +56,7 @@ export function AnnouncementBanner() {
     <Alert
       severity='info'
       variant='filled'
-      onClose={() => handleClose(currentBanner.id)}
+      onClose={() => handleClose(currentBanner[0])}
       sx={{
         borderRadius: 0,
         justifyContent: 'center',
@@ -66,7 +66,7 @@ export function AnnouncementBanner() {
       }}
     >
       {/* <AlertTitle>{currentBanner.title}</AlertTitle> */}
-      {currentBanner.description}
+      {currentBanner[1].description}
     </Alert>
   );
 }
