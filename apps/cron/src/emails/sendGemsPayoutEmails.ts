@@ -24,7 +24,7 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
           userId: scout.id,
           senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
           subject: 'Claim Your Scout Points This Week! 🎉',
-          template: 'Weekly Claim',
+          templateType: 'weekly_claim',
           templateVariables: {
             name: scout.displayName,
             points: weeklyClaimablePoints

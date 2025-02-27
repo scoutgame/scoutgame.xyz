@@ -57,7 +57,7 @@ export async function approveBuilder({
     await sendEmailTemplate({
       userId: scout.id,
       subject: 'Welcome to Scout Game, Builder! 🎉',
-      template: 'Builder Approved',
+      templateType: 'builder_approved',
       templateVariables: {
         builder_name: scout.displayName,
         builder_card_image: builderNft.imageUrl,

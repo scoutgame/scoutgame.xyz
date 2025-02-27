@@ -269,7 +269,7 @@ export async function recordNftMint(
     await sendEmailTemplate({
       senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
       subject: 'Your Builder Card Was Just Scouted! 🎉',
-      template: 'Builder card scouted',
+      templateType: 'builder_card_scouted',
       userId: builderNft.builderId,
       templateVariables: {
         builder_name: builderNft.builder.displayName,

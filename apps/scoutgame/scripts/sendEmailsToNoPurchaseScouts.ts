@@ -25,7 +25,7 @@ export async function sendEmailsToNoPurchaseScouts() {
       await sendEmailTemplate({
         userId: scout.id,
         subject: 'Ready to Start Your Scout Game Journey?',
-        template: 'no purchased cards by user',
+        templateType: 'no_purchased_cards_by_user',
         templateVariables: {
           name: scout.displayName
         },
