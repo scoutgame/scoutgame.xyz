@@ -23,7 +23,11 @@ import {
 } from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 
+import { WeekValue } from './AirdropMetrics';
+
 const currentSeasonWeeks = getAllISOWeeksFromSeasonStart();
+
+const currentSeasonWeeksSorted = currentSeasonWeeks.slice().reverse();
 
 type WeeklyStat = {
   week: string;
@@ -63,17 +67,17 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
 
   const allBuilders = new Set(builderEvents.map((event) => event.builder.id));
 
-  const weeklyStatsArray = Object.values(weeklyStats).sort((a, b) => (b.week < a.week ? -1 : 1));
+  // const weeklyStatsArray = Object.values(weeklyStats).sort((a, b) => (b.week < a.week ? -1 : 1));
   return (
     <Card>
       <Stack direction='row' alignItems='flex-start' p={2}>
         <Box flexGrow={1}>
           <Typography variant='h6' sx={{ mt: 0, mb: 3 }}>
-            Github Activity
+            Github Events
           </Typography>
           <Stack direction='row' gap={1}>
             <MetricCard
-              title='Repositories'
+              title='Active Repositories'
               value={
                 <>
                   {repos.toLocaleString()}{' '}
@@ -91,31 +95,21 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
             <Table stickyHeader size='small'>
               <TableHead>
                 <TableRow sx={{ '.MuiTableCell-root': { backgroundColor: 'background.paper' } }}>
-                  <TableCell>Week start</TableCell>
-                  <TableCell align='right'>Week #</TableCell>
+                  <TableCell></TableCell>
                   <TableCell align='right'>Builders</TableCell>
                   <TableCell align='right'>PRs</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {weeklyStatsArray.map((weeklyStat) => {
+                {currentSeasonWeeksSorted.map((week) => {
+                  const weeklyStat = weeklyStats[week];
                   return (
-                    <TableRow key={weeklyStat.week}>
+                    <TableRow key={week}>
                       <TableCell>
-                        <Stack direction='row' alignItems='center' gap={2} width='150px'>
-                          {`${getDateFromISOWeek(weeklyStat.week).toFormat('MMM d')}`}
-                          {weeklyStat.week === getCurrentWeek() && (
-                            <Chip label='Current' size='small' variant='outlined' color='secondary' />
-                          )}
-                        </Stack>
+                        <WeekValue week={week} />
                       </TableCell>
-                      <TableCell align='right'>
-                        {currentSeasonWeeks.indexOf(weeklyStat.week) > -1
-                          ? currentSeasonWeeks.indexOf(weeklyStat.week) + 1
-                          : '-'}
-                      </TableCell>
-                      <TableCell align='right'>{weeklyStat.builders.size}</TableCell>
-                      <TableCell align='right'>{weeklyStat.prs}</TableCell>
+                      <TableCell align='right'>{weeklyStat?.builders.size || '-'}</TableCell>
+                      <TableCell align='right'>{weeklyStat?.prs || '-'}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -132,9 +126,7 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
                 >
                   <TableCell>Total</TableCell>
                   <TableCell align='right'>{allBuilders.size}</TableCell>
-                  <TableCell align='right'>
-                    {weeklyStatsArray.reduce((sum, weeklyStat) => sum + weeklyStat.prs, 0)}
-                  </TableCell>
+                  <TableCell align='right'>{builderEvents.length}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

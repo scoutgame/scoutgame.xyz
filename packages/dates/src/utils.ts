@@ -144,6 +144,7 @@ export function getCurrentSeasonWeekNumber(week: ISOWeek = getCurrentWeek()): nu
   return getSeasonWeekFromISOWeek({ season, week });
 }
 
+// Week 1, 2, etc.
 export function getSeasonWeekFromISOWeek({ season, week }: { season: ISOWeek; week: ISOWeek }): number {
   const weekDate = DateTime.fromISO(week, { zone: 'utc' });
   const seasonDate = DateTime.fromISO(season, { zone: 'utc' });
