@@ -4,6 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import {
   Box,
   Card,
+  Chip,
   Stack,
   Typography,
   Table,
@@ -15,7 +16,7 @@ import {
   TableContainer
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { getDateFromISOWeek } from '@packages/dates/utils';
+import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
@@ -96,7 +97,7 @@ export async function AirdropMetrics({
       <Stack direction='row' alignItems='flex-start' p={2}>
         <Box flexGrow={1}>
           <Typography variant='h6' sx={{ mt: 0, mb: 3 }}>
-            Rewards
+            Airdrops
           </Typography>
           <Stack direction='row' gap={1}>
             <MetricCard
@@ -125,7 +126,7 @@ export async function AirdropMetrics({
             <Table stickyHeader size='small'>
               <TableHead>
                 <TableRow sx={{ '.MuiTableCell-root': { backgroundColor: 'background.paper' } }}>
-                  <TableCell>Week start</TableCell>
+                  <TableCell></TableCell>
                   <TableCell align='right'>Wallets</TableCell>
                   <TableCell align='right'>Claimed </TableCell>
                   <TableCell align='right'>Unclaimed </TableCell>
@@ -142,7 +143,9 @@ export async function AirdropMetrics({
                     .reduce((sum, p) => sum + BigInt(p.amount), zero);
                   return (
                     <TableRow key={airdrop.week}>
-                      <TableCell>{getDateFromISOWeek(airdrop.week).toFormat('MMM d')}</TableCell>
+                      <TableCell>
+                        <WeekValue week={airdrop.week} />
+                      </TableCell>
                       <TableCell align='right'>
                         {new Set(airdrop.rewardPayouts.map((p) => p.walletAddress)).size}
                       </TableCell>
@@ -216,5 +219,32 @@ function MetricCard({ title, value }: { title: string | React.ReactNode; value: 
       </Typography>
       <Typography variant='h6'>{value.toLocaleString()}</Typography>
     </Box>
+  );
+}
+
+export function WeekValue({ week }: { week: string }) {
+  return (
+    <Stack direction='row' alignItems='center' gap={2} width='130px' position='relative'>
+      {week === getCurrentWeek() && (
+        <Box
+          component='span'
+          sx={{
+            position: 'absolute',
+            left: '-15px',
+            top: '8px',
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            bgcolor: 'success.main'
+          }}
+        />
+      )}
+      <Typography component='span' fontSize='inherit' sx={{ width: '60px' }}>
+        Week {getCurrentSeasonWeekNumber(week)}
+      </Typography>
+      <Typography fontSize='inherit' component='span' color='secondary'>
+        {getDateFromISOWeek(week).toFormat('MMM d')}
+      </Typography>
+    </Stack>
   );
 }
