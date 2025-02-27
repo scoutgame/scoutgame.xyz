@@ -186,8 +186,8 @@ export async function recordMergedPullRequest({
       );
 
       const thisPrDate = builderEventDate.toISOString().split('T')[0];
-      const isFirstPrInDay = !previousDaysWithPr.has(thisPrDate);
-      const threeDayPrStreak = isFirstPrInDay && previousDaysWithPr.size % 3 === 2;
+      const isFirstPrToday = !previousDaysWithPr.has(thisPrDate);
+      const threeDayPrStreak = isFirstPrToday && previousDaysWithPr.size % 3 === 2;
 
       const gemReceiptType: GemsReceiptType =
         isFirstMergedPullRequest && !hasFirstMergedPullRequestAlreadyThisWeek
@@ -196,7 +196,9 @@ export async function recordMergedPullRequest({
             ? 'third_pr_in_streak'
             : pullRequest.reviewDecision === 'APPROVED'
               ? 'regular_pr'
-              : 'regular_pr_unreviewed';
+              : isFirstPrToday
+                ? 'regular_pr' // we count this differently because it's the first PR of the day
+                : 'regular_pr_unreviewed';
 
       const gemValue = gemsValues[gemReceiptType];
 

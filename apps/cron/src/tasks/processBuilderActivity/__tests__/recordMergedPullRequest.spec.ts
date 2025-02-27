@@ -194,6 +194,53 @@ describe('recordMergedPullRequest', () => {
     expect(gemsReceipts[1].value).toBe(gemsValues.regular_pr_unreviewed);
   });
 
+  it('should give 10 points for the first PR of the daywith no review', async () => {
+    const builder = await mockBuilder();
+
+    const repo = await mockRepo();
+
+    const pullRequests = [
+      mockPullRequest({
+        mergedAt: DateTime.utc().minus({ days: 2 }).toISO(),
+        createdAt: DateTime.utc().minus({ days: 2 }).toISO(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo
+      }),
+      mockPullRequest({
+        mergedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo
+      })
+    ];
+
+    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
+
+    await recordMergedPullRequest({ pullRequest: pullRequests[0], repo, season: currentSeason });
+    await recordMergedPullRequest({ pullRequest: pullRequests[1], repo, season: currentSeason });
+
+    const gemsReceipts = await prisma.gemsReceipt.findMany({
+      where: {
+        event: {
+          builderId: builder.id
+        }
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+
+    expect(gemsReceipts).toHaveLength(2);
+    expect(gemsReceipts[0].type).toBe('first_pr');
+    expect(gemsReceipts[0].value).toBe(gemsValues.first_pr);
+    expect(gemsReceipts[1].type).toBe('regular_pr');
+    expect(gemsReceipts[1].value).toBe(gemsValues.regular_pr);
+  });
+
   it('should create builder events and gems receipts for a regular merged pull request', async () => {
     const builder = await mockBuilder();
 
