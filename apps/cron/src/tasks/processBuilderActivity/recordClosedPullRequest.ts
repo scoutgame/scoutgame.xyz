@@ -196,7 +196,7 @@ export async function recordClosedPullRequest({
           userId: builder.id,
           senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
           subject: 'Your Scout Game Account Has Been Suspended',
-          template: 'Builder suspended',
+          templateType: 'builder_suspended',
           templateVariables: {
             builder_name: builder.displayName,
             repo_1_title: events[0].repo.name,

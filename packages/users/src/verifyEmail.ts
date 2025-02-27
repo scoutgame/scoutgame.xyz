@@ -34,7 +34,7 @@ export async function sendVerificationEmail({ userId }: { userId: string }) {
     userId,
     senderAddress: `The Scout Game <noreply@mail.scoutgame.xyz>`,
     subject: 'Verify your email',
-    template: 'email verification',
+    templateType: 'email_verification',
     templateVariables: {
       verification_url: `${baseUrl}/verify-email?code=${code}`
     },

@@ -31,7 +31,7 @@ export async function sendBuilderStatusEmails() {
       await sendEmailTemplate({
         userId: builder.id,
         subject: 'You’re Already Making an Impact in Scout Game! 🎉',
-        template: 'builder status',
+        templateType: 'builder_status',
         templateVariables: {
           builder_name: builder.displayName,
           builder_card_image: builder.builderNfts[0].imageUrl

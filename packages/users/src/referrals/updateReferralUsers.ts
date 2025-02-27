@@ -143,7 +143,7 @@ export async function updateReferralUsers(
       userId: referrer.id,
       senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
       subject: 'Someone Joined Scout Game Using Your Referral! 🎉',
-      template: 'Referral link signup',
+      templateType: 'referral_link_signup',
       templateVariables: {
         name: referrer.displayName,
         scout_name: referee.displayName,
