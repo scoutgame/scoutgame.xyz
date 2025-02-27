@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
 import { parseUnits, type Address } from 'viem';
 import { base } from 'viem/chains';
@@ -32,7 +33,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
     return;
   }
 
-  const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
+  const { hash, contractAddress, cid, merkleTree, normalizedRecipients } = await createSablierAirdropContract({
     adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY as Address,
     campaignName: `Scoutgame Octant & Base contribution ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: base.id,
@@ -78,6 +79,36 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
       }
     }
   });
+
+  for (const recipient of normalizedRecipients) {
+    try {
+      const builder = await prisma.scout.findFirstOrThrow({
+        where: {
+          wallets: {
+            some: { address: recipient.address.toLowerCase() }
+          }
+        },
+        select: {
+          displayName: true,
+          id: true
+        }
+      });
+      await sendEmailTemplate({
+        userId: builder.id,
+        templateType: 'partner_reward_payout',
+        subject: 'You have received partner rewards! 🎉',
+        templateVariables: {
+          builder_name: builder.displayName,
+          partner: 'Octant & Base Contribution',
+          amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT,
+          token: 'USDC'
+        },
+        senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
+      });
+    } catch (error) {
+      log.error('Error sending partner reward payout email', { error, userId: recipient.address });
+    }
+  }
 
   return { hash, contractAddress };
 }
