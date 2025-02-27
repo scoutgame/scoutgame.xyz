@@ -44,7 +44,8 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
     }),
     prisma.builderEvent.findMany({
       where: {
-        bonusPartner: partner
+        bonusPartner: partner,
+        type: 'merged_pull_request'
       },
       select: {
         createdAt: true,
