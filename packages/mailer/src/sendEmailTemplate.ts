@@ -15,7 +15,9 @@ const TemplateTypesRecord = {
   builder_card_scouted: 'Builder card scouted',
   builder_approved: 'Builder approved',
   email_verification: 'Email verification',
-  referral_link_signup: 'Referral link signup'
+  referral_link_signup: 'Referral link signup',
+  merged_pr_gems: 'Merged PR gems',
+  partner_reward_payout: 'Partner reward payout'
 };
 
 export async function sendEmailTemplate({
