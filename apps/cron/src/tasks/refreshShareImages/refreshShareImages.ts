@@ -12,7 +12,7 @@ export async function refreshShareImages() {
 
   for (const builderNft of builderNfts) {
     if (builderNft?.tokenId) {
-      const updatedBuilderNft = await refreshShareImage(builderNft).catch((error) => {
+      await refreshShareImage(builderNft).catch((error) => {
         log.error(`Error refreshing share image for NFT`, {
           error,
           userId: builderNft.builderId
