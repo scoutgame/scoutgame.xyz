@@ -19,7 +19,8 @@ import {
   getWeekFromDate,
   getDateFromISOWeek,
   getAllISOWeeksFromSeasonStart,
-  getCurrentWeek
+  getCurrentWeek,
+  getCurrentSeasonStart
 } from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 
@@ -45,7 +46,8 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
     prisma.builderEvent.findMany({
       where: {
         bonusPartner: partner,
-        type: 'merged_pull_request'
+        type: 'merged_pull_request',
+        season: getCurrentSeasonStart()
       },
       select: {
         createdAt: true,
