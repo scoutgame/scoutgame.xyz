@@ -13,7 +13,7 @@ export async function getBuilderEventsForPartnerRewards({
 
   const events = await prisma.githubEvent.findMany({
     where: {
-      repo: {
+      builderEvent: {
         bonusPartner
       },
       type: 'merged_pull_request',
