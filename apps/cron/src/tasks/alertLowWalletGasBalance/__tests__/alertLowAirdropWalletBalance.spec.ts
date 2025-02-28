@@ -1,4 +1,3 @@
-import type { PartnerRewardPayoutContract } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 
 jest.unstable_mockModule('@charmverse/core/prisma-client', () => ({
