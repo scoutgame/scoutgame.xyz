@@ -44,11 +44,6 @@ export function getCurrentWeek(): ISOWeek {
   return _formatWeek(DateTime.utc());
 }
 
-// used for daily rewards
-export function getCurrentLocalWeek(): ISOWeek {
-  return _formatWeek(DateTime.local());
-}
-
 export function getLastWeek(now: DateTime = DateTime.utc()): ISOWeek {
   return getPreviousWeek(_formatWeek(now));
 }
