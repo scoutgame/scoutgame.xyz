@@ -1,11 +1,11 @@
-import { Button, CircularProgress, Container, Stack, Typography } from '@mui/material';
+import { Button, Container, Stack, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { InfoPageFooter } from '@packages/scoutgame-ui/components/info/components/InfoPageFooter';
 import { InfoPageContent } from '@packages/scoutgame-ui/components/info/InfoPage';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { FarcasterLoginButton } from './FarcasterLoginButton';
+import { LoginButton } from './LoginButton';
 
 function HeroSection() {
   return (
@@ -79,7 +79,7 @@ function HeroSection() {
                 Everyone can play. No coding required!
               </Typography>
             </Hidden>
-            <FarcasterLoginButton />
+            <LoginButton />
           </Stack>
           <Hidden mdDown>
             <Image src='/images/home/cool-dev.png' width={350} height={350} alt='Cool dev' />
@@ -146,7 +146,7 @@ function FooterSection() {
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
         <Button variant='contained' sx={{ width: '50%' }}>
-          <Link href='/login'>Get started</Link>
+          <Link href='/login'>Get starteds</Link>
         </Button>
       </Stack>
     </Stack>
