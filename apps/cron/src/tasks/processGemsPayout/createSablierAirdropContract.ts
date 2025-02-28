@@ -161,7 +161,6 @@ export async function createSablierAirdropContract({
     root,
     cid,
     merkleTree: fullMerkleTreeJson,
-    contractAddress: createdContractAddress.toLowerCase(),
-    normalizedRecipients
+    contractAddress: createdContractAddress.toLowerCase()
   };
 }

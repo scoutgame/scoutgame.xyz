@@ -17,7 +17,6 @@ const TemplateTypesRecord = {
   email_verification: 'Email verification',
   referral_link_signup: 'Referral link signup',
   merged_pr_gems: 'Merged PR gems',
-  partner_reward_payout: 'Partner reward payout',
   added_to_project: 'Added to project'
 };
 
@@ -83,24 +82,24 @@ export async function sendEmailTemplate({
 
   log.debug('Sending email to Mailgun', { subject, userId });
 
-  // await prisma.scoutNotification.create({
-  //   data: {
-  //     channel: 'email',
-  //     notificationType: templateType,
-  //     emailNotifications: {
-  //       create: {
-  //         email: user.email,
-  //         templateVariables: templateVariables ?? {}
-  //       }
-  //     },
-  //     sentAt: new Date(),
-  //     user: {
-  //       connect: {
-  //         id: userId
-  //       }
-  //     }
-  //   }
-  // });
+  await prisma.scoutNotification.create({
+    data: {
+      channel: 'email',
+      notificationType: templateType,
+      emailNotifications: {
+        create: {
+          email: user.email,
+          templateVariables: templateVariables ?? {}
+        }
+      },
+      sentAt: new Date(),
+      user: {
+        connect: {
+          id: userId
+        }
+      }
+    }
+  });
 
   return client?.messages.create(DOMAIN, {
     from: senderAddress,
