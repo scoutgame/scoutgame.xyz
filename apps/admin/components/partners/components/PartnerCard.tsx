@@ -154,6 +154,7 @@ export function PartnerCard({
                   fullWidth
                   filename={`${partnerName} Export - Week ${allWeeks.indexOf(selectedWeek) + 1} - ${getWeekStartEndFormatted(getDateFromISOWeek(selectedWeek).toJSDate())}.tsv`}
                   src={`/api/partners/${partner}?week=${selectedWeek}`}
+                  onComplete={() => setExportDialogOpen(false)}
                 >
                   Download TSV
                 </FileDownloadButton>

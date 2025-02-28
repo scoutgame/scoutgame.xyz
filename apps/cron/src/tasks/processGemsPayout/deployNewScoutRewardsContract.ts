@@ -1,21 +1,17 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
-import { getRankedNewScoutsForPastWeek } from '@packages/scoutgame/scouts/getNewScouts';
+import { getNewScoutRewards } from '@packages/scoutgame/scouts/getNewScoutRewards';
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
 import { createSablierAirdropContract } from './createSablierAirdropContract';
 
-const newScoutsRewards = [60, 50, 40, 35, 30, 25, 20, 15, 15, 10];
-
 export const optimismTokenDecimals = 18;
 export const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
 
 export async function deployNewScoutRewardsContract({ week }: { week: string }) {
-  const newScouts = (await getRankedNewScoutsForPastWeek({ week })) as { address: string }[];
-
-  const top10Scouts = newScouts.slice(0, 10);
+  const top10Scouts = await getNewScoutRewards({ week });
   const currentSeason = getCurrentSeason(week);
 
   if (top10Scouts.length === 0) {
@@ -32,7 +28,7 @@ export async function deployNewScoutRewardsContract({ week }: { week: string }) 
     chainId: optimism.id,
     recipients: top10Scouts.map((scout, index) => ({
       address: scout.address.toLowerCase() as `0x${string}`,
-      amount: newScoutsRewards[index]
+      amount: scout.opAmount
     })),
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,
@@ -62,7 +58,7 @@ export async function deployNewScoutRewardsContract({ week }: { week: string }) 
       rewardPayouts: {
         createMany: {
           data: top10Scouts.map((scout, index) => ({
-            amount: parseUnits(newScoutsRewards[index].toString(), optimismTokenDecimals).toString(),
+            amount: parseUnits(scout.opAmount.toString(), optimismTokenDecimals).toString(),
             walletAddress: scout.address.toLowerCase(),
             meta: {
               position: index + 1
