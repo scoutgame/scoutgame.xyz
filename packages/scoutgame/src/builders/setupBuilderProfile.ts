@@ -93,11 +93,12 @@ export async function setupBuilderProfile({
     throw new Error('Account is already in use');
   }
 
-  log.info('Connecting github user', {
+  log.info('Connecting github profile to new builder', {
     githubLogin,
     alreadyExists: !!githubUser,
     displayName: userResponse.name,
-    id: userResponse.id
+    id: userResponse.id,
+    userId: unsealedUserId
   });
 
   await prisma.githubUser.upsert({
@@ -127,11 +128,11 @@ export async function setupBuilderProfile({
         onboardedAt: new Date()
       }
     });
+  } else {
+    log.info(`Builder already applied: ${scout.builderStatus}`, {
+      userId: unsealedUserId
+    });
   }
 
-  if (inviteCode !== null) {
-    log.warn('Skipping builder approval for invite code', { inviteCode });
-    // await approveBuilder({ builderId: unsealedUserId });
-  }
   return scout;
 }
