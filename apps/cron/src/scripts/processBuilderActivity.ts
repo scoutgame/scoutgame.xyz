@@ -4,48 +4,19 @@ import { getBuilderActivity } from '../tasks/processBuilderActivity/getBuilderAc
 import { DateTime } from 'luxon';
 import { getCurrentWeek, getCurrentSeasonStart } from '@packages/dates/utils';
 import { prisma } from '@charmverse/core/prisma-client';
+import { prettyPrint } from '@packages/utils/strings';
 
 const windowStart = DateTime.fromISO('2024-10-28', { zone: 'utc' }).toJSDate();
 
-(async () => {
-  // const events = await prisma.builderEvent.findMany({
-  //   where: {
-  //     builderId: builder.id,
-  //     week: '2024-W40'
-  //   },
-  //   include: {
-  //     gemsReceipt: true
-  //   }
-  // });
-  // console.log(JSON.stringify(events, null, 2));
-  // return;
-  const builder = await prisma.scout.findFirstOrThrow({
-    where: { path: 'mdqst' },
-    include: { githubUsers: true }
-  });
-
-  await deleteBuilderEvents(builder.id, builder.githubUsers[0]!.id);
+async function resetBuilderEvents(builderId: string, githubUser: any) {
+  await deleteBuilderEvents(builderId, githubUser.id);
   await processBuilderActivity({
-    builderId: builder.id,
-    githubUser: builder.githubUsers[0]!,
+    builderId: builderId,
+    githubUser: githubUser,
     createdAfter: windowStart,
     season: getCurrentSeasonStart()
   });
-  return;
-  console.log('Getting builder activity');
-  const w = await prisma.scout.findFirst({
-    where: { path: 'mdqst' },
-    include: { githubUsers: true }
-  });
-
-  const { commits, pullRequests } = await getBuilderActivity({
-    login: 'mdqst',
-    githubUserId: w?.githubUsers[0]?.id,
-    after: DateTime.fromISO('2024-10-28', { zone: 'utc' }).toJSDate()
-  });
-  console.log(commits.length);
-  console.log(pullRequests.length);
-})();
+}
 
 async function deleteBuilderEvents(builderId: string, githubUserId: number) {
   const result = await prisma.$transaction([
@@ -70,3 +41,42 @@ async function deleteBuilderEvents(builderId: string, githubUserId: number) {
   console.log('Deleted', result[0], 'github events');
   console.log('Deleted', result[1], 'builder events');
 }
+
+async function getSavedBuilderEvents(builderId: string, week: string = getCurrentWeek()) {
+  return prisma.builderEvent.findMany({
+    where: {
+      builderId: builderId,
+      week: week
+    },
+    include: {
+      gemsReceipt: true
+    }
+  });
+}
+
+(async () => {
+
+  const builder = await prisma.scout.findFirstOrThrow({
+    where: { path: 'zod' },
+    include: { githubUsers: true }
+  });
+
+  // await resetBuilderEvents(builder.id, builder.githubUsers[0]!);
+
+  // const events = await getSavedBuilderEvents(builder.id, '2025-W07');
+  // prettyPrint(events);
+
+  
+  // return;
+  console.log('Getting builder activity');
+
+  const { commits, pullRequests } = await getBuilderActivity({
+    login: builder.githubUsers[0].login,
+    githubUserId: builder.githubUsers[0]?.id,
+    after: DateTime.fromISO('2025-02-10', { zone: 'utc' }).toJSDate()
+  });
+  console.log('Found Commits', commits.length);
+  prettyPrint(commits);
+  console.log('Found Pull Requests', pullRequests.length);
+  prettyPrint(pullRequests);
+})();
