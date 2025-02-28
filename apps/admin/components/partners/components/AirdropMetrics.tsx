@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
@@ -29,7 +30,7 @@ export async function AirdropMetrics({
   partner: string;
   walletAddress: string | undefined;
 }) {
-  const airdrops = await prisma.partnerRewardPayoutContract.findMany({
+  const airdropsData = await prisma.partnerRewardPayoutContract.findMany({
     where: {
       partner
     },
@@ -51,10 +52,45 @@ export async function AirdropMetrics({
       }
     }
   });
-  const chainId = airdrops[0]?.chainId;
-  const tokenAddress = airdrops[0]?.tokenAddress;
-  const tokenDecimals = airdrops[0]?.tokenDecimals;
-  const tokenSymbol = airdrops[0]?.tokenSymbol;
+
+  const zero = BigInt(0);
+  const chainId = airdropsData[0]?.chainId;
+  const tokenAddress = airdropsData[0]?.tokenAddress;
+  const tokenDecimals = airdropsData[0]?.tokenDecimals;
+  const tokenSymbol = airdropsData[0]?.tokenSymbol;
+
+  const airdrops = airdropsData.map((airdrop) => {
+    const claimed = airdrop.rewardPayouts.filter((p) => p.claimedAt).reduce((sum, p) => sum + BigInt(p.amount), zero);
+    const unclaimed = airdrop.rewardPayouts
+      .filter((p) => !p.claimedAt)
+      .reduce((sum, p) => sum + BigInt(p.amount), zero);
+    const walletAddresses = new Set(airdrop.rewardPayouts.map((p) => p.walletAddress));
+    const wallets = walletAddresses.size;
+    return {
+      walletAddresses: Array.from(walletAddresses),
+      week: airdrop.week,
+      wallets,
+      claimed,
+      unclaimed,
+      total: claimed + unclaimed
+    };
+  });
+
+  // add the upcoming payout for referral rewards
+  if (partner === 'optimism_referral_champion') {
+    const referrals = await getReferralsToReward({ week: getCurrentWeek() });
+    const upcomingPayout = referrals.reduce((sum, referral) => sum + BigInt(referral.opAmount), BigInt(0));
+    if (referrals.length > 0) {
+      airdrops.unshift({
+        week: getCurrentWeek(),
+        wallets: referrals.length,
+        walletAddresses: referrals.map((r) => r.address),
+        claimed: zero,
+        unclaimed: upcomingPayout,
+        total: upcomingPayout
+      });
+    }
+  }
 
   let walletBalance = BigInt(0);
   if (walletAddress && tokenAddress && chainId) {
@@ -81,8 +117,6 @@ export async function AirdropMetrics({
       log.error('Error fetching wallet balance:', { error });
     }
   }
-
-  const zero = BigInt(0);
 
   const toEth = (v: bigint) => {
     const num = Number(formatUnits(v, tokenDecimals));
@@ -135,23 +169,15 @@ export async function AirdropMetrics({
               </TableHead>
               <TableBody>
                 {airdrops.map((airdrop) => {
-                  const claimed = airdrop.rewardPayouts
-                    .filter((p) => p.claimedAt)
-                    .reduce((sum, p) => sum + BigInt(p.amount), zero);
-                  const unclaimed = airdrop.rewardPayouts
-                    .filter((p) => !p.claimedAt)
-                    .reduce((sum, p) => sum + BigInt(p.amount), zero);
                   return (
                     <TableRow key={airdrop.week}>
                       <TableCell>
                         <WeekValue week={airdrop.week} />
                       </TableCell>
-                      <TableCell align='right'>
-                        {new Set(airdrop.rewardPayouts.map((p) => p.walletAddress)).size}
-                      </TableCell>
-                      <TableCell align='right'>{toEth(claimed)}</TableCell>
-                      <TableCell align='right'>{toEth(unclaimed)}</TableCell>
-                      <TableCell align='right'>{toEth(claimed + unclaimed)}</TableCell>
+                      <TableCell align='right'>{airdrop.wallets}</TableCell>
+                      <TableCell align='right'>{toEth(airdrop.claimed)}</TableCell>
+                      <TableCell align='right'>{toEth(airdrop.unclaimed)}</TableCell>
+                      <TableCell align='right'>{toEth(airdrop.claimed + airdrop.unclaimed)}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -168,39 +194,10 @@ export async function AirdropMetrics({
                   }}
                 >
                   <TableCell>Total</TableCell>
-                  <TableCell align='right'>
-                    {new Set(airdrops.flatMap((a) => a.rewardPayouts.map((p) => p.walletAddress))).size}
-                  </TableCell>
-                  <TableCell align='right'>
-                    {toEth(
-                      airdrops.reduce(
-                        (sum, a) =>
-                          sum +
-                          a.rewardPayouts.filter((p) => p.claimedAt).reduce((pSum, p) => pSum + BigInt(p.amount), zero),
-                        zero
-                      )
-                    )}
-                  </TableCell>
-                  <TableCell align='right'>
-                    {toEth(
-                      airdrops.reduce(
-                        (sum, a) =>
-                          sum +
-                          a.rewardPayouts
-                            .filter((p) => !p.claimedAt)
-                            .reduce((pSum, p) => pSum + BigInt(p.amount), zero),
-                        zero
-                      )
-                    )}
-                  </TableCell>
-                  <TableCell align='right'>
-                    {toEth(
-                      airdrops.reduce(
-                        (sum, a) => sum + a.rewardPayouts.reduce((pSum, p) => pSum + BigInt(p.amount), zero),
-                        zero
-                      )
-                    )}
-                  </TableCell>
+                  <TableCell align='right'>{new Set(airdrops.flatMap((a) => a.walletAddresses)).size}</TableCell>
+                  <TableCell align='right'>{toEth(airdrops.reduce((sum, a) => sum + a.claimed, zero))}</TableCell>
+                  <TableCell align='right'>{toEth(airdrops.reduce((sum, a) => sum + a.unclaimed, zero))}</TableCell>
+                  <TableCell align='right'>{toEth(airdrops.reduce((sum, a) => sum + a.total, zero))}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
