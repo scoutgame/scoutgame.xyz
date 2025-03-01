@@ -44,11 +44,6 @@ export function getCurrentWeek(): ISOWeek {
   return _formatWeek(DateTime.utc());
 }
 
-// used for daily rewards
-export function getCurrentLocalWeek(): ISOWeek {
-  return _formatWeek(DateTime.local());
-}
-
 export function getLastWeek(now: DateTime = DateTime.utc()): ISOWeek {
   return getPreviousWeek(_formatWeek(now));
 }
@@ -144,6 +139,7 @@ export function getCurrentSeasonWeekNumber(week: ISOWeek = getCurrentWeek()): nu
   return getSeasonWeekFromISOWeek({ season, week });
 }
 
+// Week 1, 2, etc.
 export function getSeasonWeekFromISOWeek({ season, week }: { season: ISOWeek; week: ISOWeek }): number {
   const weekDate = DateTime.fromISO(week, { zone: 'utc' });
   const seasonDate = DateTime.fromISO(season, { zone: 'utc' });

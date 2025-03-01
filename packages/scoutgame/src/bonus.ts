@@ -28,6 +28,10 @@ export const bonusPartnersRecord = {
   octant: {
     name: 'Octant',
     icon: 'http://scoutgame.xyz/images/logos/octant.png'
+  },
+  gooddollar: {
+    name: 'Good Dollar',
+    icon: 'https://scoutgame.xyz/images/logos/good-dollar.png'
   }
 } as const;
 

@@ -7,5 +7,5 @@ export function useSearchRepos(searchString: string) {
 }
 
 export function useCreateRepos() {
-  return usePOST<{ owner: string }>('/api/repos');
+  return usePOST<{ owner: string; partner?: string }>('/api/repos');
 }

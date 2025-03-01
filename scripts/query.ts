@@ -6,17 +6,28 @@ import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 
 async function query() {
   // write a query to return all the bonus partners from the github repo table
-  const bonusPartners = await prisma.partnerRewardPayoutContract.findMany({
-    select: {
-      partner: true
+  const events = await prisma.githubEvent.findMany({
+    where: {
+      type: 'merged_pull_request',
+      createdAt: {
+        gt: new Date('2025-02-12T00:00:00Z'),
+        lt: new Date('2025-02-23T23:59:59Z')
+      },
+      builderEvent: {
+        bonusPartner: 'celo'
+      }
     },
-    distinct: ['partner']
+    include: {
+      repo: true,
+      builderEvent: {
+        include: {
+          builder: true
+        }
+      }
+    }
   });
 
-  console.log(
-    'Unique bonus partners:',
-    bonusPartners.map((p) => p.partner)
-  );
+  prettyPrint(events);
 }
 
 query();

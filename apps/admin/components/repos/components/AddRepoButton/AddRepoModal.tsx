@@ -21,11 +21,12 @@ import { useDebouncedValue } from 'hooks/useDebouncedValue';
 
 type Props = {
   open: boolean;
+  partner?: string;
   onClose: () => void;
   onAdd: () => void;
 };
 
-export function AddRepoModal({ open, onClose, onAdd }: Props) {
+export function AddRepoModal({ open, onClose, onAdd, partner }: Props) {
   const [repoInput, setRepoInput] = useState('');
   const { trigger: createRepos, isMutating: isImporting } = useCreateRepos();
   const debouncedFilterString = useDebouncedValue(repoInput);
@@ -34,13 +35,14 @@ export function AddRepoModal({ open, onClose, onAdd }: Props) {
     error,
     isValidating,
     isLoading
-  } = useSearchReposByOwnerFromGithub(debouncedFilterString);
+  } = useSearchReposByOwnerFromGithub(debouncedFilterString, partner);
 
-  const newRepos = reposFromGithub?.filter((g) => !g.exists) || [];
+  const newRepos =
+    (partner ? reposFromGithub?.filter((g) => !g.hasPartner) : reposFromGithub?.filter((g) => !g.exists)) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createRepos({ owner: repoInput });
+    await createRepos({ owner: repoInput, partner });
     onAdd();
     onClose();
     setRepoInput('');
@@ -54,13 +56,14 @@ export function AddRepoModal({ open, onClose, onAdd }: Props) {
 
   return (
     <Dialog open={open} onClose={onClose} PaperProps={{ sx: { maxWidth: 400 } }} fullWidth>
-      <DialogTitle>Add repos by owner</DialogTitle>
+      <DialogTitle>Add Github repositories</DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <TextField
             autoFocus
             margin='dense'
-            label='Repository Owner'
+            label='Search Github'
+            placeholder='Enter owner or owner/repo'
             type='text'
             fullWidth
             value={repoInput}
@@ -85,7 +88,7 @@ export function AddRepoModal({ open, onClose, onAdd }: Props) {
           {!isValidating && reposFromGithub && !error && (
             <>
               <Typography variant='caption'>
-                Found {newRepos.length} new repo{newRepos.length !== 1 ? 's' : ''}
+                {`Found ${newRepos.length} new${partner ? ' partner' : ''} repo${newRepos.length !== 1 ? 's' : ''}`}
                 {reposFromGithub.length !== newRepos.length ? ` of ${reposFromGithub.length}` : ''}
               </Typography>
               <Box maxHeight={100} overflow='auto'>
@@ -95,6 +98,12 @@ export function AddRepoModal({ open, onClose, onAdd }: Props) {
                     <Link href={g.url} target='_blank'>
                       {g.fullName}
                     </Link>
+                    {partner && !g.exists && (
+                      <Typography color='secondary' component='span' variant='caption'>
+                        {' '}
+                        (new)
+                      </Typography>
+                    )}
                   </Typography>
                 ))}
               </Box>
