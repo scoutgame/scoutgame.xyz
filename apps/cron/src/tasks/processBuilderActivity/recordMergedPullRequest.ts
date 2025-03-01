@@ -103,18 +103,6 @@ export async function recordMergedPullRequest({
     }
   });
 
-  const recentFirstMergedPullRequests = await prisma.githubEvent.count({
-    where: {
-      createdBy: pullRequest.author.id,
-      type: 'merged_pull_request',
-      isFirstPullRequest: true,
-      builderEvent: {
-        week
-      }
-    }
-  });
-  const hasFirstMergedPullRequestAlreadyThisWeek = recentFirstMergedPullRequests > 0;
-
   let isFirstMergedPullRequest = totalMergedPullRequests === 0;
   if (isFirstMergedPullRequest && !skipFirstMergedPullRequestCheck) {
     // double-check using Github API in case the previous PR was not recorded by us
@@ -189,14 +177,13 @@ export async function recordMergedPullRequest({
       const isFirstPrInDay = !previousDaysWithPr.has(thisPrDate);
       const threeDayPrStreak = isFirstPrInDay && previousDaysWithPr.size % 3 === 2;
 
-      const gemReceiptType: GemsReceiptType =
-        isFirstMergedPullRequest && !hasFirstMergedPullRequestAlreadyThisWeek
-          ? 'first_pr'
-          : threeDayPrStreak
-            ? 'third_pr_in_streak'
-            : pullRequest.reviewDecision === 'APPROVED'
-              ? 'regular_pr'
-              : 'regular_pr_unreviewed';
+      const gemReceiptType: GemsReceiptType = isFirstMergedPullRequest
+        ? 'first_pr'
+        : threeDayPrStreak
+          ? 'third_pr_in_streak'
+          : pullRequest.reviewDecision === 'APPROVED'
+            ? 'regular_pr'
+            : 'regular_pr_unreviewed';
 
       const gemValue = gemsValues[gemReceiptType];
 
