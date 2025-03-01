@@ -25,7 +25,7 @@ export async function generateShareImage({
   builderScouts.scouts.forEach((scout) => {
     for (const emoji of blacklistedEmojis) {
       if (scout.displayName.includes(emoji)) {
-        scout.displayName = scout.displayName.replace(emoji, '');
+        scout.displayName = scout.displayName.replaceAll(emoji, '');
       }
     }
   });
@@ -33,11 +33,11 @@ export async function generateShareImage({
   activities.forEach((activity) => {
     for (const emoji of blacklistedEmojis) {
       if (activity.displayName.includes(emoji)) {
-        activity.displayName = activity.displayName.replace(emoji, '');
+        activity.displayName = activity.displayName.replaceAll(emoji, '');
       }
 
       if (activity.type === 'nft_purchase') {
-        activity.scout.displayName = activity.scout.displayName.replace(emoji, '');
+        activity.scout.displayName = activity.scout.displayName.replaceAll(emoji, '');
       }
     }
   });
