@@ -32,12 +32,14 @@ export async function reviewAppliedBuilders() {
           after: last28Days
         });
 
+        const mergedPullRequests = pullRequests.filter((pr) => pr.mergedAt);
+
         // If the builder has activity in the last 28 days approve it
-        if (commits.length > 0 || pullRequests.length > 0) {
+        if (commits.length > 0 || mergedPullRequests.length > 0) {
           await approveBuilder({ builderId: builder.id });
           log.info('Builder approved due to activity', {
             commits: commits.map((c) => `${c.repository.full_name} - ${c.sha}`),
-            pullRequests: pullRequests.map((pr) => `${pr.repository.nameWithOwner} - PR# ${pr.number}`),
+            pullRequests: mergedPullRequests.map((pr) => `${pr.repository.nameWithOwner} - PR# ${pr.number}`),
             userId: builder.id
           });
           // If the builder has no activity in the last 28 days reject it

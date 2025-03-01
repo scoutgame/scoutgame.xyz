@@ -10,9 +10,10 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@octokit/plugin-paginate-graphql": "^5.2.2",
-    "@octokit/plugin-paginate-rest": "^11.4.1",
-    "@octokit/plugin-rest-endpoint-methods": "^13.2.6",
-    "@octokit/plugin-throttling": "^9.3.2"
+    "@octokit/core": "^6.1.4",
+    "@octokit/plugin-paginate-graphql": "^5.2.4",
+    "@octokit/plugin-paginate-rest": "^11.4.3",
+    "@octokit/plugin-rest-endpoint-methods": "^13.3.1",
+    "@octokit/plugin-throttling": "^9.4.0"
   }
 }

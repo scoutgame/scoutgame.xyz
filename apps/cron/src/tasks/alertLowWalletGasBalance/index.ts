@@ -5,6 +5,7 @@ import type Koa from 'koa';
 import type { Address } from 'viem/accounts';
 import { privateKeyToAccount } from 'viem/accounts';
 
+import { alertLowAirdropWalletBalance } from './alertLowAirdropWalletBalance';
 import { getWalletGasBalanceInUSD } from './getWalletGasBalanceInUSD';
 
 const thresholdUSD = 25;
@@ -38,4 +39,5 @@ export async function alertLowWalletGasBalance(
       ]
     });
   }
+  await alertLowAirdropWalletBalance();
 }
