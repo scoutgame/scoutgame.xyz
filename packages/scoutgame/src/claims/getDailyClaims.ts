@@ -18,9 +18,10 @@ export async function getDailyClaims(userId: string): Promise<DailyClaim[]> {
     orderBy: {
       dayOfWeek: 'asc'
     },
-    include: {
+    select: {
+      dayOfWeek: true,
       event: {
-        include: {
+        select: {
           pointsReceipts: true
         }
       }
@@ -31,6 +32,13 @@ export async function getDailyClaims(userId: string): Promise<DailyClaim[]> {
     where: {
       userId,
       week: currentWeek
+    },
+    select: {
+      event: {
+        select: {
+          pointsReceipts: true
+        }
+      }
     }
   });
 
@@ -39,6 +47,7 @@ export async function getDailyClaims(userId: string): Promise<DailyClaim[]> {
     .map((_, index) => {
       const dailyClaimEvent = dailyClaimEvents.find((_dailyClaimEvent) => _dailyClaimEvent.dayOfWeek === index + 1);
       const points = dailyClaimEvent?.event?.pointsReceipts[0]?.value || 0;
+      const streakPoints = dailyClaimStreakEvent?.event?.pointsReceipts[0]?.value || 0;
 
       const dailyClaimInfo = {
         day: index + 1,
@@ -49,7 +58,10 @@ export async function getDailyClaims(userId: string): Promise<DailyClaim[]> {
 
       // For the last day of the week, return 2 claims: one for the daily claim and one for the bonus claim
       if (index === 6) {
-        return [dailyClaimInfo, { ...dailyClaimInfo, claimed: !!dailyClaimStreakEvent, isBonus: true }];
+        return [
+          dailyClaimInfo,
+          { ...dailyClaimInfo, points: streakPoints, claimed: !!dailyClaimStreakEvent, isBonus: true }
+        ];
       }
 
       return [dailyClaimInfo];
