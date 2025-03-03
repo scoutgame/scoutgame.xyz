@@ -48,13 +48,7 @@ export async function getPointsCountForWeekWithNormalisation({
     log.warn('Points evaluated to 0', {
       week
     });
-    return {
-      totalPoints: 0,
-      normalisationFactor: 0,
-      normalisedBuilders: [],
-      weeklyAllocatedPoints,
-      topWeeklyBuilders: leaderboard
-    };
+    throw new Error('Points evaluated to 0');
   }
 
   const normalisationFactor = weeklyAllocatedPoints / points;
