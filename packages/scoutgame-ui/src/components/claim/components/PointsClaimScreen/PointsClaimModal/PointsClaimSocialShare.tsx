@@ -1,7 +1,5 @@
-import { Typography, Stack, IconButton } from '@mui/material';
-import { completeQuestAction } from '@packages/scoutgame/quests/completeQuestAction';
+import { IconButton, Stack } from '@mui/material';
 import Image from 'next/image';
-import { useAction } from 'next-safe-action/hooks';
 
 import { useMdScreen } from '../../../../../hooks/useMediaScreens';
 import { useUser } from '../../../../../providers/UserProvider';
@@ -17,20 +15,11 @@ type ShareMessageProps = {
 
 export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'>) {
   const isMd = useMdScreen();
-  const { refreshUser, user } = useUser();
-
-  const { execute, isExecuting } = useAction(completeQuestAction, {
-    onSuccess: () => {
-      refreshUser();
-    }
-  });
+  const { user } = useUser();
 
   const handleShare = (platform: 'x' | 'telegram' | 'warpcast') => {
     const shareUrl = getShareMessage({ ...props, platform, referralCode: user?.referralCode });
     window.open(shareUrl, '_blank');
-    if (!isExecuting) {
-      execute({ questType: 'share-weekly-claim' });
-    }
   };
 
   const size = !isMd ? 30 : 42.5;
@@ -47,9 +36,6 @@ export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'
         backgroundColor: '#D8E1FF'
       }}
     >
-      <Typography variant={isMd ? 'h6' : 'subtitle1'} color='#000' fontWeight='bold'>
-        Share your win and earn 10 points!
-      </Typography>
       <Stack flexDirection='row' justifyContent='center'>
         <IconButton onClick={() => handleShare('x')}>
           <Image src='/images/logos/x.png' alt='X' width={size} height={size} />
