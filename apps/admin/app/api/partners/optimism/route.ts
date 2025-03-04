@@ -1,4 +1,9 @@
-import { getRankedNewScoutsForPastWeek } from '@packages/scoutgame/scouts/getNewScouts';
+import { log } from '@charmverse/core/log';
+import { getCurrentWeek } from '@packages/dates/utils';
+import {
+  getRankedNewScoutsForCurrentWeek,
+  getRankedNewScoutsForPastWeek
+} from '@packages/scoutgame/scouts/getNewScouts';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -12,14 +17,33 @@ export async function GET(request: Request) {
     return new Response('Week parameter is required', { status: 400 });
   }
 
-  const scouts = await getRankedNewScoutsForPastWeek({ week });
+  const isCurrentWeek = week === getCurrentWeek();
+  const newScouts = isCurrentWeek
+    ? await getRankedNewScoutsForCurrentWeek()
+        .catch((error) => {
+          log.error('Error getting ranked new scouts for current week', { error, week });
+          return [];
+        })
+        .then((scouts) =>
+          scouts.map((scout) => {
+            return {
+              path: scout.path,
+              displayName: scout.displayName,
+              pointsEarned: scout.pointsPredicted,
+              wallets: scout.address
+            };
+          })
+        )
+    : await getRankedNewScoutsForPastWeek({ week }).then((scouts) =>
+        scouts.map((scout) => {
+          return {
+            path: scout.path,
+            displayName: scout.displayName,
+            pointsEarned: scout.pointsEarned,
+            wallets: scout.address
+          };
+        })
+      );
 
-  const rows = scouts.slice(0, 10).map((scout) => ({
-    Path: `https://scoutgame.xyz/u/${scout.path}`,
-    'Display Name': scout.displayName,
-    'Points Earned': scout.pointsEarned,
-    Wallet: scout.wallets?.[0]?.address
-  }));
-
-  return respondWithTSV(rows, `partners-export_optimism_new_scouts_${week}.tsv`);
+  return respondWithTSV(newScouts.slice(0, 10), `partners-export_optimism_new_scouts_${week}.tsv`);
 }

@@ -1,9 +1,10 @@
 'use client';
 
-import { Link, Typography, CircularProgress, Stack, Button } from '@mui/material';
+import { Typography, CircularProgress, Stack, Button } from '@mui/material';
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
+import Link from 'next/link';
 
-export function FarcasterLoginButton() {
+export function LoginButton() {
   const isFarcasterFrame = useIsFarcasterFrame();
 
   return isFarcasterFrame ? (

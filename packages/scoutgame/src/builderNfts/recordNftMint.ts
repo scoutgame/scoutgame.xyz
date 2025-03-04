@@ -246,45 +246,68 @@ export async function recordNftMint(
     log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
   }
 
-  try {
-    const [scout, nft] = await Promise.all([
-      prisma.scout.findUniqueOrThrow({
-        where: {
-          id: scoutId
-        },
-        select: {
-          displayName: true,
-          path: true
+  if (builderNft.nftType === 'default') {
+    try {
+      const [scout, nft] = await Promise.all([
+        prisma.scout.findUniqueOrThrow({
+          where: {
+            id: scoutId
+          },
+          select: {
+            displayName: true,
+            path: true
+          }
+        }),
+        prisma.builderNft.findUniqueOrThrow({
+          where: {
+            id: builderNftId
+          },
+          select: {
+            currentPrice: true
+          }
+        })
+      ]);
+      await sendEmailTemplate({
+        senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+        subject: 'Your Developer Card Was Just Scouted! 🎉',
+        templateType: 'builder_card_scouted',
+        userId: builderNft.builderId,
+        templateVariables: {
+          builder_name: builderNft.builder.displayName,
+          builder_profile_link: `${baseUrl}/u/${builderNft.builder.path}`,
+          cards_purchased: amount,
+          total_purchase_cost: pointsValue,
+          builder_card_image: builderNft.imageUrl,
+          scout_name: scout.displayName,
+          scout_profile_link: `${baseUrl}/u/${scout.path}`,
+          // TODO: use currentPriceInScoutToken when we move to $SCOUT
+          current_card_price: Number((Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2))
         }
-      }),
-      prisma.builderNft.findUniqueOrThrow({
-        where: {
-          id: builderNftId
-        },
-        select: {
-          currentPrice: true
+      });
+      await sendEmailTemplate({
+        senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+        subject: 'Your Developer Card Was Just Scouted! 🎉',
+        templateType: 'builder_card_scouted',
+        userId: builderNft.builderId,
+        templateVariables: {
+          builder_name: builderNft.builder.displayName,
+          builder_profile_link: `${baseUrl}/u/${builderNft.builder.path}`,
+          cards_purchased: amount,
+          total_purchase_cost: pointsValue,
+          builder_card_image: builderNft.imageUrl,
+          scout_name: scout.displayName,
+          scout_profile_link: `${baseUrl}/u/${scout.path}`,
+          // TODO: use currentPriceInScoutToken when we move to $SCOUT
+          current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
         }
-      })
-    ]);
-    await sendEmailTemplate({
-      senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-      subject: 'Your Developer Card Was Just Scouted! 🎉',
-      templateType: 'builder_card_scouted',
-      userId: builderNft.builderId,
-      templateVariables: {
-        builder_name: builderNft.builder.displayName,
-        builder_profile_link: `${baseUrl}/u/${builderNft.builder.path}`,
-        cards_purchased: amount,
-        total_purchase_cost: pointsValue,
-        builder_card_image: builderNft.imageUrl,
-        scout_name: scout.displayName,
-        scout_profile_link: `${baseUrl}/u/${scout.path}`,
-        // TODO: use currentPriceInScoutToken when we move to $SCOUT
-        current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
-      }
-    });
-  } catch (error) {
-    log.error('Error sending builder card scouted email', { error, builderId: builderNft.builderId, userId: scoutId });
+      });
+    } catch (error) {
+      log.error('Error sending builder card scouted email', {
+        error,
+        builderId: builderNft.builderId,
+        userId: scoutId
+      });
+    }
   }
 
   const week = getCurrentWeek();

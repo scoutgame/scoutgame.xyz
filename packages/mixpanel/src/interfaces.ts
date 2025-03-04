@@ -1,10 +1,8 @@
-import type { ReferralPlatform } from '@charmverse/core/prisma';
-
 export interface MixpanelTrackBase {
   // distinct_id - property name required by mixpanel to identify unique users
   distinct_id: string;
   isAnonymous?: boolean;
-  platform?: ReferralPlatform;
+  platform?: string; // ReferralPlatform; we dont always rely on the db model, 'farcaster' is a valid platform for example
   ip?: string;
 }
 
@@ -53,6 +51,8 @@ type ProjectWalletAddressSignEvent = BaseEvent & {
   walletAddress: string;
 };
 
+type FrameAddedEvent = BaseEvent;
+
 export type EventType =
   | 'page_view'
   | 'click_dont_have_farcaster_account'
@@ -93,6 +93,7 @@ export type MixpanelEventMap = {
   create_project: CreateProjectEvent;
   project_deployer_address_sign: ProjectDeployerAddressSignEvent;
   project_wallet_address_sign: ProjectWalletAddressSignEvent;
+  frame_added: FrameAddedEvent;
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

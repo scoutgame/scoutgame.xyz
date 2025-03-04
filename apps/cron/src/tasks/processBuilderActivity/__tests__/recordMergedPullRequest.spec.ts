@@ -194,6 +194,77 @@ describe('recordMergedPullRequest', () => {
     expect(gemsReceipts[1].value).toBe(gemsValues.regular_pr_unreviewed);
   });
 
+  it('should give 10 points for the first PR of the day with no review, per repo', async () => {
+    const builder = await mockBuilder();
+
+    const repo = await mockRepo();
+    const repo2 = await mockRepo();
+
+    const pullRequests = [
+      mockPullRequest({
+        mergedAt: DateTime.utc().minus({ days: 2 }).toISO(),
+        createdAt: DateTime.utc().minus({ days: 2 }).toISO(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo
+      }),
+      mockPullRequest({
+        mergedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo
+      }),
+      // the next two are the same as the first two except for the repo
+      mockPullRequest({
+        mergedAt: DateTime.utc().minus({ days: 10 }).toISO(),
+        createdAt: DateTime.utc().minus({ days: 10 }).toISO(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo: repo2
+      }),
+      mockPullRequest({
+        mergedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        reviewDecision: null,
+        state: 'MERGED',
+        author: builder.githubUser,
+        repo: repo2
+      })
+    ];
+
+    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
+
+    await recordMergedPullRequest({ pullRequest: pullRequests[0], repo, season: currentSeason });
+    await recordMergedPullRequest({ pullRequest: pullRequests[1], repo, season: currentSeason });
+    await recordMergedPullRequest({ pullRequest: pullRequests[2], repo: repo2, season: currentSeason });
+    await recordMergedPullRequest({ pullRequest: pullRequests[3], repo: repo2, season: currentSeason });
+
+    const gemsReceipts = await prisma.gemsReceipt.findMany({
+      where: {
+        event: {
+          builderId: builder.id
+        }
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+
+    expect(gemsReceipts).toHaveLength(4);
+    expect(gemsReceipts[0].type).toBe('first_pr');
+    expect(gemsReceipts[0].value).toBe(gemsValues.first_pr);
+    expect(gemsReceipts[1].type).toBe('first_pr');
+    expect(gemsReceipts[1].value).toBe(gemsValues.first_pr);
+    expect(gemsReceipts[2].type).toBe('regular_pr_unreviewed');
+    expect(gemsReceipts[2].value).toBe(gemsValues.regular_pr);
+    expect(gemsReceipts[3].type).toBe('regular_pr_unreviewed');
+    expect(gemsReceipts[3].value).toBe(gemsValues.regular_pr);
+  });
+
   it('should create builder events and gems receipts for a regular merged pull request', async () => {
     const builder = await mockBuilder();
 
@@ -751,117 +822,5 @@ describe('recordMergedPullRequest', () => {
       }
     });
     expect(scoutActivities).toBe(0);
-  });
-
-  it('should award correct points for first and second PRs in different repos and in the last 7 days', async () => {
-    const builder = await mockBuilder();
-    const repo1 = await mockRepo();
-    const repo2 = await mockRepo();
-    const scout = await mockScout();
-    const now = DateTime.now();
-    const { start: startOfWeek } = getWeekStartEnd(now.toJSDate());
-
-    await mockBuilderNft({
-      builderId: builder.id,
-      season: currentSeason,
-      owners: [scout]
-    });
-
-    // First PR in repo1
-    const firstPR = mockPullRequest({
-      mergedAt: startOfWeek.plus({ days: 3 }).toISO(),
-      createdAt: startOfWeek.plus({ days: 2 }).toISO(),
-      state: 'MERGED',
-      author: builder.githubUser,
-      repo: repo1
-    });
-
-    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
-
-    await recordMergedPullRequest({ pullRequest: firstPR, repo: repo1, season: currentSeason });
-
-    // Second PR in repo2 was created a week before and merged in the last 7 days
-    const secondPR = mockPullRequest({
-      mergedAt: startOfWeek.plus({ days: 4 }).toISO(),
-      createdAt: startOfWeek.minus({ days: 3 }).toISO(),
-      state: 'MERGED',
-      author: builder.githubUser,
-      repo: repo2
-    });
-
-    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
-
-    await recordMergedPullRequest({ pullRequest: secondPR, repo: repo2, season: currentSeason });
-
-    const gemsReceipts = await prisma.gemsReceipt.findMany({
-      where: {
-        event: {
-          builderId: builder.id
-        }
-      },
-      orderBy: {
-        createdAt: 'asc'
-      }
-    });
-
-    expect(gemsReceipts).toHaveLength(2);
-    expect(gemsReceipts[0].value).toBe(100); // First PR in a new repo should award 100 points
-    expect(gemsReceipts[1].value).toBe(10); // Second PR in a new repo (in the last 7 days) should award only 10 points
-  });
-
-  it('should award full points for PRs in different repos when created more than 7 days apart', async () => {
-    const builder = await mockBuilder();
-    const repo1 = await mockRepo();
-    const repo2 = await mockRepo();
-    const scout = await mockScout();
-    const now = DateTime.now();
-    const { start: startOfWeek } = getWeekStartEnd(now.toJSDate());
-
-    await mockBuilderNft({
-      builderId: builder.id,
-      season: currentSeason,
-      owners: [scout]
-    });
-
-    // First PR in repo1
-    const firstPR = mockPullRequest({
-      mergedAt: startOfWeek.minus({ days: 10 }).toISO(),
-      createdAt: startOfWeek.minus({ days: 11 }).toISO(),
-      state: 'MERGED',
-      author: builder.githubUser,
-      repo: repo1
-    });
-
-    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
-
-    await recordMergedPullRequest({ pullRequest: firstPR, repo: repo1, season: currentSeason });
-
-    // Second PR in repo2, more than 7 days later
-    const secondPR = mockPullRequest({
-      mergedAt: startOfWeek.toISO(),
-      createdAt: startOfWeek.toISO(),
-      state: 'MERGED',
-      author: builder.githubUser,
-      repo: repo2
-    });
-
-    (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
-
-    await recordMergedPullRequest({ pullRequest: secondPR, repo: repo2, season: currentSeason });
-
-    const gemsReceipts = await prisma.gemsReceipt.findMany({
-      where: {
-        event: {
-          builderId: builder.id
-        }
-      },
-      orderBy: {
-        createdAt: 'asc'
-      }
-    });
-
-    expect(gemsReceipts).toHaveLength(2);
-    expect(gemsReceipts[0].value).toBe(100); // First PR should award 100 points
-    expect(gemsReceipts[1].value).toBe(100); // Second PR should also award 100 points since it's after 7 days
   });
 });

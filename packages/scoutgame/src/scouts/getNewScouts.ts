@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
+import type { Address } from 'viem';
 
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
@@ -7,6 +8,7 @@ import { getNftPurchaseEvents, computeTokenOwnershipForBuilder } from '../protoc
 
 export type NewScout = {
   id: string;
+  address: Address;
   path: string;
   displayName: string;
   avatar: string | null;
@@ -69,6 +71,7 @@ export async function getRankedNewScoutsForCurrentWeek({
 
         return {
           id: scout.id,
+          address: scout.wallets.find((w) => w.primary)?.address as Address,
           path: scout.path,
           displayName: scout.displayName,
           avatar: scout.avatar,

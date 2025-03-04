@@ -11,7 +11,15 @@ const walletAddress = privateKeyToAccount(privateKey).address;
 
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   builderNftChain: { id: 1 },
-  builderSmartContractMinterKey: privateKey
+  builderSmartContractMinterKey: privateKey,
+  weeklyRewardableBuilders: 100,
+  validMintNftPurchaseEvent: {
+    id: 'mock-id',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    eventType: 'mock-event-type',
+    eventData: {}
+  }
 }));
 
 jest.unstable_mockModule('../getWalletGasBalanceInUSD', () => ({

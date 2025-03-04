@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import type { BuilderNftType, ScoutWallet } from '@charmverse/core/prisma-client';
 
 import { weeklyRewardableBuilders } from '../builderNfts/constants';
@@ -44,6 +45,9 @@ export async function getPointsCountForWeekWithNormalisation({
   const points = pointsQuotas.reduce((acc, val) => acc + val.earnablePoints, 0);
 
   if (points === 0) {
+    log.warn('Points evaluated to 0', {
+      week
+    });
     throw new Error('Points evaluated to 0');
   }
 

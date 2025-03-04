@@ -130,6 +130,7 @@
     "no-alert": "warn",
     "no-console": "error",
     "no-confusing-arrow": "off",
+    "no-continue": "off",
     "no-else-return": "off",
     "no-empty-function": "off",
     "no-multiple-empty-lines": [

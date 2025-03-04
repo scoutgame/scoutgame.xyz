@@ -104,18 +104,6 @@ export async function recordMergedPullRequest({
     }
   });
 
-  const recentFirstMergedPullRequests = await prisma.githubEvent.count({
-    where: {
-      createdBy: pullRequest.author.id,
-      type: 'merged_pull_request',
-      isFirstPullRequest: true,
-      builderEvent: {
-        week
-      }
-    }
-  });
-  const hasFirstMergedPullRequestAlreadyThisWeek = recentFirstMergedPullRequests > 0;
-
   let isFirstMergedPullRequest = totalMergedPullRequests === 0;
   if (isFirstMergedPullRequest && !skipFirstMergedPullRequestCheck) {
     // double-check using Github API in case the previous PR was not recorded by us
@@ -172,34 +160,47 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
-      const previousStreakEvent = previousGitEvents.find(
-        (e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak'
-      );
-      const previousStreakEventDate = previousStreakEvent?.completedAt?.toISOString().split('T')[0];
-      const previousDaysWithPr = new Set(
+      const streakEvent = previousGitEvents.find((e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak');
+      const streakEventDate = streakEvent?.completedAt?.toISOString().split('T')[0];
+      const daysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
           .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
           .filter(isTruthy)
           // We only grab events from the last 7 days, so what looked like a streak may change over time
           // To address this, we filter out events that happened before a previous streak event
-          .filter((dateStr) => !previousStreakEventDate || dateStr > previousStreakEventDate)
+          .filter((dateStr) => !streakEventDate || dateStr > streakEventDate)
+      );
+      const daysWithPrFromThisRepo = new Set(
+        previousGitEvents
+          .filter((e) => e.builderEvent)
+          .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
+          .filter(isTruthy)
+          // We only grab events from the last 7 days, so what looked like a streak may change over time
+          // To address this, we filter out events that happened before a previous streak event
+          .filter((dateStr) => !streakEventDate || dateStr > streakEventDate)
       );
 
       const thisPrDate = builderEventDate.toISOString().split('T')[0];
-      const isFirstPrInDay = !previousDaysWithPr.has(thisPrDate);
-      const threeDayPrStreak = isFirstPrInDay && previousDaysWithPr.size % 3 === 2;
+      const isFirstPrToday = !daysWithPr.has(thisPrDate);
+      const isFirstPrTodayFromThisRepo = previousGitEvents
+        .filter((e) => e.repoId === pullRequest.repository.id)
+        .every((e) => e.completedAt?.toISOString().split('T')[0] !== thisPrDate);
+      const threeDayPrStreak = isFirstPrToday && daysWithPr.size % 3 === 2;
 
-      const gemReceiptType: GemsReceiptType =
-        isFirstMergedPullRequest && !hasFirstMergedPullRequestAlreadyThisWeek
-          ? 'first_pr'
-          : threeDayPrStreak
-            ? 'third_pr_in_streak'
-            : pullRequest.reviewDecision === 'APPROVED'
-              ? 'regular_pr'
-              : 'regular_pr_unreviewed';
+      const gemReceiptType: GemsReceiptType = isFirstMergedPullRequest
+        ? 'first_pr'
+        : threeDayPrStreak
+          ? 'third_pr_in_streak'
+          : pullRequest.reviewDecision === 'APPROVED'
+            ? 'regular_pr'
+            : 'regular_pr_unreviewed';
 
-      const gemValue = gemsValues[gemReceiptType];
+      const gemValue =
+        // count the first PR of the day the same as a regular PR
+        gemReceiptType === 'regular_pr_unreviewed' && isFirstPrTodayFromThisRepo
+          ? gemsValues.regular_pr
+          : gemsValues[gemReceiptType];
 
       if (builderEventDate >= seasonStart.toJSDate()) {
         const existingBuilderEvent = await tx.builderEvent.findFirst({

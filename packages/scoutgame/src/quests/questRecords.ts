@@ -127,7 +127,7 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     link: '/developers',
     tag: 'scout',
     resettable: true,
-    verifiable: true
+    verifiable: false
   },
   // 'scout-moxie-builder': {
   //   label: 'Scout a Moxie Developer',
