@@ -3,7 +3,7 @@ import { Header } from '@packages/scoutgame-ui/components/common/Navigation/Head
 import { StickyFooter } from '@packages/scoutgame-ui/components/common/Navigation/StickyFooter';
 import type { ReactNode } from 'react';
 
-import { AnnouncementBanner } from 'components/common/AnnouncementBanner';
+import { AnnouncementBanner } from 'components/common/AnnouncementBanner/AnnouncementBanner';
 
 export default async function Layout({
   children
