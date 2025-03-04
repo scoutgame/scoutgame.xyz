@@ -62,6 +62,10 @@ export function useInitFarcasterData() {
           message
         });
       }
+
+      if (!context.client.added) {
+        await sdk.actions.addFrame();
+      }
     };
 
     if (sdk) {
