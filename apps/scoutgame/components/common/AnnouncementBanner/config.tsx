@@ -1,6 +1,6 @@
 import { Link } from '@mui/material';
 
-const BANNERS_COOKIE_KEY = 'last_seen_banner';
+export const BANNERS_COOKIE_KEY = 'last_seen_banner';
 
 type Banner = {
   title: string;
