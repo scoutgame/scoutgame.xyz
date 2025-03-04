@@ -18,6 +18,7 @@ function HeroSection() {
           alt='title icon'
           style={{
             width: '100%',
+            height: '100%',
             objectFit: 'cover',
             position: 'absolute',
             top: 0
@@ -155,21 +156,21 @@ function FooterSection() {
 
 export function LandingPage() {
   return (
-    <Stack height='100%' overflow='hidden'>
+    <>
       <Image
         src='/images/home/starry-bg.png'
         width='500'
         height='350'
-        alt='title icon'
+        alt=''
         style={{
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          position: 'absolute',
+          position: 'fixed',
           top: 0
         }}
       />
-      <Stack height='100%' overflow='auto'>
+      <Stack height='100%'>
         <HeroSection />
         <HowToPlaySection />
         <FooterSection />
@@ -182,6 +183,6 @@ export function LandingPage() {
           <InfoPageFooter />
         </Stack>
       </Stack>
-    </Stack>
+    </>
   );
 }
