@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { getSession } from '@packages/nextjs/session/getSession';
 
 export async function PUT(request: Request) {
@@ -14,6 +15,17 @@ export async function PUT(request: Request) {
 
   if (!scoutId) {
     return new Response('Unauthorized', { status: 401 });
+  }
+
+  const scout = await prisma.scout.findUniqueOrThrow({
+    where: { id: scoutId },
+    select: { framesNotificationToken: true }
+  });
+
+  if (!scout.framesNotificationToken) {
+    trackUserAction('frame_added', {
+      userId: scoutId
+    });
   }
 
   await prisma.scout.update({

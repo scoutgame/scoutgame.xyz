@@ -53,6 +53,8 @@ type ProjectWalletAddressSignEvent = BaseEvent & {
   walletAddress: string;
 };
 
+type FrameAddedEvent = BaseEvent;
+
 export type EventType =
   | 'page_view'
   | 'click_dont_have_farcaster_account'
@@ -93,6 +95,7 @@ export type MixpanelEventMap = {
   create_project: CreateProjectEvent;
   project_deployer_address_sign: ProjectDeployerAddressSignEvent;
   project_wallet_address_sign: ProjectWalletAddressSignEvent;
+  frame_added: FrameAddedEvent;
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];

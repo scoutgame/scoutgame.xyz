@@ -1,12 +1,11 @@
 'use client';
 
-import sdk from '@farcaster/frame-sdk';
 import type { MixpanelEventName } from '@packages/mixpanel/interfaces';
 import { trackEventAction } from '@packages/scoutgame/mixpanel/trackEventAction';
 import { getPlatform } from '@packages/utils/platform';
 import { isValidURL } from '@packages/utils/url';
 import { useAction } from 'next-safe-action/hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 import { useIsFarcasterFrame } from './useIsFarcasterFrame';
 
