@@ -1,6 +1,5 @@
 'use client';
 
-import sdk from '@farcaster/frame-sdk';
 import { BottomNavigation, BottomNavigationAction, styled } from '@mui/material';
 import { getPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';

@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import sdk from '@farcaster/frame-sdk';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
+import { setNotificationTokenAction } from '@packages/scoutgame/farcaster/setNotificationTokenAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
@@ -8,16 +9,16 @@ import { useEffect } from 'react';
 
 import { useUser } from '../providers/UserProvider';
 
-import { useSetNotificationToken } from './api/frames';
 import { useLoginSuccessHandler } from './useLoginSuccessHandler';
+import { useTrackEvent } from './useTrackEvent';
 
 export function useInitFarcasterData() {
   const router = useRouter();
   const { getNextPageLink } = useLoginSuccessHandler();
   const { refreshUser, user } = useUser();
   const { executeAsync: revalidatePath } = useAction(revalidatePathAction);
-  const { trigger: setNotificationToken } = useSetNotificationToken();
-
+  const { executeAsync: setNotificationToken } = useAction(setNotificationTokenAction);
+  const trackEvent = useTrackEvent();
   const { executeAsync: loginUser } = useAction(loginWithWalletAction, {
     onSuccess: async ({ data }) => {
       if (!data?.success) {
@@ -73,6 +74,8 @@ export function useInitFarcasterData() {
               notificationToken: result.notificationDetails.token
             });
           }
+
+          trackEvent('frame_added');
         } else if (context.client.notificationDetails) {
           await setNotificationToken({
             notificationToken: context.client.notificationDetails.token
@@ -86,5 +89,5 @@ export function useInitFarcasterData() {
     if (sdk) {
       load();
     }
-  }, [user, loginUser, setNotificationToken]);
+  }, [user, loginUser, setNotificationToken, trackEvent]);
 }
