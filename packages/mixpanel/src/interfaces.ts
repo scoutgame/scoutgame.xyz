@@ -1,10 +1,8 @@
-import type { ReferralPlatform } from '@charmverse/core/prisma';
-
 export interface MixpanelTrackBase {
   // distinct_id - property name required by mixpanel to identify unique users
   distinct_id: string;
   isAnonymous?: boolean;
-  platform?: ReferralPlatform;
+  platform?: string; // ReferralPlatform; we dont always rely on the db model, 'farcaster' is a valid platform for example
   ip?: string;
 }
 
