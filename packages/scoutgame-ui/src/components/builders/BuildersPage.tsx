@@ -38,9 +38,9 @@ export async function BuildersPage({ week, tab, builderSort, builderOrder, user 
       <Grid
         container
         spacing={1}
-        height={{
-          md: 'calc(100vh - 100px)',
-          xs: 'calc(100vh - 165px)'
+        sx={{
+          flexGrow: 1,
+          overflow: 'hidden'
         }}
         data-test='builders-page'
       >

@@ -59,9 +59,9 @@ export async function ScoutPage({
       <HeaderMessage />
       <Grid
         container
-        height={{
-          md: 'calc(100vh - 100px)',
-          xs: 'calc(100vh - 160px)'
+        sx={{
+          flexGrow: 1,
+          overflow: 'hidden'
         }}
         data-test='scout-page'
       >
