@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 
 import { useUser } from '../providers/UserProvider';
 
+import { useSetNotificationToken } from './api/frames';
 import { useLoginSuccessHandler } from './useLoginSuccessHandler';
 
 export function useInitFarcasterData() {
@@ -15,6 +16,7 @@ export function useInitFarcasterData() {
   const { getNextPageLink } = useLoginSuccessHandler();
   const { refreshUser, user } = useUser();
   const { executeAsync: revalidatePath } = useAction(revalidatePathAction);
+  const { trigger: setNotificationToken } = useSetNotificationToken();
 
   const { executeAsync: loginUser } = useAction(loginWithWalletAction, {
     onSuccess: async ({ data }) => {
@@ -40,36 +42,49 @@ export function useInitFarcasterData() {
 
   useEffect(() => {
     const load = async () => {
-      const context = await sdk.context;
-      // If context is not present we are not inside a farcaster client
-      if (!context) {
-        return;
-      }
+      try {
+        const context = await sdk.context;
+        // If context is not present we are not inside a farcaster client
+        if (!context) {
+          return;
+        }
 
-      // Immediately signal that the frame is ready and hide the splash screen
-      await sdk.actions.ready({});
-      // If the user is not logged in, auto trigger wallet login
-      if (!user) {
-        const { signature, message } = await sdk.actions.signIn({
-          nonce: Math.random().toString(36).substring(2, 10),
-          // 1 hour expiration time
-          expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString()
-        });
+        // Immediately signal that the frame is ready and hide the splash screen
+        await sdk.actions.ready({});
+        // If the user is not logged in, auto trigger wallet login
+        if (!user) {
+          const { signature, message } = await sdk.actions.signIn({
+            nonce: Math.random().toString(36).substring(2, 10),
+            // 1 hour expiration time
+            expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+          });
 
-        // Auto login user if they have a wallet connected
-        await loginUser({
-          signature,
-          message
-        });
-      }
+          // Auto login user if they have a wallet connected
+          await loginUser({
+            signature,
+            message
+          });
+        }
 
-      if (!context.client.added) {
-        await sdk.actions.addFrame();
+        if (!context.client.added) {
+          const result = await sdk.actions.addFrame();
+          if (result.notificationDetails) {
+            await setNotificationToken({
+              notificationToken: result.notificationDetails.token
+            });
+          }
+        } else if (context.client.notificationDetails) {
+          await setNotificationToken({
+            notificationToken: context.client.notificationDetails.token
+          });
+        }
+      } catch (error) {
+        log.error('Error initializing farcaster', { error });
       }
     };
 
     if (sdk) {
       load();
     }
-  }, [user, loginUser]);
+  }, [user, loginUser, setNotificationToken]);
 }
