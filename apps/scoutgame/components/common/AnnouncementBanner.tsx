@@ -1,11 +1,11 @@
-'use client';
+// 'use client';
 
-import { Clear as ClearIcon } from '@mui/icons-material';
-import { Alert, AlertTitle, IconButton, Link } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useLocalStorage } from 'usehooks-ts';
+import { Link } from '@mui/material';
+import { cookies } from 'next/headers';
 
-const HIDDEN_BANNERS_KEY = 'hidden_banners';
+import { AnnouncementBannerAlert } from './Alert';
+
+const BANNERS_COOKIE_KEY = 'last_seen_banner';
 
 type Banner = {
   title: string;
@@ -16,7 +16,7 @@ type Banner = {
 const banners: Record<string, Banner> = {
   updated_referral_bonus: {
     title: 'Updated Friendly Quest',
-    expiration: '2025-03-01',
+    expiration: '2025-03-09',
     description: (
       <>
         New friendly quest: +5 OP for you and every player who signs up with{' '}
@@ -31,42 +31,32 @@ const banners: Record<string, Banner> = {
   }
 };
 
-type HiddenBanners = Record<string, boolean>;
+const now = new Date().toISOString();
+const currentBanner = Object.entries(banners).find(([_, banner]) => banner.expiration > now);
+
+// Server component to get cookies during server rendering
+function getServerCookies() {
+  try {
+    // This will only work in a server component or route handler
+    const cookieStore = cookies();
+    return cookieStore.get(BANNERS_COOKIE_KEY)?.value;
+  } catch (error) {
+    // If called in client context, return undefined
+    return undefined;
+  }
+}
 
 export function AnnouncementBanner() {
-  const [hiddenBanners, setHiddenBanners] = useLocalStorage<HiddenBanners>(HIDDEN_BANNERS_KEY, {});
+  const lastSeenBanner = getServerCookies();
 
-  const handleClose = (bannerId: string) => {
-    // Store banner as hidden in localStorage
-    setHiddenBanners({ ...hiddenBanners, [bannerId]: true });
-  };
-
-  const currentBanner = Object.entries(banners).find(([_, banner]) => banner.expiration > new Date().toISOString());
-
-  if (!currentBanner) {
+  if (
+    // no current banner
+    !currentBanner ||
+    // seen by user already
+    lastSeenBanner === currentBanner[0]
+  ) {
     return null;
   }
 
-  // seen by user already
-  if (hiddenBanners[currentBanner[0]]) {
-    return null;
-  }
-
-  return (
-    <Alert
-      severity='info'
-      variant='filled'
-      onClose={() => handleClose(currentBanner[0])}
-      sx={{
-        borderRadius: 0,
-        justifyContent: 'center',
-        '& .MuiAlert-message': {
-          fontSize: '1rem'
-        }
-      }}
-    >
-      {/* <AlertTitle>{currentBanner.title}</AlertTitle> */}
-      {currentBanner[1].description}
-    </Alert>
-  );
+  return <AnnouncementBannerAlert id={currentBanner[0]} message={currentBanner[1].description} />;
 }
