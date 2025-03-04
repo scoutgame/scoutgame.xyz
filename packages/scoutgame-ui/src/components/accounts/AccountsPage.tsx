@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 
 import { EmailSettings } from './components/EmailSettings/EmailSettings';
 import { FarcasterConnect } from './components/FarcasterConnect/FarcasterConnect';
+import { NotificationSettings } from './components/NotificationSettings';
 import { WalletConnect } from './components/WalletConnect';
 
 export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
@@ -19,6 +20,8 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   sendTransactionEmails: boolean;
   sendMarketing: boolean;
   verifiedEmail: boolean;
+  emailNotification: boolean;
+  farcasterNotification: boolean;
 };
 
 const TelegramConnect = dynamic(() => import('./components/TelegramConnect').then((mod) => mod.TelegramConnect), {
@@ -37,6 +40,7 @@ export function AccountsPage({ user }: { user: UserWithAccountsDetails }) {
         <TelegramConnect user={user} />
         <WalletConnect user={user} />
         <EmailSettings user={user} />
+        <NotificationSettings user={user} />
       </Stack>
     </PageContainer>
   );
