@@ -11,11 +11,11 @@ export function trackUserAction<T extends MixpanelEventName>(
   params: MixpanelEventMap[T],
   utmParams?: UTMParams // pass these in separately as the names should not be modified
 ) {
-  const { userId, ...restParams } = params;
+  const { userId, platform = getPlatform(), ...restParams } = params as MixpanelEventMap[T] & { platform?: string };
   // map userId prop to distinct_id required by mixpanel to recognize the user
   const mixpanelTrackParams: MixpanelTrackBase = {
     distinct_id: userId,
-    platform: getPlatform(),
+    platform,
     ip: '0', // Disable IP tracking. This is overwritten by page_view events
     ...paramsToHumanFormat(restParams),
     // when tracking utm_params in Mixpanel event, it should also update the user profile with initial_<utm_param> properties
