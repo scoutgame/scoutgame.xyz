@@ -24,6 +24,7 @@ export default async function Accounts() {
         telegramName: true,
         email: true,
         sendTransactionEmails: true,
+        sendFarcasterNotification: true,
         sendMarketing: true,
         emailVerifications: true,
         wallets: {
@@ -60,6 +61,7 @@ export default async function Accounts() {
       user={{
         ...user,
         email: currentUserAccountsMetadata.email as string,
+        sendFarcasterNotification: currentUserAccountsMetadata.sendFarcasterNotification,
         sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails,
         sendMarketing: currentUserAccountsMetadata.sendMarketing,
         telegramId: currentUserAccountsMetadata.telegramId,

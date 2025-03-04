@@ -32,8 +32,8 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
     resolver: yupResolver(updateUserNotificationSettingsSchema),
     mode: 'onChange',
     defaultValues: {
-      emailNotification: user.emailNotification,
-      farcasterNotification: user.farcasterNotification
+      emailNotification: user.sendTransactionEmails,
+      farcasterNotification: user.sendFarcasterNotification
     }
   });
 
@@ -79,7 +79,7 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
                 <FormControlLabel
                   disabled={isExecuting}
                   control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Enable email notifications'
+                  label='Enable Scout Game email notifications (activity and pending actions)'
                 />
               )}
             />

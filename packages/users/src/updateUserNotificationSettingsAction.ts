@@ -12,8 +12,8 @@ export const updateUserNotificationSettingsAction = authActionClient
     await prisma.scout.update({
       where: { id: ctx.session.scoutId },
       data: {
-        emailNotification: parsedInput.emailNotification,
-        farcasterNotification: parsedInput.farcasterNotification
+        sendTransactionEmails: parsedInput.emailNotification,
+        sendFarcasterNotification: parsedInput.farcasterNotification
       }
     });
 

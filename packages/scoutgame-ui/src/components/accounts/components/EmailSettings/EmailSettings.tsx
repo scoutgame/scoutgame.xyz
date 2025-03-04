@@ -34,7 +34,6 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
     mode: 'onChange',
     defaultValues: {
       email: user.email,
-      sendTransactionEmails: user.sendTransactionEmails,
       sendMarketing: user.sendMarketing
     }
   });
@@ -119,17 +118,6 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
           </Stack>
 
           <Stack gap={{ xs: 1, md: 0 }}>
-            <Controller
-              control={control}
-              name='sendTransactionEmails'
-              render={({ field }) => (
-                <FormControlLabel
-                  disabled={isExecuting}
-                  control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Enable Scout Game email notifications (activity and pending actions)'
-                />
-              )}
-            />
             <Controller
               control={control}
               name='sendMarketing'
