@@ -5,6 +5,8 @@ import { mockRepo, mockBuilder } from '@packages/testing/database';
 import { mockSeason } from '@packages/testing/generators';
 import { DateTime } from 'luxon';
 
+import { gemsValues } from '../config';
+
 import { mockCommit, mockPullRequest } from '@/testing/generators';
 
 jest.unstable_mockModule('@packages/github/getCommitsByUser', () => ({
@@ -33,7 +35,6 @@ const { getPullRequestsByUser } = await import('../github/getPullRequestsByUser'
 const { processBuilderActivity } = await import('../processBuilderActivity');
 const { recordMergedPullRequest } = await import('../recordMergedPullRequest');
 const { recordCommit } = await import('../recordCommit');
-
 describe('processBuilderActivity', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -89,7 +90,7 @@ describe('processBuilderActivity', () => {
     });
     expect(builderStats).toBeDefined();
     expect(builderStats!.season).toBe(mockSeason);
-    expect(builderStats!.gemsCollected).toBe(101);
+    expect(builderStats!.gemsCollected).toBe(gemsValues.first_pr + gemsValues.daily_commit);
   });
 
   it('will record a commit even if a PR was recorded for the same sha', async () => {
@@ -140,6 +141,6 @@ describe('processBuilderActivity', () => {
     });
     expect(builderStats).toBeDefined();
     expect(builderStats!.season).toBe(mockSeason);
-    expect(builderStats!.gemsCollected).toBe(101);
+    expect(builderStats!.gemsCollected).toBe(gemsValues.first_pr + gemsValues.daily_commit);
   });
 });
