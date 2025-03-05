@@ -30,10 +30,12 @@ export async function updateBuildersCardActivity(date: DateTime) {
     buildersLeaderboardRecord[builder.id] = { rank };
   }
 
+  const buildersRanksRecord: Record<string, (number | null)[]> = {};
+
   for (const builder of builders) {
     try {
       const rank = buildersLeaderboardRecord[builder.id]?.rank ?? null;
-      await prisma.builderCardActivity.upsert({
+      const updatedBuilderCardActivity = await prisma.builderCardActivity.upsert({
         where: { builderId: builder.id },
         update: {
           last14Days: [
@@ -54,6 +56,8 @@ export async function updateBuildersCardActivity(date: DateTime) {
           ]
         }
       });
+
+      buildersRanksRecord[builder.id] = updatedBuilderCardActivity.last14Days as (number | null)[];
     } catch (error) {
       log.error(`Error updating builder card activity for builder`, {
         builderId: builder.id,
@@ -62,4 +66,6 @@ export async function updateBuildersCardActivity(date: DateTime) {
       });
     }
   }
+
+  return buildersRanksRecord;
 }
