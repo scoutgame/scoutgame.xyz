@@ -281,23 +281,6 @@ export async function recordNftMint(
           scout_name: scout.displayName,
           scout_profile_link: `${baseUrl}/u/${scout.path}`,
           // TODO: use currentPriceInScoutToken when we move to $SCOUT
-          current_card_price: Number((Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2))
-        }
-      });
-      await sendEmailTemplate({
-        senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-        subject: 'Your Developer Card Was Just Scouted! 🎉',
-        templateType: 'builder_card_scouted',
-        userId: builderNft.builderId,
-        templateVariables: {
-          builder_name: builderNft.builder.displayName,
-          builder_profile_link: `${baseUrl}/u/${builderNft.builder.path}`,
-          cards_purchased: amount,
-          total_purchase_cost: pointsValue,
-          builder_card_image: builderNft.imageUrl,
-          scout_name: scout.displayName,
-          scout_profile_link: `${baseUrl}/u/${scout.path}`,
-          // TODO: use currentPriceInScoutToken when we move to $SCOUT
           current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
         }
       });
