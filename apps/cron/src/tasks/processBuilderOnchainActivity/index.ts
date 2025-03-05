@@ -87,7 +87,7 @@ export async function processBuilderOnchainActivity(
   for (const wallet of wallets) {
     try {
       const pollStart = Date.now();
-      const latestBlock = await getLatestBlockMemoized(wallet.chainId);
+      const latestBlock = await getLatestBlockMemoized(wallet.chainId!);
       // Get the last poll event for this contract
       const lastPollEvent = await prisma.scoutProjectWalletPollEvent.findFirst({
         where: {
@@ -100,7 +100,7 @@ export async function processBuilderOnchainActivity(
 
       const fromBlock = lastPollEvent
         ? lastPollEvent.toBlockNumber + BigInt(1)
-        : (await getBlockByDateMemoized({ date: windowStart, chainId: wallet.chainId })).number;
+        : (await getBlockByDateMemoized({ date: windowStart, chainId: wallet.chainId! })).number;
 
       // log.info(`Processing contract ${contract.address} from block ${fromBlock} to ${latestBlock}`);
 
@@ -109,7 +109,7 @@ export async function processBuilderOnchainActivity(
         fromBlock,
         toBlock: latestBlock,
         walletId: wallet.id,
-        chainId: wallet.chainId
+        chainId: wallet.chainId!
       });
 
       const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);

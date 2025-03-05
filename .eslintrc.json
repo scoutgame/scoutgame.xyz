@@ -90,6 +90,7 @@
           "./packages/mixpanel/",
           "./packages/moxie/",
           "./packages/nextjs/",
+          "./packages/onchain-analytics/",
           "./packages/scoutgame/",
           "./packages/scoutgame-ui/",
           "./packages/testing/",
