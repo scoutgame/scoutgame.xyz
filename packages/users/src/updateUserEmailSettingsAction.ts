@@ -12,7 +12,6 @@ export const updateUserEmailSettingsAction = authActionClient
     const result = await updateUserEmailSettings({
       userId: ctx.session.scoutId,
       email: parsedInput.email,
-      sendTransactionEmails: parsedInput.sendTransactionEmails,
       sendMarketing: parsedInput.sendMarketing
     });
 

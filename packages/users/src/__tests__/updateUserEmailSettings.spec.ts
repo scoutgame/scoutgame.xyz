@@ -26,8 +26,7 @@ describe('updateUserEmailSettings', () => {
         path: `test${Math.random()}`,
         // test-related
         email: null,
-        sendMarketing: false,
-        sendTransactionEmails: false
+        sendMarketing: false
       }
     });
     const mockNewEmail = 'newemail@example.com';
@@ -35,8 +34,7 @@ describe('updateUserEmailSettings', () => {
     await updateUserEmailSettings({
       userId: scout.id,
       email: mockNewEmail,
-      sendMarketing: true,
-      sendTransactionEmails: true
+      sendMarketing: true
     });
 
     // Verify scout was updated in database
@@ -45,7 +43,6 @@ describe('updateUserEmailSettings', () => {
     });
     expect(updatedScout.email).toBe(mockNewEmail);
     expect(updatedScout.sendMarketing).toBe(true);
-    expect(updatedScout.sendTransactionEmails).toBe(true);
 
     // Verify Loops was called
     expect(registerLoops).toHaveBeenCalledWith(
@@ -68,8 +65,7 @@ describe('updateUserEmailSettings', () => {
       updateUserEmailSettings({
         userId: '1',
         email: 'invalid-email',
-        sendMarketing: true,
-        sendTransactionEmails: true
+        sendMarketing: true
       })
     ).rejects.toThrow('Email is invalid');
   });
