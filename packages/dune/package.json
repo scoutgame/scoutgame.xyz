@@ -1,0 +1,16 @@
+{
+  "name": "@packages/dune",
+  "version": "0.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": ""
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@duneanalytics/client-sdk": "^0.2.5",
+    "mixpanel": "^0.18.0"
+  }
+}

@@ -7,6 +7,7 @@ import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
 import { processAllBuilderActivity } from './tasks/processBuilderActivity';
 import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
+import { processDuneAnalytics } from './tasks/processDuneAnalytics';
 import { processGemsPayout } from './tasks/processGemsPayout';
 import { processNftMints } from './tasks/processNftMints';
 import { processOnchainGemsPayout } from './tasks/processOnchainGemsPayout';
@@ -79,6 +80,8 @@ addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
 addTask('/process-builder-onchain-activity', processBuilderOnchainActivity);
 
 addTask('/process-onchain-gems-payout', processOnchainGemsPayout);
+
+addTask('/process-dune-analytics', processDuneAnalytics);
 
 // Standard health check used by Beanstalk
 router.get('/api/health', middleware.healthCheck);
