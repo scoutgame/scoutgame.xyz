@@ -17,6 +17,7 @@
     "@octokit/plugin-paginate-rest": "^11.4.1",
     "@octokit/plugin-throttling": "^9.3.1",
     "@packages/dates": "^0.0.0",
+    "@packages/dune": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
     "@packages/github": "^0.0.0",
     "@packages/mailer": "^0.0.0",

@@ -3,7 +3,7 @@ import { prettyPrint } from '@packages/utils/strings';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 // console.log('current week', getCurrentWeek());
-import { getEvmWalletStats, getSolanaWalletStats } from '@packages/onchain-analytics/dune';
+import { getEvmWalletStats, getSolanaWalletStats } from '@packages/dune/queries';
 import { base } from 'viem/chains';
 
 const solanaWallet = '2N4fC9tfRGWxnUWhb4fzp7dTUY1yBSxXVJUEdVUmQUaJ';

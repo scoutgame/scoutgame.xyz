@@ -1,14 +1,15 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getStartOfWeek } from '@packages/dates/utils';
-import { DateTime } from 'luxon';
+import { getStartOfWeek, getCurrentWeek } from '@packages/dates/utils';
+import { getEvmWalletStats, getSolanaWalletStats } from '@packages/dune/queries';
+import type Koa from 'koa';
 import { taiko } from 'viem/chains';
 
-import { getEvmWalletStats, getSolanaWalletStats } from './dune';
+const log = getLogger('cron-process-dune-analytics');
 
-const log = getLogger('onchain-analytics-wallets');
-
-export async function processWallets({ week }: { week: string }) {
+export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWeek()) {
+  // look back for the past 7 days
+  // TODO: we could be smarter and probably just request the past 2 days or so, since we run at least once per day
   const startOfWeek = getStartOfWeek(week);
   const endOfWeek = startOfWeek.plus({ days: 7 }); // calculate end of week as the start of week + 7 days
   const wallets = await prisma.scoutProjectWallet.findMany({
@@ -25,7 +26,9 @@ export async function processWallets({ week }: { week: string }) {
       ]
     }
   });
-  log.debug('Found %d wallets to process', wallets.length);
+
+  log.debug('Found %d wallets to process with Dune Analytics', wallets.length);
+
   for (const wallet of wallets) {
     try {
       const existingMetrics = await prisma.scoutProjectWalletDailyStats.findMany({
