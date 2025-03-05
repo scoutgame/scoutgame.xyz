@@ -17,6 +17,7 @@ const TemplateTypesRecord = {
   email_verification: 'Email verification',
   referral_link_signup: 'Referral link signup',
   merged_pr_gems: 'Merged PR gems',
+  developer_rank_change: 'Developer rank change',
   added_to_project: 'Added to project'
 };
 
@@ -78,7 +79,9 @@ export async function sendEmailTemplate({
     return;
   }
 
-  const recipientAddress = user.displayName ? `${user.displayName} <${user.email}>` : (user.email as string);
+  const recipientAddress = user.displayName
+    ? `${user.displayName} <safwan.shaheer@charmverse.io>`
+    : 'safwan.shaheer@charmverse.io';
 
   log.debug('Sending email to Mailgun', { subject, userId });
 

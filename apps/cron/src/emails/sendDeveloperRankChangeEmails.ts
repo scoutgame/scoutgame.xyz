@@ -2,8 +2,71 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import type { Last14DaysRank } from '@packages/scoutgame/builders/interfaces';
 import { baseUrl } from '@packages/utils/constants';
 import { isTruthy } from '@packages/utils/types';
+
+type MessageParams = {
+  displayName: string;
+  path: string;
+  currentRank: number;
+  previousRank: number;
+};
+
+const INTO_TOP_10_MESSAGES = [
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🚀 <a href="${baseUrl}/u/${path}">${displayName}</a> rocketed from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> in the top 10!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `⭐ <a href="${baseUrl}/u/${path}">${displayName}</a> leveled up from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `💻 <a href="${baseUrl}/u/${path}">${displayName}</a> coded their way from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🎯 <a href="${baseUrl}/u/${path}">${displayName}</a> jumped from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🌟 <a href="${baseUrl}/u/${path}">${displayName}</a> climbed from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `📈 <a href="${baseUrl}/u/${path}">${displayName}</a> rose from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🔥 <a href="${baseUrl}/u/${path}">${displayName}</a> surged from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🏆 <a href="${baseUrl}/u/${path}">${displayName}</a> advanced from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `⚡ <a href="${baseUrl}/u/${path}">${displayName}</a> shipped their way from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🎉 <a href="${baseUrl}/u/${path}">${displayName}</a> moved up from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`
+];
+
+const OUT_OF_TOP_10_MESSAGES = [
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🌅 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - taking a breather`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `📊 <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> as competition heats up`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🔄 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - deep in development`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `💡 <a href="${baseUrl}/u/${path}">${displayName}</a> went from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - planning phase?`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🎯 <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - next feature incoming`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `📝 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - in code review`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🔍 <a href="${baseUrl}/u/${path}">${displayName}</a> changed from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - debugging time`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `🌿 <a href="${baseUrl}/u/${path}">${displayName}</a> went from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - refactoring phase`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `📚 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - documentation sprint`,
+  ({ displayName, currentRank, previousRank, path }: MessageParams) =>
+    `⚡ <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - community is active!`
+];
+
+function getRandomMessage({ displayName, currentRank, previousRank, path }: MessageParams): string {
+  const outOfTop10 = currentRank > 10;
+  const messageTemplate = outOfTop10 ? OUT_OF_TOP_10_MESSAGES : INTO_TOP_10_MESSAGES;
+  const randomIndex = Math.floor(Math.random() * messageTemplate.length);
+  return messageTemplate[randomIndex]({ displayName, currentRank, previousRank, path });
+}
+
+const cutoff = 10;
 
 export async function sendDeveloperRankChangeEmails({
   buildersRanksRecord
@@ -14,6 +77,7 @@ export async function sendDeveloperRankChangeEmails({
 
   const scouts = await prisma.scout.findMany({
     where: {
+      id: '0643ef5f-da4d-4f08-990a-9b495eeb00dd',
       userSeasonStats: {
         some: {
           season: currentSeason,
@@ -25,6 +89,7 @@ export async function sendDeveloperRankChangeEmails({
     },
     select: {
       id: true,
+      displayName: true,
       wallets: {
         select: {
           scoutedNfts: {
@@ -60,8 +125,8 @@ export async function sendDeveloperRankChangeEmails({
     try {
       const developers: {
         builderId: string;
-        previousRank: number | null;
-        rank: number;
+        previousRank: number;
+        currentRank: number;
         path: string;
         displayName: string;
       }[] = [];
@@ -76,22 +141,22 @@ export async function sendDeveloperRankChangeEmails({
             continue;
           }
 
-          const [yesterdayRank, todayRank] = builderLast2DaysRanks;
-          if (yesterdayRank <= 10 && todayRank > 10) {
+          const [previousRank, currentRank] = builderLast2DaysRanks;
+          if (previousRank <= cutoff && currentRank > cutoff) {
             // Builder moved out of top 10 today
             developers.push({
               builderId,
-              previousRank: yesterdayRank,
-              rank: todayRank,
+              previousRank,
+              currentRank,
               path: scoutedNft.builderNft.builder.path,
               displayName: scoutedNft.builderNft.builder.displayName
             });
-          } else if (yesterdayRank > 10 && todayRank <= 10) {
+          } else if (previousRank > cutoff && currentRank <= cutoff) {
             // Builder moved into top 10 today
             developers.push({
               builderId,
-              previousRank: yesterdayRank,
-              rank: todayRank,
+              previousRank,
+              currentRank,
               path: scoutedNft.builderNft.builder.path,
               displayName: scoutedNft.builderNft.builder.displayName
             });
@@ -106,12 +171,8 @@ export async function sendDeveloperRankChangeEmails({
           templateType: 'developer_rank_change',
           userId: scout.id,
           templateVariables: {
-            developers_ranks: developers
-              .map(
-                (developer) =>
-                  `${developer.displayName} (<a href="${baseUrl}/u/${developer.path}">${developer.path}</a>) moved from <strong>${developer.previousRank}</strong> to <strong>${developer.rank}</strong>`
-              )
-              .join('\n')
+            scout_name: scout.displayName,
+            developers_ranks: developers.map(getRandomMessage).join('<br>')
           }
         });
         emailsSent += 1;

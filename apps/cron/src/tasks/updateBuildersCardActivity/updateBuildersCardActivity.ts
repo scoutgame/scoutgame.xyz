@@ -57,7 +57,9 @@ export async function updateBuildersCardActivity(date: DateTime) {
         }
       });
 
-      buildersRanksRecord[builder.id] = updatedBuilderCardActivity.last14Days as (number | null)[];
+      buildersRanksRecord[builder.id] = (updatedBuilderCardActivity.last14Days as Last14DaysRank).map(
+        ({ rank: _rank }) => _rank
+      );
     } catch (error) {
       log.error(`Error updating builder card activity for builder`, {
         builderId: builder.id,
