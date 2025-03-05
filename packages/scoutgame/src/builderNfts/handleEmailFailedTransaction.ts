@@ -33,7 +33,7 @@ export async function handleEmailFailedTransaction({
       userId,
       senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
       subject: 'Your NFT purchase failed',
-      template: 'nft transaction failed',
+      templateType: 'nft_transaction_failed',
       templateVariables: {
         name: user?.displayName,
         tx_hash: pendingTx.sourceChainTxHash,

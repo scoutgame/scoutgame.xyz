@@ -40,7 +40,7 @@ async function mockReferrals(referralCode: string, week: string) {
     const builder = await mockBuilder({ createNft: true });
     const referee = await mockScout({ verifiedEmail: true, builderId: builder.id });
     await createReferralEvent(referralCode, referee.id, week);
-    await updateReferralUsers(referee.id, week, getDateFromISOWeek(week).plus({ days: 1 }).toJSDate());
+    await updateReferralUsers(referee.id, getDateFromISOWeek(week).plus({ days: 1 }).toJSDate());
     referees.push(referee);
   }
   return referees;
