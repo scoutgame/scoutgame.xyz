@@ -83,17 +83,11 @@ export async function sendEmailTemplate({
 
   log.debug('Sending email to Mailgun', { subject, userId });
 
-  await prisma.scoutNotification.create({
+  await prisma.scoutEmailNotification.create({
     data: {
-      channel: 'email',
       notificationType: templateType,
-      emailNotifications: {
-        create: {
-          email: user.email,
-          templateVariables: templateVariables ?? {}
-        }
-      },
-      sentAt: new Date(),
+      templateVariables: templateVariables ?? {},
+      email: user.email,
       user: {
         connect: {
           id: userId

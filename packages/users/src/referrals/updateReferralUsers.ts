@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { baseUrl } from '@packages/utils/constants';
@@ -13,12 +12,7 @@ type Result =
   | 'no_nft_purchase'
   | 'success';
 
-export async function updateReferralUsers(
-  refereeId: string,
-  week = getCurrentWeek(),
-  now = new Date()
-): Promise<{ result: Result }> {
-  const season = getCurrentSeasonStart(week);
+export async function updateReferralUsers(refereeId: string, now = new Date()): Promise<{ result: Result }> {
   const referee = await prisma.scout.findUniqueOrThrow({
     where: {
       id: refereeId,
@@ -111,8 +105,6 @@ export async function updateReferralUsers(
     log.debug('Ignore referral because referee has not verified their email', { userId: refereeId });
     return { result: 'not_verified' };
   }
-
-  const referrerId = referralCodeEvent.builderEvent.builderId;
 
   const referrer = await prisma.$transaction(
     async (tx) => {
