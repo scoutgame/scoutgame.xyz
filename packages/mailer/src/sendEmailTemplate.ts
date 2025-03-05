@@ -79,9 +79,7 @@ export async function sendEmailTemplate({
     return;
   }
 
-  const recipientAddress = user.displayName
-    ? `${user.displayName} <safwan.shaheer@charmverse.io>`
-    : 'safwan.shaheer@charmverse.io';
+  const recipientAddress = user.displayName ? `${user.displayName} <${user.email}>` : user.email;
 
   log.debug('Sending email to Mailgun', { subject, userId });
 
