@@ -15,55 +15,106 @@ type MessageParams = {
 
 const INTO_TOP_10_MESSAGES = [
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🚀 <a href="${baseUrl}/u/${path}">${displayName}</a> rocketed from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> in the top 10!`,
+    `🚀 <a href="${baseUrl}/u/${path}">${displayName}</a> rocketed from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong> in the top 10!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `⭐ <a href="${baseUrl}/u/${path}">${displayName}</a> leveled up from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `⭐ <a href="${baseUrl}/u/${path}">${displayName}</a> leveled up from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `💻 <a href="${baseUrl}/u/${path}">${displayName}</a> coded their way from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `💻 <a href="${baseUrl}/u/${path}">${displayName}</a> coded their way from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🎯 <a href="${baseUrl}/u/${path}">${displayName}</a> jumped from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `🎯 <a href="${baseUrl}/u/${path}">${displayName}</a> jumped from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🌟 <a href="${baseUrl}/u/${path}">${displayName}</a> climbed from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `🌟 <a href="${baseUrl}/u/${path}">${displayName}</a> climbed from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `📈 <a href="${baseUrl}/u/${path}">${displayName}</a> rose from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `📈 <a href="${baseUrl}/u/${path}">${displayName}</a> rose from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🔥 <a href="${baseUrl}/u/${path}">${displayName}</a> surged from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `🔥 <a href="${baseUrl}/u/${path}">${displayName}</a> surged from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🏆 <a href="${baseUrl}/u/${path}">${displayName}</a> advanced from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `🏆 <a href="${baseUrl}/u/${path}">${displayName}</a> advanced from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `⚡ <a href="${baseUrl}/u/${path}">${displayName}</a> shipped their way from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`,
+    `⚡ <a href="${baseUrl}/u/${path}">${displayName}</a> shipped their way from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🎉 <a href="${baseUrl}/u/${path}">${displayName}</a> moved up from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong>!`
+    `🎉 <a href="${baseUrl}/u/${path}">${displayName}</a> moved up from <strong>#${previousRank}</strong> to <strong style="color:#22c55e;">${currentRank}</strong>!`
 ];
 
 const OUT_OF_TOP_10_MESSAGES = [
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🌅 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - taking a breather`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">🌅 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - taking a breather</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `📊 <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> as competition heats up`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">📊 <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> as competition heats up</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🔄 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - deep in development`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">🔄 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - deep in development</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `💡 <a href="${baseUrl}/u/${path}">${displayName}</a> went from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - planning phase?`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">💡 <a href="${baseUrl}/u/${path}">${displayName}</a> went from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - planning phase?</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🎯 <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - next feature incoming`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">🎯 <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - next feature incoming</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `📝 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - in code review`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">📝 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - in code review</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🔍 <a href="${baseUrl}/u/${path}">${displayName}</a> changed from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - debugging time`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">🔍 <a href="${baseUrl}/u/${path}">${displayName}</a> changed from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - debugging time</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `🌿 <a href="${baseUrl}/u/${path}">${displayName}</a> went from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - refactoring phase`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">🌿 <a href="${baseUrl}/u/${path}">${displayName}</a> went from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - refactoring phase</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `📚 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - documentation sprint`,
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">📚 <a href="${baseUrl}/u/${path}">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - documentation sprint</p>`,
   ({ displayName, currentRank, previousRank, path }: MessageParams) =>
-    `⚡ <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong>#${currentRank}</strong> - community is active!`
+    `<p style="font-family: 'Arial', sans-serif; color: #000;">⚡ <a href="${baseUrl}/u/${path}">${displayName}</a> shifted from <strong>#${previousRank}</strong> to <strong style="color:#ef4444;">#${currentRank}</strong> - community is active!</p>`
 ];
 
-function getRandomMessage({ displayName, currentRank, previousRank, path }: MessageParams): string {
+function getRandomMessage(
+  { displayName, currentRank, previousRank, path }: MessageParams,
+  usedMessages: Set<number>
+): string {
   const outOfTop10 = currentRank > 10;
   const messageTemplate = outOfTop10 ? OUT_OF_TOP_10_MESSAGES : INTO_TOP_10_MESSAGES;
-  const randomIndex = Math.floor(Math.random() * messageTemplate.length);
-  return messageTemplate[randomIndex]({ displayName, currentRank, previousRank, path });
+
+  // Get available message indices that haven't been used
+  const availableIndices = Array.from({ length: messageTemplate.length }, (_, i) => i).filter(
+    (i) => !usedMessages.has(i)
+  );
+
+  // If all messages have been used, clear the set and use all indices
+  if (availableIndices.length === 0) {
+    usedMessages.clear();
+    availableIndices.push(...Array.from({ length: messageTemplate.length }, (_, i) => i));
+  }
+
+  const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+  usedMessages.add(randomIndex);
+
+  const message = messageTemplate[randomIndex]({
+    displayName,
+    currentRank,
+    previousRank,
+    path
+  });
+
+  return `<li>${message}</li>`;
+}
+
+function formatDevelopersSection(developers: MessageParams[], usedMessages: Set<number>): string {
+  const intoTop10 = developers.filter((d) => d.currentRank <= 10);
+  const outOfTop10 = developers.filter((d) => d.currentRank > 10);
+
+  let html = '';
+
+  if (intoTop10.length > 0) {
+    html += `
+      <h3 style="font-family: 'Arial', sans-serif;">🚀 Developers who broke into the top 10:</h3>
+      <ul>
+        ${intoTop10.map((dev) => getRandomMessage(dev, usedMessages)).join('\n')}
+      </ul>
+    `;
+  }
+
+  if (outOfTop10.length > 0) {
+    html += `
+      <h3 style="font-family: 'Arial', sans-serif;">💭 Developers taking a strategic pause:</h3>
+      <ul>
+        ${outOfTop10.map((dev) => getRandomMessage(dev, usedMessages)).join('\n')}
+      </ul>
+    `;
+  }
+
+  return html;
 }
 
 const cutoff = 10;
@@ -172,7 +223,7 @@ export async function sendDeveloperRankChangeEmails({
           userId: scout.id,
           templateVariables: {
             scout_name: scout.displayName,
-            developers_ranks: developers.map(getRandomMessage).join('<br>')
+            developers_ranks: formatDevelopersSection(developers, new Set())
           }
         });
         emailsSent += 1;
