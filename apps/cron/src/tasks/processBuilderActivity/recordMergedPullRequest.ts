@@ -310,7 +310,11 @@ export async function recordMergedPullRequest({
                   builder_name: githubUser.displayName as string,
                   pr_title: pullRequest.title,
                   pr_link: pullRequest.url,
-                  gems_value: gemValue
+                  gems_value: gemValue,
+                  partner_rewards:
+                    repo.bonusPartner === 'octant'
+                      ? `<p>You also earned <strong>75</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/octant">Octant</a></p>`
+                      : ''
                 }
               });
             } catch (error) {
