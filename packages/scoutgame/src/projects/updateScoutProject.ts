@@ -1,11 +1,11 @@
 import { log } from '@charmverse/core/log';
-import type { ScoutProjectWallet } from '@charmverse/core/prisma-client';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { recordWalletAnalytics } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import { getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import { verifyMessage } from 'viem';
+import { taiko, taikoTestnetSepolia } from 'viem/chains';
 
 import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { UpdateScoutProjectFormValues } from './updateScoutProjectSchema';
@@ -366,13 +366,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
             }
           }
         });
-        backfillWalletAnalytics(newWallet)
-          .then((results) => {
-            log.info(`Backfilled analytics for wallet ${wallet.address}`, { results });
-          })
-          .catch((error) => {
-            log.error(`Error backfilling analytics for wallet ${wallet.address}`, error);
-          });
+        backfillWalletAnalytics(newWallet).catch((error) => {
+          log.error(`Error backfilling analytics for wallet ${wallet.address}`, error);
+        });
       }
     }
 
@@ -422,6 +418,23 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           )!.id
         }))
       });
+      for (const address of contractAddressesToCreate) {
+        const newContract = await tx.scoutProjectContract.findUniqueOrThrow({
+          where: {
+            address_chainId: {
+              address,
+              chainId: contractTransactionRecord[address].chainId
+            }
+          }
+        });
+        // assume evm for now
+        backfillWalletAnalytics({ chainType: 'evm', ...newContract }).catch((error) => {
+          log.error(`Error backfilling analytics for wallet ${newContract.address}`, {
+            contractId: newContract.id,
+            error
+          });
+        });
+      }
     }
 
     return _updatedProject;
@@ -435,6 +448,11 @@ async function backfillWalletAnalytics(
   wallet: Parameters<typeof recordWalletAnalytics>[0],
   currentWeek = getCurrentWeek()
 ) {
+  // taiko is a separate, very slow process, so skip for now
+  if (wallet.chainId === taiko.id || wallet.chainId === taikoTestnetSepolia.id) {
+    log.debug('Skipping taiko wallet', { walletId: wallet.id });
+    return;
+  }
   const weeks: string[] = [];
   while (weeks.length < 4) {
     weeks.unshift(currentWeek); // Add to the beginning of the array so we process the most recent week first
@@ -443,4 +461,5 @@ async function backfillWalletAnalytics(
   for (const week of weeks) {
     await recordWalletAnalytics(wallet, week);
   }
+  log.info(`Backfilled analytics for wallet ${wallet.address}`, { walletId: wallet.id });
 }
