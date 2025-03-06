@@ -30,7 +30,9 @@ export async function sendNotifications<T extends NotificationTypes>({
   farcaster?: {
     templateVariables: FarcasterNotificationVariables<T>;
   };
-}) {
+}): Promise<number> {
+  let notificationsSent = 0;
+
   if (email) {
     try {
       await sendEmailNotification({
@@ -39,6 +41,7 @@ export async function sendNotifications<T extends NotificationTypes>({
         userId,
         templateVariables: email.templateVariables
       });
+      notificationsSent += 1;
     } catch (error) {
       log.error('Error sending email notification', { error, userId, notificationType });
     }
@@ -51,8 +54,11 @@ export async function sendNotifications<T extends NotificationTypes>({
         notificationType,
         notificationVariables: farcaster.templateVariables
       });
+      notificationsSent += 1;
     } catch (error) {
       log.error('Error sending farcaster notification', { error, userId, notificationType });
     }
   }
+
+  return notificationsSent;
 }

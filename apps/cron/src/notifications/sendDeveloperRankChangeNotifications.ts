@@ -239,7 +239,7 @@ export async function sendDeveloperRankChangeNotifications({
       }
 
       if (developers.length) {
-        await sendNotifications({
+        notificationsSent += await sendNotifications({
           notificationType: 'developer_rank_change',
           userId: scout.id,
           email: {
@@ -252,7 +252,6 @@ export async function sendDeveloperRankChangeNotifications({
             templateVariables: undefined
           }
         });
-        notificationsSent += 1;
       }
     } catch (error) {
       log.error('Error sending developer rank change email', { error, userId: scout.id });

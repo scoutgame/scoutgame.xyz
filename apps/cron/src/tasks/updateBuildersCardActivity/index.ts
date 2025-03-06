@@ -1,8 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type Koa from 'koa';
 import { DateTime } from 'luxon';
-
-import { sendDeveloperRankChangeEmails } from '../../notifications/sendDeveloperRankChangeEmails';
+import { sendDeveloperRankChangeNotifications } from 'src/notifications/sendDeveloperRankChangeNotifications';
 
 import { updateBuildersCardActivity } from './updateBuildersCardActivity';
 
@@ -17,9 +16,9 @@ export async function updateAllBuildersCardActivities(
 
   // Make sure not to send emails on monday at the start of the week
   if (weekday !== 1) {
-    const emailsSent = await sendDeveloperRankChangeEmails({
+    const notificationsSent = await sendDeveloperRankChangeNotifications({
       buildersRanksRecord
     });
-    log.info(`Sent ${emailsSent} developer rank change emails`);
+    log.info(`Sent ${notificationsSent} developer rank change notifications`);
   }
 }
