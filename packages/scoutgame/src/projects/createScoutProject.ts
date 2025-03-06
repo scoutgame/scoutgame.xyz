@@ -181,6 +181,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
                   data: payload.wallets.map((wallet) => ({
                     address: wallet.address,
                     chainId: wallet.chainId,
+                    chainType: 'evm',
                     verifiedBy: userId,
                     verifiedAt: new Date(),
                     createdBy: userId
