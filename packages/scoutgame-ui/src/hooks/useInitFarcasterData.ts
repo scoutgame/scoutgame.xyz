@@ -52,6 +52,20 @@ export function useInitFarcasterData() {
 
         // Immediately signal that the frame is ready and hide the splash screen
         await sdk.actions.ready({});
+
+        // If the user changes notification preferences in warpcast app keep them in sync with our db
+        sdk.on('notificationsDisabled', async () => {
+          await setNotificationToken({
+            notificationToken: null
+          });
+        });
+
+        sdk.on('notificationsEnabled', async ({ notificationDetails }) => {
+          await setNotificationToken({
+            notificationToken: notificationDetails.token
+          });
+        });
+
         // If the user is not logged in, auto trigger wallet login
         if (!user) {
           const { signature, message } = await sdk.actions.signIn({
@@ -76,9 +90,9 @@ export function useInitFarcasterData() {
           }
 
           trackEvent('frame_added');
-        } else if (context.client.notificationDetails) {
+        } else {
           await setNotificationToken({
-            notificationToken: context.client.notificationDetails.token
+            notificationToken: context.client.notificationDetails?.token ?? null
           });
         }
       } catch (error) {
@@ -89,5 +103,9 @@ export function useInitFarcasterData() {
     if (sdk) {
       load();
     }
+
+    return () => {
+      sdk.removeAllListeners();
+    };
   }, [user, loginUser, setNotificationToken, trackEvent]);
 }

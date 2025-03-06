@@ -7,7 +7,7 @@ import * as yup from 'yup';
 export const setNotificationTokenAction = authActionClient
   .schema(
     yup.object({
-      notificationToken: yup.string().required()
+      notificationToken: yup.string().nullable()
     })
   )
   .action(async ({ ctx, parsedInput }) => {
@@ -16,7 +16,10 @@ export const setNotificationTokenAction = authActionClient
 
     await prisma.scout.update({
       where: { id: scoutId },
-      data: { framesNotificationToken: notificationToken }
+      data: {
+        framesNotificationToken: notificationToken ?? null,
+        sendFarcasterNotification: !!notificationToken
+      }
     });
 
     return { success: true };
