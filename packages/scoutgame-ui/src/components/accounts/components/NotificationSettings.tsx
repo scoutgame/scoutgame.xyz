@@ -2,9 +2,8 @@
 
 import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { LoadingButton } from '@mui/lab';
-import { Checkbox, FormControlLabel, Paper, Stack, Typography } from '@mui/material';
+import { Checkbox, FormControlLabel, Paper, Stack, Tooltip } from '@mui/material';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { updateUserNotificationSettingsAction } from '@packages/users/updateUserNotificationSettingsAction';
 import {
@@ -22,6 +21,7 @@ import type { UserWithAccountsDetails } from '../AccountsPage';
 
 export function NotificationSettings({ user }: { user: UserWithAccountsDetails }) {
   const [errors, setErrors] = useState<string[] | null>(null);
+
   const {
     control,
     getValues,
@@ -72,21 +72,40 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
               control={control}
               name='emailNotification'
               render={({ field }) => (
-                <FormControlLabel
-                  disabled={isExecuting}
-                  control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Email notifications'
-                />
+                <Tooltip
+                  title={
+                    !user.verifiedEmail ? 'Please verify your email before updating email notification preference' : ''
+                  }
+                >
+                  <div style={{ width: 'fit-content' }}>
+                    <FormControlLabel
+                      disabled={isExecuting || !user.verifiedEmail}
+                      control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
+                      label='Email notifications'
+                    />
+                  </div>
+                </Tooltip>
               )}
             />
             <Controller
               control={control}
               name='farcasterNotification'
               render={({ field }) => (
-                <FormControlLabel
-                  control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Farcaster Notifications'
-                />
+                <Tooltip
+                  title={
+                    !user.farcasterId
+                      ? 'Please connect your Farcaster account before updating Farcaster notification preference'
+                      : ''
+                  }
+                >
+                  <div style={{ width: 'fit-content' }}>
+                    <FormControlLabel
+                      disabled={isExecuting || !user.farcasterId}
+                      control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
+                      label='Farcaster Notifications'
+                    />
+                  </div>
+                </Tooltip>
               )}
             />
           </Stack>
