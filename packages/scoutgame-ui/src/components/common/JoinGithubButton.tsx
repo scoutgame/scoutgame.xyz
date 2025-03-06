@@ -16,7 +16,7 @@ export function JoinGithubButton({ text = 'Connect & Sign up' }: { text?: string
         href={isProfilePage ? `${href}?profile-redirect=true` : href}
         variant='contained'
         color='primary'
-        sx={{ width: '100%' }}
+        size='large'
       >
         {text}
       </Button>
