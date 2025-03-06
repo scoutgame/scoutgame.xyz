@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Check as CheckIcon, Send as SendIcon } from '@mui/icons-material';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Checkbox, FormControlLabel, Paper, Stack, TextField, Typography, Chip } from '@mui/material';
+import { Box, Checkbox, Chip, FormControlLabel, Paper, Stack, TextField, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { updateUserEmailSettingsAction } from '@packages/users/updateUserEmailSettingsAction';
 import type { UpdateUserEmailSettingsFormValues } from '@packages/users/updateUserEmailSettingsSchema';
@@ -34,7 +34,6 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
     mode: 'onChange',
     defaultValues: {
       email: user.email,
-      sendTransactionEmails: user.sendTransactionEmails,
       sendMarketing: user.sendMarketing
     }
   });
@@ -119,17 +118,6 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
           </Stack>
 
           <Stack gap={{ xs: 1, md: 0 }}>
-            <Controller
-              control={control}
-              name='sendTransactionEmails'
-              render={({ field }) => (
-                <FormControlLabel
-                  disabled={isExecuting}
-                  control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Enable Scout Game email notifications (activity and pending actions)'
-                />
-              )}
-            />
             <Controller
               control={control}
               name='sendMarketing'

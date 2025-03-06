@@ -12,13 +12,11 @@ import { sendVerificationEmail } from './verifyEmail';
 export async function updateUserEmailSettings({
   userId,
   email,
-  sendMarketing,
-  sendTransactionEmails
+  sendMarketing
 }: {
   userId: string;
   email: string;
   sendMarketing: boolean;
-  sendTransactionEmails: boolean;
 }) {
   if (typeof email !== 'string') {
     throw new Error('Email is required');
@@ -41,7 +39,6 @@ export async function updateUserEmailSettings({
     where: { id: userId },
     data: {
       email,
-      sendTransactionEmails,
       sendMarketing
     }
   });
