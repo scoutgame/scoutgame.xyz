@@ -1,7 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { baseUrl } from '@packages/utils/constants';
+import { RateLimit } from 'async-sema';
 import { v4 } from 'uuid';
+
+// 10 notifications per second, there are no specific rate limits mentioned in the docs
+const rateLimiter = RateLimit(10);
 
 type Variables = {
   weekly_claim: {
@@ -36,23 +40,23 @@ type Variables = {
 const FarcasterNotificationTypesRecord = {
   weekly_claim: {
     title: 'Weekly Claim',
-    description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week! Claim them now!`,
+    description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week! Click to Claim!`,
     targetUrl: `${baseUrl}/claim`
   },
   zero_weekly_claim: {
     title: 'A New Week, A New Opportunity',
-    description: 'A new week means a fresh opportunity to earn rewards',
-    targetUrl: `${baseUrl}/scout`
+    description: 'A new week means a fresh opportunity to earn rewards. Start playing.',
+    targetUrl: `${baseUrl}/quests`
   },
   builder_suspended: {
     title: 'Developer suspended',
     description: `Your developer card has been suspended`,
-    targetUrl: `${baseUrl}/profile`
+    targetUrl: `${baseUrl}/info/spam-policy`
   },
   nft_transaction_failed: {
     title: 'NFT transaction failed',
     description: ({ builderName }: Variables['nft_transaction_failed']) =>
-      `Your NFT transaction failed when purchasing ${builderName}`,
+      `our transaction failed when purchasing ${builderName}. Try again`,
     targetUrl: ({ builderPath }: Variables['nft_transaction_failed']) => `${baseUrl}/u/${builderPath}`
   },
   builder_card_scouted: {
@@ -63,13 +67,13 @@ const FarcasterNotificationTypesRecord = {
   },
   builder_approved: {
     title: 'Developer approved',
-    description: () => `Your developer card has been approved`,
+    description: () => `You have been approved as a Scout Game Developer`,
     targetUrl: `${baseUrl}/profile`
   },
   referral_link_signup: {
     title: 'Referral link signup',
     description: ({ refereeName }: Variables['referral_link_signup']) =>
-      `Your referee ${refereeName} signed up using your referral link`,
+      `Your referee ${refereeName} signed up using your referral link. Claim your rewards on Monday!`,
     targetUrl: ({ refereePath }: Variables['referral_link_signup']) => `${baseUrl}/u/${refereePath}`
   },
   merged_pr_gems: {
@@ -80,8 +84,8 @@ const FarcasterNotificationTypesRecord = {
   },
   developer_rank_change: {
     title: 'Your developers are on the move!',
-    description: 'Your developers are moving in the leaderboard rankings',
-    targetUrl: `${baseUrl}/profile?tab=scouts`
+    description: 'Your developers are moving in the leaderboard rankings. Check them out!',
+    targetUrl: `${baseUrl}/scout`
   },
   added_to_project: {
     title: 'Added to project',
@@ -155,7 +159,9 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
     notificationType
   });
 
-  await fetch('https://api.warpcast.com/v1/frame-notifications', {
+  await rateLimiter();
+
+  const response = await fetch('https://api.warpcast.com/v1/frame-notifications', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -168,6 +174,22 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
       notificationId
     })
   });
+
+  const data = (await response.json()) as {
+    successTokens: string[];
+    invalidTokens: string[];
+    rateLimitedTokens: string[];
+  };
+
+  if (data.rateLimitedTokens.includes(user.framesNotificationToken)) {
+    log.debug('Rate limited when sending farcaster notification, waiting 1 second', { userId });
+    return;
+  }
+
+  if (data.invalidTokens.includes(user.framesNotificationToken)) {
+    log.debug('Invalid frames notification token', { userId });
+    return;
+  }
 
   await prisma.scoutFarcasterNotification.create({
     data: {
