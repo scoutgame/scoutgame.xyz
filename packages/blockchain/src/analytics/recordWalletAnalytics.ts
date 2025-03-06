@@ -5,27 +5,33 @@ import { getStartOfWeek } from '@packages/dates/utils';
 import { getEvmWalletStats, getSolanaWalletStats } from '@packages/dune/queries';
 import { DateTime } from 'luxon';
 
-export async function recordWalletAnalytics(
+export function recordWalletAnalyticsForWeek(
   wallet: Pick<ScoutProjectWallet, 'id' | 'address' | 'chainType' | 'chainId'>,
   week: string
 ) {
   const _startOfWeek = getStartOfWeek(week);
   const startOfWeek = _startOfWeek.toJSDate();
   const endOfWeek = _startOfWeek.plus({ days: 7 }).toJSDate(); // calculate end of week as the start of week + 7 days
+  return recordWalletAnalytics(wallet, startOfWeek, endOfWeek);
+}
+
+export async function recordWalletAnalytics(
+  wallet: Pick<ScoutProjectWallet, 'id' | 'address' | 'chainType' | 'chainId'>,
+  startDate: Date,
+  endDate: Date
+) {
   const existingMetrics = await prisma.scoutProjectWalletDailyStats.findMany({
     where: {
       walletId: wallet.id,
       day: {
-        gte: startOfWeek,
-        lte: endOfWeek
+        gte: startDate,
+        lte: endDate
       }
     },
     orderBy: {
       day: 'asc'
     }
   });
-
-  let startDate = startOfWeek;
 
   // If we there is a recent metric after startOfWeek but from before today, use that date (+1) instead
   if (existingMetrics.length > 0) {
@@ -37,7 +43,6 @@ export async function recordWalletAnalytics(
       log.debug('Found existing metric for wallet %s, using that date instead of startOfWeek', {
         walletAddress: wallet.address,
         lastMetricDate: latestMetric.day,
-        startOfWeek,
         newStartDate: startDate
       });
     }
@@ -48,13 +53,13 @@ export async function recordWalletAnalytics(
       ? await getSolanaWalletStats({
           address: wallet.address,
           startDate,
-          endDate: endOfWeek
+          endDate
         })
       : await getEvmWalletStats({
           address: wallet.address,
           chainId: wallet.chainId!,
-          startDate: startOfWeek,
-          endDate: endOfWeek
+          startDate,
+          endDate
         });
   // create metrics if they dont exist
   const newMetrics = metrics.filter((m) => !existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));
@@ -77,5 +82,5 @@ export async function recordWalletAnalytics(
       data: metric
     });
   }
-  return { newMetrics, updatedMetrics, startOfWeek, endOfWeek };
+  return { newMetrics, updatedMetrics, endDate, startDate };
 }

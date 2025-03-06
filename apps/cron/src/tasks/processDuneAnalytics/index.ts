@@ -1,6 +1,6 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { recordWalletAnalytics } from '@packages/blockchain/analytics/recordWalletAnalytics';
+import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getCurrentWeek } from '@packages/dates/utils';
 import type Koa from 'koa';
 import { taiko } from 'viem/chains';
@@ -27,7 +27,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
 
   for (const wallet of wallets) {
     try {
-      const { startOfWeek, endOfWeek, newMetrics, updatedMetrics } = await recordWalletAnalytics(wallet, week);
+      const { startDate, endDate, newMetrics, updatedMetrics } = await recordWalletAnalyticsForWeek(wallet, week);
       log.info(`Created wallet metrics for wallet: ${wallet.address}`, {
         newMetrics: newMetrics.length,
         chainType: wallet.chainType,
@@ -35,8 +35,8 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
         walletAddress: wallet.address,
         walletId: wallet.id,
         week,
-        startOfWeek,
-        endOfWeek
+        startDate,
+        endDate
       });
     } catch (error) {
       log.error(`Error creating wallet metrics for wallet: ${wallet.address}`, {

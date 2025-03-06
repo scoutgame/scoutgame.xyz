@@ -58,7 +58,7 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
           verified: true
         })),
       wallets: project.wallets
-        .filter((w) => w.chainType === 'evm')
+        .filter((w) => !w.chainType || w.chainType === 'evm')
         .map((wallet) => ({
           address: wallet.address,
           chainId: wallet.chainId!,
