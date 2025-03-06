@@ -4,18 +4,17 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
-import { convertCostToPoints } from '../builderNfts/utils';
-
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type DeveloperInfo = {
+  id: string;
   path: string;
   displayName: string;
   avatar: string;
   firstContributionDate: Date;
   level: number;
   estimatedPayout: number;
-  price: number;
+  price: bigint;
   rank: number;
   gemsCollected: number;
   githubConnectedAt: Date;
@@ -153,16 +152,15 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     }
   });
 
-  const purchaseCostInPoints = convertCostToPoints(developer.builderNfts[0].currentPrice || BigInt(0));
-
   return {
+    id: developer.id,
     path: developer.path,
     avatar: developer.avatar as string,
     displayName: developer.displayName,
     firstContributionDate: firstContributionDate?.createdAt || developer.createdAt,
     level: developer.userSeasonStats[0]?.level || 0,
     estimatedPayout: developer.builderNfts[0]?.estimatedPayout || 0,
-    price: purchaseCostInPoints,
+    price: developer.builderNfts[0].currentPrice || BigInt(0),
     rank: developer.userWeeklyStats[0]?.rank || 0,
     gemsCollected: developer.userWeeklyStats[0]?.gemsCollected || 0,
     githubConnectedAt: developer.githubUsers[0].createdAt,
