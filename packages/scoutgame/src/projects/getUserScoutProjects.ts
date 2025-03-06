@@ -31,7 +31,8 @@ export type ScoutProjectDetailed = Pick<
   }[];
   wallets: {
     address: string;
-    chainId: number;
+    chainId: number | null;
+    chainType: 'evm' | 'solana' | null;
   }[];
 };
 

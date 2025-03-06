@@ -50,7 +50,8 @@ export const projectDetailedSelect = {
     },
     select: {
       address: true,
-      chainId: true
+      chainId: true,
+      chainType: true
     }
   }
 } satisfies Prisma.ScoutProjectSelect;
