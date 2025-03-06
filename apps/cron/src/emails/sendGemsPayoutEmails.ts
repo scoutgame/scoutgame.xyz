@@ -5,6 +5,9 @@ import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
 import { formatUnits } from 'viem';
 
+const fontFamily = 'Arial, sans-serif';
+const fontColor = '#000';
+
 const partnerRewardsRecord: Record<string, { name: string; partnerLink?: string; icon: string; chain: string }> = {
   octant_base_contribution: {
     chain: 'Base',
@@ -27,6 +30,7 @@ const partnerRewardsRecord: Record<string, { name: string; partnerLink?: string;
 };
 
 function formatPartnerRewardPayout(
+  openingStatement: string,
   wallets: {
     partnerRewardPayouts: Pick<PartnerRewardPayout, 'amount'>[] &
       {
@@ -41,11 +45,11 @@ function formatPartnerRewardPayout(
     return '';
   }
 
-  let html = 'You have also earned these partner rewards this week:<br/><ul>';
+  let html = `<p style="margin-top: 5px; font-family: ${fontFamily}; color: ${fontColor};">${openingStatement}:</p><ul>`;
   for (const wallet of wallets) {
     for (const payout of wallet.partnerRewardPayouts) {
       const partner = partnerRewardsRecord[payout.payoutContract.partner as keyof typeof partnerRewardsRecord];
-      html += `<li><strong style="font-family: 'Arial', sans-serif;">${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="${partner.icon}"/> on ${partner.chain} from ${partner.partnerLink ? `<a style="text-decoration: underline; color: #3a3a3a;" href="${partner.partnerLink}">${partner.name}</a>` : partner.name}</li>`;
+      html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="${partner.icon}"/> on ${partner.chain} from ${partner.partnerLink ? `<a style="text-decoration: underline; color: ${fontColor};" href="${partner.partnerLink}">${partner.name}</a>` : partner.name}</li>`;
     }
   }
   return `${html}</ul>`;
@@ -100,16 +104,33 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
         await sendEmailTemplate({
           userId: scout.id,
           senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-          subject: 'Claim Your Scout Points This Week! 🎉',
+          subject: `Claim Your Scout Points ${scout.wallets ? '& Partner Rewards' : ''} This Week! 🎉`,
           templateType: 'weekly_claim',
           templateVariables: {
             name: scout.displayName,
             points: weeklyClaimablePoints,
-            partner_rewards: formatPartnerRewardPayout(scout.wallets)
+            partner_rewards: formatPartnerRewardPayout(
+              'You have also earned these partner rewards this week',
+              scout.wallets
+            )
           }
         });
-        totalEmailsSent += 1;
+      } else {
+        await sendEmailTemplate({
+          userId: scout.id,
+          senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
+          templateType: 'zero_weekly_claim',
+          templateVariables: {
+            name: scout.displayName,
+            partner_rewards: formatPartnerRewardPayout(
+              'On the bright side, you have earned these partner rewards this week',
+              scout.wallets
+            )
+          },
+          subject: 'No points earned this week? 🤔'
+        });
       }
+      totalEmailsSent += 1;
     } catch (error) {
       log.error('Error sending points claim email', { error, userId: scout.id });
     }

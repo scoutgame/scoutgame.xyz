@@ -8,6 +8,7 @@ const isTestEnv = process.env.REACT_APP_APP_ENV === 'test';
 
 const TemplateTypesRecord = {
   weekly_claim: 'Weekly Claim',
+  zero_weekly_claim: 'Zero weekly claim',
   builder_suspended: 'Builder suspended',
   builder_status: 'Builder status',
   no_purchased_cards_by_user: 'No purchased cards by user',
