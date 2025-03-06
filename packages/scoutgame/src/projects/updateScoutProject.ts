@@ -365,17 +365,15 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
             }
           }
         });
-        // Record analytics for the current week and the past 3 weeks
+        // Record analytics for the current and past 3 weeks
         let currentWeek = getCurrentWeek();
-        let len = 3;
-        const promises: ReturnType<typeof recordWalletAnalytics>[] = [];
-        while (len > 0) {
-          len -= 1;
-          promises.push(recordWalletAnalytics(newWallet, currentWeek));
+        const weeks: string[] = [];
+        while (weeks.length < 4) {
+          weeks.unshift(currentWeek); // Add to the beginning of the array so we process the most recent week first
           currentWeek = getPreviousWeek(currentWeek);
         }
 
-        Promise.all(promises)
+        Promise.all(weeks.map((week) => recordWalletAnalytics(newWallet, week)))
           .then((results) => {
             log.info(`Backfilled analytics for wallet ${wallet.address}`, { results });
           })
