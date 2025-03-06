@@ -23,23 +23,33 @@ export function PublicBuilderStats({
         THIS SEASON
       </Typography>
       <Stack flexDirection='row' gap={1} alignItems='center'>
-        <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'h6'} color='orange.main'>
+        <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
           {seasonPoints || 0}
         </Typography>
-        <Image src='/images/profile/scout-game-orange-icon.svg' width='25' height='25' alt='scout game icon' />
-        <Typography fontWeight={500} variant={isDesktop ? 'h6' : 'body1'} color='orange.main'>
+        <Image
+          src='/images/profile/scout-game-orange-icon.svg'
+          width={isDesktop ? '25' : '16'}
+          height={isDesktop ? '25' : '16'}
+          alt='scout game icon'
+        />
+        <Typography fontWeight={500} variant={isDesktop ? 'h6' : 'body2'} color='orange.main'>
           ({allTimePoints || 0})
         </Typography>
       </Stack>
-      <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'h6'} color='orange.main'>
+      <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
         {totalScouts || 0} Scouts
       </Typography>
       <Stack flexDirection='row' gap={1} alignItems='center'>
-        <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'h6'} color='orange.main'>
+        <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
           {totalNftsSold || 0}
         </Typography>
-        <Image src='/images/profile/icons/cards-orange.svg' width='20' height='20' alt='cards icon' />
-        <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'h6'} color='orange.main'>
+        <Image
+          src='/images/profile/icons/cards-orange.svg'
+          width={isDesktop ? '20' : '14'}
+          height={isDesktop ? '20' : '14'}
+          alt='cards icon'
+        />
+        <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
           Sold
         </Typography>
       </Stack>
