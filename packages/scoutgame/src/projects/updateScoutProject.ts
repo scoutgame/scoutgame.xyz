@@ -1,5 +1,8 @@
+import { log } from '@charmverse/core/log';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
+import { recordWalletAnalytics } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
+import { getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import { verifyMessage } from 'viem';
 
@@ -353,6 +356,33 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           verifiedAt: new Date()
         }))
       });
+      for (const wallet of walletAddressesToCreate) {
+        const newWallet = await tx.scoutProjectWallet.findUniqueOrThrow({
+          where: {
+            address_chainId: {
+              address: wallet.address,
+              chainId: wallet.chainId
+            }
+          }
+        });
+        // Record analytics for the current week and the past 3 weeks
+        let currentWeek = getCurrentWeek();
+        let len = 3;
+        const promises: ReturnType<typeof recordWalletAnalytics>[] = [];
+        while (len > 0) {
+          len -= 1;
+          promises.push(recordWalletAnalytics(newWallet, currentWeek));
+          currentWeek = getPreviousWeek(currentWeek);
+        }
+
+        Promise.all(promises)
+          .then((results) => {
+            log.info(`Backfilled analytics for wallet ${wallet.address}`, { results });
+          })
+          .catch((error) => {
+            log.error(`Error backfilling analytics for wallet ${wallet.address}`, error);
+          });
+      }
     }
 
     const deployers = await tx.scoutProjectDeployer.findMany({
