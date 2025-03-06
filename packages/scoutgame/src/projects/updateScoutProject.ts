@@ -473,7 +473,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 }
 
 // Record analytics for the current and past 3 weeks, one week at a time
-async function backfillWalletAnalytics(wallet: Parameters<typeof recordWalletAnalytics>[0]) {
+export async function backfillWalletAnalytics(wallet: Parameters<typeof recordWalletAnalytics>[0]) {
   const endDate = new Date();
   const startDate = DateTime.fromJSDate(endDate).minus({ days: 30 }).toJSDate();
   // taiko is a separate, very slow process, so skip for now

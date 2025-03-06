@@ -16,6 +16,7 @@ import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './con
 import type { CreateScoutProjectFormValues } from './createScoutProjectSchema';
 import { generateProjectPath } from './generateProjectPath';
 import { generateRandomAvatar } from './generateRandomAvatar';
+import { backfillWalletAnalytics } from './updateScoutProject';
 
 export async function createScoutProject(payload: CreateScoutProjectFormValues, userId: string) {
   const path = await generateProjectPath(payload.name);
@@ -227,6 +228,38 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     return scoutProject;
   });
 
+  if (payload.wallets) {
+    for (const wallet of payload.wallets) {
+      const newWallet = await prisma.scoutProjectWallet.findUnique({
+        where: {
+          address_chainId: {
+            address: wallet.address,
+            chainId: wallet.chainId
+          }
+        }
+      });
+      if (newWallet) {
+        try {
+          // assume evm for now
+          const result = await backfillWalletAnalytics(newWallet);
+          if (result) {
+            log.info(`Backfilled analytics for wallet ${newWallet.address}`, {
+              endDate: result.endDate,
+              startDate: result.startDate,
+              userId,
+              walletId: newWallet.id
+            });
+          }
+        } catch (error) {
+          log.error(`Error backfilling analytics for wallet ${newWallet.address}`, {
+            contractId: newWallet.id,
+            userId,
+            error
+          });
+        }
+      }
+    }
+  }
   return {
     id: project.id,
     path: project.path,
