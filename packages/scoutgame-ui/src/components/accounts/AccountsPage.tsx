@@ -39,6 +39,10 @@ export function AccountsPage({ user }: { user: UserWithAccountsDetails }) {
         <TelegramConnect user={user} />
         <WalletConnect user={user} />
         <EmailSettings user={user} />
+        <Typography variant='h4' color='secondary' fontWeight={600} mt={2}>
+          Notifications
+        </Typography>
+        <Typography variant='h6'>Receive notifications for activity and pending actions</Typography>
         <NotificationSettings user={user} />
       </Stack>
     </PageContainer>

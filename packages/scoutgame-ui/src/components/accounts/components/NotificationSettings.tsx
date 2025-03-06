@@ -67,10 +67,6 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
     <Paper elevation={2} sx={{ p: 2 }}>
       <form noValidate onSubmit={handleSubmit(onSubmit, onInvalid)}>
         <Stack gap={2}>
-          <Stack direction='row' gap={1} alignItems='center'>
-            <NotificationsNoneOutlinedIcon />
-            <Typography variant='h6'>Notifications</Typography>
-          </Stack>
           <Stack gap={{ xs: 1, md: 0 }}>
             <Controller
               control={control}
@@ -79,7 +75,7 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
                 <FormControlLabel
                   disabled={isExecuting}
                   control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Enable Scout Game email notifications (activity and pending actions)'
+                  label='Email notifications'
                 />
               )}
             />
@@ -89,7 +85,7 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
               render={({ field }) => (
                 <FormControlLabel
                   control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Enable Farcaster notifications'
+                  label='Farcaster Notifications'
                 />
               )}
             />
