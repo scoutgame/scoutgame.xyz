@@ -6,7 +6,7 @@ jest.unstable_mockModule('@packages/mailer/sendEmailTemplate', () => ({
   sendEmailTemplate: jest.fn()
 }));
 
-const { sendVerificationEmail, verifyEmail, InvalidVerificationError } = await import('../verifyEmail');
+const { sendVerificationEmail, verifyEmail } = await import('../verifyEmail');
 const { sendEmailTemplate } = await import('@packages/mailer/sendEmailTemplate');
 
 describe('verifyEmail', () => {
@@ -33,7 +33,7 @@ describe('verifyEmail', () => {
     expect(sendEmailTemplate).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: scout.id,
-        template: 'email verification'
+        templateType: 'email_verification'
       })
     );
   });
