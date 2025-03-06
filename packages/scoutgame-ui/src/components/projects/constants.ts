@@ -1,5 +1,6 @@
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { isProdEnv } from '@packages/utils/constants';
+import { base, baseSepolia, mainnet, optimism, optimismSepolia } from 'viem/chains';
 
 export const chainRecords: Record<
   number,
@@ -13,6 +14,22 @@ export const chainRecords: Record<
     chainId: 167000,
     image: '/images/crypto/taiko.png',
     name: 'Taiko'
+  },
+  // add base, ethereum, and optimism
+  [base.id]: {
+    chainId: base.id,
+    image: '/images/crypto/base.svg',
+    name: 'Base'
+  },
+  [optimism.id]: {
+    chainId: optimism.id,
+    image: '/images/crypto/op.png',
+    name: 'Optimism'
+  },
+  [mainnet.id]: {
+    chainId: mainnet.id,
+    image: '/images/crypto/ethereum-circle.png',
+    name: 'Ethereum'
   }
 };
 
@@ -22,6 +39,17 @@ if (!isProdEnv) {
     chainId: 11155111,
     image: '/images/crypto/ethereum-circle.png',
     name: 'Sepolia Testnet'
+  };
+  // add testnet chains
+  chainRecords[baseSepolia.id] = {
+    chainId: baseSepolia.id,
+    image: '/images/crypto/base.svg',
+    name: 'Base Sepolia'
+  };
+  chainRecords[optimismSepolia.id] = {
+    chainId: optimismSepolia.id,
+    image: '/images/crypto/op.png',
+    name: 'Optimism Sepolia'
   };
 }
 

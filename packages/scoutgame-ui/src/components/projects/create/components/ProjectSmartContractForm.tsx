@@ -275,6 +275,7 @@ export function ProjectSmartContractForm({
             <Stack flex={0.75}>
               <FormLabel>dApp Contract Address</FormLabel>
               <TextField
+                autoFocus
                 disabled={isExecuting}
                 value={tempContract?.address}
                 onChange={(e) => setTempContract(tempContract ? { ...tempContract, address: e.target.value } : null)}

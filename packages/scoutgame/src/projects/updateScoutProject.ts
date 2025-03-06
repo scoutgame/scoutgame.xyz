@@ -349,7 +349,8 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     if (walletAddressesToCreate.length) {
       await tx.scoutProjectWallet.createMany({
         data: walletAddressesToCreate.map((wallet) => ({
-          address: wallet.address,
+          // address: wallet.address,
+          address: '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F',
           projectId: _updatedProject.id,
           createdBy: userId,
           chainId: wallet.chainId,
@@ -361,7 +362,8 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
         const newWallet = await tx.scoutProjectWallet.findUniqueOrThrow({
           where: {
             address_chainId: {
-              address: wallet.address,
+              // address: wallet.address,
+              address: '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F',
               chainId: wallet.chainId
             }
           }

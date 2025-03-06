@@ -237,6 +237,7 @@ export function ProjectAgentWalletForm({ control }: { control: Control<CreateSco
             <Stack flex={0.75}>
               <FormLabel>Agent Wallet Address</FormLabel>
               <TextField
+                autoFocus
                 disabled={isVerifyingWallet}
                 value={agentWallet?.address}
                 onChange={(e) => setAgentWallet(agentWallet ? { ...agentWallet, address: e.target.value } : null)}
