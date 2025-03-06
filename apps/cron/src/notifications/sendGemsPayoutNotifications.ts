@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type { PartnerRewardPayout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
+import { getCurrentSeasonStart, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
 import { formatUnits } from 'viem';
@@ -57,6 +57,8 @@ function formatPartnerRewardPayout(
 }
 
 export async function sendGemsPayoutNotifications({ week }: { week: string }) {
+  const weekNumber = getCurrentSeasonWeekNumber(week);
+
   const scouts = await prisma.scout.findMany({
     where: {
       deletedAt: null
@@ -131,7 +133,9 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
               partner_rewards: formatPartnerRewardPayout(
                 'On the bright side, you have earned these partner rewards this week',
                 scout.wallets
-              )
+              ),
+              season: getCurrentSeasonStart(),
+              week_num: weekNumber
             }
           },
           farcaster: {

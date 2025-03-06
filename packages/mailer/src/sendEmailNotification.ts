@@ -17,6 +17,8 @@ type Variables = {
   zero_weekly_claim: {
     name: string;
     partner_rewards: string;
+    week_num: number;
+    season: string;
   };
   builder_suspended: {
     builder_name: string;
@@ -92,7 +94,7 @@ export const NotificationTypesRecord = {
   },
   zero_weekly_claim: {
     template: 'Zero weekly claim',
-    subject: 'You earned 0 points this week! 🎉'
+    subject: 'A New Week, A New Opportunity 🚀'
   },
   builder_suspended: {
     template: 'Builder suspended',
