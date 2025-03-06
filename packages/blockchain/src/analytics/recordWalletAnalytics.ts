@@ -5,7 +5,10 @@ import { getStartOfWeek } from '@packages/dates/utils';
 import { getEvmWalletStats, getSolanaWalletStats } from '@packages/dune/queries';
 import { DateTime } from 'luxon';
 
-export async function recordWalletAnalytics(wallet: ScoutProjectWallet, week: string) {
+export async function recordWalletAnalytics(
+  wallet: Pick<ScoutProjectWallet, 'id' | 'address' | 'chainType' | 'chainId'>,
+  week: string
+) {
   const _startOfWeek = getStartOfWeek(week);
   const startOfWeek = _startOfWeek.toJSDate();
   const endOfWeek = _startOfWeek.plus({ days: 7 }).toJSDate(); // calculate end of week as the start of week + 7 days

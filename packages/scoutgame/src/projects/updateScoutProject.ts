@@ -1,4 +1,5 @@
 import { log } from '@charmverse/core/log';
+import type { ScoutProjectWallet } from '@charmverse/core/prisma-client';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { recordWalletAnalytics } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
@@ -365,15 +366,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
             }
           }
         });
-        // Record analytics for the current and past 3 weeks
-        let currentWeek = getCurrentWeek();
-        const weeks: string[] = [];
-        while (weeks.length < 4) {
-          weeks.unshift(currentWeek); // Add to the beginning of the array so we process the most recent week first
-          currentWeek = getPreviousWeek(currentWeek);
-        }
-
-        Promise.all(weeks.map((week) => recordWalletAnalytics(newWallet, week)))
+        backfillWalletAnalytics(newWallet)
           .then((results) => {
             log.info(`Backfilled analytics for wallet ${wallet.address}`, { results });
           })
@@ -435,4 +428,19 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   });
 
   return updatedProject;
+}
+
+// Record analytics for the current and past 3 weeks, one week at a time
+async function backfillWalletAnalytics(
+  wallet: Parameters<typeof recordWalletAnalytics>[0],
+  currentWeek = getCurrentWeek()
+) {
+  const weeks: string[] = [];
+  while (weeks.length < 4) {
+    weeks.unshift(currentWeek); // Add to the beginning of the array so we process the most recent week first
+    currentWeek = getPreviousWeek(currentWeek);
+  }
+  for (const week of weeks) {
+    await recordWalletAnalytics(wallet, week);
+  }
 }
