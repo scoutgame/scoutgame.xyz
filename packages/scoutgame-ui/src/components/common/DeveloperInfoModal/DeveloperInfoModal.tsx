@@ -257,7 +257,14 @@ export function DeveloperInfoModal({
             </Stack>
           </Stack>
           <Stack>
-            <Stack direction='row' alignItems='center' gap={1}>
+            <Stack
+              direction='row'
+              alignItems='center'
+              gap={{
+                xs: 0.5,
+                md: 1
+              }}
+            >
               <Typography
                 variant={isDesktop ? 'h5' : 'h6'}
                 maxWidth={{
@@ -275,6 +282,7 @@ export function DeveloperInfoModal({
               <Link href={`/u/${developer.path}`} onClick={onClose}>
                 <Button
                   sx={{
+                    p: 0,
                     '& .MuiButton-startIcon': {
                       mr: 0.5
                     },
@@ -286,12 +294,12 @@ export function DeveloperInfoModal({
                     }
                   }}
                   variant='text'
-                  startIcon={<OpenInNewIcon />}
+                  startIcon={<OpenInNewIcon sx={{ fontSize: { xs: '12px !important', md: '14px !important' } }} />}
                   color='secondary'
                   size='small'
                 >
                   <Typography color='secondary' fontSize='12px'>
-                    View Profile
+                    View {isDesktop ? 'Profile' : ''}
                   </Typography>
                 </Button>
               </Link>
