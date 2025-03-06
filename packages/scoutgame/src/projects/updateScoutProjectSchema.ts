@@ -46,6 +46,16 @@ export const updateScoutProjectSchema = yup.object({
       otherwise: (schema) => schema
     })
     .required('Contracts are required'),
+  solanaWallets: yup
+    .array()
+    .of(
+      yup.object({
+        address: yup.string().required('Wallet address is required'),
+        verified: yup.boolean().required()
+      })
+    )
+    .min(0)
+    .required('SolanaWallets are required'),
   wallets: yup
     .array()
     .of(

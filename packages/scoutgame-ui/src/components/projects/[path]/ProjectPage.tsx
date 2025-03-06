@@ -14,6 +14,11 @@ import { LeaveProjectButton } from './components/LeaveProjectButton';
 import { ProjectPageMember } from './components/ProjectPageMember';
 
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
+  const contractsAndAgentWallets = [
+    ...project.contracts.map((contract) => ({ ...contract, type: 'contract' })),
+    ...project.wallets.filter((w) => w.chainType === 'evm').map((wallet) => ({ ...wallet, type: 'agent' }))
+  ];
+
   return (
     <Container maxWidth='lg'>
       <Stack my={4} gap={2}>
@@ -76,10 +81,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             {project.contracts.length === 0 && project.wallets.length === 0 ? (
               <Typography>No contracts or agent wallets added</Typography>
             ) : (
-              [
-                ...project.contracts.map((contract) => ({ ...contract, type: 'contract' })),
-                ...project.wallets.map((wallet) => ({ ...wallet, type: 'agent' }))
-              ].map((contract) => (
+              contractsAndAgentWallets.map((contract) => (
                 <Stack
                   key={contract.address}
                   flexDirection='row'
@@ -91,8 +93,8 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                   borderRadius={1}
                 >
                   <Image
-                    src={chainRecords[contract.chainId].image}
-                    alt={chainRecords[contract.chainId].name}
+                    src={chainRecords[contract.chainId!].image}
+                    alt={chainRecords[contract.chainId!].name}
                     width={20}
                     height={20}
                     style={{ borderRadius: '50%' }}

@@ -51,11 +51,19 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
         address: deployer.address,
         verified: deployer.verified
       })),
-      wallets: project.wallets.map((wallet) => ({
-        address: wallet.address,
-        chainId: wallet.chainId,
-        verified: true
-      }))
+      solanaWallets: project.wallets
+        .filter((w) => w.chainType === 'solana')
+        .map((wallet) => ({
+          address: wallet.address,
+          verified: true
+        })),
+      wallets: project.wallets
+        .filter((w) => w.chainType === 'evm')
+        .map((wallet) => ({
+          address: wallet.address,
+          chainId: wallet.chainId!,
+          verified: true
+        }))
     }
   });
 
