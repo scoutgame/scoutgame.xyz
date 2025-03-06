@@ -36,13 +36,13 @@ type Variables = {
 const FarcasterNotificationTypesRecord = {
   weekly_claim: {
     title: 'Weekly Claim',
-    description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week!`,
+    description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week! Claim them now!`,
     targetUrl: `${baseUrl}/claim`
   },
   zero_weekly_claim: {
-    title: 'Zero weekly claim',
-    description: 'You earned 0 points this week!',
-    targetUrl: `${baseUrl}/claim`
+    title: 'A New Week, A New Opportunity',
+    description: 'A new week means a fresh opportunity to earn rewards',
+    targetUrl: `${baseUrl}/scout`
   },
   builder_suspended: {
     title: 'Developer suspended',
@@ -56,14 +56,14 @@ const FarcasterNotificationTypesRecord = {
     targetUrl: ({ builderPath }: Variables['nft_transaction_failed']) => `${baseUrl}/u/${builderPath}`
   },
   builder_card_scouted: {
-    title: 'Builder card scouted',
+    title: 'Developer card scouted',
     description: ({ scouterName }: Variables['builder_card_scouted']) =>
-      `Your builder card has been scouted by ${scouterName}`,
+      `Your developer card has been scouted by ${scouterName}`,
     targetUrl: ({ scouterPath }: Variables['builder_card_scouted']) => `${baseUrl}/u/${scouterPath}`
   },
   builder_approved: {
-    title: 'Builder approved',
-    description: () => `Your builder has been approved`,
+    title: 'Developer approved',
+    description: () => `Your developer card has been approved`,
     targetUrl: `${baseUrl}/profile`
   },
   referral_link_signup: {
@@ -73,7 +73,7 @@ const FarcasterNotificationTypesRecord = {
     targetUrl: ({ refereePath }: Variables['referral_link_signup']) => `${baseUrl}/u/${refereePath}`
   },
   merged_pr_gems: {
-    title: 'Merged PR gems',
+    title: 'You got gems!',
     description: ({ gems, partnerRewards }: Variables['merged_pr_gems']) =>
       `You earned ${gems} gems ${partnerRewards ? ` and ${partnerRewards}` : ''} for merging a PR`,
     targetUrl: `${baseUrl}/profile`
