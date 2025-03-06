@@ -2,10 +2,10 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
 import { registerBuilderStarterPackNFT } from '../builderNfts/builderRegistration/registerBuilderStarterPackNFT';
+import { sendNotifications } from '../notifications/sendNotifications';
 
 const baseUrl = process.env.DOMAIN || 'https://scoutgame.xyz';
 
@@ -54,16 +54,19 @@ export async function approveBuilder({
   log.info('Builder approved', { userId: builderId, season });
 
   try {
-    await sendEmailTemplate({
+    await sendNotifications({
       userId: scout.id,
-      subject: 'Welcome to Scout Game, Builder! 🎉',
-      templateType: 'builder_approved',
-      templateVariables: {
-        builder_name: scout.displayName,
-        builder_card_image: builderNft.imageUrl,
-        builder_profile_link: `${baseUrl}/u/${scout.path}`
+      notificationType: 'builder_approved',
+      email: {
+        templateVariables: {
+          builder_name: scout.displayName,
+          builder_card_image: builderNft.imageUrl,
+          builder_profile_link: `${baseUrl}/u/${scout.path}`
+        }
       },
-      senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>'
+      farcaster: {
+        templateVariables: undefined
+      }
     });
   } catch (error) {
     log.error('Error sending builder approval email', { error, userId: scout.id });

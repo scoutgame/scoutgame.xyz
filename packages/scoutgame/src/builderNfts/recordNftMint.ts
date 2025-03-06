@@ -4,7 +4,7 @@ import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { baseUrl } from '@packages/utils/constants';
@@ -12,6 +12,7 @@ import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { sendNotifications } from '../notifications/sendNotifications';
 import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
@@ -267,21 +268,27 @@ export async function recordNftMint(
           }
         })
       ]);
-      await sendEmailTemplate({
-        senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-        subject: 'Your Developer Card Was Just Scouted! 🎉',
-        templateType: 'builder_card_scouted',
+      await sendNotifications({
+        notificationType: 'builder_card_scouted',
         userId: builderNft.builderId,
-        templateVariables: {
-          builder_name: builderNft.builder.displayName,
-          builder_profile_link: `${baseUrl}/u/${builderNft.builder.path}`,
-          cards_purchased: amount,
-          total_purchase_cost: pointsValue,
-          builder_card_image: builderNft.imageUrl,
-          scout_name: scout.displayName,
-          scout_profile_link: `${baseUrl}/u/${scout.path}`,
-          // TODO: use currentPriceInScoutToken when we move to $SCOUT
-          current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
+        email: {
+          templateVariables: {
+            builder_name: builderNft.builder.displayName,
+            builder_profile_link: `${baseUrl}/u/${builderNft.builder.path}`,
+            cards_purchased: amount,
+            total_purchase_cost: pointsValue,
+            builder_card_image: builderNft.imageUrl,
+            scout_name: scout.displayName,
+            scout_profile_link: `${baseUrl}/u/${scout.path}`,
+            // TODO: use currentPriceInScoutToken when we move to $SCOUT
+            current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
+          }
+        },
+        farcaster: {
+          templateVariables: {
+            scouterName: scout.displayName,
+            scouterPath: scout.path
+          }
         }
       });
     } catch (error) {

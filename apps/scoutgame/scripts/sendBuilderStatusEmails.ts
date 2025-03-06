@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export async function sendBuilderStatusEmails() {
@@ -28,10 +28,9 @@ export async function sendBuilderStatusEmails() {
 
   for (const builder of builders) {
     try {
-      await sendEmailTemplate({
+      await sendEmailNotification({
         userId: builder.id,
-        subject: 'You’re Already Making an Impact in Scout Game! 🎉',
-        templateType: 'builder_status',
+        notificationType: 'builder_status',
         templateVariables: {
           builder_name: builder.displayName,
           builder_card_image: builder.builderNfts[0].imageUrl

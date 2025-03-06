@@ -1,7 +1,8 @@
 import { log } from '@charmverse/core/log';
 import type { PartnerRewardPayout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
+import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
 import { formatUnits } from 'viem';
 
@@ -55,7 +56,7 @@ function formatPartnerRewardPayout(
   return `${html}</ul>`;
 }
 
-export async function sendGemsPayoutEmails({ week }: { week: string }) {
+export async function sendGemsPayoutNotifications({ week }: { week: string }) {
   const scouts = await prisma.scout.findMany({
     where: {
       deletedAt: null
@@ -101,33 +102,41 @@ export async function sendGemsPayoutEmails({ week }: { week: string }) {
     try {
       const { points: weeklyClaimablePoints } = await getClaimablePoints({ userId: scout.id, week });
       if (weeklyClaimablePoints) {
-        await sendEmailTemplate({
+        await sendNotifications({
           userId: scout.id,
-          senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-          subject: `Claim Your Scout Points ${scout.wallets ? '& Partner Rewards' : ''} This Week! 🎉`,
-          templateType: 'weekly_claim',
-          templateVariables: {
-            name: scout.displayName,
-            points: weeklyClaimablePoints,
-            partner_rewards: formatPartnerRewardPayout(
-              'You have also earned these partner rewards this week',
-              scout.wallets
-            )
-          }
+          email: {
+            templateVariables: {
+              name: scout.displayName,
+              points: weeklyClaimablePoints,
+              partner_rewards: formatPartnerRewardPayout(
+                'You have also earned these partner rewards this week',
+                scout.wallets
+              )
+            }
+          },
+          farcaster: {
+            templateVariables: {
+              points: weeklyClaimablePoints
+            }
+          },
+          notificationType: 'weekly_claim'
         });
       } else {
-        await sendEmailTemplate({
+        await sendNotifications({
           userId: scout.id,
-          senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-          templateType: 'zero_weekly_claim',
-          templateVariables: {
-            name: scout.displayName,
-            partner_rewards: formatPartnerRewardPayout(
-              'On the bright side, you have earned these partner rewards this week',
-              scout.wallets
-            )
+          notificationType: 'zero_weekly_claim',
+          email: {
+            templateVariables: {
+              name: scout.displayName,
+              partner_rewards: formatPartnerRewardPayout(
+                'On the bright side, you have earned these partner rewards this week',
+                scout.wallets
+              )
+            }
           },
-          subject: 'No points earned this week? 🤔'
+          farcaster: {
+            templateVariables: undefined
+          }
         });
       }
       totalEmailsSent += 1;

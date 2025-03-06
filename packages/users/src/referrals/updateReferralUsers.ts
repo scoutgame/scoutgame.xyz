@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { baseUrl } from '@packages/utils/constants';
 
@@ -131,11 +131,10 @@ export async function updateReferralUsers(refereeId: string, now = new Date()): 
   );
 
   try {
-    await sendEmailTemplate({
+    await sendEmailNotification({
       userId: referrer.id,
       senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-      subject: 'Someone Joined Scout Game Using Your Referral! 🎉',
-      templateType: 'referral_link_signup',
+      notificationType: 'referral_link_signup',
       templateVariables: {
         name: referrer.displayName,
         scout_name: referee.displayName,

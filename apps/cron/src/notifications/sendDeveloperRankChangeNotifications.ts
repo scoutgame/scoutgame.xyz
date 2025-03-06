@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { baseUrl } from '@packages/utils/constants';
 
 type MessageParams = {
@@ -143,7 +143,7 @@ function formatDevelopersSection(developers: MessageParams[]): string {
 
 const cutoff = 10;
 
-export async function sendDeveloperRankChangeEmails({
+export async function sendDeveloperRankChangeNotifications({
   buildersRanksRecord
 }: {
   buildersRanksRecord: Record<string, (number | null)[]>;
@@ -193,7 +193,7 @@ export async function sendDeveloperRankChangeEmails({
     }
   });
 
-  let emailsSent = 0;
+  let notificationsSent = 0;
 
   for (const scout of scouts) {
     try {
@@ -239,22 +239,25 @@ export async function sendDeveloperRankChangeEmails({
       }
 
       if (developers.length) {
-        await sendEmailTemplate({
-          senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-          subject: 'Your developers are on the move! 🚀',
-          templateType: 'developer_rank_change',
+        await sendNotifications({
+          notificationType: 'developer_rank_change',
           userId: scout.id,
-          templateVariables: {
-            scout_name: scout.displayName,
-            developers_ranks: formatDevelopersSection(developers)
+          email: {
+            templateVariables: {
+              scout_name: scout.displayName,
+              developers_ranks: formatDevelopersSection(developers)
+            }
+          },
+          farcaster: {
+            templateVariables: undefined
           }
         });
-        emailsSent += 1;
+        notificationsSent += 1;
       }
     } catch (error) {
       log.error('Error sending developer rank change email', { error, userId: scout.id });
     }
   }
 
-  return emailsSent;
+  return notificationsSent;
 }

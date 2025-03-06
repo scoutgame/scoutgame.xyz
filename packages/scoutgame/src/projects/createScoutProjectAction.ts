@@ -1,11 +1,13 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { baseUrl } from '@packages/utils/constants';
 import { revalidatePath } from 'next/cache';
+
+import { sendNotifications } from '../notifications/sendNotifications';
 
 import { createScoutProject } from './createScoutProject';
 import { createScoutProjectSchema } from './createScoutProjectSchema';
@@ -29,15 +31,21 @@ export const createScoutProjectAction = authActionClient
       const member = createdScoutProject.members.find((_member) => _member.userId === memberUserId);
       if (member) {
         try {
-          await sendEmailTemplate({
+          await sendNotifications({
             userId: memberUserId,
-            senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>',
-            subject: 'You have been added to a project! 🎉',
-            templateType: 'added_to_project',
-            templateVariables: {
-              builder_name: member.user.displayName,
-              project_name: createdScoutProject.name,
-              project_link: `${baseUrl}/p/${createdScoutProject.path}`
+            notificationType: 'added_to_project',
+            email: {
+              templateVariables: {
+                builder_name: member.user.displayName,
+                project_name: createdScoutProject.name,
+                project_link: `${baseUrl}/p/${createdScoutProject.path}`
+              }
+            },
+            farcaster: {
+              templateVariables: {
+                projectName: createdScoutProject.name,
+                projectPath: createdScoutProject.path
+              }
             }
           });
         } catch (error) {

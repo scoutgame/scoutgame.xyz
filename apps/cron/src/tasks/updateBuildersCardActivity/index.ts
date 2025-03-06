@@ -2,7 +2,7 @@ import { log } from '@charmverse/core/log';
 import type Koa from 'koa';
 import { DateTime } from 'luxon';
 
-import { sendDeveloperRankChangeEmails } from '../../emails/sendDeveloperRankChangeEmails';
+import { sendDeveloperRankChangeEmails } from '../../notifications/sendDeveloperRankChangeEmails';
 
 import { updateBuildersCardActivity } from './updateBuildersCardActivity';
 

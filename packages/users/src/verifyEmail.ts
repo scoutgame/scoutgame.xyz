@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { baseUrl } from '@packages/utils/constants';
@@ -30,11 +30,10 @@ export async function sendVerificationEmail({ userId }: { userId: string }) {
   const code = await createVerificationCode({ email: scout.email, userId });
 
   // Send verification email
-  await sendEmailTemplate({
+  await sendEmailNotification({
     userId,
     senderAddress: `The Scout Game <noreply@mail.scoutgame.xyz>`,
-    subject: 'Verify your email',
-    templateType: 'email_verification',
+    notificationType: 'email_verification',
     templateVariables: {
       verification_url: `${baseUrl}/verify-email?code=${code}`
     },

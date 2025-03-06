@@ -2,10 +2,12 @@
 
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { baseUrl } from '@packages/utils/constants';
 import { revalidatePath } from 'next/cache';
+
+import { sendNotifications } from '../notifications/sendNotifications';
 
 import { updateScoutProject } from './updateScoutProject';
 import { updateScoutProjectSchema } from './updateScoutProjectSchema';
@@ -50,15 +52,21 @@ export const updateScoutProjectAction = authActionClient
       const user = member.user;
 
       try {
-        await sendEmailTemplate({
+        await sendNotifications({
           userId: member.userId,
-          senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>',
-          subject: 'You have been added to a project! 🎉',
-          templateType: 'added_to_project',
-          templateVariables: {
-            builder_name: user.displayName,
-            project_name: updatedProject.name,
-            project_link: `${baseUrl}/p/${updatedProject.path}`
+          notificationType: 'added_to_project',
+          email: {
+            templateVariables: {
+              builder_name: user.displayName,
+              project_name: updatedProject.name,
+              project_link: `${baseUrl}/p/${updatedProject.path}`
+            }
+          },
+          farcaster: {
+            templateVariables: {
+              projectName: updatedProject.name,
+              projectPath: updatedProject.path
+            }
           }
         });
       } catch (error) {
