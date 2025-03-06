@@ -45,7 +45,7 @@ function formatPartnerRewardPayout(
     return '';
   }
 
-  let html = `<p style="margin-top: 5px; font-family: ${fontFamily}; color: ${fontColor};">${openingStatement}:</p><ul>`;
+  let html = `<p style="padding-top: 5px; font-family: ${fontFamily}; color: ${fontColor};">${openingStatement}:</p><ul>`;
   for (const wallet of wallets) {
     for (const payout of wallet.partnerRewardPayouts) {
       const partner = partnerRewardsRecord[payout.payoutContract.partner as keyof typeof partnerRewardsRecord];

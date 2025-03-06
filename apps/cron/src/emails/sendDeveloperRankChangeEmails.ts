@@ -131,8 +131,7 @@ function formatDevelopersSection(developers: MessageParams[]): string {
 
   if (outOfTop10.length > 0) {
     html += `
-      <br />
-      <h3 style="font-family: ${FONT_FAMILY};">💭 Developers who dropped out of the top 10:</h3>
+      <h3 style="font-family: ${FONT_FAMILY}; padding-top: 20px;">💭 Developers who dropped out of the top 10:</h3>
       <ul>
         ${outOfTop10.map((dev) => getRandomMessage(dev)).join('\n')}
       </ul>
