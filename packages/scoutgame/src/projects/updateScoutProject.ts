@@ -1,5 +1,6 @@
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
+import { isSmartContractAddress } from '@packages/blockchain/utils';
 import { isTruthy } from '@packages/utils/types';
 import { verifyMessage } from 'viem';
 
@@ -190,6 +191,11 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
         if (!isValidSignature) {
           throw new Error(`Invalid signature for wallet ${wallet.address}`);
+        }
+
+        const isSmartContract = await isSmartContractAddress(wallet.address as `0x${string}`, wallet.chainId);
+        if (isSmartContract) {
+          throw new Error(`Address ${wallet.address} is a smart contract, not a wallet`);
         }
       }
     }

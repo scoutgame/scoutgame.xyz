@@ -22,7 +22,7 @@ export async function getContractDeployerAddress({
 
   const formattedAddress = getAddress(contractAddress);
 
-  const bytecode = await client.getBytecode({
+  const bytecode = await client.getCode({
     address: formattedAddress
   });
 
@@ -36,7 +36,7 @@ export async function getContractDeployerAddress({
   while (left <= right) {
     const mid = left + (right - left) / BigInt(2);
 
-    const code = await client.getBytecode({
+    const code = await client.getCode({
       address: formattedAddress,
       blockNumber: mid
     });
@@ -44,7 +44,7 @@ export async function getContractDeployerAddress({
     if (!code) {
       left = mid + BigInt(1);
     } else {
-      const prevCode = await client.getBytecode({
+      const prevCode = await client.getCode({
         address: formattedAddress,
         blockNumber: mid - BigInt(1)
       });
