@@ -4,14 +4,14 @@ import { LandingPage } from '../../components/home/LandingPage';
 
 const frame = {
   version: 'next',
-  imageUrl: `https://scoutgame.xyz/images/farcaster/fc_frame.png`,
+  imageUrl: `https://6531-45-125-222-48.ngrok-free.app/images/farcaster/fc_frame.png`,
   button: {
     title: 'Scout',
     action: {
       type: 'launch_frame',
-      name: 'Scout Game',
-      url: `https://scoutgame.xyz`,
-      splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
+      name: 'Scout Game Test',
+      url: `https://6531-45-125-222-48.ngrok-free.app`,
+      splashImageUrl: `https://6531-45-125-222-48.ngrok-free.app/images/farcaster/fc_splash.png`,
       splashBackgroundColor: '#000'
     }
   }

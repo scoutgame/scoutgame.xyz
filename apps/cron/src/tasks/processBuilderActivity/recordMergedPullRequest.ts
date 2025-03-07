@@ -9,7 +9,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { streakWindow } from '@packages/dates/config';
 import { getStartOfWeek, getWeekFromDate, isToday } from '@packages/dates/utils';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
+import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import { isTruthy } from '@packages/utils/types';
@@ -293,10 +295,39 @@ export async function recordMergedPullRequest({
               questTypes.push('contribute-game7-repo');
             } else if (repo.bonusPartner === 'celo') {
               questTypes.push('contribute-celo-repo');
+            } else if (repo.bonusPartner === 'octant') {
+              questTypes.push('contribute-octant-repo');
             }
 
             if (questTypes.length) {
               await completeQuests(githubUser.builderId, questTypes);
+            }
+
+            try {
+              await sendNotifications({
+                userId: githubUser.builderId,
+                notificationType: 'merged_pr_gems',
+                email: {
+                  templateVariables: {
+                    builder_name: githubUser.displayName as string,
+                    pr_title: pullRequest.title,
+                    pr_link: pullRequest.url,
+                    gems_value: gemValue,
+                    partner_rewards:
+                      repo.bonusPartner === 'octant'
+                        ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">75</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/octant">Octant</a></p>`
+                        : ''
+                  }
+                },
+                farcaster: {
+                  templateVariables: {
+                    gems: gemValue,
+                    partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
+                  }
+                }
+              });
+            } catch (error) {
+              log.error('Error sending merged PR gems email to builder', { error, userId: githubUser.builderId });
             }
           } catch (error) {
             log.error('Error completing quest for merged PR', { error, userId: githubUser.builderId, activityType });

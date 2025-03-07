@@ -1,8 +1,13 @@
 'use server';
 
+import { log } from '@charmverse/core/log';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { baseUrl } from '@packages/utils/constants';
 import { revalidatePath } from 'next/cache';
+
+import { sendNotifications } from '../notifications/sendNotifications';
 
 import { createScoutProject } from './createScoutProject';
 import { createScoutProjectSchema } from './createScoutProjectSchema';
@@ -16,6 +21,39 @@ export const createScoutProjectAction = authActionClient
     const userId = ctx.session.scoutId;
 
     const createdScoutProject = await createScoutProject(parsedInput, userId);
+
+    // Find all the project members except the creator
+    const projectMemberUserIds = createdScoutProject.members
+      .map((member) => member.userId)
+      .filter((memberUserId) => memberUserId !== userId);
+
+    for (const memberUserId of projectMemberUserIds) {
+      const member = createdScoutProject.members.find((_member) => _member.userId === memberUserId);
+      if (member) {
+        try {
+          await sendNotifications({
+            userId: memberUserId,
+            notificationType: 'added_to_project',
+            email: {
+              templateVariables: {
+                builder_name: member.user.displayName,
+                project_name: createdScoutProject.name,
+                project_link: `${baseUrl}/p/${createdScoutProject.path}`
+              }
+            },
+            farcaster: {
+              templateVariables: {
+                projectName: createdScoutProject.name,
+                projectPath: createdScoutProject.path
+              }
+            }
+          });
+        } catch (error) {
+          log.error('Error sending added to project email', { error, userId });
+        }
+      }
+    }
+
     trackUserAction('create_project', {
       name: createdScoutProject.name,
       path: createdScoutProject.path,

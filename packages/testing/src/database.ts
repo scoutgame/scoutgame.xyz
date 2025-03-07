@@ -780,6 +780,30 @@ export async function mockBuilderStrike({
   });
 }
 
+export function mockUserSeasonStats({
+  userId,
+  season,
+  nftsPurchased = 1,
+  pointsEarnedAsBuilder = Math.floor(Math.random() * 1000),
+  pointsEarnedAsScout = Math.floor(Math.random() * 1000)
+}: {
+  userId: string;
+  season: string;
+  nftsPurchased?: number;
+  pointsEarnedAsBuilder?: number;
+  pointsEarnedAsScout?: number;
+}) {
+  return prisma.userSeasonStats.create({
+    data: {
+      userId,
+      season,
+      nftsPurchased,
+      pointsEarnedAsBuilder,
+      pointsEarnedAsScout
+    }
+  });
+}
+
 export function mockUserAllTimeStats({
   userId,
   pointsEarnedAsBuilder = Math.floor(Math.random() * 1000),

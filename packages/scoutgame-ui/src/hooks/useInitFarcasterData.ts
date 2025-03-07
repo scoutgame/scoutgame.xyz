@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import sdk from '@farcaster/frame-sdk';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
-import { setNotificationTokenAction } from '@packages/scoutgame/farcaster/setNotificationTokenAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
@@ -17,7 +16,6 @@ export function useInitFarcasterData() {
   const { getNextPageLink } = useLoginSuccessHandler();
   const { refreshUser, user } = useUser();
   const { executeAsync: revalidatePath } = useAction(revalidatePathAction);
-  const { executeAsync: setNotificationToken } = useAction(setNotificationTokenAction);
   const trackEvent = useTrackEvent();
   const { executeAsync: loginUser } = useAction(loginWithWalletAction, {
     onSuccess: async ({ data }) => {
@@ -52,6 +50,7 @@ export function useInitFarcasterData() {
 
         // Immediately signal that the frame is ready and hide the splash screen
         await sdk.actions.ready({});
+
         // If the user is not logged in, auto trigger wallet login
         if (!user) {
           const { signature, message } = await sdk.actions.signIn({
@@ -68,18 +67,7 @@ export function useInitFarcasterData() {
         }
 
         if (!context.client.added) {
-          const result = await sdk.actions.addFrame();
-          if (result.notificationDetails) {
-            await setNotificationToken({
-              notificationToken: result.notificationDetails.token
-            });
-          }
-
-          trackEvent('frame_added');
-        } else if (context.client.notificationDetails) {
-          await setNotificationToken({
-            notificationToken: context.client.notificationDetails.token
-          });
+          await sdk.actions.addFrame();
         }
       } catch (error) {
         log.error('Error initializing farcaster', { error });
@@ -89,5 +77,9 @@ export function useInitFarcasterData() {
     if (sdk) {
       load();
     }
-  }, [user, loginUser, setNotificationToken, trackEvent]);
+
+    return () => {
+      sdk.removeAllListeners();
+    };
+  }, [user, loginUser, trackEvent]);
 }

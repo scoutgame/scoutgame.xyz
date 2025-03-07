@@ -2,12 +2,12 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { mockScout } from '@packages/testing/database';
 
-jest.unstable_mockModule('@packages/mailer/sendEmailTemplate', () => ({
-  sendEmailTemplate: jest.fn()
+jest.unstable_mockModule('@packages/mailer/sendEmailNotification', () => ({
+  sendEmailNotification: jest.fn()
 }));
 
-const { sendVerificationEmail, verifyEmail, InvalidVerificationError } = await import('../verifyEmail');
-const { sendEmailTemplate } = await import('@packages/mailer/sendEmailTemplate');
+const { sendVerificationEmail, verifyEmail } = await import('../verifyEmail');
+const { sendEmailNotification } = await import('@packages/mailer/sendEmailNotification');
 
 describe('verifyEmail', () => {
   beforeEach(() => {
@@ -30,10 +30,10 @@ describe('verifyEmail', () => {
     expect(verification?.completedAt).toBeNull();
 
     // Verify email was sent
-    expect(sendEmailTemplate).toHaveBeenCalledWith(
+    expect(sendEmailNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: scout.id,
-        template: 'email verification'
+        notificationType: 'email_verification'
       })
     );
   });

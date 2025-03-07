@@ -126,6 +126,7 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
     })),
     wallets: scoutProject.wallets.map((wallet) => ({
       ...wallet,
+      chainId: wallet.chainId!,
       // return undefined so we know the data is not available
       txCount: wallet.dailyStats.length
         ? wallet.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)

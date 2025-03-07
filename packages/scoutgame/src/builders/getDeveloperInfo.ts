@@ -23,6 +23,8 @@ export type DeveloperInfo = {
   seasonPoints: number;
   scoutedBy: number;
   cardsSold: number;
+  nftImageUrl: string | null;
+  congratsImageUrl: string | null;
   githubActivities: {
     repo: string;
     owner: string;
@@ -94,7 +96,9 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
         },
         select: {
           estimatedPayout: true,
-          currentPrice: true
+          currentPrice: true,
+          imageUrl: true,
+          congratsImageUrl: true
         }
       },
       events: {
@@ -169,6 +173,8 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
     scoutedBy: developer.userSeasonStats[0]?.nftOwners || 0,
     cardsSold: developer.userSeasonStats[0]?.nftsSold || 0,
+    nftImageUrl: developer.builderNfts[0]?.imageUrl || null,
+    congratsImageUrl: developer.builderNfts[0]?.congratsImageUrl || null,
     githubActivities: developer.events
       .filter((event) => event.githubEvent && event.gemsReceipt)
       .map((event) => ({

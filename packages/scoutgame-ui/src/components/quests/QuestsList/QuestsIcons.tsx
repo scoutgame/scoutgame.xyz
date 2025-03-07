@@ -40,6 +40,7 @@ export const QuestIcon: Record<QuestType, ReactNode> = {
   'first-repo-contribution': BuilderDogIcon,
   'contribute-celo-repo': <Image src='/images/crypto/celo.png' alt='Celo' width={34} height={34} />,
   'contribute-game7-repo': <Image src='/images/crypto/game7.png' alt='Game7' width={34} height={34} />,
+  'contribute-octant-repo': <Image src='/images/logos/octant.png' alt='Octant' width={34} height={34} />,
   'share-builder-profile': BuilderDogIcon,
   // Dynamically added
   'link-farcaster-account': <img src='/images/logos/farcaster.png' alt='Farcaster' width={32.5} height={32.5} />,

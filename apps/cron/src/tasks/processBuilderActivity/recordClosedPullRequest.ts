@@ -2,8 +2,9 @@ import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
+import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { attestBuilderStatusEvent } from '@packages/scoutgameattestations/attestBuilderStatusEvent';
 import { isTruthy } from '@packages/utils/types';
 import { v4 as uuid } from 'uuid';
@@ -192,22 +193,25 @@ export async function recordClosedPullRequest({
         .filter(isTruthy)
         .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
       try {
-        await sendEmailTemplate({
+        await sendNotifications({
           userId: builder.id,
-          senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-          subject: 'Your Scout Game Account Has Been Suspended',
-          template: 'Builder suspended',
-          templateVariables: {
-            builder_name: builder.displayName,
-            repo_1_title: events[0].repo.name,
-            pr_1_link: events[0].url,
-            pr_1_title: events[0].title,
-            repo_2_title: events[1].repo.name,
-            pr_2_link: events[1].url,
-            pr_2_title: events[1].title,
-            repo_3_title: events[2].repo.name,
-            pr_3_link: events[2].url,
-            pr_3_title: events[2].title
+          notificationType: 'builder_suspended',
+          email: {
+            templateVariables: {
+              builder_name: builder.displayName,
+              repo_1_title: events[0].repo.name,
+              pr_1_link: events[0].url,
+              pr_1_title: events[0].title,
+              repo_2_title: events[1].repo.name,
+              pr_2_link: events[1].url,
+              pr_2_title: events[1].title,
+              repo_3_title: events[2].repo.name,
+              pr_3_link: events[2].url,
+              pr_3_title: events[2].title
+            }
+          },
+          farcaster: {
+            templateVariables: undefined
           }
         });
 

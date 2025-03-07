@@ -98,6 +98,8 @@ async function backfillQuestsForBuilders() {
             contributedToGame7Repo = true;
           } else if (bonusPartner === 'lit_protocol') {
             contributedToLitProtocolRepo = true;
+          } else if (bonusPartner === 'octant') {
+            contributedToOctantRepo = true;
           }
         });
 
@@ -128,6 +130,10 @@ async function backfillQuestsForBuilders() {
         questTypes.push('contribute-lit-repo');
       }
 
+      if (contributedToOctantRepo) {
+        questTypes.push('contribute-octant-repo');
+      }
+
       await completeQuests(builder.id, questTypes);
     } catch (error) {
       log.error(`Error recording builder activity quests for builder ${builder.id}`, error);
@@ -135,9 +141,9 @@ async function backfillQuestsForBuilders() {
   }
 }
 
-backfillQuestsForScouts().then(() => {
-  log.info('backfillQuestsForScouts complete');
-});
+// backfillQuestsForScouts().then(() => {
+//   log.info('backfillQuestsForScouts complete');
+// });
 
 backfillQuestsForBuilders().then(() => {
   log.info('backfillQuestsForBuilders complete');

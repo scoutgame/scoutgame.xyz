@@ -195,7 +195,17 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
         id: true,
         path: true,
         name: true,
-        deployers: true
+        deployers: true,
+        members: {
+          select: {
+            userId: true,
+            user: {
+              select: {
+                displayName: true
+              }
+            }
+          }
+        }
       }
     });
 
@@ -242,6 +252,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   return {
     id: project.id,
     path: project.path,
-    name: project.name
+    name: project.name,
+    members: project.members
   };
 }
