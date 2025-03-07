@@ -5,7 +5,7 @@ import { getPointsCountForWeekWithNormalisation } from '@packages/scoutgame/poin
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
-import { sendGemsPayoutEmails } from '../../emails/sendGemsPayoutEmails';
+import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
 
 import { deployNewScoutRewardsContract } from './deployNewScoutRewardsContract';
 import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards';
@@ -77,7 +77,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     })
   ]);
 
-  const emailsSent = await sendGemsPayoutEmails({ week });
+  const notificationsSent = await sendGemsPayoutNotifications({ week });
 
   await prisma.weeklyClaims.upsert({
     where: {
@@ -94,5 +94,5 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     update: {}
   });
 
-  log.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { emailsSent });
+  log.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { notificationsSent });
 }

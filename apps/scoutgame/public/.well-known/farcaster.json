@@ -1,18 +1,18 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjgyODg4OCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDNFNTQzYzAxMzZiYTY2ZTJGYTAxQ2M5NWExODU5Q2FGNDFkYzExQ2UifQ",
-    "payload": "eyJkb21haW4iOiJzY291dGdhbWUueHl6In0",
-    "signature": "MHg5NmIxNDZlNTljZjQ2MDFhNDYzNTljMTRlMDM3YjEwZDI5NWVmMzUxNjFlOWUzZjk2OGEzYTQxMjcwZTAzZWEzNGQ4ZjkyMzEwMTJiMTUwOTRhMTc0MzVmNWRlZmVmZDBiNmRkZDk0N2MxNjAzN2ZiNzlkZjFlOGY4Yjk1NDJlYTFi"
+    "header": "eyJmaWQiOjMxODA2MSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDAzN0U5YzkyNWRhOTUzRkIzYmY0QWVGOURDZkUwNTZkM2ZEODQ1OTIifQ",
+    "payload": "eyJkb21haW4iOiI2NTMxLTQ1LTEyNS0yMjItNDgubmdyb2stZnJlZS5hcHAifQ",
+    "signature": "MHhlODZkNWFhNjk4ZTM3ODY4ZGE5Nzk0NDExMzg4MTQ1ZDNlOGY2MzI0NDU1ZTk2NWNlNTdhMDA2ZDVhOGEyYTY3NmJmYmRiMTg0YzVhNzlkZWJjMWZkOWI4YjAxZjlkNjFhZDFjNmEzY2Y5NTQ5YWNlY2FhNDhjZmMzMDk0ZGU5NDFi"
   },
   "frame": {
     "version": "1",
-    "name": "Scout Game",
-    "iconUrl": "https://scoutgame.xyz/images/farcaster/fc_icon.png",
-    "homeUrl": "https://scoutgame.xyz",
-    "imageUrl": "https://scoutgame.xyz/images/farcaster/fc_frame.png",
+    "name": "Scout Game Test",
+    "iconUrl": "https://6531-45-125-222-48.ngrok-free.app/images/farcaster/fc_icon.png",
+    "homeUrl": "https://6531-45-125-222-48.ngrok-free.app",
+    "imageUrl": "https://6531-45-125-222-48.ngrok-free.app/images/farcaster/fc_frame.png",
     "buttonTitle": "Scout",
-    "splashImageUrl": "https://scoutgame.xyz/images/farcaster/fc_splash.png",
+    "splashImageUrl": "https://6531-45-125-222-48.ngrok-free.app/images/farcaster/fc_splash.png",
     "splashBackgroundColor": "#000",
-    "webhookUrl": "https://scoutgame.xyz/api/farcaster/webhook"
+    "webhookUrl": "https://6531-45-125-222-48.ngrok-free.app/api/farcaster/webhook"
   }
 }

@@ -1,7 +1,9 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { getUser } from '@packages/nextjs/session/getUser';
+
+import { sendNotifications } from '../notifications/sendNotifications';
 
 export async function handleEmailFailedTransaction({
   userId,
@@ -29,16 +31,22 @@ export async function handleEmailFailedTransaction({
       return;
     }
 
-    await sendEmailTemplate({
+    await sendNotifications({
       userId,
-      senderAddress: `The Scout Game <updates@mail.scoutgame.xyz>`,
-      subject: 'Your NFT purchase failed',
-      template: 'nft transaction failed',
-      templateVariables: {
-        name: user?.displayName,
-        tx_hash: pendingTx.sourceChainTxHash,
-        error_message: errorMessage,
-        wallet_address: pendingTx.senderAddress
+      notificationType: 'nft_transaction_failed',
+      email: {
+        templateVariables: {
+          name: user?.displayName,
+          tx_hash: pendingTx.sourceChainTxHash,
+          error_message: errorMessage,
+          wallet_address: pendingTx.senderAddress
+        }
+      },
+      farcaster: {
+        templateVariables: {
+          builderName: user.displayName,
+          builderPath: user.path
+        }
       }
     });
 

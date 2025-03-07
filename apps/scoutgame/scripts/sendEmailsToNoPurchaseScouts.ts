@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailTemplate } from '@packages/mailer/sendEmailTemplate';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export async function sendEmailsToNoPurchaseScouts() {
@@ -22,10 +22,9 @@ export async function sendEmailsToNoPurchaseScouts() {
 
   for (const scout of nonPurchasingScouts) {
     try {
-      await sendEmailTemplate({
+      await sendEmailNotification({
         userId: scout.id,
-        subject: 'Ready to Start Your Scout Game Journey?',
-        template: 'no purchased cards by user',
+        notificationType: 'no_purchased_cards_by_user',
         templateVariables: {
           name: scout.displayName
         },

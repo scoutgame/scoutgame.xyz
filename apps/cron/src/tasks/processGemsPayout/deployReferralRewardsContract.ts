@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
-import type { DateTime } from 'luxon';
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
