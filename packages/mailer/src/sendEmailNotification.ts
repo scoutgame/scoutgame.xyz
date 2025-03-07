@@ -169,14 +169,14 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
 
   if (!client) {
     log.debug('No mailgun client, not sending email');
-    return;
+    return false;
   }
 
   const template = NotificationTypesRecord[notificationType];
 
   if (!template) {
     log.debug('Invalid template type, not sending email', { userId, notificationType });
-    return;
+    return false;
   }
 
   const user = await prisma.scout.findUniqueOrThrow({
@@ -193,12 +193,12 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
 
   if (!user.email) {
     log.debug('User does not have an email, not sending email', { userId, template });
-    return;
+    return false;
   }
 
   if (!user.sendTransactionEmails && !overrideUserSendingPreference) {
     log.debug('User does not want to receive any emails, not sending email', { userId, template });
-    return;
+    return false;
   }
 
   const recipientAddress = user.displayName ? `${user.displayName} <${user.email}>` : user.email;
@@ -221,11 +221,13 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
     }
   });
 
-  return client?.messages.create(DOMAIN, {
+  const message = await client?.messages.create(DOMAIN, {
     from: senderAddress,
     to: recipientAddress,
     subject,
     template: template.template,
     't:variables': templateVariables
   });
+
+  return message !== null;
 }

@@ -110,7 +110,7 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
 
   if (!notification) {
     log.debug('Invalid notification type, not sending farcaster notification', { userId, notificationType });
-    return;
+    return false;
   }
 
   const user = await prisma.scout.findUniqueOrThrow({
@@ -126,17 +126,17 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
 
   if (!user.farcasterId) {
     log.debug('User has no farcaster id, not sending farcaster notification', { userId });
-    return;
+    return false;
   }
 
   if (!user.sendFarcasterNotification) {
     log.debug('User has no farcaster notification preference, not sending farcaster notification', { userId });
-    return;
+    return false;
   }
 
   if (!user.framesNotificationToken) {
     log.debug('User has no frames notification token, not sending farcaster notification', { userId });
-    return;
+    return false;
   }
 
   const body =
@@ -185,7 +185,7 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
 
   if (data.result.rateLimitedTokens.includes(user.framesNotificationToken)) {
     log.debug('Rate limited when sending farcaster notification', { userId });
-    return;
+    return false;
   }
 
   // The token is not valid anymore, so we need to remove it
@@ -199,7 +199,7 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
       }
     });
     log.debug('Invalid frames notification token', { userId });
-    return;
+    return false;
   }
 
   await prisma.scoutFarcasterNotification.create({
@@ -215,4 +215,6 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
       }
     }
   });
+
+  return true;
 }

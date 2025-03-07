@@ -144,12 +144,12 @@ function formatDevelopersSection(developers: MessageParams[]): string {
 const cutoff = 10;
 
 export async function sendDeveloperRankChangeNotifications({
-  buildersRanksRecord
+  buildersRanksRecord,
+  currentSeason = getCurrentSeasonStart()
 }: {
+  currentSeason?: string;
   buildersRanksRecord: Record<string, (number | null)[]>;
 }) {
-  const currentSeason = getCurrentSeasonStart();
-
   const scouts = await prisma.scout.findMany({
     where: {
       userSeasonStats: {
@@ -157,6 +157,18 @@ export async function sendDeveloperRankChangeNotifications({
           season: currentSeason,
           nftsPurchased: {
             gt: 0
+          }
+        }
+      },
+      wallets: {
+        some: {
+          scoutedNfts: {
+            some: {
+              builderNft: {
+                season: currentSeason,
+                nftType: 'default'
+              }
+            }
           }
         }
       }
@@ -170,7 +182,6 @@ export async function sendDeveloperRankChangeNotifications({
             where: {
               builderNft: {
                 season: currentSeason,
-                // Only sending emails for default NFTs since starter packs can get noisy
                 nftType: 'default'
               }
             },
@@ -197,64 +208,83 @@ export async function sendDeveloperRankChangeNotifications({
 
   for (const scout of scouts) {
     try {
-      const developers: {
+      const scoutedDevelopers: {
         builderId: string;
         previousRank: number | null;
         currentRank: number;
         path: string;
         displayName: string;
       }[] = [];
-      for (const wallet of scout.wallets) {
-        for (const scoutedNft of wallet.scoutedNfts) {
-          const builderId = scoutedNft.builderNft.builder.id;
 
-          const builderLast2DaysRanks = buildersRanksRecord[builderId]?.slice(-2);
+      const scoutedNfts = scout.wallets.flatMap((wallet) => wallet.scoutedNfts);
 
-          // Continue if we don't know whether the builder rank changed from yesterday
-          if (builderLast2DaysRanks.length !== 2) {
-            continue;
-          }
+      if (scoutedNfts.length === 0) {
+        continue;
+      }
 
-          const [previousRank, currentRank] = builderLast2DaysRanks;
-          if (previousRank && currentRank && previousRank <= cutoff && currentRank > cutoff) {
-            // Builder moved out of top 10 today
-            developers.push({
-              builderId,
-              previousRank,
-              currentRank,
-              path: scoutedNft.builderNft.builder.path,
-              displayName: scoutedNft.builderNft.builder.displayName
-            });
-          } else if ((previousRank === null || previousRank > cutoff) && currentRank && currentRank <= cutoff) {
-            // Builder moved into top 10 today
-            developers.push({
-              builderId,
-              previousRank,
-              currentRank,
-              path: scoutedNft.builderNft.builder.path,
-              displayName: scoutedNft.builderNft.builder.displayName
-            });
-          }
+      // Multiple wallets might have scouted the same developer, so we need to deduplicate
+      const developerIdsSet = new Set<string>();
+
+      for (const scoutedNft of scoutedNfts) {
+        const builderId = scoutedNft.builderNft.builder.id;
+
+        if (developerIdsSet.has(builderId)) {
+          continue;
+        }
+
+        const builderRanks = buildersRanksRecord[builderId];
+
+        if (!builderRanks || builderRanks.length !== 2) {
+          continue;
+        }
+
+        const [previousRank, currentRank] = builderRanks;
+
+        if (currentRank && currentRank <= cutoff && (previousRank === null || previousRank > cutoff)) {
+          scoutedDevelopers.push({
+            builderId,
+            previousRank,
+            currentRank,
+            path: scoutedNft.builderNft.builder.path,
+            displayName: scoutedNft.builderNft.builder.displayName
+          });
+
+          developerIdsSet.add(builderId);
+        } else if (previousRank && previousRank <= cutoff && currentRank && currentRank > cutoff) {
+          scoutedDevelopers.push({
+            builderId,
+            previousRank,
+            currentRank,
+            path: scoutedNft.builderNft.builder.path,
+            displayName: scoutedNft.builderNft.builder.displayName
+          });
+
+          developerIdsSet.add(builderId);
         }
       }
 
-      if (developers.length) {
-        notificationsSent += await sendNotifications({
-          notificationType: 'developer_rank_change',
-          userId: scout.id,
-          email: {
-            templateVariables: {
-              scout_name: scout.displayName,
-              developers_ranks: formatDevelopersSection(developers)
+      if (scoutedDevelopers.length > 0) {
+        try {
+          const sent = await sendNotifications({
+            notificationType: 'developer_rank_change',
+            userId: scout.id,
+            email: {
+              templateVariables: {
+                scout_name: scout.displayName,
+                developers_ranks: formatDevelopersSection(scoutedDevelopers)
+              }
+            },
+            farcaster: {
+              templateVariables: undefined
             }
-          },
-          farcaster: {
-            templateVariables: undefined
-          }
-        });
+          });
+          notificationsSent += sent;
+        } catch (error) {
+          log.error('Error sending developer rank change notification', { error, userId: scout.id });
+        }
       }
     } catch (error) {
-      log.error('Error sending developer rank change email', { error, userId: scout.id });
+      log.error('Error processing scout for rank changes', { error, userId: scout.id });
     }
   }
 

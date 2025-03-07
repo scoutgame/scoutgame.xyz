@@ -35,13 +35,13 @@ export async function sendNotifications<T extends NotificationTypes>({
 
   if (email) {
     try {
-      await sendEmailNotification({
+      const sent = await sendEmailNotification({
         senderAddress: 'The Scout Game <updates@mail.scoutgame.xyz>',
         notificationType,
         userId,
         templateVariables: email.templateVariables
       });
-      notificationsSent += 1;
+      notificationsSent += sent ? 1 : 0;
     } catch (error) {
       log.error('Error sending email notification', { error, userId, notificationType });
     }
@@ -49,12 +49,12 @@ export async function sendNotifications<T extends NotificationTypes>({
 
   if (farcaster) {
     try {
-      await sendFarcasterNotification({
+      const sent = await sendFarcasterNotification({
         userId,
         notificationType,
         notificationVariables: farcaster.templateVariables
       });
-      notificationsSent += 1;
+      notificationsSent += sent ? 1 : 0;
     } catch (error) {
       log.error('Error sending farcaster notification', { error, userId, notificationType });
     }
