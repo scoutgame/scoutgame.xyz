@@ -31,6 +31,7 @@ export type ScoutProjectDetailed = Pick<
     chainType: 'evm' | 'solana' | null;
     txCount?: number;
   }[];
+  totalTxCount?: number;
 };
 
 // TODO: Add week to the data model?
@@ -109,6 +110,10 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
   if (!scoutProject) {
     return null;
   }
+  const allDailyStats = [
+    ...scoutProject.contracts.flatMap((contract) => contract.dailyStats),
+    ...scoutProject.wallets.flatMap((wallet) => wallet.dailyStats)
+  ];
 
   return {
     ...scoutProject,
@@ -132,6 +137,8 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
       displayName: member.user.displayName,
       role: member.role,
       path: member.user.path
-    }))
+    })),
+    // return undefined so we know the data is not available
+    totalTxCount: allDailyStats.length ? allDailyStats.reduce((acc, curr) => acc + curr.transactions, 0) : undefined
   };
 }

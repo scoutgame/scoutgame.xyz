@@ -1,7 +1,7 @@
 import { stringUtils } from '@charmverse/core/utilities';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
-import { Box, Chip, Container, Stack, Typography } from '@mui/material';
+import { IconButton, Box, Chip, Container, Stack, Typography, Tooltip } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -45,6 +45,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             md: 1
           }}
           borderRadius={1}
+          position='relative'
         >
           <BackButton />
           <Image
@@ -72,9 +73,21 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             </Stack>
             <Typography sx={{ whiteSpace: 'pre-wrap' }}>{project.description}</Typography>
           </Stack>
-          <Box sx={{ alignSelf: 'flex-start' }}>
-            <EditProjectIcon path={project.path} teamMembers={project.teamMembers} />
-          </Box>
+          {typeof project.totalTxCount === 'number' && (
+            <Stack justifyContent='center' alignItems='center' flex={1}>
+              <Typography color='secondary' width='100px' align='center' variant='body2'>
+                Current Week Transactions
+              </Typography>
+              <Typography fontSize='2em'>{project.totalTxCount?.toLocaleString()} tx</Typography>
+            </Stack>
+          )}
+          <Tooltip title='Edit project'>
+            <Box sx={{ position: 'absolute', top: 5, right: 5 }}>
+              <IconButton>
+                <EditProjectIcon path={project.path} teamMembers={project.teamMembers} />
+              </IconButton>
+            </Box>
+          </Tooltip>
         </Stack>
         <Stack gap={1}>
           <Stack flexDirection='row' alignItems='center'>
