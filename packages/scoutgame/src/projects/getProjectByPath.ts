@@ -69,6 +69,10 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
 
   return {
     ...scoutProject,
+    wallets: scoutProject.wallets.map((wallet) => ({
+      ...wallet,
+      chainId: wallet.chainId!
+    })),
     teamMembers: scoutProject.members.map((member) => ({
       id: member.user.id,
       avatar: member.user.avatar ?? '',
