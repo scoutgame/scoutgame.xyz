@@ -19,6 +19,7 @@ type Variables = {
     partner_rewards: string;
     week_num: number;
     season: string;
+    new_developers: string;
   };
   builder_suspended: {
     builder_name: string;
