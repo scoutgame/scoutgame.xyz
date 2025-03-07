@@ -29,7 +29,8 @@ describe('processWalletTransactions', () => {
         address: uuid() as Address,
         createdBy: scout.id,
         chainId: 167009,
-        projectId: project.id
+        projectId: project.id,
+        chainType: 'evm'
       }
     });
 
@@ -102,7 +103,8 @@ describe('processWalletTransactions', () => {
         address: uuid(),
         createdBy: scout.id,
         chainId: 167009,
-        projectId: project.id
+        projectId: project.id,
+        chainType: 'evm'
       }
     });
 
@@ -144,7 +146,8 @@ describe('processWalletTransactions', () => {
         address: uuid() as Address,
         createdBy: scout.id,
         chainId: 167009,
-        projectId: project.id
+        projectId: project.id,
+        chainType: 'evm'
       }
     });
 
