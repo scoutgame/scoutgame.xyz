@@ -56,7 +56,6 @@ import { useAccount, useSwitchChain } from 'wagmi';
 import { useUserWalletAddress } from '../../../../hooks/api/session';
 import { useTrackEvent } from '../../../../hooks/useTrackEvent';
 import { usePurchase } from '../../../../providers/PurchaseProvider';
-import { useSnackbar } from '../../../../providers/SnackbarContext';
 import { useUser } from '../../../../providers/UserProvider';
 import { IconButton } from '../../Button/IconButton';
 import { PointsIcon } from '../../Icons';
