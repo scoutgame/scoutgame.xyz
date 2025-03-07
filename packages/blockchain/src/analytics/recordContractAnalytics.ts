@@ -65,6 +65,21 @@ export async function recordContractAnalytics(
           endDate
         });
 
+  // create metrics for missing dates that are within the range
+  for (let date = startDate; date <= endDate; date.setDate(date.getDate() + 1)) {
+    const day = DateTime.fromJSDate(date).toUTC().startOf('day').toJSDate();
+    if (metrics.some((m) => m.day.getTime() === day.getTime())) {
+      continue;
+    }
+    metrics.push({
+      day,
+      transactions: 0,
+      accounts: 0,
+      gasFees: '0'
+    });
+  }
+  metrics.sort((a, b) => a.day.getTime() - b.day.getTime());
+
   // create metrics if they dont exist
   const newMetrics = metrics.filter((m) => !existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));
   await prisma.scoutProjectContractDailyStats.createMany({
