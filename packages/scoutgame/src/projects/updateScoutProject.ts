@@ -1,9 +1,11 @@
+import { log } from '@charmverse/core/log';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import { isSmartContractAddress } from '@packages/blockchain/utils';
 import { isTruthy } from '@packages/utils/types';
 import { verifyMessage } from 'viem';
 
+import { backfillAnalytics } from './backfillAnalytics';
 import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { UpdateScoutProjectFormValues } from './updateScoutProjectSchema';
 
@@ -113,7 +115,6 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   const walletAddressesToRemove = projectWalletAddresses.filter(
     (address) => !projectPayloadWalletAddresses.includes(address)
   );
-
   const projectMemberIdsToCreate = projectPayloadMemberIds.filter((scoutId) => !projectMemberIds.includes(scoutId));
 
   const projectMemberIdsToRemove = projectMemberIds.filter((scoutId) => !projectPayloadMemberIds.includes(scoutId));
@@ -140,87 +141,61 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const retainedProjectMemberIds = projectMemberIds.filter((scoutId) => projectPayloadMemberIds.includes(scoutId));
 
-  const builderMemberIds = [...retainedProjectMemberIds, ...projectMemberIdsToRestore, ...projectMemberIdsToCreate];
-
-  const builderMembersCount = await prisma.scout.count({
-    where: {
-      id: {
-        in: builderMemberIds
-      },
-      OR: [
-        {
-          builderStatus: 'approved'
-        },
-        {
-          utmCampaign: 'taiko'
-        }
-      ]
-    }
-  });
-
-  if (builderMembersCount !== builderMemberIds.length) {
-    throw new Error('All project members must be builders');
-  }
-
-  if (deployerAddressesToCreate.length) {
-    for (const deployerAddress of deployerAddressesToCreate) {
-      const deployer = payload.deployers.find((_deployer) => _deployer.address === deployerAddress);
-      if (deployer) {
-        const isValidSignature = await verifyMessage({
-          message: CONTRACT_DEPLOYER_SIGN_MESSAGE,
-          signature: deployer.signature as `0x${string}`,
-          address: deployer.address as `0x${string}`
-        });
-        if (!isValidSignature) {
-          throw new Error(`Invalid signature for deployer ${deployer.address}`);
-        }
+  for (const deployerAddress of deployerAddressesToCreate) {
+    const deployer = payload.deployers.find((_deployer) => _deployer.address === deployerAddress);
+    if (deployer) {
+      const isValidSignature = await verifyMessage({
+        message: CONTRACT_DEPLOYER_SIGN_MESSAGE,
+        signature: deployer.signature as `0x${string}`,
+        address: deployer.address as `0x${string}`
+      });
+      if (!isValidSignature) {
+        throw new Error(`Invalid signature for deployer ${deployer.address}`);
       }
     }
   }
 
-  if (walletAddressesToCreate.length) {
-    for (const walletAddress of walletAddressesToCreate) {
-      const wallet = payload.wallets.find((_wallet) => _wallet.address === walletAddress.address);
+  for (const walletAddress of walletAddressesToCreate) {
+    const wallet = payload.wallets.find((_wallet) => _wallet.address === walletAddress.address);
 
-      if (wallet) {
-        const isValidSignature = await verifyMessage({
-          message: AGENT_WALLET_SIGN_MESSAGE,
-          signature: wallet.signature as `0x${string}`,
-          address: wallet.address as `0x${string}`
-        });
+    if (wallet) {
+      const isValidSignature = await verifyMessage({
+        message: AGENT_WALLET_SIGN_MESSAGE,
+        signature: wallet.signature as `0x${string}`,
+        address: wallet.address as `0x${string}`
+      });
 
-        if (!isValidSignature) {
-          throw new Error(`Invalid signature for wallet ${wallet.address}`);
-        }
-
-        const isSmartContract = await isSmartContractAddress(wallet.address as `0x${string}`, wallet.chainId);
-        if (isSmartContract) {
-          throw new Error(`Address ${wallet.address} is a smart contract, not a wallet`);
-        }
+      if (!isValidSignature) {
+        throw new Error(`Invalid signature for wallet ${wallet.address}`);
       }
+
+      const isSmartContract = await isSmartContractAddress(wallet.address as `0x${string}`, wallet.chainId);
+      if (isSmartContract) {
+        throw new Error(`Address ${wallet.address} is a smart contract, not a wallet`);
+      }
+    } else {
+      log.error(`Wallet ${walletAddress} not found in payload`);
     }
   }
 
-  if (contractAddressesToCreate.length) {
-    for (const contractAddress of contractAddressesToCreate) {
-      const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
-      if (contract) {
-        const { transaction, block } = await getContractDeployerAddress({
-          contractAddress: contract.address,
-          chainId: contract.chainId
-        });
-        contractTransactionRecord[contract.address] = {
-          chainId: contract.chainId,
-          txHash: transaction.hash,
-          blockNumber: Number(block.number),
-          blockTimestamp: Number(block.timestamp),
-          deployerAddress: transaction.from
-        };
-        if (contract.deployerAddress !== transaction.from) {
-          throw new Error(
-            `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
-          );
-        }
+  for (const contractAddress of contractAddressesToCreate) {
+    const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
+    if (contract) {
+      const { transaction, block } = await getContractDeployerAddress({
+        contractAddress: contract.address,
+        chainId: contract.chainId
+      });
+      contractTransactionRecord[contract.address] = {
+        chainId: contract.chainId,
+        txHash: transaction.hash,
+        blockNumber: Number(block.number),
+        blockTimestamp: Number(block.timestamp),
+        deployerAddress: transaction.from
+      };
+      if (contract.deployerAddress !== transaction.from) {
+        throw new Error(
+          `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
+        );
       }
     }
   }
@@ -355,6 +330,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
           projectId: _updatedProject.id,
           createdBy: userId,
           chainId: wallet.chainId,
+          chainType: 'evm',
           verifiedBy: userId,
           verifiedAt: new Date()
         }))
@@ -410,6 +386,22 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
 
     return _updatedProject;
+  });
+
+  // backfill analytics for contracts and wallets
+  backfillAnalytics({
+    contracts: contractAddressesToCreate.map((address) => ({
+      address,
+      chainId: contractTransactionRecord[address].chainId
+    })),
+    wallets: walletAddressesToCreate,
+    userId
+  }).catch((error) => {
+    log.error('Error backfilling analytics for project', {
+      contracts: contractAddressesToCreate,
+      wallets: walletAddressesToCreate,
+      error
+    });
   });
 
   return updatedProject;

@@ -12,6 +12,7 @@ import { isTruthy } from '@packages/utils/types';
 import sharp from 'sharp';
 import { verifyMessage } from 'viem';
 
+import { backfillAnalytics } from './backfillAnalytics';
 import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { CreateScoutProjectFormValues } from './createScoutProjectSchema';
 import { generateProjectPath } from './generateProjectPath';
@@ -140,9 +141,9 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     }
   });
 
-  if (builderMembersCount !== payload.teamMembers.length) {
-    throw new Error('All project members must be approved builders');
-  }
+  // if (builderMembersCount !== payload.teamMembers.length) {
+  //   throw new Error('All project members must be approved builders');
+  // }
 
   const project = await prisma.$transaction(async (tx) => {
     const scoutProject = await tx.scoutProject.create({
@@ -181,6 +182,7 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
                   data: payload.wallets.map((wallet) => ({
                     address: wallet.address,
                     chainId: wallet.chainId,
+                    chainType: 'evm',
                     verifiedBy: userId,
                     verifiedAt: new Date(),
                     createdBy: userId
@@ -234,6 +236,17 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     }
 
     return scoutProject;
+  });
+
+  backfillAnalytics({
+    contracts: payload.contracts?.map((contract) => ({
+      address: contract.address,
+      chainId: contract.chainId
+    })),
+    wallets: payload.wallets,
+    userId
+  }).catch((error) => {
+    log.error('Error backfilling analytics for project during', { error });
   });
 
   return {

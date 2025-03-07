@@ -1,7 +1,10 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { recordContractAnalyticsForWeek } from '@packages/blockchain/analytics/recordContractAnalytics';
+import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getCurrentWeek } from '@packages/dates/utils';
 import type Koa from 'koa';
 import memoize from 'lodash.memoize'; //
 import type { Address } from 'viem';
@@ -25,7 +28,7 @@ const getBlockByDateMemoized = memoize(
 
 export async function processBuilderOnchainActivity(
   ctx: Koa.Context,
-  { contractIds }: { contractIds?: string[] } = {}
+  { contractIds, week = getCurrentWeek() }: { contractIds?: string[]; week?: string } = {}
 ) {
   // look back 30 days
   const windowStart = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30);
@@ -72,6 +75,9 @@ export async function processBuilderOnchainActivity(
       });
 
       const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);
+
+      await recordContractAnalyticsForWeek(contract, week);
+
       log.info(
         `Processed contract ${contract.address} from block ${fromBlock} to ${latestBlock} in ${durationMins} minutes`
       );
@@ -84,8 +90,14 @@ export async function processBuilderOnchainActivity(
     }
   }
 
-  const wallets = await prisma.scoutProjectWallet.findMany();
-  log.info(`Analyzing interactions for ${wallets.length} wallets...`, { windowStart });
+  const wallets = await prisma.scoutProjectWallet.findMany({
+    where: {
+      chainId: {
+        in: [taiko.id, taikoTestnetSepolia.id]
+      }
+    }
+  });
+  log.info(`Retrieving transactions for ${wallets.length} wallets on taiko...`, { windowStart });
 
   for (const wallet of wallets) {
     try {
@@ -116,6 +128,9 @@ export async function processBuilderOnchainActivity(
       });
 
       const durationMins = ((Date.now() - pollStart) / 1000 / 60).toFixed(2);
+
+      await recordWalletAnalyticsForWeek(wallet, week);
+
       log.info(
         `Processed wallet ${wallet.address} from block ${fromBlock} to ${latestBlock} in ${durationMins} minutes`
       );

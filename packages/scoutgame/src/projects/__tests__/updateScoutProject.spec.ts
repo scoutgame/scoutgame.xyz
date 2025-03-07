@@ -148,30 +148,6 @@ describe('updateScoutProject', () => {
     );
   });
 
-  it('should throw an error if any team member is not an approved builder', async () => {
-    const owner = await mockBuilder();
-    const builder = await mockBuilder();
-    const bannedBuilder = await mockBuilder({ builderStatus: 'banned' });
-    const project = await mockScoutProject({ userId: owner.id });
-
-    await expect(
-      updateScoutProject(
-        {
-          projectId: project.id,
-          teamMembers: [
-            { displayName: 'Owner', scoutId: owner.id, role: 'owner' },
-            { displayName: 'Builder', scoutId: builder.id, role: 'member' },
-            { displayName: 'Banned', scoutId: bannedBuilder.id, role: 'member' }
-          ],
-          contracts: [],
-          deployers: [],
-          wallets: []
-        },
-        owner.id
-      )
-    ).rejects.toThrow('All project members must be builders');
-  });
-
   it('should successfully change project owner', async () => {
     const owner = await mockBuilder();
     const newOwner = await mockBuilder();

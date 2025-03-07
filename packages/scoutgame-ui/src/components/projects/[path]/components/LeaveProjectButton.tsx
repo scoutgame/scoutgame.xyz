@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Stack, Typography } from '@mui/material';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import { leaveProjectAction } from '@packages/scoutgame/projects/leaveProjectAction';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';

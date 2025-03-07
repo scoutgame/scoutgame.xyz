@@ -22,6 +22,7 @@
     "@hookform/resolvers": "^3.6.0",
     "@mui/lab": "^6.0.0-beta.10",
     "@packages/dates": "^0.0.0",
+    "@packages/dune": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
     "@packages/github": "^0.0.0",
     "@packages/mailer": "^0.0.0",

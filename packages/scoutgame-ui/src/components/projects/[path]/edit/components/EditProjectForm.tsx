@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import { updateScoutProjectAction } from '@packages/scoutgame/projects/updateScoutProjectAction';
 import { updateScoutProjectSchema } from '@packages/scoutgame/projects/updateScoutProjectSchema';
 import { useRouter } from 'next/navigation';
@@ -51,11 +51,19 @@ export function EditProjectForm({ project }: { project: ScoutProjectDetailed }) 
         address: deployer.address,
         verified: deployer.verified
       })),
-      wallets: project.wallets.map((wallet) => ({
-        address: wallet.address,
-        chainId: wallet.chainId,
-        verified: true
-      }))
+      solanaWallets: project.wallets
+        .filter((w) => w.chainType === 'solana')
+        .map((wallet) => ({
+          address: wallet.address,
+          verified: true
+        })),
+      wallets: project.wallets
+        .filter((w) => !w.chainType || w.chainType === 'evm')
+        .map((wallet) => ({
+          address: wallet.address,
+          chainId: wallet.chainId!,
+          verified: true
+        }))
     }
   });
 

@@ -7,7 +7,7 @@ import { CreateProjectForm } from './components/CreateProjectForm';
 
 export function CreateProjectPage({ user }: { user: SessionUser }) {
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth='md'>
       <Stack my={4} gap={1}>
         <Typography variant='h4' color='secondary' fontWeight={600}>
           Create a project

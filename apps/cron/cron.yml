@@ -55,3 +55,8 @@ cron:
     url: '/process-builder-onchain-activity'
     # every hour
     schedule: '0 * * * *'
+
+  - name: 'process-dune-analytics'
+    url: '/process-dune-analytics'
+    # every hour
+    schedule: '0 * * * *'

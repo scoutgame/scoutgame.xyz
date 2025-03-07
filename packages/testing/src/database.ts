@@ -903,7 +903,7 @@ export async function mockScoutProject({
       },
       wallets: {
         createMany: {
-          data: wallets.map((address) => ({ address, chainId, createdBy }))
+          data: wallets.map((address) => ({ address, chainId, createdBy, chainType: 'evm' }))
         }
       }
     },

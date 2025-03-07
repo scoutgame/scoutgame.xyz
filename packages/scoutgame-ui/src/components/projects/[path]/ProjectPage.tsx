@@ -1,12 +1,13 @@
 import { stringUtils } from '@charmverse/core/utilities';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
-import { Box, Chip, Container, Stack, Typography } from '@mui/material';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import { IconButton, Box, Chip, Container, Stack, Typography, Tooltip } from '@mui/material';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { BackButton } from '../../common/Button/BackButton';
+import { WalletAddress } from '../../common/WalletAddress';
 import { chainRecords } from '../constants';
 
 import { EditProjectIcon } from './components/EditProjectIcon';
@@ -14,8 +15,15 @@ import { LeaveProjectButton } from './components/LeaveProjectButton';
 import { ProjectPageMember } from './components/ProjectPageMember';
 
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
+  const contractsAndAgentWallets = [
+    ...project.contracts.map((contract) => ({ ...contract, type: 'contract' })),
+    ...project.wallets
+      .filter((w) => w.chainType === 'evm' || !w.chainType)
+      .map((wallet) => ({ ...wallet, type: 'agent' }))
+  ];
+
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth='md'>
       <Stack my={4} gap={2}>
         <Typography variant='h4' color='secondary' fontWeight={600}>
           Projects
@@ -37,6 +45,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             md: 1
           }}
           borderRadius={1}
+          position='relative'
         >
           <BackButton />
           <Image
@@ -64,45 +73,66 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             </Stack>
             <Typography sx={{ whiteSpace: 'pre-wrap' }}>{project.description}</Typography>
           </Stack>
-          <Box sx={{ alignSelf: 'flex-start' }}>
-            <EditProjectIcon path={project.path} teamMembers={project.teamMembers} />
-          </Box>
+          {typeof project.totalTxCount === 'number' && (
+            <Stack justifyContent='center' alignItems='center' flex={1}>
+              <Typography color='secondary' width='100px' align='center' variant='body2'>
+                Current Week Transactions
+              </Typography>
+              <Typography fontSize='2em'>{project.totalTxCount?.toLocaleString()} tx</Typography>
+            </Stack>
+          )}
+          <Tooltip title='Edit project'>
+            <Box sx={{ position: 'absolute', top: 5, right: 5 }}>
+              <IconButton>
+                <EditProjectIcon path={project.path} teamMembers={project.teamMembers} />
+              </IconButton>
+            </Box>
+          </Tooltip>
         </Stack>
         <Stack gap={1}>
-          <Typography color='secondary' variant='h6'>
-            dApps & Agent Wallets
-          </Typography>
-          <Stack gap={1}>
-            {project.contracts.length === 0 && project.wallets.length === 0 ? (
-              <Typography>No contracts or agent wallets added</Typography>
-            ) : (
-              [
-                ...project.contracts.map((contract) => ({ ...contract, type: 'contract' })),
-                ...project.wallets.map((wallet) => ({ ...wallet, type: 'agent' }))
-              ].map((contract) => (
-                <Stack
-                  key={contract.address}
-                  flexDirection='row'
-                  alignItems='center'
-                  gap={1}
-                  bgcolor='background.paper'
-                  px={1.5}
-                  py={1}
-                  borderRadius={1}
-                >
+          <Stack flexDirection='row' alignItems='center'>
+            <Typography color='secondary' variant='h6' sx={{ flexGrow: 1 }}>
+              dApps & Agent Wallets
+            </Typography>
+            <Box width={100} textAlign='center'>
+              <Typography color='secondary'>Tx count</Typography>
+            </Box>
+          </Stack>
+          {contractsAndAgentWallets.length === 0 ? (
+            <Typography>No contracts or agent wallets added</Typography>
+          ) : (
+            contractsAndAgentWallets.map((contract) => (
+              <Stack
+                key={contract.address}
+                flexDirection='row'
+                alignItems='center'
+                bgcolor='background.paper'
+                pl={1.5}
+                py={1}
+                borderRadius={1}
+              >
+                <Stack gap={2} flexDirection='row' alignItems='center' flexGrow={1}>
                   <Image
-                    src={chainRecords[contract.chainId].image}
-                    alt={chainRecords[contract.chainId].name}
-                    width={20}
-                    height={20}
+                    src={chainRecords[contract.chainId!].image}
+                    alt={chainRecords[contract.chainId!].name}
+                    width={36}
+                    height={36}
                     style={{ borderRadius: '50%' }}
                   />
-                  <Typography>{stringUtils.shortenHex(contract.address)}</Typography>
+                  <WalletAddress address={contract.address} chainId={contract.chainId!} />
                   <Chip label={contract.type} size='small' color='primary' variant='outlined' />
                 </Stack>
-              ))
-            )}
-          </Stack>
+
+                <Box width={100} textAlign='center'>
+                  {typeof contract.txCount === 'number' ? (
+                    <Typography>{contract.txCount} txs</Typography>
+                  ) : (
+                    <Typography color='grey'>N/A</Typography>
+                  )}
+                </Box>
+              </Stack>
+            ))
+          )}
         </Stack>
         <Stack gap={1}>
           <Typography color='secondary' variant='h6'>

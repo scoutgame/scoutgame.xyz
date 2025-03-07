@@ -92,8 +92,8 @@ export function ProjectTeamMemberForm({
               px={1.5}
               borderRadius={1}
             >
-              <Stack flexDirection='row' alignItems='center' gap={1} flex={1}>
-                <Avatar size='small' variant='circular' src={member.avatar} />
+              <Stack flexDirection='row' alignItems='center' gap={2} flex={1}>
+                <Avatar size='large' variant='circular' src={member.avatar} />
                 <Typography>{member.displayName}</Typography>
                 <Typography variant='caption' color='secondary'>
                   {ProjectRoleText[member.role as ScoutProjectMemberRole]}
