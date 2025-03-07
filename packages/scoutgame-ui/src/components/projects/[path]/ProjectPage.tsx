@@ -16,7 +16,9 @@ import { ProjectPageMember } from './components/ProjectPageMember';
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   const contractsAndAgentWallets = [
     ...project.contracts.map((contract) => ({ ...contract, type: 'contract' })),
-    ...project.wallets.filter((w) => w.chainType === 'evm').map((wallet) => ({ ...wallet, type: 'agent' }))
+    ...project.wallets
+      .filter((w) => w.chainType === 'evm' || !w.chainType)
+      .map((wallet) => ({ ...wallet, type: 'agent' }))
   ];
 
   return (
