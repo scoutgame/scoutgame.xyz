@@ -266,7 +266,6 @@ export function ProjectSmartContractForm({
                       setSelectedContract(contract.address);
                       setIsConfirmModalOpen(true);
                     }}
-                    color={isExecuting ? 'disabled' : 'error'}
                   >
                     <DeleteIcon />
                   </IconButton>
