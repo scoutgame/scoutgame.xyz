@@ -5,12 +5,12 @@ import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { Avatar } from '../Avatar';
 import { BuilderCardRankGraph } from '../Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { Dialog } from '../Dialog';
+import { ScoutButton } from '../ScoutButton/ScoutButton';
 
 export function DeveloperInfoModal({
   onClose,
@@ -22,7 +22,6 @@ export function DeveloperInfoModal({
   isLoading: boolean;
 }) {
   const isDesktop = useMdScreen();
-  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -258,7 +257,14 @@ export function DeveloperInfoModal({
             </Stack>
           </Stack>
           <Stack>
-            <Stack direction='row' alignItems='center' gap={1}>
+            <Stack
+              direction='row'
+              alignItems='center'
+              gap={{
+                xs: 0.5,
+                md: 1
+              }}
+            >
               <Typography
                 variant={isDesktop ? 'h5' : 'h6'}
                 maxWidth={{
@@ -276,6 +282,7 @@ export function DeveloperInfoModal({
               <Link href={`/u/${developer.path}`} onClick={onClose}>
                 <Button
                   sx={{
+                    p: 0,
                     '& .MuiButton-startIcon': {
                       mr: 0.5
                     },
@@ -287,12 +294,12 @@ export function DeveloperInfoModal({
                     }
                   }}
                   variant='text'
-                  startIcon={<OpenInNewIcon />}
+                  startIcon={<OpenInNewIcon sx={{ fontSize: { xs: '12px !important', md: '14px !important' } }} />}
                   color='secondary'
                   size='small'
                 >
                   <Typography color='secondary' fontSize='12px'>
-                    View Profile
+                    View {isDesktop ? 'Profile' : ''}
                   </Typography>
                 </Button>
               </Link>
@@ -422,19 +429,18 @@ export function DeveloperInfoModal({
                   />
                 </Stack>
               </Stack>
-              <Stack>
-                <Typography color='secondary.main'>Price</Typography>
-                <Stack direction='row' gap={0.5} alignItems='center'>
-                  <Typography color='secondary.main' variant={isDesktop ? 'h6' : 'body1'}>
-                    {developer.price}
-                  </Typography>
-                  <Image
-                    src='/images/profile/scout-game-blue-icon.svg'
-                    width={isDesktop ? '24' : '18'}
-                    height={isDesktop ? '24' : '18'}
-                    alt='scoutgame icon'
-                  />
-                </Stack>
+              <Stack gap={0.5} onClick={onClose}>
+                <Typography color='secondary.main'>Buy now</Typography>
+                <ScoutButton
+                  builder={{
+                    builderStatus: 'applied',
+                    id: developer.id,
+                    displayName: developer.displayName,
+                    path: developer.path,
+                    price: developer.price
+                  }}
+                  type='default'
+                />
               </Stack>
             </Stack>
             <Stack
