@@ -5,7 +5,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type Koa from 'koa';
 import memoize from 'lodash.memoize'; //
 import type { Address } from 'viem';
-import { taiko } from 'viem/chains';
+import { taiko, taikoTestnetSepolia } from 'viem/chains';
 
 import { processContractTransactions } from './processContractTransactions';
 import { processWalletTransactions } from './processWalletTransactions';
@@ -37,7 +37,9 @@ export async function processBuilderOnchainActivity(
           }
         }
       : {
-          chainId: taiko.id
+          chainId: {
+            in: [taiko.id, taikoTestnetSepolia.id]
+          }
         }
   });
   log.info(`Analyzing interactions for ${contracts.length} contracts...`, { windowStart });
@@ -84,7 +86,9 @@ export async function processBuilderOnchainActivity(
 
   const wallets = await prisma.scoutProjectWallet.findMany({
     where: {
-      chainId: taiko.id
+      chainId: {
+        in: [taiko.id, taikoTestnetSepolia.id]
+      }
     }
   });
   log.info(`Retrieving transactions for ${wallets.length} wallets on taiko...`, { windowStart });
