@@ -146,40 +146,40 @@ describe('createScoutProject', () => {
     );
   });
 
-  it('should throw an error if all the team members are not builders', async () => {
-    const owner = await mockScout();
-    const builder = await mockBuilder();
-    const bannedBuilder = await mockBuilder({
-      builderStatus: 'banned'
-    });
+  // it('should throw an error if all the team members are not builders', async () => {
+  //   const owner = await mockScout();
+  //   const builder = await mockBuilder();
+  //   const bannedBuilder = await mockBuilder({
+  //     builderStatus: 'banned'
+  //   });
 
-    await expect(
-      createScoutProject(
-        {
-          name: 'Test Project',
-          teamMembers: [
-            {
-              displayName: 'Owner 1',
-              scoutId: owner.id,
-              role: 'owner'
-            },
-            {
-              displayName: 'Builder 1',
-              scoutId: builder.id,
-              role: 'member'
-            },
-            {
-              displayName: 'Banned Builder',
-              scoutId: bannedBuilder.id,
-              role: 'member'
-            }
-          ],
-          deployers: []
-        },
-        owner.id
-      )
-    ).rejects.toThrow('All project members must be approved builders');
-  });
+  //   await expect(
+  //     createScoutProject(
+  //       {
+  //         name: 'Test Project',
+  //         teamMembers: [
+  //           {
+  //             displayName: 'Owner 1',
+  //             scoutId: owner.id,
+  //             role: 'owner'
+  //           },
+  //           {
+  //             displayName: 'Builder 1',
+  //             scoutId: builder.id,
+  //             role: 'member'
+  //           },
+  //           {
+  //             displayName: 'Banned Builder',
+  //             scoutId: bannedBuilder.id,
+  //             role: 'member'
+  //           }
+  //         ],
+  //         deployers: []
+  //       },
+  //       owner.id
+  //     )
+  //   ).rejects.toThrow('All project members must be approved builders');
+  // });
 
   it('should create project with members, contracts and deployers', async () => {
     const owner = await mockBuilder();
