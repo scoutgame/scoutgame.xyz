@@ -429,7 +429,12 @@ export function DeveloperInfoModal({
                   />
                 </Stack>
               </Stack>
-              <Stack gap={0.5} onClick={onClose}>
+              <Stack
+                gap={0.5}
+                onClick={() => {
+                  onClose();
+                }}
+              >
                 <Typography color='secondary.main'>Buy now</Typography>
                 <ScoutButton
                   builder={{
@@ -437,7 +442,10 @@ export function DeveloperInfoModal({
                     id: developer.id,
                     displayName: developer.displayName,
                     path: developer.path,
-                    price: developer.price
+                    price: developer.price,
+                    nftImageUrl: developer.nftImageUrl,
+                    avatar: developer.avatar,
+                    congratsImageUrl: developer.congratsImageUrl
                   }}
                   type='default'
                 />
