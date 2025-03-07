@@ -1,5 +1,4 @@
 import { PartnersDashboard } from 'components/partners/PartnersDashboard';
-import { getRepos } from 'lib/repos/getRepos';
 
 export const dynamic = 'force-dynamic';
 
