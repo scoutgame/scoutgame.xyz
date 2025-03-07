@@ -204,10 +204,10 @@ describe('updateScoutProject', () => {
   it('should successfully update project with new members, contracts, agent wallets and deployers', async () => {
     const owner = await mockBuilder();
     const member2 = await mockBuilder();
-    const contractAddress = `0x${v4()}`;
+    const contractAddress = `0x${'1'.repeat(40)}`;
     const builder = await mockBuilder();
-    const deployerAddress = `0x${v4()}`;
-    const agentWalletAddress = `0x${v4()}`;
+    const deployerAddress = `0x${'2'.repeat(40)}`;
+    const agentWalletAddress = `0x${'3'.repeat(40)}`;
 
     const project = await mockScoutProject({
       userId: owner.id,
@@ -217,9 +217,9 @@ describe('updateScoutProject', () => {
       wallets: [agentWalletAddress]
     });
 
-    const deployer2Address = `0x${v4()}`;
-    const contract2Address = `0x${v4()}`;
-    const agentWallet2Address = `0x${v4()}`;
+    const deployer2Address = `0x${'4'.repeat(40)}`;
+    const contract2Address = `0x${'5'.repeat(40)}`;
+    const agentWallet2Address = `0x${'6'.repeat(40)}`;
 
     mockVerifyMessage.mockResolvedValue(true as never);
 
@@ -240,7 +240,6 @@ describe('updateScoutProject', () => {
         name: 'Updated Project',
         teamMembers: [
           { displayName: 'Owner', scoutId: owner.id, role: 'owner' },
-          // Add a new member
           { displayName: 'Builder', scoutId: builder.id, role: 'member' }
         ],
         deployers: [
@@ -263,7 +262,6 @@ describe('updateScoutProject', () => {
           }
         ],
         wallets: [
-          // Add a new agent wallet
           {
             address: agentWallet2Address,
             chainId: 1,
