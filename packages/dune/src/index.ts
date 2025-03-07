@@ -46,7 +46,7 @@ type DailyStatFromDune = {
   gas_fees: number;
 };
 
-export async function getEvmWalletStats({
+export async function getEvmAddressStats({
   address,
   chainId,
   startDate,

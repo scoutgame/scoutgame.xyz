@@ -1,7 +1,7 @@
 'use client';
 
 import EditIcon from '@mui/icons-material/Edit';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import Link from 'next/link';
 
 import { useUser } from '../../../../providers/UserProvider';

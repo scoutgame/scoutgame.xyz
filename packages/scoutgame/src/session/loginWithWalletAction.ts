@@ -26,7 +26,7 @@ export const loginWithWalletAction = actionClient
         'invite-code',
         await sealData({ inviteCode: parsedInput.inviteCode }, { password: authSecret as string })
       );
-      log.info(`Builder logged in with invite code: ${parsedInput.inviteCode}`, { walletAddress });
+      log.info(`Builder logged in with invite code: ${parsedInput.inviteCode}`, { userId: newUserId });
     }
 
     const user = await findOrCreateWalletUser({
@@ -37,6 +37,13 @@ export const loginWithWalletAction = actionClient
     });
     await saveSession(ctx, { scoutId: user.id });
     const sessionUser = (await getUserFromSession()) as SessionUser;
+
+    log.info('User logged in', {
+      userId: user.id,
+      newUserId,
+      referralCode: parsedInput.referralCode || undefined,
+      utmCampaign: parsedInput.utmCampaign || undefined
+    });
 
     if (user.isNew) {
       trackUserAction('sign_up', {

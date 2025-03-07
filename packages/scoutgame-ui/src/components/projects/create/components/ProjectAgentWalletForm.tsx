@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
   FormLabel,
+  IconButton,
   MenuItem,
   Paper,
   Select,
@@ -26,6 +27,7 @@ import { useSignMessage } from 'wagmi';
 import { useTrackEvent } from '../../../../hooks/useTrackEvent';
 import { Dialog } from '../../../common/Dialog';
 import { FormErrors } from '../../../common/FormErrors';
+import { WalletAddress } from '../../../common/WalletAddress';
 import type { TemporaryAddress } from '../../components/ProjectForm/ProjectForm';
 import { chainRecords } from '../../constants';
 
@@ -198,36 +200,41 @@ export function ProjectAgentWalletForm({ control }: { control: Control<CreateSco
                   justifyContent='space-between'
                   flex={1}
                 >
-                  <Stack gap={1} flex={0.75} flexDirection='row'>
+                  <Stack gap={2} flex={0.75} flexDirection='row' alignItems='center'>
                     <Image
                       src={chainRecords[wallet.chainId].image}
-                      width={25}
-                      height={25}
+                      width={36}
+                      height={36}
                       alt={chainRecords[wallet.chainId].name}
                       style={{ borderRadius: '50%' }}
                     />
-                    <Typography color={wallet.verified ? undefined : 'error'}>
-                      {stringUtils.shortenHex(wallet.address)}
-                    </Typography>
+                    <WalletAddress
+                      address={wallet.address}
+                      chainId={wallet.chainId}
+                      color={wallet.verified ? undefined : 'error'}
+                    />
                   </Stack>
                   {!wallet.verified && <Typography color='error'>Must sign with Wallet Address</Typography>}
                 </Stack>
-                <DeleteIcon
-                  fontSize='small'
+                <IconButton
+                  color='error'
+                  size='small'
                   onClick={() => {
                     setSelectedWallet(wallet.address as `0x${string}`);
                     setIsConfirmModalOpen(true);
                   }}
-                  color='error'
-                  sx={{ cursor: 'pointer' }}
-                />
+                >
+                  <DeleteIcon />
+                </IconButton>
               </Stack>
             ))}
           </Stack>
         )
       ) : (
         <Paper sx={{ p: 1.5 }}>
-          <Typography textAlign='center'>No agent wallets added to the project</Typography>
+          <Typography color='grey' textAlign='center'>
+            No agent wallets added to the project
+          </Typography>
         </Paper>
       )}
 
@@ -336,7 +343,7 @@ export function ProjectAgentWalletForm({ control }: { control: Control<CreateSco
           onClick={() => {
             setAgentWallet({
               address: '',
-              chainId: 167000
+              chainId: 1
             });
             setIsFormOpen(true);
           }}

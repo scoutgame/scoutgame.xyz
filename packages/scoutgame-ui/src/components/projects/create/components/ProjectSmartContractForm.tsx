@@ -9,6 +9,7 @@ import {
   Button,
   CircularProgress,
   FormLabel,
+  IconButton,
   MenuItem,
   Paper,
   Select,
@@ -29,6 +30,7 @@ import { useSignMessage } from 'wagmi';
 import { useTrackEvent } from '../../../../hooks/useTrackEvent';
 import { Dialog } from '../../../common/Dialog';
 import { FormErrors } from '../../../common/FormErrors';
+import { WalletAddress } from '../../../common/WalletAddress';
 import { chainRecords } from '../../../projects/constants';
 import type { TemporaryAddress } from '../../components/ProjectForm/ProjectForm';
 
@@ -198,7 +200,9 @@ export function ProjectSmartContractForm({
       </Typography>
       {!groupedContracts.length && !isFormOpen ? (
         <Paper sx={{ p: 1.5 }}>
-          <Typography textAlign='center'>No dApps added to the project</Typography>
+          <Typography color='grey' textAlign='center'>
+            No dApps added to the project
+          </Typography>
         </Paper>
       ) : (
         groupedContracts.map((deployer) => (
@@ -242,26 +246,30 @@ export function ProjectSmartContractForm({
                     <Stack gap={1} flex={0.75} flexDirection='row'>
                       <Image
                         src={chainRecords[contract.chainId].image}
-                        width={25}
-                        height={25}
+                        width={36}
+                        height={36}
                         alt={chainRecords[contract.chainId].name}
                         style={{ borderRadius: '50%' }}
                       />
-                      <Typography color={deployer.verified ? undefined : 'error'}>
-                        {stringUtils.shortenHex(contract.address)}
-                      </Typography>
+
+                      <WalletAddress
+                        address={contract.address}
+                        chainId={contract.chainId}
+                        color={deployer.verified ? undefined : 'error'}
+                      />
                     </Stack>
                     {!deployer.verified && <Typography color='error'>Must sign with Deployer Address</Typography>}
                   </Stack>
-                  <DeleteIcon
-                    fontSize='small'
+                  <IconButton
+                    size='small'
                     onClick={() => {
                       setSelectedContract(contract.address);
                       setIsConfirmModalOpen(true);
                     }}
                     color={isExecuting ? 'disabled' : 'error'}
-                    sx={{ cursor: 'pointer' }}
-                  />
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </Stack>
               ))}
             </Stack>

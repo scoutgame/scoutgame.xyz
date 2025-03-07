@@ -9,9 +9,9 @@ export default async function Page() {
     return null;
   }
 
-  if (user.builderStatus !== 'approved' && user.utmCampaign !== 'taiko') {
-    return redirect('/developers');
-  }
+  // if (user.builderStatus !== 'approved' && user.utmCampaign !== 'taiko') {
+  //   return redirect('/developers');
+  // }
 
   return <CreateProjectPage user={user} />;
 }

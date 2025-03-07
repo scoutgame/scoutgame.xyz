@@ -12,11 +12,11 @@ import { isTruthy } from '@packages/utils/types';
 import sharp from 'sharp';
 import { verifyMessage } from 'viem';
 
+import { backfillAnalytics } from './backfillAnalytics';
 import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { CreateScoutProjectFormValues } from './createScoutProjectSchema';
 import { generateProjectPath } from './generateProjectPath';
 import { generateRandomAvatar } from './generateRandomAvatar';
-import { backfillWalletAnalytics } from './updateScoutProject';
 
 export async function createScoutProject(payload: CreateScoutProjectFormValues, userId: string) {
   const path = await generateProjectPath(payload.name);
@@ -141,9 +141,9 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     }
   });
 
-  if (builderMembersCount !== payload.teamMembers.length) {
-    throw new Error('All project members must be approved builders');
-  }
+  // if (builderMembersCount !== payload.teamMembers.length) {
+  //   throw new Error('All project members must be approved builders');
+  // }
 
   const project = await prisma.$transaction(async (tx) => {
     const scoutProject = await tx.scoutProject.create({
@@ -228,38 +228,17 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     return scoutProject;
   });
 
-  if (payload.wallets) {
-    for (const wallet of payload.wallets) {
-      const newWallet = await prisma.scoutProjectWallet.findUnique({
-        where: {
-          address_chainId: {
-            address: wallet.address,
-            chainId: wallet.chainId
-          }
-        }
-      });
-      if (newWallet) {
-        try {
-          // assume evm for now
-          const result = await backfillWalletAnalytics(newWallet);
-          if (result) {
-            log.info(`Backfilled analytics for wallet ${newWallet.address}`, {
-              endDate: result.endDate,
-              startDate: result.startDate,
-              userId,
-              walletId: newWallet.id
-            });
-          }
-        } catch (error) {
-          log.error(`Error backfilling analytics for wallet ${newWallet.address}`, {
-            contractId: newWallet.id,
-            userId,
-            error
-          });
-        }
-      }
-    }
-  }
+  backfillAnalytics({
+    contracts: payload.contracts?.map((contract) => ({
+      address: contract.address,
+      chainId: contract.chainId
+    })),
+    wallets: payload.wallets,
+    userId
+  }).catch((error) => {
+    log.error('Error backfilling analytics for project during', { error });
+  });
+
   return {
     id: project.id,
     path: project.path,

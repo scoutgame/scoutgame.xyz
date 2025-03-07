@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import { updateScoutProjectAction } from '@packages/scoutgame/projects/updateScoutProjectAction';
 import { updateScoutProjectSchema } from '@packages/scoutgame/projects/updateScoutProjectSchema';
 import { useRouter } from 'next/navigation';

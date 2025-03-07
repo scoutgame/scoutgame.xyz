@@ -1,13 +1,10 @@
 import { log } from '@charmverse/core/log';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
-import { recordWalletAnalytics } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
-import { getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
-import { DateTime } from 'luxon';
 import { verifyMessage } from 'viem';
-import { taiko, taikoTestnetSepolia } from 'viem/chains';
 
+import { backfillAnalytics } from './backfillAnalytics';
 import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_DEPLOYER_SIGN_MESSAGE } from './constants';
 import type { UpdateScoutProjectFormValues } from './updateScoutProjectSchema';
 
@@ -143,28 +140,6 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   const retainedProjectMemberIds = projectMemberIds.filter((scoutId) => projectPayloadMemberIds.includes(scoutId));
 
-  const builderMemberIds = [...retainedProjectMemberIds, ...projectMemberIdsToRestore, ...projectMemberIdsToCreate];
-
-  const builderMembersCount = await prisma.scout.count({
-    where: {
-      id: {
-        in: builderMemberIds
-      },
-      OR: [
-        {
-          builderStatus: 'approved'
-        },
-        {
-          utmCampaign: 'taiko'
-        }
-      ]
-    }
-  });
-
-  if (builderMembersCount !== builderMemberIds.length) {
-    throw new Error('All project members must be builders');
-  }
-
   for (const deployerAddress of deployerAddressesToCreate) {
     const deployer = payload.deployers.find((_deployer) => _deployer.address === deployerAddress);
     if (deployer) {
@@ -196,6 +171,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       log.error(`Wallet ${walletAddress} not found in payload`);
     }
   }
+
+  // for testing
+  payload.wallets[0].address = '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F';
 
   for (const contractAddress of contractAddressesToCreate) {
     const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
@@ -345,8 +323,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     if (walletAddressesToCreate.length) {
       await tx.scoutProjectWallet.createMany({
         data: walletAddressesToCreate.map((wallet) => ({
-          // address: wallet.address,
-          address: '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F',
+          address: wallet.address,
           projectId: _updatedProject.id,
           createdBy: userId,
           chainId: wallet.chainId,
@@ -409,77 +386,20 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   });
 
   // backfill analytics for contracts and wallets
-  for (const address of contractAddressesToCreate) {
-    const newContract = await prisma.scoutProjectContract.findUniqueOrThrow({
-      where: {
-        address_chainId: {
-          address,
-          chainId: contractTransactionRecord[address].chainId
-        }
-      }
+  backfillAnalytics({
+    contracts: contractAddressesToCreate.map((address) => ({
+      address,
+      chainId: contractTransactionRecord[address].chainId
+    })),
+    wallets: walletAddressesToCreate,
+    userId
+  }).catch((error) => {
+    log.error('Error backfilling analytics for project', {
+      contracts: contractAddressesToCreate,
+      wallets: walletAddressesToCreate,
+      error
     });
-    try {
-      // assume evm for now
-      const result = await backfillWalletAnalytics({ chainType: 'evm', ...newContract });
-      if (result) {
-        log.info(`Backfilled analytics for contract ${address}`, {
-          endDate: result.endDate,
-          startDate: result.startDate,
-          userId,
-          walletId: newContract.id
-        });
-      }
-    } catch (error) {
-      log.error(`Error backfilling analytics for contract ${newContract.address}`, {
-        contractId: newContract.id,
-        userId,
-        error
-      });
-    }
-  }
-
-  // backfill analytics for wallets
-  for (const wallet of walletAddressesToCreate) {
-    const newWallet = await prisma.scoutProjectWallet.findUniqueOrThrow({
-      where: {
-        address_chainId: {
-          // address: wallet.address,
-          address: '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F',
-          chainId: wallet.chainId
-        }
-      }
-    });
-    try {
-      // assume evm for now
-      const result = await backfillWalletAnalytics(newWallet);
-      if (result) {
-        log.info(`Backfilled analytics for wallet ${newWallet.address}`, {
-          endDate: result.endDate,
-          startDate: result.startDate,
-          userId,
-          walletId: newWallet.id
-        });
-      }
-    } catch (error) {
-      log.error(`Error backfilling analytics for wallet ${newWallet.address}`, {
-        contractId: newWallet.id,
-        userId,
-        error
-      });
-    }
-  }
+  });
 
   return updatedProject;
-}
-
-// Record analytics for the current and past 3 weeks, one week at a time
-export async function backfillWalletAnalytics(wallet: Parameters<typeof recordWalletAnalytics>[0]) {
-  const endDate = new Date();
-  const startDate = DateTime.fromJSDate(endDate).minus({ days: 30 }).toJSDate();
-  // taiko is a separate, very slow process, so skip for now
-  if (wallet.chainId === taiko.id || wallet.chainId === taikoTestnetSepolia.id) {
-    log.debug('Skipping taiko wallet', { walletId: wallet.id });
-    return;
-  }
-  return recordWalletAnalytics(wallet, startDate, endDate);
 }

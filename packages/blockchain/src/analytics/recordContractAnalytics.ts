@@ -1,28 +1,28 @@
 import { log } from '@charmverse/core/log';
-import type { ScoutProjectWallet } from '@charmverse/core/prisma';
+import type { ScoutProjectContract } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
-import { getEvmAddressStats, getSolanaWalletStats } from '@packages/dune/queries';
+import { getEvmAddressStats } from '@packages/dune/queries';
 import { DateTime } from 'luxon';
 
-export function recordWalletAnalyticsForWeek(
-  wallet: Pick<ScoutProjectWallet, 'id' | 'address' | 'chainType' | 'chainId'>,
+export function recordContractAnalyticsForWeek(
+  contract: Pick<ScoutProjectContract, 'id' | 'address' | 'chainId'>,
   week: string
 ) {
   const _startOfWeek = getStartOfWeek(week);
   const startOfWeek = _startOfWeek.toJSDate();
   const endOfWeek = _startOfWeek.plus({ days: 7 }).toJSDate(); // calculate end of week as the start of week + 7 days
-  return recordWalletAnalytics(wallet, startOfWeek, endOfWeek);
+  return recordContractAnalytics(contract, startOfWeek, endOfWeek);
 }
 
-export async function recordWalletAnalytics(
-  wallet: Pick<ScoutProjectWallet, 'id' | 'address' | 'chainType' | 'chainId'>,
+export async function recordContractAnalytics(
+  wallet: Pick<ScoutProjectContract, 'id' | 'address' | 'chainId'>,
   startDate: Date,
   endDate: Date
 ) {
-  const existingMetrics = await prisma.scoutProjectWalletDailyStats.findMany({
+  const existingMetrics = await prisma.scoutProjectContractDailyStats.findMany({
     where: {
-      walletId: wallet.id,
+      contractId: wallet.id,
       day: {
         gte: startDate,
         lte: endDate
@@ -48,35 +48,30 @@ export async function recordWalletAnalytics(
     }
   }
 
-  const metrics =
-    wallet.chainType === 'solana'
-      ? await getSolanaWalletStats({
-          address: wallet.address,
-          startDate,
-          endDate
-        })
-      : await getEvmAddressStats({
-          address: wallet.address,
-          chainId: wallet.chainId!,
-          startDate,
-          endDate
-        });
+  // TODO: Support Solana
+  const metrics = await getEvmAddressStats({
+    address: wallet.address,
+    chainId: wallet.chainId!,
+    startDate,
+    endDate
+  });
+
   // create metrics if they dont exist
   const newMetrics = metrics.filter((m) => !existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));
-  await prisma.scoutProjectWalletDailyStats.createMany({
+  await prisma.scoutProjectContractDailyStats.createMany({
     data: newMetrics.map((m) => ({
       ...m,
-      walletId: wallet.id,
+      contractId: wallet.id,
       week: getWeekFromDate(m.day)
     }))
   });
   // update metrics if they exist
   const updatedMetrics = metrics.filter((m) => existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));
   for (const metric of updatedMetrics) {
-    await prisma.scoutProjectWalletDailyStats.update({
+    await prisma.scoutProjectContractDailyStats.update({
       where: {
-        walletId_day: {
-          walletId: wallet.id,
+        contractId_day: {
+          contractId: wallet.id,
           day: metric.day
         }
       },

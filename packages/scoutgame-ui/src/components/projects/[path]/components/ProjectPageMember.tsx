@@ -2,7 +2,7 @@
 
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { Stack, Typography } from '@mui/material';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getUserScoutProjects';
+import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -23,14 +23,14 @@ export function ProjectPageMember({ member }: { member: ScoutProjectDetailed['te
       key={member.id}
       flexDirection='row'
       alignItems='center'
-      gap={1}
+      gap={2}
       bgcolor='background.paper'
       px={1.5}
       py={1}
       borderRadius={1}
       sx={{ cursor: 'pointer' }}
     >
-      <Image src={member.avatar} alt={member.displayName} width={25} height={25} style={{ borderRadius: '50%' }} />
+      <Image src={member.avatar} alt={member.displayName} width={48} height={48} style={{ borderRadius: '50%' }} />
       <Typography>{member.displayName}</Typography>
       <Typography variant='caption' color='secondary'>
         {ProjectRoleText[member.role as ScoutProjectMemberRole]}

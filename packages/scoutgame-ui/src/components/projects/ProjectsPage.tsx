@@ -7,7 +7,7 @@ import { ProjectsList } from './components/ProjectsList';
 
 export function ProjectsPage({ projects }: { projects: ScoutProjectMinimal[] }) {
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth='md'>
       <Stack my={4} gap={2}>
         <Stack gap={1}>
           <Typography variant='h4' color='secondary' fontWeight={600}>
