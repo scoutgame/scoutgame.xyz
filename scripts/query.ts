@@ -25,55 +25,6 @@ async function query() {
   //   endDate: new Date('2025-03-06T00:00:00Z')
   // });
   //prettyPrint(events);
-
-  const scoutProjectWallet = await prisma.scoutProjectWallet.findFirstOrThrow({
-    where: {
-      chainId: taiko.id
-    }
-  });
-  console.log(scoutProjectWallet);
-  // return;
-
-  // await prisma.scoutProjectWalletTransaction.createMany({
-  //   data: [
-  //     {
-  //       walletId: scoutProjectWallet!.id,
-  //       chainId: base.id,
-  //       createdAt: new Date('2025-03-05T00:00:00Z'),
-  //       gasCost: 4000,
-  //       gasUsed: 6000,
-  //       from: '0x0000000000000000000000000000000000000000',
-  //       to: '0x0000000000000000000000000000000000000000',
-  //       txHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
-  //       txData: '0x0000000000000000000000000000000000000000000000000000000000000000',
-  //       status: '0x0',
-  //       blockNumber: 1,
-  //       gasPrice: 1000
-  //     },
-  //     {
-  //       walletId: scoutProjectWallet!.id,
-  //       chainId: base.id,
-  //       createdAt: new Date('2025-03-03T00:00:00Z'),
-  //       gasCost: 1000,
-  //       gasUsed: 1000,
-  //       from: '0x0000000000000000000000000000000000000000',
-  //       to: '0x0000000000000000000000000000000000000000',
-  //       txHash: '0x0000000000000000000000000000000000000000000000000000000000000001',
-  //       txData: '0x0000000000000000000000000000000000000000000000000000000000000000',
-  //       status: '0x0',
-  //       blockNumber: 1,
-  //       gasPrice: 1000
-  //     }
-  //   ]
-  // });
-  // const tokens = await prisma.scoutProjectWalletTransaction.count({});
-
-  // // prettyPrint(tokens);
-  // await getWalletTransactionStats({
-  //   address: scoutProjectWallet.address,
-  //   chainId: scoutProjectWallet.chainId!
-  // });
-  await recordWalletAnalyticsForWeek(scoutProjectWallet, getCurrentWeek());
 }
 
 query();
