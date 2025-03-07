@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import sdk from '@farcaster/frame-sdk';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
-import { setNotificationTokenAction } from '@packages/scoutgame/farcaster/setNotificationTokenAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
@@ -17,7 +16,6 @@ export function useInitFarcasterData() {
   const { getNextPageLink } = useLoginSuccessHandler();
   const { refreshUser, user } = useUser();
   const { executeAsync: revalidatePath } = useAction(revalidatePathAction);
-  const { executeAsync: setNotificationToken } = useAction(setNotificationTokenAction);
   const trackEvent = useTrackEvent();
   const { executeAsync: loginUser } = useAction(loginWithWalletAction, {
     onSuccess: async ({ data }) => {
@@ -53,19 +51,6 @@ export function useInitFarcasterData() {
         // Immediately signal that the frame is ready and hide the splash screen
         await sdk.actions.ready({});
 
-        // If the user changes notification preferences in warpcast app keep them in sync with our db
-        sdk.on('notificationsDisabled', async () => {
-          await setNotificationToken({
-            notificationToken: null
-          });
-        });
-
-        sdk.on('notificationsEnabled', async ({ notificationDetails }) => {
-          await setNotificationToken({
-            notificationToken: notificationDetails.token
-          });
-        });
-
         // If the user is not logged in, auto trigger wallet login
         if (!user) {
           const { signature, message } = await sdk.actions.signIn({
@@ -82,18 +67,7 @@ export function useInitFarcasterData() {
         }
 
         if (!context.client.added) {
-          const result = await sdk.actions.addFrame();
-          if (result.notificationDetails) {
-            await setNotificationToken({
-              notificationToken: result.notificationDetails.token
-            });
-          }
-
-          trackEvent('frame_added');
-        } else {
-          await setNotificationToken({
-            notificationToken: context.client.notificationDetails?.token ?? null
-          });
+          await sdk.actions.addFrame();
         }
       } catch (error) {
         log.error('Error initializing farcaster', { error });
@@ -107,5 +81,5 @@ export function useInitFarcasterData() {
     return () => {
       sdk.removeAllListeners();
     };
-  }, [user, loginUser, setNotificationToken, trackEvent]);
+  }, [user, loginUser, trackEvent]);
 }
