@@ -29,17 +29,17 @@ export async function processBuilderOnchainActivity(
 ) {
   // look back 30 days
   const windowStart = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30);
-  const contracts = await prisma.scoutProjectContract.findMany(
-    contractIds
+  const contracts = await prisma.scoutProjectContract.findMany({
+    where: contractIds
       ? {
-          where: {
-            id: {
-              in: contractIds
-            }
+          id: {
+            in: contractIds
           }
         }
-      : undefined
-  );
+      : {
+          chainId: taiko.id
+        }
+  });
   log.info(`Analyzing interactions for ${contracts.length} contracts...`, { windowStart });
 
   for (const contract of contracts) {

@@ -8,7 +8,7 @@ import { base } from 'viem/chains';
 
 const solanaWallet = '2N4fC9tfRGWxnUWhb4fzp7dTUY1yBSxXVJUEdVUmQUaJ';
 const chrisWallet = '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F';
-
+// 0x66525057AC951a0DB5C9fa7fAC6E056D6b8997E2
 async function query() {
   const events = await getSolanaWalletStats({
     address: solanaWallet,
