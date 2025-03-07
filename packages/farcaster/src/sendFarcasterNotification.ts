@@ -176,17 +176,28 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
   });
 
   const data = (await response.json()) as {
-    successTokens: string[];
-    invalidTokens: string[];
-    rateLimitedTokens: string[];
+    result: {
+      successTokens: string[];
+      invalidTokens: string[];
+      rateLimitedTokens: string[];
+    };
   };
 
-  if (data.rateLimitedTokens.includes(user.framesNotificationToken)) {
-    log.debug('Rate limited when sending farcaster notification, waiting 1 second', { userId });
+  if (data.result.rateLimitedTokens.includes(user.framesNotificationToken)) {
+    log.debug('Rate limited when sending farcaster notification', { userId });
     return;
   }
 
-  if (data.invalidTokens.includes(user.framesNotificationToken)) {
+  // The token is not valid anymore, so we need to remove it
+  if (data.result.invalidTokens.includes(user.framesNotificationToken)) {
+    await prisma.scout.update({
+      where: {
+        id: userId
+      },
+      data: {
+        framesNotificationToken: null
+      }
+    });
     log.debug('Invalid frames notification token', { userId });
     return;
   }
