@@ -172,9 +172,6 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
   }
 
-  // for testing
-  payload.wallets[0].address = '0x3B60e31CFC48a9074CD5bEbb26C9EAa77650a43F';
-
   for (const contractAddress of contractAddressesToCreate) {
     const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
     if (contract) {

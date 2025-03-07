@@ -62,7 +62,7 @@ export const updateScoutProjectSchema = yup.object({
       yup.object({
         address: yup.string().required('Wallet address is required'),
         chainId: yup.number().integer().required('Chain ID is required'),
-        signature: yup.string().required('Signature is required'),
+        signature: yup.string().optional(),
         verified: yup.boolean().required()
       })
     )

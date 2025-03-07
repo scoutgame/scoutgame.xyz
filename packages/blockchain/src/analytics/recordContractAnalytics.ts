@@ -4,6 +4,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import { getEvmAddressStats } from '@packages/dune/queries';
 import { DateTime } from 'luxon';
+import { taiko, taikoTestnetSepolia } from 'viem/chains';
+
+import { getContractTransactionStats } from './getTransactionStats';
 
 export function recordContractAnalyticsForWeek(
   contract: Pick<ScoutProjectContract, 'id' | 'address' | 'chainId'>,
@@ -49,12 +52,18 @@ export async function recordContractAnalytics(
   }
 
   // TODO: Support Solana
-  const metrics = await getEvmAddressStats({
-    address: wallet.address,
-    chainId: wallet.chainId!,
-    startDate,
-    endDate
-  });
+  const metrics =
+    wallet.chainId === taiko.id || wallet.chainId === taikoTestnetSepolia.id
+      ? await getContractTransactionStats({
+          address: wallet.address,
+          chainId: wallet.chainId!
+        })
+      : await getEvmAddressStats({
+          address: wallet.address,
+          chainId: wallet.chainId!,
+          startDate,
+          endDate
+        });
 
   // create metrics if they dont exist
   const newMetrics = metrics.filter((m) => !existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));

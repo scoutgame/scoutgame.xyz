@@ -4,6 +4,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import { getEvmAddressStats, getSolanaWalletStats } from '@packages/dune/queries';
 import { DateTime } from 'luxon';
+import { taiko, taikoTestnetSepolia } from 'viem/chains';
+
+import { getWalletTransactionStats } from './getTransactionStats';
 
 export function recordWalletAnalyticsForWeek(
   wallet: Pick<ScoutProjectWallet, 'id' | 'address' | 'chainType' | 'chainId'>,
@@ -55,12 +58,17 @@ export async function recordWalletAnalytics(
           startDate,
           endDate
         })
-      : await getEvmAddressStats({
-          address: wallet.address,
-          chainId: wallet.chainId!,
-          startDate,
-          endDate
-        });
+      : wallet.chainId === taiko.id || wallet.chainId === taikoTestnetSepolia.id
+        ? await getWalletTransactionStats({
+            address: wallet.address,
+            chainId: wallet.chainId!
+          })
+        : await getEvmAddressStats({
+            address: wallet.address,
+            chainId: wallet.chainId!,
+            startDate,
+            endDate
+          });
   // create metrics if they dont exist
   const newMetrics = metrics.filter((m) => !existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));
   await prisma.scoutProjectWalletDailyStats.createMany({
