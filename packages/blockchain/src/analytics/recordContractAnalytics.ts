@@ -21,7 +21,8 @@ export function recordContractAnalyticsForWeek(
 export async function recordContractAnalytics(
   wallet: Pick<ScoutProjectContract, 'id' | 'address' | 'chainId'>,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  now = new Date()
 ) {
   const existingMetrics = await prisma.scoutProjectContractDailyStats.findMany({
     where: {
@@ -38,7 +39,7 @@ export async function recordContractAnalytics(
 
   // If we there is a recent metric after startOfWeek but from before today, use that date (+1) instead
   if (existingMetrics.length > 0) {
-    const today = DateTime.utc().startOf('day').toJSDate().getTime();
+    const today = DateTime.fromJSDate(now, { zone: 'utc' }).startOf('day').toJSDate().getTime();
     const existingMetricsBeforeToday = existingMetrics.filter((m) => m.day.getTime() < today);
     const latestMetric = existingMetricsBeforeToday[existingMetricsBeforeToday.length - 1];
     if (latestMetric) {
@@ -66,7 +67,7 @@ export async function recordContractAnalytics(
         });
 
   // create metrics for missing dates that are within the range
-  for (let date = startDate; date <= endDate; date.setDate(date.getDate() + 1)) {
+  for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
     const day = DateTime.fromJSDate(date).toUTC().startOf('day').toJSDate();
     if (metrics.some((m) => m.day.getTime() === day.getTime())) {
       continue;
