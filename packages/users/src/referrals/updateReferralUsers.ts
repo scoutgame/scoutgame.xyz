@@ -138,7 +138,7 @@ export async function updateReferralUsers(refereeId: string, now = new Date()): 
       templateVariables: {
         name: referrer.displayName,
         scout_name: referee.displayName,
-        scout_profile_link: `${baseUrl}/u/${referee.path}`
+        scout_profile_link: `https://scoutgame.xyz/u/${referee.path}`
       }
     });
   } catch (error) {

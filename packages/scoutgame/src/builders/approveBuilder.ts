@@ -61,7 +61,7 @@ export async function approveBuilder({
         templateVariables: {
           builder_name: scout.displayName,
           builder_card_image: builderNft.imageUrl,
-          builder_profile_link: `${baseUrl}/u/${scout.path}`
+          builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
         }
       },
       farcaster: {

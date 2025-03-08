@@ -99,12 +99,12 @@ const OUT_OF_TOP_10_MESSAGES_PARTS = [
 function getOutOfTop10Message({ displayName, currentRank, previousRank, path }: MessageParams): string {
   const { emoji, suffix } =
     OUT_OF_TOP_10_MESSAGES_PARTS[Math.floor(Math.random() * OUT_OF_TOP_10_MESSAGES_PARTS.length)];
-  return `<p style="font-family: ${FONT_FAMILY}; color: ${TEXT_COLOR};">${emoji} <a href="${baseUrl}/u/${path}" style="color: ${LINK_COLOR};">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong style="color:${ERROR_COLOR};">#${currentRank}</strong> - ${suffix}</p>`;
+  return `<p style="font-family: ${FONT_FAMILY}; color: ${TEXT_COLOR};">${emoji} <a href="https://scoutgame.xyz/u/${path}" style="color: ${LINK_COLOR};">${displayName}</a> moved from <strong>#${previousRank}</strong> to <strong style="color:${ERROR_COLOR};">#${currentRank}</strong> - ${suffix}</p>`;
 }
 
 function getIntoTop10Message({ displayName, currentRank, previousRank, path }: MessageParams): string {
   const { emoji, filler } = INTO_TOP_10_MESSAGES_PARTS[Math.floor(Math.random() * INTO_TOP_10_MESSAGES_PARTS.length)];
-  return `<p style="font-family: ${FONT_FAMILY}; color: ${TEXT_COLOR};">${emoji} <a href="${baseUrl}/u/${path}" style="color: ${LINK_COLOR};">${displayName}</a> ${previousRank === null ? `moved directly to` : `${filler} <strong>#${previousRank}</strong> to`} <strong style="color:${SUCCESS_COLOR};">#${currentRank}</strong></p>`;
+  return `<p style="font-family: ${FONT_FAMILY}; color: ${TEXT_COLOR};">${emoji} <a href="https://scoutgame.xyz/u/${path}" style="color: ${LINK_COLOR};">${displayName}</a> ${previousRank === null ? `moved directly to` : `${filler} <strong>#${previousRank}</strong> to`} <strong style="color:${SUCCESS_COLOR};">#${currentRank}</strong></p>`;
 }
 
 function getRandomMessage(messageParams: MessageParams): string {
