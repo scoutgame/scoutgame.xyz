@@ -24,6 +24,7 @@ const { recordWalletAnalytics } = await import('../recordWalletAnalytics');
 describe('recordWalletAnalytics', () => {
   const startDate = new Date('2023-01-01T00:00:00Z');
   const endDate = new Date('2023-01-07T23:59:59Z');
+  const now = new Date('2023-01-06T16:00:00Z');
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,10 +38,13 @@ describe('recordWalletAnalytics', () => {
 
     (getEvmAddressStats as jest.Mock).mockResolvedValue([]);
 
-    await recordWalletAnalytics(mockWallet, startDate, endDate);
+    await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 
     const createdStats = await prisma.scoutProjectWalletDailyStats.findMany({
-      where: { walletId: mockWallet.id }
+      where: { walletId: mockWallet.id },
+      orderBy: {
+        day: 'asc'
+      }
     });
 
     // Expect 7 days of stats to be created
@@ -59,10 +63,13 @@ describe('recordWalletAnalytics', () => {
     ];
     (getEvmAddressStats as jest.Mock).mockResolvedValue(mockStats);
 
-    await recordWalletAnalytics(mockWallet, startDate, endDate);
+    await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 
     const createdStats = await prisma.scoutProjectWalletDailyStats.findMany({
-      where: { walletId: mockWallet.id }
+      where: { walletId: mockWallet.id },
+      orderBy: {
+        day: 'asc'
+      }
     });
 
     // Expect the stats to match the mock stats
@@ -79,10 +86,13 @@ describe('recordWalletAnalytics', () => {
     const mockStats = [{ day: new Date('2023-01-03T00:00:00Z'), transactions: 7, accounts: 4, gasFees: '0.3' }];
     (getWalletTransactionStats as jest.Mock).mockResolvedValue(mockStats);
 
-    const { newMetrics } = await recordWalletAnalytics(mockWallet, startDate, endDate);
+    const { newMetrics } = await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 
     const createdStats = await prisma.scoutProjectWalletDailyStats.findMany({
-      where: { walletId: mockWallet.id }
+      where: { walletId: mockWallet.id },
+      orderBy: {
+        day: 'asc'
+      }
     });
 
     // Expect the stats to match the mock stats
@@ -114,14 +124,16 @@ describe('recordWalletAnalytics', () => {
     const updatedStats = [{ day: existingStat.day, transactions: 3, accounts: 1, gasFees: '0.05' }];
     (getEvmAddressStats as jest.Mock).mockResolvedValue(updatedStats);
 
-    await recordWalletAnalytics(mockWallet, startDate, endDate);
+    await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 
     const createdStats = await prisma.scoutProjectWalletDailyStats.findMany({
-      where: { walletId: mockWallet.id }
+      where: { walletId: mockWallet.id },
+      orderBy: {
+        day: 'asc'
+      }
     });
-
     // Expect the existing stat to be updated
     expect(createdStats.length).toBe(7);
-    expect(createdStats[6].transactions).toBe(3); // Updated value
+    expect(createdStats[0].transactions).toBe(3); // Updated value
   });
 });
