@@ -41,57 +41,57 @@ const FarcasterNotificationTypesRecord = {
   weekly_claim: {
     title: 'Weekly Claim',
     description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week! Click to Claim!`,
-    targetUrl: `${baseUrl}/claim`
+    targetUrl: `https://scoutgame.xyz/claim`
   },
   zero_weekly_claim: {
     title: 'A New Week, A New Opportunity',
     description: 'A new week means a fresh opportunity to earn rewards. Start playing.',
-    targetUrl: `${baseUrl}/quests`
+    targetUrl: `https://scoutgame.xyz/quests`
   },
   builder_suspended: {
     title: 'Developer suspended',
     description: `Your developer card has been suspended`,
-    targetUrl: `${baseUrl}/info/spam-policy`
+    targetUrl: `https://scoutgame.xyz/info/spam-policy`
   },
   nft_transaction_failed: {
     title: 'NFT transaction failed',
     description: ({ builderName }: Variables['nft_transaction_failed']) =>
       `our transaction failed when purchasing ${builderName}. Try again`,
-    targetUrl: ({ builderPath }: Variables['nft_transaction_failed']) => `${baseUrl}/u/${builderPath}`
+    targetUrl: ({ builderPath }: Variables['nft_transaction_failed']) => `https://scoutgame.xyz/u/${builderPath}`
   },
   builder_card_scouted: {
     title: 'Developer card scouted',
     description: ({ scouterName }: Variables['builder_card_scouted']) =>
       `Your developer card has been scouted by ${scouterName}`,
-    targetUrl: ({ scouterPath }: Variables['builder_card_scouted']) => `${baseUrl}/u/${scouterPath}`
+    targetUrl: ({ scouterPath }: Variables['builder_card_scouted']) => `https://scoutgame.xyz/u/${scouterPath}`
   },
   builder_approved: {
     title: 'Developer approved',
     description: () => `You have been approved as a Scout Game Developer`,
-    targetUrl: `${baseUrl}/profile`
+    targetUrl: `https://scoutgame.xyz/profile`
   },
   referral_link_signup: {
     title: 'Referral link signup',
     description: ({ refereeName }: Variables['referral_link_signup']) =>
       `Your referee ${refereeName} signed up using your referral link. Claim your rewards on Monday!`,
-    targetUrl: ({ refereePath }: Variables['referral_link_signup']) => `${baseUrl}/u/${refereePath}`
+    targetUrl: ({ refereePath }: Variables['referral_link_signup']) => `https://scoutgame.xyz/u/${refereePath}`
   },
   merged_pr_gems: {
     title: 'You got gems!',
     description: ({ gems, partnerRewards }: Variables['merged_pr_gems']) =>
       `You earned ${gems} gems ${partnerRewards ? ` and ${partnerRewards}` : ''} for merging a PR`,
-    targetUrl: `${baseUrl}/profile`
+    targetUrl: `https://scoutgame.xyz/profile`
   },
   developer_rank_change: {
     title: 'Your developers are on the move!',
     description: 'Your developers are moving in the leaderboard rankings. Check them out!',
-    targetUrl: `${baseUrl}/scout`
+    targetUrl: `https://scoutgame.xyz/scout`
   },
   added_to_project: {
     title: 'Added to project',
     description: ({ projectName }: Variables['added_to_project']) =>
       `You have been added to the project ${projectName}`,
-    targetUrl: ({ projectPath }: Variables['added_to_project']) => `${baseUrl}/p/${projectPath}`
+    targetUrl: ({ projectPath }: Variables['added_to_project']) => `https://scoutgame.xyz/p/${projectPath}`
   }
 };
 
