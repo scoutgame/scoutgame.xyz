@@ -902,8 +902,8 @@ export async function mockScoutProject({
       wallets: {
         createMany: {
           data: wallets.map((wallet) => {
-            const chainId = wallet.chainId || 1;
-            const address = typeof wallet === 'string' ? wallet : wallet.address;
+            const chainId = 'chainId' in (wallet as object) ? (wallet as { chainId: number }).chainId : 1;
+            const address = typeof wallet === 'string' ? wallet : (wallet as { address: string }).address;
             return { address, chainId, createdBy, chainType: 'evm' };
           })
         }
@@ -921,7 +921,7 @@ export async function mockScoutProject({
   if (contracts.length && deployer) {
     await prisma.scoutProjectContract.createMany({
       data: contracts.map((contract) => {
-        const chainId = contract.chainId || 1;
+        const chainId = (contract as { chainId?: number }).chainId || 1;
         const address = typeof contract === 'string' ? contract : contract.address;
         return {
           address,
