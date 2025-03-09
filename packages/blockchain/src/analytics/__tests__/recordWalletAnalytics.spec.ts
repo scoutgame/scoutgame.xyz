@@ -36,7 +36,7 @@ describe('recordWalletAnalytics', () => {
     });
     const mockWallet = project.wallets[0]!;
 
-    (getEvmAddressStats as jest.Mock).mockResolvedValue([]);
+    (getEvmAddressStats as jest.Mock).mockResolvedValue([] as never);
 
     await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 
@@ -61,7 +61,7 @@ describe('recordWalletAnalytics', () => {
       { day: new Date('2023-01-01T00:00:00Z'), transactions: 5, accounts: 3, gasFees: '0.1' },
       { day: new Date('2023-01-02T00:00:00Z'), transactions: 10, accounts: 5, gasFees: '0.2' }
     ];
-    (getEvmAddressStats as jest.Mock).mockResolvedValue(mockStats);
+    (getEvmAddressStats as jest.Mock).mockResolvedValue(mockStats as never);
 
     await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 
@@ -84,7 +84,7 @@ describe('recordWalletAnalytics', () => {
     });
     const mockWallet = project.wallets[0]!;
     const mockStats = [{ day: new Date('2023-01-03T00:00:00Z'), transactions: 7, accounts: 4, gasFees: '0.3' }];
-    (getWalletTransactionStats as jest.Mock).mockResolvedValue(mockStats);
+    (getWalletTransactionStats as jest.Mock).mockResolvedValue(mockStats as never);
 
     const { newMetrics } = await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 
@@ -122,7 +122,7 @@ describe('recordWalletAnalytics', () => {
     });
 
     const updatedStats = [{ day: existingStat.day, transactions: 3, accounts: 1, gasFees: '0.05' }];
-    (getEvmAddressStats as jest.Mock).mockResolvedValue(updatedStats);
+    (getEvmAddressStats as jest.Mock).mockResolvedValue(updatedStats as never);
 
     await recordWalletAnalytics(mockWallet, startDate, endDate, now);
 

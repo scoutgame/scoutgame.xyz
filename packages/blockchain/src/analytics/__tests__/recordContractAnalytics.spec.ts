@@ -7,15 +7,14 @@ import { v4 as uuid } from 'uuid';
 
 // Mock modules before importing the function under test
 jest.unstable_mockModule('@packages/dune/queries', () => ({
-  getEvmAddressStats: jest.fn(),
-  getSolanacontractstats: jest.fn()
+  getEvmAddressStats: jest.fn()
 }));
 
 jest.unstable_mockModule('../getTransactionStats', () => ({
   getContractTransactionStats: jest.fn()
 }));
 
-const { getEvmAddressStats, getSolanacontractstats } = await import('@packages/dune/queries');
+const { getEvmAddressStats } = await import('@packages/dune/queries');
 
 const { getContractTransactionStats } = await import('../getTransactionStats');
 const { recordContractAnalytics } = await import('../recordContractAnalytics');
@@ -35,7 +34,7 @@ describe('recordContractAnalytics', () => {
     });
     const mockContract = project.contracts[0]!;
 
-    (getEvmAddressStats as jest.Mock).mockResolvedValue([]);
+    (getEvmAddressStats as jest.Mock).mockResolvedValue([] as never);
     await recordContractAnalytics(mockContract, startDate, endDate, now);
 
     const createdStats = await prisma.scoutProjectContractDailyStats.findMany({
@@ -60,7 +59,7 @@ describe('recordContractAnalytics', () => {
       { day: new Date('2023-01-02T00:00:00Z'), transactions: 10, accounts: 5, gasFees: '0.2' }
     ];
 
-    (getEvmAddressStats as jest.Mock).mockResolvedValue(mockStats);
+    (getEvmAddressStats as jest.Mock).mockResolvedValue(mockStats as never);
 
     await recordContractAnalytics(mockContract, startDate, endDate, now);
 
@@ -84,7 +83,7 @@ describe('recordContractAnalytics', () => {
     const mockContract = project.contracts[0]!;
     const mockStats = [{ day: new Date('2023-01-03T00:00:00Z'), transactions: 7, accounts: 4, gasFees: '0.3' }];
 
-    (getEvmAddressStats as jest.Mock).mockResolvedValue(mockStats);
+    (getEvmAddressStats as jest.Mock).mockResolvedValue(mockStats as never);
 
     await recordContractAnalytics(mockContract, startDate, endDate, now);
 
@@ -122,7 +121,7 @@ describe('recordContractAnalytics', () => {
 
     const updatedStats = [{ day: existingStat.day, transactions: 3, accounts: 1, gasFees: '0.05' }];
 
-    (getEvmAddressStats as jest.Mock).mockResolvedValue(updatedStats);
+    (getEvmAddressStats as jest.Mock).mockResolvedValue(updatedStats as never);
 
     await recordContractAnalytics(mockContract, startDate, endDate, now);
 

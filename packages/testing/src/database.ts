@@ -902,7 +902,7 @@ export async function mockScoutProject({
       wallets: {
         createMany: {
           data: wallets.map((wallet) => {
-            const chainId = 'chainId' in (wallet as object) ? (wallet as { chainId: number }).chainId : 1;
+            const chainId = (wallet as { chainId: number }).chainId || 1;
             const address = typeof wallet === 'string' ? wallet : (wallet as { address: string }).address;
             return { address, chainId, createdBy, chainType: 'evm' };
           })
