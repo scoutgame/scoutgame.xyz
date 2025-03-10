@@ -26,12 +26,12 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     }
   });
 
-  log.debug('Found %d wallets to process with Dune Analytics', wallets.length);
+  log.debug(`Found ${wallets.length} wallets to process with Dune Analytics`);
 
   for (const wallet of wallets) {
     try {
       const { startDate, endDate, newMetrics, updatedMetrics } = await recordWalletAnalyticsForWeek(wallet, week);
-      log.info(`Created wallet metrics for wallet`, {
+      log.info(`Created metrics for wallet`, {
         newMetrics: newMetrics.length,
         chainType: wallet.chainType,
         updatedMetrics: updatedMetrics.length,
@@ -42,7 +42,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
         endDate
       });
     } catch (error) {
-      log.error(`Error creating wallet metrics for wallet`, {
+      log.error(`Error creating metrics for wallet`, {
         chainType: wallet.chainType,
         address: wallet.address,
         week,
@@ -65,12 +65,12 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     }
   });
 
-  log.debug('Found %d contract to process with Dune Analytics', wallets.length);
+  log.debug(`Found ${contracts.length} contracts to process with Dune Analytics`);
 
   for (const contract of contracts) {
     try {
       const { startDate, endDate, newMetrics, updatedMetrics } = await recordContractAnalyticsForWeek(contract, week);
-      log.info(`Created wallet metrics for wallet`, {
+      log.info(`Created metrics for contract`, {
         newMetrics: newMetrics.length,
         updatedMetrics: updatedMetrics.length,
         walletId: contract.id,
@@ -79,7 +79,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
         endDate
       });
     } catch (error) {
-      log.error(`Error creating contract metrics for contract`, {
+      log.error(`Error creating metrics for contract`, {
         address: contract.address,
         week,
         contractId: contract.id,

@@ -87,6 +87,7 @@ const projectDetailedSelect = (week: string) =>
         deletedAt: null
       },
       select: {
+        id: true,
         address: true,
         chainId: true,
         chainType: true,

@@ -59,7 +59,7 @@ export const updateScoutProjectAction = authActionClient
             templateVariables: {
               builder_name: user.displayName,
               project_name: updatedProject.name,
-              project_link: `${baseUrl}/p/${updatedProject.path}`
+              project_link: `https://scoutgame.xyz/p/${updatedProject.path}`
             }
           },
           farcaster: {

@@ -15,13 +15,13 @@ export async function getUserScoutProjectsInfo({ userId }: { userId: string }): 
     where: {
       members: {
         some: {
-          userId
+          userId,
+          deletedAt: null
         }
       },
       deletedAt: null
     },
     select: projectMinimalSelect
   });
-
   return projects;
 }

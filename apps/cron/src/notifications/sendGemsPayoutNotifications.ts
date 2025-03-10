@@ -63,7 +63,7 @@ function formatNewDevelopers(developers: { displayName: string; path: string }[]
 
   let html = `<p style="font-family: ${fontFamily}; color: ${fontColor};">🔥 Want to scout some developers early? Here are some new developers who just joined the game:</p><ul style="font-family: ${fontFamily}; color: ${fontColor};">`;
   for (const dev of developers) {
-    html += `<li><a style="text-decoration: underline; color: ${linkColor};" href="${baseUrl}/u/${dev.path}">${dev.displayName}</a></li>`;
+    html += `<li><a style="text-decoration: underline; color: ${linkColor};" href="https://scoutgame.xyz/u/${dev.path}">${dev.displayName}</a></li>`;
   }
   html += '</ul>';
 

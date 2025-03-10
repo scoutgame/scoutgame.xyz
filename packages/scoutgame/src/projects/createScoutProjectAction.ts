@@ -38,7 +38,7 @@ export const createScoutProjectAction = authActionClient
               templateVariables: {
                 builder_name: member.user.displayName,
                 project_name: createdScoutProject.name,
-                project_link: `${baseUrl}/p/${createdScoutProject.path}`
+                project_link: `https://scoutgame.xyz/p/${createdScoutProject.path}`
               }
             },
             farcaster: {
