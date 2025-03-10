@@ -848,26 +848,24 @@ export function mockUserWeeklyStats({
 
 export async function mockScoutProject({
   name = 'Test Project',
-  chainId = 1,
   userId,
   memberIds = [],
   deployerAddress,
-  contractAddresses = [],
+  contracts = [],
   wallets = []
 }: {
-  chainId?: number;
   name?: string;
   userId?: string;
   memberIds?: string[];
   deployerAddress?: string;
-  contractAddresses?: string[];
-  wallets?: string[];
+  contracts?: ({ chainId?: number; address: string } | string)[];
+  wallets?: ({ chainId?: number; address: string } | string)[];
 }) {
   const path = randomString();
   const createdBy = userId ?? (await mockScout()).id;
 
   // always set deployerAddress if contract addresses are provided
-  deployerAddress = deployerAddress || (contractAddresses.length ? '0x1234' : undefined);
+  deployerAddress = deployerAddress || (contracts.length ? '0x1234' : undefined);
 
   const scoutProject = await prisma.scoutProject.create({
     data: {
@@ -903,32 +901,41 @@ export async function mockScoutProject({
       },
       wallets: {
         createMany: {
-          data: wallets.map((address) => ({ address, chainId, createdBy, chainType: 'evm' }))
+          data: wallets.map((wallet) => {
+            const chainId = (wallet as { chainId: number }).chainId || 1;
+            const address = typeof wallet === 'string' ? wallet : (wallet as { address: string }).address;
+            return { address, chainId, createdBy, chainType: 'evm' };
+          })
         }
       }
     },
     include: {
       deployers: true,
-      members: true
+      members: true,
+      wallets: true
     }
   });
 
   const deployer = scoutProject.deployers[0];
-  let contracts: ScoutProjectContract[] = [];
-  if (contractAddresses.length && deployer) {
+  let _contracts: ScoutProjectContract[] = [];
+  if (contracts.length && deployer) {
     await prisma.scoutProjectContract.createMany({
-      data: contractAddresses.map((address) => ({
-        address,
-        chainId,
-        projectId: scoutProject.id,
-        deployerId: deployer.id,
-        deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
-        deployedAt: new Date(),
-        createdBy,
-        blockNumber: 1
-      }))
+      data: contracts.map((contract) => {
+        const chainId = (contract as { chainId?: number }).chainId || 1;
+        const address = typeof contract === 'string' ? contract : contract.address;
+        return {
+          address,
+          chainId,
+          projectId: scoutProject.id,
+          deployerId: deployer.id,
+          deployTxHash: `0x${Math.random().toString(16).substring(2)}`,
+          deployedAt: new Date(),
+          createdBy,
+          blockNumber: 1
+        };
+      })
     });
-    contracts = await prisma.scoutProjectContract.findMany({
+    _contracts = await prisma.scoutProjectContract.findMany({
       where: {
         projectId: scoutProject.id
       }
@@ -937,7 +944,7 @@ export async function mockScoutProject({
 
   return {
     ...scoutProject,
-    contracts
+    contracts: _contracts
   };
 }
 
