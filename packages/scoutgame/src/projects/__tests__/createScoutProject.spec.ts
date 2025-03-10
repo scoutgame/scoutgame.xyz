@@ -18,6 +18,10 @@ jest.unstable_mockModule('@packages/blockchain/getContractDeployerAddress', asyn
   getContractDeployerAddress: mockGetContractDeployerAddress
 }));
 
+jest.unstable_mockModule('../backfillAnalytics', async () => ({
+  backfillAnalytics: () => Promise.resolve()
+}));
+
 const { createScoutProject } = await import('../createScoutProject');
 
 describe('createScoutProject', () => {

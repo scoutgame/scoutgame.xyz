@@ -17,9 +17,17 @@ jest.unstable_mockModule('@packages/blockchain/getContractDeployerAddress', asyn
   getContractDeployerAddress: mockGetContractDeployerAddress
 }));
 
+jest.unstable_mockModule('../backfillAnalytics', async () => ({
+  backfillAnalytics: () => Promise.resolve()
+}));
+
 const { updateScoutProject } = await import('../updateScoutProject');
 
 describe('updateScoutProject', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should throw an error if user is not the project owner', async () => {
     const owner = await mockBuilder();
     const nonOwner = await mockBuilder();
@@ -33,7 +41,8 @@ describe('updateScoutProject', () => {
           teamMembers: [],
           contracts: [],
           deployers: [],
-          wallets: []
+          wallets: [],
+          solanaWallets: []
         },
         nonOwner.id
       )
@@ -52,7 +61,8 @@ describe('updateScoutProject', () => {
           teamMembers: [],
           contracts: [],
           deployers: [],
-          wallets: []
+          wallets: [],
+          solanaWallets: []
         },
         owner.id
       )
@@ -75,7 +85,8 @@ describe('updateScoutProject', () => {
           ],
           contracts: [],
           deployers: [],
-          wallets: []
+          wallets: [],
+          solanaWallets: []
         },
         owner.id
       )
@@ -102,7 +113,8 @@ describe('updateScoutProject', () => {
               verified: true
             }
           ],
-          wallets: []
+          wallets: [],
+          solanaWallets: []
         },
         owner.id
       )
@@ -139,7 +151,8 @@ describe('updateScoutProject', () => {
             }
           ],
           deployers: [],
-          wallets: []
+          wallets: [],
+          solanaWallets: []
         },
         owner.id
       )
@@ -162,7 +175,8 @@ describe('updateScoutProject', () => {
         ],
         contracts: [],
         deployers: [],
-        wallets: []
+        wallets: [],
+        solanaWallets: []
       },
       owner.id
     );
@@ -188,7 +202,7 @@ describe('updateScoutProject', () => {
     const project = await mockScoutProject({
       userId: owner.id,
       deployerAddress,
-      contractAddresses: [contractAddress],
+      contracts: [contractAddress],
       memberIds: [member2.id],
       wallets: [agentWalletAddress]
     });
@@ -244,7 +258,8 @@ describe('updateScoutProject', () => {
             signature: '0x123',
             verified: true
           }
-        ]
+        ],
+        solanaWallets: []
       },
       owner.id
     );
