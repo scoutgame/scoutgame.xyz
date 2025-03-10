@@ -36,7 +36,7 @@ describe('processBuilderOnchainActivity', () => {
   it('should save contract logs and transactions', async () => {
     const address = randomWalletAddress();
     const project = await mockScoutProject({
-      conracts: [{ chainId: 167009, address }]
+      contracts: [{ chainId: 167009, address }]
     });
 
     const contractId = project.contracts[0].id;
@@ -140,7 +140,7 @@ describe('processBuilderOnchainActivity', () => {
   it('should handle empty logs gracefully', async () => {
     const address = randomWalletAddress();
     const project = await mockScoutProject({
-      conracts: [{ chainId: 167009, address }]
+      contracts: [{ chainId: 167009, address }]
     });
     const contractId = project.contracts[0].id;
 
