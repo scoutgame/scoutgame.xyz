@@ -1,3 +1,5 @@
+'server-only';
+
 import { getPopularRepos } from '@packages/scoutgame/repos/getRepos';
 import { RepositoriesPage } from '@packages/scoutgame-ui/components/info/pages/RepositoriesPage';
 import type { Metadata } from 'next';
