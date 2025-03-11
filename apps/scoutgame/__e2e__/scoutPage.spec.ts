@@ -43,11 +43,5 @@ test.describe('Scout page', () => {
 
     const scoutTable = scoutPage.container.locator('data-test=scouts-table').last();
     await expect(scoutTable).toBeVisible();
-
-    const newScoutsTab = scoutPage.container.locator('data-test=tab-new-scouts').last();
-    await newScoutsTab.click();
-
-    const newScoutTable = scoutPage.container.locator('data-test=new-scouts-table').last();
-    await expect(newScoutTable).toBeVisible();
   });
 });

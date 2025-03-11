@@ -87,7 +87,7 @@ function Document() {
           <Stack gap={{ xs: 2, md: 3 }}>
             <PartnerReward name='Glo Dollar' image='/images/crypto/glo-dollar.png' status='completed' />
             <PartnerReward name='Moxie' image='/images/crypto/moxie.png' status='completed' />
-            <PartnerReward name='Optimism' image='/images/crypto/op.png' href='/info/partner-rewards/optimism' />
+            <PartnerReward name='Optimism' image='/images/crypto/op.png' status='completed' />
           </Stack>
         </Stack>
       </Stack>
