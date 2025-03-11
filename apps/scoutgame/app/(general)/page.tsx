@@ -9,7 +9,7 @@ const frame = {
     title: 'Scout',
     action: {
       type: 'launch_frame',
-      name: 'Scout Game Test',
+      name: 'Scout Game',
       url: `https://scoutgame.xyz`,
       splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
       splashBackgroundColor: '#000'
