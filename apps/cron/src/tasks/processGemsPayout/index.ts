@@ -66,9 +66,6 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
   }
 
   await Promise.all([
-    deployNewScoutRewardsContract({ week }).catch((error) => {
-      log.error('Error deploying new scout rewards contract', { error, week, season });
-    }),
     deployReferralChampionRewardsContract({ week }).catch((error) => {
       log.error('Error deploying referral champion rewards contract', { error, week, season });
     }),
