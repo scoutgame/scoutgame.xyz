@@ -180,30 +180,24 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   }
 
   for (const contract of contractAddressesToCreate) {
-    try {
-      const { transaction, block } = await getContractDeployerAddress({
-        contractAddress: contract.address,
-        chainId: contract.chainId
-      });
-      contractTransactionRecord[contract.address] = {
-        chainId: contract.chainId,
-        txHash: transaction.hash,
-        blockNumber: Number(block.number),
-        blockTimestamp: Number(block.timestamp),
-        deployerAddress: transaction.from
-      };
-      if (contract.deployerAddress !== transaction.from) {
-        throw new Error(
-          `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
-        );
-      }
-    } catch (error) {
-      log.error(`Error getting contract deployer address for ${contract.address}`, {
-        error,
-        contractAddress: contract.address,
-        chainId: contract.chainId
-      });
+    const { transaction, block } = await getContractDeployerAddress({
+      contractAddress: contract.address,
+      chainId: contract.chainId
+    });
+
+    if (contract.deployerAddress !== transaction.from) {
+      throw new Error(
+        `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
+      );
     }
+
+    contractTransactionRecord[contract.address] = {
+      chainId: contract.chainId,
+      txHash: transaction.hash,
+      blockNumber: Number(block.number),
+      blockTimestamp: Number(block.timestamp),
+      deployerAddress: transaction.from
+    };
   }
 
   const updatedProject = await prisma.$transaction(async (tx) => {
@@ -415,6 +409,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   for (const { address, chainId } of walletAddressesToCreate) {
     trackUserAction('add_project_agent_address', {
       userId,
+      projectId: updatedProject.id,
       walletAddress: address,
       chainId
     });
@@ -423,6 +418,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   for (const { address, chainId } of contractAddressesToCreate) {
     trackUserAction('add_project_contract_address', {
       userId,
+      projectId: updatedProject.id,
       contractAddress: address,
       chainId,
       deployerAddress: contractTransactionRecord[address].deployerAddress

@@ -46,11 +46,13 @@ type AddProjectContractAddressEvent = BaseEvent & {
   deployerAddress: string;
   contractAddress: string;
   chainId: number;
+  projectId: string;
 };
 
 type AddProjectAgentAddressEvent = BaseEvent & {
   walletAddress: string;
   chainId: number;
+  projectId: string;
 };
 
 type FrameAddedEvent = BaseEvent;

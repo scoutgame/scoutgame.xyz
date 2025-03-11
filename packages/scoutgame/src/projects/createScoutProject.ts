@@ -146,23 +146,6 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   //   throw new Error('All project members must be approved builders');
   // }
 
-  for (const wallet of payload.wallets ?? []) {
-    trackUserAction('add_project_agent_address', {
-      userId,
-      walletAddress: wallet.address,
-      chainId: wallet.chainId
-    });
-  }
-
-  for (const contract of payload.contracts ?? []) {
-    trackUserAction('add_project_contract_address', {
-      userId,
-      contractAddress: contract.address,
-      deployerAddress: contract.deployerAddress,
-      chainId: contract.chainId
-    });
-  }
-
   const project = await prisma.$transaction(async (tx) => {
     const scoutProject = await tx.scoutProject.create({
       data: {
@@ -266,6 +249,25 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
   }).catch((error) => {
     log.error('Error backfilling analytics for project during', { error });
   });
+
+  for (const wallet of payload.wallets ?? []) {
+    trackUserAction('add_project_agent_address', {
+      userId,
+      walletAddress: wallet.address,
+      chainId: wallet.chainId,
+      projectId: project.id
+    });
+  }
+
+  for (const contract of payload.contracts ?? []) {
+    trackUserAction('add_project_contract_address', {
+      userId,
+      contractAddress: contract.address,
+      deployerAddress: contract.deployerAddress,
+      chainId: contract.chainId,
+      projectId: project.id
+    });
+  }
 
   return {
     id: project.id,
