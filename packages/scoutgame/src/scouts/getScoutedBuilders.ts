@@ -190,7 +190,11 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           currentPrice: true,
           nftType: true,
           nftSoldEvents: {
-            where: validMintNftPurchaseEvent,
+            where: {
+              walletAddress: {
+                not: null
+              }
+            },
             include: {
               scoutWallet: {
                 select: {

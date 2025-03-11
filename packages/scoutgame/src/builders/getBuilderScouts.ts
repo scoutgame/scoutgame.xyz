@@ -4,8 +4,6 @@ import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
-import { validMintNftPurchaseEvent } from '../builderNfts/constants';
-
 export type ScoutInfo = BasicUserInfo & {
   displayName: string;
   nfts: number;
@@ -20,11 +18,19 @@ export type BuilderScouts = {
 export async function getBuilderScouts(builderId: string): Promise<BuilderScouts> {
   const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
+      // Make sure that the event is not due to a nft burn
+      walletAddress: {
+        not: null
+      },
       builderEvent: {
         builderId,
         season: getCurrentSeasonStart()
       },
-      ...validMintNftPurchaseEvent
+      scoutWallet: {
+        scout: {
+          deletedAt: null
+        }
+      }
     },
     select: {
       scoutWallet: {
