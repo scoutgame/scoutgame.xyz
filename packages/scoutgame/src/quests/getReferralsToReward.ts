@@ -3,7 +3,7 @@ import { getWeekStartEndFromISOWeek } from '@packages/dates/utils';
 
 type RewardRecipient = { path: string; userId: string; address: string; opAmount: number; referrals: number };
 
-const REFERRAL_REWARD_AMOUNT = 5;
+export const REFERRAL_REWARD_AMOUNT = 5;
 
 export async function getReferralsToReward(options: { week: string }): Promise<RewardRecipient[]> {
   const { start, end } = getWeekStartEndFromISOWeek(options.week);
