@@ -1,7 +1,7 @@
 'use client';
 
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
 import type { Control } from 'react-hook-form';
@@ -128,11 +128,13 @@ export function ProjectForm({
               Smart Contracts
             </Typography>
             <Typography lineHeight={2}>
-              Add your smart contracts to earn additional gems and to participate in partner rewards, such as the Taiko
-              AI challenge.
+              Add your smart contracts to earn additional gems and to participate in partner rewards.
               <br />
               Sign a message with the wallet that deployed your contracts to prove ownership.
             </Typography>
+            <Alert severity='info'>
+              TIP: If you are applying for the Taiko AI Challenge, add an Agent wallet on the Taiko chain
+            </Alert>
 
             <Stack>
               <ProjectSmartContractForm control={control} deployers={deployers} setDeployers={setDeployers} />

@@ -4,16 +4,20 @@ import { createReferralEvent } from '@packages/users/referrals/createReferralEve
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { v4 as uuid } from 'uuid';
 
-import { getReferralsToReward } from '../getReferralsToReward';
+import { REFERRAL_REWARD_AMOUNT, getReferralsToReward } from '../getReferralsToReward';
 
 describe('getReferralsToReward', () => {
   it('should return referrer and referees', async () => {
     const testWeek = '2025-W03';
     const { referrer, referees } = await mockUserWithReferral({ week: testWeek });
 
-    const recipients = await getReferralsToReward({ week: testWeek });
+    const rewards = await getReferralsToReward({ week: testWeek });
 
-    expect(recipients.map((connector) => connector.userId).sort()).toEqual(
+    const referrerReward = rewards.find((d) => d.userId === referrer.id);
+    expect(referrerReward?.referrals).toEqual(referees.length);
+    expect(referrerReward?.opAmount).toEqual(referees.length * REFERRAL_REWARD_AMOUNT);
+
+    expect(rewards.map((reward) => reward.userId).sort()).toEqual(
       [referrer.id, ...referees.map((referee) => referee.id)].sort()
     );
   });
