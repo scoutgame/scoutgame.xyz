@@ -68,11 +68,6 @@ export async function recordNftPurchaseQuests(scoutId: string, skipMixpanel: boo
     questTypes.push('scout-5-builders');
   }
 
-  // This is a new scout and thus they have entered the OP New Scout Competition
-  if (totalCardsPurchased >= 1) {
-    questTypes.push('enter-op-new-scout-competition');
-  }
-
   // If the scout purchased a card of a moxie builder, mark the moxie quest as complete
   // if (hasMoxieProfile) {
   //   questTypes.push('scout-moxie-builder');
