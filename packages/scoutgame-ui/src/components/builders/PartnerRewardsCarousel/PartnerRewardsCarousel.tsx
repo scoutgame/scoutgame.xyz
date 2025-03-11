@@ -8,10 +8,10 @@ import { useMdScreen } from '../../../hooks/useMediaScreens';
 import { Carousel } from '../../common/Carousel/Carousel';
 
 const partnerInfos = [
+  { logo: 'taiko.png', name: 'taiko', infoPath: 'taiko' },
   { logo: 'celo.png', name: 'celo', infoPath: 'celo' },
   { logo: 'game7.png', name: 'game7', infoPath: 'game7' },
-  { logo: 'octant.svg', name: 'octant', infoPath: 'octant', skipRoundedBorder: true },
-  { logo: 'taiko.png', name: 'taiko', infoPath: 'taiko' }
+  { logo: 'octant.svg', name: 'octant', infoPath: 'octant', skipRoundedBorder: true }
 ];
 
 export function PartnerRewardsCarousel() {
