@@ -19,15 +19,11 @@ import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/Sc
 import { SearchBuildersInput } from './components/SearchBuildersInput';
 import { ScoutPageTable } from './ScoutPageTable/ScoutPageTable';
 
-export const scoutTabOptions: TabItem[] = [
-  { label: 'All Scouts', value: 'scouts' },
-  { label: 'New Scouts', value: 'new-scouts' }
-];
+export const scoutTabOptions: TabItem[] = [{ label: 'All Scouts', value: 'scouts' }];
 
 export const scoutTabMobileOptions: TabItem[] = [
   { label: 'Developers', value: 'builders' },
-  { label: 'All Scouts', value: 'scouts' },
-  { label: 'New Scouts', value: 'new-scouts' }
+  { label: 'All Scouts', value: 'scouts' }
 ];
 
 export async function ScoutPage({

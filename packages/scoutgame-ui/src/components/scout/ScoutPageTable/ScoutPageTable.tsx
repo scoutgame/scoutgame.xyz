@@ -7,7 +7,6 @@ import { getRankedNewScoutsForCurrentWeek } from '@packages/scoutgame/scouts/get
 import { getScouts, type ScoutsSortBy } from '@packages/scoutgame/scouts/getScouts';
 
 import { BuildersTable } from './components/BuildersTable';
-import { NewScoutsTable } from './components/NewScoutsTable';
 import { ScoutsTable } from './components/ScoutsTable';
 
 export async function ScoutPageTable({
@@ -31,9 +30,6 @@ export async function ScoutPageTable({
       getScouts({ limit: 200, sortBy: sort as ScoutsSortBy, order: order as 'asc' | 'desc' })
     );
     return <ScoutsTable scouts={scouts} order={order ?? 'asc'} sort={sort ?? 'rank'} />;
-  } else if (tab === 'new-scouts') {
-    const [, newScouts = []] = await safeAwaitSSRData(getRankedNewScoutsForCurrentWeek());
-    return <NewScoutsTable scouts={newScouts} />;
   }
 
   return null;

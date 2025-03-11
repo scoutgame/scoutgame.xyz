@@ -19,10 +19,6 @@ const PARTNERS = [
     privateKeyEnvVar: 'REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY'
   },
   {
-    id: 'optimism_new_scout',
-    privateKeyEnvVar: 'NEW_SCOUT_REWARD_ADMIN_PRIVATE_KEY'
-  },
-  {
     id: 'octant_base_contribution',
     privateKeyEnvVar: 'OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY'
   }
@@ -183,9 +179,6 @@ async function calculateUpcomingPayout({
     if (partner === 'optimism_referral_champion') {
       const referrals = await getReferralsToReward({ week });
       return referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
-    } else if (partner === 'optimism_new_scout') {
-      const scouts = await getNewScoutRewards({ week });
-      return scouts.reduce((sum, scout) => sum + toWei(scout.opAmount), BigInt(0));
     } else if (partner === 'octant_base_contribution') {
       const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
       const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));

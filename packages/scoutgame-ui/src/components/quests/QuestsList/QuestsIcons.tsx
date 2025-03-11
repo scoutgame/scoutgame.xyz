@@ -33,7 +33,7 @@ export const QuestIcon: Record<QuestType, ReactNode> = {
   'share-scout-profile': ScoutBinocularsIcon,
   'verify-email': <EmailIcon fontSize='large' />,
   // 'link-farcaster-telegram-account': ScoutBinocularsIcon,
-  'enter-op-new-scout-competition': <Image src='/images/crypto/op.png' alt='OP' width={34} height={34} />,
+  // 'enter-op-new-scout-competition': <Image src='/images/crypto/op.png' alt='OP' width={34} height={34} />,
   'score-first-commit': BuilderDogIcon,
   'score-first-pr': BuilderDogIcon,
   'score-streak': BuilderDogIcon,

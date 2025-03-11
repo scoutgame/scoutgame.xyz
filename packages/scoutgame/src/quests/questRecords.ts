@@ -18,7 +18,7 @@ export type QuestType =
   | 'scout-starter-card'
   | 'scout-3-starter-cards'
   | 'scout-full-season-card'
-  | 'enter-op-new-scout-competition'
+  // | 'enter-op-new-scout-competition'
   | 'scout-5-builders'
   | 'scout-share-builder'
   // | 'scout-moxie-builder'
@@ -103,16 +103,16 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     resettable: true,
     verifiable: true
   },
-  'enter-op-new-scout-competition': {
-    label: 'Enter the OP New Scout Competition',
-    points: 10,
-    rewards: 'OP rewards',
-    partner: 'Optimism',
-    link: '/info/partner-rewards/optimism',
-    tag: 'scout',
-    resettable: true,
-    verifiable: true
-  },
+  // 'enter-op-new-scout-competition': {
+  //   label: 'Enter the OP New Scout Competition',
+  //   points: 10,
+  //   rewards: 'OP rewards',
+  //   partner: 'Optimism',
+  //   link: '/info/partner-rewards/optimism',
+  //   tag: 'scout',
+  //   resettable: true,
+  //   verifiable: true
+  // },
   'scout-5-builders': {
     label: 'Scout 5 Developers',
     points: 10,

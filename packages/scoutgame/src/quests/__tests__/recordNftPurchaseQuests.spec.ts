@@ -7,7 +7,7 @@ import { recordNftPurchaseQuests } from '../recordNftPurchaseQuests';
 const season = getCurrentSeasonStart();
 
 describe('recordNftPurchaseQuests', () => {
-  it('should record scout-starter-card and op quest completion for scout with 1 starter pack card', async () => {
+  it('should record scout-starter-card completion for scout with 1 starter pack card', async () => {
     const [builder1, builder2] = await Promise.all([mockBuilder(), mockBuilder()]);
     await Promise.all([
       mockBuilderNft({
@@ -48,18 +48,7 @@ describe('recordNftPurchaseQuests', () => {
       }
     });
 
-    const opQuest = await prisma.scoutSocialQuest.findUnique({
-      where: {
-        type_userId_season: {
-          type: 'enter-op-new-scout-competition',
-          userId: scout.id,
-          season
-        }
-      }
-    });
-
     expect(quest).not.toBeNull();
-    expect(opQuest).not.toBeNull();
   });
 
   it('should record scout-3-starter-cards quest completion for scout with 3 starter pack cards', async () => {
@@ -101,7 +90,7 @@ describe('recordNftPurchaseQuests', () => {
     expect(quest).not.toBeNull();
   });
 
-  it('should record scout-full-season-card and op quest completion for scout with 1 full season card', async () => {
+  it('should record scout-full-season-card completion for scout with 1 full season card', async () => {
     const [builder1, builder2] = await Promise.all([mockBuilder(), mockBuilder()]);
     const builderIds = [builder1.id, builder2.id];
     await Promise.all(
@@ -137,18 +126,7 @@ describe('recordNftPurchaseQuests', () => {
       }
     });
 
-    const opQuest = await prisma.scoutSocialQuest.findUnique({
-      where: {
-        type_userId_season: {
-          type: 'enter-op-new-scout-competition',
-          userId: scout.id,
-          season
-        }
-      }
-    });
-
     expect(quest).not.toBeNull();
-    expect(opQuest).not.toBeNull();
   });
 
   it('should record scout-5-builders quest completion for scout with 5 unique cards', async () => {
