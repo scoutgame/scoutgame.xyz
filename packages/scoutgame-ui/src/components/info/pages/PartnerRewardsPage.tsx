@@ -70,7 +70,7 @@ function Document() {
             <PartnerReward name='Lit Protocol' image='/images/crypto/lit.png' status='completed' />
             <PartnerReward name='Octant' image='/images/crypto/octant.svg' href='/info/partner-rewards/octant' />
             <PartnerReward name='Base' image='/images/crypto/base.svg' href='/info/partner-rewards/octant' />
-            <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='paused' />
+            <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='completed' />
             <PartnerReward name='Talent Protocol' image='/images/crypto/talent.jpg' status='completed' />
             <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
             <PartnerReward
