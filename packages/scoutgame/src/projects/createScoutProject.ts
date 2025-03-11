@@ -263,7 +263,6 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     trackUserAction('add_project_contract_address', {
       userId,
       contractAddress: contract.address,
-      deployerAddress: contract.deployerAddress,
       chainId: contract.chainId,
       projectId: project.id
     });
