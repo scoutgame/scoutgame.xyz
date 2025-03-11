@@ -18,18 +18,22 @@ export type BuilderScouts = {
 export async function getBuilderScouts(builderId: string): Promise<BuilderScouts> {
   const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
     where: {
+      // Make sure that the event is not due to a nft burn
+      walletAddress: {
+        not: null
+      },
       builderEvent: {
         builderId,
         season: getCurrentSeasonStart()
+      },
+      scoutWallet: {
+        scout: {
+          deletedAt: null
+        }
       }
     },
     select: {
       scoutWallet: {
-        where: {
-          scout: {
-            deletedAt: null
-          }
-        },
         select: {
           scout: {
             select: BasicUserInfoSelect
@@ -40,15 +44,12 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
     }
   });
 
-  // TODO: Figure out why there are some events that don't have a scoutWallet
-  const validPurchaseEvents = nftPurchaseEvents.filter((e) => e.scoutWallet);
-
   const uniqueScoutIds = Array.from(
-    new Set(validPurchaseEvents.map((event) => event.scoutWallet!.scout.id).filter(isTruthy))
+    new Set(nftPurchaseEvents.map((event) => event.scoutWallet!.scout.id).filter(isTruthy))
   );
   const scoutsRecord: Record<string, ScoutInfo> = {};
 
-  validPurchaseEvents.forEach((event) => {
+  nftPurchaseEvents.forEach((event) => {
     const existingScout = scoutsRecord[event.scoutWallet!.scout.id];
     if (!existingScout) {
       scoutsRecord[event.scoutWallet!.scout.id] = {
