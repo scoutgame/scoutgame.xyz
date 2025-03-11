@@ -2,6 +2,7 @@ import { log } from '@charmverse/core/log';
 import { prisma, ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
 import { isSmartContractAddress } from '@packages/blockchain/utils';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { isTruthy } from '@packages/utils/types';
 import { verifyMessage } from 'viem';
 
@@ -99,8 +100,8 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
   const projectPayloadContractAddresses = payload.contracts.map((contract) => contract.address);
   const projectPayloadWalletAddresses = payload.wallets.map((wallet) => wallet.address);
 
-  const contractAddressesToCreate = projectPayloadContractAddresses.filter(
-    (address) => !projectContractAddresses.includes(address)
+  const contractAddressesToCreate = payload.contracts.filter(
+    (contract) => !projectContractAddresses.includes(contract.address)
   );
   const contractAddressesToRemove = projectContractAddresses.filter(
     (address) => !projectPayloadContractAddresses.includes(address)
@@ -178,26 +179,25 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
     }
   }
 
-  for (const contractAddress of contractAddressesToCreate) {
-    const contract = payload.contracts.find((_contract) => _contract.address === contractAddress);
-    if (contract) {
-      const { transaction, block } = await getContractDeployerAddress({
-        contractAddress: contract.address,
-        chainId: contract.chainId
-      });
-      contractTransactionRecord[contract.address] = {
-        chainId: contract.chainId,
-        txHash: transaction.hash,
-        blockNumber: Number(block.number),
-        blockTimestamp: Number(block.timestamp),
-        deployerAddress: transaction.from
-      };
-      if (contract.deployerAddress !== transaction.from) {
-        throw new Error(
-          `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
-        );
-      }
+  for (const contract of contractAddressesToCreate) {
+    const { transaction, block } = await getContractDeployerAddress({
+      contractAddress: contract.address,
+      chainId: contract.chainId
+    });
+
+    if (contract.deployerAddress !== transaction.from) {
+      throw new Error(
+        `Contract ${contract.address} was not deployed by the provided deployer. Actual deployer: ${transaction.from}`
+      );
     }
+
+    contractTransactionRecord[contract.address] = {
+      chainId: contract.chainId,
+      txHash: transaction.hash,
+      blockNumber: Number(block.number),
+      blockTimestamp: Number(block.timestamp),
+      deployerAddress: transaction.from
+    };
   }
 
   const updatedProject = await prisma.$transaction(async (tx) => {
@@ -370,18 +370,20 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
     if (contractAddressesToCreate.length) {
       await tx.scoutProjectContract.createMany({
-        data: contractAddressesToCreate.map((address) => ({
-          createdBy: userId,
-          projectId: _updatedProject.id,
-          address,
-          chainId: contractTransactionRecord[address].chainId,
-          deployedAt: new Date(contractTransactionRecord[address].blockTimestamp * 1000),
-          deployTxHash: contractTransactionRecord[address].txHash,
-          blockNumber: contractTransactionRecord[address].blockNumber,
-          deployerId: deployers.find(
-            (deployer) => deployer.address === contractTransactionRecord[address].deployerAddress
-          )!.id
-        }))
+        data: contractAddressesToCreate
+          .filter((contract) => contractTransactionRecord[contract.address])
+          .map(({ address, chainId }) => ({
+            createdBy: userId,
+            projectId: _updatedProject.id,
+            address,
+            chainId,
+            deployedAt: new Date(contractTransactionRecord[address].blockTimestamp * 1000),
+            deployTxHash: contractTransactionRecord[address].txHash,
+            blockNumber: contractTransactionRecord[address].blockNumber,
+            deployerId: deployers.find(
+              (deployer) => deployer.address === contractTransactionRecord[address].deployerAddress
+            )!.id
+          }))
       });
     }
 
@@ -390,9 +392,9 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
 
   // backfill analytics for contracts and wallets
   backfillAnalytics({
-    contracts: contractAddressesToCreate.map((address) => ({
+    contracts: contractAddressesToCreate.map(({ address, chainId }) => ({
       address,
-      chainId: contractTransactionRecord[address].chainId
+      chainId
     })),
     wallets: walletAddressesToCreate,
     userId
@@ -403,6 +405,24 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       error
     });
   });
+
+  for (const { address, chainId } of walletAddressesToCreate) {
+    trackUserAction('add_project_agent_address', {
+      userId,
+      projectId: updatedProject.id,
+      walletAddress: address,
+      chainId
+    });
+  }
+
+  for (const { address, chainId } of contractAddressesToCreate) {
+    trackUserAction('add_project_contract_address', {
+      userId,
+      projectId: updatedProject.id,
+      contractAddress: address,
+      chainId
+    });
+  }
 
   return updatedProject;
 }

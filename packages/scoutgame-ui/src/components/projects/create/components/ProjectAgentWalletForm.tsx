@@ -108,9 +108,6 @@ export function ProjectAgentWalletForm({ control }: { control: Control<CreateSco
 
   const signWithWalletAddress = useCallback(
     async (walletAddress: `0x${string}`) => {
-      trackEvent('project_wallet_address_sign', {
-        walletAddress
-      });
       const walletIndex = wallets.findIndex((f) => f.address === walletAddress);
       if (walletIndex !== -1) {
         const wallet = wallets[walletIndex];

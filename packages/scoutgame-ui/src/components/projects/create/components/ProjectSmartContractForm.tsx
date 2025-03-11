@@ -153,10 +153,6 @@ export function ProjectSmartContractForm({
 
   const signWithDeployerAddress = useCallback(
     async (deployerAddress: `0x${string}`, contractAddress: `0x${string}`) => {
-      trackEvent('project_deployer_address_sign', {
-        deployerAddress,
-        contractAddress
-      });
       const { signature, isValid } = await verifyDeployerOwnership(deployerAddress);
       if (isValid) {
         const contractIndex = contracts.findIndex((f) => f.address === contractAddress);

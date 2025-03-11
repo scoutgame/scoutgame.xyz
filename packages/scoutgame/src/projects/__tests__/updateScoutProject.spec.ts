@@ -24,7 +24,10 @@ jest.unstable_mockModule('../backfillAnalytics', async () => ({
 const { updateScoutProject } = await import('../updateScoutProject');
 
 describe('updateScoutProject', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await prisma.scoutProjectWallet.deleteMany();
+    await prisma.scoutProjectContract.deleteMany();
+    await prisma.scoutProject.deleteMany();
     jest.clearAllMocks();
   });
 
