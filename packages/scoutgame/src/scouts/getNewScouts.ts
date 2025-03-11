@@ -14,6 +14,7 @@ export type NewScout = {
   avatar: string | null;
   pointsPredicted: number;
   buildersScouted: number;
+  starterPacks: number;
   nftsHeld: number;
   earliestPurchasedAt: Date | undefined;
 };
@@ -67,8 +68,8 @@ export async function getRankedNewScoutsForCurrentWeek({
       .map((scout): NewScout => {
         const scoutTransactions = _nftPurchaseEvents.filter((event) => event.to?.scoutId === scout.id);
         const buildersScouted = Array.from(new Set(scoutTransactions.map((event) => event.builderNft.builderId)));
+        const starterPacks = scoutTransactions.filter((event) => event.builderNft.nftType === 'starter_pack').length;
         const nftsHeld = scoutTransactions.reduce((acc, event) => acc + event.tokensPurchased, 0);
-
         return {
           id: scout.id,
           address: scout.wallets.find((w) => w.primary)?.address as Address,
@@ -76,6 +77,7 @@ export async function getRankedNewScoutsForCurrentWeek({
           displayName: scout.displayName,
           avatar: scout.avatar,
           buildersScouted: buildersScouted.length,
+          starterPacks,
           pointsPredicted: _pointsPerScout[scout.id] ?? 0,
           nftsHeld,
           // Check the first purchase event for each wallet as they are already sorted in ascending order
@@ -111,7 +113,11 @@ export async function getRankedNewScoutsForCurrentWeek({
 }
 
 // TODO: cache the pointsEarned as part of userWeeklyStats like we do in userSeasonStats
-export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) {
+export async function getRankedNewScoutsForPastWeek({
+  week
+}: {
+  week: string;
+}): Promise<(Omit<NewScout, 'pointsPredicted'> & { pointsEarned: number })[]> {
   const season = getCurrentSeason(week).start;
   const [receipts, newScouts] = await Promise.all([
     prisma.pointsReceipt.findMany({
@@ -145,8 +151,12 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
       // only include new scouts
       .filter((user) => newScouts.find((s) => s.id === user[0]))
       .map((user) => {
-        const scout = newScouts.find((s) => s.id === user[0]);
-        const address = scout?.wallets.find((w) => w.primary)?.address;
+        const scout = newScouts.find((s) => s.id === user[0])!;
+        const address = scout?.wallets.find((w) => w.primary)?.address as Address;
+        const nftsHeld = scout.wallets.reduce(
+          (acc, w) => acc + w.purchaseEvents.reduce((_acc, e) => _acc + e.tokensPurchased, 0),
+          0
+        );
         return {
           ...scout,
           address,
@@ -156,6 +166,11 @@ export async function getRankedNewScoutsForPastWeek({ week }: { week: string }) 
               (acc, w) => acc + w.purchaseEvents.reduce((_acc, e) => _acc + e.tokensPurchased, 0),
               0
             ) ?? 0,
+          nftsHeld,
+          starterPacks: scout?.wallets.reduce(
+            (acc, w) => acc + w.purchaseEvents.filter((e) => e.builderNft.nftType === 'starter_pack').length,
+            0
+          ),
           earliestPurchasedAt: scout?.wallets
             .sort(
               (a, b) =>
@@ -241,7 +256,12 @@ export async function getNewScouts({ week, season: testSeason }: { week: string;
             },
             select: {
               tokensPurchased: true,
-              createdAt: true
+              createdAt: true,
+              builderNft: {
+                select: {
+                  nftType: true
+                }
+              }
             }
           }
         }

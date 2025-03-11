@@ -30,6 +30,8 @@ export async function GET(request: Request) {
               path: scout.path,
               displayName: scout.displayName,
               pointsEarned: scout.pointsPredicted,
+              starterPackNfts: scout.starterPacks,
+              seasonNfts: scout.nftsHeld - scout.starterPacks,
               wallets: scout.address
             };
           })
@@ -40,6 +42,8 @@ export async function GET(request: Request) {
             path: scout.path,
             displayName: scout.displayName,
             pointsEarned: scout.pointsEarned,
+            starterPackNfts: scout.starterPacks,
+            seasonNfts: scout.nftsHeld - scout.starterPacks,
             wallets: scout.address
           };
         })
