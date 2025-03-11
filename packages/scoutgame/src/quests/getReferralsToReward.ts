@@ -25,6 +25,7 @@ export async function getReferralsToReward(options: { week: string }): Promise<R
     },
     select: {
       createdAt: true,
+      completedAt: true,
       referee: {
         select: {
           id: true,
@@ -63,6 +64,7 @@ export async function getReferralsToReward(options: { week: string }): Promise<R
       }
     }
   });
+  const myEvents = referralEvents.filter((e) => e.builderEvent.builder.id === '49bc7cc2-0dbc-4ae8-a23d-7f8b6d9186d2');
 
   // count how many referrals there are for each builder
   const referralCounts = referralEvents.reduce<Record<string, RewardRecipient>>((acc, event) => {
@@ -77,21 +79,21 @@ export async function getReferralsToReward(options: { week: string }): Promise<R
           referrals: 0,
           opAmount: 0
         };
-        acc[referee.id].opAmount += REFERRAL_REWARD_AMOUNT;
       }
+      acc[referee.id].opAmount += REFERRAL_REWARD_AMOUNT;
     }
     if (referrer.wallets.length > 0) {
       if (!acc[referrer.id]) {
         acc[referrer.id] = {
-          path: `https://scoutgame.xyz/u/${referee.path}`,
+          path: `https://scoutgame.xyz/u/${referrer.path}`,
           userId: referrer.id,
           address: referrer.wallets[0].address,
           referrals: 0,
           opAmount: 0
         };
-        acc[referrer.id].opAmount += REFERRAL_REWARD_AMOUNT;
-        acc[referrer.id].referrals += 1;
       }
+      acc[referrer.id].opAmount += REFERRAL_REWARD_AMOUNT;
+      acc[referrer.id].referrals += 1;
     }
     return acc;
   }, {});
