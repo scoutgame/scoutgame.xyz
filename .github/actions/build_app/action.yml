@@ -21,12 +21,13 @@ runs:
       uses: actions/cache@v4
       with:
         # include the public folder in case the build output puts something there (like sw.js)
+        # but make sure that changes to public folder break the restore cache key, so we do not override the latest files
         path: |
           apps/${{ inputs.app_name }}/.next
           apps/${{ inputs.app_name }}/public
-        key: app-${{ inputs.app_name }}-${{ env.NPM_PACKAGES_COMMIT }}-${{ env.SOURCE_CODE_COMMIT }}
+        key: app-${{ inputs.app_name }}-${{ env.NPM_PACKAGES_COMMIT }}-${{ hashFiles('apps/${{ inputs.app_name }}/public/**') }}-${{ env.SOURCE_CODE_COMMIT }}
         restore-keys: |
-          app-${{ inputs.app_name }}-${{ env.NPM_PACKAGES_COMMIT }}-
+          app-${{ inputs.app_name }}-${{ env.NPM_PACKAGES_COMMIT }}-${{ hashFiles('apps/${{ inputs.app_name }}/public/**') }}-
 
     - name: Build app
       shell: bash
