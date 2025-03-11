@@ -6,8 +6,9 @@ import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
 import { createSablierAirdropContract } from './createSablierAirdropContract';
-import { optimismTokenDecimals, optimismTokenAddress } from './deployNewScoutRewardsContract';
 
+const optimismTokenDecimals = 18;
+const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
 export async function deployReferralChampionRewardsContract({ week }: { week: string }) {
   const currentSeason = getCurrentSeason(week);
 
