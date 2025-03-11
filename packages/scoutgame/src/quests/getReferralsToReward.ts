@@ -3,7 +3,7 @@ import { getWeekStartEndFromISOWeek } from '@packages/dates/utils';
 
 type RewardRecipient = { path: string; userId: string; address: string; opAmount: number; referrals: number };
 
-const REFERRAL_REWARD_AMOUNT = 5;
+export const REFERRAL_REWARD_AMOUNT = 5;
 
 export async function getReferralsToReward(options: { week: string }): Promise<RewardRecipient[]> {
   const { start, end } = getWeekStartEndFromISOWeek(options.week);
@@ -77,21 +77,21 @@ export async function getReferralsToReward(options: { week: string }): Promise<R
           referrals: 0,
           opAmount: 0
         };
-        acc[referee.id].opAmount += REFERRAL_REWARD_AMOUNT;
       }
+      acc[referee.id].opAmount += REFERRAL_REWARD_AMOUNT;
     }
     if (referrer.wallets.length > 0) {
       if (!acc[referrer.id]) {
         acc[referrer.id] = {
-          path: `https://scoutgame.xyz/u/${referee.path}`,
+          path: `https://scoutgame.xyz/u/${referrer.path}`,
           userId: referrer.id,
           address: referrer.wallets[0].address,
           referrals: 0,
           opAmount: 0
         };
-        acc[referrer.id].opAmount += REFERRAL_REWARD_AMOUNT;
-        acc[referrer.id].referrals += 1;
       }
+      acc[referrer.id].opAmount += REFERRAL_REWARD_AMOUNT;
+      acc[referrer.id].referrals += 1;
     }
     return acc;
   }, {});
