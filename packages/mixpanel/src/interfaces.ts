@@ -42,13 +42,15 @@ type CreateProjectEvent = BaseEvent & {
   path: string;
 };
 
-type ProjectDeployerAddressSignEvent = BaseEvent & {
+type AddProjectContractAddressEvent = BaseEvent & {
   deployerAddress: string;
   contractAddress: string;
+  chainId: number;
 };
 
-type ProjectWalletAddressSignEvent = BaseEvent & {
+type AddProjectAgentAddressEvent = BaseEvent & {
   walletAddress: string;
+  chainId: number;
 };
 
 type FrameAddedEvent = BaseEvent;
@@ -93,8 +95,8 @@ export type MixpanelEventMap = {
   verify_email: BaseEvent;
   claim_partner_reward: ClaimPartnerRewardEvent;
   create_project: CreateProjectEvent;
-  project_deployer_address_sign: ProjectDeployerAddressSignEvent;
-  project_wallet_address_sign: ProjectWalletAddressSignEvent;
+  add_project_contract_address: AddProjectContractAddressEvent;
+  add_project_agent_address: AddProjectAgentAddressEvent;
   frame_added: FrameAddedEvent;
   frame_removed: FrameRemovedEvent;
 } & Record<EventType, FrontendEvent>;

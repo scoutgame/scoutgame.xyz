@@ -8,6 +8,7 @@ import {
   getUserS3FilePath
 } from '@packages/aws/uploadToS3Server';
 import { getContractDeployerAddress } from '@packages/blockchain/getContractDeployerAddress';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { isTruthy } from '@packages/utils/types';
 import sharp from 'sharp';
 import { verifyMessage } from 'viem';
@@ -125,25 +126,42 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
     }
   }
 
-  const builderMembersCount = await prisma.scout.count({
-    where: {
-      id: {
-        in: payload.teamMembers.map((member) => member.scoutId)
-      },
-      OR: [
-        {
-          builderStatus: 'approved'
-        },
-        {
-          utmCampaign: 'taiko'
-        }
-      ]
-    }
-  });
+  // const builderMembersCount = await prisma.scout.count({
+  //   where: {
+  //     id: {
+  //       in: payload.teamMembers.map((member) => member.scoutId)
+  //     },
+  //     OR: [
+  //       {
+  //         builderStatus: 'approved'
+  //       },
+  //       {
+  //         utmCampaign: 'taiko'
+  //       }
+  //     ]
+  //   }
+  // });
 
   // if (builderMembersCount !== payload.teamMembers.length) {
   //   throw new Error('All project members must be approved builders');
   // }
+
+  for (const wallet of payload.wallets ?? []) {
+    trackUserAction('add_project_agent_address', {
+      userId,
+      walletAddress: wallet.address,
+      chainId: wallet.chainId
+    });
+  }
+
+  for (const contract of payload.contracts ?? []) {
+    trackUserAction('add_project_contract_address', {
+      userId,
+      contractAddress: contract.address,
+      deployerAddress: contract.deployerAddress,
+      chainId: contract.chainId
+    });
+  }
 
   const project = await prisma.$transaction(async (tx) => {
     const scoutProject = await tx.scoutProject.create({
