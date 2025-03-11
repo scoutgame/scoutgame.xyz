@@ -420,8 +420,7 @@ export async function updateScoutProject(payload: UpdateScoutProjectFormValues, 
       userId,
       projectId: updatedProject.id,
       contractAddress: address,
-      chainId,
-      deployerAddress: contractTransactionRecord[address].deployerAddress
+      chainId
     });
   }
 

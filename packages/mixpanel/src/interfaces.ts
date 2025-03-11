@@ -43,7 +43,6 @@ type CreateProjectEvent = BaseEvent & {
 };
 
 type AddProjectContractAddressEvent = BaseEvent & {
-  deployerAddress: string;
   contractAddress: string;
   chainId: number;
   projectId: string;
