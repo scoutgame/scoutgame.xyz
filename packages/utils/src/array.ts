@@ -46,8 +46,8 @@ export function flatArrayMap<T>(obj: { [key: string]: T[] }): T[] {
   }, [] as T[]);
 }
 
-export function partition<T>(collection: T[], predicate: (value: T, key: string, collection: T[]) => boolean) {
-  return collection.reduce(
+export function partition<T>(collection: T[], predicate: (value: T, key: number, collection: T[]) => boolean) {
+  return collection.reduce<[T[], T[]]>(
     (result, value, key) => {
       (predicate(value, key, collection) ? result[0] : result[1]).push(value);
       return result;
