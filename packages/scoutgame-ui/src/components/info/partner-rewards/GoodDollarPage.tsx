@@ -86,7 +86,7 @@ function Document() {
         <Link href='https://github.com/GoodDollar/.github/blob/master/CONTRIBUTING.md' target='_blank' rel='noreferrer'>
           Open Source Contribution guide
         </Link>{' '}
-        provided by Celo
+        provided by Good Dollar
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
         Eligible GoodDollar Repositories
