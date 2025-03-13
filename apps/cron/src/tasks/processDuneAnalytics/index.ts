@@ -13,14 +13,16 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     where: {
       OR: [
         {
-          chainType: 'solana'
+          chainType: 'solana',
+          deletedAt: null
         },
         {
           chainId: {
             not: {
               in: [taiko.id, taikoTestnetSepolia.id]
             }
-          }
+          },
+          deletedAt: null
         }
       ]
     }

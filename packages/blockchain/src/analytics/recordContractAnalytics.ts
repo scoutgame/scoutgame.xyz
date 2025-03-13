@@ -3,6 +3,7 @@ import type { ScoutProjectContract } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import { getEvmAddressStats } from '@packages/dune/queries';
+import { partition } from 'lodash';
 import { DateTime } from 'luxon';
 import { taiko, taikoTestnetSepolia } from 'viem/chains';
 
@@ -81,8 +82,12 @@ export async function recordContractAnalytics(
   }
   metrics.sort((a, b) => a.day.getTime() - b.day.getTime());
 
-  // create metrics if they dont exist
-  const newMetrics = metrics.filter((m) => !existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));
+  // split metrics into new and existing
+  const [updatedMetrics, newMetrics] = partition(metrics, (metric) =>
+    existingMetrics.some((_m) => _m.day.getTime() === metric.day.getTime())
+  );
+
+  // create metrics that do not exist
   await prisma.scoutProjectContractDailyStats.createMany({
     data: newMetrics.map((m) => ({
       ...m,
@@ -90,8 +95,7 @@ export async function recordContractAnalytics(
       week: getWeekFromDate(m.day)
     }))
   });
-  // update metrics if they exist
-  const updatedMetrics = metrics.filter((m) => existingMetrics.some((_m) => _m.day.getTime() === m.day.getTime()));
+  // update existing metrics
   for (const metric of updatedMetrics) {
     await prisma.scoutProjectContractDailyStats.update({
       where: {
