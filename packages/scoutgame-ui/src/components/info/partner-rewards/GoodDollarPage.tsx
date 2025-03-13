@@ -78,6 +78,17 @@ function Document() {
         </TableBody>
       </Table>
       <Typography variant='h6' color='secondary' mt={2}>
+        How to contribute
+      </Typography>
+      <Typography>
+        Open Source contributions can be overwhelming when you are staring out. It is important to check a repository
+        for a contribution guide. If they don't offer one, you can refer back to a general one or use the{' '}
+        <Link href='https://github.com/GoodDollar/.github/blob/master/CONTRIBUTING.md' target='_blank' rel='noreferrer'>
+          Open Source Contribution guide
+        </Link>{' '}
+        provided by Celo
+      </Typography>
+      <Typography variant='h6' color='secondary' mt={2}>
         Eligible GoodDollar Repositories
       </Typography>
       <Typography>Developers can contribute to the following repositories:</Typography>

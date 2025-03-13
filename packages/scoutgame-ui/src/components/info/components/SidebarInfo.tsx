@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
+import { partners } from '../partnerConfig';
+
 const links = [
   { href: '/info', text: 'All about Scout Game' },
   { href: '/info/about-scoutgame', text: 'What is Scout Game?' },
@@ -21,16 +23,6 @@ const links = [
   { href: '/info/repositories', text: 'Repositories' },
   { href: '/info/spam-policy', text: 'Spam Policy' }
 ];
-
-const partners = [
-  { href: '/info/partner-rewards/celo', text: 'Celo' },
-  { href: '/info/partner-rewards/game7', text: 'Game7' },
-  { href: '/info/partner-rewards/bountycaster', text: 'BountyCaster' },
-  { href: '/info/partner-rewards/octant', text: 'Octant' },
-  { href: '/info/partner-rewards/taiko', text: 'Taiko' },
-  { href: '/info/partner-rewards/good-dollar', text: 'Good Dollar' }
-];
-
 export function SidebarInfo({ handleClose }: Readonly<{ handleClose?: () => void }>) {
   const pathname = usePathname();
   const [open, setOpen] = useState(pathname.startsWith('/info/partner-rewards'));
