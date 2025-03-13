@@ -4,6 +4,8 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import { Stack, Link as MuiLink, SvgIcon, Typography, Container } from '@mui/material';
 import Image from 'next/image';
 
+import { partners } from '../partnerConfig';
+
 export function InfoPageFooter() {
   return (
     <Stack
@@ -105,15 +107,11 @@ export function InfoPageFooter() {
           >
             Partners
           </Typography>
-          <MuiLink href='/info/partner-rewards/bountycaster'>
-            <Typography>Bountycaster</Typography>
-          </MuiLink>
-          <MuiLink href='/info/partner-rewards/celo'>
-            <Typography>Celo</Typography>
-          </MuiLink>
-          <MuiLink href='/info/partner-rewards/game7'>
-            <Typography>Game7</Typography>
-          </MuiLink>
+          {partners.map((partner) => (
+            <MuiLink key={partner.href} href={partner.href}>
+              <Typography>{partner.text}</Typography>
+            </MuiLink>
+          ))}
         </Stack>
       </Container>
     </Stack>
