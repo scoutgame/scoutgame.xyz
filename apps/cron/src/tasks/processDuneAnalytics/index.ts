@@ -1,5 +1,9 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import {
+  getNewProjectAchievements,
+  recordProjectAchievement
+} from '@packages/blockchain/analytics/getNewProjectAchievements';
 import { recordContractAnalyticsForWeek } from '@packages/blockchain/analytics/recordContractAnalytics';
 import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getCurrentWeek } from '@packages/dates/utils';
