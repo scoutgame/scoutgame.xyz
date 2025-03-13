@@ -1,5 +1,9 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import {
+  getNewProjectAchievements,
+  recordProjectAchievement
+} from '@packages/blockchain/analytics/getNewProjectAchievements';
 import { recordContractAnalyticsForWeek } from '@packages/blockchain/analytics/recordContractAnalytics';
 import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
@@ -42,8 +46,15 @@ export async function processBuilderOnchainActivity(
       : {
           chainId: {
             in: [taiko.id, taikoTestnetSepolia.id]
-          }
-        }
+          },
+          deletedAt: null
+        },
+    select: {
+      projectId: true,
+      chainId: true,
+      address: true,
+      id: true
+    }
   });
   log.info(`Analyzing interactions for ${contracts.length} contracts...`, { windowStart });
 
@@ -140,6 +151,17 @@ export async function processBuilderOnchainActivity(
         chainId: wallet.chainId,
         address: wallet.address
       });
+    }
+  }
+
+  // create builder evens conditionally based on on each project's contracts
+  const projectIds = new Set(contracts.map((c) => c.projectId));
+  for (const projectId of projectIds) {
+    const builderEvents = await getNewProjectAchievements(projectId, week);
+    if (builderEvents.length > 0) {
+      for (const event of builderEvents) {
+        await recordProjectAchievement(event, week);
+      }
     }
   }
 }

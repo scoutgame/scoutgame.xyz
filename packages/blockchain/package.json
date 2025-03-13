@@ -11,7 +11,11 @@
   },
   "dependencies": {
     "@openzeppelin/merkle-tree": "^1.0.7",
+    "@packages/dates": "^0.0.0",
     "@packages/dune": "^0.0.0",
     "@packages/utils": "^1.0.0"
+  },
+  "devDependencies": {
+    "@packages/testing": "^1.0.0"
   }
 }

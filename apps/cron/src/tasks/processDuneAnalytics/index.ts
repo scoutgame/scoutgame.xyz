@@ -1,5 +1,9 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import {
+  getNewProjectAchievements,
+  recordProjectAchievement
+} from '@packages/blockchain/analytics/getNewProjectAchievements';
 import { recordContractAnalyticsForWeek } from '@packages/blockchain/analytics/recordContractAnalytics';
 import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getCurrentWeek } from '@packages/dates/utils';
@@ -13,16 +17,24 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     where: {
       OR: [
         {
-          chainType: 'solana'
+          chainType: 'solana',
+          deletedAt: null
         },
         {
           chainId: {
             not: {
               in: [taiko.id, taikoTestnetSepolia.id]
             }
-          }
+          },
+          deletedAt: null
         }
       ]
+    },
+    select: {
+      id: true,
+      address: true,
+      chainId: true,
+      chainType: true
     }
   });
 
@@ -55,6 +67,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     where: {
       OR: [
         {
+          deletedAt: null,
           chainId: {
             not: {
               in: [taiko.id, taikoTestnetSepolia.id]
@@ -62,6 +75,12 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
           }
         }
       ]
+    },
+    select: {
+      id: true,
+      address: true,
+      chainId: true,
+      projectId: true
     }
   });
 
@@ -85,6 +104,17 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
         contractId: contract.id,
         error
       });
+    }
+  }
+
+  // create builder events conditionally based on on each project's contracts
+  const projectIds = new Set(contracts.map((c) => c.projectId));
+  for (const projectId of projectIds) {
+    const builderEvents = await getNewProjectAchievements(projectId, week);
+    if (builderEvents.length > 0) {
+      for (const event of builderEvents) {
+        await recordProjectAchievement(event, week);
+      }
     }
   }
 }
