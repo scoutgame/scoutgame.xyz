@@ -245,7 +245,7 @@ describe('recordProjectAchievement', () => {
     });
 
     // Verify gems receipt was created
-    expect(eventWithGems?.gemsReceipt.value).toBeGreaterThan(0);
+    expect(eventWithGems?.gemsReceipt?.value).toBeGreaterThan(0);
   });
 
   it('should create multiple builder events for projects with multiple members', async () => {
