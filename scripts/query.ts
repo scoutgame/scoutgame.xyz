@@ -25,6 +25,13 @@ async function query() {
   //   endDate: new Date('2025-03-06T00:00:00Z')
   // });
   //prettyPrint(events);
+  console.log(
+    await prisma.scoutProjectWallet.findMany({
+      include: {
+        project: true
+      }
+    })
+  );
 }
 
 query();

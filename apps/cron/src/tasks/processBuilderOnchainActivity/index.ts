@@ -1,9 +1,9 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import {
-  getNewProjectBuilderEvents,
-  recordProjectBuilderEvent
-} from '@packages/blockchain/analytics/getNewProjectBuilderEvents';
+  getNewProjectAchievements,
+  recordProjectAchievement
+} from '@packages/blockchain/analytics/getNewProjectAchievements';
 import { recordContractAnalyticsForWeek } from '@packages/blockchain/analytics/recordContractAnalytics';
 import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
@@ -157,10 +157,10 @@ export async function processBuilderOnchainActivity(
   // create builder evens conditionally based on on each project's contracts
   const projectIds = new Set(contracts.map((c) => c.projectId));
   for (const projectId of projectIds) {
-    const builderEvents = await getNewProjectBuilderEvents(projectId, week);
+    const builderEvents = await getNewProjectAchievements(projectId, week);
     if (builderEvents.length > 0) {
       for (const event of builderEvents) {
-        await recordProjectBuilderEvent(event, week);
+        await recordProjectAchievement(event, week);
       }
     }
   }
