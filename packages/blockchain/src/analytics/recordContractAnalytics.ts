@@ -3,7 +3,7 @@ import type { ScoutProjectContract } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import { getEvmAddressStats } from '@packages/dune/queries';
-import { partition } from 'lodash';
+import { partition } from '@packages/utils/array';
 import { DateTime } from 'luxon';
 import { taiko, taikoTestnetSepolia } from 'viem/chains';
 

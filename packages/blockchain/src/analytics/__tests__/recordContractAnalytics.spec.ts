@@ -14,24 +14,6 @@ jest.unstable_mockModule('../getTransactionStats', () => ({
   getContractTransactionStats: jest.fn()
 }));
 
-// mock partition from lodash, since jest cannot handle it. TODO: use lodash-es or migrate to vitest?
-jest.unstable_mockModule('lodash', () => ({
-  partition: jest.fn(<T>(arr: T[], predicate: (item: T) => boolean) => {
-    const trueArray: T[] = [];
-    const falseArray: T[] = [];
-
-    for (const item of arr) {
-      if (predicate(item)) {
-        trueArray.push(item);
-      } else {
-        falseArray.push(item);
-      }
-    }
-
-    return [trueArray, falseArray];
-  })
-}));
-
 const { getEvmAddressStats } = await import('@packages/dune/queries');
 
 const { getContractTransactionStats } = await import('../getTransactionStats');
