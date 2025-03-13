@@ -912,7 +912,8 @@ export async function mockScoutProject({
     include: {
       deployers: true,
       members: true,
-      wallets: true
+      wallets: true,
+      contracts: true
     }
   });
 

@@ -15,17 +15,17 @@ export type ProjectAchievement = {
   }[];
 };
 
-const tiers = {
+export const tiers = {
   bronze: {
-    gems: 1, // gems per week, divided by builders
+    gems: 10, // gems per week, divided by builders
     minTransactions: 1
   },
   silver: {
-    gems: 50,
+    gems: 20,
     minTransactions: 200
   },
   gold: {
-    gems: 100,
+    gems: 50,
     minTransactions: 1800
   }
 } satisfies Record<OnchainAchievementTier, { gems: number; minTransactions: number }>;
@@ -39,7 +39,11 @@ export async function getNewProjectAchievements(projectId: string, week: string)
     include: {
       members: {
         where: {
-          deletedAt: null
+          deletedAt: null,
+          user: {
+            deletedAt: null,
+            builderStatus: 'approved'
+          }
         },
         select: {
           user: {
@@ -110,31 +114,30 @@ export async function recordProjectAchievement(achievement: ProjectAchievement, 
   const { projectId, tier, builders } = achievement;
   const season = getCurrentSeason(week).start;
 
-  await prisma.scoutProjectOnchainAcheivement.create({
-    data: {
-      projectId,
-      tier,
-      week,
-      builderEvents: {
-        createMany: {
-          data: builders.map((b) => ({
-            builderId: b.builderId,
-            type: 'onchain_activity',
-            week,
-            season,
-            gemsReceipts: {
-              createMany: {
-                data: [
-                  {
-                    gems: b.gems,
-                    recipientId: b.builderId
-                  }
-                ]
-              }
-            }
-          }))
-        }
+  await prisma.$transaction(async (tx) => {
+    const record = await tx.scoutProjectOnchainAchievement.create({
+      data: {
+        projectId,
+        tier,
+        week
       }
+    });
+    for (const builder of builders) {
+      await tx.builderEvent.create({
+        data: {
+          builderId: builder.builderId,
+          type: 'onchain_achievement',
+          onchainAchievementId: record.id,
+          week,
+          season,
+          gemsReceipt: {
+            create: {
+              value: builder.gems,
+              type: 'onchain_achievement'
+            }
+          }
+        }
+      });
     }
   });
 }

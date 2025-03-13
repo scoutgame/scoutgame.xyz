@@ -25,6 +25,12 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
           deletedAt: null
         }
       ]
+    },
+    select: {
+      id: true,
+      address: true,
+      chainId: true,
+      chainType: true
     }
   });
 
@@ -57,6 +63,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     where: {
       OR: [
         {
+          deletedAt: null,
           chainId: {
             not: {
               in: [taiko.id, taikoTestnetSepolia.id]
@@ -64,6 +71,12 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
           }
         }
       ]
+    },
+    select: {
+      id: true,
+      address: true,
+      chainId: true,
+      projectId: true
     }
   });
 
@@ -87,6 +100,17 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
         contractId: contract.id,
         error
       });
+    }
+  }
+
+  // create builder events conditionally based on on each project's contracts
+  const projectIds = new Set(contracts.map((c) => c.projectId));
+  for (const projectId of projectIds) {
+    const builderEvents = await getNewProjectAchievements(projectId, week);
+    if (builderEvents.length > 0) {
+      for (const event of builderEvents) {
+        await recordProjectAchievement(event, week);
+      }
     }
   }
 }
