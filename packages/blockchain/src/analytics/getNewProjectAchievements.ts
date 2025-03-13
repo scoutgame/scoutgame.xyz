@@ -21,11 +21,11 @@ export const tiers = {
     minTransactions: 1
   },
   silver: {
-    gems: 20,
+    gems: 10, // note the actual value is 20 for silver, but we consider you already got 10 for bronze
     minTransactions: 200
   },
   gold: {
-    gems: 50,
+    gems: 30, // note the actual value is 50 for gold, but we consider you already got 10 for bronze and 10 for silver
     minTransactions: 1800
   }
 } satisfies Record<OnchainAchievementTier, { gems: number; minTransactions: number }>;
