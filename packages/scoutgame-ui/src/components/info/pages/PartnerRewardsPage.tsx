@@ -65,19 +65,20 @@ function Document() {
             Developer Rewards
           </Typography>
           <Stack gap={{ xs: 2, md: 3 }}>
-            <PartnerReward name='Celo' image='/images/crypto/celo.png' href='/info/partner-rewards/celo' />
-            <PartnerReward name='Game7' image='/images/crypto/game7.png' href='/info/partner-rewards/game7' />
-            <PartnerReward name='Lit Protocol' image='/images/crypto/lit.png' status='completed' />
-            <PartnerReward name='Octant' image='/images/crypto/octant.svg' href='/info/partner-rewards/octant' />
             <PartnerReward name='Base' image='/images/crypto/base.svg' href='/info/partner-rewards/octant' />
-            <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='completed' />
-            <PartnerReward name='Talent Protocol' image='/images/crypto/talent.jpg' status='completed' />
+            <PartnerReward name='Octant' image='/images/crypto/octant.svg' href='/info/partner-rewards/octant' />
             <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
+            <PartnerReward name='Game7' image='/images/crypto/game7.png' href='/info/partner-rewards/game7' />
+            <PartnerReward name='Celo' image='/images/crypto/celo.png' href='/info/partner-rewards/celo' />
             <PartnerReward
               name='Good Dollar'
               image='/images/logos/good-dollar.png'
               href='/info/partner-rewards/good-dollar'
             />
+            <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='completed' />
+            <PartnerReward name='Lit Protocol' image='/images/crypto/lit.png' status='completed' />
+            <PartnerReward name='Talent Protocol' image='/images/crypto/talent.jpg' status='completed' />
+            <PartnerReward name='BountyCaster' image='/images/logos/bountycaster.png' status='completed' />
           </Stack>
         </Stack>
         <Stack flex={1} gap={2}>
@@ -85,9 +86,9 @@ function Document() {
             Scout Rewards
           </Typography>
           <Stack gap={{ xs: 2, md: 3 }}>
-            <PartnerReward name='Glo Dollar' image='/images/crypto/glo-dollar.png' status='completed' />
-            <PartnerReward name='Moxie' image='/images/crypto/moxie.png' status='completed' />
             <PartnerReward name='Optimism' image='/images/crypto/op.png' status='completed' />
+            <PartnerReward name='Moxie' image='/images/crypto/moxie.png' status='completed' />
+            <PartnerReward name='Glo Dollar' image='/images/crypto/glo-dollar.png' status='completed' />
           </Stack>
         </Stack>
       </Stack>
