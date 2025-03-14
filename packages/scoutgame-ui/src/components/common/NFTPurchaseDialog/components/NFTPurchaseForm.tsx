@@ -32,8 +32,7 @@ import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import {
-  getScoutProtocolBuilderNFTContract,
-  scoutProtocolBuilderNftContractAddress,
+  getScoutProtocolBuilderNFTReadonlyContract,
   scoutProtocolChainId,
   scoutTokenDecimals,
   scoutTokenErc20ContractAddress
@@ -103,7 +102,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const initialQuantities = [1, 11, 111];
   const pricePerNft = builder.price
     ? platform === 'onchain_webapp'
-      ? builder.price
+      ? Number(builder.price) / 10 ** 18
       : convertCostToPoints(builder.price).toLocaleString()
     : '';
   const { address, chainId } = useAccount();
@@ -175,7 +174,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
       const _price =
         platform === 'onchain_webapp'
-          ? await getScoutProtocolBuilderNFTContract().getTokenPurchasePrice({
+          ? await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
               args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
             })
           : builder.nftType === 'starter_pack'
@@ -196,7 +195,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     try {
       setIsFetchingPrice(true);
       _builderTokenId = await (platform === 'onchain_webapp'
-        ? getScoutProtocolBuilderNFTContract().getTokenIdForBuilder({ args: { builderId } })
+        ? getScoutProtocolBuilderNFTReadonlyContract().getTokenIdForBuilder({ args: { builderId } })
         : builder.nftType === 'starter_pack'
           ? getBuilderNftStarterPackReadonlyClient().getTokenIdForBuilder({ args: { builderId } })
           : builderContractReadonlyApiClient.getTokenIdForBuilder({ args: { builderId } }));
@@ -243,10 +242,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
-  const contractAddress =
-    platform === 'onchain_webapp'
-      ? scoutProtocolBuilderNftContractAddress
-      : getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season });
+  const contractAddress = getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season });
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address: address as Address,
@@ -317,10 +313,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           value: _value
         },
         txMetadata: {
-          contractAddress:
-            platform === 'onchain_webapp'
-              ? scoutProtocolBuilderNftContractAddress
-              : getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }),
+          contractAddress: getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }),
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,
           builderTokenId: Number(builderTokenId),

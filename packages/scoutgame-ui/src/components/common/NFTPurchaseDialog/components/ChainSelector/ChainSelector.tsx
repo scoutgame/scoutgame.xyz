@@ -46,14 +46,14 @@ function SelectField(
           chain: scoutProtocolChain,
           icon: '/images/crypto/base64.png',
           id: scoutProtocolChain.id,
-          name: 'Base Sepolia',
+          name: 'Base',
           usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
           currency: 'SCOUT'
         }
       ]
     : getChainOptions({ useTestnets });
 
-  const { tokens } = useGetTokenBalances({ address: address as Address });
+  const { tokens } = useGetTokenBalances({ address: address as Address, useScoutToken });
 
   return (
     <Select<SelectedPaymentOption>

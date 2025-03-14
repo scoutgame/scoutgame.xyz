@@ -18,11 +18,9 @@ import {
   scoutTokenDecimalsMultiplier
 } from '../protocol/constants';
 
-import { isPreseason01Contract, isStarterPackContract } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
-import { validatePreseason01orStarterPackMint } from './validatePreseason01orStarterPackMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
 export async function handlePendingTransaction({
@@ -89,20 +87,12 @@ export async function handlePendingTransaction({
             sourceTxHashChainId: pendingTx.sourceChainId
           });
 
-    const useScoutIdValidation =
-      isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress);
-
     scoutgameMintsLogger.info('Transaction settled', { txHash });
 
-    const validatedMint = useScoutIdValidation
-      ? await validatePreseason01orStarterPackMint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        })
-      : await validateTransferrableNftMint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        });
+    const validatedMint = await validateTransferrableNftMint({
+      chainId: pendingTx.destinationChainId,
+      txHash
+    });
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {

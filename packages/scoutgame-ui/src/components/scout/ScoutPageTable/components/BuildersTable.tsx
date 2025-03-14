@@ -241,9 +241,8 @@ export function BuildersTable({
             <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>
-                  {/* We need to migrate $SCOUT based NFT prices to numeric column. Until then, we are storing the price as the human friendly version */}
                   {platform === 'onchain_webapp'
-                    ? Number(builder.price || 0)
+                    ? Number(builder.price || 0) / 10 ** 18
                     : convertCostToPoints(builder.price || BigInt(0))}
                 </TableCellText>
                 {isMdScreen && (

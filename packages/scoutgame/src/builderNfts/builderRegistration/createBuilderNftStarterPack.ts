@@ -29,7 +29,6 @@ export async function createBuilderNftStarterPack({
 }) {
   contractAddress = contractAddress ?? getBuilderNftStarterPackContractAddress(season);
 
-  // TODO: use the correct client for the season when we move to $SCOUT
   const currentPrice = await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
     args: { amount: BigInt(1) }
   });

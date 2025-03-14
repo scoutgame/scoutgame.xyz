@@ -115,8 +115,8 @@ export async function BuilderProfile({
         totalNftsSold={totalNftsSold}
         currentNftPrice={
           platform === 'onchain_webapp'
-            ? (Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** 18).toFixed(2)
-            : (Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
+            ? Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** 18
+            : Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals
         }
       />
       <Stack gap={0.5}>

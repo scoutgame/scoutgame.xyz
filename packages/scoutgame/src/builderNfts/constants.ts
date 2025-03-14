@@ -87,21 +87,6 @@ export function getDecentApiKey() {
 // Selecting the top 100 builders
 export const weeklyRewardableBuilders = 100;
 
-export function isPreseason01Contract(contractAddress: string): boolean {
-  const preseason01 = '2024-W41';
-
-  const preseason01Addresses = [
-    getBuilderNftContractAddress(preseason01),
-    getBuilderNftStarterPackContractAddress(preseason01)
-  ];
-
-  if (preseason01Addresses.includes(contractAddress.toLowerCase() as Address)) {
-    return true;
-  }
-
-  return false;
-}
-
 export function isStarterPackContract(contractAddress: string): boolean {
   const starterPackAddresses = [
     getBuilderNftStarterPackContractAddress('2024-W41'),

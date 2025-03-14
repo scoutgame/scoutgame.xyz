@@ -36,9 +36,10 @@ export function ScoutButton({
 
   const platform = getPlatform();
 
-  // We need to migrate $SCOUT based NFT prices to numeric column. Until then, we are storing the price as the human friendly version
   const purchaseCostInPoints =
-    platform === 'onchain_webapp' ? Number(builder?.price || 0) : convertCostToPoints(builder?.price || BigInt(0));
+    platform === 'onchain_webapp'
+      ? Number(builder?.price || 0) / 10 ** 18
+      : convertCostToPoints(builder?.price || BigInt(0));
 
   const handleClick = () => {
     trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });

@@ -20,7 +20,7 @@ export function BuilderStats({
   builderPoints?: number;
   totalScouts?: number;
   totalNftsSold?: number;
-  currentNftPrice?: string;
+  currentNftPrice?: number;
   starterPack?: boolean;
 }) {
   const isDesktop = useMdScreen();
@@ -74,7 +74,7 @@ export function BuilderStats({
             CURRENT CARD PRICE
           </Typography>
           <Typography fontWeight={500} variant='h4' color='orange.main' align='center'>
-            ${currentNftPrice}
+            {currentNftPrice}
           </Typography>
         </Stack>
       </Stack>
