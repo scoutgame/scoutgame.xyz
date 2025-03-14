@@ -371,6 +371,11 @@ export class ScoutGameSeason01NFTImplementationClient {
           internalType: 'string',
           name: 'builderId',
           type: 'string'
+        },
+        {
+          internalType: 'address',
+          name: 'account',
+          type: 'address'
         }
       ],
       name: 'registerBuilderToken',
@@ -1360,7 +1365,7 @@ export class ScoutGameSeason01NFTImplementationClient {
   }
 
   async registerBuilderToken(params: {
-    args: { builderId: string };
+    args: { builderId: string; account: string };
     value?: bigint;
     gasPrice?: bigint;
   }): Promise<TransactionReceipt> {
@@ -1371,20 +1376,17 @@ export class ScoutGameSeason01NFTImplementationClient {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'registerBuilderToken',
-      args: [params.args.builderId]
+      args: [params.args.builderId, params.args.account]
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
       to: getAddress(this.contractAddress),
       data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
+      value: params.value ?? BigInt(0),
+      gasPrice: params.gasPrice
     };
 
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
     const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
     return this.walletClient.waitForTransactionReceipt({ hash: tx });
   }
 

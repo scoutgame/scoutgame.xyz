@@ -61,11 +61,10 @@ export const purchaseWithPointsAction = authActionClient
     const currentPriceInScoutToken = Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** 18;
     const pointsValue = platform === 'onchain_webapp' ? currentPriceInScoutToken : convertCostToPoints(currentPrice);
 
-    if (platform === 'onchain_webapp') {
-      if (scout.currentBalance < currentPriceInScoutToken) {
-        throw new Error('Insufficient points');
-      }
-    } else if (scout.currentBalance < pointsValue) {
+    if (
+      (platform === 'onchain_webapp' && scout.currentBalance < currentPriceInScoutToken) ||
+      (platform !== 'onchain_webapp' && scout.currentBalance < pointsValue)
+    ) {
       throw new Error('Insufficient points');
     }
 

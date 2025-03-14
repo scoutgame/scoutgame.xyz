@@ -60,7 +60,15 @@ export async function registerBuilderNFT({
       avatar: true,
       path: true,
       displayName: true,
-      builderStatus: true
+      builderStatus: true,
+      wallets: {
+        where: {
+          primary: true
+        },
+        select: {
+          address: true
+        }
+      }
     }
   });
 
@@ -68,11 +76,17 @@ export async function registerBuilderNFT({
     throw new InvalidInputError('Scout profile does not have a github user');
   }
 
+  const primaryWallet = builder.wallets[0];
+
+  if (!primaryWallet) {
+    throw new InvalidInputError('Builder does not have a primary wallet');
+  }
+
   let tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } }).catch((err) => null);
 
   if (!tokenId) {
     log.info(`Registering builder token for builder`, { userId: builderId });
-    await minterClient.registerBuilderToken({ args: { builderId } });
+    await minterClient.registerBuilderToken({ args: { builderId, account: primaryWallet.address } });
 
     tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } });
 

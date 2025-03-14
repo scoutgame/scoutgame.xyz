@@ -5,7 +5,7 @@ import type { UserBalanceArgs } from '@decent.xyz/box-hooks';
 import { useUsersBalances } from '@decent.xyz/box-hooks';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { scoutProtocolChainId, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Address } from 'viem';
 import { createPublicClient, http, parseAbi } from 'viem';
 import { base } from 'viem/chains';
