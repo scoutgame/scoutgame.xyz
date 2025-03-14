@@ -22,10 +22,6 @@ export async function registerBuilderStarterPackNFT({
   chainId?: number;
   contractAddress?: Address;
 }) {
-  if (!season) {
-    throw new InvalidInputError('Season is required');
-  }
-
   if (!contractAddress) {
     contractAddress = getBuilderNftStarterPackContractAddress(season);
   }

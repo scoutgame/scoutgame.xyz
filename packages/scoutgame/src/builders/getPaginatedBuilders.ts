@@ -2,6 +2,7 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
+import { getPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 
@@ -12,6 +13,8 @@ export type CompositeCursor = {
   userId: string;
   rank?: number | null;
 };
+
+const platform = getPlatform();
 
 export async function getPaginatedBuilders({
   limit,
@@ -74,8 +77,8 @@ export async function getPaginatedBuilders({
               },
               select: {
                 contractAddress: true,
-                // TODO: use the currentPriceInScoutToken when we move to $SCOUT
                 currentPrice: true,
+                currentPriceInScoutToken: true,
                 imageUrl: true,
                 nftType: true,
                 congratsImageUrl: true,
@@ -140,7 +143,10 @@ export async function getPaginatedBuilders({
         path: stat.user.path,
         displayName: stat.user.displayName,
         builderPoints: stat.user.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
-        price: stat.user.builderNfts?.[0]?.currentPrice ?? 0,
+        price:
+          platform === 'onchain_webapp'
+            ? BigInt(stat.user.builderNfts?.[0]?.currentPriceInScoutToken ?? 0)
+            : (stat.user.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
         scoutedBy: uniqueValues(
           stat.user.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
         ).length,

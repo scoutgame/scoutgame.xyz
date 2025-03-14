@@ -23,7 +23,7 @@ export function BuilderShareImage({
   activities: BuilderActivity[];
   builderScouts: BuilderScouts;
   stats: BuilderStats;
-  builderPrice: bigint;
+  builderPrice: string;
   size?: number;
 }) {
   const domain = baseUrl || process.env.IMAGE_HOSTING_DOMAIN;
@@ -39,8 +39,6 @@ export function BuilderShareImage({
   const { rank = 0, seasonPoints = 0, gemsCollected = 0 } = stats;
 
   const { totalScouts = 0, totalNftsSold = 0 } = builderScouts;
-
-  const purchaseCostInPoints = convertCostToPoints(builderPrice);
 
   const randomOverlay = overlays[random] || overlays[0];
 
@@ -152,7 +150,7 @@ export function BuilderShareImage({
           >
             <h6 style={{ fontSize: '14px', color: '#69DDFF', margin: 0 }}>CURRENT PRICE</h6>
             <p style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
-              <span>{purchaseCostInPoints}</span>
+              <span>{builderPrice}</span>
               <img width={21} height={12} src={`${domain}/images/profile/scout-game-icon.svg`} alt='points' />
             </p>
           </div>

@@ -2,6 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { BuilderNft } from '@charmverse/core/prisma';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
+import { getPlatform } from '@packages/utils/platform';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
@@ -39,7 +40,8 @@ export async function refreshBuilderNftPrice({
         id: existingNft.id
       },
       data: {
-        currentPrice: Number(currentPrice)
+        currentPrice: getPlatform() === 'onchain_webapp' ? undefined : Number(currentPrice),
+        currentPriceInScoutToken: getPlatform() === 'onchain_webapp' ? currentPrice.toString() : undefined
       }
     });
 

@@ -1,10 +1,13 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getPlatform } from '@packages/utils/platform';
 
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
 import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
 import { builderNftChain, getBuilderNftContractAddress } from '../constants';
+
+const platform = getPlatform();
 
 export async function createBuilderNft({
   avatar,
@@ -59,7 +62,8 @@ export async function createBuilderNft({
       contractAddress,
       tokenId: Number(tokenId),
       season,
-      currentPrice,
+      currentPrice: platform === 'onchain_webapp' ? undefined : currentPrice,
+      currentPriceInScoutToken: platform === 'onchain_webapp' ? currentPrice.toString() : undefined,
       imageUrl: fileUrl,
       congratsImageUrl
     }

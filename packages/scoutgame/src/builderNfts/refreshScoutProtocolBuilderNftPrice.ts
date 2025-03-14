@@ -4,7 +4,7 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { getScoutProtocolBuilderNFTContract, scoutTokenDecimalsMultiplier } from '../protocol/constants';
+import { getScoutProtocolBuilderNFTContract } from '../protocol/constants';
 
 export async function refreshScoutProtocolBuilderNftPrice({
   builderId,

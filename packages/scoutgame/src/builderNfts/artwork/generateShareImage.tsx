@@ -20,7 +20,7 @@ export async function generateShareImage({
   activities: BuilderActivity[];
   stats: BuilderStats;
   builderScouts: BuilderScouts;
-  builderPrice: bigint;
+  builderPrice: string;
 }): Promise<Buffer> {
   builderScouts.scouts.forEach((scout) => {
     for (const emoji of blacklistedEmojis) {

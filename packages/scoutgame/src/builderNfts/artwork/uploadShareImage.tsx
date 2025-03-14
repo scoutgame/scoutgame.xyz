@@ -1,9 +1,11 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
+import { getPlatform } from '@packages/utils/platform';
 
 import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
+import { builderTokenDecimals } from '../constants';
 
 import { builderNftArtworkContractName } from './constants';
 import { generateShareImage } from './generateShareImage';
@@ -32,13 +34,17 @@ export async function uploadShareImage({
   // const builderScouts = await getBuilderScouts('745c9ffd-278f-4e91-8b94-beaded2ebcd1');
   // const builderNft = await getBuilderNft('745c9ffd-278f-4e91-8b94-beaded2ebcd1');
 
+  const platform = getPlatform();
+
   const imageBuffer = await generateShareImage({
     userImage,
     activities,
     stats,
     builderScouts,
-    // TODO: use currentPriceInScoutToken when we move to $SCOUT
-    builderPrice: builderNft?.currentPrice || BigInt(0)
+    builderPrice:
+      platform === 'onchain_webapp'
+        ? (Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** 18).toFixed(2)
+        : (Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
   });
 
   const imagePath = getShareImagePath({

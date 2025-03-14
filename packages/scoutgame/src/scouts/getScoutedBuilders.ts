@@ -10,6 +10,8 @@ import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 
+const platform = getPlatform();
+
 async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
   const wallets = await prisma.scoutWallet.findMany({
     where: {
@@ -122,8 +124,6 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     }
   });
 
-  const platform = getPlatform();
-
   return builders.map((builder) => ({
     ...builder,
     nftImageUrl: builder.builderNfts[0].imageUrl,
@@ -191,8 +191,8 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
         select: {
           contractAddress: true,
           imageUrl: true,
-          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
+          currentPriceInScoutToken: true,
           nftType: true,
           nftSoldEvents: {
             where: {
@@ -254,7 +254,8 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           displayName: builder.displayName,
           builderStatus: builder.builderStatus!,
           nftsSoldToScout: nftsSoldData.toScout,
-          price: nft.currentPrice ?? 0,
+          price:
+            platform === 'onchain_webapp' ? BigInt(nft.currentPriceInScoutToken ?? 0) : (nft.currentPrice ?? BigInt(0)),
           last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
           nftType: nft.nftType,
           gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,

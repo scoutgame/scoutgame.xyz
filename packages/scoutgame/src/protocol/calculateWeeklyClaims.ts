@@ -111,7 +111,7 @@ export async function calculateWeeklyClaims({
   const builderNfts = await prisma.builderNft.findMany({
     where: {
       chainId: scoutProtocolChainId,
-      contractAddress: scoutProtocolBuilderNftContractAddress()
+      contractAddress: scoutProtocolBuilderNftContractAddress
     },
     select: {
       tokenId: true,

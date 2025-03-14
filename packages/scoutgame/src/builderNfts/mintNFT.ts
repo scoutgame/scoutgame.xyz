@@ -8,7 +8,6 @@ import { transferSingleAbi } from './accounting/getTransferSingleEvents';
 import { getPreSeasonTwoBuilderNftContractMinterClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
 import { getSeasonOneBuilderNftContractMinterClient } from './clients/season01/getSeasonOneBuilderNftContractMinterClient';
 import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
-import { isPreseason01Contract } from './constants';
 import { recordNftMint } from './recordNftMint';
 
 export type MintNFTParams = {
@@ -43,8 +42,7 @@ export async function mintNFT(params: MintNFTParams) {
         account: recipientAddress as Address,
         tokenId: BigInt(builderNft.tokenId),
         amount: BigInt(amount),
-        // For preseason02 onwards, we don't need to pass the scoutId as it's not used, except for starter packs which use the scoutId to track the mint status
-        scout: (!isPreseason01Contract(season) && nftType !== 'starter_pack' ? undefined : scoutId) as any
+        scout: scoutId
       }
     });
   } else if (season === '2025-W02') {

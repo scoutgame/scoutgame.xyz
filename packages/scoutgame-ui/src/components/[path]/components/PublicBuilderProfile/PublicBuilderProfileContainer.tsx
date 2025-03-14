@@ -8,6 +8,7 @@ import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScout
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
+import { getPlatform } from '@packages/utils/platform';
 
 import { useLgScreen, useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
@@ -27,12 +28,13 @@ export type BuilderProfileProps = {
   } & Omit<BuilderCardStats, 'starterPackSoldToScout'>;
   defaultNft: {
     imageUrl: string;
-    // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-    currentPrice: bigint;
+    currentPriceInScoutToken: string | null;
+    currentPrice: bigint | null;
   } | null;
   starterPackNft: {
     imageUrl: string;
-    currentPrice: bigint;
+    currentPriceInScoutToken: string | null;
+    currentPrice: bigint | null;
   } | null;
   builderActivities: BuilderActivity[];
   scoutProjects?: ScoutProjectMinimal[];
@@ -71,6 +73,8 @@ export function PublicBuilderProfileContainer({
   scoutProjects,
   starterPackSoldToScout
 }: BuilderProfileProps) {
+  const platform = getPlatform();
+
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
   return (
@@ -90,7 +94,14 @@ export function PublicBuilderProfileContainer({
                 <Box minWidth='fit-content'>
                   <BuilderCard
                     type='default'
-                    builder={{ ...builder, nftImageUrl: defaultNft?.imageUrl, price: defaultNft?.currentPrice }}
+                    builder={{
+                      ...builder,
+                      nftImageUrl: defaultNft?.imageUrl,
+                      price:
+                        platform === 'onchain_webapp'
+                          ? BigInt(defaultNft?.currentPriceInScoutToken ?? 0)
+                          : defaultNft?.currentPrice || BigInt(0)
+                    }}
                     showPurchaseButton
                     size='small'
                   />
@@ -100,7 +111,10 @@ export function PublicBuilderProfileContainer({
                         builder={{
                           ...builder,
                           nftImageUrl: starterPackNft.imageUrl,
-                          price: starterPackNft.currentPrice
+                          price:
+                            platform === 'onchain_webapp'
+                              ? BigInt(starterPackNft.currentPriceInScoutToken ?? 0)
+                              : starterPackNft.currentPrice || BigInt(0)
                         }}
                         showLabel
                         markStarterCardPurchased={starterPackSoldToScout}
@@ -156,7 +170,14 @@ export function PublicBuilderProfileContainer({
                   <div>
                     <BuilderCard
                       type='default'
-                      builder={{ ...builder, nftImageUrl: defaultNft?.imageUrl, price: defaultNft?.currentPrice }}
+                      builder={{
+                        ...builder,
+                        nftImageUrl: defaultNft?.imageUrl,
+                        price:
+                          platform === 'onchain_webapp'
+                            ? BigInt(defaultNft?.currentPriceInScoutToken ?? 0)
+                            : defaultNft?.currentPrice || BigInt(0)
+                      }}
                       showPurchaseButton
                       size={isLgScreen ? 'large' : 'medium'}
                     />
@@ -166,7 +187,10 @@ export function PublicBuilderProfileContainer({
                           builder={{
                             ...builder,
                             nftImageUrl: starterPackNft.imageUrl,
-                            price: starterPackNft.currentPrice
+                            price:
+                              platform === 'onchain_webapp'
+                                ? BigInt(starterPackNft.currentPriceInScoutToken ?? 0)
+                                : starterPackNft.currentPrice || BigInt(0)
                           }}
                           showLabel
                           markStarterCardPurchased={starterPackSoldToScout}

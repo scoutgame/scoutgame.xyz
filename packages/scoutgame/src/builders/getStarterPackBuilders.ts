@@ -1,5 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getCurrentSeason } from '@packages/dates/utils';
+import { getPlatform } from '@packages/utils/platform';
 
 import { starterPackBuilders } from '../builderNfts/builderRegistration/starterPack/starterPackBuilders';
 
@@ -7,6 +8,8 @@ import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type StarterPackBuilder = { builder: BuilderInfo; hasPurchased: boolean };
+
+const platform = getPlatform();
 
 export async function getStarterPackBuilders({
   week = getCurrentWeek(),
@@ -45,7 +48,7 @@ export async function getStarterPackBuilders({
           nftType: BuilderNftType.starter_pack
         },
         select: {
-          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+          currentPriceInScoutToken: true,
           currentPrice: true,
           nftSoldEvents: userId
             ? {
@@ -94,8 +97,10 @@ export async function getStarterPackBuilders({
       avatar: builder.avatar as string,
       displayName: builder.displayName,
       rank: builder.userWeeklyStats[0]?.rank || -1,
-      // TODO: convert to $SCOUT
-      price: builder.builderNfts[0]?.currentPrice,
+      price:
+        platform === 'onchain_webapp'
+          ? BigInt(builder.builderNfts[0]?.currentPriceInScoutToken ?? 0)
+          : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
       level: builder.userSeasonStats[0]?.level || 0,
       estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
