@@ -6,6 +6,7 @@ import type {
   ScoutProjectMemberRole
 } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
+import { shortenHex } from '@packages/utils/strings';
 
 export type ScoutProjectDetailed = Pick<
   ScoutProject,
@@ -32,6 +33,9 @@ export type ScoutProjectDetailed = Pick<
     txCount?: number;
   }[];
   totalTxCount?: number;
+  contractDailyStats: {
+    date: string;
+  }[];
 };
 
 // TODO: Add week to the data model?
@@ -56,6 +60,9 @@ const projectDetailedSelect = (week: string) =>
         dailyStats: {
           where: {
             week
+          },
+          orderBy: {
+            day: 'asc'
           }
         }
       }
@@ -94,6 +101,9 @@ const projectDetailedSelect = (week: string) =>
         dailyStats: {
           where: {
             week
+          },
+          orderBy: {
+            day: 'asc'
           }
         }
       }
@@ -115,6 +125,55 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
     ...scoutProject.contracts.flatMap((contract) => contract.dailyStats),
     ...scoutProject.wallets.flatMap((wallet) => wallet.dailyStats)
   ];
+
+  // const contractDailyStats = scoutProject.contracts.flatMap((contract) =>
+  //   contract.dailyStats.reduce<{ txCount: number; stats: { address: string; date: string; transactions: number }[] }>(
+  //     ({ txCount, stats }, dailyStat) => {
+  //       const newTxCount = txCount + dailyStat.transactions;
+  //       stats.push({
+  //         address: contract.address,
+  //         date: dailyStat.day.toLocaleDateString('en-US', {
+  //           month: 'short',
+  //           day: 'numeric'
+  //         }),
+  //         transactions: newTxCount
+  //       });
+  //       return { txCount: newTxCount, stats };
+  //     },
+  //     { txCount: 0, stats: [] }
+  //   )
+  // );
+  const contractDailyStats = Object.entries(
+    scoutProject.contracts.reduce<Record<string, Record<string, number>>>((acc, contract) => {
+      let weeklyTotal = 0;
+      contract.dailyStats.forEach((dailyStat) => {
+        const date = dailyStat.day.toISOString();
+        weeklyTotal += dailyStat.transactions;
+        acc[date] = acc[date] ?? {};
+        acc[date][shortenHex(contract.address)] = weeklyTotal;
+      });
+      return acc;
+    }, {})
+  ).map(([date, stats]) => ({
+    date,
+    ...stats
+  }));
+
+  // contract.dailyStats.reduce<{ txCount: number; stats: { address: string; date: string; transactions: number }[] }>(
+  //   ({ txCount, stats }, dailyStat) => {
+  //     const newTxCount = txCount + dailyStat.transactions;
+  //     stats.push({
+  //       address: contract.address,
+  //       date: dailyStat.day.toLocaleDateString('en-US', {
+  //         month: 'short',
+  //         day: 'numeric'
+  //       }),
+  //       transactions: newTxCount
+  //     });
+  //     return { txCount: newTxCount, stats };
+  //   }
+  // ),
+  // {}
 
   return {
     ...scoutProject,
@@ -140,7 +199,8 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
       role: member.role,
       path: member.user.path
     })),
-    // return undefined so we know the data is not available
-    totalTxCount: allDailyStats.length ? allDailyStats.reduce((acc, curr) => acc + curr.transactions, 0) : undefined
+    // return undefined so we know the data has not yet been recorded
+    totalTxCount: allDailyStats.length ? allDailyStats.reduce((acc, curr) => acc + curr.transactions, 0) : undefined,
+    contractDailyStats
   };
 }
