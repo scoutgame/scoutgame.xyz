@@ -348,7 +348,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const displayedBalance = !balanceInfo
     ? undefined
-    : selectedPaymentOption.currency === 'ETH'
+    : selectedPaymentOption.currency === 'ETH' || selectedPaymentOption.currency === 'SCOUT'
       ? (Number(balanceInfo.balance || 0) / 1e18).toFixed(4)
       : (Number(balanceInfo.balance || 0) / 1e6).toFixed(2);
 

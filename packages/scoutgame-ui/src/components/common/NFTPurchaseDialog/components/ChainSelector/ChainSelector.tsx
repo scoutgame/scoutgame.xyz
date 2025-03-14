@@ -1,7 +1,7 @@
 import { MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChain, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
@@ -53,7 +53,10 @@ function SelectField(
       ]
     : getChainOptions({ useTestnets });
 
-  const { tokens } = useGetTokenBalances({ address: address as Address, useScoutToken });
+  const { tokens } = useGetTokenBalances({
+    address: address as Address,
+    useScoutToken
+  });
 
   return (
     <Select<SelectedPaymentOption>
@@ -95,12 +98,13 @@ function SelectField(
             t.chainId === _chain.id &&
             (_chain.currency === 'ETH'
               ? t.address === NULL_EVM_ADDRESS
-              : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase())
+              : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase() ||
+                t.address?.toLowerCase() === scoutTokenErc20ContractAddress().toLowerCase())
         );
         let _balance = Number(_tokenBalanceInfo?.balance);
 
         if (_balance) {
-          if (_chain.currency === 'ETH') {
+          if (_chain.currency === 'ETH' || _chain.currency === 'SCOUT') {
             _balance /= 1e18;
           } else {
             _balance /= 1e6;
