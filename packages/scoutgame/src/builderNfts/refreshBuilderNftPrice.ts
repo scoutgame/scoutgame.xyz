@@ -5,7 +5,7 @@ import { stringUtils } from '@charmverse/core/utilities';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
 
 export async function refreshBuilderNftPrice({
   builderId,
@@ -19,7 +19,7 @@ export async function refreshBuilderNftPrice({
       throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
     }
 
-    const contractClient = getPreSeasonTwoBuilderNftContractReadonlyClient();
+    const contractClient = getBuilderNftContractReadonlyClient();
 
     const tokenId = await contractClient.getTokenIdForBuilder({ args: { builderId } });
 

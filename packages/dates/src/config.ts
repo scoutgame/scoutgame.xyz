@@ -7,6 +7,7 @@ export const weeksPerSeason = 13;
 export type SeasonConfig = {
   title: string;
   start: ISOWeek;
+  preseason?: boolean;
 };
 
 // the end of each season is the start of the next season
@@ -24,12 +25,20 @@ export const seasons = [
   // Preseason 1
   {
     start: '2024-W41',
-    title: 'Season 1'
+    title: 'Season 1',
+    preseason: true
   },
   // Preseason 2
   {
     start: '2025-W02',
-    title: 'Season 2'
+    title: 'Season 2',
+    preseason: true
+  },
+  // Season 1
+  {
+    // April 28th 2025
+    start: '2025-W17',
+    title: 'Season 1'
   }
 ] satisfies SeasonConfig[];
 
@@ -38,13 +47,3 @@ export const seasonStarts = seasons.map((s) => s.start);
 export type Season = (typeof seasons)[number]['start'];
 
 export const streakWindow = 7 * 24 * 60 * 60 * 1000;
-
-// Validate the season list just in case it is configured wrong
-function validateSeasonList(seasonList: Season[]): void {
-  if (!seasonList.every((s) => s)) {
-    throw new Error('Invalid season list');
-  }
-  if (seasonList.slice().sort().join(',') !== seasonList.join(',')) {
-    throw new Error('Season list is not sorted');
-  }
-}

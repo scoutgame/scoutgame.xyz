@@ -7,6 +7,13 @@ export function getCurrentSeason(
   _currentWeek: ISOWeek = getCurrentWeek(),
   seasonList: SeasonConfig[] = seasons
 ): SeasonConfig {
+  if (process.env.SCOUTGAME_SEASON) {
+    const season = seasonList.find((s) => s.start === process.env.SCOUTGAME_SEASON);
+    if (!season) {
+      throw new Error(`Season ${process.env.SCOUTGAME_SEASON} not found`);
+    }
+    return season;
+  }
   const _seasonStarts = seasonList.map((s) => s.start);
   // Validate the season list so that logic can make assumptions below
   validateSeasonList(_seasonStarts);

@@ -20,15 +20,11 @@ import {
   Typography
 } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import {
-  builderNftChain,
-  getBuilderNftContractAddress,
   getBuilderNftContractAddressForNftType,
-  getBuilderNftStarterPackContractAddress,
   treasuryAddress,
-  usdcOptimismMainnetContractAddress,
   useTestnets
 } from '@packages/scoutgame/builderNfts/constants';
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
@@ -36,11 +32,11 @@ import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import {
-  scoutProtocolChainId,
+  getScoutProtocolBuilderNFTContract,
   scoutProtocolBuilderNftContractAddress,
-  scoutTokenErc20ContractAddress,
+  scoutProtocolChainId,
   scoutTokenDecimals,
-  getScoutProtocolBuilderNFTContract
+  scoutTokenErc20ContractAddress
 } from '@packages/scoutgame/protocol/constants';
 import type { MinimalUserInfo } from '@packages/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
@@ -119,10 +115,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { switchChainAsync } = useSwitchChain();
   const { data: nftStats } = useGetBuilderNftStats({ builderId });
 
-  const builderContractReadonlyApiClient = getPreSeasonTwoBuilderNftContractReadonlyClient({
-    chain: builderNftChain,
-    contractAddress: getBuilderNftContractAddress(season)
-  });
+  const builderContractReadonlyApiClient = getBuilderNftContractReadonlyClient();
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(
     platform === 'onchain_webapp'
@@ -186,10 +179,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
             })
           : builder.nftType === 'starter_pack'
-            ? await getBuilderNftStarterPackReadonlyClient({
-                chain: builderNftChain,
-                contractAddress: getBuilderNftStarterPackContractAddress(season)
-              }).getTokenPurchasePrice({
+            ? await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
                 args: { amount: BigInt(amount) }
               })
             : await builderContractReadonlyApiClient.getTokenPurchasePrice({
@@ -208,10 +198,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       _builderTokenId = await (platform === 'onchain_webapp'
         ? getScoutProtocolBuilderNFTContract().getTokenIdForBuilder({ args: { builderId } })
         : builder.nftType === 'starter_pack'
-          ? getBuilderNftStarterPackReadonlyClient({
-              chain: builderNftChain,
-              contractAddress: getBuilderNftStarterPackContractAddress(season)
-            }).getTokenIdForBuilder({ args: { builderId } })
+          ? getBuilderNftStarterPackReadonlyClient().getTokenIdForBuilder({ args: { builderId } })
           : builderContractReadonlyApiClient.getTokenIdForBuilder({ args: { builderId } }));
 
       setBuilderTokenId(_builderTokenId);
@@ -258,7 +245,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const contractAddress =
     platform === 'onchain_webapp'
-      ? scoutProtocolBuilderNftContractAddress()
+      ? scoutProtocolBuilderNftContractAddress
       : getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season });
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
@@ -332,7 +319,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         txMetadata: {
           contractAddress:
             platform === 'onchain_webapp'
-              ? scoutProtocolBuilderNftContractAddress()
+              ? scoutProtocolBuilderNftContractAddress
               : getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }),
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,

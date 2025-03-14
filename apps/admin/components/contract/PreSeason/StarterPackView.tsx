@@ -15,11 +15,12 @@ function ContractLink({
   title: string;
   subtitle?: string;
 }) {
+  const chainName = process.env.REACT_APP_CONTRACT_CHAIN_NAME;
   return (
     <Box gap={1} display='flex' flexDirection='column'>
       <Typography variant='h6'>{title}</Typography>
       <Box sx={{ minHeight: '40px' }}>{subtitle && <Typography variant='body2'>{subtitle}</Typography>}</Box>
-      <Link href={`https://optimism.blockscout.com/${linkType}/${address}`} target='_blank'>
+      <Link href={`https://${chainName}.blockscout.com/${linkType}/${address}`} target='_blank'>
         {address}
         <IconButton size='small' color='primary'>
           <MdLaunch size='16px' />

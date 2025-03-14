@@ -5,7 +5,7 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
@@ -159,7 +159,7 @@ export async function findAndIndexMissingPurchases({
             },
             blockNumber: missingTx.blockNumber
           })
-        : getPreSeasonTwoBuilderNftContractReadonlyClient().getTokenPurchasePrice({
+        : getBuilderNftContractReadonlyClient().getTokenPurchasePrice({
             args: { tokenId: BigInt(key), amount: BigInt(missingTx.args.value) },
             blockNumber: missingTx.blockNumber
           }));

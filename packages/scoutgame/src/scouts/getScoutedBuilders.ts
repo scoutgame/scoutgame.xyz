@@ -29,7 +29,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
       },
       builderNft: {
         chainId: scoutProtocolChainId,
-        contractAddress: scoutProtocolBuilderNftContractAddress()
+        contractAddress: scoutProtocolBuilderNftContractAddress
       }
     },
     include: {
@@ -53,7 +53,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
             in: uniqueTokenIds
           },
           chainId: scoutProtocolChainId,
-          contractAddress: scoutProtocolBuilderNftContractAddress()
+          contractAddress: scoutProtocolBuilderNftContractAddress
         }
       },
       deletedAt: null
@@ -90,13 +90,13 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
       builderNfts: {
         where: {
           season: getCurrentSeasonStart(),
-          contractAddress: scoutProtocolBuilderNftContractAddress()
+          contractAddress: scoutProtocolBuilderNftContractAddress
         },
         select: {
           contractAddress: true,
           imageUrl: true,
-          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
+          currentPriceInScoutToken: true,
           nftType: true,
           tokenId: true,
           congratsImageUrl: true,
@@ -122,12 +122,17 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     }
   });
 
+  const platform = getPlatform();
+
   return builders.map((builder) => ({
     ...builder,
     nftImageUrl: builder.builderNfts[0].imageUrl,
     nftType: builder.builderNfts[0].nftType,
     congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
-    price: builder.builderNfts[0].currentPrice ?? BigInt(0),
+    price:
+      platform === 'onchain_webapp'
+        ? BigInt(builder.builderNfts[0].currentPriceInScoutToken ?? 0)
+        : (builder.builderNfts[0].currentPrice ?? BigInt(0)),
     level: builder.userSeasonStats[0]?.level ?? 0,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),

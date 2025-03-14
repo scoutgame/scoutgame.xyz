@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
 import { getBuilderNftContractStarterPackMinterClient } from '../clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
 import { getBuilderNftStarterPackReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
@@ -66,7 +66,7 @@ export async function registerBuilderStarterPackNFT({
   }
 
   // Read the tokenId from the existing builder NFT Contract so that they match
-  const tokenId = await getPreSeasonTwoBuilderNftContractReadonlyClient().getTokenIdForBuilder({
+  const tokenId = await getBuilderNftContractReadonlyClient().getTokenIdForBuilder({
     args: { builderId }
   });
 

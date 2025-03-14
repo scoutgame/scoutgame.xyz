@@ -1,7 +1,7 @@
 import { SchemaRegistry, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import type { Address } from 'viem';
-import { baseSepolia, base, optimism, optimismSepolia } from 'viem/chains';
+import { baseSepolia, base } from 'viem/chains';
 import type { Chain } from 'viem/chains';
 
 export const NULL_EAS_REF_UID = '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`;

@@ -1,11 +1,9 @@
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
 
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import { builderNftChain } from './constants';
 
 export async function refreshScoutNftBalance({
   wallet,
@@ -29,16 +27,13 @@ export async function refreshScoutNftBalance({
   });
 
   const balance = await (nftType === 'starter_pack'
-    ? getBuilderNftStarterPackReadonlyClient({
-        chain: builderNftChain,
-        contractAddress
-      }).balanceOf({
+    ? getBuilderNftStarterPackReadonlyClient().balanceOf({
         args: {
           account: wallet,
           id: BigInt(tokenId)
         }
       })
-    : getPreSeasonTwoBuilderNftContractReadonlyClient({ chain: builderNftChain, contractAddress }).balanceOf({
+    : getBuilderNftContractReadonlyClient().balanceOf({
         args: {
           account: wallet,
           tokenId: BigInt(tokenId)

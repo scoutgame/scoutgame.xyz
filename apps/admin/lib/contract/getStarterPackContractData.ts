@@ -19,10 +19,7 @@ export type StarterPackNFTContractData = {
 };
 
 export async function getStarterPackContractData({ season }: { season: ISOWeek }): Promise<StarterPackNFTContractData> {
-  const starterPackClient = getBuilderNftStarterPackReadonlyClient({
-    chain: optimism,
-    contractAddress: getBuilderNftStarterPackContractAddress(season)
-  });
+  const starterPackClient = getBuilderNftStarterPackReadonlyClient();
 
   const starterPackProxyClient = getBuilderNftStarterPackProxyReadonlyClient({
     chain: optimism,

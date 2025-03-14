@@ -121,7 +121,7 @@ export async function handlePendingTransaction({
         }
       });
 
-      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress()) {
+      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress.toLowerCase()) {
         await refreshScoutProtocolBuilderNftPrice({
           season: getCurrentSeasonStart(),
           builderId: builderNft.builderId

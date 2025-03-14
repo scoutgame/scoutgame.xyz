@@ -1,18 +1,20 @@
 import env from '@beam-australia/react-env';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
-import { baseSepolia } from 'viem/chains';
+import { base } from 'viem/chains';
 
 import { LockupWeeklyStreamCreatorClient } from '../builderNfts/clients/protocol/wrappers/LockupWeeklyStreamCreatorClient';
 import { ScoutProtocolBuilderNFTImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutProtocolBuilderNFTImplementation';
 import { ScoutTokenERC20ImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutTokenERC20Implementation';
+import { getBuilderNftContractAddress } from '../builderNfts/constants';
 
 export const sablierLockupContractAddress = process.env.SABLIER_LOCKUP_CONTRACT_ADDRESS as Address;
 
 export const sablierStreamId = process.env.SABLIER_STREAM_ID as Address;
 
-export const scoutProtocolChain = baseSepolia;
+export const scoutProtocolChain = base;
 
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
@@ -38,16 +40,16 @@ export function getScoutAdminWalletClient() {
   });
 }
 
-export function getScoutProtocolBuilderNFTContract() {
-  const contractAddress = scoutProtocolBuilderNftContractAddress();
+export const scoutProtocolBuilderNftContractAddress = getBuilderNftContractAddress(getCurrentSeasonStart());
 
-  if (!contractAddress) {
+export function getScoutProtocolBuilderNFTContract() {
+  if (!scoutProtocolBuilderNftContractAddress) {
     throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
   }
 
   const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
     chain: scoutProtocolChain,
-    contractAddress,
+    contractAddress: scoutProtocolBuilderNftContractAddress,
     walletClient: getScoutAdminWalletClient()
   });
 
@@ -55,15 +57,13 @@ export function getScoutProtocolBuilderNFTContract() {
 }
 
 export function getScoutProtocolBuilderNFTReadonlyContract() {
-  const contractAddress = scoutProtocolBuilderNftContractAddress();
-
-  if (!contractAddress) {
+  if (!scoutProtocolBuilderNftContractAddress) {
     throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
   }
 
   const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
     chain: scoutProtocolChain,
-    contractAddress,
+    contractAddress: scoutProtocolBuilderNftContractAddress,
     publicClient: getPublicClient(scoutProtocolChainId)
   });
 
@@ -109,11 +109,4 @@ export function getSablierLockupContract() {
 
 export function getScoutProtocolAddress(): Address {
   return (env('SCOUTPROTOCOL_CONTRACT_ADDRESS') || process.env.REACT_APP_SCOUTPROTOCOL_CONTRACT_ADDRESS) as Address;
-}
-
-export function scoutProtocolBuilderNftContractAddress() {
-  return (
-    (env('SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS') as Address) ||
-    (process.env.REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS as Address)
-  )?.toLowerCase() as Address;
 }
