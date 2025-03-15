@@ -1,7 +1,9 @@
+import type { BuilderEvent, NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { seasons } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { getPlatform } from '@packages/utils/platform';
 
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
 
@@ -54,6 +56,8 @@ export async function getPointsReceiptsRewards({
   if (claimableSeasons.length === 0) {
     throw new Error(`No seasons found to claim points: ${season}`);
   }
+  const platform = getPlatform();
+
   const pointsReceipts = await prisma.pointsReceipt.findMany({
     where: {
       recipientId: userId,
@@ -91,16 +95,49 @@ export async function getPointsReceiptsRewards({
     }
   });
 
+  const tokensReceipts = await prisma.tokensReceipt.findMany({
+    where: {
+      recipientWallet: {
+        scoutId: userId
+      },
+      claimedAt: isClaimed ? { not: null } : { equals: null }
+    },
+    select: {
+      value: true,
+      recipientWalletAddress: true,
+      recipientWallet: {
+        select: {
+          scoutId: true
+        }
+      },
+      event: {
+        select: {
+          week: true,
+          season: true,
+          type: true,
+          bonusPartner: true,
+          builderId: true,
+          nftPurchaseEvent: {
+            select: {
+              tokensPurchased: true
+            }
+          }
+        }
+      }
+    }
+  });
+
   const builderRewards: Record<string, BuilderPointsReceiptReward> = {};
   const soldNftRewards: Record<string, SoldNftsPointsReceiptReward> = {};
   const leaderboardRankRewards: Record<string, LeaderboardRankPointsReceiptReward> = {};
 
   const leaderboardRankWeeks = Array.from(
-    new Set(
-      pointsReceipts
+    new Set([
+      ...pointsReceipts
         .filter((pr) => pr.event.type === 'gems_payout' && pr.recipientId === userId)
-        .map((pr) => pr.event.week)
-    )
+        .map((pr) => pr.event.week),
+      ...tokensReceipts.filter((tr) => tr.recipientWallet?.scoutId === userId).map((tr) => tr.event.week)
+    ])
   );
 
   const weeklyRankRecord: Record<string, number | null> = {};
@@ -123,14 +160,17 @@ export async function getPointsReceiptsRewards({
 
   const bonusPartners: Set<string> = new Set();
 
-  const pointsBySeason = pointsReceipts.reduce(
-    (acc, receipt) => {
-      const s = receipt.event.season as Season;
-      acc[s] = (acc[s] ?? 0) + receipt.value;
-      return acc;
-    },
-    {} as Record<Season, number>
-  );
+  const pointsBySeason: Record<Season, number> = {};
+
+  pointsReceipts.forEach((receipt) => {
+    const _season = receipt.event.season as Season;
+    pointsBySeason[_season] = (pointsBySeason[_season] ?? 0) + receipt.value;
+  });
+
+  tokensReceipts.forEach((receipt) => {
+    const _season = receipt.event.season as Season;
+    pointsBySeason[_season] = (pointsBySeason[_season] ?? 0) + Number(BigInt(receipt.value) / BigInt(10 ** 18));
+  });
 
   const previousSeasons: SeasonPointsReceiptsReward[] = seasons
     .slice()
@@ -143,7 +183,33 @@ export async function getPointsReceiptsRewards({
       season: s.start
     }));
 
-  const currentSeasonReceipts = pointsReceipts.filter((pr) => pr.event.season === season);
+  const currentSeasonReceipts: {
+    value: number;
+    event: Pick<BuilderEvent, 'week' | 'season' | 'type' | 'bonusPartner' | 'builderId'> & {
+      nftPurchaseEvent?: Pick<NFTPurchaseEvent, 'tokensPurchased'> | null;
+    };
+    recipientId: string;
+  }[] = [];
+
+  pointsReceipts
+    .filter((pr) => pr.event.season === season && pr.recipientId === userId)
+    .forEach((pr) => {
+      currentSeasonReceipts.push({
+        value: pr.value,
+        event: pr.event,
+        recipientId: pr.recipientId!
+      });
+    });
+
+  tokensReceipts
+    .filter((tr) => tr.event.season === season && tr.recipientWallet?.scoutId === userId)
+    .forEach((tr) => {
+      currentSeasonReceipts.push({
+        value: Number(BigInt(tr.value) / BigInt(10 ** 18)),
+        event: tr.event,
+        recipientId: tr.recipientWallet!.scoutId!
+      });
+    });
 
   for (const receipt of currentSeasonReceipts) {
     const points = receipt.value;

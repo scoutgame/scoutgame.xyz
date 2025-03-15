@@ -183,7 +183,7 @@ export async function calculateWeeklyClaims({
 
         const builderTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
           eventId: builderEventId,
-          value: tokensForBuilder,
+          value: (BigInt(tokensForBuilder) * BigInt(10 ** 18)).toString(),
           recipientWalletAddress: builderWallet
         };
 
@@ -191,10 +191,9 @@ export async function calculateWeeklyClaims({
           (scoutClaim) =>
             ({
               eventId: builderEventId,
-              // TODO: Multiple by 18 decimals when we move to $SCOUT
-              // Edge case. Decimal tokens value should be converted to int before adding decimals
-              // Example. 7.91 => 791 => Add 16 decimals since we already shifted by 2 decimal places
-              value: scoutClaim.erc20Tokens,
+              // Convert decimal value to integer first by multiplying by 100 (2 decimal places)
+              // Then add 16 more decimals to reach 18 total decimals for $SCOUT token
+              value: (BigInt(Math.round(scoutClaim.erc20Tokens * 100)) * BigInt(10 ** 16)).toString(),
               recipientWalletAddress: scoutClaim.wallet
             }) as Prisma.TokensReceiptCreateManyInput
         );
@@ -229,7 +228,7 @@ export async function calculateWeeklyClaims({
   // Convert to final claims array
   const claims: ProvableClaim[] = Array.from(claimsByWallet.entries()).map(([address, amount]) => ({
     address: address as Address,
-    amount: amount.toString()
+    amount: (BigInt(amount) * BigInt(10 ** 18)).toString()
   }));
 
   const merkleProofs = generateMerkleTree(claims);

@@ -3,6 +3,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { getScoutTokenERC20Contract } from '@packages/scoutgame/protocol/constants';
+import { revalidatePath } from 'next/cache';
 import type { Address } from 'viem';
 import * as yup from 'yup';
 
@@ -49,7 +50,6 @@ export const handleOnchainClaimAction = authActionClient
     await prisma.tokensReceipt.updateMany({
       where: {
         recipientWalletAddress: parsedInput.wallet.toLowerCase(),
-
         event: {
           week: {
             in: parsedInput.claimsProofs.map((claim) => claim.week)
@@ -77,6 +77,8 @@ export const handleOnchainClaimAction = authActionClient
         currentBalance
       }
     });
+
+    revalidatePath('/claim');
 
     return { success: true };
   });

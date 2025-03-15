@@ -16,7 +16,7 @@ import { encodeFunctionData, decodeFunctionResult, getAddress } from 'viem';
 
 // ReadWriteWalletClient reflects a wallet client that has been extended with PublicActions
 //  https://github.com/wevm/viem/discussions/1463#discussioncomment-7504732
-type ReadWriteWalletClient<
+export type ReadWriteWalletClient<
   transport extends Transport = Transport,
   chain extends Chain | undefined = Chain | undefined,
   account extends Account | undefined = Account | undefined
@@ -482,24 +482,19 @@ export class ScoutProtocolImplementationClient {
   }) {
     if (!publicClient && !walletClient) {
       throw new Error('At least one client is required.');
-    } else if (publicClient && walletClient) {
-      throw new Error('Provide only a public client or wallet clients');
     }
 
     this.chain = chain;
     this.contractAddress = contractAddress;
 
-    const client = publicClient || walletClient;
-
-    if (client!.chain!.id !== chain.id) {
-      throw new Error('Client must be on the same chain as the contract. Make sure to add a chain to your client');
-    }
-
     if (publicClient) {
       this.publicClient = publicClient;
     } else {
-      this.walletClient = walletClient;
       this.publicClient = walletClient as PublicClient;
+    }
+
+    if (walletClient) {
+      this.walletClient = walletClient;
     }
   }
 
@@ -571,7 +566,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async claimsManager(): Promise<Address> {
@@ -688,7 +683,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async pause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
@@ -713,7 +708,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async pauser(): Promise<Address> {
@@ -788,7 +783,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async setPauser(params: {
@@ -817,7 +812,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async setScoutTokenERC20(params: {
@@ -846,7 +841,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async setWeeklyMerkleRoot(params: {
@@ -875,7 +870,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async transferAdmin(params: {
@@ -904,7 +899,7 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 
   async unPause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
@@ -929,6 +924,6 @@ export class ScoutProtocolImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return this.publicClient.waitForTransactionReceipt({ hash: tx });
   }
 }

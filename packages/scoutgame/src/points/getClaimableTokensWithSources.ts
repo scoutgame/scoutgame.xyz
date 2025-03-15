@@ -79,9 +79,9 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
   for (const receipt of tokenReceipts) {
     if (receipt.event.type === 'gems_payout' && receipt.event.builderId !== userId) {
       if (!builderIdScoutPointsRecord[receipt.event.builderId]) {
-        builderIdScoutPointsRecord[receipt.event.builderId] = receipt.value;
+        builderIdScoutPointsRecord[receipt.event.builderId] = Number(BigInt(receipt.value) / BigInt(10 ** 18));
       } else {
-        builderIdScoutPointsRecord[receipt.event.builderId] += receipt.value;
+        builderIdScoutPointsRecord[receipt.event.builderId] += Number(BigInt(receipt.value) / BigInt(10 ** 18));
       }
     }
   }
