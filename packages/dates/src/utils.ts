@@ -1,4 +1,3 @@
-import env from '@beam-australia/react-env';
 import { DateTime } from 'luxon';
 
 import type { ISOWeek, Season, SeasonConfig } from './config';
@@ -8,14 +7,6 @@ export function getCurrentSeason(
   _currentWeek: ISOWeek = getCurrentWeek(),
   seasonList: SeasonConfig[] = seasons
 ): SeasonConfig {
-  const scoutGameSeason = env('SCOUTGAME_SEASON') || process.env.REACT_APP_SCOUTGAME_SEASON;
-  if (scoutGameSeason) {
-    const season = seasonList.find((s) => s.start === scoutGameSeason);
-    if (!season) {
-      throw new Error(`Season ${process.env.REACT_APP_SCOUTGAME_SEASON} not found`);
-    }
-    return season;
-  }
   const _seasonStarts = seasonList.map((s) => s.start);
   // Validate the season list so that logic can make assumptions below
   validateSeasonList(_seasonStarts);

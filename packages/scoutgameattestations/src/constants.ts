@@ -1,7 +1,7 @@
 import env from '@beam-australia/react-env';
-import { baseSepolia, base } from 'viem/chains';
+import { base } from 'viem/chains';
 
-export const scoutGameAttestationChain = baseSepolia;
+export const scoutGameAttestationChain = base;
 
 export const scoutGameAttestationChainId = scoutGameAttestationChain.id;
 

@@ -27,7 +27,7 @@ export async function resolveTokenOwnership({
       chainId === baseSepolia.id
         ? 19_000_000
         : chainId === base.id
-          ? 27_500_000
+          ? 27_250_000
           : chainId === optimism.id
             ? 126_000_000
             : 1,
