@@ -94,6 +94,12 @@ export function InfoPageFooter() {
           <MuiLink href='/info/dpa'>
             <Typography>DPA</Typography>
           </MuiLink>
+          <MuiLink
+            href='https://docs.google.com/document/d/1xAiP9jS_DOWzjJXHrEXLAkCEAFE1QrInkvMkgGPO2Pk'
+            target='_blank'
+          >
+            <Typography>Protocol Whitepaper</Typography>
+          </MuiLink>
         </Stack>
 
         <Stack gap={1} flex={1}>
