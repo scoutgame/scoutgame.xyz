@@ -16,3 +16,7 @@ export function getPlatform(): ReferralPlatform {
 
   return 'unknown';
 }
+
+export function isOnchainPlatform() {
+  return platform === 'onchain_webapp' || platform === 'onchain_cron';
+}

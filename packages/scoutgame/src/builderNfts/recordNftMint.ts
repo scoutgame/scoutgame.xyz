@@ -6,12 +6,13 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
-import { getPlatform } from '@packages/utils/platform';
+import { getPlatform, isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { sendNotifications } from '../notifications/sendNotifications';
+import { scoutTokenDecimals } from '../protocol/constants';
 import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
@@ -19,8 +20,6 @@ import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
 import type { MintNFTParams } from './mintNFT';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
-
-const platform = getPlatform();
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType' | 'scoutId'> & {
@@ -270,10 +269,9 @@ export async function recordNftMint(
           }
         })
       ]);
-      const currentCardPrice =
-        platform === 'onchain_webapp'
-          ? (Number(nft.currentPriceInScoutToken || 0) / 10 ** 18).toFixed(2)
-          : (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2);
+      const currentCardPrice = isOnchainPlatform()
+        ? (Number(nft.currentPriceInScoutToken || 0) / 10 ** scoutTokenDecimals).toFixed(2)
+        : (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2);
 
       await sendNotifications({
         notificationType: 'builder_card_scouted',

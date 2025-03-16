@@ -5,7 +5,8 @@ import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
-import { getPlatform } from '@packages/utils/platform';
+import { scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -41,7 +42,6 @@ export function BuildersTable({
   const searchParams = useSearchParams();
   const isMdScreen = useMdScreen();
   const { openModal } = useDeveloperInfoModal();
-  const platform = getPlatform();
 
   const handleSort = (sortBy: string) => {
     const params = new URLSearchParams(searchParams);
@@ -241,8 +241,8 @@ export function BuildersTable({
             <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>
-                  {platform === 'onchain_webapp'
-                    ? Number(builder.price || 0) / 10 ** 18
+                  {isOnchainPlatform()
+                    ? Number(builder.price || 0) / 10 ** scoutTokenDecimals
                     : convertCostToPoints(builder.price || BigInt(0))}
                 </TableCellText>
                 {isMdScreen && (

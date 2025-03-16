@@ -12,9 +12,10 @@ import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartn
 import {
   getScoutProtocolAddress,
   scoutProtocolChain,
-  scoutProtocolChainId
+  scoutProtocolChainId,
+  scoutTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
-import { getPlatform } from '@packages/utils/platform';
+import { getPlatform, isOnchainPlatform } from '@packages/utils/platform';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -187,7 +188,7 @@ function PointsClaimScreenComponent({
           {totalUnclaimedPoints ? (
             <>
               <Typography variant='h5' textAlign='center'>
-                You have earned Scout {platform === 'onchain_webapp' ? 'Tokens' : 'Points'}!
+                You have earned Scout {isOnchainPlatform() ? 'Tokens' : 'Points'}!
               </Typography>
 
               <Stack
@@ -208,7 +209,7 @@ function PointsClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {(totalUnclaimedPoints / 10 ** 18).toLocaleString()}
+                      {(totalUnclaimedPoints / 10 ** scoutTokenDecimals).toLocaleString()}
                     </Typography>
                     <Image
                       width={35}

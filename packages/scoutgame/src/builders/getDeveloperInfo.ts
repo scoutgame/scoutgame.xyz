@@ -2,7 +2,7 @@
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -166,10 +166,9 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     firstContributionDate: firstContributionDate?.createdAt || developer.createdAt,
     level: developer.userSeasonStats[0]?.level || 0,
     estimatedPayout: developer.builderNfts[0]?.estimatedPayout || 0,
-    price:
-      getPlatform() === 'onchain_webapp'
-        ? BigInt(developer.builderNfts[0].currentPriceInScoutToken || 0)
-        : BigInt(developer.builderNfts[0].currentPrice || 0),
+    price: isOnchainPlatform()
+      ? BigInt(developer.builderNfts[0].currentPriceInScoutToken || 0)
+      : BigInt(developer.builderNfts[0].currentPrice || 0),
     rank: developer.userWeeklyStats[0]?.rank || 0,
     gemsCollected: developer.userWeeklyStats[0]?.gemsCollected || 0,
     githubConnectedAt: developer.githubUsers[0].createdAt,

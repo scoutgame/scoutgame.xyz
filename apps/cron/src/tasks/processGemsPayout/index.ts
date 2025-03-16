@@ -2,6 +2,7 @@ import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getLastWeek } from '@packages/dates/utils';
 import { getPointsCountForWeekWithNormalisation } from '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation';
+import { scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
@@ -82,7 +83,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
       proofsMap: {},
       season,
       claims: [],
-      totalClaimable: totalPoints,
+      totalClaimable: (BigInt(totalPoints) * BigInt(10 ** scoutTokenDecimals)).toString(),
       week
     },
     update: {}

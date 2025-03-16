@@ -3,10 +3,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { getPlatform } from '@packages/utils/platform';
+import { getPlatform, isOnchainPlatform } from '@packages/utils/platform';
 import { revalidatePath } from 'next/cache';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { scoutTokenDecimals } from '../protocol/constants';
 
 import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
@@ -58,12 +59,14 @@ export const purchaseWithPointsAction = authActionClient
           args: { tokenId: BigInt(builderNft.tokenId), amount: BigInt(parsedInput.amount) }
         }));
 
-    const currentPriceInScoutToken = Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** 18;
-    const pointsValue = platform === 'onchain_webapp' ? currentPriceInScoutToken : convertCostToPoints(currentPrice);
+    const isOnchain = isOnchainPlatform();
+
+    const currentPriceInScoutToken = Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** scoutTokenDecimals;
+    const pointsValue = isOnchain ? currentPriceInScoutToken : convertCostToPoints(currentPrice);
 
     if (
-      (platform === 'onchain_webapp' && scout.currentBalance < currentPriceInScoutToken) ||
-      (platform !== 'onchain_webapp' && scout.currentBalance < pointsValue)
+      (isOnchain && scout.currentBalance < currentPriceInScoutToken) ||
+      (!isOnchain && scout.currentBalance < pointsValue)
     ) {
       throw new Error('Insufficient points');
     }

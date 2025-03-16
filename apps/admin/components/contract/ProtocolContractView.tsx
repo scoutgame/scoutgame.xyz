@@ -1,4 +1,5 @@
 import { Box, Divider, Grid2, IconButton, Typography } from '@mui/material';
+import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import {
   contributionSchemaDefinition,
   scoutGameUserProfileSchemaDefinition
@@ -19,7 +20,7 @@ function ContractLink({
   title: string;
   subtitle?: string;
 }) {
-  const chainName = process.env.REACT_APP_CONTRACT_CHAIN_NAME;
+  const chainName = scoutProtocolChain.name.toLowerCase();
   return (
     <Box gap={1} display='flex' flexDirection='column'>
       <Typography variant='h6'>{title}</Typography>

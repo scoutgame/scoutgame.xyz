@@ -178,6 +178,10 @@ async function deployEASSchemas({chainId, resolverAddress, selectedSchemas}: {ch
     privateKey: PRIVATE_KEY,
   });
 
+  if (!walletClient.account) {
+    throw new Error('No account found');
+  }
+
   const deployerAddress = walletClient.account.address;
 
   log.info('Using account:', deployerAddress, 'on chain:', chain.name);

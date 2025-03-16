@@ -2,14 +2,12 @@ import type { Prisma } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
-
-const platform = getPlatform();
 
 const userSelect = (week: string, season: string, userId?: string) =>
   ({
@@ -135,10 +133,9 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       id: builder.id,
       path: builder.path,
       displayName: builder.displayName,
-      price:
-        platform === 'onchain_webapp'
-          ? BigInt(builder.builderNfts[0]?.currentPriceInScoutToken ?? 0)
-          : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
+      price: isOnchainPlatform()
+        ? BigInt(builder.builderNfts[0]?.currentPriceInScoutToken ?? 0)
+        : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
       nftImageUrl: builder.builderNfts[0]?.imageUrl,
       congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl,
       builderStatus: builder.builderStatus!,

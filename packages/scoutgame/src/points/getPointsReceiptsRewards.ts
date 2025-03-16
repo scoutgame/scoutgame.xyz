@@ -5,6 +5,8 @@ import { seasons } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 import { getPlatform } from '@packages/utils/platform';
 
+import { scoutTokenDecimals } from '../protocol/constants';
+
 export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
 
 type PointsReceiptRewardBase = {
@@ -169,7 +171,8 @@ export async function getPointsReceiptsRewards({
 
   tokensReceipts.forEach((receipt) => {
     const _season = receipt.event.season as Season;
-    pointsBySeason[_season] = (pointsBySeason[_season] ?? 0) + Number(BigInt(receipt.value) / BigInt(10 ** 18));
+    pointsBySeason[_season] =
+      (pointsBySeason[_season] ?? 0) + Number(BigInt(receipt.value) / BigInt(10 ** scoutTokenDecimals));
   });
 
   const previousSeasons: SeasonPointsReceiptsReward[] = seasons
@@ -205,7 +208,7 @@ export async function getPointsReceiptsRewards({
     .filter((tr) => tr.event.season === season && tr.recipientWallet?.scoutId === userId)
     .forEach((tr) => {
       currentSeasonReceipts.push({
-        value: Number(BigInt(tr.value) / BigInt(10 ** 18)),
+        value: Number(BigInt(tr.value) / BigInt(10 ** scoutTokenDecimals)),
         event: tr.event,
         recipientId: tr.recipientWallet!.scoutId!
       });

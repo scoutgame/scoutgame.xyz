@@ -9,7 +9,7 @@ import {
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import {
@@ -148,10 +148,9 @@ export async function handlePendingTransaction({
           builderNftId: builderNft.id,
           mintTxHash: txHash,
           paidWithPoints: false,
-          pointsValue:
-            getPlatform() === 'onchain_webapp'
-              ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
-              : convertCostToPoints(pendingTx.targetAmountReceived),
+          pointsValue: isOnchainPlatform()
+            ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
+            : convertCostToPoints(pendingTx.targetAmountReceived),
           recipientAddress: pendingTx.senderAddress,
           mintTxLogIndex: validatedMint.txLogIndex
         });

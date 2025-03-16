@@ -3,11 +3,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { uniqueValues } from '@packages/utils/array';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
-
-const platform = getPlatform();
 
 export async function getBuildersByFid({
   fids,
@@ -94,10 +92,9 @@ export async function getBuildersByFid({
         congratsImageUrl: scout.builderNfts[0]?.congratsImageUrl,
         path: scout.path,
         displayName: scout.displayName,
-        price:
-          platform === 'onchain_webapp'
-            ? BigInt(scout.builderNfts?.[0]?.currentPriceInScoutToken ?? 0)
-            : (scout.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
+        price: isOnchainPlatform()
+          ? BigInt(scout.builderNfts?.[0]?.currentPriceInScoutToken ?? 0)
+          : (scout.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
         scoutedBy: scout.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
         rank: scout.userWeeklyStats[0]?.rank ?? -1,
         builderStatus: scout.builderStatus!,

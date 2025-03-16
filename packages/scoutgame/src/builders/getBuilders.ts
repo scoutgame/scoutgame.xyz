@@ -1,9 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { getPlatform } from '@packages/utils/platform';
-
-import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -22,8 +20,6 @@ export type BuilderMetadata = {
   rank: number | null;
 };
 
-const platform = getPlatform();
-
 export async function getBuilders({
   limit = 200,
   sortBy = 'week_gems',
@@ -36,6 +32,7 @@ export async function getBuilders({
   order?: 'asc' | 'desc';
 }): Promise<BuilderMetadata[]> {
   const week = getCurrentWeek();
+  const isOnchain = isOnchainPlatform();
 
   const season = getCurrentSeasonStart(week);
 
@@ -122,10 +119,9 @@ export async function getBuilders({
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
-      price:
-        platform === 'onchain_webapp'
-          ? BigInt(user.builderNfts[0].currentPriceInScoutToken ?? 0)
-          : user.builderNfts[0]?.currentPrice || BigInt(0),
+      price: isOnchain
+        ? BigInt(user.builderNfts[0].currentPriceInScoutToken ?? 0)
+        : user.builderNfts[0]?.currentPrice || BigInt(0),
       level: user.userSeasonStats[0]?.level || 0,
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       gemsCollected: user.userWeeklyStats[0]?.gemsCollected || 0,
@@ -210,7 +206,7 @@ export async function getBuilders({
       path: builder.path,
       avatar: builder.avatar as string,
       displayName: builder.displayName,
-      price: platform === 'onchain_webapp' ? BigInt(currentPriceInScoutToken ?? 0) : currentPrice || BigInt(0),
+      price: isOnchain ? BigInt(currentPriceInScoutToken ?? 0) : currentPrice || BigInt(0),
       estimatedPayout: estimatedPayout || 0,
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
@@ -288,7 +284,7 @@ export async function getBuilders({
       path: builder.path,
       avatar: builder.avatar as string,
       displayName: builder.displayName,
-      price: platform === 'onchain_webapp' ? BigInt(currentPriceInScoutToken ?? 0) : currentPrice || BigInt(0),
+      price: isOnchain ? BigInt(currentPriceInScoutToken ?? 0) : currentPrice || BigInt(0),
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
       level: builder.userSeasonStats[0]?.level || 0,
@@ -375,10 +371,9 @@ export async function getBuilders({
       rank,
       nftsSoldToScout:
         user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null,
-      price:
-        platform === 'onchain_webapp'
-          ? BigInt(user.builderNfts[0].currentPriceInScoutToken ?? 0)
-          : user.builderNfts[0]?.currentPrice || BigInt(0)
+      price: isOnchain
+        ? BigInt(user.builderNfts[0].currentPriceInScoutToken ?? 0)
+        : user.builderNfts[0]?.currentPrice || BigInt(0)
     }));
   }
 

@@ -8,8 +8,9 @@ import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderAct
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
+import { scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
@@ -19,8 +20,6 @@ import { JoinGithubButton } from '../../../common/JoinGithubButton';
 import { BuilderActivitiesList } from './BuilderActivitiesList';
 import { BuilderStats } from './BuilderStats';
 import { BuilderWeeklyStats } from './BuilderWeeklyStats';
-
-const platform = getPlatform();
 
 export async function BuilderProfile({
   builder,
@@ -114,8 +113,8 @@ export async function BuilderProfile({
         totalScouts={totalScouts}
         totalNftsSold={totalNftsSold}
         currentNftPrice={
-          platform === 'onchain_webapp'
-            ? Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** 18
+          isOnchainPlatform()
+            ? Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** scoutTokenDecimals
             : Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals
         }
       />

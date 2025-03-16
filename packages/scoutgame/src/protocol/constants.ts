@@ -2,8 +2,9 @@ import env from '@beam-australia/react-env';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
-import { base } from 'viem/chains';
+import { base, optimism } from 'viem/chains';
 
 import { LockupWeeklyStreamCreatorClient } from '../builderNfts/clients/protocol/wrappers/LockupWeeklyStreamCreatorClient';
 import { ScoutProtocolBuilderNFTImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutProtocolBuilderNFTImplementation';
@@ -14,7 +15,7 @@ export const sablierLockupContractAddress = process.env.SABLIER_LOCKUP_CONTRACT_
 
 export const sablierStreamId = process.env.SABLIER_STREAM_ID as Address;
 
-export const scoutProtocolChain = base;
+export const scoutProtocolChain = isOnchainPlatform() ? base : optimism;
 
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
