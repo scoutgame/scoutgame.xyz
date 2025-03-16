@@ -1,4 +1,5 @@
 // Must be there otherwise React is not defined error is thrown
+import * as React from 'react';
 import sharp from 'sharp';
 
 import type { BuilderActivity } from '../../builders/getBuilderActivities';
