@@ -104,6 +104,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       ? Number(builder.price) / 10 ** scoutTokenDecimals
       : convertCostToPoints(builder.price).toLocaleString()
     : '';
+
   const { address, chainId } = useAccount();
   const { error: addressError } = useUserWalletAddress(address);
   const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
@@ -172,17 +173,18 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
-      const _price = isOnchain
-        ? await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
-            args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
-          })
-        : builder.nftType === 'starter_pack'
+      const _price =
+        builder.nftType === 'starter_pack'
           ? await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
               args: { amount: BigInt(amount) }
             })
-          : await builderContractReadonlyApiClient.getTokenPurchasePrice({
-              args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
-            });
+          : isOnchain
+            ? await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
+                args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
+              })
+            : await builderContractReadonlyApiClient.getTokenPurchasePrice({
+                args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
+              });
       setPurchaseCost(_price);
     },
     [setPurchaseCost]
