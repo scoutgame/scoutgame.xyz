@@ -100,27 +100,40 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
           nftType: true,
           tokenId: true,
           congratsImageUrl: true,
-          estimatedPayout: true,
-          nftSoldEvents: scoutId
-            ? {
-                where: {
-                  builderEvent: {
-                    season: getCurrentSeasonStart()
-                  },
-                  ...validMintNftPurchaseEvent,
-                  scoutWallet: {
-                    scoutId
-                  }
-                },
-                select: {
-                  tokensPurchased: true
-                }
-              }
-            : undefined
+          estimatedPayout: true
         }
       }
     }
   });
+
+  const scoutNfts = await prisma.scoutNft.findMany({
+    where: {
+      scoutWallet: {
+        scoutId
+      },
+      builderNft: {
+        season: getCurrentSeasonStart(),
+        chainId: scoutProtocolChainId,
+        contractAddress: scoutProtocolBuilderNftContractAddress
+      }
+    },
+    select: {
+      balance: true,
+      builderNft: {
+        select: {
+          builderId: true
+        }
+      }
+    }
+  });
+
+  const scoutNftsByBuilderId = scoutNfts.reduce(
+    (acc, nft) => {
+      acc[nft.builderNft.builderId] = (acc[nft.builderNft.builderId] || 0) + (nft.balance || 0);
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return builders.map((builder) => ({
     ...builder,
@@ -133,7 +146,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
     level: builder.userSeasonStats[0]?.level ?? 0,
     estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
-    nftsSoldToScout: builder.builderNfts[0].nftSoldEvents.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0)
+    nftsSoldToScout: scoutNftsByBuilderId[builder.id] ?? 0
   }));
 }
 

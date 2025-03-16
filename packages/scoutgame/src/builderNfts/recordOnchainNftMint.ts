@@ -127,10 +127,6 @@ export async function recordOnchainNftMint({
     return { balance: _balance };
   });
 
-  await recordNftPurchaseQuests(scoutId).catch((error) => {
-    log.error('Error completing quest', { error, builderId: builderNft.builderId, questType: 'scout-starter-card' });
-  });
-
   await refreshEstimatedPayouts({
     week: getCurrentWeek(),
     builderIdToRefresh: builderNft.builderId
