@@ -37,7 +37,7 @@ export const seasons = [
   // Season 1
   {
     // April 28th 2025
-    start: '2025-W17',
+    start: '2025-W10',
     title: 'Season 1'
   }
 ] satisfies SeasonConfig[];

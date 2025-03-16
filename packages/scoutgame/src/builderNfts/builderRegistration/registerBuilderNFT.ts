@@ -82,7 +82,7 @@ export async function registerBuilderNFT({
     throw new InvalidInputError('Builder does not have a primary wallet');
   }
 
-  let tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } }).catch((err) => null);
+  let tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } }).catch(() => null);
 
   if (!tokenId) {
     log.info(`Registering builder token for builder`, { userId: builderId });

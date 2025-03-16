@@ -2,7 +2,8 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType, Prisma } from '@charmverse/core/prisma';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeason } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import { base, optimism, optimismSepolia } from 'viem/chains';
@@ -16,9 +17,10 @@ export const useTestnets = false;
  */
 export const builderTokenDecimals = 6;
 
-const currentSeason = getCurrentSeasonStart();
+const currentSeason = getCurrentSeason();
 
-export const builderNftChain: Chain = currentSeason < '2025-W17' ? (useTestnets ? optimismSepolia : optimism) : base;
+export const builderNftChain: Chain =
+  !currentSeason.preseason || isOnchainPlatform() ? base : useTestnets ? optimismSepolia : optimism;
 
 // Dev contracts we also deployed for easier use
 // const devOptimismSepoliaBuildersContract = '0x2f6093b70562729952bf379633dee3e89922d717';
@@ -91,7 +93,7 @@ export function isStarterPackContract(contractAddress: string): boolean {
   const starterPackAddresses = [
     getBuilderNftStarterPackContractAddress('2024-W41'),
     getBuilderNftStarterPackContractAddress('2025-W02'),
-    getBuilderNftStarterPackContractAddress('2025-W17')
+    getBuilderNftStarterPackContractAddress('2025-W10')
   ];
 
   if (starterPackAddresses.includes(contractAddress.toLowerCase() as Address)) {

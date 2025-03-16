@@ -41,15 +41,8 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
   });
 
   if (season === '2024-W41') {
-    const builderContractReadonlyApiClient = getPreSeasonOneBuilderNftContractReadonlyClient({
-      chain: optimism,
-      contractAddress: getBuilderNftContractAddress(season)
-    });
-
-    const builderProxyContractReadonlyApiClient = getPreSeasonOneBuilderNftProxyContractReadonlyClient({
-      chain: optimism,
-      contractAddress: getBuilderNftContractAddress(season)
-    });
+    const builderContractReadonlyApiClient = getPreSeasonOneBuilderNftContractReadonlyClient();
+    const builderProxyContractReadonlyApiClient = getPreSeasonOneBuilderNftProxyContractReadonlyClient();
 
     const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
       await Promise.all([
@@ -72,15 +65,8 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       nftSalesData
     };
   } else if (season === '2025-W02') {
-    const builderImplementationContractReadonlyApiClient = getPreSeasonTwoBuilderNftContractReadonlyClient({
-      chain: optimism,
-      contractAddress: getBuilderNftContractAddress(season)
-    });
-
-    const builderProxyContractReadonlyApiClient = getPreSeasonTwoBuilderNftProxyContractReadonlyClient({
-      chain: optimism,
-      contractAddress: getBuilderNftContractAddress(season)
-    });
+    const builderImplementationContractReadonlyApiClient = getPreSeasonTwoBuilderNftContractReadonlyClient();
+    const builderProxyContractReadonlyApiClient = getPreSeasonTwoBuilderNftProxyContractReadonlyClient();
 
     const currentUsdcBalance = await usdcClient.balanceOf({ args: { account: scoutgameDotEth } });
 
