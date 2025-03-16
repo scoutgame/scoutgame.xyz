@@ -83,7 +83,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
       proofsMap: {},
       season,
       claims: [],
-      totalClaimable: (BigInt(totalPoints) * BigInt(10 ** scoutTokenDecimals)).toString(),
+      totalClaimable: (BigInt(Math.floor(totalPoints)) * BigInt(10 ** scoutTokenDecimals)).toString(),
       week
     },
     update: {}
