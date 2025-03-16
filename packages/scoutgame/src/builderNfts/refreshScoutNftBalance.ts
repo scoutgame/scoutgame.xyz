@@ -56,4 +56,6 @@ export async function refreshScoutNftBalance({
       builderNftId: existingBuilderNft.id
     }
   });
+
+  return balance;
 }

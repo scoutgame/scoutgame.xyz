@@ -9,7 +9,7 @@ import { base, optimism } from 'viem/chains';
 import { LockupWeeklyStreamCreatorClient } from '../builderNfts/clients/protocol/wrappers/LockupWeeklyStreamCreatorClient';
 import { ScoutProtocolBuilderNFTImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutProtocolBuilderNFTImplementation';
 import { ScoutTokenERC20ImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutTokenERC20Implementation';
-import { getBuilderNftContractAddress } from '../builderNfts/constants';
+import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../builderNfts/constants';
 
 export const sablierLockupContractAddress = process.env.SABLIER_LOCKUP_CONTRACT_ADDRESS as Address;
 
@@ -45,6 +45,8 @@ export function getScoutAdminWalletClient() {
 }
 
 export const scoutProtocolBuilderNftContractAddress = getBuilderNftContractAddress(getCurrentSeasonStart());
+export const scoutProtocolBuilderStarterNftContractAddress =
+  getBuilderNftStarterPackContractAddress(getCurrentSeasonStart());
 
 export function getScoutProtocolBuilderNFTContract() {
   if (!scoutProtocolBuilderNftContractAddress) {
