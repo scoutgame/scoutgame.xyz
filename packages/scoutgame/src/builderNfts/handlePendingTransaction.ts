@@ -121,10 +121,12 @@ export async function handlePendingTransaction({
       ) {
         await recordOnchainNftMint({
           builderNftId: builderNft.id,
-          senderAddress: pendingTx.senderAddress as `0x${string}`,
+          recipientAddress: pendingTx.senderAddress as `0x${string}`,
           scoutId: pendingTx.userId,
           amount: pendingTx.tokenAmount,
-          pointsValue
+          pointsValue,
+          txLogIndex: validatedMint.txLogIndex,
+          txHash
         });
       } else {
         await recordNftMint({

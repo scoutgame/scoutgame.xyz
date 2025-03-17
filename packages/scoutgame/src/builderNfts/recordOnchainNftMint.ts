@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentWeek } from '@packages/dates/utils';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import { getCurrentWeek, getWeekFromDate } from '@packages/dates/utils';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
@@ -14,16 +15,22 @@ import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 export async function recordOnchainNftMint({
   builderNftId,
-  senderAddress,
+  recipientAddress,
   scoutId,
   amount,
-  pointsValue
+  pointsValue,
+  sentAt = new Date(),
+  txLogIndex,
+  txHash
 }: {
   builderNftId: string;
-  senderAddress: `0x${string}`;
+  recipientAddress: Address;
   scoutId: string;
   amount: number;
   pointsValue: number;
+  sentAt?: Date;
+  txLogIndex: number;
+  txHash: string;
 }) {
   const builderNft = await prisma.builderNft.findFirstOrThrow({
     where: {
@@ -46,33 +53,58 @@ export async function recordOnchainNftMint({
     }
   });
 
+  const [builderNftScouts, scoutNfts] = await Promise.all([
+    prisma.scoutNft.findMany({
+      where: {
+        builderNft: {
+          builderId: builderNft.builderId,
+          season: builderNft.season
+        }
+      },
+      select: {
+        balance: true,
+        scoutWallet: {
+          select: {
+            scoutId: true
+          }
+        }
+      }
+    }),
+    prisma.scoutNft.findMany({
+      where: {
+        builderNft: {
+          season: builderNft.season
+        },
+        scoutWallet: {
+          scoutId
+        }
+      },
+      select: {
+        balance: true
+      }
+    })
+  ]);
+
   await refreshBuilderNftPrice({
     season: builderNft.season,
     builderId: builderNft.builderId
   });
 
-  const scoutNfts = await prisma.scoutNft.findMany({
-    where: {
-      builderNftId
-    },
-    select: {
-      balance: true,
-      scoutWallet: {
-        select: {
-          scoutId: true
-        }
-      }
-    }
-  });
-
   const uniqueOwners: Set<string> = new Set();
   let nftsSold = 0;
+  let nftsPurchased = 0;
 
-  scoutNfts.forEach((scoutNft) => {
-    if (scoutNft.scoutWallet?.scoutId) {
-      uniqueOwners.add(scoutNft.scoutWallet.scoutId);
+  const week = getWeekFromDate(sentAt);
+
+  builderNftScouts.forEach((scout) => {
+    if (scout.scoutWallet?.scoutId) {
+      uniqueOwners.add(scout.scoutWallet.scoutId);
     }
-    nftsSold += scoutNft.balance;
+    nftsSold += scout.balance;
+  });
+
+  scoutNfts.forEach((scout) => {
+    nftsPurchased += scout.balance;
   });
 
   const { balance } = await prisma.$transaction(async (tx) => {
@@ -80,7 +112,7 @@ export async function recordOnchainNftMint({
       contractAddress: builderNft.contractAddress as Address,
       nftType: builderNft.nftType,
       tokenId: builderNft.tokenId,
-      wallet: senderAddress.toLowerCase() as `0x${string}`
+      wallet: recipientAddress.toLowerCase() as Address
     });
 
     await tx.userSeasonStats.upsert({
@@ -92,9 +124,7 @@ export async function recordOnchainNftMint({
       },
       update: {
         nftOwners: uniqueOwners.size,
-        nftsSold: {
-          increment: nftsSold
-        }
+        nftsSold
       },
       create: {
         nftOwners: uniqueOwners.size,
@@ -112,14 +142,38 @@ export async function recordOnchainNftMint({
         }
       },
       update: {
-        nftsPurchased: {
-          increment: amount
-        }
+        nftsPurchased
       },
       create: {
-        nftsPurchased: amount,
+        nftsPurchased,
         userId: scoutId,
         season: builderNft.season
+      }
+    });
+
+    await tx.builderEvent.create({
+      data: {
+        type: 'nft_purchase',
+        season: builderNft.season,
+        week,
+        builder: {
+          connect: {
+            id: builderNft.builderId
+          }
+        },
+        createdAt: sentAt,
+        nftPurchaseEvent: {
+          create: {
+            pointsValue,
+            tokensPurchased: amount,
+            createdAt: sentAt,
+            txHash: txHash.toLowerCase(),
+            builderNftId,
+            walletAddress: recipientAddress,
+            senderWalletAddress: null,
+            txLogIndex
+          }
+        }
       }
     });
 
