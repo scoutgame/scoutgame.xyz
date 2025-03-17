@@ -22,6 +22,14 @@ export function getCurrentSeason(
   return _currentSeason;
 }
 
+export function getSeasonConfig(startOfSeason: Season): SeasonConfig {
+  const season = seasons.find((s) => s.start === startOfSeason);
+  if (!season) {
+    throw new Error(`Invalid season: ${startOfSeason}`);
+  }
+  return season;
+}
+
 // Return the start of the current season
 export function getCurrentSeasonStart(
   _currentWeek: ISOWeek = getCurrentWeek(),
@@ -56,9 +64,14 @@ export function getNextWeek(week: ISOWeek): ISOWeek {
   return _formatWeek(getDateFromISOWeek(week).plus({ week: 1 }));
 }
 
-export function getPreviousSeason(season: Season): Season {
+export function getPreviousSeason(season: Season): Season | null {
   const seasonIndex = seasons.findIndex((s) => s.start === season);
-  return seasons[seasonIndex - 1].start;
+  return seasons[seasonIndex - 1]?.start || null;
+}
+
+export function getNextSeason(season: Season): Season | null {
+  const seasonIndex = seasons.findIndex((s) => s.start === season);
+  return seasons[seasonIndex + 1]?.start || null;
 }
 
 export function getWeekFromDate(date: Date): ISOWeek {

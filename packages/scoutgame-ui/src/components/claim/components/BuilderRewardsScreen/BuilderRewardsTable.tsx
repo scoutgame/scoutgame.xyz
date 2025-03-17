@@ -35,11 +35,8 @@ function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
       <TableCell align='center'>
         <Typography>{reward.cardsHeld}</Typography>
       </TableCell>
-      {reward.rank ? (
-        <TableCell align='center'>
-          <Typography>{reward.rank}</Typography>
-        </TableCell>
-      ) : null}
+      <TableCell align='center'>{reward.rank ? <Typography>{reward.rank}</Typography> : '-'}</TableCell>
+
       <TableCell align='right'>
         <PointsCell points={reward.points} />
       </TableCell>
@@ -62,7 +59,7 @@ export function BuilderRewardsTable({
         <TableRow>
           <TableCell align='left'>DEVELOPER</TableCell>
           <TableCell align='center'>CARDS HELD</TableCell>
-          {week ? <TableCell align='center'>RANK</TableCell> : null}
+          <TableCell align='center'>RANK</TableCell>
           <TableCell align='right'>POINTS</TableCell>
         </TableRow>
       </StyledTableHead>
