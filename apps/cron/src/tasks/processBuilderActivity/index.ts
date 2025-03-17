@@ -81,6 +81,8 @@ export async function processAllBuilderActivity(
       githubUser: builder.githubUsers[0]!,
       createdAfter: newBuilder ? getDateFromISOWeek(getCurrentWeek()).toJSDate() : createdAfter,
       season
+    }).catch((error) => {
+      log.error('Error processing builder activity', { error, userId: builder.id });
     });
 
     if (builders.indexOf(builder) % 10 === 0) {
