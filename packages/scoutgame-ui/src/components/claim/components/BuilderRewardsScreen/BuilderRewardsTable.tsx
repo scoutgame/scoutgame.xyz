@@ -66,7 +66,7 @@ export function BuilderRewardsTable({
       <StyledTableBody
         sx={{
           '& .MuiTableCell-root': {
-            width: !week ? '33.33%' : '25%'
+            width: '25%'
           }
         }}
       >
@@ -74,7 +74,7 @@ export function BuilderRewardsTable({
           <BuilderRewardsTableRow key={reward.path} reward={reward} />
         ))}
         <TableRow>
-          <TableCell colSpan={week ? 3 : 2}>
+          <TableCell colSpan={3}>
             <Typography>Total Scout Points</Typography>
           </TableCell>
           <TableCell align='right'>

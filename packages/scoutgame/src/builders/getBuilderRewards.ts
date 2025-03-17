@@ -46,6 +46,7 @@ export async function getSeasonBuilderRewards({
       pointsReceived: {
         where: {
           event: {
+            season,
             type: 'gems_payout'
           }
         },
@@ -76,7 +77,7 @@ export async function getSeasonBuilderRewards({
     const builderId = builder.id;
     const cardsHeld = scout.wallets
       .flatMap((wallet) => wallet.purchaseEvents)
-      .filter((event) => event.createdAt < receipt.createdAt)
+      .filter((event) => event.createdAt < receipt.createdAt && event.builderNft.builderId === builderId)
       .reduce((acc, event) => acc + event.tokensPurchased, 0);
     if (cardsHeld) {
       if (!builderRewardsRecord[builderId]) {
