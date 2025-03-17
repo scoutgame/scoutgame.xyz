@@ -6,15 +6,21 @@ import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/databa
 import { randomLargeInt, randomWalletAddress } from '@packages/testing/generators';
 import type { Address } from 'viem';
 
-jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
-  getPreSeasonTwoBuilderNftContractMinterClient: () => ({
+const amount = 10;
+
+jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
+  getBuilderNftContractMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
+  }),
+  getBuilderNftContractReadonlyClient: () => ({
+    getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
+    registerBuilderToken: jest.fn(),
+    getTokenPurchasePrice: () => Promise.resolve(randomLargeInt()),
+    balanceOf: () => Promise.resolve(amount)
   })
 }));
-
-const amount = 10;
 
 jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient', () => ({
   getPreSeasonTwoBuilderNftContractReadonlyClient: () => ({
@@ -118,7 +124,8 @@ describe('recordNftTransfer', () => {
         walletAddress: mockRecipientWallet,
         senderWalletAddress: mockSenderWallet,
         txLogIndex: 5
-      }
+      },
+      onchainAchievementId: null
     });
 
     // Make sure the recipient wallet was created
