@@ -6,7 +6,6 @@ import type { Address } from 'viem';
 
 import { sendNotifications } from '../notifications/sendNotifications';
 import { scoutTokenDecimals } from '../protocol/constants';
-import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
 import { builderTokenDecimals } from './constants';
 import { refreshBuilderNftPrice } from './refreshBuilderNftPrice';

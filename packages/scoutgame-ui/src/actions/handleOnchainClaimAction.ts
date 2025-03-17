@@ -2,7 +2,7 @@
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { getScoutTokenERC20Contract } from '@packages/scoutgame/protocol/constants';
+import { getScoutTokenERC20Contract, scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { revalidatePath } from 'next/cache';
 import type { Address } from 'viem';
 import * as yup from 'yup';
@@ -29,8 +29,6 @@ export const handleOnchainClaimAction = authActionClient
     const userId = ctx.session.scoutId;
 
     const balance = await getScoutTokenERC20Contract().balanceOf({ args: { account: parsedInput.wallet as Address } });
-
-    const decimals = await getScoutTokenERC20Contract().decimals();
 
     const scout = await prisma.scout.findFirst({
       where: {
@@ -62,12 +60,7 @@ export const handleOnchainClaimAction = authActionClient
       }
     });
 
-    // Getting an error "Exponentiation cannot be performed on 'bigint' values unless the 'target' option is set to 'es2016' or later." so using this instead of BigInt(10) ** BigInt(decimals)
-    const exponent = Array.from({ length: Number(decimals) }, () => BigInt(10)).reduce(
-      (acc, val) => acc * val,
-      BigInt(1)
-    );
-    const currentBalance = Number(balance / exponent);
+    const currentBalance = Number(balance / BigInt(10 ** scoutTokenDecimals));
 
     await prisma.scout.update({
       where: {
