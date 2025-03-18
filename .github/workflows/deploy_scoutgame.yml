@@ -130,7 +130,7 @@ jobs:
     name: Test e2e
     runs-on: ubuntu-latest
     needs: build
-    # if: ${{ github.event.action != 'labeled' && needs.build.outputs.skip_tests != 'true' }}
+    if: ${{ github.event.action != 'labeled' && needs.build.outputs.skip_tests != 'true' }}
     # Postgres setup copied from https://gist.github.com/2color/537f8ef13ecec80059abb007839a6878
     services:
       postgres:
