@@ -1,3 +1,4 @@
+import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import { POST } from '@packages/utils/http';
 import { RateLimit } from 'async-sema';
@@ -23,9 +24,10 @@ export type SupportedChainId = keyof typeof supportedChains;
 const rateLimiter = RateLimit(1500, { timeUnit: 60 * 1000, uniformDistribution: true });
 
 export function getAnkrBaseUrl(chainId: SupportedChainId) {
+  const ankrApiId = env('ANKR_API_ID') || process.env.REACT_APP_ANKR_API_ID;
   const chainPath = supportedChains[chainId];
   if (!chainPath) throw new Error(`Chain id "${chainId}" not supported by Ankr`);
-  return `https://rpc.ankr.com/${chainPath}/${process.env.ANKR_API_ID}`; /// ${process.env.ANKR_API_ID}`;
+  return `https://rpc.ankr.com/${chainPath}/${ankrApiId}`; /// ${process.env.ANKR_API_ID}`;
 }
 
 export type ResponseError = {
