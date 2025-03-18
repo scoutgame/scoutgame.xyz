@@ -27,6 +27,7 @@ export function getAnkrBaseUrl(chainId: SupportedChainId) {
   const ankrApiId = env('ANKR_API_ID') || process.env.REACT_APP_ANKR_API_ID;
   const chainPath = supportedChains[chainId];
   if (!chainPath) throw new Error(`Chain id "${chainId}" not supported by Ankr`);
+  if (!ankrApiId) throw new Error(`No ankr api id found for chain id "${chainId}"`);
   return `https://rpc.ankr.com/${chainPath}/${ankrApiId}`; /// ${process.env.ANKR_API_ID}`;
 }
 
