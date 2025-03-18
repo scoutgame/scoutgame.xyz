@@ -39,7 +39,7 @@ export const getPublicClient = (chainId: number) => {
     if (ankrApiId) {
       providerUrl = `${providerUrl}/${ankrApiId}`;
     } else {
-      log.error('No ankr api id found', { chainId });
+      log.error('No ankr api id found using default rpc url', { chainId });
     }
   }
 

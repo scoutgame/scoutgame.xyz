@@ -118,7 +118,8 @@ describe('recordNftTransfer', () => {
         walletAddress: mockRecipientWallet,
         senderWalletAddress: mockSenderWallet,
         txLogIndex: 5
-      }
+      },
+      onchainAchievementId: null
     });
 
     // Make sure the recipient wallet was created

@@ -56,7 +56,7 @@ export function getWalletClient({
   if (chainId === optimism.id) {
     const ankrApiId = env('ANKR_API_ID') || process.env.REACT_APP_ANKR_API_ID;
     if (!ankrApiId) {
-      log.warn('No ANKR_API_ID found, using default rpc url');
+      log.warn('No ANKR_API_ID found, using default rpc url', { chainId });
     } else {
       rpcUrl = `https://rpc.ankr.com/optimism/${ankrApiId}`;
     }
