@@ -169,12 +169,12 @@ describe('calculateBuilderLevels', () => {
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
     const { builders: ignoredBuilders } = seedBuildersGemPayouts({
-      season: getPreviousSeason(season),
+      season: getPreviousSeason(season)!,
       amount: 57,
       indexOffset: indexOffset * 2
     });
 
-    await writeSeededBuildersGemPayoutsToDatabase({ builders: ignoredBuilders, season: getPreviousSeason(season) });
+    await writeSeededBuildersGemPayoutsToDatabase({ builders: ignoredBuilders, season: getPreviousSeason(season)! });
 
     // Case where we didn't renew a builder for the current season, but we are still recording their activity
     for (let i = 0; i < ignoredBuilders.length; i++) {
