@@ -1,3 +1,4 @@
+import env from '@beam-australia/react-env';
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import { sleep } from '@packages/utils/sleep';
@@ -53,11 +54,11 @@ export function getWalletClient({
   let rpcUrl = chain.rpcUrls[0];
 
   if (chainId === optimism.id) {
-    const apiKey = process.env.ANKR_API_ID;
-    if (!apiKey) {
+    const ankrApiId = env('ANKR_API_ID') || process.env.REACT_APP_ANKR_API_ID;
+    if (!ankrApiId) {
       log.warn('No ANKR_API_ID found, using default rpc url');
     } else {
-      rpcUrl = `https://rpc.ankr.com/optimism/${apiKey}`;
+      rpcUrl = `https://rpc.ankr.com/optimism/${ankrApiId}`;
     }
   } else {
     try {
