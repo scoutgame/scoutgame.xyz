@@ -29,8 +29,19 @@ jest.unstable_mockModule('../refreshBuilderNftPrice', () => ({
   refreshBuilderNftPrice: jest.fn()
 }));
 
+jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
+  getPublicClient: () => {
+    return {
+      getBlock: async () => {
+        return {
+          timestamp: 1716153600
+        };
+      }
+    };
+  }
+}));
+
 const { recordNftTransfer } = await import('../recordNftTransfer');
-const { refreshScoutNftBalance } = await import('../refreshScoutNftBalance');
 
 describe('recordNftTransfer', () => {
   afterEach(() => {

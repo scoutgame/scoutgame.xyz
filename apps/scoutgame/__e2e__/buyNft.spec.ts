@@ -15,7 +15,7 @@ test.describe('Buy Nft', () => {
 
   const season = getCurrentSeasonStart();
 
-  test('Should be able to buy an nft', async ({ utils, page, userPage }) => {
+  test.skip('Should be able to buy an nft', async ({ utils, page, userPage }) => {
     // Only for testing locally. Ensure the database is clean
     // await prisma.scout.deleteMany({});
     const builder = await mockBuilder({

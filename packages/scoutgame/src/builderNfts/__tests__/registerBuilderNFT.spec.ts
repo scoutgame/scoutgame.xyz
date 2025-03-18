@@ -4,7 +4,15 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomLargeInt } from '@packages/testing/generators';
 
-import { builderNftChain, getBuilderNftContractAddress } from '../constants';
+// Mock the constants module first
+jest.unstable_mockModule('../constants', () => ({
+  builderNftChain: { id: 10 },
+  getBuilderNftContractAddress: () => '0x1234567890123456789012345678901234567890',
+  scoutProtocolBuilderNftContractAddress: '0x1234567890123456789012345678901234567890'
+}));
+
+// Import constants after mocking
+const { builderNftChain, getBuilderNftContractAddress } = await import('../constants');
 
 jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
   getPreSeasonTwoBuilderNftContractMinterClient: () => ({
@@ -36,6 +44,7 @@ const { createBuilderNft } = await import('../builderRegistration/createBuilderN
 
 describe('registerBuilderNFT', () => {
   const mockSeason = getCurrentSeasonStart();
+  const mockContractAddress = getBuilderNftContractAddress(mockSeason);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -48,19 +57,23 @@ describe('registerBuilderNFT', () => {
         builderId: builder.id,
         season: mockSeason,
         chainId: builderNftChain.id,
-        contractAddress: getBuilderNftContractAddress(mockSeason)
+        contractAddress: mockContractAddress
       });
     });
 
     // Call the function
-    await registerBuilderNFT({ builderId: builder.id, season: mockSeason });
+    await registerBuilderNFT({
+      builderId: builder.id,
+      season: mockSeason,
+      contractAddress: mockContractAddress
+    });
 
     // Verify that a new NFT record was created in the database
     const createdNft = await prisma.builderNft.findFirst({
       where: {
         builderId: builder.id,
         chainId: builderNftChain.id,
-        contractAddress: getBuilderNftContractAddress(mockSeason),
+        contractAddress: mockContractAddress,
         season: mockSeason
       }
     });
@@ -69,7 +82,7 @@ describe('registerBuilderNFT', () => {
     expect(createdNft?.builderId).toBe(builder.id);
     expect(createdNft?.season).toBe(mockSeason);
     expect(createdNft?.chainId).toBe(builderNftChain.id);
-    expect(createdNft?.contractAddress).toBe(getBuilderNftContractAddress(mockSeason));
+    expect(createdNft?.contractAddress).toBe(mockContractAddress);
   });
 
   it('should return existing builder NFT if already registered', async () => {
