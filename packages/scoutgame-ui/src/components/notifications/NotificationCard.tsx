@@ -1,6 +1,6 @@
 import type { ScoutAppNotification } from '@charmverse/core/prisma-client';
 import { Typography, Stack, Card, Link } from '@mui/material';
-import { AppNotificationTypesRecord } from '@packages/scoutgame/notifications/sendAppNotification';
+import { AppNotificationTypesRecord } from '@packages/scoutgame/notifications/appNotificationConstants';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 
 export function NotificationCard({ notification }: { notification: ScoutAppNotification }) {
@@ -18,7 +18,24 @@ export function NotificationCard({ notification }: { notification: ScoutAppNotif
       : AppNotificationTypesRecord[notificationType].targetUrl;
 
   return (
-    <Card sx={{ p: 2, gap: 1, display: 'flex', flexDirection: 'column' }} component={Link} href={targetUrl}>
+    <Card
+      sx={{
+        p: 2,
+        gap: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        textDecoration: 'none',
+        bgcolor: notification.read ? 'background.dark' : 'background.paper',
+        transition: 'background-color 150ms ease-in-out',
+        '&:hover': {
+          bgcolor: 'background.dark',
+          textDecoration: 'none',
+          transition: 'background-color 150ms ease-in-out'
+        }
+      }}
+      component={Link}
+      href={targetUrl}
+    >
       <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
         <Typography variant='h5'>{title}</Typography>
         <Typography fontWeight={600}>{getShortenedRelativeTime(notification.createdAt)}</Typography>
