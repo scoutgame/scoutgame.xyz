@@ -19,7 +19,18 @@ export function NotificationsPage({
   return (
     <Container maxWidth='md'>
       <Stack my={4} gap={2}>
-        <Stack direction='row' justifyContent='space-between' alignItems='center'>
+        <Stack
+          direction={{
+            xs: 'column',
+            md: 'row'
+          }}
+          gap={{
+            xs: 1,
+            md: 0
+          }}
+          justifyContent='space-between'
+          alignItems='center'
+        >
           <Typography variant='h4' color='secondary' fontWeight={600}>
             Notifications
           </Typography>

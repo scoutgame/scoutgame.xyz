@@ -7,6 +7,7 @@ import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { useAction } from 'next-safe-action/hooks';
 
 import { toggleAppNotification } from '../../actions/toggleAppNotification';
+import { useMdScreen } from '../../hooks/useMediaScreens';
 
 export function NotificationCard({ notification }: { notification: ScoutAppNotification }) {
   const { execute, isExecuting } = useAction(toggleAppNotification);
@@ -23,11 +24,19 @@ export function NotificationCard({ notification }: { notification: ScoutAppNotif
       ? AppNotificationTypesRecord[notificationType].targetUrl(notification.templateVariables as any)
       : AppNotificationTypesRecord[notificationType].targetUrl;
 
+  const isDesktop = useMdScreen();
+
   return (
     <Card
       sx={{
-        p: 2,
-        gap: 1.5,
+        p: {
+          xs: 1,
+          md: 2
+        },
+        gap: {
+          xs: 0.5,
+          md: 1.5
+        },
         display: 'flex',
         flexDirection: 'column',
         textDecoration: 'none',
@@ -47,12 +56,22 @@ export function NotificationCard({ notification }: { notification: ScoutAppNotif
       }}
     >
       <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-        <Typography variant='h5'>{title}</Typography>
-        <Typography fontWeight={600}>{getShortenedRelativeTime(notification.createdAt)}</Typography>
+        <Typography variant={isDesktop ? 'h5' : 'h6'}>{title}</Typography>
+        <Typography fontWeight={600} variant={isDesktop ? 'body1' : 'body2'}>
+          {getShortenedRelativeTime(notification.createdAt)}
+        </Typography>
       </Stack>
-      <Typography>{description}</Typography>
+      <Typography
+        mb={{
+          xs: 0.5,
+          md: 1
+        }}
+        variant={isDesktop ? 'body1' : 'body2'}
+      >
+        {description}
+      </Typography>
       <Button
-        size='medium'
+        size={isDesktop ? 'medium' : 'small'}
         variant='text'
         sx={{ alignSelf: 'flex-start', width: 'fit-content', bgcolor: 'background.light' }}
         disabled={isExecuting}
