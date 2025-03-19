@@ -6,7 +6,7 @@ import { getBlockByDate } from '@packages/blockchain/getBlockByDate';
 import { getEvmAddressStats, getSolanaWalletStats } from '@packages/dune/queries';
 import { base, taiko } from 'viem/chains';
 import { getWalletTransactionStats } from '@packages/blockchain/analytics/getTransactionStats';
-import { findAndIndexMissingPurchases } from '@apps/cron/builderNfts/resolveMissingPurchases';
+
 import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
 import { getCurrentWeek } from '@packages/dates/utils';
 const solanaWallet = '2N4fC9tfRGWxnUWhb4fzp7dTUY1yBSxXVJUEdVUmQUaJ';
@@ -26,10 +26,9 @@ async function query() {
   // });
   //prettyPrint(events);
   console.log(
-    await prisma.scout.findMany({
-      where: { displayName: 'chris' },
+    await prisma.scoutProjectWallet.findMany({
       include: {
-        builderNfts: true
+        project: true
       }
     })
   );
