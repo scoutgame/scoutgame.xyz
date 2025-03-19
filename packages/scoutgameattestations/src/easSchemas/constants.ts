@@ -31,15 +31,15 @@ export function encodeNameSchemaAttestation({ name, schemaId }: NameSchemaAttest
 }
 
 export const easConfig = {
-  [base.id]: {
-    // Base Mainnet
-    chain: base,
+  [optimismSepolia.id]: {
+    // Optimism Sepolia Testnet
+    chain: optimismSepolia,
     easContractAddress: '0x4200000000000000000000000000000000000021',
     easSchemaRegistryAddress: '0x4200000000000000000000000000000000000020'
   },
-  [baseSepolia.id]: {
-    // Base Sepolia Testnet
-    chain: baseSepolia,
+  [optimism.id]: {
+    // Optimism Mainnet
+    chain: optimism,
     easContractAddress: '0x4200000000000000000000000000000000000021',
     easSchemaRegistryAddress: '0x4200000000000000000000000000000000000020'
   }
@@ -47,4 +47,4 @@ export const easConfig = {
 
 export type EASSchemaChain = keyof typeof easConfig;
 
-export const supportedEasChains = [baseSepolia.id, base.id];
+export const supportedEasChains = [optimismSepolia.id, optimism.id];
