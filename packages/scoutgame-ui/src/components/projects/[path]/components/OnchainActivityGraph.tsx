@@ -2,17 +2,7 @@
 
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
-import {
-  Bar,
-  CartesianGrid,
-  Legend,
-  Tooltip,
-  BarChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  XAxis,
-  YAxis
-} from 'recharts';
+import { Bar, Label, Legend, Tooltip, BarChart, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 const colors = ['#69DDFF', '#0580A4'];
 
@@ -23,6 +13,10 @@ type Datum = {
 type Props = {
   data: Datum[];
 };
+
+const silver = '#AFC4E2';
+const bronze = '#A05925';
+const gold = '#E88E04';
 
 function shortDate(date: string) {
   return DateTime.fromISO(date, { zone: 'utc' }).toLocaleString({ month: 'short', day: 'numeric' });
@@ -65,14 +59,16 @@ export function OnchainActivityGraph({ data }: Props) {
 
         {/* <CartesianGrid vertical={false} strokeDasharray='3 3' /> */}
         <XAxis dataKey='date' angle={-45} textAnchor='end' style={{ fontSize: '12px' }} />
-        <YAxis style={{ fontSize: '12px' }} />
-        <Legend />
+        <YAxis style={{ fontSize: '12px' }} domain={[0, 2000]} />
+        <Legend wrapperStyle={{ paddingTop: '10px' }} />
         {contractAddresses?.map((address, index) => (
           <Bar key={address} dataKey={address} stackId='a' fill={index % 2 === 0 ? colors[1] : colors[0]} />
         ))}
         {/* <Area isAnimationActive={false} type='monotone' dataKey='value' stroke='#69DDFF' fill='#0580A4' /> */}
-        <ReferenceLine y={200} stroke='#FF00D0' />
-        <ReferenceLine y={1800} stroke='#FF00D0' />
+        <ReferenceLine y={200} strokeDasharray='5 5' stroke={silver}>
+          <Label value='Silver' fill='#111' position='left' offset={10} />
+        </ReferenceLine>
+        <ReferenceLine y={1800} strokeDasharray='5 5' stroke={gold} />
       </BarChart>
     </ResponsiveContainer>
   );

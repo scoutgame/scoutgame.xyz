@@ -192,7 +192,7 @@ export function PointsClaimScreen({
                       width={35}
                       height={35}
                       style={{ marginRight: 10 }}
-                      src='/images/profile/scout-game-icon.svg'
+                      src='/images/icons/binoculars.svg'
                       alt='Scouts'
                     />{' '}
                     {bonusPartners.length > 0 ? '+ ' : ''}

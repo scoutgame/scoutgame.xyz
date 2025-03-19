@@ -1,11 +1,13 @@
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
-import { IconButton, Box, Chip, Container, Stack, Typography, Tooltip } from '@mui/material';
+import { IconButton, Box, Container, Stack, Typography, Tooltip, Avatar } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
+import { capitalize } from '@packages/utils/strings';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { BackButton } from '../../common/Button/BackButton';
+import { GemsIcon, TransactionIcon } from '../../common/Icons';
 import { WalletAddress } from '../../common/WalletAddress';
 import { chainRecords } from '../constants';
 
@@ -23,9 +25,6 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
   return (
     <Container maxWidth='md'>
       <Stack my={4} gap={2}>
-        <Typography variant='h4' color='secondary' fontWeight={600}>
-          Projects
-        </Typography>
         <Stack
           gap={{
             xs: 0.5,
@@ -71,12 +70,17 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             </Stack>
             <Typography sx={{ whiteSpace: 'pre-wrap' }}>{project.description}</Typography>
           </Stack>
-          {typeof project.totalTxCount === 'number' && (
-            <Stack justifyContent='center' alignItems='center' flex={1}>
-              <Typography color='secondary' width='100px' align='center' variant='body2'>
-                Current Week Transactions
-              </Typography>
-              <Typography fontSize='2em'>{project.totalTxCount?.toLocaleString()} tx</Typography>
+          {project.contractDailyStats.length > 0 && (
+            <Stack flexDirection='row' gap={2} alignItems='center' mr={2}>
+              <Stack justifyContent='center' alignItems='center' flex={1}>
+                <Typography color='secondary' width='100px' align='center' variant='body2'>
+                  Current Week Transactions
+                </Typography>
+                <Typography fontSize='2em'>
+                  {project.totalTxCount?.toLocaleString()} <TransactionIcon />
+                </Typography>
+              </Stack>
+              <GemsIcon color={project.tier} size={60} />
             </Stack>
           )}
           <Tooltip title='Edit project'>
@@ -94,7 +98,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
               <Typography color='secondary' variant='h6' sx={{ flexGrow: 1 }}>
                 Contracts
               </Typography>
-              <Box width={100} textAlign='center'>
+              <Box textAlign='right' mr={3}>
                 <Typography color='secondary'>Tx count</Typography>
               </Box>
             </Stack>
@@ -109,7 +113,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
               <Typography color='secondary' variant='h6' sx={{ flexGrow: 1 }}>
                 Agent wallets
               </Typography>
-              <Box width={100} textAlign='center'>
+              <Box textAlign='right' mr={3}>
                 <Typography color='secondary'>Tx count</Typography>
               </Box>
             </Stack>
@@ -119,12 +123,24 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
           </Stack>
         )}
         <Stack gap={1}>
-          <Typography color='secondary' variant='h6'>
-            Team
-          </Typography>
+          <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
+            <Typography color='secondary' variant='h6'>
+              Team
+            </Typography>
+            {project.tier && (
+              <Typography
+                variant='h6'
+                width={100}
+                textAlign='center'
+                sx={{ display: 'flex', alignItems: 'center', width: 'auto', gap: 0.5, mr: 3 }}
+              >
+                {capitalize(project.tier)} Tier: {project.totalTxCount} <GemsIcon color={project.tier} size={20} />
+              </Typography>
+            )}
+          </Stack>
           <Stack gap={1}>
             {project.teamMembers.map((member) => (
-              <ProjectPageMember key={member.id} member={member} />
+              <ProjectPageMember key={member.id} member={member} projectTier={project.tier} />
             ))}
           </Stack>
         </Stack>
@@ -156,20 +172,16 @@ function AddressRow({
       borderRadius={1}
     >
       <Stack gap={2} flexDirection='row' alignItems='center' flexGrow={1}>
-        <Image
-          src={chainRecords[chainId!].image}
-          alt={chainRecords[chainId!].name}
-          width={36}
-          height={36}
-          style={{ borderRadius: '50%' }}
-        />
+        <Avatar src={chainRecords[chainId!].image} alt={chainRecords[chainId!].name} />
         <WalletAddress address={address} chainId={chainId!} />
-        <Chip label={type} size='small' color='primary' variant='outlined' />
+        {/* <Chip label={type} size='small' color='primary' variant='outlined' /> */}
       </Stack>
 
-      <Box width={100} textAlign='center'>
+      <Box textAlign='right' mr={3}>
         {typeof txCount === 'number' ? (
-          <Typography>{txCount} txs</Typography>
+          <Typography sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {txCount} <TransactionIcon size={16} />
+          </Typography>
         ) : (
           <Typography color='grey'>N/A</Typography>
         )}
