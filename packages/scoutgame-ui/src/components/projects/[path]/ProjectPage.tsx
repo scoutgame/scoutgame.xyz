@@ -11,7 +11,7 @@ import { chainRecords } from '../constants';
 
 import { EditProjectIcon } from './components/EditProjectIcon';
 import { LeaveProjectButton } from './components/LeaveProjectButton';
-import { OnchainActivityGraph } from './components/OnChainActivityGraph';
+import { OnchainActivityGraph } from './components/OnchainActivityGraph';
 import { ProjectPageMember } from './components/ProjectPageMember';
 
 export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {

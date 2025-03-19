@@ -1,7 +1,7 @@
 'use client';
 
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
-import { Stack, Typography } from '@mui/material';
+import { Avatar, Stack, Typography } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,7 +30,7 @@ export function ProjectPageMember({ member }: { member: ScoutProjectDetailed['te
       borderRadius={1}
       sx={{ cursor: 'pointer' }}
     >
-      <Image src={member.avatar} alt={member.displayName} width={48} height={48} style={{ borderRadius: '50%' }} />
+      <Avatar src={member.avatar} alt={member.displayName} width={48} height={48} />
       <Typography>{member.displayName}</Typography>
       <Typography variant='caption' color='secondary'>
         {ProjectRoleText[member.role as ScoutProjectMemberRole]}

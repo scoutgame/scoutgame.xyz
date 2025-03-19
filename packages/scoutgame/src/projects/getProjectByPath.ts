@@ -7,6 +7,7 @@ import type {
 } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { shortenHex } from '@packages/utils/strings';
+import { DateTime } from 'luxon';
 
 export type ScoutProjectDetailed = Pick<
   ScoutProject,
@@ -38,8 +39,7 @@ export type ScoutProjectDetailed = Pick<
   }[];
 };
 
-// TODO: Add week to the data model?
-const projectDetailedSelect = (week: string) =>
+const projectDetailedSelect = (lookback: Date) =>
   ({
     id: true,
     path: true,
@@ -59,7 +59,9 @@ const projectDetailedSelect = (week: string) =>
         deployerId: true,
         dailyStats: {
           where: {
-            week
+            day: {
+              gte: lookback
+            }
           },
           orderBy: {
             day: 'asc'
@@ -100,7 +102,9 @@ const projectDetailedSelect = (week: string) =>
         chainType: true,
         dailyStats: {
           where: {
-            week
+            day: {
+              gte: lookback
+            }
           },
           orderBy: {
             day: 'asc'
@@ -110,12 +114,12 @@ const projectDetailedSelect = (week: string) =>
     }
   }) satisfies Prisma.ScoutProjectSelect;
 
-export async function getProjectByPath(path: string, week = getCurrentWeek()): Promise<ScoutProjectDetailed | null> {
+export async function getProjectByPath(path: string): Promise<ScoutProjectDetailed | null> {
   const scoutProject = await prisma.scoutProject.findUnique({
     where: {
       path
     },
-    select: projectDetailedSelect(week)
+    select: projectDetailedSelect(DateTime.now().minus({ days: 14 }).toJSDate())
   });
 
   if (!scoutProject) {
@@ -145,12 +149,14 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
   // );
   const contractDailyStats = Object.entries(
     scoutProject.contracts.reduce<Record<string, Record<string, number>>>((acc, contract) => {
-      let weeklyTotal = 0;
-      contract.dailyStats.forEach((dailyStat) => {
-        const date = dailyStat.day.toISOString();
-        weeklyTotal += dailyStat.transactions;
+      const weeklyTotals = new Map<string, number>();
+      contract.dailyStats.forEach(({ week: _week, day, transactions }) => {
+        const date = day.toISOString();
+        const weeklyTotal = weeklyTotals.get(_week) ?? 0;
+        const newWeeklyTotal = weeklyTotal + transactions;
+        weeklyTotals.set(_week, newWeeklyTotal);
         acc[date] = acc[date] ?? {};
-        acc[date][shortenHex(contract.address)] = weeklyTotal;
+        acc[date][shortenHex(contract.address)] = newWeeklyTotal;
       });
       return acc;
     }, {})
