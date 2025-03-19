@@ -41,7 +41,8 @@ export function NotificationCard({ notification }: { notification: ScoutAppNotif
       }}
       component={Link}
       href={targetUrl}
-      onClick={(e) => {
+      onClick={() => {
+        if (notification.read || isExecuting) return;
         execute({ notificationId: notification.id, read: true });
       }}
     >
