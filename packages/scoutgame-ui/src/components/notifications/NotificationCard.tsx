@@ -63,7 +63,7 @@ export function NotificationCard({ notification }: { notification: ScoutAppNotif
           execute({ notificationId: notification.id, read: !notification.read });
         }}
       >
-        <Typography>Mark as {notification.read ? 'unread' : 'read'}</Typography>
+        <Typography textTransform='capitalize'>Mark {notification.read ? 'unread' : 'read'}</Typography>
       </Button>
     </Card>
   );

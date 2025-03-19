@@ -51,7 +51,14 @@ export function NotificationsPage({
           {notifications.length > 0 ? (
             notifications.map((notification) => <NotificationCard key={notification.id} notification={notification} />)
           ) : (
-            <Typography>No notifications received yet</Typography>
+            <Typography>
+              No{' '}
+              {status === 'all'
+                ? 'notifications received yet'
+                : status === 'read'
+                  ? 'read notifications left'
+                  : 'unread notifications left'}
+            </Typography>
           )}
         </Stack>
       </Stack>
