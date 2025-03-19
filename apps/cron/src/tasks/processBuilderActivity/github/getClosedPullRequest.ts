@@ -1,4 +1,4 @@
-import { octokit } from './octokit';
+import { octokit } from '@packages/github/client';
 
 type GetPrCloserResponse = {
   repository: {

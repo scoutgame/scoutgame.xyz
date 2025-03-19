@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPreviousSeason, getCurrentSeasonStart } from '@packages/dates/utils';
+import { isTruthy } from '@packages/utils/types';
 
 import type { BonusPartner } from '../bonus';
 
@@ -17,7 +18,7 @@ export async function getClaimablePoints({
   pointsReceiptIds: string[];
 }> {
   const previousSeason = getPreviousSeason(season);
-  const claimableSeasons = [previousSeason, season].filter(Boolean);
+  const claimableSeasons = [previousSeason, season].filter(isTruthy);
   if (claimableSeasons.length === 0) {
     throw new Error(`No seasons found to claim points: ${season}`);
   }

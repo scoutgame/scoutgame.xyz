@@ -38,13 +38,3 @@ export const seasonStarts = seasons.map((s) => s.start);
 export type Season = (typeof seasons)[number]['start'];
 
 export const streakWindow = 7 * 24 * 60 * 60 * 1000;
-
-// Validate the season list just in case it is configured wrong
-function validateSeasonList(seasonList: Season[]): void {
-  if (!seasonList.every((s) => s)) {
-    throw new Error('Invalid season list');
-  }
-  if (seasonList.slice().sort().join(',') !== seasonList.join(',')) {
-    throw new Error('Season list is not sorted');
-  }
-}

@@ -12,12 +12,12 @@ export const octokit = new OctokitWithThrottling({
   throttle: {
     // @ts-ignore
     onRateLimit: (retryAfter, options, _octokit, retryCount) => {
-      if (retryCount < 2) {
-        log.debug(`[Octokit] Retrying after ${retryAfter} seconds!`);
-        // only retries twice
-        return true;
-      }
-      return false;
+      log.info(`[Octokit] Retrying after ${retryAfter} seconds! Retry count: ${retryCount}`);
+      return true;
+      // if (retryCount < 2) {
+      //   // only retries twice
+      //   return true;
+      // }
     },
     // @ts-ignore
     onSecondaryRateLimit: (retryAfter, options, _octokit) => {

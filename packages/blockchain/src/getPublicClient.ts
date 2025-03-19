@@ -1,3 +1,4 @@
+import env from '@beam-australia/react-env';
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import { createPublicClient, http } from 'viem';
@@ -32,6 +33,13 @@ export const getPublicClient = (chainId: number) => {
       providerUrl = alchemyProviderUrl;
     } catch (error) {
       log.error('Error getting alchemy provider url', { error, chainId });
+    }
+  } else {
+    const ankrApiId = env('ANKR_API_ID') || process.env.REACT_APP_ANKR_API_ID;
+    if (ankrApiId) {
+      providerUrl = `${providerUrl}/${ankrApiId}`;
+    } else {
+      log.error('No ankr api id found using default rpc url', { chainId });
     }
   }
 

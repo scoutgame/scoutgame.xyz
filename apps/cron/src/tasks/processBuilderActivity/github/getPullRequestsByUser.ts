@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
-
-import { octokit } from './octokit';
+import { octokit } from '@packages/github/client';
 
 type GraphQLPullRequest = {
   author: {

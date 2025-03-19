@@ -58,5 +58,5 @@ cron:
 
   - name: 'process-dune-analytics'
     url: '/process-dune-analytics'
-    # every hour
-    schedule: '0 * * * *'
+    # once a day at midnight
+    schedule: '0 0 * * *'

@@ -1,19 +1,21 @@
 import { Paper, Typography, Box } from '@mui/material';
+import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { getSeasonBuilderRewards, getWeeklyBuilderRewards } from '@packages/scoutgame/builders/getBuilderRewards';
 import Image from 'next/image';
 
 import { BuilderRewardsTable } from './BuilderRewardsTable';
 
-export async function BuilderRewardsTableContainer({ week }: { week: string | null }) {
+export async function BuilderRewardsTableContainer({ week, season }: { week: string | null; season: string }) {
   const user = await getUserFromSession();
+  const isCurrentPeriod = season === getCurrentSeasonStart() || week === getCurrentWeek();
   if (!user) {
     return null;
   }
 
   const builderRewards = week
     ? await getWeeklyBuilderRewards({ week, userId: user.id })
-    : await getSeasonBuilderRewards({ userId: user.id });
+    : await getSeasonBuilderRewards({ season, userId: user.id });
 
   const totalPoints = builderRewards.reduce((acc, reward) => acc + reward.points, 0);
 
@@ -31,7 +33,7 @@ export async function BuilderRewardsTableContainer({ week }: { week: string | nu
           alignItems: 'center'
         }}
       >
-        <Typography>Time to scout some Developers!</Typography>
+        <Typography>{isCurrentPeriod ? 'Time to scout some Developers!' : 'No rewards earned'}</Typography>
         <Box
           sx={{
             width: {

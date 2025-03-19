@@ -29,8 +29,19 @@ jest.unstable_mockModule('../refreshBuilderNftPrice', () => ({
   refreshBuilderNftPrice: jest.fn()
 }));
 
+jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
+  getPublicClient: () => {
+    return {
+      getBlock: async () => {
+        return {
+          timestamp: 1716153600
+        };
+      }
+    };
+  }
+}));
+
 const { recordNftTransfer } = await import('../recordNftTransfer');
-const { refreshScoutNftBalance } = await import('../refreshScoutNftBalance');
 
 describe('recordNftTransfer', () => {
   afterEach(() => {
@@ -118,7 +129,8 @@ describe('recordNftTransfer', () => {
         walletAddress: mockRecipientWallet,
         senderWalletAddress: mockSenderWallet,
         txLogIndex: 5
-      }
+      },
+      onchainAchievementId: null
     });
 
     // Make sure the recipient wallet was created
