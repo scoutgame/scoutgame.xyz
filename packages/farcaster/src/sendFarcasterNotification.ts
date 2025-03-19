@@ -5,7 +5,7 @@ import { RateLimit } from 'async-sema';
 import { v4 } from 'uuid';
 
 // 10 notifications per second, there are no specific rate limits mentioned in the docs
-const rateLimiter = RateLimit(10);
+const rateLimiter = RateLimit(25);
 
 type Variables = {
   weekly_claim: {
