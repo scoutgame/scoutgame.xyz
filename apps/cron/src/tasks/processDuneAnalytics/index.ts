@@ -43,7 +43,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
   for (const wallet of wallets) {
     try {
       const { startDate, endDate, newMetrics, updatedMetrics } = await recordWalletAnalyticsForWeek(wallet, week);
-      log.info(`Created metrics for wallet`, {
+      log.info(`Created daily stats for wallet`, {
         newMetrics: newMetrics.length,
         chainType: wallet.chainType,
         updatedMetrics: updatedMetrics.length,
@@ -88,17 +88,20 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
 
   for (const contract of contracts) {
     try {
-      const { startDate, endDate, newMetrics, updatedMetrics } = await recordContractAnalyticsForWeek(contract, week);
-      log.info(`Created metrics for contract`, {
-        newMetrics: newMetrics.length,
-        updatedMetrics: updatedMetrics.length,
+      const { startDate, endDate, newDailyStats, updatedDailyStats } = await recordContractAnalyticsForWeek(
+        contract,
+        week
+      );
+      log.info(`Created daily stats for contract`, {
+        newDailyStats: newDailyStats.length,
+        updatedMetrics: updatedDailyStats.length,
         walletId: contract.id,
         week,
         startDate,
         endDate
       });
     } catch (error) {
-      log.error(`Error creating metrics for contract`, {
+      log.error(`Error creating daily stats for contract`, {
         address: contract.address,
         week,
         contractId: contract.id,
