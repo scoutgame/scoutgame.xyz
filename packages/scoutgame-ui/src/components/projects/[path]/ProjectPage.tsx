@@ -134,7 +134,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                 textAlign='center'
                 sx={{ display: 'flex', alignItems: 'center', width: 'auto', gap: 0.5, mr: 3 }}
               >
-                {capitalize(project.tier)} Tier: {project.totalTxCount} <GemsIcon color={project.tier} size={20} />
+                {capitalize(project.tier)} Tier: {project.totalGems} <GemsIcon color={project.tier} size={20} />
               </Typography>
             )}
           </Stack>

@@ -174,8 +174,13 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
     ...stats
   }));
 
+  // filter achievements from other projects for each member (since i couldnt figure out how to do this in the query)
+  scoutProject.members.forEach((member) => {
+    member.user.events = member.user.events.filter((event) => event.onchainAchievement?.projectId === scoutProject.id);
+  });
+
   const tier = scoutProject.members
-    .flatMap((member) => member.user.events.filter((event) => event.onchainAchievement?.projectId === scoutProject.id))
+    .flatMap((member) => member.user.events)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]?.onchainAchievement?.tier;
 
   const teamMembers: ProjectTeamMember[] = scoutProject.members.map((member) => ({

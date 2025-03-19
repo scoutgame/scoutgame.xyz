@@ -59,7 +59,8 @@ export function OnchainActivityGraph({ data }: Props) {
 
         {/* <CartesianGrid vertical={false} strokeDasharray='3 3' /> */}
         <XAxis dataKey='date' angle={-45} textAnchor='end' style={{ fontSize: '12px' }} />
-        <YAxis style={{ fontSize: '12px' }} domain={[0, 2000]} />
+        {/* <YAxis style={{ fontSize: '12px' }} domain={[0, 2000]} /> sets the min/max range */}
+        <YAxis style={{ fontSize: '12px' }} />
         <Legend wrapperStyle={{ paddingTop: '10px' }} />
         {contractAddresses?.map((address, index) => (
           <Bar key={address} dataKey={address} stackId='a' fill={index % 2 === 0 ? colors[1] : colors[0]} />

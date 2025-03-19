@@ -87,7 +87,7 @@ async function mockScoutProjectWithManyTransactions(userId: string) {
         contractId: project.contracts[0]!.id,
         day: today.startOf('day').toJSDate(),
         week: getWeekFromDate(today.toJSDate()),
-        transactions: Math.floor(Math.random() * 50),
+        transactions: Math.floor(Math.random() * 200),
         accounts: 5,
         gasFees: '100'
       }
@@ -97,7 +97,7 @@ async function mockScoutProjectWithManyTransactions(userId: string) {
         contractId: project.contracts[1]!.id,
         day: today.startOf('day').toJSDate(),
         week: getWeekFromDate(today.toJSDate()),
-        transactions: Math.floor(Math.random() * 20),
+        transactions: Math.floor(Math.random() * 75),
         accounts: 5,
         gasFees: '100'
       }
