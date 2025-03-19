@@ -2,7 +2,7 @@
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { attestBuilderStatusEvent } from '@packages/scoutgameattestations/attestBuilderStatusEvent';
+import { attestDeveloperStatusEvent } from '@packages/scoutgameattestations/attestDeveloperStatusEvent';
 import * as yup from 'yup';
 
 import { authActionClient } from 'lib/actions/actionClient';
@@ -23,11 +23,11 @@ export const setBuilderStatusAction = authActionClient
     const result = await setBuilderStatus(userId, status as BuilderStatus);
 
     if (status === 'approved' && isUnbanned) {
-      await attestBuilderStatusEvent({
+      await attestDeveloperStatusEvent({
         builderId: userId,
         event: {
           type: 'unbanned',
-          description: 'Builder unbanned',
+          description: 'Developer unbanned',
           season: getCurrentSeasonStart()
         }
       });

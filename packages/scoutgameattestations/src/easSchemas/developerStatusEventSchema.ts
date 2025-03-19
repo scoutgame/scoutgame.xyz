@@ -3,24 +3,24 @@ import type { BuilderStatusEventType } from '@prisma/client';
 
 import type { EASSchema } from './types';
 
-const builderStatusEventEASSchema = 'string description,string type,string season';
+const developerStatusEventEASSchema = 'string description,string type,string season';
 
-const builderStatusEventSchemaName = 'Scout Game Builder Status Event';
+const developerStatusEventSchemaName = 'Scout Game Developer Status Event';
 
-export const builderStatusEventSchemaDefinition = {
-  schema: builderStatusEventEASSchema,
-  name: builderStatusEventSchemaName
+export const developerStatusEventSchemaDefinition = {
+  schema: developerStatusEventEASSchema,
+  name: developerStatusEventSchemaName
 } as const satisfies EASSchema;
 
-export type BuilderStatusEventAttestation = {
+export type DeveloperStatusEventAttestation = {
   description: string;
   type: BuilderStatusEventType;
   season: string;
 };
 
-const encoder = new SchemaEncoder(builderStatusEventEASSchema);
+const encoder = new SchemaEncoder(developerStatusEventEASSchema);
 
-export function encodeBuilderStatusEventAttestation(attestation: BuilderStatusEventAttestation): `0x${string}` {
+export function encodeDeveloperStatusEventAttestation(attestation: DeveloperStatusEventAttestation): `0x${string}` {
   const encodedData = encoder.encodeData([
     { name: 'description', type: 'string', value: attestation.description },
     { name: 'type', type: 'string', value: attestation.type },
@@ -30,10 +30,10 @@ export function encodeBuilderStatusEventAttestation(attestation: BuilderStatusEv
   return encodedData as `0x${string}`;
 }
 
-export function decodeBuilderStatusEventAttestation(rawData: string): BuilderStatusEventAttestation {
+export function decodeDeveloperStatusEventAttestation(rawData: string): DeveloperStatusEventAttestation {
   const parsed = encoder.decodeData(rawData);
   const values = parsed.reduce((acc, item) => {
-    const key = item.name as keyof BuilderStatusEventAttestation;
+    const key = item.name as keyof DeveloperStatusEventAttestation;
 
     if (key === 'type') {
       acc[key] = item.value.value as BuilderStatusEventType;
@@ -41,7 +41,7 @@ export function decodeBuilderStatusEventAttestation(rawData: string): BuilderSta
       acc[key] = item.value.value as string;
     }
     return acc;
-  }, {} as BuilderStatusEventAttestation);
+  }, {} as DeveloperStatusEventAttestation);
 
-  return values as BuilderStatusEventAttestation;
+  return values as DeveloperStatusEventAttestation;
 }
