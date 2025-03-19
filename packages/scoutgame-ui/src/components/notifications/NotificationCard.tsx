@@ -1,9 +1,15 @@
+'use client';
+
 import type { ScoutAppNotification } from '@charmverse/core/prisma-client';
-import { Typography, Stack, Card, Link } from '@mui/material';
+import { Typography, Stack, Card, Link, Button } from '@mui/material';
 import { AppNotificationTypesRecord } from '@packages/scoutgame/notifications/appNotificationConstants';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
+import { useAction } from 'next-safe-action/hooks';
+
+import { toggleAppNotification } from '../../actions/toggleAppNotification';
 
 export function NotificationCard({ notification }: { notification: ScoutAppNotification }) {
+  const { execute, isExecuting } = useAction(toggleAppNotification);
   const notificationType = notification.notificationType as keyof typeof AppNotificationTypesRecord;
   const title = AppNotificationTypesRecord[notificationType].title;
 
@@ -21,26 +27,43 @@ export function NotificationCard({ notification }: { notification: ScoutAppNotif
     <Card
       sx={{
         p: 2,
-        gap: 1,
+        gap: 1.5,
         display: 'flex',
         flexDirection: 'column',
         textDecoration: 'none',
         bgcolor: notification.read ? 'background.dark' : 'background.paper',
         transition: 'background-color 150ms ease-in-out',
         '&:hover': {
-          bgcolor: 'background.dark',
+          bgcolor: 'transparent',
           textDecoration: 'none',
           transition: 'background-color 150ms ease-in-out'
         }
       }}
       component={Link}
       href={targetUrl}
+      onClick={(e) => {
+        execute({ notificationId: notification.id, read: true });
+      }}
     >
       <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
         <Typography variant='h5'>{title}</Typography>
         <Typography fontWeight={600}>{getShortenedRelativeTime(notification.createdAt)}</Typography>
       </Stack>
       <Typography>{description}</Typography>
+      <Button
+        size='medium'
+        variant='text'
+        sx={{ alignSelf: 'flex-start', width: 'fit-content', bgcolor: 'background.light' }}
+        disabled={isExecuting}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (isExecuting) return;
+          execute({ notificationId: notification.id, read: !notification.read });
+        }}
+      >
+        <Typography>Mark as {notification.read ? 'unread' : 'read'}</Typography>
+      </Button>
     </Card>
   );
 }
