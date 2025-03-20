@@ -9,7 +9,7 @@ export function GoodDollarPage() {
     <InfoPageContainer
       data-test='partner-page-good-dollar'
       image='/images/info/rewards-partner-good-dollar.png'
-      title='Good Dollar'
+      title='GoodDollar'
     >
       <Document />
     </InfoPageContainer>
@@ -88,11 +88,7 @@ function Document() {
       </List>
       <Typography>
         Applying for the QF Round can be done{' '}
-        <Link
-          href='https://explorer.gitcoin.co/#/round/10/0x8de918f0163b2021839a8d84954dd7e8e151326d/0x8de918f0163b2021839a8d84954dd7e8e151326d-0'
-          target='_blank'
-          rel='noreferrer'
-        >
+        <Link href='https://explorer.gitcoin.co/#/round/42220/29' target='_blank' rel='noreferrer'>
           here
         </Link>
         !
@@ -242,11 +238,7 @@ function Document() {
       <Typography mt={1}>Join us and contribute to building the future of financial freedom!</Typography>
       <Typography mt={1}>
         Read more about GoodDollar's Gitcoin Grants{' '}
-        <Link
-          href='https://explorer.gitcoin.co/#/round/10/0x8de918f0163b2021839a8d84954dd7e8e151326d'
-          target='_blank'
-          rel='noreferrer'
-        >
+        <Link href='https://ubi.gd/KickoffQFRound' target='_blank' rel='noreferrer'>
           here
         </Link>
       </Typography>
