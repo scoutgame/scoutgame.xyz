@@ -1,6 +1,7 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
+import { checkSanctionedAddress } from '@packages/blockchain/webcacy/checkSanctionedAddress';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
@@ -11,6 +12,7 @@ import { authSecret } from '@packages/utils/constants';
 import { sealData } from 'iron-session';
 import { cookies } from 'next/headers';
 
+import { checkWalletSanctionStatus } from '../wallets/checkWalletSanctionStatus';
 import { connectWalletAccountSchema } from '../wallets/connectWalletAccountSchema';
 import { verifyWalletSignature } from '../wallets/verifyWalletSignature';
 
@@ -20,6 +22,12 @@ export const loginWithWalletAction = actionClient
   .action(async ({ ctx, parsedInput }) => {
     const newUserId = ctx.session.anonymousUserId;
     const { walletAddress } = await verifyWalletSignature(parsedInput);
+
+    const isSanctioned = await checkWalletSanctionStatus(walletAddress);
+
+    if (isSanctioned) {
+      throw new Error('Wallet address is sanctioned');
+    }
 
     if (parsedInput.inviteCode) {
       cookies().set(

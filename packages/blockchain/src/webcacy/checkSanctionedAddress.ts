@@ -9,7 +9,7 @@ interface ErrorResponse {
   statusCode?: number;
 }
 
-async function checkSanctionedAddress(address: string): Promise<boolean> {
+export async function checkSanctionedAddress(address: string): Promise<boolean> {
   const apiKey = process.env.WEBCACY_API_KEY;
   if (!apiKey) {
     throw new Error('WEBCACY_API_KEY is not defined');
