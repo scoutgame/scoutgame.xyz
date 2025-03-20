@@ -32,22 +32,22 @@ export const AppNotificationTypesRecord = {
   weekly_claim: {
     title: 'Weekly Claim',
     description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week! Click to Claim!`,
-    targetUrl: `/claim`
+    targetUrl: () => `/claim`
   },
   zero_weekly_claim: {
     title: 'A New Week, A New Opportunity',
-    description: 'A new week means a fresh opportunity to earn rewards. Start playing.',
-    targetUrl: `/quests`
+    description: () => 'A new week means a fresh opportunity to earn rewards. Start playing.',
+    targetUrl: () => `/quests`
   },
   builder_suspended: {
     title: 'Developer suspended',
-    description: `Your developer card has been suspended`,
-    targetUrl: `/info/spam-policy`
+    description: () => `Your developer card has been suspended`,
+    targetUrl: () => `/info/spam-policy`
   },
   nft_transaction_failed: {
     title: 'NFT transaction failed',
     description: ({ builderName }: Variables['nft_transaction_failed']) =>
-      `our transaction failed when purchasing ${builderName}. Try again`,
+      `Your transaction failed when purchasing ${builderName}. Try again`,
     targetUrl: ({ builderPath }: Variables['nft_transaction_failed']) => `/u/${builderPath}`
   },
   builder_card_scouted: {
@@ -59,7 +59,7 @@ export const AppNotificationTypesRecord = {
   builder_approved: {
     title: 'Developer approved',
     description: () => `You have been approved as a Scout Game Developer`,
-    targetUrl: `/profile`
+    targetUrl: () => `/profile`
   },
   referral_link_signup: {
     title: 'Referral link signup',
@@ -71,12 +71,12 @@ export const AppNotificationTypesRecord = {
     title: 'You got gems!',
     description: ({ gems, partnerRewards }: Variables['merged_pr_gems']) =>
       `You earned ${gems} gems ${partnerRewards ? ` and ${partnerRewards}` : ''} for merging a PR`,
-    targetUrl: `/profile`
+    targetUrl: () => `/profile`
   },
   developer_rank_change: {
     title: 'Your developers are on the move!',
-    description: 'Your developers are moving in the leaderboard rankings. Check them out!',
-    targetUrl: `/scout`
+    description: () => 'Your developers are moving in the leaderboard rankings. Check them out!',
+    targetUrl: () => `/scout`
   },
   added_to_project: {
     title: 'Added to project',

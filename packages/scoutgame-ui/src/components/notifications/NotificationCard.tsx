@@ -14,15 +14,8 @@ export function NotificationCard({ notification }: { notification: ScoutAppNotif
   const notificationType = notification.notificationType as keyof typeof AppNotificationTypesRecord;
   const title = AppNotificationTypesRecord[notificationType].title;
 
-  const description =
-    typeof AppNotificationTypesRecord[notificationType].description === 'function'
-      ? AppNotificationTypesRecord[notificationType].description(notification.templateVariables as any)
-      : AppNotificationTypesRecord[notificationType].description;
-
-  const targetUrl =
-    typeof AppNotificationTypesRecord[notificationType].targetUrl === 'function'
-      ? AppNotificationTypesRecord[notificationType].targetUrl(notification.templateVariables as any)
-      : AppNotificationTypesRecord[notificationType].targetUrl;
+  const description = AppNotificationTypesRecord[notificationType].description(notification.templateVariables as any);
+  const targetUrl = AppNotificationTypesRecord[notificationType].targetUrl(notification.templateVariables as any);
 
   const isDesktop = useMdScreen();
 

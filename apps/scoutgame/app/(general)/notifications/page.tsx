@@ -1,5 +1,5 @@
 import { getSession } from '@packages/nextjs/session/getSession';
-import { safeAwait, safeAwaitSSRData } from '@packages/nextjs/utils/async';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getAppNotificationCount, getAppNotifications } from '@packages/scoutgame/notifications/getAppNotifications';
 import { NotificationsPage } from '@packages/scoutgame-ui/components/notifications/NotificationsPage';
 

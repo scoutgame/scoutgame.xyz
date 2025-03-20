@@ -41,17 +41,17 @@ const FarcasterNotificationTypesRecord = {
   weekly_claim: {
     title: 'Weekly Claim',
     description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week! Click to Claim!`,
-    targetUrl: `https://scoutgame.xyz/claim`
+    targetUrl: () => `https://scoutgame.xyz/claim`
   },
   zero_weekly_claim: {
     title: 'A New Week, A New Opportunity',
-    description: 'A new week means a fresh opportunity to earn rewards. Start playing.',
-    targetUrl: `https://scoutgame.xyz/quests`
+    description: () => 'A new week means a fresh opportunity to earn rewards. Start playing.',
+    targetUrl: () => `https://scoutgame.xyz/quests`
   },
   builder_suspended: {
     title: 'Developer suspended',
-    description: `Your developer card has been suspended`,
-    targetUrl: `https://scoutgame.xyz/info/spam-policy`
+    description: () => `Your developer card has been suspended`,
+    targetUrl: () => `https://scoutgame.xyz/info/spam-policy`
   },
   nft_transaction_failed: {
     title: 'NFT transaction failed',
@@ -68,7 +68,7 @@ const FarcasterNotificationTypesRecord = {
   builder_approved: {
     title: 'Developer approved',
     description: () => `You have been approved as a Scout Game Developer`,
-    targetUrl: `https://scoutgame.xyz/profile`
+    targetUrl: () => `https://scoutgame.xyz/profile`
   },
   referral_link_signup: {
     title: 'Referral link signup',
@@ -80,12 +80,12 @@ const FarcasterNotificationTypesRecord = {
     title: 'You got gems!',
     description: ({ gems, partnerRewards }: Variables['merged_pr_gems']) =>
       `You earned ${gems} gems ${partnerRewards ? ` and ${partnerRewards}` : ''} for merging a PR`,
-    targetUrl: `https://scoutgame.xyz/profile`
+    targetUrl: () => `https://scoutgame.xyz/profile`
   },
   developer_rank_change: {
     title: 'Your developers are on the move!',
-    description: 'Your developers are moving in the leaderboard rankings. Check them out!',
-    targetUrl: `https://scoutgame.xyz/scout`
+    description: () => 'Your developers are moving in the leaderboard rankings. Check them out!',
+    targetUrl: () => `https://scoutgame.xyz/scout`
   },
   added_to_project: {
     title: 'Added to project',
@@ -139,15 +139,8 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
     return false;
   }
 
-  const body =
-    typeof notification.description === 'function'
-      ? notification.description(notificationVariables as any)
-      : notification.description;
-
-  const targetUrl =
-    typeof notification.targetUrl === 'function'
-      ? notification.targetUrl(notificationVariables as any)
-      : notification.targetUrl;
+  const body = notification.description(notificationVariables as any);
+  const targetUrl = notification.targetUrl(notificationVariables as any);
 
   const notificationId = v4();
 

@@ -4,7 +4,7 @@ import { sendFarcasterNotification } from '@packages/farcaster/sendFarcasterNoti
 import type { EmailNotificationVariables } from '@packages/mailer/sendEmailNotification';
 import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 
-import type { AppNotificationVariables } from './sendAppNotification';
+import type { AppNotificationVariables } from './appNotificationConstants';
 import { sendAppNotification } from './sendAppNotification';
 
 export type NotificationTypes =
