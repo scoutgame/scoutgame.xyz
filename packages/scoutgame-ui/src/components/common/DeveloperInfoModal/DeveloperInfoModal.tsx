@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useMdScreen } from '../../../hooks/useMediaScreens';
+import { useUser } from '../../../providers/UserProvider';
 import { Avatar } from '../Avatar';
 import { BuilderCardRankGraph } from '../Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { Dialog } from '../Dialog';
@@ -44,6 +45,7 @@ function DeveloperCardSection({
 }) {
   const isDesktop = useMdScreen();
   const color = cardType === BuilderNftType.starter_pack ? 'green.main' : 'secondary.main';
+  const { user } = useUser();
 
   return (
     <Stack
@@ -61,20 +63,38 @@ function DeveloperCardSection({
           {cardType === BuilderNftType.starter_pack ? 'STARTER CARD' : 'REGULAR CARD'}
         </Typography>
         <Stack direction='row' gap={0.75} alignItems='center'>
-          <Typography color={color}>
-            {cardsSoldToScout} of {cardsSold}
-          </Typography>
-          <Image
-            src={
-              cardType === BuilderNftType.starter_pack
-                ? '/images/profile/icons/cards-green.svg'
-                : '/images/profile/icons/cards-secondary.svg'
-            }
-            width={17.5}
-            height={17.5}
-            alt='cards sold icon'
-          />
-          <Typography color={color}>Held</Typography>
+          {user ? (
+            <>
+              <Typography color={color}>
+                {cardsSoldToScout} of {cardsSold}
+              </Typography>
+              <Image
+                src={
+                  cardType === BuilderNftType.starter_pack
+                    ? '/images/profile/icons/cards-green.svg'
+                    : '/images/profile/icons/cards-secondary.svg'
+                }
+                width={17.5}
+                height={17.5}
+                alt='cards sold icon'
+              />
+              <Typography color={color}>Held</Typography>
+            </>
+          ) : (
+            <>
+              <Typography color={color}>{cardsSold}</Typography>
+              <Image
+                src={
+                  cardType === BuilderNftType.starter_pack
+                    ? '/images/profile/icons/cards-green.svg'
+                    : '/images/profile/icons/cards-secondary.svg'
+                }
+                width={17.5}
+                height={17.5}
+                alt='cards sold icon'
+              />
+            </>
+          )}
         </Stack>
       </Stack>
       <Stack flexDirection='row' gap={0.5} alignItems='center' justifyContent='space-between'>
@@ -459,7 +479,7 @@ export function DeveloperInfoModal({
               borderRadius={1}
               flex={1}
               height={{
-                xs: 100,
+                xs: 115,
                 md: 140
               }}
             >
@@ -516,13 +536,18 @@ export function DeveloperInfoModal({
                 <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.scoutedBy} Scouts</Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.cardsSold}</Typography>
-                  <Image src='/images/profile/icons/cards-white.svg' width={22} height={22} alt='cards sold icon' />
+                  <Image
+                    src='/images/profile/icons/cards-white.svg'
+                    width={isDesktop ? 22 : 18}
+                    height={isDesktop ? 22 : 18}
+                    alt='cards sold icon'
+                  />
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>Sold</Typography>
                 </Stack>
               </Stack>
             </Stack>
           </Stack>
-          <Stack bgcolor='primary.dark' borderRadius={1} p={1} gap={0.5} minWidth={175} flex={1}>
+          <Stack bgcolor='primary.dark' borderRadius={1} p={0.5} gap={0.5} minWidth={175} flex={1}>
             <Typography color='secondary.main'>Github Activity</Typography>
             <Stack>
               {developer.githubActivities.length > 0 ? (
