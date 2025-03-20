@@ -1,15 +1,21 @@
 'use client';
 
-import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
-import { Stack, Typography } from '@mui/material';
-import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
-import Image from 'next/image';
+import type { ScoutProjectMemberRole, OnchainAchievementTier } from '@charmverse/core/prisma';
+import { Avatar, Stack, Typography } from '@mui/material';
+import type { ProjectTeamMember } from '@packages/scoutgame/projects/getProjectByPath';
 import Link from 'next/link';
 
 import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
+import { GemsIcon } from '../../../common/Icons';
 import { ProjectRoleText } from '../../constants';
 
-export function ProjectPageMember({ member }: { member: ScoutProjectDetailed['teamMembers'][number] }) {
+export function ProjectPageMember({
+  member,
+  projectTier
+}: {
+  member: ProjectTeamMember;
+  projectTier?: OnchainAchievementTier;
+}) {
   const { openModal } = useDeveloperInfoModal();
 
   return (
@@ -25,16 +31,24 @@ export function ProjectPageMember({ member }: { member: ScoutProjectDetailed['te
       alignItems='center'
       gap={2}
       bgcolor='background.paper'
-      px={1.5}
+      pl={1.5}
       py={1}
       borderRadius={1}
       sx={{ cursor: 'pointer' }}
     >
-      <Image src={member.avatar} alt={member.displayName} width={48} height={48} style={{ borderRadius: '50%' }} />
+      <Avatar src={member.avatar} alt={member.displayName} />
       <Typography>{member.displayName}</Typography>
       <Typography variant='caption' color='secondary'>
         {ProjectRoleText[member.role as ScoutProjectMemberRole]}
       </Typography>
+      {member.gemsThisWeek > 0 && (
+        <Typography
+          sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexGrow: 1, justifyContent: 'flex-end', mr: 3 }}
+        >
+          +{member.gemsThisWeek}
+          <GemsIcon color={projectTier} size={16} />
+        </Typography>
+      )}
     </Stack>
   );
 }

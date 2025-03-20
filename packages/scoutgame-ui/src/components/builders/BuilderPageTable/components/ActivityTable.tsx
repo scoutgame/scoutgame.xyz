@@ -13,7 +13,7 @@ import { LuBookMarked } from 'react-icons/lu';
 
 import { secondaryTextColorDarkMode } from '../../../../theme/colors';
 import { Hidden } from '../../../common/Hidden';
-import { GemsIcon } from '../../../common/Icons';
+import { GemsIcon, TransactionIcon } from '../../../common/Icons';
 import {
   BuilderActivityGems,
   getActivityLabel
@@ -40,6 +40,8 @@ export function BuilderActivityAction({ activity }: { activity: BuilderActivity 
           )
         ) : activity.type === 'nft_purchase' ? (
           <BiLike size='15px' style={{ flexShrink: 0, marginTop: '2.5px' }} />
+        ) : activity.type === 'onchain_achievement' ? (
+          <TransactionIcon size={15} />
         ) : null}
         <Stack flexDirection='row' gap={0.5} alignItems='center' justifyContent='space-between' width='100%'>
           <Hidden mdDown>
@@ -100,6 +102,21 @@ export function BuilderActivityAction({ activity }: { activity: BuilderActivity 
             }}
           >
             <Link href={activity.url}>{activity.repo}</Link>
+          </Typography>
+        )}
+        {activity.type === 'onchain_achievement' && (
+          <Typography
+            component='span'
+            variant='caption'
+            sx={{
+              whiteSpace: 'nowrap',
+              display: {
+                xs: 'block',
+                md: 'initial'
+              }
+            }}
+          >
+            <Link href={`/p/${activity.project.path}`}>{activity.project.name}</Link>
           </Typography>
         )}
       </Typography>

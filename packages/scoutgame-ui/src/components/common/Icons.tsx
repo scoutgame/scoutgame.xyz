@@ -1,17 +1,29 @@
 import Image from 'next/image';
 
-export function GemsIcon({ size = 20 }: { size?: number }) {
-  return <Image width={size} height={size} src='/images/profile/icons/hex-gem-icon.svg' alt='' />;
+const gemsSrc = {
+  bronze: '/images/icons/gem-bronze.svg',
+  silver: '/images/icons/gem-silver.svg',
+  gold: '/images/icons/gem-gold.svg',
+  default: '/images/icons/gem.svg'
+} as const;
+
+export function GemsIcon({ size = 20, color }: { size?: number; color?: 'bronze' | 'silver' | 'gold' }) {
+  const src = (color && gemsSrc[color]) || gemsSrc.default;
+  return <Image width={size} height={size} src={src} alt='' />;
 }
 
 const pointsSrc = {
-  orange: '/images/profile/scout-game-orange-icon.svg',
-  green: '/images/profile/scout-game-green-icon.svg',
-  blue: '/images/profile/scout-game-blue-icon.svg',
-  default: '/images/profile/scout-game-icon.svg'
+  orange: '/images/icons/binoculars-orange.svg',
+  green: '/images/icons/binoculars-green.svg',
+  blue: '/images/icons/binoculars-blue.svg',
+  default: '/images/icons/binoculars.svg'
 } as const;
 
 export function PointsIcon({ size = 20, color }: { size?: number; color?: 'orange' | 'green' | 'blue' }) {
   const src = (color && pointsSrc[color]) || pointsSrc.default;
   return <Image width={size} height={size} src={src} alt='' />;
+}
+
+export function TransactionIcon({ size = 20 }: { size?: number }) {
+  return <Image width={size} height={size} src='/images/icons/transaction.svg' alt='' />;
 }

@@ -225,7 +225,7 @@ export function BuildersTable({
                 <Image
                   width={isMdScreen ? 15 : 12.5}
                   height={isMdScreen ? 15 : 12.5}
-                  src='/images/profile/icons/hex-gem-icon.svg'
+                  src='/images/icons/gem.svg'
                   alt='gem icon'
                 />
               </Stack>
@@ -233,9 +233,7 @@ export function BuildersTable({
             <TableCell align='right' width={isMdScreen ? 150 : 'auto'}>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>{builder.estimatedPayout}</TableCellText>
-                {isMdScreen && (
-                  <Image width={15} height={15} src='/images/profile/scout-game-icon.svg' alt='points icon' />
-                )}
+                {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon' />}
               </Stack>
             </TableCell>
             <TableCell align='center'>
@@ -246,9 +244,7 @@ export function BuildersTable({
                     ? Number(builder.price || 0)
                     : convertCostToPoints(builder.price || BigInt(0))}
                 </TableCellText>
-                {isMdScreen && (
-                  <Image width={15} height={15} src='/images/profile/scout-game-icon.svg' alt='points icon ' />
-                )}
+                {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon ' />}
               </Stack>
             </TableCell>
           </TableRow>

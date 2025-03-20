@@ -322,7 +322,7 @@ export function DeveloperInfoModal({
                 alignItems='center'
               >
                 <Image
-                  src='/images/profile/scout-game-icon.svg'
+                  src='/images/icons/binoculars.svg'
                   width={isDesktop ? '24' : '18'}
                   height={isDesktop ? '24' : '18'}
                   alt='scoutgame icon'
@@ -422,7 +422,7 @@ export function DeveloperInfoModal({
                     {developer.estimatedPayout}
                   </Typography>
                   <Image
-                    src='/images/profile/scout-game-green-icon.svg'
+                    src='/images/icons/binoculars-green.svg'
                     width={isDesktop ? '24' : '18'}
                     height={isDesktop ? '24' : '18'}
                     alt='scoutgame icon'
@@ -471,7 +471,7 @@ export function DeveloperInfoModal({
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.gemsCollected}</Typography>
                   <Image
-                    src='/images/profile/icons/hex-gem-icon.svg'
+                    src='/images/icons/gem.svg'
                     width={isDesktop ? '24' : '18'}
                     height={isDesktop ? '24' : '18'}
                     alt='gem icon'
@@ -509,7 +509,7 @@ export function DeveloperInfoModal({
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.seasonPoints}</Typography>
                   <Image
-                    src='/images/profile/scout-game-icon.svg'
+                    src='/images/icons/binoculars.svg'
                     width={isDesktop ? '24' : '18'}
                     height={isDesktop ? '24' : '18'}
                     alt='gem icon'
@@ -571,7 +571,7 @@ export function DeveloperInfoModal({
                         >
                           <Typography>{activity.gems}</Typography>
                           <Image
-                            src='/images/profile/icons/hex-gem-icon.svg'
+                            src='/images/icons/gem.svg'
                             width={isDesktop ? '20' : '16'}
                             height={isDesktop ? '20' : '16'}
                             alt='gem icon'
