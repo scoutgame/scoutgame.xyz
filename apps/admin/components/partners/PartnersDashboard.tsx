@@ -9,7 +9,7 @@ export function PartnersDashboard() {
       <Stack spacing={3} justifyContent='center' mb={3}>
         <PartnerCardContainer partner='celo' partnerName='Celo' hasGithubRepos />
         <PartnerCardContainer partner='game7' partnerName='Game7' hasGithubRepos />
-        <PartnerCardContainer partner='gooddollar' partnerName='Good Dollar' hasGithubRepos />
+        <PartnerCardContainer partner='gooddollar' partnerName='GoodDollar' hasGithubRepos />
         <PartnerCardContainer
           partner='octant'
           partnerName='Octant'
