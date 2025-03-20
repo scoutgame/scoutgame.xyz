@@ -1,6 +1,7 @@
 import { baseUrl } from '@packages/utils/constants';
 import { getRelativeTime } from '@packages/utils/dates';
 // It is a MUST to import React
+import { capitalize } from '@packages/utils/strings';
 import React from 'react';
 import type { CSSProperties } from 'react';
 
@@ -259,6 +260,9 @@ export function BuilderShareImage({
 }
 
 export function getActivityLabel(activity: BuilderActivity) {
+  if (activity.type === 'onchain_achievement') {
+    return `${capitalize(activity.tier)} Tier!`;
+  }
   return activity.type === 'github_event'
     ? activity.contributionType === 'first_pr'
       ? 'First contribution!'
@@ -274,7 +278,10 @@ export function getActivityLabel(activity: BuilderActivity) {
       : null;
 }
 
-export function getActivityDetail(activity: BuilderActivity) {
+export function getActivityDetail(activity: BuilderActivity): string | null {
+  if (activity.type === 'onchain_achievement') {
+    return activity.project.name;
+  }
   return activity.type === 'nft_purchase'
     ? activity.scout.displayName
     : activity.type === 'github_event'

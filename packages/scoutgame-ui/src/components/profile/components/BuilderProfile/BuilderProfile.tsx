@@ -48,16 +48,16 @@ export async function BuilderProfile({
         ])
       : [];
 
-  if (!builder.githubLogin && !hideGithubButton) {
-    return (
-      <Stack gap={2} alignItems='center'>
-        <Typography>Connect your GitHub account to apply as a Developer.</Typography>
-        <Suspense>
-          <JoinGithubButton />
-        </Suspense>
-      </Stack>
-    );
-  }
+  // if (!builder.githubLogin && !hideGithubButton) {
+  //   return (
+  //     <Stack gap={2} alignItems='center'>
+  //       <Typography>Connect your GitHub account to apply as a Developer.</Typography>
+  //       <Suspense>
+  //         <JoinGithubButton />
+  //       </Suspense>
+  //     </Stack>
+  //   );
+  // }
 
   if (builder.builderStatus === 'applied') {
     return (

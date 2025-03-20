@@ -3,7 +3,6 @@ import LanguageIcon from '@mui/icons-material/Language';
 import { IconButton, Box, Container, Stack, Typography, Tooltip, Avatar } from '@mui/material';
 import type { ScoutProjectDetailed } from '@packages/scoutgame/projects/getProjectByPath';
 import { capitalize } from '@packages/utils/strings';
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { BackButton } from '../../common/Button/BackButton';
@@ -45,12 +44,16 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
           position='relative'
         >
           <BackButton />
-          <Image
-            src={project.avatar || 'https://www.svgrepo.com/show/335614/project.svg'}
+          <Avatar
+            src={project.avatar}
             alt={project.name}
-            width={100}
-            height={100}
-            style={{ objectFit: 'cover' }}
+            sx={{
+              width: 100,
+              height: 100,
+              fontSize: 14,
+              fontWeight: 600
+            }}
+            variant='square'
           />
           <Stack gap={1} ml={1} flex={1}>
             <Stack flexDirection='row' alignItems='center' gap={1}>
