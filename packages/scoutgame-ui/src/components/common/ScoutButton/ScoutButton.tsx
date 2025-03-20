@@ -75,7 +75,7 @@ export function ScoutButton({
             fullWidth
             onClick={handleClick}
             data-test={isLoading ? '' : 'scout-button'}
-            variant='buy'
+            variant={type === 'starter_pack' ? 'buy-starter' : 'buy'}
             sx={{
               color,
               borderColor: color
