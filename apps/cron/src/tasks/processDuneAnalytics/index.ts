@@ -1,11 +1,9 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import {
-  getNewProjectAchievements,
-  recordProjectAchievement
-} from '@packages/blockchain/analytics/getNewProjectAchievements';
+import { getNewProjectAchievements } from '@packages/blockchain/analytics/getNewProjectAchievements';
 import { recordContractAnalyticsForWeek } from '@packages/blockchain/analytics/recordContractAnalytics';
 import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
+import { saveProjectAchievement } from '@packages/blockchain/analytics/saveProjectAchievement';
 import { getCurrentWeek } from '@packages/dates/utils';
 import type Koa from 'koa';
 import { taiko, taikoTestnetSepolia } from 'viem/chains';
@@ -116,7 +114,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     const builderEvents = await getNewProjectAchievements(projectId, week);
     if (builderEvents.length > 0) {
       for (const event of builderEvents) {
-        await recordProjectAchievement(event, week);
+        await saveProjectAchievement(event, week);
       }
     }
   }
