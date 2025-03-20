@@ -19,13 +19,19 @@ export type ProjectTeamMember = {
   gemsThisWeek: number;
 };
 
+// a map of contract addresses to the number of transactions on a given day
+export type ContractDailyStat = {
+  date: string;
+} & Record<string, number | string>;
+
 export type ScoutProjectDetailed = Pick<
   ScoutProject,
   'id' | 'path' | 'avatar' | 'name' | 'description' | 'website' | 'github'
 > & {
   tier: OnchainAchievementTier | undefined;
   contracts: (Pick<ScoutProjectContract, 'id' | 'address' | 'chainId' | 'deployerId'> & {
-    txCount?: number;
+    loadingStats: boolean;
+    txCount: number;
   })[];
   teamMembers: ProjectTeamMember[];
   deployers: {
@@ -36,13 +42,15 @@ export type ScoutProjectDetailed = Pick<
     address: string;
     chainId: number | null;
     chainType: 'evm' | 'solana' | null;
-    txCount?: number;
+    loadingStats: boolean;
+    txCount: number;
   }[];
-  totalTxCount?: number;
-  totalGems?: number;
-  contractDailyStats: {
-    date: string;
-  }[];
+  stats: {
+    loading: boolean; // stats are calculated once a day
+    totalTxCount: number;
+    totalGems: number;
+    contractDailyStats: ContractDailyStat[];
+  };
 };
 
 const projectDetailedSelect = (lookback: Date) =>
@@ -200,24 +208,23 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
     ...scoutProject,
     contracts: scoutProject.contracts.map((contract) => ({
       ...contract,
-      // return undefined so we know the data is not available
-      txCount: contract.dailyStats.length
-        ? contract.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)
-        : undefined
+      loadingStats: contract.dailyStats.length === 0,
+      txCount: contract.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)
     })),
     wallets: scoutProject.wallets.map((wallet) => ({
       ...wallet,
       chainId: wallet.chainId!,
-      // return undefined so we know the data is not available
-      txCount: wallet.dailyStats.length
-        ? wallet.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)
-        : undefined
+      loadingStats: wallet.dailyStats.length === 0,
+      txCount: wallet.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)
     })),
     // take the latest tier from the members events
     tier,
     teamMembers,
-    totalTxCount: allDailyStats.filter((d) => d.week === week).reduce((acc, curr) => acc + curr.transactions, 0),
-    totalGems: projectGems,
-    contractDailyStats
+    stats: {
+      loading: allDailyStats.length === 0,
+      totalTxCount: allDailyStats.filter((d) => d.week === week).reduce((acc, curr) => acc + curr.transactions, 0),
+      totalGems: projectGems,
+      contractDailyStats
+    }
   };
 }
