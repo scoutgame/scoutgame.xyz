@@ -66,16 +66,7 @@ export function DeveloperInfoModalSkeleton() {
             }}
             height={125}
           />
-          <Skeleton
-            variant='text'
-            sx={{
-              width: {
-                xs: '33.33%',
-                md: 150
-              }
-            }}
-            height={125}
-          />
+
           <Skeleton
             variant='text'
             sx={{
@@ -86,8 +77,6 @@ export function DeveloperInfoModalSkeleton() {
             }}
             height={125}
           />
-        </Stack>
-        <Stack direction='row' gap={0.5}>
           <Skeleton
             variant='text'
             sx={{
@@ -98,15 +87,22 @@ export function DeveloperInfoModalSkeleton() {
             }}
             height={125}
           />
+        </Stack>
+        <Skeleton variant='text' width='100%' height={125} />
+        <Stack direction='row' gap={0.5}>
           <Skeleton
             variant='text'
             sx={{
-              width: {
-                xs: '66.66%',
-                md: `calc(100% - 150px)`
-              }
+              width: '50%'
             }}
-            height={125}
+            height={75}
+          />
+          <Skeleton
+            variant='text'
+            sx={{
+              width: '50%'
+            }}
+            height={75}
           />
         </Stack>
       </Stack>

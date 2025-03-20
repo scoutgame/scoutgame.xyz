@@ -1,6 +1,6 @@
 import { BuilderNftType } from '@charmverse/core/prisma-client';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { Button, IconButton, Skeleton, Stack, Typography } from '@mui/material';
+import { Button, IconButton, Stack, Typography } from '@mui/material';
 import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
@@ -126,7 +126,7 @@ export function DeveloperInfoModal({
 }) {
   const isDesktop = useMdScreen();
 
-  if (isLoading) {
+  if (!isLoading) {
     return (
       <Dialog
         open
