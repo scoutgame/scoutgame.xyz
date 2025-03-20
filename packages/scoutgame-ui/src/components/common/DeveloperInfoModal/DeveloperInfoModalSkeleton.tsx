@@ -89,18 +89,30 @@ export function DeveloperInfoModalSkeleton() {
           />
         </Stack>
         <Skeleton variant='text' width='100%' height={125} />
-        <Stack direction='row' gap={0.5}>
+        <Stack
+          direction={{
+            xs: 'column',
+            md: 'row'
+          }}
+          gap={0.5}
+        >
           <Skeleton
             variant='text'
             sx={{
-              width: '50%'
+              width: {
+                xs: '100%',
+                md: '50%'
+              }
             }}
             height={75}
           />
           <Skeleton
             variant='text'
             sx={{
-              width: '50%'
+              width: {
+                xs: '100%',
+                md: '50%'
+              }
             }}
             height={75}
           />

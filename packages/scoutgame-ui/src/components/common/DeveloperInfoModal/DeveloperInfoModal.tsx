@@ -126,7 +126,7 @@ export function DeveloperInfoModal({
 }) {
   const isDesktop = useMdScreen();
 
-  if (!isLoading) {
+  if (isLoading) {
     return (
       <Dialog
         open
@@ -542,7 +542,13 @@ export function DeveloperInfoModal({
               )}
             </Stack>
           </Stack>
-          <Stack direction='row' gap={0.5}>
+          <Stack
+            direction={{
+              xs: 'column',
+              md: 'row'
+            }}
+            gap={0.5}
+          >
             <DeveloperCardSection
               developerId={developer.id}
               displayName={developer.displayName}
