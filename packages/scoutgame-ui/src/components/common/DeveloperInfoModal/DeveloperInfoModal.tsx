@@ -419,11 +419,12 @@ export function DeveloperInfoModal({
                     component='span'
                     display={{
                       xs: 'none',
-                      md: 'block'
+                      md: 'inline'
                     }}
+                    color='secondary.main'
                   >
                     Current
-                  </Typography>
+                  </Typography>{' '}
                   Rank
                 </Typography>
                 <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.rank}</Typography>
@@ -434,11 +435,12 @@ export function DeveloperInfoModal({
                     component='span'
                     display={{
                       xs: 'none',
-                      md: 'block'
+                      md: 'inline'
                     }}
+                    color='secondary.main'
                   >
                     Week's
-                  </Typography>
+                  </Typography>{' '}
                   Gems
                 </Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
@@ -452,7 +454,15 @@ export function DeveloperInfoModal({
                 </Stack>
               </Stack>
             </Stack>
-            <Stack bgcolor='primary.dark' borderRadius={1} gap={0.5} flex={1}>
+            <Stack
+              bgcolor='primary.dark'
+              borderRadius={1}
+              flex={1}
+              height={{
+                xs: 100,
+                md: 140
+              }}
+            >
               <Typography
                 color='secondary.main'
                 p={{
@@ -462,7 +472,9 @@ export function DeveloperInfoModal({
               >
                 14D Rank
               </Typography>
-              <BuilderCardRankGraph last14DaysRank={developer.last14DaysRank} />
+              <Stack height='calc(100% - 16px)'>
+                <BuilderCardRankGraph last14DaysRank={developer.last14DaysRank} />
+              </Stack>
             </Stack>
             <Stack
               bgcolor='primary.dark'
@@ -478,16 +490,17 @@ export function DeveloperInfoModal({
               }}
               width='25%'
             >
-              <Typography color='secondary.main'>
+              <Typography color='secondary.main' component='span'>
                 <Typography
                   component='span'
                   display={{
                     xs: 'none',
-                    md: 'block'
+                    md: 'inline'
                   }}
+                  color='secondary.main'
                 >
                   This
-                </Typography>
+                </Typography>{' '}
                 Season
               </Typography>
               <Stack>
