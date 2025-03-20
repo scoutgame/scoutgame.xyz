@@ -1,5 +1,6 @@
 import type { ScoutAppNotification } from '@charmverse/core/prisma-client';
-import { Container, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Container, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { NotificationCard } from './NotificationCard';
@@ -62,14 +63,50 @@ export function NotificationsPage({
           {notifications.length > 0 ? (
             notifications.map((notification) => <NotificationCard key={notification.id} notification={notification} />)
           ) : (
-            <Typography>
-              No{' '}
-              {status === 'all'
-                ? 'notifications received yet'
-                : status === 'read'
-                  ? 'read notifications left'
-                  : 'unread notifications left'}
-            </Typography>
+            <Stack
+              sx={{
+                width: '100%',
+                px: 2.5,
+                py: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                mt: 0,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Typography variant='h6'>
+                {status === 'all'
+                  ? 'No notifications received yet'
+                  : status === 'read'
+                    ? 'No notifications have been read'
+                    : 'All notifications have been read'}
+              </Typography>
+              <Box
+                sx={{
+                  width: {
+                    md: '400px',
+                    xs: '250px'
+                  },
+                  height: {
+                    md: '400px',
+                    xs: '250px'
+                  }
+                }}
+              >
+                <Image
+                  src='/images/cat-with-binoculars.png'
+                  alt='Scouts'
+                  width={400}
+                  height={400}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                />
+              </Box>
+            </Stack>
           )}
         </Stack>
       </Stack>
