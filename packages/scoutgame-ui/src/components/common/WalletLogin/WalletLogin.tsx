@@ -67,7 +67,7 @@ function WalletLoginButton() {
     }
   });
 
-  const errorWalletMessage = result.validationErrors?.fieldErrors.message;
+  const errorWalletMessage = result.validationErrors?.fieldErrors.message || result.serverError?.message;
 
   const handleWalletConnect = async (_address: string) => {
     const preparedMessage: Partial<SiweMessage> = {
