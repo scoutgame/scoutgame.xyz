@@ -113,7 +113,7 @@ export function Header() {
                         {user.currentBalance}
                       </Typography>
                       <Image
-                        src='/images/profile/scout-game-icon.svg'
+                        src='/images/icons/binoculars.svg'
                         width={20}
                         height={20}
                         alt='Scout Game points icon'

@@ -1,16 +1,20 @@
 import { Paper, Stack, Typography } from '@mui/material';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { bonusPartnersRecord } from '@packages/scoutgame/bonus';
-import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
+import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import { getRelativeTime } from '@packages/utils/dates';
+import { capitalize } from '@packages/utils/strings';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BiLike } from 'react-icons/bi';
 import { LuBookMarked } from 'react-icons/lu';
 
-import { GemsIcon } from '../../../common/Icons';
+import { GemsIcon, TransactionIcon } from '../../../common/Icons';
 
 export function getActivityLabel(activity: BuilderActivity, shorten = false) {
+  if (activity.type === 'onchain_achievement') {
+    return `${capitalize(activity.tier)} Tier!`;
+  }
   return activity.type === 'github_event'
     ? activity.contributionType === 'first_pr'
       ? shorten
@@ -46,9 +50,17 @@ function BuilderActivityDetail({ activity }: { activity: BuilderActivity }) {
   return (
     <Stack component='span' flexDirection='row' gap={0.5} alignItems='center'>
       {activity.type === 'nft_purchase' ? (
-        <Link href={`/u/${activity.scout.path}`}>{activity.scout.displayName}</Link>
+        <Link href={`/u/${activity.scout.path}`} target='_blank'>
+          {activity.scout.displayName}
+        </Link>
       ) : activity.type === 'github_event' ? (
-        <Link href={activity.url}>{activity.repo}</Link>
+        <Link href={activity.url} target='_blank'>
+          {activity.repo}
+        </Link>
+      ) : activity.type === 'onchain_achievement' ? (
+        <Link href={`/p/${activity.project.path}`} target='_blank'>
+          {activity.project.name}
+        </Link>
       ) : null}
     </Stack>
   );
@@ -65,12 +77,12 @@ export function BuilderActivityGems({
 }) {
   return (
     <Stack component='span' flexDirection='row' gap={0.5} alignItems='center'>
-      {activity.type === 'github_event' ? (
+      {activity.type === 'github_event' || activity.type === 'onchain_achievement' ? (
         <>
           <Typography component='span' variant={size === 'small' ? 'body2' : 'body1'}>
             +{activity.gems}
           </Typography>
-          <GemsIcon size={size === 'small' ? 16 : 20} />
+          <GemsIcon size={size === 'small' ? 16 : 20} color={(activity as OnchainAchievementActivity).tier} />
         </>
       ) : showEmpty ? (
         '-'
@@ -130,6 +142,8 @@ export function BuilderActivitiesList({ activities }: { activities: BuilderActiv
                     <LuBookMarked size='15px' />
                   ) : activity.type === 'nft_purchase' ? (
                     <BiLike size='15px' />
+                  ) : activity.type === 'onchain_achievement' ? (
+                    <TransactionIcon size={15} />
                   ) : null}
                   <BuilderActivityLabel activity={activity} />
                 </Stack>

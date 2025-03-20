@@ -1,6 +1,5 @@
 import EditIcon from '@mui/icons-material/Edit';
-import { Box, CircularProgress } from '@mui/material';
-import Image from 'next/image';
+import { Avatar, Box, CircularProgress } from '@mui/material';
 import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
@@ -10,10 +9,17 @@ type EditableAvatarProps = {
   control: Control<any>;
   avatarSize?: number;
   isLoading?: boolean;
+  username?: string;
   onAvatarChange?: (url: string) => void;
 };
 
-export function EditableAvatar({ control, avatarSize = 100, isLoading, onAvatarChange }: EditableAvatarProps) {
+export function EditableAvatar({
+  control,
+  avatarSize = 100,
+  username,
+  isLoading,
+  onAvatarChange
+}: EditableAvatarProps) {
   const { field: avatarField } = useController({
     name: 'avatar',
     control
@@ -83,16 +89,20 @@ export function EditableAvatar({ control, avatarSize = 100, isLoading, onAvatarC
           }}
         />
       ) : (
-        <Image
+        <Avatar
           src={avatarField.value}
-          alt='avatar'
-          width={avatarSize}
-          height={avatarSize}
-          sizes='100vw'
-          style={{
-            objectFit: 'cover',
-            borderRadius: '50%'
+          alt={username}
+          sx={{
+            width: avatarSize,
+            height: avatarSize,
+            fontSize: avatarSize / 2
           }}
+          // height={avatarSize}
+          // sizes='100vw'
+          // style={{
+          //   objectFit: 'cover',
+          //   borderRadius: '50%'
+          // }}
         />
       )}
     </Box>
