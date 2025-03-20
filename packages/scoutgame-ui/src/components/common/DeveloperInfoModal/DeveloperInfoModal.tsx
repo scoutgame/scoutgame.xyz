@@ -407,15 +407,40 @@ export function DeveloperInfoModal({
               }}
               borderRadius={1}
               gap={0.5}
-              minWidth={125}
+              minWidth={{
+                xs: 100,
+                md: 125
+              }}
               width='25%'
             >
               <Stack>
-                <Typography color='secondary.main'>Current Rank</Typography>
+                <Typography color='secondary.main'>
+                  <Typography
+                    component='span'
+                    display={{
+                      xs: 'none',
+                      md: 'block'
+                    }}
+                  >
+                    Current
+                  </Typography>
+                  Rank
+                </Typography>
                 <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.rank}</Typography>
               </Stack>
               <Stack>
-                <Typography color='secondary.main'>Week's Gems</Typography>
+                <Typography color='secondary.main'>
+                  <Typography
+                    component='span'
+                    display={{
+                      xs: 'none',
+                      md: 'block'
+                    }}
+                  >
+                    Week's
+                  </Typography>
+                  Gems
+                </Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.gemsCollected}</Typography>
                   <Image
@@ -447,10 +472,24 @@ export function DeveloperInfoModal({
               }}
               borderRadius={1}
               gap={0.5}
-              minWidth={125}
+              minWidth={{
+                xs: 100,
+                md: 125
+              }}
               width='25%'
             >
-              <Typography color='secondary.main'>This Season</Typography>
+              <Typography color='secondary.main'>
+                <Typography
+                  component='span'
+                  display={{
+                    xs: 'none',
+                    md: 'block'
+                  }}
+                >
+                  This
+                </Typography>
+                Season
+              </Typography>
               <Stack>
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.seasonPoints}</Typography>
