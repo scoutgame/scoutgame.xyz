@@ -22,7 +22,9 @@ type ScoutWithGithubUser = {
   nftsSold: number;
   pointsEarnedAsScout: number;
   pointsEarnedAsBuilder: number;
-  weeklyBuilderRank?: number;
+  // weeklyBuilderRank?: number;
+  developerLevel?: string;
+  season: string;
 };
 
 export async function GET() {
@@ -51,25 +53,48 @@ export async function GET() {
       }
     }
   });
-  const rows: ScoutWithGithubUser[] = users.map((user) => ({
-    id: user.id,
-    path: user.path!,
-    createdAt: user.createdAt.toDateString(),
-    email: user.email || undefined,
-    optedInToMarketing: user.sendMarketing ? 'Yes' : '',
-    // avatar: user.avatar || '',
-    builderStatus: user.builderStatus || undefined,
-    tokenId: user.builderNfts[0]?.tokenId || undefined,
-    fid: user.farcasterId || undefined,
-    farcasterName: user.farcasterName || undefined,
-    githubLogin: user.githubUsers[0]?.login,
-    currentBalance: user.currentBalance,
-    pointsEarnedAsScout: user.userSeasonStats[0]?.pointsEarnedAsScout || 0,
-    pointsEarnedAsBuilder: user.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
-    nftsPurchased: user.userSeasonStats[0]?.nftsPurchased || 0,
-    nftsSold: user.userSeasonStats[0]?.nftsSold || 0,
-    weeklyBuilderRank: user.userWeeklyStats[0]?.rank || undefined
-  }));
+  const rows: ScoutWithGithubUser[] = users.flatMap((user) => {
+    // Create a map with shared user data
+    const sharedUserData = {
+      id: user.id,
+      path: user.path!,
+      createdAt: user.createdAt.toDateString(),
+      email: user.email || undefined,
+      optedInToMarketing: user.sendMarketing ? 'Yes' : '',
+      builderStatus: user.builderStatus || undefined,
+      tokenId: user.builderNfts[0]?.tokenId || undefined,
+      fid: user.farcasterId || undefined,
+      farcasterName: user.farcasterName || undefined,
+      githubLogin: user.githubUsers[0]?.login,
+      currentBalance: user.currentBalance
+    };
+    // If user has no season stats, create one row with default values
+    if (user.userSeasonStats.length === 0) {
+      return [
+        // If user has no season stats, return one row with default values
+        {
+          ...sharedUserData,
+          pointsEarnedAsScout: 0,
+          pointsEarnedAsBuilder: 0,
+          nftsPurchased: 0,
+          nftsSold: 0,
+          developerLevel: undefined,
+          season: ''
+        }
+      ];
+    }
+
+    // Create one row per season stat
+    return user.userSeasonStats.map((seasonStat) => ({
+      ...sharedUserData,
+      pointsEarnedAsScout: seasonStat.pointsEarnedAsScout,
+      pointsEarnedAsBuilder: seasonStat.pointsEarnedAsBuilder,
+      nftsPurchased: seasonStat.nftsPurchased,
+      nftsSold: seasonStat.nftsSold,
+      developerLevel: seasonStat.level || undefined,
+      season: seasonStat.season
+    }));
+  });
 
   return respondWithTSV(rows, 'scout_users_export.tsv');
 }
