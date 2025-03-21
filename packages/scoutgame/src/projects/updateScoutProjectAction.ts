@@ -2,9 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { baseUrl } from '@packages/utils/constants';
 import { revalidatePath } from 'next/cache';
 
 import { sendNotifications } from '../notifications/sendNotifications';
@@ -63,6 +61,12 @@ export const updateScoutProjectAction = authActionClient
             }
           },
           farcaster: {
+            templateVariables: {
+              projectName: updatedProject.name,
+              projectPath: updatedProject.path
+            }
+          },
+          app: {
             templateVariables: {
               projectName: updatedProject.name,
               projectPath: updatedProject.path

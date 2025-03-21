@@ -17,7 +17,8 @@ export type BuilderMetrics = {
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[] | null;
   gemsCollected?: number;
-  nftsSoldToScout?: number;
+  nftsSoldToLoggedInScout?: number;
+  nftsSoldToScoutInView?: number;
 };
 
 export type BuilderInfo = BasicUserInfo &

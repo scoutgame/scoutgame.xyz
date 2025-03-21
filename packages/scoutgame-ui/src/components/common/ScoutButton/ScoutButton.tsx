@@ -59,8 +59,7 @@ export function ScoutButton({
   }
 
   const color = type === 'starter_pack' ? 'green.main' : undefined;
-  const image =
-    type === 'starter_pack' ? '/images/profile/scout-game-green-icon.svg' : '/images/profile/scout-game-blue-icon.svg';
+  const image = type === 'starter_pack' ? '/images/icons/binoculars-green.svg' : '/images/icons/binoculars-blue.svg';
 
   return (
     <div>
@@ -75,7 +74,7 @@ export function ScoutButton({
             fullWidth
             onClick={handleClick}
             data-test={isLoading ? '' : 'scout-button'}
-            variant='buy'
+            variant={type === 'starter_pack' ? 'buy-starter' : 'buy'}
             sx={{
               color,
               borderColor: color

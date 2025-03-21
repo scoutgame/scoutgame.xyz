@@ -1,5 +1,6 @@
+import { BuilderNftType } from '@charmverse/core/prisma-client';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { Button, IconButton, Skeleton, Stack, Typography } from '@mui/material';
+import { Button, IconButton, Stack, Typography } from '@mui/material';
 import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
@@ -7,10 +8,132 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useMdScreen } from '../../../hooks/useMediaScreens';
+import { useUser } from '../../../providers/UserProvider';
 import { Avatar } from '../Avatar';
 import { BuilderCardRankGraph } from '../Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { Dialog } from '../Dialog';
 import { ScoutButton } from '../ScoutButton/ScoutButton';
+
+import { DeveloperInfoModalSkeleton } from './DeveloperInfoModalSkeleton';
+
+function DeveloperCardSection({
+  cardType,
+  estimatedPayout,
+  cardsSold,
+  cardsSoldToScout,
+  onClose,
+  developerId,
+  displayName,
+  avatar,
+  nftImageUrl,
+  congratsImageUrl,
+  cardPrice,
+  path
+}: {
+  cardType: BuilderNftType;
+  estimatedPayout: number;
+  cardsSold: number;
+  cardsSoldToScout: number;
+  onClose: VoidFunction;
+  developerId: string;
+  displayName: string;
+  avatar: string;
+  nftImageUrl: string | null;
+  congratsImageUrl: string | null;
+  cardPrice: bigint;
+  path: string;
+}) {
+  const isDesktop = useMdScreen();
+  const color = cardType === BuilderNftType.starter_pack ? 'green.main' : 'secondary.main';
+  const { user } = useUser();
+
+  return (
+    <Stack
+      bgcolor='primary.dark'
+      p={{
+        xs: 0.5,
+        md: 1
+      }}
+      borderRadius={1}
+      gap={0.5}
+      flex={1}
+    >
+      <Stack flexDirection='row' gap={0.5} alignItems='center' justifyContent='space-between'>
+        <Typography color={color}>
+          {cardType === BuilderNftType.starter_pack ? 'STARTER CARD' : 'REGULAR CARD'}
+        </Typography>
+        <Stack direction='row' gap={0.75} alignItems='center'>
+          {user ? (
+            <>
+              <Typography color={color}>
+                {cardsSoldToScout} of {cardsSold}
+              </Typography>
+              <Image
+                src={
+                  cardType === BuilderNftType.starter_pack
+                    ? '/images/profile/icons/cards-green.svg'
+                    : '/images/profile/icons/cards-secondary.svg'
+                }
+                width={17.5}
+                height={17.5}
+                alt='cards sold icon'
+              />
+              <Typography color={color}>Held</Typography>
+            </>
+          ) : (
+            <>
+              <Typography color={color}>{cardsSold}</Typography>
+              <Image
+                src={
+                  cardType === BuilderNftType.starter_pack
+                    ? '/images/profile/icons/cards-green.svg'
+                    : '/images/profile/icons/cards-secondary.svg'
+                }
+                width={17.5}
+                height={17.5}
+                alt='cards sold icon'
+              />
+            </>
+          )}
+        </Stack>
+      </Stack>
+      <Stack flexDirection='row' gap={0.5} alignItems='center' justifyContent='space-between'>
+        <Stack>
+          <Typography color={color}>Est. Payout</Typography>
+          <Stack direction='row' gap={0.5} alignItems='center'>
+            <Typography variant={isDesktop ? 'h6' : 'body1'}>{estimatedPayout}</Typography>
+            <Image
+              src='/images/profile/scout-game-profile-icon.png'
+              width={isDesktop ? 24 : 18.5}
+              height={isDesktop ? 15.5 : 12}
+              alt='scoutgame icon'
+            />
+          </Stack>
+        </Stack>
+        <Stack
+          gap={0.5}
+          onClick={() => {
+            onClose();
+          }}
+        >
+          <ScoutButton
+            builder={{
+              builderStatus: 'applied',
+              id: developerId,
+              displayName,
+              path,
+              price: cardPrice,
+              nftImageUrl,
+              avatar,
+              congratsImageUrl
+            }}
+            type={cardType}
+          />
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
 
 export function DeveloperInfoModal({
   onClose,
@@ -49,115 +172,7 @@ export function DeveloperInfoModal({
           }
         }}
       >
-        <Stack
-          gap={{
-            xs: 1,
-            md: 2
-          }}
-        >
-          <Stack
-            direction='row'
-            gap={{
-              xs: 1,
-              md: 2
-            }}
-          >
-            <Skeleton
-              variant='circular'
-              sx={{
-                width: {
-                  xs: 75,
-                  md: 100
-                },
-                height: {
-                  xs: 75,
-                  md: 100
-                }
-              }}
-            />
-            <Stack
-              gap={{
-                xs: 1,
-                md: 2
-              }}
-            >
-              <Skeleton variant='text' width={150} height={25} />
-              <Skeleton variant='text' width={50} height={15} />
-              <Stack
-                direction='row'
-                gap={{
-                  xs: 1,
-                  md: 2
-                }}
-              >
-                <Stack direction='row' gap={1}>
-                  <Skeleton variant='circular' width={20} height={20} />
-                  <Skeleton variant='text' width={100} height={20} />
-                </Stack>
-                <Stack direction='row' gap={1}>
-                  <Skeleton variant='circular' width={20} height={20} />
-                  <Skeleton variant='text' width={100} height={20} />
-                </Stack>
-              </Stack>
-            </Stack>
-          </Stack>
-          <Stack gap={0.5}>
-            <Stack direction='row' gap={0.5}>
-              <Skeleton
-                variant='text'
-                sx={{
-                  width: {
-                    xs: '33.33%',
-                    md: 150
-                  }
-                }}
-                height={125}
-              />
-              <Skeleton
-                variant='text'
-                sx={{
-                  width: {
-                    xs: '33.33%',
-                    md: 150
-                  }
-                }}
-                height={125}
-              />
-              <Skeleton
-                variant='text'
-                sx={{
-                  width: {
-                    xs: '33.33%',
-                    md: 'calc(100% - 300px)'
-                  }
-                }}
-                height={125}
-              />
-            </Stack>
-            <Stack direction='row' gap={0.5}>
-              <Skeleton
-                variant='text'
-                sx={{
-                  width: {
-                    xs: '33.33%',
-                    md: 150
-                  }
-                }}
-                height={125}
-              />
-              <Skeleton
-                variant='text'
-                sx={{
-                  width: {
-                    xs: '66.66%',
-                    md: `calc(100% - 150px)`
-                  }
-                }}
-                height={125}
-              />
-            </Stack>
-          </Stack>
-        </Stack>
+        <DeveloperInfoModalSkeleton />
       </Dialog>
     );
   }
@@ -322,7 +337,7 @@ export function DeveloperInfoModal({
                 alignItems='center'
               >
                 <Image
-                  src='/images/profile/scout-game-icon.svg'
+                  src='/images/icons/binoculars.svg'
                   width={isDesktop ? '24' : '18'}
                   height={isDesktop ? '24' : '18'}
                   alt='scoutgame icon'
@@ -412,66 +427,46 @@ export function DeveloperInfoModal({
               }}
               borderRadius={1}
               gap={0.5}
-              minWidth={125}
-              width='25%'
-            >
-              <Stack>
-                <Typography color='green.main'>Est. Payout</Typography>
-                <Stack direction='row' gap={0.5} alignItems='center'>
-                  <Typography color='green.main' variant={isDesktop ? 'h6' : 'body1'}>
-                    {developer.estimatedPayout}
-                  </Typography>
-                  <Image
-                    src='/images/profile/scout-game-green-icon.svg'
-                    width={isDesktop ? '24' : '18'}
-                    height={isDesktop ? '24' : '18'}
-                    alt='scoutgame icon'
-                  />
-                </Stack>
-              </Stack>
-              <Stack
-                gap={0.5}
-                onClick={() => {
-                  onClose();
-                }}
-              >
-                <Typography color='secondary.main'>Buy now</Typography>
-                <ScoutButton
-                  builder={{
-                    builderStatus: 'applied',
-                    id: developer.id,
-                    displayName: developer.displayName,
-                    path: developer.path,
-                    price: developer.price,
-                    nftImageUrl: developer.nftImageUrl,
-                    avatar: developer.avatar,
-                    congratsImageUrl: developer.congratsImageUrl
-                  }}
-                  type='default'
-                />
-              </Stack>
-            </Stack>
-            <Stack
-              bgcolor='primary.dark'
-              p={{
-                xs: 0.5,
-                md: 1
+              minWidth={{
+                xs: 100,
+                md: 125
               }}
-              borderRadius={1}
-              gap={0.5}
-              minWidth={125}
               width='25%'
             >
               <Stack>
-                <Typography color='secondary.main'>Current Rank</Typography>
+                <Typography color='secondary.main'>
+                  <Typography
+                    component='span'
+                    display={{
+                      xs: 'none',
+                      md: 'inline'
+                    }}
+                    color='secondary.main'
+                  >
+                    Current
+                  </Typography>{' '}
+                  Rank
+                </Typography>
                 <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.rank}</Typography>
               </Stack>
               <Stack>
-                <Typography color='secondary.main'>Week's Gems</Typography>
+                <Typography color='secondary.main'>
+                  <Typography
+                    component='span'
+                    display={{
+                      xs: 'none',
+                      md: 'inline'
+                    }}
+                    color='secondary.main'
+                  >
+                    Week's
+                  </Typography>{' '}
+                  Gems
+                </Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.gemsCollected}</Typography>
                   <Image
-                    src='/images/profile/icons/hex-gem-icon.svg'
+                    src='/images/icons/gem.svg'
                     width={isDesktop ? '24' : '18'}
                     height={isDesktop ? '24' : '18'}
                     alt='gem icon'
@@ -479,7 +474,15 @@ export function DeveloperInfoModal({
                 </Stack>
               </Stack>
             </Stack>
-            <Stack bgcolor='primary.dark' borderRadius={1} gap={0.5} flex={1}>
+            <Stack
+              bgcolor='primary.dark'
+              borderRadius={1}
+              flex={1}
+              height={{
+                xs: 115,
+                md: 140
+              }}
+            >
               <Typography
                 color='secondary.main'
                 p={{
@@ -489,10 +492,10 @@ export function DeveloperInfoModal({
               >
                 14D Rank
               </Typography>
-              <BuilderCardRankGraph last14DaysRank={developer.last14DaysRank} />
+              <Stack height='calc(100% - 16px)'>
+                <BuilderCardRankGraph last14DaysRank={developer.last14DaysRank} />
+              </Stack>
             </Stack>
-          </Stack>
-          <Stack direction='row' gap={0.5}>
             <Stack
               bgcolor='primary.dark'
               p={{
@@ -501,15 +504,30 @@ export function DeveloperInfoModal({
               }}
               borderRadius={1}
               gap={0.5}
-              minWidth={125}
+              minWidth={{
+                xs: 100,
+                md: 125
+              }}
               width='25%'
             >
-              <Typography color='secondary.main'>This Season</Typography>
+              <Typography color='secondary.main' component='span'>
+                <Typography
+                  component='span'
+                  display={{
+                    xs: 'none',
+                    md: 'inline'
+                  }}
+                  color='secondary.main'
+                >
+                  This
+                </Typography>{' '}
+                Season
+              </Typography>
               <Stack>
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.seasonPoints}</Typography>
                   <Image
-                    src='/images/profile/scout-game-icon.svg'
+                    src='/images/icons/binoculars.svg'
                     width={isDesktop ? '24' : '18'}
                     height={isDesktop ? '24' : '18'}
                     alt='gem icon'
@@ -518,83 +536,135 @@ export function DeveloperInfoModal({
                 <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.scoutedBy} Scouts</Typography>
                 <Stack direction='row' gap={0.5} alignItems='center'>
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>{developer.cardsSold}</Typography>
-                  <Image src='/images/profile/icons/cards-white.svg' width={22} height={22} alt='cards sold icon' />
+                  <Image
+                    src='/images/profile/icons/cards-white.svg'
+                    width={isDesktop ? 22 : 18}
+                    height={isDesktop ? 22 : 18}
+                    alt='cards sold icon'
+                  />
                   <Typography variant={isDesktop ? 'h6' : 'body1'}>Sold</Typography>
                 </Stack>
               </Stack>
             </Stack>
-            <Stack bgcolor='primary.dark' borderRadius={1} p={1} gap={0.5} minWidth={175} flex={1}>
-              <Typography color='secondary.main'>Github Activity</Typography>
-              <Stack>
-                {developer.githubActivities.length > 0 ? (
-                  developer.githubActivities.map((activity) => (
-                    <Link
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      href={activity.url}
+          </Stack>
+          <Stack
+            bgcolor='primary.dark'
+            borderRadius={1}
+            p={{
+              xs: 0.5,
+              md: 1
+            }}
+            gap={0.5}
+            minWidth={175}
+            flex={1}
+          >
+            <Typography color='secondary.main'>Github Activity</Typography>
+            <Stack>
+              {developer.githubActivities.length > 0 ? (
+                developer.githubActivities.map((activity) => (
+                  <Link
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    href={activity.url}
+                    key={activity.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <Stack
                       key={activity.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      direction='row'
+                      gap={0.75}
+                      alignItems='center'
+                      justifyContent='space-between'
                     >
-                      <Stack
-                        key={activity.url}
-                        direction='row'
-                        gap={0.75}
-                        alignItems='center'
-                        justifyContent='space-between'
+                      <Avatar src={activity.avatar} name={activity.repo} size='xSmall' variant='rounded' />
+                      <Typography
+                        variant={isDesktop ? 'h6' : 'body1'}
+                        width={{
+                          xs: '65%',
+                          md: '75%'
+                        }}
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}
                       >
-                        <Avatar src={activity.avatar} name={activity.repo} size='xSmall' variant='rounded' />
-                        <Typography
-                          variant={isDesktop ? 'h6' : 'body1'}
-                          width={{
-                            xs: '65%',
-                            md: '75%'
-                          }}
-                          sx={{
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          {activity.repo}
-                        </Typography>
-                        <Stack
-                          width={{
-                            xs: '20%',
-                            md: '15%'
-                          }}
-                          justifyContent='flex-end'
-                          direction='row'
-                          gap={0.5}
-                          alignItems='center'
-                        >
-                          <Typography>{activity.gems}</Typography>
-                          <Image
-                            src='/images/profile/icons/hex-gem-icon.svg'
-                            width={isDesktop ? '20' : '16'}
-                            height={isDesktop ? '20' : '16'}
-                            alt='gem icon'
-                          />
-                        </Stack>
-                        <Stack
-                          width={{
-                            xs: '15%',
-                            md: '10%'
-                          }}
-                          justifyContent='flex-end'
-                          flexDirection='row'
-                        >
-                          <Typography>{getShortenedRelativeTime(activity.createdAt)}</Typography>
-                        </Stack>
+                        {activity.repo}
+                      </Typography>
+                      <Stack
+                        width={{
+                          xs: '20%',
+                          md: '15%'
+                        }}
+                        justifyContent='flex-end'
+                        direction='row'
+                        gap={0.5}
+                        alignItems='center'
+                      >
+                        <Typography>{activity.gems}</Typography>
+                        <Image
+                          src='/images/icons/gem.svg'
+                          width={isDesktop ? '20' : '16'}
+                          height={isDesktop ? '20' : '16'}
+                          alt='gem icon'
+                        />
                       </Stack>
-                    </Link>
-                  ))
-                ) : (
-                  <Typography>No activity in the last 30 days.</Typography>
-                )}
-              </Stack>
+                      <Stack
+                        width={{
+                          xs: '15%',
+                          md: '10%'
+                        }}
+                        justifyContent='flex-end'
+                        flexDirection='row'
+                      >
+                        <Typography>{getShortenedRelativeTime(activity.createdAt)}</Typography>
+                      </Stack>
+                    </Stack>
+                  </Link>
+                ))
+              ) : (
+                <Typography>No activity in the last 30 days.</Typography>
+              )}
             </Stack>
+          </Stack>
+          <Stack
+            direction={{
+              xs: 'column',
+              md: 'row'
+            }}
+            gap={0.5}
+          >
+            <DeveloperCardSection
+              developerId={developer.id}
+              displayName={developer.displayName}
+              avatar={developer.avatar}
+              nftImageUrl={developer.starterCard.nftImageUrl}
+              congratsImageUrl={developer.starterCard.congratsImageUrl}
+              cardPrice={developer.starterCard.price}
+              path={developer.path}
+              cardType={BuilderNftType.starter_pack}
+              estimatedPayout={developer.starterCard.estimatedPayout}
+              cardsSold={developer.starterCard.cardsSold}
+              cardsSoldToScout={developer.starterCard.cardsSoldToScout}
+              onClose={onClose}
+            />
+
+            <DeveloperCardSection
+              developerId={developer.id}
+              displayName={developer.displayName}
+              avatar={developer.avatar}
+              nftImageUrl={developer.regularCard.nftImageUrl}
+              congratsImageUrl={developer.regularCard.congratsImageUrl}
+              cardPrice={developer.regularCard.price}
+              path={developer.path}
+              cardType={BuilderNftType.default}
+              estimatedPayout={developer.regularCard.estimatedPayout}
+              cardsSold={developer.regularCard.cardsSold}
+              cardsSoldToScout={developer.regularCard.cardsSoldToScout}
+              onClose={onClose}
+            />
           </Stack>
         </Stack>
       </Stack>

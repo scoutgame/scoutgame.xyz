@@ -30,7 +30,7 @@ export const bonusPartnersRecord = {
     icon: 'http://scoutgame.xyz/images/logos/octant.png'
   },
   gooddollar: {
-    name: 'Good Dollar',
+    name: 'GoodDollar',
     icon: 'https://scoutgame.xyz/images/logos/good-dollar.png'
   }
 } as const;

@@ -4,7 +4,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
-import { baseUrl } from '@packages/utils/constants';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
@@ -155,6 +154,11 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
               points: weeklyClaimablePoints
             }
           },
+          app: {
+            templateVariables: {
+              points: weeklyClaimablePoints
+            }
+          },
           notificationType: 'weekly_claim'
         });
       } else {
@@ -174,6 +178,9 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
             }
           },
           farcaster: {
+            templateVariables: undefined
+          },
+          app: {
             templateVariables: undefined
           }
         });

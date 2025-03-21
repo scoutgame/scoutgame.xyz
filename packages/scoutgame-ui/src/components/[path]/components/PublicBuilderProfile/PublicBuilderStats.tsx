@@ -27,7 +27,7 @@ export function PublicBuilderStats({
           {seasonPoints || 0}
         </Typography>
         <Image
-          src='/images/profile/scout-game-orange-icon.svg'
+          src='/images/icons/binoculars-orange.svg'
           width={isDesktop ? '25' : '16'}
           height={isDesktop ? '25' : '16'}
           alt='scout game icon'

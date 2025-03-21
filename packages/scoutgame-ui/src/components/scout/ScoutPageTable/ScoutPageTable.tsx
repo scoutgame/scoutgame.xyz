@@ -22,7 +22,12 @@ export async function ScoutPageTable({
 }) {
   if (tab === 'builders') {
     const [, builders = []] = await safeAwaitSSRData(
-      getBuilders({ limit: 200, sortBy: sort as BuildersSortBy, order: order as 'asc' | 'desc', userId })
+      getBuilders({
+        limit: 200,
+        sortBy: sort as BuildersSortBy,
+        order: order as 'asc' | 'desc',
+        loggedInScoutId: userId
+      })
     );
     return <BuildersTable builders={builders} order={order ?? 'desc'} sort={(sort as BuildersSortBy) ?? 'week_gems'} />;
   } else if (tab === 'scouts') {

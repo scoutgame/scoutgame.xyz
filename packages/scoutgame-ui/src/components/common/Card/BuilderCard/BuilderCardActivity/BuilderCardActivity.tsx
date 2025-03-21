@@ -68,7 +68,7 @@ export function BuilderCardActivity({
               <Image
                 width={isMobile ? 12.5 : 15}
                 height={isMobile ? 12.5 : 15}
-                src='/images/profile/icons/hex-gem-icon.svg'
+                src='/images/icons/gem.svg'
                 alt='scout game icon '
               />
             </Stack>
@@ -97,7 +97,7 @@ export function BuilderCardActivity({
               >
                 {estimatedPayout}
               </Typography>
-              <Image width={15} height={15} src='/images/profile/scout-game-green-icon.svg' alt='scout game icon' />
+              <Image width={15} height={15} src='/images/icons/binoculars-green.svg' alt='scout game icon' />
             </Stack>
           </Stack>
         </Stack>

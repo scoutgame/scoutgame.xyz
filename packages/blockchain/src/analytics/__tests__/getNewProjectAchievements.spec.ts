@@ -12,7 +12,8 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
 }));
 
 // Import the functions to test
-const { getNewProjectAchievements, tiers, recordProjectAchievement } = await import('../getNewProjectAchievements');
+const { getNewProjectAchievements, tiers } = await import('../getNewProjectAchievements');
+const { saveProjectAchievement } = await import('../saveProjectAchievement');
 
 describe('getNewProjectAchievements', () => {
   const mockWeek = '2023-W01';
@@ -181,7 +182,7 @@ describe('getNewProjectAchievements', () => {
   });
 });
 
-describe('recordProjectAchievement', () => {
+describe('saveProjectAchievement', () => {
   const mockWeek = '2023-01';
 
   afterEach(async () => {
@@ -206,7 +207,7 @@ describe('recordProjectAchievement', () => {
     };
 
     // Act
-    await recordProjectAchievement(mockAchievement, mockWeek);
+    await saveProjectAchievement(mockAchievement, mockWeek);
 
     // Assert
     // Since we're not mocking prisma, we need to verify the record was created
@@ -245,7 +246,7 @@ describe('recordProjectAchievement', () => {
     });
 
     // Verify gems receipt was created
-    expect(eventWithGems?.gemsReceipt.value).toBeGreaterThan(0);
+    expect(eventWithGems?.gemsReceipt?.value).toBeGreaterThan(0);
   });
 
   it('should create multiple builder events for projects with multiple members', async () => {
@@ -269,7 +270,7 @@ describe('recordProjectAchievement', () => {
     };
 
     // Act
-    await recordProjectAchievement(mockAchievement, mockWeek);
+    await saveProjectAchievement(mockAchievement, mockWeek);
 
     // Assert
     const savedAchievement = await prisma.scoutProjectOnchainAchievement.findFirst({

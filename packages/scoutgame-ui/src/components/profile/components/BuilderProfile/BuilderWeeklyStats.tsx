@@ -21,7 +21,7 @@ export function BuilderWeeklyStats({ gemsCollected, rank }: { gemsCollected?: nu
         </Typography>
         <Stack flexDirection='row' gap={1} alignItems='center' justifyContent='center'>
           <Typography variant='h4'>{gemsCollected || 0}</Typography>
-          <Image width={25} height={25} src='/images/profile/icons/hex-gem-icon.svg' alt='Gem' />
+          <Image width={25} height={25} src='/images/icons/gem.svg' alt='Gem' />
         </Stack>
       </Stack>
       <Stack gap={1}>

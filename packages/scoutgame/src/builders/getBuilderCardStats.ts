@@ -1,8 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
-import { validMintNftPurchaseEvent } from '../builderNfts/constants';
-
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 export type BuilderCardStats = {
@@ -10,16 +8,16 @@ export type BuilderCardStats = {
   estimatedPayout?: number | null;
   last14DaysRank?: (number | null)[];
   gemsCollected?: number;
-  nftsSoldToScout?: number;
-  starterPackSoldToScout: boolean;
+  nftsSoldToLoggedInScout: number | undefined;
+  starterNftSoldToLoggedInScout: boolean;
 };
 
 export async function getBuilderCardStats({
   builderId,
-  scoutId
+  loggedInScoutId
 }: {
   builderId: string;
-  scoutId?: string;
+  loggedInScoutId?: string;
 }): Promise<BuilderCardStats> {
   const season = getCurrentSeasonStart();
   const builder = await prisma.scout.findUniqueOrThrow({
@@ -45,16 +43,15 @@ export async function getBuilderCardStats({
         select: {
           estimatedPayout: true,
           nftType: true,
-          nftSoldEvents: scoutId
+          nftOwners: loggedInScoutId
             ? {
                 where: {
-                  ...validMintNftPurchaseEvent,
                   scoutWallet: {
-                    scoutId
+                    scoutId: loggedInScoutId
                   }
                 },
                 select: {
-                  tokensPurchased: true
+                  balance: true
                 }
               }
             : undefined
@@ -77,7 +74,7 @@ export async function getBuilderCardStats({
     estimatedPayout: defaultNft?.estimatedPayout,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     gemsCollected: builder.userWeeklyStats[0]?.gemsCollected,
-    nftsSoldToScout: defaultNft?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0),
-    starterPackSoldToScout: (starterPackNft?.nftSoldEvents || []).length > 0
+    nftsSoldToLoggedInScout: defaultNft?.nftOwners?.[0]?.balance || 0,
+    starterNftSoldToLoggedInScout: (starterPackNft?.nftOwners?.[0]?.balance ?? 0) > 0
   };
 }

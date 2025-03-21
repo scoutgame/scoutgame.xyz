@@ -4,6 +4,9 @@ import { sendFarcasterNotification } from '@packages/farcaster/sendFarcasterNoti
 import type { EmailNotificationVariables } from '@packages/mailer/sendEmailNotification';
 import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 
+import type { AppNotificationVariables } from './appNotificationConstants';
+import { sendAppNotification } from './sendAppNotification';
+
 export type NotificationTypes =
   | 'weekly_claim'
   | 'zero_weekly_claim'
@@ -20,7 +23,8 @@ export async function sendNotifications<T extends NotificationTypes>({
   userId,
   notificationType,
   email,
-  farcaster
+  farcaster,
+  app
 }: {
   userId: string;
   notificationType: T;
@@ -29,6 +33,9 @@ export async function sendNotifications<T extends NotificationTypes>({
   };
   farcaster?: {
     templateVariables: FarcasterNotificationVariables<T>;
+  };
+  app?: {
+    templateVariables: AppNotificationVariables<T>;
   };
 }): Promise<number> {
   let notificationsSent = 0;
@@ -57,6 +64,19 @@ export async function sendNotifications<T extends NotificationTypes>({
       notificationsSent += sent ? 1 : 0;
     } catch (error) {
       log.error('Error sending farcaster notification', { error, userId, notificationType });
+    }
+  }
+
+  if (app) {
+    try {
+      await sendAppNotification({
+        userId,
+        notificationType,
+        notificationVariables: app.templateVariables
+      });
+      notificationsSent += 1;
+    } catch (error) {
+      log.error('Error sending app notification', { error, userId, notificationType });
     }
   }
 
