@@ -4,19 +4,19 @@ import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { attestOnchain } from './attestOnchain';
 import { scoutGameAttestationChainId, scoutGameBuilderEventSchemaUid } from './constants';
 import { createOrGetUserProfileAttestation } from './createOrGetUserProfileAttestation';
-import type { BuilderStatusEventAttestation } from './easSchemas/builderStatusEventSchema';
-import { encodeBuilderStatusEventAttestation } from './easSchemas/builderStatusEventSchema';
+import type { DeveloperStatusEventAttestation } from './easSchemas/developerStatusEventSchema';
+import { encodeDeveloperStatusEventAttestation } from './easSchemas/developerStatusEventSchema';
 import { attestationLogger } from './logger';
 
-export async function attestBuilderStatusEvent({
+export async function attestDeveloperStatusEvent({
   builderId,
   event
 }: {
   builderId: string;
-  event: BuilderStatusEventAttestation;
+  event: DeveloperStatusEventAttestation;
 }): Promise<void> {
   try {
-    const builderStatusEventAttestationData = encodeBuilderStatusEventAttestation(event);
+    const developerStatusEventAttestationData = encodeDeveloperStatusEventAttestation(event);
 
     const userAttestation = await createOrGetUserProfileAttestation({
       scoutId: builderId
@@ -26,7 +26,7 @@ export async function attestBuilderStatusEvent({
       schemaId: scoutGameBuilderEventSchemaUid(),
       recipient: NULL_EVM_ADDRESS,
       refUID: userAttestation.id as `0x${string}`,
-      data: builderStatusEventAttestationData,
+      data: developerStatusEventAttestationData,
       chainId: scoutGameAttestationChainId
     });
 
@@ -39,6 +39,6 @@ export async function attestBuilderStatusEvent({
       }
     });
   } catch (err) {
-    attestationLogger.error('Error attesting builder status event', { error: err, builderId, event });
+    attestationLogger.error('Error attesting developer status event', { error: err, builderId, event });
   }
 }

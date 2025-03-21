@@ -7,8 +7,7 @@ export const authConfig = {
   relay: 'https://relay.farcaster.xyz',
   rpcUrl: 'https://mainnet.optimism.io',
   domain: 'scoutgame.xyz',
-  siweUri: 'https://scoutgame.xyz/login',
-  provider: optimism
+  siweUri: 'https://scoutgame.xyz/login'
 } as const;
 
 export function getAuthConfig() {
@@ -16,8 +15,7 @@ export function getAuthConfig() {
     relay: 'https://relay.farcaster.xyz',
     rpcUrl: optimism.rpcUrls.default.http[0],
     domain: 'scoutgame.xyz',
-    siweUri: 'https://scoutgame.xyz/login',
-    provider: optimism
+    siweUri: 'https://scoutgame.xyz/login'
   };
   try {
     const optimismRpc = getAlchemyBaseUrl(optimism.id);

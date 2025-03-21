@@ -1,7 +1,10 @@
-import type { BuilderStatusEventAttestation } from './builderStatusEventSchema';
-import { builderStatusEventSchemaDefinition, decodeBuilderStatusEventAttestation } from './builderStatusEventSchema';
 import type { ContributionReceiptAttestation } from './contributionReceiptSchema';
 import { contributionSchemaDefinition, decodeContributionReceiptAttestation } from './contributionReceiptSchema';
+import type { DeveloperStatusEventAttestation } from './developerStatusEventSchema';
+import {
+  decodeDeveloperStatusEventAttestation,
+  developerStatusEventSchemaDefinition
+} from './developerStatusEventSchema';
 import type { ScoutGameUserProfileAttestation } from './scoutGameUserProfileSchema';
 import {
   decodeScoutGameUserProfileAttestation,
@@ -11,23 +14,23 @@ import type { EASSchema } from './types';
 
 export * from './constants';
 export * from './contributionReceiptSchema';
+export * from './developerStatusEventSchema';
 export * from './scoutGameUserProfileSchema';
-export * from './builderStatusEventSchema';
 export * from './types';
 
 export const allSchemas = [
   contributionSchemaDefinition,
   scoutGameUserProfileSchemaDefinition,
-  builderStatusEventSchemaDefinition
+  developerStatusEventSchemaDefinition
 ] satisfies EASSchema[];
 
 export type EASSchemaNames = (typeof allSchemas)[number]['name'];
 
-export type AttestationType = 'contributionReceipt' | 'builderStatusEvent' | 'userProfile';
+export type AttestationType = 'contributionReceipt' | 'developerStatusEvent' | 'userProfile';
 
 export type AttestationContentFromAttestationType = {
   contributionReceipt: ContributionReceiptAttestation;
-  builderStatusEvent: BuilderStatusEventAttestation;
+  developerStatusEvent: DeveloperStatusEventAttestation;
   userProfile: ScoutGameUserProfileAttestation;
 };
 
@@ -43,7 +46,7 @@ export function decodeAttestation<T extends AttestationType = AttestationType>({
     (rawData: string) => AttestationContentFromAttestationType[keyof AttestationContentFromAttestationType]
   > = {
     contributionReceipt: decodeContributionReceiptAttestation,
-    builderStatusEvent: decodeBuilderStatusEventAttestation,
+    developerStatusEvent: decodeDeveloperStatusEventAttestation,
     userProfile: decodeScoutGameUserProfileAttestation
   };
 

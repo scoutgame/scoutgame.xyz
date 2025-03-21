@@ -20,9 +20,14 @@ async function setupEAS({ chainId }: { chainId: EASSchemaChain }) {
   const easContractAddress = easConfig[chainId].easContractAddress;
 
   const rpcUrl = getChainById(chainId)?.rpcUrls[0] as string;
+  const ankrApiKey = process.env.REACT_APP_ANKR_API_ID;
+
+  if (!ankrApiKey) {
+    throw new Error('ANKR_API_ID is not set');
+  }
 
   // ethers v6 version of StaticJSONRPCProvider https://github.com/ethers-io/ethers.js/discussions/3994
-  const provider = new JsonRpcProvider(rpcUrl, undefined, {
+  const provider = new JsonRpcProvider(`${rpcUrl}/${ankrApiKey}`, undefined, {
     staticNetwork: Network.from(chainId)
   });
 

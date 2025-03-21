@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
-import { attestBuilderStatusEvent } from '@packages/scoutgameattestations/attestBuilderStatusEvent';
+import { attestDeveloperStatusEvent } from '@packages/scoutgameattestations/attestDeveloperStatusEvent';
 import { isTruthy } from '@packages/utils/types';
 import { v4 as uuid } from 'uuid';
 
@@ -178,7 +178,7 @@ export async function recordClosedPullRequest({
         }
       });
 
-      await attestBuilderStatusEvent({
+      await attestDeveloperStatusEvent({
         builderId: builder.id,
         event: {
           type: 'banned',
