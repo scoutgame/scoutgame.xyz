@@ -1,7 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { getDeveloperInfo, type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
+import { getDeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import useSWR from 'swr';
 
 import { DeveloperInfoModal } from '../components/common/DeveloperInfoModal/DeveloperInfoModal';
+
+import { useUser } from './UserProvider';
 
 type DeveloperInfoModalContextType = {
   openModal: (path: string) => void;
@@ -23,6 +25,7 @@ export function DeveloperInfoModalProvider({ children }: { children: ReactNode }
   const [isOpen, setIsOpen] = useState(false);
   const [developerPath, setDeveloperPath] = useState<string | null>(null);
   const router = useRouter();
+  const { user } = useUser();
 
   const { data: developer, isLoading } = useSWR(
     developerPath ? `developer-${developerPath}` : null,
@@ -31,7 +34,7 @@ export function DeveloperInfoModalProvider({ children }: { children: ReactNode }
         return null;
       }
 
-      const _developer = await getDeveloperInfo(developerPath);
+      const _developer = await getDeveloperInfo({ path: developerPath, scoutId: user?.id });
       if (!_developer) {
         // If the developer doesn't exist, redirect to the user's profile
         router.push(`/u/${developerPath}`);

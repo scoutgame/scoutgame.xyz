@@ -237,6 +237,26 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
               transition: 'all 0.3s ease-in-out'
             }
           })
+        },
+        {
+          props: { variant: 'buy-starter' },
+          style: ({ theme }) => ({
+            background: 'transparent',
+            borderRadius: '5px',
+            paddingTop: 2,
+            paddingBottom: 2,
+            paddingRight: 2,
+            paddingLeft: 2,
+            // fontSize: '0.9rem',
+            color: theme.palette.green.main,
+            borderStyle: 'solid',
+            borderWidth: '1px',
+            borderColor: theme.palette.green.main,
+            '&:hover': {
+              backgroundColor: alpha(theme.palette.green.main, 0.1),
+              transition: 'all 0.3s ease-in-out'
+            }
+          })
         }
       ],
       styleOverrides: {
