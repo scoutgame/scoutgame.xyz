@@ -11,6 +11,8 @@ import type { Address, Hash, WalletClient } from 'viem';
 import { parseEther } from 'viem';
 import { useAccount, useSwitchChain, useWalletClient, useBalance } from 'wagmi';
 
+import { useWalletSanctionCheck } from '../../../../../hooks/api/wallets';
+
 import sablierAirdropAbi from './SablierMerkleInstant.json';
 
 export async function claimSablierAirdrop({
@@ -94,6 +96,7 @@ export function useClaimPartnerReward({
   const { executeAsync: updatePartnerRewardPayout } = useAction(updatePartnerRewardPayoutAction);
   const { switchChainAsync } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
+  const { error: sanctionCheckError } = useWalletSanctionCheck(recipientAddress);
 
   const { data: balance } = useBalance({
     address: recipientAddress,
@@ -203,6 +206,7 @@ export function useClaimPartnerReward({
   };
 
   return {
+    sanctionCheckError,
     isClaiming,
     claimPartnerReward,
     isConnected,
