@@ -23,7 +23,7 @@ type ScoutWithGithubUser = {
   pointsEarnedAsScout: number;
   pointsEarnedAsBuilder: number;
   // weeklyBuilderRank?: number;
-  developerLevel?: string;
+  developerLevel?: number;
   season: string;
 };
 
@@ -78,7 +78,6 @@ export async function GET() {
           pointsEarnedAsBuilder: 0,
           nftsPurchased: 0,
           nftsSold: 0,
-          developerLevel: undefined,
           season: ''
         }
       ];
@@ -90,8 +89,8 @@ export async function GET() {
       pointsEarnedAsScout: seasonStat.pointsEarnedAsScout,
       pointsEarnedAsBuilder: seasonStat.pointsEarnedAsBuilder,
       nftsPurchased: seasonStat.nftsPurchased,
-      nftsSold: seasonStat.nftsSold,
-      developerLevel: seasonStat.level || undefined,
+      nftsSold: seasonStat.nftsSold || 0,
+      developerLevel: seasonStat.level,
       season: seasonStat.season
     }));
   });
