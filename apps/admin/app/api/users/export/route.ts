@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { NextRequest } from 'next/server';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
@@ -41,6 +42,7 @@ export async function GET() {
       farcasterId: true,
       farcasterName: true,
       currentBalance: true,
+      currentBalanceInScoutToken: true,
       githubUsers: true,
       userSeasonStats: true,
       userWeeklyStats: true,
@@ -63,7 +65,9 @@ export async function GET() {
     fid: user.farcasterId || undefined,
     farcasterName: user.farcasterName || undefined,
     githubLogin: user.githubUsers[0]?.login,
-    currentBalance: user.currentBalance,
+    currentBalance: isOnchainPlatform()
+      ? Number(BigInt(user.currentBalanceInScoutToken ?? 0) / BigInt(10 ** 18))
+      : user.currentBalance || 0,
     pointsEarnedAsScout: user.userSeasonStats[0]?.pointsEarnedAsScout || 0,
     pointsEarnedAsBuilder: user.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
     nftsPurchased: user.userSeasonStats[0]?.nftsPurchased || 0,

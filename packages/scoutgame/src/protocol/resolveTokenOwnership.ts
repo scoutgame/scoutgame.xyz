@@ -27,7 +27,8 @@ export async function resolveTokenOwnership({
       chainId === baseSepolia.id
         ? 19_000_000
         : chainId === base.id
-          ? 27_250_000
+          ? // TODO: Change the block number once the nft contract is deployed
+            27_250_000
           : chainId === optimism.id
             ? 126_000_000
             : 1,

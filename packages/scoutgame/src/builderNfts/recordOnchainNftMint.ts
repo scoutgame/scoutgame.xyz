@@ -4,7 +4,7 @@ import { getCurrentWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
 import { sendNotifications } from '../notifications/sendNotifications';
-import { scoutTokenDecimals } from '../protocol/constants';
+import { getScoutTokenERC20Contract, scoutTokenDecimals } from '../protocol/constants';
 
 import { refreshBuilderNftPrice } from './refreshBuilderNftPrice';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
@@ -51,6 +51,10 @@ export async function recordOnchainNftMint({
     }
   });
 
+  const currentBalanceInScoutToken = await getScoutTokenERC20Contract().balanceOf({
+    args: { account: recipientAddress }
+  });
+
   const week = getWeekFromDate(sentAt);
 
   await refreshNftPurchaseStats({
@@ -85,6 +89,14 @@ export async function recordOnchainNftMint({
     }
   });
 
+  await prisma.scout.update({
+    where: {
+      id: scoutId
+    },
+    data: {
+      currentBalanceInScoutToken: currentBalanceInScoutToken.toString()
+    }
+  });
   const balance = await refreshScoutNftBalance({
     contractAddress: builderNft.contractAddress as Address,
     nftType: builderNft.nftType,

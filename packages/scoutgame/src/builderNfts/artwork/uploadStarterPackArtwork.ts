@@ -67,7 +67,7 @@ export async function uploadStarterPackArtworkCongrats({
     stats,
     builderScouts,
     builderPrice: isOnchainPlatform()
-      ? (Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** scoutTokenDecimals).toFixed(2)
+      ? (Number(builderNft?.currentPrice || 0) / 10 ** scoutTokenDecimals).toFixed(2)
       : (Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
   });
 
