@@ -3,24 +3,31 @@ import type {
   Prisma,
   ScoutProject,
   ScoutProjectContract,
-  ScoutProjectMemberRole
+  ScoutProjectMemberRole,
+  OnchainAchievementTier
 } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
+import { shortenHex } from '@packages/utils/strings';
+import { DateTime } from 'luxon';
+
+export type ProjectTeamMember = {
+  id: string;
+  path: string;
+  avatar: string;
+  displayName: string;
+  role: ScoutProjectMemberRole;
+  gemsThisWeek: number;
+};
 
 export type ScoutProjectDetailed = Pick<
   ScoutProject,
   'id' | 'path' | 'avatar' | 'name' | 'description' | 'website' | 'github'
 > & {
+  tier: OnchainAchievementTier | undefined;
   contracts: (Pick<ScoutProjectContract, 'id' | 'address' | 'chainId' | 'deployerId'> & {
     txCount?: number;
   })[];
-  teamMembers: {
-    id: string;
-    path: string;
-    avatar: string;
-    displayName: string;
-    role: ScoutProjectMemberRole;
-  }[];
+  teamMembers: ProjectTeamMember[];
   deployers: {
     id: string;
     address: string;
@@ -32,10 +39,13 @@ export type ScoutProjectDetailed = Pick<
     txCount?: number;
   }[];
   totalTxCount?: number;
+  totalGems?: number;
+  contractDailyStats: {
+    date: string;
+  }[];
 };
 
-// TODO: Add week to the data model?
-const projectDetailedSelect = (week: string) =>
+const projectDetailedSelect = (lookback: Date) =>
   ({
     id: true,
     path: true,
@@ -55,7 +65,12 @@ const projectDetailedSelect = (week: string) =>
         deployerId: true,
         dailyStats: {
           where: {
-            week
+            day: {
+              gte: lookback
+            }
+          },
+          orderBy: {
+            day: 'asc'
           }
         }
       }
@@ -70,7 +85,27 @@ const projectDetailedSelect = (week: string) =>
             id: true,
             avatar: true,
             displayName: true,
-            path: true
+            path: true,
+            events: {
+              where: {
+                type: 'onchain_achievement',
+                week: getCurrentWeek()
+              },
+              select: {
+                createdAt: true,
+                gemsReceipt: {
+                  select: {
+                    value: true
+                  }
+                },
+                onchainAchievement: {
+                  select: {
+                    projectId: true, // need to filter by this project
+                    tier: true
+                  }
+                }
+              }
+            }
           }
         },
         role: true
@@ -93,19 +128,25 @@ const projectDetailedSelect = (week: string) =>
         chainType: true,
         dailyStats: {
           where: {
-            week
+            day: {
+              gte: lookback
+            }
+          },
+          orderBy: {
+            day: 'asc'
           }
         }
       }
     }
   }) satisfies Prisma.ScoutProjectSelect;
 
-export async function getProjectByPath(path: string, week = getCurrentWeek()): Promise<ScoutProjectDetailed | null> {
+export async function getProjectByPath(path: string): Promise<ScoutProjectDetailed | null> {
+  const week = getCurrentWeek();
   const scoutProject = await prisma.scoutProject.findUnique({
     where: {
       path
     },
-    select: projectDetailedSelect(week)
+    select: projectDetailedSelect(DateTime.now().minus({ days: 14 }).toJSDate())
   });
 
   if (!scoutProject) {
@@ -115,6 +156,45 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
     ...scoutProject.contracts.flatMap((contract) => contract.dailyStats),
     ...scoutProject.wallets.flatMap((wallet) => wallet.dailyStats)
   ];
+  const contractDailyStats = Object.entries(
+    scoutProject.contracts.reduce<Record<string, Record<string, number>>>((acc, contract) => {
+      const weeklyTotals = new Map<string, number>();
+      contract.dailyStats.forEach(({ week: _week, day, transactions }) => {
+        const date = day.toISOString();
+        const weeklyTotal = weeklyTotals.get(_week) ?? 0;
+        const newWeeklyTotal = weeklyTotal + transactions;
+        weeklyTotals.set(_week, newWeeklyTotal);
+        acc[date] = acc[date] ?? {};
+        acc[date][shortenHex(contract.address)] = newWeeklyTotal;
+      });
+      return acc;
+    }, {})
+  ).map(([date, stats]) => ({
+    date,
+    ...stats
+  }));
+
+  // filter achievements from other projects for each member (since i couldnt figure out how to do this in the query)
+  scoutProject.members.forEach((member) => {
+    member.user.events = member.user.events.filter((event) => event.onchainAchievement?.projectId === scoutProject.id);
+  });
+
+  const tier = scoutProject.members
+    .flatMap((member) => member.user.events)
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]?.onchainAchievement?.tier;
+
+  const teamMembers: ProjectTeamMember[] = scoutProject.members.map((member) => ({
+    id: member.user.id,
+    avatar: member.user.avatar ?? '',
+    displayName: member.user.displayName,
+    role: member.role,
+    path: member.user.path,
+    gemsThisWeek: member.user.events.reduce((acc, curr) => {
+      return acc + (curr.gemsReceipt?.value ?? 0);
+    }, 0)
+  }));
+
+  const projectGems = teamMembers.reduce((acc, curr) => acc + curr.gemsThisWeek, 0);
 
   return {
     ...scoutProject,
@@ -133,14 +213,11 @@ export async function getProjectByPath(path: string, week = getCurrentWeek()): P
         ? wallet.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)
         : undefined
     })),
-    teamMembers: scoutProject.members.map((member) => ({
-      id: member.user.id,
-      avatar: member.user.avatar ?? '',
-      displayName: member.user.displayName,
-      role: member.role,
-      path: member.user.path
-    })),
-    // return undefined so we know the data is not available
-    totalTxCount: allDailyStats.length ? allDailyStats.reduce((acc, curr) => acc + curr.transactions, 0) : undefined
+    // take the latest tier from the members events
+    tier,
+    teamMembers,
+    totalTxCount: allDailyStats.filter((d) => d.week === week).reduce((acc, curr) => acc + curr.transactions, 0),
+    totalGems: projectGems,
+    contractDailyStats
   };
 }

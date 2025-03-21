@@ -45,5 +45,6 @@ declare module '@mui/material/Button' {
   interface ButtonPropsVariantOverrides {
     gradient: true;
     buy: true;
+    'buy-starter': true;
   }
 }

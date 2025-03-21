@@ -1,11 +1,21 @@
 'use server';
 
-import { prisma } from '@charmverse/core/prisma-client';
+import { log } from '@charmverse/core/log';
+import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
+
+type DeveloperCardInfo = {
+  estimatedPayout: number;
+  price: bigint;
+  cardsSold: number;
+  cardsSoldToScout: number;
+  nftImageUrl: string;
+  congratsImageUrl: string | null;
+};
 
 export type DeveloperInfo = {
   id: string;
@@ -14,18 +24,16 @@ export type DeveloperInfo = {
   avatar: string;
   firstContributionDate: Date;
   level: number;
-  estimatedPayout: number;
-  price: bigint;
+  starterCard: DeveloperCardInfo;
+  regularCard: DeveloperCardInfo;
   rank: number;
+  cardsSold: number;
   gemsCollected: number;
   githubConnectedAt: Date;
   githubLogin: string;
   farcasterUsername: string | null;
   seasonPoints: number;
   scoutedBy: number;
-  cardsSold: number;
-  nftImageUrl: string | null;
-  congratsImageUrl: string | null;
   githubActivities: {
     repo: string;
     owner: string;
@@ -37,7 +45,13 @@ export type DeveloperInfo = {
   last14DaysRank: (number | null)[];
 };
 
-export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | null> {
+export async function getDeveloperInfo({
+  path,
+  scoutId
+}: {
+  path: string;
+  scoutId?: string;
+}): Promise<DeveloperInfo | null> {
   const season = getCurrentSeasonStart();
   const week = getCurrentWeek();
   const oneMonthAgo = DateTime.now().minus({ months: 1 }).toJSDate();
@@ -92,15 +106,32 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
       },
       builderNfts: {
         where: {
-          season,
-          nftType: 'default'
+          season
         },
         select: {
           estimatedPayout: true,
           currentPrice: true,
           currentPriceInScoutToken: true,
           imageUrl: true,
-          congratsImageUrl: true
+          congratsImageUrl: true,
+          nftType: true,
+          nftOwners: {
+            where: {
+              scoutWallet: {
+                scout: {
+                  deletedAt: null
+                }
+              }
+            },
+            select: {
+              balance: true,
+              scoutWallet: {
+                select: {
+                  scoutId: true
+                }
+              }
+            }
+          }
         }
       },
       events: {
@@ -158,6 +189,35 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     }
   });
 
+  const regularCard = developer.builderNfts.find((nft) => nft.nftType === BuilderNftType.default);
+  const starterCard = developer.builderNfts.find((nft) => nft.nftType === BuilderNftType.starter_pack);
+
+  if (!regularCard) {
+    log.error('No regular or starter card found', {
+      developerId: developer.id
+    });
+
+    throw new Error('No regular card found for developer');
+  }
+
+  if (!starterCard) {
+    log.error('No starter card found', {
+      developerId: developer.id
+    });
+
+    throw new Error('No starter card found for developer');
+  }
+
+  const regularCardsSold = regularCard.nftOwners.reduce((acc, nftOwner) => acc + nftOwner.balance, 0);
+  const starterCardsSold = starterCard.nftOwners.reduce((acc, nftOwner) => acc + nftOwner.balance, 0);
+
+  const regularCardsSoldToScout = regularCard.nftOwners
+    .filter((nftOwner) => nftOwner.scoutWallet.scoutId === scoutId)
+    .reduce((acc, nftOwner) => acc + nftOwner.balance, 0);
+  const starterCardsSoldToScout = starterCard.nftOwners
+    .filter((nftOwner) => nftOwner.scoutWallet.scoutId === scoutId)
+    .reduce((acc, nftOwner) => acc + nftOwner.balance, 0);
+
   return {
     id: developer.id,
     path: developer.path,
@@ -165,10 +225,7 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     displayName: developer.displayName,
     firstContributionDate: firstContributionDate?.createdAt || developer.createdAt,
     level: developer.userSeasonStats[0]?.level || 0,
-    estimatedPayout: developer.builderNfts[0]?.estimatedPayout || 0,
-    price: isOnchainPlatform()
-      ? BigInt(developer.builderNfts[0].currentPriceInScoutToken || 0)
-      : BigInt(developer.builderNfts[0].currentPrice || 0),
+    cardsSold: developer.userSeasonStats[0]?.nftsSold || 0,
     rank: developer.userWeeklyStats[0]?.rank || 0,
     gemsCollected: developer.userWeeklyStats[0]?.gemsCollected || 0,
     githubConnectedAt: developer.githubUsers[0].createdAt,
@@ -176,9 +233,6 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
     farcasterUsername: developer.farcasterName || null,
     seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
     scoutedBy: developer.userSeasonStats[0]?.nftOwners || 0,
-    cardsSold: developer.userSeasonStats[0]?.nftsSold || 0,
-    nftImageUrl: developer.builderNfts[0]?.imageUrl || null,
-    congratsImageUrl: developer.builderNfts[0]?.congratsImageUrl || null,
     githubActivities: developer.events
       .filter((event) => event.githubEvent && event.gemsReceipt)
       .map((event) => ({
@@ -189,6 +243,26 @@ export async function getDeveloperInfo(path: string): Promise<DeveloperInfo | nu
         repo: event.githubEvent!.repo.name,
         owner: event.githubEvent!.repo.owner
       })),
-    last14DaysRank: normalizeLast14DaysRank(developer.builderCardActivities[0])
+    last14DaysRank: normalizeLast14DaysRank(developer.builderCardActivities[0]),
+    starterCard: {
+      estimatedPayout: starterCard.estimatedPayout || 0,
+      price: isOnchainPlatform()
+        ? BigInt(starterCard.currentPriceInScoutToken || 0)
+        : BigInt(starterCard.currentPrice || 0),
+      cardsSold: starterCardsSold,
+      cardsSoldToScout: starterCardsSoldToScout,
+      nftImageUrl: starterCard.imageUrl,
+      congratsImageUrl: starterCard.congratsImageUrl || null
+    },
+    regularCard: {
+      estimatedPayout: regularCard.estimatedPayout || 0,
+      price: isOnchainPlatform()
+        ? BigInt(regularCard.currentPriceInScoutToken || 0)
+        : BigInt(regularCard.currentPrice || 0),
+      cardsSold: regularCardsSold,
+      cardsSoldToScout: regularCardsSoldToScout,
+      nftImageUrl: regularCard.imageUrl,
+      congratsImageUrl: regularCard.congratsImageUrl || null
+    }
   };
 }

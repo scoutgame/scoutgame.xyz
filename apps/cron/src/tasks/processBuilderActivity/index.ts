@@ -6,7 +6,6 @@ import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refresh
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
 import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
 import type Koa from 'koa';
-import { DateTime } from 'luxon';
 
 import { processBuilderActivity } from './processBuilderActivity';
 import { reviewAppliedBuilders } from './reviewAppliedBuilders';

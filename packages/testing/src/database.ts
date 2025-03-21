@@ -852,7 +852,11 @@ export async function mockScoutProject({
   memberIds = [],
   deployerAddress,
   contracts = [],
-  wallets = []
+  wallets = [],
+  avatar = 'https://placehold.co/600x400',
+  description = 'Test description',
+  website = 'https://test.com',
+  github = `https://github.com/test-${Math.random().toString(36).substring(2, 15)}`
 }: {
   name?: string;
   userId?: string;
@@ -860,6 +864,10 @@ export async function mockScoutProject({
   deployerAddress?: string;
   contracts?: ({ chainId?: number; address: string } | string)[];
   wallets?: ({ chainId?: number; address: string } | string)[];
+  avatar?: string;
+  description?: string;
+  website?: string;
+  github?: string;
 }) {
   const path = randomString();
   const createdBy = userId ?? (await mockScout()).id;
@@ -871,10 +879,10 @@ export async function mockScoutProject({
     data: {
       name,
       path,
-      avatar: 'https://placehold.co/600x400',
-      description: 'Test description',
-      website: 'https://test.com',
-      github: `https://github.com/test-${Math.random().toString(36).substring(2, 15)}`,
+      avatar,
+      description,
+      website,
+      github,
       deployers: deployerAddress
         ? {
             create: {

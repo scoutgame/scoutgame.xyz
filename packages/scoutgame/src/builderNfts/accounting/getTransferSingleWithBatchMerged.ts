@@ -66,16 +66,43 @@ function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSin
   }));
 }
 
+// Paginate requests with a maximum range of 100,000 blocks
+const MAX_BLOCK_RANGE = 100000;
+
 export async function getTransferSingleWithBatchMerged({
   fromBlock,
   toBlock,
   contractAddress,
   chainId = builderNftChain.id
 }: BlockRange & { contractAddress: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
-  const [singleEvents, batchEvents] = await Promise.all([
-    getTransferSingleEvents({ fromBlock, toBlock, contractAddress, chainId }),
-    getTransferBatchEvents({ fromBlock, toBlock, contractAddress, chainId })
-  ]);
+  const publicClient = getPublicClient(chainId);
+  const latestBlock = toBlock || Number(await publicClient.getBlockNumber());
+  const startBlock = fromBlock || 0;
+
+  let singleEvents: TransferSingleEvent[] = [];
+  let batchEvents: TransferBatchEvent[] = [];
+
+  for (let currentBlock = Number(startBlock); currentBlock < Number(latestBlock); currentBlock += MAX_BLOCK_RANGE) {
+    const endBlock = Math.min(currentBlock + MAX_BLOCK_RANGE - 1, Number(latestBlock));
+
+    const [pageSingleEvents, pageBatchEvents] = await Promise.all([
+      getTransferSingleEvents({
+        fromBlock: BigInt(currentBlock),
+        toBlock: BigInt(endBlock),
+        contractAddress,
+        chainId
+      }),
+      getTransferBatchEvents({
+        fromBlock: BigInt(currentBlock),
+        toBlock: BigInt(endBlock),
+        contractAddress,
+        chainId
+      })
+    ]);
+
+    singleEvents = [...singleEvents, ...pageSingleEvents];
+    batchEvents = [...batchEvents, ...pageBatchEvents];
+  }
 
   const convertedBatchEvents = await Promise.all(batchEvents.map((event) => convertBatchToSingleEvents(event)));
 

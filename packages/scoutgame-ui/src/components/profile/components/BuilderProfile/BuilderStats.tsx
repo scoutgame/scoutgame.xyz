@@ -54,7 +54,7 @@ export function BuilderStats({
             <Typography fontWeight={500} variant='h4' color='orange.main'>
               {builderPoints || 0}
             </Typography>
-            <Image src='/images/profile/scout-game-orange-icon.svg' width='25' height='25' alt='scout game icon' />
+            <Image src='/images/icons/binoculars-orange.svg' width='25' height='25' alt='scout game icon' />
           </Stack>
           <Typography fontWeight={500} variant='h4' color='orange.main' align='center'>
             {totalScouts || 0} Scouts

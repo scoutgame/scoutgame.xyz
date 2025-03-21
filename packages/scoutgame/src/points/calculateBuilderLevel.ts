@@ -6,6 +6,7 @@ export type BuilderAggregateScore = {
   builderId: string;
   totalPoints: number;
   firstActiveWeek: ISOWeek;
+  activeWeeks: number;
   level: number;
   centile: number;
   averageGemsPerWeek: number;
@@ -25,16 +26,23 @@ export const decileTable = [
 ];
 
 export async function calculateBuilderLevels({
-  season = getCurrentSeasonStart()
+  season = getCurrentSeasonStart(),
+  week
 }: {
   season?: ISOWeek;
+  week?: ISOWeek;
 } = {}): Promise<BuilderAggregateScore[]> {
-  let allSeasonWeeks = getAllISOWeeksFromSeasonStart({ season });
+  let weeksWindow = getAllISOWeeksFromSeasonStart({ season });
+
+  // for looking at historical data
+  if (week) {
+    weeksWindow = weeksWindow.filter((_week) => _week <= week);
+  }
 
   // Filter out current week if season is the current season. We only want the historical data
   if (season === getCurrentSeasonStart()) {
     const currentWeek = getCurrentWeek();
-    allSeasonWeeks = allSeasonWeeks.filter((week) => week < currentWeek);
+    weeksWindow = weeksWindow.filter((_week) => _week <= currentWeek);
   }
 
   // Fetch all builders with their gem payouts
@@ -45,6 +53,11 @@ export async function calculateBuilderLevels({
       },
       builderEvent: {
         season,
+        week: week
+          ? {
+              lte: week
+            }
+          : undefined,
         type: 'gems_payout',
         builder: {
           builderNfts: {
@@ -81,38 +94,30 @@ export async function calculateBuilderLevels({
       }
 
       if (!acc[builderId]) {
+        // Find index of first active week in all season weeks
+        const firstActiveWeekIndex = weeksWindow.indexOf(gemsPayout.week);
+
+        // Get number of weeks builder has been active (from first week to end of season)
+        const activeWeeks = weeksWindow.slice(firstActiveWeekIndex).length;
         acc[builderId] = {
           builderId,
           totalPoints: 0,
           firstActiveWeek: gemsPayout.week,
+          activeWeeks,
           centile: 0,
           level: 0,
           averageGemsPerWeek: 0
         };
       }
+
       acc[builderId].totalPoints += gemsPayout.points;
+      acc[builderId].averageGemsPerWeek = Math.floor(acc[builderId].totalPoints / acc[builderId].activeWeeks);
       return acc;
     },
     {} as Record<string, BuilderAggregateScore>
   );
 
-  const averageGemsPerWeekPerBuilder = Object.values(builderScores).map((builder) => {
-    // Find index of first active week in all season weeks
-    const firstActiveWeekIndex = allSeasonWeeks.indexOf(builder.firstActiveWeek);
-
-    // Get number of weeks builder has been active (from first week to end of season)
-    const activeWeeks = allSeasonWeeks.slice(firstActiveWeekIndex).length;
-
-    // Calculate average based on active weeks instead of full season
-    const averageGemsPerWeek = builder.totalPoints / activeWeeks;
-
-    return {
-      ...builder,
-      averageGemsPerWeek: Math.floor(averageGemsPerWeek)
-    };
-  });
-
-  const orderedBuilderScores = averageGemsPerWeekPerBuilder.sort((a, b) => b.averageGemsPerWeek - a.averageGemsPerWeek);
+  const orderedBuilderScores = Object.values(builderScores).sort((a, b) => b.averageGemsPerWeek - a.averageGemsPerWeek);
 
   const totalBuilders = orderedBuilderScores.length;
 

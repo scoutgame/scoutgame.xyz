@@ -1,6 +1,7 @@
 import { baseUrl } from '@packages/utils/constants';
 import { getRelativeTime } from '@packages/utils/dates';
 // It is a MUST to import React
+import { capitalize } from '@packages/utils/strings';
 import React from 'react';
 import type { CSSProperties } from 'react';
 
@@ -9,7 +10,6 @@ import { bonusPartnersRecord } from '../../../bonus';
 import type { BuilderActivity } from '../../../builders/getBuilderActivities';
 import type { BuilderScouts } from '../../../builders/getBuilderScouts';
 import type { BuilderStats } from '../../../builders/getBuilderStats';
-import { convertCostToPoints } from '../../utils';
 
 export function BuilderShareImage({
   nftImageUrl,
@@ -114,7 +114,7 @@ export function BuilderShareImage({
                 }}
               >
                 {gemsCollected}
-                <img width={15} height={15} src={`${domain}/images/profile/icons/hex-gem-icon.svg`} alt='gem' />
+                <img width={15} height={15} src={`${domain}/images/icons/gem.svg`} alt='gem' />
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -132,7 +132,7 @@ export function BuilderShareImage({
             <h6 style={{ fontSize: '14px', color: '#69DDFF', margin: 0 }}>THIS SEASON</h6>
             <div style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
               <span>{seasonPoints}</span>
-              <img width={21} height={12} src={`${domain}/images/profile/scout-game-icon.svg`} alt='points' />
+              <img width={21} height={12} src={`${domain}/images/icons/binoculars.svg`} alt='points' />
             </div>
             <p style={{ margin: 0 }}>{totalScouts} Scouts</p>
             <p style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
@@ -219,7 +219,7 @@ export function BuilderShareImage({
                         style={{ margin: 0 }}
                         width={15}
                         height={15}
-                        src={`${domain}/images/profile/icons/hex-gem-icon.svg`}
+                        src={`${domain}/images/icons/gem.svg`}
                         alt='gem'
                       />
                     </div>
@@ -257,6 +257,9 @@ export function BuilderShareImage({
 }
 
 export function getActivityLabel(activity: BuilderActivity) {
+  if (activity.type === 'onchain_achievement') {
+    return `${capitalize(activity.tier)} Tier!`;
+  }
   return activity.type === 'github_event'
     ? activity.contributionType === 'first_pr'
       ? 'First contribution!'
@@ -272,7 +275,10 @@ export function getActivityLabel(activity: BuilderActivity) {
       : null;
 }
 
-export function getActivityDetail(activity: BuilderActivity) {
+export function getActivityDetail(activity: BuilderActivity): string | null {
+  if (activity.type === 'onchain_achievement') {
+    return activity.project.name;
+  }
   return activity.type === 'nft_purchase'
     ? activity.scout.displayName
     : activity.type === 'github_event'

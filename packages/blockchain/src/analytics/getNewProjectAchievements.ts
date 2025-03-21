@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import type { OnchainAchievementTier } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeason } from '@packages/dates/utils';
 
 /**
  * Represents a builder event
@@ -108,36 +107,4 @@ export async function getNewProjectAchievements(projectId: string, week: string)
     log.error('Error retrieving builder events', { error, projectId, week });
     throw error;
   }
-}
-
-export async function recordProjectAchievement(achievement: ProjectAchievement, week: string) {
-  const { projectId, tier, builders } = achievement;
-  const season = getCurrentSeason(week).start;
-
-  await prisma.$transaction(async (tx) => {
-    const record = await tx.scoutProjectOnchainAchievement.create({
-      data: {
-        projectId,
-        tier,
-        week
-      }
-    });
-    for (const builder of builders) {
-      await tx.builderEvent.create({
-        data: {
-          builderId: builder.builderId,
-          type: 'onchain_achievement',
-          onchainAchievementId: record.id,
-          week,
-          season,
-          gemsReceipt: {
-            create: {
-              value: builder.gems,
-              type: 'onchain_achievement'
-            }
-          }
-        }
-      });
-    }
-  });
 }

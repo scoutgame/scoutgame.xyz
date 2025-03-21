@@ -71,7 +71,7 @@ function Document() {
             <PartnerReward name='Game7' image='/images/crypto/game7.png' href='/info/partner-rewards/game7' />
             <PartnerReward name='Celo' image='/images/crypto/celo.png' href='/info/partner-rewards/celo' />
             <PartnerReward
-              name='Good Dollar'
+              name='GoodDollar'
               image='/images/logos/good-dollar.png'
               href='/info/partner-rewards/good-dollar'
             />

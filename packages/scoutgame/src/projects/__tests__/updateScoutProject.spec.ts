@@ -21,6 +21,14 @@ jest.unstable_mockModule('../backfillAnalytics', async () => ({
   backfillAnalytics: () => Promise.resolve()
 }));
 
+jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
+  getPublicClient: () => {
+    return {
+      getBytecode: jest.fn().mockResolvedValue('0x' as never)
+    };
+  }
+}));
+
 const { updateScoutProject } = await import('../updateScoutProject');
 
 describe('updateScoutProject', () => {

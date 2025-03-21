@@ -10,9 +10,10 @@ import { ClaimedPointsTable } from './components/PointsTable/ClaimedPointsTable'
 
 export type ClaimPageProps = {
   period: string;
+  season: string;
 };
 
-export function ClaimPage({ period }: ClaimPageProps) {
+export function ClaimPage({ period, season }: ClaimPageProps) {
   return (
     <Stack
       gap={8}
@@ -34,7 +35,7 @@ export function ClaimPage({ period }: ClaimPageProps) {
             }
           }}
         >
-          <BuilderRewardsScreen period={period} />
+          <BuilderRewardsScreen period={period} season={season} />
         </Stack>
         <Suspense fallback={<LoadingTable />}>
           <ClaimedPointsTable />
@@ -51,7 +52,7 @@ export function ClaimPage({ period }: ClaimPageProps) {
           }
         }}
       >
-        <BuilderRewardsScreen period={period} />
+        <BuilderRewardsScreen period={period} season={season} />
       </Stack>
     </Stack>
   );

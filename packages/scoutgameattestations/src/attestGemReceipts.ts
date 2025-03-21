@@ -1,5 +1,6 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { capitalize } from '@packages/utils/strings';
 
 import { multiAttestOnchain, type ScoutGameAttestationInput } from './attestOnchain';
 import { scoutGameAttestationChainId, scoutGameContributionReceiptSchemaUid } from './constants';
@@ -16,13 +17,8 @@ export async function attestGemReceipts(): Promise<void> {
       gte: minimumGemsDate
     },
     event: {
-      githubEvent: {
-        type: {
-          in: ['commit', 'merged_pull_request']
-        }
-      },
-      builder: {
-        builderStatus: 'approved'
+      type: {
+        in: ['daily_commit', 'merged_pull_request', 'onchain_achievement']
       }
     },
     OR: [
@@ -76,6 +72,17 @@ export async function attestGemReceipts(): Promise<void> {
               onchainProfileAttestationUid: true
             }
           },
+          onchainAchievement: {
+            select: {
+              tier: true,
+              project: {
+                select: {
+                  name: true,
+                  path: true
+                }
+              }
+            }
+          },
           githubEvent: {
             select: {
               commitHash: true,
@@ -95,6 +102,9 @@ export async function attestGemReceipts(): Promise<void> {
   });
 
   function getDescription(ev: (typeof gemReceiptsWithoutAttestation)[number]) {
+    if (ev.type === 'onchain_achievement') {
+      return `Project ${ev.event.onchainAchievement?.project?.name} reached ${capitalize(ev.event.onchainAchievement?.tier)} tier`;
+    }
     return ev.type === 'daily_commit'
       ? `Contributed a regular commit to the repository`
       : ev.type === 'first_pr'
@@ -107,9 +117,13 @@ export async function attestGemReceipts(): Promise<void> {
   }
 
   function getUrl(ev: (typeof gemReceiptsWithoutAttestation)[number]) {
-    return ev.type === 'daily_commit'
-      ? `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/commit/${ev.event.githubEvent?.commitHash}`
-      : `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/pull/${ev.event.githubEvent?.pullRequestNumber}`;
+    if (ev.type === 'onchain_achievement') {
+      return `https://scoutgame.xyz/p/${ev.event.onchainAchievement?.project?.path}`;
+    }
+    if (ev.type === 'daily_commit') {
+      return `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/commit/${ev.event.githubEvent?.commitHash}`;
+    }
+    return `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/pull/${ev.event.githubEvent?.pullRequestNumber}`;
   }
 
   const attestationInputs: Omit<ScoutGameAttestationInput, 'schemaId' | 'chainId'>[] = [];

@@ -1,11 +1,9 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import {
-  getNewProjectAchievements,
-  recordProjectAchievement
-} from '@packages/blockchain/analytics/getNewProjectAchievements';
+import { getNewProjectAchievements } from '@packages/blockchain/analytics/getNewProjectAchievements';
 import { recordContractAnalyticsForWeek } from '@packages/blockchain/analytics/recordContractAnalytics';
 import { recordWalletAnalyticsForWeek } from '@packages/blockchain/analytics/recordWalletAnalytics';
+import { saveProjectAchievement } from '@packages/blockchain/analytics/saveProjectAchievement';
 import { getCurrentWeek } from '@packages/dates/utils';
 import type Koa from 'koa';
 import { taiko, taikoTestnetSepolia } from 'viem/chains';
@@ -43,7 +41,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
   for (const wallet of wallets) {
     try {
       const { startDate, endDate, newMetrics, updatedMetrics } = await recordWalletAnalyticsForWeek(wallet, week);
-      log.info(`Created metrics for wallet`, {
+      log.info(`Created daily stats for wallet`, {
         newMetrics: newMetrics.length,
         chainType: wallet.chainType,
         updatedMetrics: updatedMetrics.length,
@@ -88,17 +86,20 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
 
   for (const contract of contracts) {
     try {
-      const { startDate, endDate, newMetrics, updatedMetrics } = await recordContractAnalyticsForWeek(contract, week);
-      log.info(`Created metrics for contract`, {
-        newMetrics: newMetrics.length,
-        updatedMetrics: updatedMetrics.length,
+      const { startDate, endDate, newDailyStats, updatedDailyStats } = await recordContractAnalyticsForWeek(
+        contract,
+        week
+      );
+      log.info(`Created daily stats for contract`, {
+        newDailyStats: newDailyStats.length,
+        updatedMetrics: updatedDailyStats.length,
         walletId: contract.id,
         week,
         startDate,
         endDate
       });
     } catch (error) {
-      log.error(`Error creating metrics for contract`, {
+      log.error(`Error creating daily stats for contract`, {
         address: contract.address,
         week,
         contractId: contract.id,
@@ -113,7 +114,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
     const builderEvents = await getNewProjectAchievements(projectId, week);
     if (builderEvents.length > 0) {
       for (const event of builderEvents) {
-        await recordProjectAchievement(event, week);
+        await saveProjectAchievement(event, week);
       }
     }
   }

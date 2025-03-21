@@ -35,11 +35,8 @@ function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
       <TableCell align='center'>
         <Typography>{reward.cardsHeld}</Typography>
       </TableCell>
-      {reward.rank ? (
-        <TableCell align='center'>
-          <Typography>{reward.rank}</Typography>
-        </TableCell>
-      ) : null}
+      <TableCell align='center'>{reward.rank ? <Typography>{reward.rank}</Typography> : '-'}</TableCell>
+
       <TableCell align='right'>
         <PointsCell points={reward.points} />
       </TableCell>
@@ -62,14 +59,14 @@ export function BuilderRewardsTable({
         <TableRow>
           <TableCell align='left'>DEVELOPER</TableCell>
           <TableCell align='center'>CARDS HELD</TableCell>
-          {week ? <TableCell align='center'>RANK</TableCell> : null}
+          <TableCell align='center'>RANK</TableCell>
           <TableCell align='right'>POINTS</TableCell>
         </TableRow>
       </StyledTableHead>
       <StyledTableBody
         sx={{
           '& .MuiTableCell-root': {
-            width: !week ? '33.33%' : '25%'
+            width: '25%'
           }
         }}
       >
@@ -77,7 +74,7 @@ export function BuilderRewardsTable({
           <BuilderRewardsTableRow key={reward.path} reward={reward} />
         ))}
         <TableRow>
-          <TableCell colSpan={week ? 3 : 2}>
+          <TableCell colSpan={3}>
             <Typography>Total Scout Points</Typography>
           </TableCell>
           <TableCell align='right'>

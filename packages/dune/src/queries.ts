@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { QueryParameter } from '@duneanalytics/client-sdk';
 
-import { rateLimiter, duneClient } from './client';
+import { rateLimiter, isEnabled, duneClient } from './client';
 
 type WalletDailyStats = {
   day: Date;
@@ -51,6 +51,10 @@ export async function getEvmAddressStats({
   startDate: Date;
   endDate: Date;
 }): Promise<WalletDailyStats[]> {
+  if (!isEnabled) {
+    log.debug('Dune is not enabled, skipping EVM address stats');
+    return [];
+  }
   // https://dune.com/queries/4812202
   const queryId = 4812202;
   const chain = evmChainIdToDuneChain[chainId as keyof typeof evmChainIdToDuneChain];
@@ -91,6 +95,10 @@ export async function getSolanaWalletStats({
   startDate: Date;
   endDate: Date;
 }): Promise<WalletDailyStats[]> {
+  if (!isEnabled) {
+    log.debug('Dune is not enabled, skipping Solana wallet stats');
+    return [];
+  }
   // https://dune.com/queries/4812208
   // const queryId = 4812208; // includes gas but times out (429)
   const queryId = 4813103;
