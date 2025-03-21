@@ -25,13 +25,16 @@ export async function getBuilders({
   limit = 200,
   sortBy = 'week_gems',
   order = 'asc',
-  loggedInScoutId
+  loggedInScoutId,
+  nftType: _nftType
 }: {
   loggedInScoutId?: string;
   limit?: number;
   sortBy?: BuildersSortBy;
   order?: 'asc' | 'desc';
+  nftType: 'default' | 'starter';
 }): Promise<BuilderMetadata[]> {
+  const nftType = _nftType === 'default' ? BuilderNftType.default : BuilderNftType.starter_pack;
   const week = getCurrentWeek();
 
   const season = getCurrentSeasonStart(week);
@@ -63,7 +66,7 @@ export async function getBuilders({
             builderNfts: {
               where: {
                 season,
-                nftType: BuilderNftType.default
+                nftType
               },
               select: {
                 estimatedPayout: true,
@@ -120,7 +123,7 @@ export async function getBuilders({
     const builderNfts = await prisma.builderNft.findMany({
       where: {
         season,
-        nftType: BuilderNftType.default,
+        nftType,
         builder: {
           builderStatus: 'approved',
           deletedAt: null,
@@ -200,7 +203,7 @@ export async function getBuilders({
     const builderNfts = await prisma.builderNft.findMany({
       where: {
         season,
-        nftType: BuilderNftType.default,
+        nftType,
         builder: {
           builderStatus: 'approved',
           deletedAt: null
@@ -296,7 +299,7 @@ export async function getBuilders({
             builderNfts: {
               where: {
                 season,
-                nftType: BuilderNftType.default
+                nftType
               },
               select: {
                 currentPrice: true,

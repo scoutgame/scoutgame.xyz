@@ -2,7 +2,7 @@ import { Box, Container, Tab, Tabs } from '@mui/material';
 import Link from 'next/link';
 
 import { PreSeasonNFT } from './PreSeasonNFT';
-import { StarterPack } from './StarterPack';
+import { StarterNFT } from './StarterNFT';
 
 export function PreSeasonContractDashboard({
   currentTab = 'preseason01',
@@ -29,7 +29,7 @@ export function PreSeasonContractDashboard({
         <Tab
           component={Link}
           value={`preseason${preseasonNumber}-starter`}
-          label={`PreSeason ${preseasonNumber} Starter Pack`}
+          label={`PreSeason ${preseasonNumber} Starter Cards`}
           href={{
             query: { tab: `preseason${preseasonNumber}-starter` }
           }}
@@ -37,7 +37,7 @@ export function PreSeasonContractDashboard({
       </Tabs>
       <Box mt={2}>
         {currentTab === `preseason${preseasonNumber}` && <PreSeasonNFT season={season} />}
-        {currentTab === `preseason${preseasonNumber}-starter` && <StarterPack season={season} />}
+        {currentTab === `preseason${preseasonNumber}-starter` && <StarterNFT season={season} />}
       </Box>
     </Container>
   );

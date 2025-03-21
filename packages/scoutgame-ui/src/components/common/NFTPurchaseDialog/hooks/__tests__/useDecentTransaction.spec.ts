@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import {
   getBuilderNftStarterPackContractAddress,
-  isStarterPackContract,
+  isStarterNftContract,
   isPreseason01Contract
 } from '@packages/scoutgame/builderNfts/constants';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -29,7 +29,7 @@ jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   builderNftChain: mockBuilderNftChain,
   getDecentApiKey: jest.fn().mockImplementation(() => '123'),
   getBuilderNftContractAddress: jest.fn().mockImplementation(() => mockBuilderContractAddress),
-  isStarterPackContract,
+  isStarterNftContract,
   isPreseason01Contract
 }));
 

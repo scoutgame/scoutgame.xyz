@@ -7,7 +7,7 @@ import {
   getBuilderNftContractAddress,
   getDecentApiKey,
   isPreseason01Contract,
-  isStarterPackContract,
+  isStarterNftContract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import {
@@ -86,7 +86,7 @@ export function useDecentTransaction({
     contractAddress ||
     (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress(getCurrentSeasonStart()));
 
-  const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterPackContract(_contractAddress);
+  const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterNftContract(_contractAddress);
 
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,

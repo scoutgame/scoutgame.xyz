@@ -45,7 +45,7 @@ export function BuilderCard({
         size={size}
         hideDetails={hideDetails}
         disableProfileUrl={disableProfileUrl}
-        starterPack={type === 'starter_pack'}
+        isStarterCard={type === 'starter_pack'}
       >
         {builder.builderStatus === 'banned' ? (
           <Typography textAlign='center'>SUSPENDED</Typography>

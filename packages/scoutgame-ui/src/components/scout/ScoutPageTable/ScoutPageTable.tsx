@@ -13,12 +13,14 @@ export async function ScoutPageTable({
   tab,
   order,
   sort,
-  userId
+  userId,
+  nftType
 }: {
   userId?: string;
   tab: string;
   order?: string;
   sort?: string;
+  nftType: 'default' | 'starter';
 }) {
   if (tab === 'builders') {
     const [, builders = []] = await safeAwaitSSRData(
@@ -26,7 +28,8 @@ export async function ScoutPageTable({
         limit: 200,
         sortBy: sort as BuildersSortBy,
         order: order as 'asc' | 'desc',
-        loggedInScoutId: userId
+        loggedInScoutId: userId,
+        nftType
       })
     );
     return <BuildersTable builders={builders} order={order ?? 'desc'} sort={(sort as BuildersSortBy) ?? 'week_gems'} />;
