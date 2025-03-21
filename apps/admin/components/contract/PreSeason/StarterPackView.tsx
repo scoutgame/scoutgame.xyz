@@ -1,5 +1,4 @@
 import { Box, Divider, Grid2, IconButton, Typography } from '@mui/material';
-import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import Link from 'next/link';
 import { MdLaunch } from 'react-icons/md';
 
@@ -9,14 +8,15 @@ function ContractLink({
   address,
   linkType = 'address',
   title,
-  subtitle
+  subtitle,
+  chainName
 }: {
   address: string;
   linkType?: 'address' | 'token' | 'contract';
   title: string;
   subtitle?: string;
+  chainName: string;
 }) {
-  const chainName = scoutProtocolChain.name.toLowerCase();
   return (
     <Box gap={1} display='flex' flexDirection='column'>
       <Typography variant='h6'>{title}</Typography>
@@ -58,6 +58,7 @@ export function StarterPackView(data: StarterPackNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.contractAddress}
           title='Proxy address'
           linkType='token'
@@ -66,6 +67,7 @@ export function StarterPackView(data: StarterPackNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.currentImplementation}
           title='Current Implementation'
           subtitle='This contract is called by the proxy and handles the minting logic. We upgrade to a new implementation multiple times over the season.'
@@ -115,6 +117,7 @@ export function StarterPackView(data: StarterPackNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.admin}
           title='Admin'
           subtitle='Admin wallet can upgrade the contract, update the wallet that receives proceeds from NFT sales, modify pricing, register builders and mint tokens.'
@@ -122,6 +125,7 @@ export function StarterPackView(data: StarterPackNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.currentMinter}
           title='Minter'
           subtitle='Minter wallet can register new builder nfts and mint tokens to any address.'
@@ -129,6 +133,7 @@ export function StarterPackView(data: StarterPackNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.proceedsReceiver}
           title='Proceeds Receiver'
           subtitle='This is the wallet address that receives funds paid to mint builder NFTs.'

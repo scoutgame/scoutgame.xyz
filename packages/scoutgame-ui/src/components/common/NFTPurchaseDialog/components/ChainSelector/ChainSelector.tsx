@@ -12,7 +12,7 @@ import { ChainComponent } from './ChainComponent';
 import type { ChainWithCurrency } from './chains';
 import { getChainOptions } from './chains';
 
-export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'SCOUT' };
+export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'DEV' };
 
 function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency;
@@ -48,7 +48,7 @@ function SelectField(
           id: scoutProtocolChain.id,
           name: 'Base',
           usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-          currency: 'SCOUT'
+          currency: 'DEV'
         }
       ]
     : getChainOptions({ useTestnets });
@@ -104,7 +104,7 @@ function SelectField(
         let _balance = Number(_tokenBalanceInfo?.balance);
 
         if (_balance) {
-          if (_chain.currency === 'ETH' || _chain.currency === 'SCOUT') {
+          if (_chain.currency === 'ETH' || _chain.currency === 'DEV') {
             _balance /= 1e18;
           } else {
             _balance /= 1e6;

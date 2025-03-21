@@ -120,7 +120,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     isOnchain
       ? {
           chainId: scoutProtocolChainId,
-          currency: 'SCOUT'
+          currency: 'DEV'
         }
       : {
           chainId: useTestnets ? ChainId.OPTIMISM_SEPOLIA : ChainId.OPTIMISM,
@@ -149,10 +149,16 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const [purchaseCost, setPurchaseCost] = useState(BigInt(0));
   const [builderTokenId, setBuilderTokenId] = useState<bigint>(BigInt(0));
 
-  const purchaseCostInPoints = isOnchain
-    ? purchaseCost / BigInt(10 ** scoutTokenDecimals)
-    : convertCostToPoints(purchaseCost);
-  const notEnoughPoints = user && user.currentBalance < purchaseCostInPoints;
+  const { purchaseCostInPoints, notEnoughPoints } = isOnchain
+    ? {
+        purchaseCostInPoints: purchaseCost / BigInt(10 ** scoutTokenDecimals),
+        notEnoughPoints:
+          user && user.currentBalance && user.currentBalance < purchaseCost / BigInt(10 ** scoutTokenDecimals)
+      }
+    : {
+        purchaseCostInPoints: convertCostToPoints(purchaseCost),
+        notEnoughPoints: user && user.currentBalance && user.currentBalance < convertCostToPoints(purchaseCost)
+      };
 
   const {
     isExecuting: isExecutingPointsPurchase,
@@ -264,7 +270,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     erc20Address:
       selectedPaymentOption.currency === 'USDC'
         ? selectedChainCurrency
-        : selectedPaymentOption.currency === 'SCOUT'
+        : selectedPaymentOption.currency === 'DEV'
           ? scoutTokenErc20ContractAddress()
           : null,
     owner: address as Address,
@@ -349,7 +355,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const displayedBalance = !balanceInfo
     ? undefined
-    : selectedPaymentOption.currency === 'ETH' || selectedPaymentOption.currency === 'SCOUT'
+    : selectedPaymentOption.currency === 'ETH' || selectedPaymentOption.currency === 'DEV'
       ? (Number(balanceInfo.balance || 0) / 1e18).toFixed(4)
       : (Number(balanceInfo.balance || 0) / 1e6).toFixed(2);
 

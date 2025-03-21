@@ -4,13 +4,10 @@ import { ActionType } from '@decent.xyz/box-common';
 import {
   builderNftChain,
   getDecentApiKey,
+  isStarterPackContract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
-import {
-  scoutProtocolBuilderNftContractAddress,
-  scoutProtocolChainId,
-  scoutTokenErc20ContractAddress
-} from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChainId, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
@@ -93,7 +90,9 @@ export function useDecentTransaction({
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
       signature: transferableNftMintSignature,
-      args: [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
+      args: isStarterPackContract(contractAddress)
+        ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
+        : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }
   };
   const {

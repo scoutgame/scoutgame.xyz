@@ -60,14 +60,12 @@ export const handleOnchainClaimAction = authActionClient
       }
     });
 
-    const currentBalance = Number(balance / BigInt(10 ** scoutTokenDecimals));
-
     await prisma.scout.update({
       where: {
         id: scout.id
       },
       data: {
-        currentBalance
+        currentBalanceInScoutToken: balance.toString()
       }
     });
 

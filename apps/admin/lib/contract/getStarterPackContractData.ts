@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
+import { getSeasonConfig } from '@packages/dates/utils';
 import { getBuilderNftStarterPackProxyReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackProxyReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
@@ -16,6 +17,7 @@ export type StarterPackNFTContractData = {
   nftSalesData: NftSalesData;
   admin: Address;
   proceedsReceiver: Address;
+  chainName: string;
 };
 
 export async function getStarterPackContractData({ season }: { season: ISOWeek }): Promise<StarterPackNFTContractData> {
@@ -37,6 +39,8 @@ export async function getStarterPackContractData({ season }: { season: ISOWeek }
     starterPackClient.getProceedsReceiver()
   ]);
 
+  const seasonConfig = getSeasonConfig(season);
+
   return {
     totalSupply,
     currentMinter: currentMinter as Address,
@@ -44,6 +48,7 @@ export async function getStarterPackContractData({ season }: { season: ISOWeek }
     nftSalesData,
     currentImplementation,
     admin,
-    proceedsReceiver
+    proceedsReceiver,
+    chainName: seasonConfig.preseason ? 'optimism' : 'base'
   };
 }

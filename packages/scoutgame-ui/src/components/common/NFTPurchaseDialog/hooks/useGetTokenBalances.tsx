@@ -100,10 +100,10 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
       }
     }
 
-    if (!fetchScoutTokenInfoRef.current) {
+    if (!fetchScoutTokenInfoRef.current && useScoutToken) {
       fetchScoutTokenInfo();
     }
-  }, [address]);
+  }, [address, useScoutToken]);
 
   return {
     ...result,

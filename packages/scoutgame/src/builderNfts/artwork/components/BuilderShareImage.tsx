@@ -151,7 +151,7 @@ export function BuilderShareImage({
             <h6 style={{ fontSize: '14px', color: '#69DDFF', margin: 0 }}>CURRENT PRICE</h6>
             <p style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
               <span>{builderPrice}</span>
-              <img width={21} height={12} src={`${domain}/images/profile/scout-game-icon.svg`} alt='points' />
+              <img width={21} height={12} src={`${domain}/images/icons/binoculars.svg`} alt='points' />
             </p>
           </div>
         </div>
