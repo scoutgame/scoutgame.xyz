@@ -47,17 +47,16 @@ function PartnerRewardsClaimButtonContent({
   chain: string;
 }) {
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
-  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee, feeAmount, sanctionCheckError } =
-    useClaimPartnerReward({
-      payoutContractId: partnerReward.payoutContractId,
-      contractAddress: partnerReward.contractAddress as Address,
-      rewardChainId: partnerReward.chainId,
-      recipientAddress: partnerReward.recipientAddress as Address,
-      onSuccess: () => {
-        setShowPartnerRewardModal(false);
-        revalidateClaimPoints();
-      }
-    });
+  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee, feeAmount } = useClaimPartnerReward({
+    payoutContractId: partnerReward.payoutContractId,
+    contractAddress: partnerReward.contractAddress as Address,
+    rewardChainId: partnerReward.chainId,
+    recipientAddress: partnerReward.recipientAddress as Address,
+    onSuccess: () => {
+      setShowPartnerRewardModal(false);
+      revalidateClaimPoints();
+    }
+  });
 
   return (
     <>
@@ -66,18 +65,11 @@ function PartnerRewardsClaimButtonContent({
         color='primary'
         sx={{ width: 'fit-content' }}
         loading={isClaiming}
-        disabled={isClaiming || sanctionCheckError}
+        disabled={isClaiming}
         onClick={() => setShowPartnerRewardModal(true)}
       >
         Claim
       </LoadingButton>
-      {sanctionCheckError && (
-        <Typography variant='caption' color='error' align='center' data-test='address-error'>
-          {'message' in sanctionCheckError
-            ? sanctionCheckError.message
-            : `Address ${partnerReward.recipientAddress} is sanctioned. Try a different wallet`}
-        </Typography>
-      )}
       <Dialog
         open={showPartnerRewardModal}
         onClose={() => setShowPartnerRewardModal(false)}
