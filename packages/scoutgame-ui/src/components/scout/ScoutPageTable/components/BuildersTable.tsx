@@ -158,10 +158,10 @@ export function BuildersTable({
               >
                 <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
                 <Stack maxWidth={{ xs: '50px', md: 'initial' }}>
-                  {builder.nftsSoldToScout ? (
+                  {builder.nftsSoldToLoggedInScout ? (
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography fontSize={{ xs: '10.5px', md: '14px' }} color='green.main' noWrap>
-                        {builder.nftsSoldToScout}
+                        {builder.nftsSoldToLoggedInScout}
                       </Typography>
                       <Image
                         width={isMdScreen ? 15 : 13}

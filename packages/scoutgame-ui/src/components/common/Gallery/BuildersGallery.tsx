@@ -7,14 +7,12 @@ export function BuildersGallery({
   builders,
   columns = 6,
   size = 'medium',
-  markStarterCardPurchased = false,
-  hideScoutCount = false
+  markStarterCardPurchased = false
 }: {
   builders: BuilderInfo[];
   columns?: number;
   size?: 'small' | 'medium' | 'large';
   markStarterCardPurchased?: boolean;
-  hideScoutCount?: boolean;
 }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -26,13 +24,17 @@ export function BuildersGallery({
         {builders.map((builder) => (
           <Grid key={builder.path} size={{ xs: 1 }} display='flex' justifyContent='center' alignItems='center'>
             <Box>
+              {builder.nftsSoldToScoutInView !== undefined && builder.nftsSoldToScoutInView > 0 && (
+                <Typography color='green.main' textAlign='right' mb={1}>
+                  X {builder.nftsSoldToScoutInView}
+                </Typography>
+              )}
               <BuilderCard
                 builder={builder}
                 showPurchaseButton
                 size={size}
                 type={builder.nftType}
                 markStarterCardPurchased={markStarterCardPurchased}
-                hideScoutCount={hideScoutCount}
               />
             </Box>
           </Grid>
