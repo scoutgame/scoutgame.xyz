@@ -1,4 +1,5 @@
 import { Box, Divider, Grid2, IconButton, Typography } from '@mui/material';
+import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import {
   contributionSchemaDefinition,
   scoutGameUserProfileSchemaDefinition
@@ -19,11 +20,12 @@ function ContractLink({
   title: string;
   subtitle?: string;
 }) {
+  const chainName = scoutProtocolChain.name.toLowerCase();
   return (
     <Box gap={1} display='flex' flexDirection='column'>
       <Typography variant='h6'>{title}</Typography>
       <Box sx={{ minHeight: '40px' }}>{subtitle && <Typography variant='body2'>{subtitle}</Typography>}</Box>
-      <Link href={`https://optimism.blockscout.com/${linkType}/${address}`} target='_blank'>
+      <Link href={`https://${chainName}.blockscout.com/${linkType}/${address}`} target='_blank'>
         {address}
         <IconButton size='small' color='primary'>
           <MdLaunch size='16px' />

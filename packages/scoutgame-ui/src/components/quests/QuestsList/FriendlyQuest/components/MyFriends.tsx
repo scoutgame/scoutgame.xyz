@@ -14,7 +14,7 @@ import type { Friend } from '@packages/users/getFriends';
 import { Avatar } from '../../../../common/Avatar';
 
 export function MyFriends({ friends, title }: { friends: Friend[]; title?: string }) {
-  const sorted = friends.sort((a, b) => b.currentBalance - a.currentBalance);
+  const sorted = friends.sort((a, b) => (b.currentBalance || 0) - (a.currentBalance || 0));
 
   if (friends.length === 0) {
     return (

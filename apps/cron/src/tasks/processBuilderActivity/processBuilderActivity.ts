@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getWeekFromDate } from '@packages/dates/utils';
 import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
 import { getBuilderActivity } from './getBuilderActivity';
@@ -149,7 +149,7 @@ export async function processBuilderActivity({
     gemsCollected
   });
 
-  if (getPlatform() === 'onchain_webapp') {
+  if (isOnchainPlatform()) {
     await attestGemReceipts();
   }
 }

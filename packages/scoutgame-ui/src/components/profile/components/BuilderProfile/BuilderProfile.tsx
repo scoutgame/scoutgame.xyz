@@ -3,11 +3,14 @@ import 'server-only';
 import { prisma } from '@charmverse/core/prisma-client';
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderActivities';
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
+import { scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
@@ -38,7 +41,7 @@ export async function BuilderProfile({
             },
             select: {
               imageUrl: true,
-              // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+              currentPriceInScoutToken: true,
               currentPrice: true
             }
           }),
@@ -109,8 +112,11 @@ export async function BuilderProfile({
         builderPoints={builderStats?.seasonPoints}
         totalScouts={totalScouts}
         totalNftsSold={totalNftsSold}
-        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-        currentNftPrice={builderNft?.currentPrice}
+        currentNftPrice={
+          isOnchainPlatform()
+            ? Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** scoutTokenDecimals
+            : Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals
+        }
       />
       <Stack gap={0.5}>
         <Typography color='secondary'>This Week</Typography>

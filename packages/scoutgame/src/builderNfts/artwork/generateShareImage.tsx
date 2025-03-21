@@ -1,4 +1,5 @@
 // Must be there otherwise React is not defined error is thrown
+import * as React from 'react';
 import sharp from 'sharp';
 
 import type { BuilderActivity } from '../../builders/getBuilderActivities';
@@ -20,7 +21,7 @@ export async function generateShareImage({
   activities: BuilderActivity[];
   stats: BuilderStats;
   builderScouts: BuilderScouts;
-  builderPrice: bigint;
+  builderPrice: string;
 }): Promise<Buffer> {
   builderScouts.scouts.forEach((scout) => {
     for (const emoji of blacklistedEmojis) {

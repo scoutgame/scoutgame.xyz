@@ -157,7 +157,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
               },
               transactionInfo: {
                 destinationChainId:
-                  contractAddress === scoutProtocolBuilderNftContractAddress()
+                  contractAddress === scoutProtocolBuilderNftContractAddress
                     ? scoutProtocolChainId
                     : builderNftChain.id,
                 sourceChainId,
@@ -165,7 +165,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
               },
               purchaseInfo: {
                 quotedPrice:
-                  contractAddress === scoutProtocolBuilderNftContractAddress()
+                  contractAddress === scoutProtocolBuilderNftContractAddress
                     ? Number(BigInt(purchaseCost) / scoutTokenDecimalsMultiplier)
                     : Number(purchaseCost),
                 tokenAmount: tokensToBuy,

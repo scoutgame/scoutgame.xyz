@@ -6,16 +6,16 @@ import { randomLargeInt, randomWalletAddress } from '@packages/testing/generator
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { v4 } from 'uuid';
 
-jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient', () => ({
-  getPreSeasonTwoBuilderNftContractMinterClient: () => ({
+jest.unstable_mockModule('../clients/starterPack/getBuilderContractStarterPackReadonlyClient', () => ({
+  getBuilderNftStarterPackReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
   })
 }));
 
-jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient', () => ({
-  getPreSeasonTwoBuilderNftContractReadonlyClient: () => ({
+jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
+  getBuilderNftContractReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt()),
@@ -96,7 +96,8 @@ describe('recordNftMint', () => {
         walletAddress: mockWallet,
         senderWalletAddress: null,
         txLogIndex: 0
-      }
+      },
+      onchainAchievementId: null
     });
 
     const builderStats = await prisma.userSeasonStats.findUniqueOrThrow({

@@ -168,6 +168,6 @@ export async function getPointStatsFromHistory({
     bonusPointsReceived,
     pointsSpent,
     userId,
-    balanceOnScoutProfile: user.currentBalance
+    balanceOnScoutProfile: user.currentBalance || 0
   };
 }

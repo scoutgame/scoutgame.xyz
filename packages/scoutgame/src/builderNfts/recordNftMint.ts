@@ -4,10 +4,8 @@ import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
-import { baseUrl } from '@packages/utils/constants';
 import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
@@ -264,10 +262,13 @@ export async function recordNftMint(
             id: builderNftId
           },
           select: {
-            currentPrice: true
+            currentPrice: true,
+            currentPriceInScoutToken: true
           }
         })
       ]);
+      const currentCardPrice = (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2);
+
       await sendNotifications({
         notificationType: 'builder_card_scouted',
         userId: builderNft.builderId,
@@ -280,8 +281,7 @@ export async function recordNftMint(
             builder_card_image: builderNft.imageUrl,
             scout_name: scout.displayName,
             scout_profile_link: `https://scoutgame.xyz/u/${scout.path}`,
-            // TODO: use currentPriceInScoutToken when we move to $SCOUT
-            current_card_price: (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
+            current_card_price: currentCardPrice
           }
         },
         farcaster: {

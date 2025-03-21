@@ -82,7 +82,7 @@ export const chainOptionsTestnet: ChainOption[] = [
   }
 ];
 
-export type AvailableCurrency = 'ETH' | 'USDC' | 'SCOUT';
+export type AvailableCurrency = 'ETH' | 'USDC' | 'DEV';
 
 export type ChainWithCurrency = ChainOption & { currency: AvailableCurrency };
 
@@ -93,7 +93,7 @@ export function getCurrencyContract({ currency, chainId }: SelectedPaymentOption
     return NULL_EVM_ADDRESS;
   }
 
-  if (currency === 'SCOUT') {
+  if (currency === 'DEV') {
     return scoutTokenErc20ContractAddress();
   }
 

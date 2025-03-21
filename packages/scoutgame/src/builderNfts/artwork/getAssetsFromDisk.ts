@@ -9,7 +9,7 @@ export function getAssetsFromDisk() {
   const currentSeason = getCurrentSeasonStart();
   const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../../src'), 'assets');
   const overlaysFolder = `${folder}/overlays/${currentSeason}`;
-  const overlayFiles = fs.readdirSync(overlaysFolder);
+  const overlayFiles = fs.readdirSync(overlaysFolder).filter((file) => file.endsWith('.png'));
   const overlaysBase64 = overlayFiles
     .map((file) => {
       if (file === 'starter_pack.png') {

@@ -1,7 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import {
   seedBuildersGemPayouts,
   writeSeededBuildersGemPayoutsToDatabase

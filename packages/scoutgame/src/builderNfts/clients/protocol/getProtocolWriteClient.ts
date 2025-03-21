@@ -1,3 +1,5 @@
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
+
 import { getScoutProtocolAddress, scoutProtocolChain } from '../../../protocol/constants';
 
 import { getProtocolClaimsManagerWallet } from './getProtocolClaimsManagerWallet';
@@ -16,6 +18,7 @@ export function getProtocolWriteClient() {
   return new ScoutProtocolImplementationClient({
     chain: scoutProtocolChain,
     contractAddress: getScoutProtocolAddress(),
+    publicClient: getPublicClient(scoutProtocolChain.id),
     walletClient: getProtocolClaimsManagerWallet()
   });
 }

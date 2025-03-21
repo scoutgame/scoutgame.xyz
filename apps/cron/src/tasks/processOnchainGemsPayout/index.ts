@@ -23,7 +23,7 @@ export async function processOnchainGemsPayout(
 
   const tokenBalances = await resolveTokenOwnership({
     chainId: scoutProtocolChainId,
-    contractAddress: scoutProtocolBuilderNftContractAddress(),
+    contractAddress: scoutProtocolBuilderNftContractAddress,
     week
   });
 

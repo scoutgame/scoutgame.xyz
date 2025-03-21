@@ -5,6 +5,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { calculateRewardForScout } from '../points/divideTokensBetweenBuilderAndHolders';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
+import { scoutTokenDecimals } from '../protocol/constants';
 
 import type { BuilderNftWithOwners } from './getAllSeasonNftsWithOwners';
 import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';
@@ -58,7 +59,8 @@ export async function refreshEstimatedPayouts({
       }
     },
     data: {
-      estimatedPayout: 0
+      estimatedPayout: 0,
+      estimatedPayoutInScoutToken: '0'
     }
   });
 
@@ -96,7 +98,10 @@ export async function refreshEstimatedPayouts({
             id: defaultNft.id
           },
           data: {
-            estimatedPayout: expectedPayoutForNextNftPurchase
+            estimatedPayout: expectedPayoutForNextNftPurchase,
+            estimatedPayoutInScoutToken: (
+              BigInt(expectedPayoutForNextNftPurchase) * BigInt(10 ** scoutTokenDecimals)
+            ).toString()
           }
         });
       }
@@ -107,7 +112,10 @@ export async function refreshEstimatedPayouts({
             id: starterPackNft.id
           },
           data: {
-            estimatedPayout: expectedPayoutForNextStarterPackPurchase
+            estimatedPayout: expectedPayoutForNextStarterPackPurchase,
+            estimatedPayoutInScoutToken: (
+              BigInt(expectedPayoutForNextStarterPackPurchase) * BigInt(10 ** scoutTokenDecimals)
+            ).toString()
           }
         });
       }

@@ -1,10 +1,12 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
-import { getBuilderNftStarterPackContractAddress } from '../constants';
+import { scoutTokenDecimals } from '../../protocol/constants';
+import { builderTokenDecimals, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { generateShareImage } from './generateShareImage';
 import { generateNftStarterPackImage } from './generateStarterPackNftImage';
@@ -64,8 +66,9 @@ export async function uploadStarterPackArtworkCongrats({
     activities,
     stats,
     builderScouts,
-    // TODO: use currentPriceInScoutToken when we move to $SCOUT
-    builderPrice: builderNft?.currentPrice || BigInt(0)
+    builderPrice: isOnchainPlatform()
+      ? (Number(builderNft?.currentPrice || 0) / 10 ** scoutTokenDecimals).toFixed(2)
+      : (Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
   });
 
   const imagePath = getNftCongratsPath({
