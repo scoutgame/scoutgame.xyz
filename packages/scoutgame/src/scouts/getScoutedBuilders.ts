@@ -244,34 +244,44 @@ export async function getScoutedBuilders({
     const nftsSoldToLoggedInScout = scoutedNfts
       .filter((s) => s.builderNft.builderId === builder.id && s.scoutWallet.scoutId === loggedInScoutId)
       .reduce((acc, nft) => acc + nft.balance, 0);
-    const nftsSoldToScoutInView =
-      loggedInScoutId === scoutIdInView
-        ? 0 // dont show this number if scout is looking at their own profile
-        : scoutedNfts
-            .filter((s) => s.builderNft.builderId === builder.id && s.scoutWallet.scoutId === scoutIdInView)
-            .reduce((acc, nft) => acc + nft.balance, 0);
-    if (nftsSoldToScoutInView === 0 && loggedInScoutId !== scoutIdInView) {
-      return [];
-    }
-    return builder.builderNfts.map((nft) => {
-      const nftData: BuilderInfo = {
-        id: builder.id,
-        nftImageUrl: nft.imageUrl,
-        path: builder.path,
-        displayName: builder.displayName,
-        builderStatus: builder.builderStatus!,
-        nftsSoldToScoutInView,
-        nftsSoldToLoggedInScout,
-        price: nft.currentPrice ?? 0,
-        last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
-        nftType: nft.nftType,
-        gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
-        congratsImageUrl: nft.congratsImageUrl,
-        estimatedPayout: nft.estimatedPayout ?? 0,
-        level: builder.userSeasonStats[0]?.level ?? 0
-      };
 
-      return nftData;
-    }) as BuilderInfo[];
+    return builder.builderNfts
+      .map((nft) => {
+        const nftsSoldToScoutInView =
+          loggedInScoutId === scoutIdInView
+            ? 0 // dont show this number if scout is looking at their own profile
+            : scoutedNfts
+                .filter(
+                  (s) =>
+                    s.builderNft.builderId === builder.id &&
+                    s.builderNft.nftType === nft.nftType &&
+                    s.scoutWallet.scoutId === scoutIdInView
+                )
+                .reduce((acc, _nft) => acc + _nft.balance, 0);
+
+        if (nftsSoldToScoutInView === 0 && loggedInScoutId !== scoutIdInView) {
+          return null;
+        }
+
+        const nftData: BuilderInfo = {
+          id: builder.id,
+          nftImageUrl: nft.imageUrl,
+          path: builder.path,
+          displayName: builder.displayName,
+          builderStatus: builder.builderStatus!,
+          nftsSoldToScoutInView,
+          nftsSoldToLoggedInScout,
+          price: nft.currentPrice ?? 0,
+          last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
+          nftType: nft.nftType,
+          gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
+          congratsImageUrl: nft.congratsImageUrl,
+          estimatedPayout: nft.estimatedPayout ?? 0,
+          level: builder.userSeasonStats[0]?.level ?? 0
+        };
+
+        return nftData;
+      })
+      .filter(isTruthy);
   });
 }
