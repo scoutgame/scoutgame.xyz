@@ -6,7 +6,6 @@ import { getBuilderNft } from '@packages/scoutgame/builders/getBuilderNft';
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
-import { countStarterPackTokensPurchased } from '@packages/scoutgame/scouts/countStarterPackTokensPurchased';
 
 import type { BuilderProfileProps } from './PublicBuilderProfileContainer';
 import { PublicBuilderProfileContainer } from './PublicBuilderProfileContainer';
@@ -28,16 +27,14 @@ export async function PublicBuilderProfile({
     { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 },
     builderActivities,
     { scouts = [], totalNftsSold = 0, totalScouts = 0 },
-    { level, estimatedPayout, last14DaysRank, nftsSoldToScout, starterPackSoldToScout },
-    { remaining: remainingStarterCards }
+    { level, estimatedPayout, last14DaysRank, nftsSoldToScout, starterPackSoldToScout }
   ] = await Promise.all([
     getBuilderNft(builderId),
     getBuilderNft(builderId, 'starter_pack'),
     getBuilderStats(builderId),
     getBuilderActivities({ builderId, limit: 200 }),
     getBuilderScouts(builderId),
-    getBuilderCardStats({ builderId, scoutId }),
-    countStarterPackTokensPurchased(scoutId)
+    getBuilderCardStats({ builderId, scoutId })
   ]);
 
   return (
@@ -53,7 +50,7 @@ export async function PublicBuilderProfile({
       }}
       starterPackSoldToScout={starterPackSoldToScout}
       defaultNft={defaultNft}
-      starterPackNft={remainingStarterCards > 0 ? starterPackNft : null}
+      starterPackNft={starterPackNft}
       allTimePoints={allTimePoints}
       seasonPoints={seasonPoints}
       totalScouts={totalScouts}

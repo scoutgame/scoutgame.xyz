@@ -6,13 +6,7 @@ import { Carousel } from '../../common/Carousel/Carousel';
 import { StarterPackCard } from './StarterPackCard';
 import { StarterPackInfo } from './StarterPackInfo';
 
-export function StarterPackCarousel({
-  builders,
-  remainingStarterCards
-}: {
-  builders: StarterPackBuilder[];
-  remainingStarterCards: number;
-}) {
+export function StarterPackCarousel({ builders }: { builders: StarterPackBuilder[] }) {
   return (
     <Stack gap={{ xs: 2, md: 4 }} flexDirection={{ xs: 'column-reverse', md: 'row' }} ml={{ md: 2 }}>
       <Carousel
@@ -39,7 +33,7 @@ export function StarterPackCarousel({
           <StarterPackCard key={builder.id} builder={builder} hasPurchased={hasPurchased} />
         ))}
       </Carousel>
-      <StarterPackInfo remainingStarterCards={remainingStarterCards} />
+      <StarterPackInfo />
     </Stack>
   );
 }

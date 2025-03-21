@@ -45,7 +45,7 @@ function GridDivider() {
   );
 }
 
-export function StarterPackView(data: StarterPackNFTContractData) {
+export function StarterNFTView(data: StarterPackNFTContractData) {
   const itemSizeTwoColumnMd = { xs: 12, md: 6 };
   const itemSizeThreeColumnMd = { xs: 12, md: 4 };
 

@@ -35,9 +35,9 @@ export function BuilderCardNftDisplay({
   size = 'medium',
   hideDetails = false,
   disableProfileUrl = false,
-  starterPack
+  isStarterCard
 }: {
-  starterPack?: boolean;
+  isStarterCard?: boolean;
   path: string;
   nftImageUrl?: string | null;
   level?: number | null;
@@ -71,7 +71,7 @@ export function BuilderCardNftDisplay({
           ) : (
             <CardMedia component='img' image='/images/no_nft_person.png' />
           )}
-          <BuilderCardLevel level={level} size={size} starterPack={starterPack} />
+          <BuilderCardLevel level={level} size={size} isStarterCard={isStarterCard} />
         </Box>
         <Box
           sx={{

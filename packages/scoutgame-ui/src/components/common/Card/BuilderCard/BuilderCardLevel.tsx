@@ -11,11 +11,11 @@ import { BuilderCardActivityTooltip } from './BuilderCardActivity/BuilderCardAct
 export function BuilderCardLevel({
   level,
   size,
-  starterPack
+  isStarterCard
 }: {
   level?: number | null;
   size: string;
-  starterPack?: boolean;
+  isStarterCard?: boolean;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -43,7 +43,7 @@ export function BuilderCardLevel({
             },
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: starterPack ? 'yellow.main' : 'orange.main',
+            backgroundColor: isStarterCard ? 'yellow.main' : 'orange.main',
             borderRadius: '50%',
             border: '3.5px solid #000'
           }}

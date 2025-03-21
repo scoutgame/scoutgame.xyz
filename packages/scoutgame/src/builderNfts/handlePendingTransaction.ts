@@ -18,7 +18,7 @@ import {
   scoutTokenDecimalsMultiplier
 } from '../protocol/constants';
 
-import { isPreseason01Contract, isStarterPackContract } from './constants';
+import { isPreseason01Contract, isStarterNftContract } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
 import { convertCostToPoints } from './utils';
@@ -90,7 +90,7 @@ export async function handlePendingTransaction({
           });
 
     const useScoutIdValidation =
-      isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress);
+      isPreseason01Contract(pendingTx.contractAddress) || isStarterNftContract(pendingTx.contractAddress);
 
     scoutgameMintsLogger.info('Transaction settled', { txHash });
 

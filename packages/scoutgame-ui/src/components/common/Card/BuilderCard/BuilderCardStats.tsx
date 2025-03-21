@@ -10,7 +10,7 @@ export function BuilderCardStats({
   gemsCollected,
   estimatedPayout,
   nftsSoldToScout,
-  starterPack,
+  isStarterCard,
   hideScoutCount = false
 }: {
   hideScoutCount?: boolean;
@@ -20,7 +20,7 @@ export function BuilderCardStats({
   size: 'x-small' | 'small' | 'medium' | 'large';
   estimatedPayout?: number | null;
   nftsSoldToScout?: number | null;
-  starterPack?: boolean;
+  isStarterCard?: boolean;
 }) {
   return (
     <Stack height='100%'>
@@ -33,7 +33,7 @@ export function BuilderCardStats({
       <BuilderCardName
         name={displayName}
         size={size}
-        starterPack={starterPack}
+        isStarterCard={isStarterCard}
         hideScoutCount={hideScoutCount}
         nftsSoldToScout={nftsSoldToScout}
       />

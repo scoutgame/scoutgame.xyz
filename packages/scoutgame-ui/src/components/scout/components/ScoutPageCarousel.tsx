@@ -8,52 +8,62 @@ import { useState } from 'react';
 import { StarterPackCarousel } from '../StarterPackCarousel/StarterPackCarousel';
 import { BuildersCarousel } from '../TodaysHotBuildersCarousel/BuildersCarousel';
 
+const CAROUSEL_CONFIG = {
+  starter_pack: {
+    title: 'Scout a Starter Card!',
+    label: 'Starters',
+    color: 'green.main'
+  },
+  top_builders: {
+    title: "Scout today's HOT Developers!",
+    label: 'Developers',
+    color: 'secondary'
+  }
+};
 export function ScoutPageCarousel({
   builders,
-  starterPackBuilders,
-  remainingStarterCards,
+  hasPurchasedStarterCard,
+  starterCardDevs,
   scoutId
 }: {
   builders: BuilderInfo[];
-  starterPackBuilders: StarterPackBuilder[];
-  remainingStarterCards: number;
+  hasPurchasedStarterCard: boolean;
+  starterCardDevs: StarterPackBuilder[];
   scoutId?: string;
 }) {
-  const [tab, setTab] = useState<'top_builders' | 'starter_pack'>('starter_pack');
+  // If the scout has purchased a starter card, show the top builders carousel
+  // Otherwise, show the starter card view unless logged out
+  const defaultTab = scoutId ? (hasPurchasedStarterCard ? 'top_builders' : 'starter_pack') : 'starter_pack';
+  const [tab, setTab] = useState<'top_builders' | 'starter_pack'>(defaultTab);
 
-  const isStarterPackEnabled = starterPackBuilders.length > 0 && scoutId;
+  const tabConfig = CAROUSEL_CONFIG[tab];
   const nextTab = tab === 'starter_pack' ? 'top_builders' : 'starter_pack';
-  const text = tab === 'starter_pack' && isStarterPackEnabled ? 'Top Developers' : 'Starter Pack';
-  const title =
-    tab === 'starter_pack' && isStarterPackEnabled ? 'Scout the Starter Pack!' : "Scout today's HOT Developers!";
-  const color = tab === 'starter_pack' && isStarterPackEnabled ? 'green.main' : 'secondary';
+  const switchLabel = CAROUSEL_CONFIG[nextTab].label;
 
   const handleTabSwitch = () => setTab(nextTab);
   return (
     <Box position='relative' mb={3}>
-      {isStarterPackEnabled && (
-        <Box width='100%' display='flex' justifyContent='flex-end'>
-          <Button
-            variant='text'
-            data-test='carousel-tab-switch'
-            onClick={handleTabSwitch}
-            sx={{
-              position: { md: 'absolute' },
-              right: 0,
-              top: 18,
-              textDecoration: 'underline',
-              color: 'text.primary'
-            }}
-          >
-            {text}
-          </Button>
-        </Box>
-      )}
-      <Typography variant='h5' color={color} textAlign='center' fontWeight='bold' mb={2} mt={2}>
-        {title}
+      <Box width='100%' display='flex' justifyContent='flex-end'>
+        <Button
+          variant='text'
+          data-test='carousel-tab-switch'
+          onClick={handleTabSwitch}
+          sx={{
+            position: { md: 'absolute' },
+            right: 0,
+            top: 18,
+            textDecoration: 'underline',
+            color: 'text.primary'
+          }}
+        >
+          {switchLabel}
+        </Button>
+      </Box>
+      <Typography variant='h5' color={tabConfig.color} textAlign='center' fontWeight='bold' mb={2} mt={2}>
+        {tabConfig.title}
       </Typography>
-      {tab === 'starter_pack' && isStarterPackEnabled ? (
-        <StarterPackCarousel builders={starterPackBuilders} remainingStarterCards={remainingStarterCards} />
+      {tab === 'starter_pack' ? (
+        <StarterPackCarousel builders={starterCardDevs} />
       ) : (
         <BuildersCarousel builders={builders} showPromoCards />
       )}
