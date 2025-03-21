@@ -8,7 +8,11 @@ import { DateTime } from 'luxon';
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
-import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
+import {
+  scoutProtocolBuilderNftContractAddress,
+  scoutProtocolChainId,
+  scoutTokenDecimals
+} from '../protocol/constants';
 
 async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
   const wallets = await prisma.scoutWallet.findMany({
@@ -100,7 +104,8 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
           nftType: true,
           tokenId: true,
           congratsImageUrl: true,
-          estimatedPayout: true
+          estimatedPayout: true,
+          estimatedPayoutInScoutToken: true
         }
       }
     }
@@ -144,7 +149,9 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({ scoutId }: { scoutId
       ? BigInt(builder.builderNfts[0].currentPriceInScoutToken ?? 0)
       : (builder.builderNfts[0].currentPrice ?? BigInt(0)),
     level: builder.userSeasonStats[0]?.level ?? 0,
-    estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
+    estimatedPayout: isOnchainPlatform()
+      ? Number(BigInt(builder.builderNfts[0].estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+      : (builder.builderNfts[0]?.estimatedPayout ?? 0),
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     nftsSoldToScout: scoutNftsByBuilderId[builder.id] ?? 0
   }));
@@ -219,7 +226,8 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
             }
           },
           congratsImageUrl: true,
-          estimatedPayout: true
+          estimatedPayout: true,
+          estimatedPayoutInScoutToken: true
         }
       },
       builderCardActivities: {
@@ -269,7 +277,9 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           nftType: nft.nftType,
           gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
           congratsImageUrl: nft.congratsImageUrl,
-          estimatedPayout: nft.estimatedPayout ?? 0,
+          estimatedPayout: isOnchainPlatform()
+            ? Number(BigInt(nft.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+            : (nft.estimatedPayout ?? 0),
           level: builder.userSeasonStats[0]?.level ?? 0
         };
 

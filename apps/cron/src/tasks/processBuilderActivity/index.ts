@@ -66,35 +66,32 @@ export async function processAllBuilderActivity(
   log.info(`Processing activity for ${builders.length} builders`);
 
   for (const builder of builders) {
-    try {
-      // If the builder was created less than and hr and has no existing events
-      const newBuilder =
-        builder.createdAt > new Date(Date.now() - 60 * 60 * 1000) && !builder.githubUsers[0]?.events[0];
+    // If the builder was created less than and hr and has no existing events
+    const newBuilder = builder.createdAt > new Date(Date.now() - 60 * 60 * 1000) && !builder.githubUsers[0]?.events[0];
 
-      if (newBuilder) {
-        log.info(`Detected new builder. Pulling in github data for this season`, {
-          userId: builder.id,
-          githubUserId: builder.githubUsers[0]?.id
-        });
-      }
-
-      await processBuilderActivity({
-        builderId: builder.id,
-        githubUser: builder.githubUsers[0]!,
-        createdAfter: newBuilder ? getDateFromISOWeek(getCurrentWeek()).toJSDate() : createdAfter,
-        season
+    if (newBuilder) {
+      log.info(`Detected new builder. Pulling in github data for this season`, {
+        userId: builder.id,
+        githubUserId: builder.githubUsers[0]?.id
       });
+    }
 
-      if (builders.indexOf(builder) % 10 === 0) {
-        log.debug(`Processed ${builders.indexOf(builder)}/${builders.length} builders.`, {
-          lastId: builder.id, // log last id in case we want to start in the middle of the process
-          builders: builders
-            .slice(builders.indexOf(builder), builders.indexOf(builder) + 10)
-            .map((b) => b.githubUsers[0].login)
-        });
-      }
-    } catch (error) {
-      log.error('Error processing builder activity', { error, builderId: builder.id });
+    await processBuilderActivity({
+      builderId: builder.id,
+      githubUser: builder.githubUsers[0]!,
+      createdAfter: newBuilder ? getDateFromISOWeek(getCurrentWeek()).toJSDate() : createdAfter,
+      season
+    }).catch((error) => {
+      log.error('Error processing builder activity', { error, userId: builder.id });
+    });
+
+    if (builders.indexOf(builder) % 10 === 0) {
+      log.debug(`Processed ${builders.indexOf(builder)}/${builders.length} builders.`, {
+        lastId: builder.id, // log last id in case we want to start in the middle of the process
+        builders: builders
+          .slice(builders.indexOf(builder), builders.indexOf(builder) + 10)
+          .map((b) => b.githubUsers[0].login)
+      });
     }
   }
 

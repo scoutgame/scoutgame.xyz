@@ -3,6 +3,7 @@ import { getCurrentWeek, getCurrentSeason } from '@packages/dates/utils';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { starterPackBuilders } from '../builderNfts/builderRegistration/starterPack/starterPackBuilders';
+import { scoutTokenDecimals } from '../protocol/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -61,6 +62,7 @@ export async function getStarterPackBuilders({
               }
             : undefined,
           estimatedPayout: true,
+          estimatedPayoutInScoutToken: true,
           imageUrl: true,
           congratsImageUrl: true
         }
@@ -99,7 +101,9 @@ export async function getStarterPackBuilders({
         ? BigInt(builder.builderNfts[0]?.currentPriceInScoutToken ?? 0)
         : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
       level: builder.userSeasonStats[0]?.level || 0,
-      estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
+      estimatedPayout: isOnchainPlatform()
+        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+        : builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       builderStatus: 'approved',
       nftImageUrl: builder.builderNfts[0]?.imageUrl || '',

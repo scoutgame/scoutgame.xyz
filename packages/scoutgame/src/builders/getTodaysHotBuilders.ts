@@ -5,6 +5,7 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+import { scoutTokenDecimals } from '../protocol/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -44,6 +45,7 @@ const userSelect = (week: string, season: string, userId?: string) =>
         imageUrl: true,
         congratsImageUrl: true,
         estimatedPayout: true,
+        estimatedPayoutInScoutToken: true,
         nftSoldEvents: userId
           ? {
               where: {
@@ -140,7 +142,9 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl,
       builderStatus: builder.builderStatus!,
       level: builder.userSeasonStats[0]?.level || 0,
-      estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
+      estimatedPayout: isOnchainPlatform()
+        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+        : builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default,
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,

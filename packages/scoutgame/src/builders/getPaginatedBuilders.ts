@@ -5,6 +5,7 @@ import { uniqueValues } from '@packages/utils/array';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+import { scoutTokenDecimals } from '../protocol/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -81,6 +82,7 @@ export async function getPaginatedBuilders({
                 nftType: true,
                 congratsImageUrl: true,
                 estimatedPayout: true,
+                estimatedPayoutInScoutToken: true,
                 nftSoldEvents: {
                   where: {
                     ...validMintNftPurchaseEvent,
@@ -151,7 +153,11 @@ export async function getPaginatedBuilders({
         builderStatus: stat.user.builderStatus!,
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
-        estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0,
+        estimatedPayout: isOnchainPlatform()
+          ? Number(
+              BigInt(stat.user.builderNfts?.[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals)
+            )
+          : (stat.user.builderNfts?.[0]?.estimatedPayout ?? 0),
         gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
         nftsSoldToScout:
           stat.user.builderNfts?.[0]?.nftSoldEvents
