@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { attestBuilderStatusEvent } from '@packages/scoutgameattestations/attestBuilderStatusEvent';
@@ -211,6 +210,9 @@ export async function recordClosedPullRequest({
             }
           },
           farcaster: {
+            templateVariables: undefined
+          },
+          app: {
             templateVariables: undefined
           }
         });

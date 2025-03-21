@@ -2,7 +2,20 @@
 
 import { log } from '@charmverse/core/log';
 import InfoIcon from '@mui/icons-material/Info';
-import { Box, Container, Menu, MenuItem, Toolbar, AppBar, Button, Typography, Stack, IconButton } from '@mui/material';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import {
+  Box,
+  Container,
+  Menu,
+  MenuItem,
+  Toolbar,
+  AppBar,
+  Button,
+  Typography,
+  Stack,
+  IconButton,
+  Badge
+} from '@mui/material';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
@@ -17,6 +30,7 @@ import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
+import { useGetUnreadNotificationsCount } from '../../../hooks/api/notifications';
 import { useIsFarcasterFrame } from '../../../hooks/useIsFarcasterFrame';
 
 export function Header() {
@@ -25,6 +39,7 @@ export function Header() {
   const { user, refreshUser } = useUser();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const isFarcasterFrame = useIsFarcasterFrame();
+  const { data: unreadNotificationsCount } = useGetUnreadNotificationsCount();
 
   const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction, {
     onSuccess: async () => {
@@ -77,6 +92,13 @@ export function Header() {
               </Hidden>
               {user ? (
                 <>
+                  <Link href='/notifications'>
+                    <IconButton size='small' sx={{ mr: { xs: 1, md: 3 } }}>
+                      <Badge badgeContent={unreadNotificationsCount?.count ?? 0} color='secondary'>
+                        <NotificationsOutlinedIcon />
+                      </Badge>
+                    </IconButton>
+                  </Link>
                   <Link href='/info'>
                     <IconButton size='small' sx={{ mr: { xs: 1, md: 3 } }}>
                       <InfoIcon color='secondary' />

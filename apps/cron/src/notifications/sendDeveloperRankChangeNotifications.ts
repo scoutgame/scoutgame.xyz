@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
-import { baseUrl } from '@packages/utils/constants';
 
 type MessageParams = {
   displayName: string;
@@ -275,6 +274,9 @@ export async function sendDeveloperRankChangeNotifications({
               }
             },
             farcaster: {
+              templateVariables: undefined
+            },
+            app: {
               templateVariables: undefined
             }
           });
