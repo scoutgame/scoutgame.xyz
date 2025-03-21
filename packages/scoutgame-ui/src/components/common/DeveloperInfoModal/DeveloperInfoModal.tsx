@@ -103,9 +103,9 @@ function DeveloperCardSection({
           <Stack direction='row' gap={0.5} alignItems='center'>
             <Typography variant={isDesktop ? 'h6' : 'body1'}>{estimatedPayout}</Typography>
             <Image
-              src='/images/profile/scout-game-icon.svg'
-              width={isDesktop ? '24' : '18'}
-              height={isDesktop ? '24' : '18'}
+              src='/images/profile/scout-game-profile-icon.png'
+              width={isDesktop ? 24 : 18.5}
+              height={isDesktop ? 15.5 : 12}
               alt='scoutgame icon'
             />
           </Stack>
@@ -547,7 +547,17 @@ export function DeveloperInfoModal({
               </Stack>
             </Stack>
           </Stack>
-          <Stack bgcolor='primary.dark' borderRadius={1} p={0.5} gap={0.5} minWidth={175} flex={1}>
+          <Stack
+            bgcolor='primary.dark'
+            borderRadius={1}
+            p={{
+              xs: 0.5,
+              md: 1
+            }}
+            gap={0.5}
+            minWidth={175}
+            flex={1}
+          >
             <Typography color='secondary.main'>Github Activity</Typography>
             <Stack>
               {developer.githubActivities.length > 0 ? (
@@ -595,7 +605,7 @@ export function DeveloperInfoModal({
                       >
                         <Typography>{activity.gems}</Typography>
                         <Image
-                          src='/images/profile/icons/hex-gem-icon.svg'
+                          src='/images/icons/gem.svg'
                           width={isDesktop ? '20' : '16'}
                           height={isDesktop ? '20' : '16'}
                           alt='gem icon'
