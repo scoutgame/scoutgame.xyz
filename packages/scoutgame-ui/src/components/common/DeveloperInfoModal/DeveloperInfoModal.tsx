@@ -103,7 +103,7 @@ function DeveloperCardSection({
           <Stack direction='row' gap={0.5} alignItems='center'>
             <Typography variant={isDesktop ? 'h6' : 'body1'}>{estimatedPayout}</Typography>
             <Image
-              src='/images/profile/scout-game-profile-icon.png'
+              src='/images/icons/binoculars.svg'
               width={isDesktop ? 24 : 18.5}
               height={isDesktop ? 15.5 : 12}
               alt='scoutgame icon'

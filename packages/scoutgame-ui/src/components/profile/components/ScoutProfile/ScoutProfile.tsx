@@ -22,7 +22,7 @@ export async function ScoutProfile({ userId }: { userId: string }) {
   const [seasonStats, scoutedBuilders] = data;
 
   const nftsPurchasedThisSeason = scoutedBuilders.reduce(
-    (acc, builder) => acc + (builder.nftsSoldToScoutInView || 0),
+    (acc, builder) => acc + (builder.nftsSoldToLoggedInScout || 0),
     0
   );
 
