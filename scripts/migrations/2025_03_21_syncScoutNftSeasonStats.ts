@@ -1,5 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { prettyPrint } from '@packages/utils/strings';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 async function syncScoutNftSeasonStats() {
@@ -9,6 +8,9 @@ async function syncScoutNftSeasonStats() {
         scout: {
           deletedAt: null
         }
+      },
+      balance: {
+        gt: 0
       },
       builderNft: {
         season: getCurrentSeasonStart()
