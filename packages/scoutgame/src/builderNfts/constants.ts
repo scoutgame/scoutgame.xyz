@@ -93,7 +93,7 @@ export function isStarterPackContract(contractAddress: string): boolean {
   const starterPackAddresses = [
     getBuilderNftStarterPackContractAddress('2024-W41'),
     getBuilderNftStarterPackContractAddress('2025-W02'),
-    getBuilderNftStarterPackContractAddress('2025-W10')
+    getBuilderNftStarterPackContractAddress('2025-W17')
   ];
 
   if (starterPackAddresses.includes(contractAddress.toLowerCase() as Address)) {
