@@ -1,5 +1,4 @@
 import { log } from '@charmverse/core/log';
-import { prisma } from '@charmverse/core/prisma-client';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { checkWalletSanctionStatus } from '@packages/scoutgame/wallets/checkWalletSanctionStatus';
 import { NextResponse } from 'next/server';
@@ -20,39 +19,9 @@ export async function GET(request: Request) {
   if (!isAddress(address)) {
     return new Response('Invalid address', { status: 400 });
   }
-
-  const existingUser = await prisma.scoutWallet.findUnique({
-    where: {
-      address: address.toLowerCase()
-    }
-  });
-  if (existingUser) {
-    if (existingUser.scoutId !== scoutId) {
-      log.warn('Wallet address already in use by another user', {
-        address,
-        userId: scoutId,
-        existingUserId: existingUser.scoutId
-      });
-      return new Response(`Address ${address} is already in use`, {
-        status: 400
-      });
-    }
-  } else {
-    const wallets = await prisma.scoutWallet.findMany({ where: { scoutId } });
-    const primary = wallets.length === 0; // The first scout wallet should be set to primary
-
-    await prisma.scoutWallet.create({
-      data: {
-        address: address.toLowerCase(),
-        scoutId,
-        primary
-      }
-    });
-    log.info('Added wallet address to user', { address, userId: scoutId, primary });
-  }
-
   const isSanctioned = await checkWalletSanctionStatus(address);
   if (isSanctioned) {
+    log.warn('Wallet address is sanctioned', { address });
     return new Response('Wallet address is sanctioned. Try a different wallet', { status: 400 });
   }
 

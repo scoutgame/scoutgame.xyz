@@ -11,6 +11,8 @@ import type { Address, Hash, WalletClient } from 'viem';
 import { parseEther } from 'viem';
 import { useAccount, useSwitchChain, useWalletClient, useBalance } from 'wagmi';
 
+import { useWalletSanctionCheck } from '../../../../../hooks/api/wallets';
+
 import sablierAirdropAbi from './SablierMerkleInstant.json';
 
 export async function claimSablierAirdrop({
@@ -94,6 +96,7 @@ export function useClaimPartnerReward({
   const { executeAsync: updatePartnerRewardPayout } = useAction(updatePartnerRewardPayoutAction);
   const { switchChainAsync } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
+  const { mutate: checkWalletSanctionStatus } = useWalletSanctionCheck();
 
   const { data: balance } = useBalance({
     address: recipientAddress,
@@ -157,6 +160,12 @@ export function useClaimPartnerReward({
         toast.error(error instanceof Error ? error.message : 'Failed to switch chain');
         return;
       }
+    }
+
+    const isSanctioned = await checkWalletSanctionStatus(recipientAddress);
+    if (isSanctioned) {
+      toast.error(`Wallet ${recipientAddress} is sanctioned. Try a different wallet`);
+      return;
     }
 
     setIsClaiming(true);
