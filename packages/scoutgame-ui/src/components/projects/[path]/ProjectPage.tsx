@@ -73,17 +73,19 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
             </Stack>
             <Typography sx={{ whiteSpace: 'pre-wrap' }}>{project.description}</Typography>
           </Stack>
-          {project.contractDailyStats.length > 0 && (
+          {!project.stats.loading && (
             <Stack flexDirection='row' gap={2} alignItems='center' mr={2}>
               <Stack justifyContent='center' alignItems='center' flex={1}>
                 <Typography color='secondary' width='100px' align='center' variant='body2'>
                   Current Week Transactions
                 </Typography>
                 <Typography fontSize='2em'>
-                  {project.totalTxCount?.toLocaleString()} <TransactionIcon />
+                  {project.stats.loading ? 0 : project.stats.totalTxCount?.toLocaleString()} <TransactionIcon />
                 </Typography>
               </Stack>
-              <GemsIcon color={project.tier} size={60} />
+              <div style={{ display: project.stats.loading ? 'none' : 'block' }}>
+                <GemsIcon color={project.tier} size={60} />
+              </div>
             </Stack>
           )}
           <Tooltip title='Edit project'>
@@ -96,7 +98,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
         </Stack>
         {contracts.length > 0 && (
           <Stack gap={1}>
-            <OnchainActivityGraph data={project.contractDailyStats} />
+            <OnchainActivityGraph data={project.stats.contractDailyStats} />
             <Stack flexDirection='row' alignItems='center'>
               <Typography color='secondary' variant='h6' sx={{ flexGrow: 1 }}>
                 Contracts
@@ -137,7 +139,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
                 textAlign='center'
                 sx={{ display: 'flex', alignItems: 'center', width: 'auto', gap: 0.5, mr: 3 }}
               >
-                {capitalize(project.tier)} Tier: {project.totalGems} <GemsIcon color={project.tier} size={20} />
+                {capitalize(project.tier)} Tier: {project.stats.totalGems} <GemsIcon color={project.tier} size={20} />
               </Typography>
             )}
           </Stack>
@@ -157,12 +159,12 @@ function AddressRow({
   address,
   chainId,
   txCount,
-  type
+  loadingStats
 }: {
   address: string;
   chainId: number | null;
   txCount?: number;
-  type: string;
+  loadingStats: boolean;
 }) {
   return (
     <Stack
@@ -181,7 +183,7 @@ function AddressRow({
       </Stack>
 
       <Box textAlign='right' mr={3}>
-        {typeof txCount === 'number' ? (
+        {!loadingStats ? (
           <Typography sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             {txCount} <TransactionIcon size={16} />
           </Typography>
