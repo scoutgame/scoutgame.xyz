@@ -23,6 +23,11 @@ export const scoutTabOptions: TabItem[] = [{ label: 'Top Scouts', value: 'scouts
 
 export const scoutTabMobileOptions: TabItem[] = [{ label: 'Developers', value: 'builders' }, ...scoutTabOptions];
 
+const nftTypeOptions = [
+  { label: 'Developers', value: 'default' },
+  { label: 'Starters', value: 'starter' }
+];
+
 export async function ScoutPage({
   scoutSort,
   builderSort,
@@ -31,6 +36,7 @@ export async function ScoutPage({
   scoutTab,
   buildersLayout,
   tab,
+  nftType,
   userId
 }: {
   scoutSort: string;
@@ -40,6 +46,7 @@ export async function ScoutPage({
   scoutTab: string;
   buildersLayout: string;
   tab: string;
+  nftType: 'starter' | 'default';
   userId?: string;
 }) {
   const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder })
@@ -67,8 +74,9 @@ export async function ScoutPage({
             gap: 2
           }}
         >
+          <TabsMenu value={nftType} tabs={nftTypeOptions} queryKey='nftType' sx={{ width: '100%' }} />
           <Suspense key='scout-page-carousel' fallback={<LoadingCards count={3} withTitle={true} />}>
-            <ScoutPageCarousel />
+            <ScoutPageCarousel nftType={nftType} />
           </Suspense>
           <Stack
             position='sticky'
@@ -114,7 +122,13 @@ export async function ScoutPage({
               }
             >
               {buildersLayout === 'table' && (
-                <ScoutPageTable tab='builders' order={builderOrder} sort={builderSort} userId={userId} />
+                <ScoutPageTable
+                  tab='builders'
+                  order={builderOrder}
+                  sort={builderSort}
+                  userId={userId}
+                  nftType={nftType}
+                />
               )}
               {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} />}
             </Suspense>
@@ -135,6 +149,7 @@ export async function ScoutPage({
                 order={tab === 'builders' ? builderOrder : scoutOrder}
                 sort={tab === 'builders' ? builderSort : scoutSort}
                 userId={userId}
+                nftType={nftType}
               />
             </Suspense>
           </Stack>
@@ -154,7 +169,7 @@ export async function ScoutPage({
             <InfoModal sx={{ position: 'absolute', right: 10, top: 3.5 }} />
           </Box>
           <Suspense fallback={<LoadingTable />}>
-            <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} userId={userId} />
+            <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} userId={userId} nftType={nftType} />
           </Suspense>
         </Grid>
       </Grid>

@@ -8,7 +8,7 @@ import { countStarterPackTokensPurchased } from '@packages/scoutgame/scouts/coun
 
 import { ScoutPageCarousel } from './ScoutPageCarousel';
 
-export async function ScoutPageCarouselContainer() {
+export async function ScoutPageCarouselContainer({ nftType }: { nftType: 'default' | 'starter' }) {
   const session = await getSession();
   const scoutId = session.scoutId;
   const [, builders = []] = await safeAwaitSSRData(getTodaysHotBuilders());
@@ -19,12 +19,5 @@ export async function ScoutPageCarouselContainer() {
     ? await safeAwaitSSRData(getStarterPackBuilders({ userId: scoutId }))
     : [null, []];
 
-  return (
-    <ScoutPageCarousel
-      builders={builders}
-      hasPurchasedStarterCard={!!purchasedCards && purchasedCards > 0}
-      starterCardDevs={starterCardBuilders}
-      scoutId={scoutId}
-    />
-  );
+  return <ScoutPageCarousel nftType={nftType} builders={builders} starterCardDevs={starterCardBuilders} />;
 }
