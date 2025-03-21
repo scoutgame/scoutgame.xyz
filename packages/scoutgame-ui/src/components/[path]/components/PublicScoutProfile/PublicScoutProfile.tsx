@@ -13,15 +13,17 @@ import { PublicScoutProfileContainer } from './PublicScoutProfileContainer';
 
 export async function PublicScoutProfile({
   publicUser,
+  loggedInUserId,
   scoutProjects
 }: {
   publicUser: BasicUserInfo;
+  loggedInUserId?: string;
   scoutProjects?: ScoutProjectMinimal[];
 }) {
   const allPromises = [
     findScoutOrThrow(publicUser.id),
     getScoutStats(publicUser.id),
-    getScoutedBuilders({ scoutId: publicUser.id })
+    getScoutedBuilders({ scoutIdInView: publicUser.id, loggedInScoutId: loggedInUserId })
   ] as const;
   const [error, data] = await safeAwaitSSRData(Promise.all(allPromises));
 
