@@ -114,7 +114,7 @@ export async function getBuilders({
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       rank: user.userWeeklyStats[0]?.rank,
-      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners.reduce((acc, nft) => acc + nft.balance, 0)
+      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce((acc, nft) => acc + nft.balance, 0)
     }));
   } else if (sortBy === 'estimated_payout') {
     const builderNfts = await prisma.builderNft.findMany({
@@ -342,7 +342,7 @@ export async function getBuilders({
       level: user.userSeasonStats[0]?.level || 0,
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
       rank,
-      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners.reduce((acc, nft) => acc + nft.balance, 0) || null,
+      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce((acc, nft) => acc + nft.balance, 0) || null,
       price: (user.builderNfts[0]?.currentPrice || 0) as bigint
     }));
   }
