@@ -4,35 +4,29 @@ import { checkSanctionedAddress } from '@packages/blockchain/webcacy/checkSancti
 const BLACKLISTED_TIME_FRAME = 1000 * 60 * 60 * 24 * 30; // 30 days
 
 export async function checkWalletSanctionStatus(address: string) {
-  const walletSanctionStatus = await prisma.walletSanctionStatus.findUnique({
+  const scoutWallet = await prisma.scoutWallet.findUniqueOrThrow({
     where: {
       address: address.toLowerCase()
     }
   });
 
-  if (walletSanctionStatus && walletSanctionStatus.isSanctioned) {
+  if (scoutWallet.isSanctioned) {
     return true;
   }
 
   const checkBlacklistedStatus =
-    !walletSanctionStatus ||
-    !walletSanctionStatus.checkedAt ||
-    walletSanctionStatus.checkedAt < new Date(Date.now() - BLACKLISTED_TIME_FRAME);
+    !scoutWallet.lastSanctionCheckedAt ||
+    scoutWallet.lastSanctionCheckedAt < new Date(Date.now() - BLACKLISTED_TIME_FRAME);
 
   if (checkBlacklistedStatus) {
     const isSanctioned = await checkSanctionedAddress(address);
-    await prisma.walletSanctionStatus.upsert({
+    await prisma.scoutWallet.update({
       where: {
         address: address.toLowerCase()
       },
-      update: {
+      data: {
         isSanctioned,
-        checkedAt: new Date()
-      },
-      create: {
-        address: address.toLowerCase(),
-        isSanctioned,
-        checkedAt: new Date()
+        lastSanctionCheckedAt: new Date()
       }
     });
 

@@ -1,14 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getUserProfile } from '@packages/users/getUserProfile';
 
-import { checkWalletSanctionStatus } from './checkWalletSanctionStatus';
-
 export async function connectWalletAccount({ address, userId }: { address: string; userId: string }) {
-  const isSanctioned = await checkWalletSanctionStatus(address);
-  if (isSanctioned) {
-    throw new Error('Wallet address is sanctioned');
-  }
-
   const existingWalletUser = await getUserProfile({ walletAddress: address });
 
   if (existingWalletUser) {

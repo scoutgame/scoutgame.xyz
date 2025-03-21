@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getSession } from '@packages/nextjs/session/getSession';
-import { checkWalletSanctionStatus } from '@packages/scoutgame/wallets/checkWalletSanctionStatus';
 import { NextResponse } from 'next/server';
 import { isAddress } from 'viem';
 
@@ -19,11 +18,6 @@ export async function GET(request: Request) {
   }
   if (!isAddress(address)) {
     return new Response('Invalid address', { status: 400 });
-  }
-
-  const isSanctioned = await checkWalletSanctionStatus(address);
-  if (isSanctioned) {
-    return new Response('Wallet address is sanctioned', { status: 400 });
   }
 
   const existingUser = await prisma.scoutWallet.findUnique({
