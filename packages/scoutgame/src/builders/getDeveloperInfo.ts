@@ -51,6 +51,10 @@ export async function getDeveloperInfo({
   path: string;
   scoutId?: string;
 }): Promise<DeveloperInfo | null> {
+  if (typeof path !== 'string') {
+    log.error('Path is not a string when looking for developer info', { path, scoutId });
+    return null;
+  }
   const season = getCurrentSeasonStart();
   const week = getCurrentWeek();
   const oneMonthAgo = DateTime.now().minus({ months: 1 }).toJSDate();
