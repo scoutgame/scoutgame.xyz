@@ -37,7 +37,7 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
           <Typography variant={isDesktop ? 'h3' : 'h4'} fontWeight={400}>
             {points || 0}
           </Typography>
-          <Image src='/images/profile/scout-game-icon.svg' width='40' height='40' alt='scout game icon' />
+          <Image src='/images/icons/binoculars.svg' width='40' height='40' alt='scout game icon' />
         </Stack>
       </Stack>
       <Stack gap={2}>
@@ -74,7 +74,7 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
                   ? seasonPoints?.pointsEarnedAsBuilder || 0
                   : allTimePoints?.pointsEarnedAsBuilder || 0}
               </Typography>
-              <Image src='/images/profile/scout-game-orange-icon.svg' width='25' height='25' alt='build icon' />
+              <Image src='/images/icons/binoculars-orange.svg' width='25' height='25' alt='build icon' />
             </Stack>
           </Stack>
           <Stack alignItems='center' gap={0.5}>
@@ -87,7 +87,7 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
                   ? seasonPoints?.pointsEarnedAsScout || 0
                   : allTimePoints?.pointsEarnedAsScout || 0}
               </Typography>
-              <Image src='/images/profile/scout-game-green-icon.svg' width='25' height='25' alt='scout icon' />
+              <Image src='/images/icons/binoculars-green.svg' width='25' height='25' alt='scout icon' />
             </Stack>
           </Stack>
         </Stack>

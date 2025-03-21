@@ -2,7 +2,7 @@ import { GoodDollarPage } from '@packages/scoutgame-ui/components/info/partner-r
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Good Dollar Partner Rewards'
+  title: 'GoodDollar Partner Rewards'
 };
 
 export default async function Celo() {

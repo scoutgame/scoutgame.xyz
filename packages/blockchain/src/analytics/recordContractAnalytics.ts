@@ -25,7 +25,7 @@ export async function recordContractAnalytics(
   endDate: Date,
   now = new Date()
 ) {
-  const existingMetrics = await prisma.scoutProjectContractDailyStats.findMany({
+  const dailyStatsInDb = await prisma.scoutProjectContractDailyStats.findMany({
     where: {
       contractId: wallet.id,
       day: {
@@ -39,22 +39,22 @@ export async function recordContractAnalytics(
   });
 
   // If we there is a recent metric after startOfWeek but from before today, use that date (+1) instead
-  if (existingMetrics.length > 0) {
+  if (dailyStatsInDb.length > 0) {
     const today = DateTime.fromJSDate(now, { zone: 'utc' }).startOf('day').toJSDate().getTime();
-    const existingMetricsBeforeToday = existingMetrics.filter((m) => m.day.getTime() < today);
-    const latestMetric = existingMetricsBeforeToday[existingMetricsBeforeToday.length - 1];
-    if (latestMetric) {
-      startDate = DateTime.fromJSDate(latestMetric.day).plus({ days: 1 }).toJSDate();
-      log.debug('Found existing metric for wallet %s, using that date instead of startOfWeek', {
+    const dailyStatsBeforeToday = dailyStatsInDb.filter((m) => m.day.getTime() < today);
+    const latestStat = dailyStatsBeforeToday[dailyStatsBeforeToday.length - 1];
+    if (latestStat) {
+      startDate = DateTime.fromJSDate(latestStat.day).plus({ days: 1 }).toJSDate();
+      log.debug('Found existing daily stat for wallet %s, using that date instead of startOfWeek', {
         walletAddress: wallet.address,
-        lastMetricDate: latestMetric.day,
+        lastMetricDate: latestStat.day,
         newStartDate: startDate
       });
     }
   }
 
-  // TODO: Support Solana
-  const metrics =
+  // Get latest daily stats from the blockchain. TODO: Support Solana
+  const dailyStats =
     wallet.chainId === taiko.id || wallet.chainId === taikoTestnetSepolia.id
       ? await getContractTransactionStats({
           address: wallet.address,
@@ -70,42 +70,45 @@ export async function recordContractAnalytics(
   // create metrics for missing dates that are within the range
   for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
     const day = DateTime.fromJSDate(date).toUTC().startOf('day').toJSDate();
-    if (metrics.some((m) => m.day.getTime() === day.getTime())) {
+    if (dailyStats.some((s) => s.day.getTime() === day.getTime())) {
       continue;
     }
-    metrics.push({
+    dailyStats.push({
       day,
       transactions: 0,
       accounts: 0,
       gasFees: '0'
     });
   }
-  metrics.sort((a, b) => a.day.getTime() - b.day.getTime());
+  dailyStats.sort((a, b) => a.day.getTime() - b.day.getTime());
 
   // split metrics into new and existing
-  const [updatedMetrics, newMetrics] = partition(metrics, (metric) =>
-    existingMetrics.some((_m) => _m.day.getTime() === metric.day.getTime())
+  const [dailyStatsToUpdate, newDailyStats] = partition(dailyStats, (dailyStat) =>
+    dailyStatsInDb.some((_m) => _m.day.getTime() === dailyStat.day.getTime())
   );
 
   // create metrics that do not exist
-  await prisma.scoutProjectContractDailyStats.createMany({
-    data: newMetrics.map((m) => ({
-      ...m,
-      contractId: wallet.id,
-      week: getWeekFromDate(m.day)
-    }))
-  });
+  if (newDailyStats.length > 0) {
+    await prisma.scoutProjectContractDailyStats.createMany({
+      data: newDailyStats.map((s) => ({
+        ...s,
+        contractId: wallet.id,
+        week: getWeekFromDate(s.day)
+      }))
+    });
+  }
+
   // update existing metrics
-  for (const metric of updatedMetrics) {
+  for (const dailyStat of dailyStatsToUpdate) {
     await prisma.scoutProjectContractDailyStats.update({
       where: {
         contractId_day: {
           contractId: wallet.id,
-          day: metric.day
+          day: dailyStat.day
         }
       },
-      data: metric
+      data: dailyStat
     });
   }
-  return { newMetrics, updatedMetrics, endDate, startDate };
+  return { newDailyStats, updatedDailyStats: dailyStatsToUpdate, endDate, startDate };
 }
