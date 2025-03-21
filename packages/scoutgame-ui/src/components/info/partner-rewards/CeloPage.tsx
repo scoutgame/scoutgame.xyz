@@ -45,12 +45,12 @@ const qualifiedProjects = [
   'https://github.com/celo-org/celo-farcaster-frames'
 ];
 const previousProjects = [
-  'https://github.com/valora-inc/hooks',
+  'https://github.com/divvi-xyz/hooks',
   'https://github.com/GoodDollar/GoodWeb3-Mono',
   'https://github.com/GoodDollar/GoodCollective',
   'https://github.com/Glo-Foundation/glo-wallet',
   'https://github.com/Ubeswap/ubeswap-interface-v3',
-  'https://github.com/capsule-org/examples-hub/issues',
+  'https://github.com/getpara/examples-hub',
   'https://github.com/distroinfinity/superflow',
   'https://github.com/getpara/awesome-para'
 ];
