@@ -24,7 +24,7 @@ import { PublicBuilderStats } from './PublicBuilderStats';
 export type BuilderProfileProps = {
   builder: BasicUserInfo & {
     builderStatus: BuilderStatus | null;
-  } & Omit<BuilderCardStats, 'starterPackSoldToScout'>;
+  } & Omit<BuilderCardStats, 'starterNftSoldToLoggedInScout'>;
   defaultNft: {
     imageUrl: string;
     // TODO: use the currentPriceInScoutToken when we move to $SCOUT
@@ -36,7 +36,7 @@ export type BuilderProfileProps = {
   } | null;
   builderActivities: BuilderActivity[];
   scoutProjects?: ScoutProjectMinimal[];
-  starterPackSoldToScout: boolean;
+  starterNftSoldToLoggedInScout: boolean;
 } & BuilderStats &
   BuilderScouts;
 
@@ -69,7 +69,7 @@ export function PublicBuilderProfileContainer({
   gemsCollected,
   rank,
   scoutProjects,
-  starterPackSoldToScout
+  starterNftSoldToLoggedInScout
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
@@ -103,7 +103,7 @@ export function PublicBuilderProfileContainer({
                           price: starterPackNft.currentPrice
                         }}
                         isStarterCard
-                        markStarterCardPurchased={starterPackSoldToScout}
+                        markStarterCardPurchased={starterNftSoldToLoggedInScout}
                         type='starter_pack'
                       />
                     </Stack>
@@ -169,7 +169,7 @@ export function PublicBuilderProfileContainer({
                             price: starterPackNft.currentPrice
                           }}
                           isStarterCard
-                          markStarterCardPurchased={starterPackSoldToScout}
+                          markStarterCardPurchased={starterNftSoldToLoggedInScout}
                           type='starter_pack'
                         />
                       </Stack>

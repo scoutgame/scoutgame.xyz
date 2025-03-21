@@ -55,7 +55,7 @@ export async function fetchAttestations<T extends AttestationType = AttestationT
   const schemaId =
     type === 'contributionReceipt'
       ? scoutGameContributionReceiptSchemaUid()
-      : type === 'builderStatusEvent'
+      : type === 'developerStatusEvent'
         ? scoutGameBuilderEventSchemaUid()
         : type === 'userProfile'
           ? scoutGameUserProfileSchemaUid()

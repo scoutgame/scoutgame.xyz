@@ -4,10 +4,8 @@ import type { NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
-import { baseUrl } from '@packages/utils/constants';
 import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
@@ -285,6 +283,12 @@ export async function recordNftMint(
           }
         },
         farcaster: {
+          templateVariables: {
+            scouterName: scout.displayName,
+            scouterPath: scout.path
+          }
+        },
+        app: {
           templateVariables: {
             scouterName: scout.displayName,
             scouterPath: scout.path

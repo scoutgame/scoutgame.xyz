@@ -9,17 +9,15 @@ export function BuilderCardStats({
   size,
   gemsCollected,
   estimatedPayout,
-  nftsSoldToScout,
   isStarterCard,
-  hideScoutCount = false
+  nftsSoldToLoggedInScout
 }: {
-  hideScoutCount?: boolean;
   gemsCollected?: number;
   displayName: string;
   last14DaysRank?: (number | null)[] | null;
   size: 'x-small' | 'small' | 'medium' | 'large';
   estimatedPayout?: number | null;
-  nftsSoldToScout?: number | null;
+  nftsSoldToLoggedInScout?: number | null;
   isStarterCard?: boolean;
 }) {
   return (
@@ -34,8 +32,7 @@ export function BuilderCardStats({
         name={displayName}
         size={size}
         isStarterCard={isStarterCard}
-        hideScoutCount={hideScoutCount}
-        nftsSoldToScout={nftsSoldToScout}
+        nftsSoldToLoggedInScout={nftsSoldToLoggedInScout}
       />
     </Stack>
   );

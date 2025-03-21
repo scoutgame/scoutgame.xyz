@@ -12,11 +12,11 @@ import { PublicBuilderProfileContainer } from './PublicBuilderProfileContainer';
 
 export async function PublicBuilderProfile({
   builder,
-  scoutId,
+  loggedInUserId,
   scoutProjects
 }: {
-  builder: BuilderProfileProps['builder'];
-  scoutId?: string;
+  builder: Omit<BuilderProfileProps['builder'], 'nftsSoldToLoggedInScout' | 'starterNftSoldToLoggedInScout'>;
+  loggedInUserId?: string;
   scoutProjects?: ScoutProjectMinimal[];
 }) {
   const builderId = builder.id;
@@ -27,14 +27,14 @@ export async function PublicBuilderProfile({
     { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 },
     builderActivities,
     { scouts = [], totalNftsSold = 0, totalScouts = 0 },
-    { level, estimatedPayout, last14DaysRank, nftsSoldToScout, starterPackSoldToScout }
+    { level, estimatedPayout, last14DaysRank, nftsSoldToLoggedInScout, starterNftSoldToLoggedInScout }
   ] = await Promise.all([
     getBuilderNft(builderId),
     getBuilderNft(builderId, 'starter_pack'),
     getBuilderStats(builderId),
     getBuilderActivities({ builderId, limit: 200 }),
     getBuilderScouts(builderId),
-    getBuilderCardStats({ builderId, scoutId })
+    getBuilderCardStats({ builderId, loggedInScoutId: loggedInUserId })
   ]);
 
   return (
@@ -43,12 +43,12 @@ export async function PublicBuilderProfile({
       builder={{
         ...builder,
         gemsCollected,
-        nftsSoldToScout,
+        nftsSoldToLoggedInScout,
         last14DaysRank: last14DaysRank ?? [],
         level: level ?? 0,
         estimatedPayout: estimatedPayout ?? 0
       }}
-      starterPackSoldToScout={starterPackSoldToScout}
+      starterNftSoldToLoggedInScout={starterNftSoldToLoggedInScout}
       defaultNft={defaultNft}
       starterPackNft={starterPackNft}
       allTimePoints={allTimePoints}

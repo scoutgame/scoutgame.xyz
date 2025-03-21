@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { BuilderNftType, type BuilderStatus } from '@charmverse/core/prisma-client';
+import type { BuilderStatus } from '@charmverse/core/prisma';
 import { Box, Stack, Paper } from '@mui/material';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
@@ -17,12 +17,12 @@ import { PublicProfileTabsMenu } from './PublicProfileTabsMenu';
 type UserProfile = BasicUserInfo & { displayName: string; builderStatus: BuilderStatus | null };
 
 export function PublicProfilePage({
-  scoutId,
+  loggedInUserId,
   user,
   tab,
   scoutProjects
 }: {
-  scoutId?: string;
+  loggedInUserId?: string;
   user: UserProfile;
   tab: string;
   scoutProjects?: ScoutProjectMinimal[];
@@ -54,9 +54,9 @@ export function PublicProfilePage({
         />
       </Box>
       {tab === 'builder' ? (
-        <PublicBuilderProfile scoutId={scoutId} builder={user} scoutProjects={scoutProjects} />
+        <PublicBuilderProfile loggedInUserId={loggedInUserId} builder={user} scoutProjects={scoutProjects} />
       ) : (
-        <PublicScoutProfile publicUser={user} scoutProjects={scoutProjects} />
+        <PublicScoutProfile loggedInUserId={loggedInUserId} publicUser={user} scoutProjects={scoutProjects} />
       )}
     </Box>
   );

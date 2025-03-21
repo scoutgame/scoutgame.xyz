@@ -11,11 +11,9 @@ export function BuilderCardName({
   name,
   size,
   isStarterCard,
-  nftsSoldToScout,
-  hideScoutCount = false
+  nftsSoldToLoggedInScout
 }: {
-  hideScoutCount?: boolean;
-  nftsSoldToScout?: number | null;
+  nftsSoldToLoggedInScout?: number | null;
   name: string;
   size: 'x-small' | 'small' | 'medium' | 'large';
   isStarterCard?: boolean;
@@ -25,7 +23,7 @@ export function BuilderCardName({
   const { fontSize, spanRef } = useDynamicFontSize(name, minFontSize, maxFontSize);
   const isMdScreen = useMdScreen();
   const isMounted = useIsMounted();
-  const showScoutCount = !hideScoutCount && nftsSoldToScout;
+  const showScoutCount = !!nftsSoldToLoggedInScout;
 
   if (!isMounted) {
     return null;
@@ -80,7 +78,7 @@ export function BuilderCardName({
                 fontSize
               }}
             >
-              {nftsSoldToScout}
+              {nftsSoldToLoggedInScout}
             </Typography>
             <Image
               width={isMdScreen ? 12.5 : 10}

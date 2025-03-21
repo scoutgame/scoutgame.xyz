@@ -98,7 +98,7 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
         </Stack>
         {contracts.length > 0 && (
           <Stack gap={1}>
-            <OnchainActivityGraph data={project.stats.contractDailyStats} />
+            <OnchainActivityGraph data={project.stats.contractDailyStats} loading={project.stats.loading} />
             <Stack flexDirection='row' alignItems='center'>
               <Typography color='secondary' variant='h6' sx={{ flexGrow: 1 }}>
                 Contracts

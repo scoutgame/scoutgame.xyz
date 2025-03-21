@@ -8,8 +8,7 @@ import type {
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { streakWindow } from '@packages/dates/config';
-import { getStartOfWeek, getWeekFromDate, isToday } from '@packages/dates/utils';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
+import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
@@ -320,6 +319,12 @@ export async function recordMergedPullRequest({
                   }
                 },
                 farcaster: {
+                  templateVariables: {
+                    gems: gemValue,
+                    partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
+                  }
+                },
+                app: {
                   templateVariables: {
                     gems: gemValue,
                     partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined

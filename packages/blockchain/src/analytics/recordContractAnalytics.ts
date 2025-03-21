@@ -39,19 +39,19 @@ export async function recordContractAnalytics(
   });
 
   // If we there is a recent metric after startOfWeek but from before today, use that date (+1) instead
-  if (dailyStatsInDb.length > 0) {
-    const today = DateTime.fromJSDate(now, { zone: 'utc' }).startOf('day').toJSDate().getTime();
-    const dailyStatsBeforeToday = dailyStatsInDb.filter((m) => m.day.getTime() < today);
-    const latestStat = dailyStatsBeforeToday[dailyStatsBeforeToday.length - 1];
-    if (latestStat) {
-      startDate = DateTime.fromJSDate(latestStat.day).plus({ days: 1 }).toJSDate();
-      log.debug('Found existing daily stat for wallet %s, using that date instead of startOfWeek', {
-        walletAddress: wallet.address,
-        lastMetricDate: latestStat.day,
-        newStartDate: startDate
-      });
-    }
-  }
+  // if (dailyStatsInDb.length > 0) {
+  //   const today = DateTime.fromJSDate(now, { zone: 'utc' }).startOf('day').toJSDate().getTime();
+  //   const dailyStatsBeforeToday = dailyStatsInDb.filter((m) => m.day.getTime() < today);
+  //   const latestStat = dailyStatsBeforeToday[dailyStatsBeforeToday.length - 1];
+  //   if (latestStat) {
+  //     startDate = DateTime.fromJSDate(latestStat.day).plus({ days: 1 }).toJSDate();
+  //     log.debug('Found existing daily stat for contract %s, using that date instead of startOfWeek', {
+  //       contract: wallet.address,
+  //       lastMetricDate: latestStat.day,
+  //       newStartDate: startDate
+  //     });
+  //   }
+  // }
 
   // Get latest daily stats from the blockchain. TODO: Support Solana
   const dailyStats =

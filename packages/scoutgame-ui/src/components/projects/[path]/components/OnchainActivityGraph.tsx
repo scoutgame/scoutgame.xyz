@@ -10,6 +10,7 @@ const colors = ['#69DDFF', '#0580A4'];
 
 type Props = {
   data: ContractDailyStat[];
+  loading: boolean;
 };
 
 const silver = '#AFC4E2';
@@ -20,7 +21,7 @@ function shortDate(date: string) {
   return DateTime.fromISO(date, { zone: 'utc' }).toLocaleString({ month: 'short', day: 'numeric' });
 }
 
-export function OnchainActivityGraph({ data }: Props) {
+export function OnchainActivityGraph({ data, loading }: Props) {
   const contractAddresses = useMemo(
     () => (data[0] ? Object.keys(data[0]).filter((key) => key !== 'date') : []),
     [data]
@@ -53,22 +54,24 @@ export function OnchainActivityGraph({ data }: Props) {
   }, [data, contractAddresses]);
   return (
     <Box position='relative'>
-      <Typography
-        color='grey'
-        sx={{
-          fontStyle: 'italic',
-          textAlign: 'center',
-          padding: '3em',
-          position: 'absolute',
-          width: '100% ',
-          height: '100%',
-          left: 0,
-          bottom: 0,
-          top: 0
-        }}
-      >
-        No data yet. Transactions are updated once a day
-      </Typography>
+      {loading && (
+        <Typography
+          color='grey'
+          sx={{
+            fontStyle: 'italic',
+            textAlign: 'center',
+            padding: '3em',
+            position: 'absolute',
+            width: '100% ',
+            height: '100%',
+            left: 0,
+            bottom: 0,
+            top: 0
+          }}
+        >
+          No data yet. Transactions are updated once a day
+        </Typography>
+      )}
       <ResponsiveContainer width='100%' height={200}>
         <BarChart data={processedData} dataKey='date'>
           {/* <YAxis domain={[0, 100]} hide /> */}
