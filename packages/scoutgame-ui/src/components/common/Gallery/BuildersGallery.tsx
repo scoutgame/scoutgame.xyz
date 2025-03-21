@@ -26,11 +26,6 @@ export function BuildersGallery({
         {builders.map((builder) => (
           <Grid key={builder.path} size={{ xs: 1 }} display='flex' justifyContent='center' alignItems='center'>
             <Box>
-              {builder.nftsSoldToScout !== undefined && builder.nftsSoldToScout > 0 && (
-                <Typography color='green.main' textAlign='right' mb={1}>
-                  X {builder.nftsSoldToScout ?? 0}
-                </Typography>
-              )}
               <BuilderCard
                 builder={builder}
                 showPurchaseButton
