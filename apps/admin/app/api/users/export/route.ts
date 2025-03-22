@@ -27,6 +27,7 @@ type ScoutWithGithubUser = {
   dailyClaimsCount: number;
   questsCompleted: number;
   referrals: number;
+  referralsCompleted: number;
   developerLevel?: number;
   season: string;
 };
@@ -51,7 +52,16 @@ export async function GET() {
       githubUsers: true,
       events: {
         where: {
-          type: 'referral'
+          type: {
+            in: ['referral', 'daily_claim']
+          }
+        },
+        include: {
+          referralCodeEvent: {
+            select: {
+              completedAt: true
+            }
+          }
         }
       },
       socialQuests: true,
@@ -70,7 +80,7 @@ export async function GET() {
     const sharedUserData = {
       id: user.id,
       onboardedAt: user.onboardedAt?.toDateString(),
-      path: user.path!,
+      path: `https://scoutgame.xyz/${user.path!}`,
       createdAt: user.createdAt.toDateString(),
       email: user.email || undefined,
       optedInToMarketing: user.sendMarketing ? 'Yes' : '',
@@ -111,6 +121,8 @@ export async function GET() {
               return acc;
             }, 0),
             referrals: builderEvents.filter((e) => e.type === 'referral').length,
+            referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
+              .length,
             dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
             questsCompleted: socialQuests.length,
             nftsPurchased: 0,
@@ -156,6 +168,8 @@ export async function GET() {
           developerLevel: seasonStat.level,
           season: seasonStat.season,
           referrals: builderEvents.filter((e) => e.type === 'referral').length,
+          referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
+            .length,
           dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
           questsCompleted: socialQuests.length
         };
