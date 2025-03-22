@@ -1,10 +1,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import type { NextRequest } from 'next/server';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
 export const dynamic = 'force-dynamic';
+
+const whitelistedSeasons = ['2024-W41', '2025-W02'];
 
 type ScoutWithGithubUser = {
   id: string;
@@ -21,8 +22,11 @@ type ScoutWithGithubUser = {
   nftsPurchased: number;
   nftsSold: number;
   pointsEarnedAsScout: number;
-  pointsEarnedAsBuilder: number;
-  // weeklyBuilderRank?: number;
+  pointsEarnedAsDeveloper: number;
+  pointsEarnedTotal: number;
+  dailyClaimsCount: number;
+  questsCompleted: number;
+  referrals: number;
   developerLevel?: number;
   season: string;
 };
@@ -34,6 +38,7 @@ export async function GET() {
     },
     select: {
       id: true,
+      onboardedAt: true,
       path: true,
       sendMarketing: true,
       createdAt: true,
@@ -44,8 +49,15 @@ export async function GET() {
       farcasterName: true,
       currentBalance: true,
       githubUsers: true,
+      events: {
+        where: {
+          type: 'referral'
+        }
+      },
+      socialQuests: true,
       userSeasonStats: true,
       userWeeklyStats: true,
+      pointsReceived: true,
       builderNfts: {
         where: {
           season: getCurrentSeasonStart()
@@ -57,6 +69,7 @@ export async function GET() {
     // Create a map with shared user data
     const sharedUserData = {
       id: user.id,
+      onboardedAt: user.onboardedAt?.toDateString(),
       path: user.path!,
       createdAt: user.createdAt.toDateString(),
       email: user.email || undefined,
@@ -66,33 +79,87 @@ export async function GET() {
       fid: user.farcasterId || undefined,
       farcasterName: user.farcasterName || undefined,
       githubLogin: user.githubUsers[0]?.login,
-      currentBalance: user.currentBalance
+      currentBalance: user.currentBalance,
+      pointsEarnedTotal: user.pointsReceived
+        .filter((p) => p.season === getCurrentSeasonStart())
+        .reduce((acc, curr) => acc + curr.value, 0)
     };
+    const seasonBasedOnPoints = [...user.events, ...user.pointsReceived]
+      .filter(({ season }) => whitelistedSeasons.includes(season))
+      .reduce<string[]>((acc, curr) => {
+        if (acc.includes(curr.season)) {
+          return acc;
+        }
+        acc.push(curr.season);
+        return acc;
+      }, []);
+
     // If user has no season stats, create one row with default values
     if (user.userSeasonStats.length === 0) {
+      if (seasonBasedOnPoints.length > 1) {
+        return seasonBasedOnPoints.map((season) => {
+          const builderEvents = user.events.filter((e) => e.season === season);
+          const socialQuests = user.socialQuests.filter((q) => q.season === season);
+          return {
+            ...sharedUserData,
+            pointsEarnedAsScout: 0,
+            pointsEarnedAsDeveloper: 0,
+            pointsEarnedTotal: user.pointsReceived.reduce((acc, curr) => {
+              if (curr.season === season) {
+                return acc + curr.value;
+              }
+              return acc;
+            }, 0),
+            referrals: builderEvents.filter((e) => e.type === 'referral').length,
+            dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
+            questsCompleted: socialQuests.length,
+            nftsPurchased: 0,
+            nftsSold: 0,
+            season
+          };
+        });
+      }
       return [
         // If user has no season stats, return one row with default values
         {
           ...sharedUserData,
           pointsEarnedAsScout: 0,
-          pointsEarnedAsBuilder: 0,
+          pointsEarnedAsDeveloper: 0,
           nftsPurchased: 0,
           nftsSold: 0,
+          referrals: 0,
+          dailyClaimsCount: 0,
+          questsCompleted: 0,
           season: ''
         }
       ];
     }
 
     // Create one row per season stat
-    return user.userSeasonStats.map((seasonStat) => ({
-      ...sharedUserData,
-      pointsEarnedAsScout: seasonStat.pointsEarnedAsScout,
-      pointsEarnedAsBuilder: seasonStat.pointsEarnedAsBuilder,
-      nftsPurchased: seasonStat.nftsPurchased,
-      nftsSold: seasonStat.nftsSold || 0,
-      developerLevel: seasonStat.level,
-      season: seasonStat.season
-    }));
+    return user.userSeasonStats
+      .filter(({ season }) => whitelistedSeasons.includes(season))
+      .map((seasonStat) => {
+        const builderEvents = user.events.filter((e) => e.season === seasonStat.season);
+        const socialQuests = user.socialQuests.filter((q) => q.season === seasonStat.season);
+        return {
+          ...sharedUserData,
+          pointsEarnedAsScout: seasonStat.pointsEarnedAsScout,
+          pointsEarnedAsDeveloper: seasonStat.pointsEarnedAsBuilder,
+          pointsEarnedTotal: user.pointsReceived.reduce((acc, curr) => {
+            if (curr.season === seasonStat.season) {
+              return acc + curr.value;
+            }
+            return acc;
+          }, 0),
+          nftsPurchased: seasonStat.nftsPurchased,
+          nftsSold: seasonStat.nftsSold || 0,
+          developerLevel: seasonStat.level,
+          season: seasonStat.season,
+          referrals: builderEvents.filter((e) => e.type === 'referral').length,
+          dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
+          questsCompleted: socialQuests.length
+        };
+      });
   });
 
   return respondWithTSV(rows, 'scout_users_export.tsv');
