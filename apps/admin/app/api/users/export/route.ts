@@ -142,6 +142,7 @@ export async function GET() {
           referrals: 0,
           dailyClaimsCount: 0,
           questsCompleted: 0,
+          referralsCompleted: 0,
           season: ''
         }
       ];
