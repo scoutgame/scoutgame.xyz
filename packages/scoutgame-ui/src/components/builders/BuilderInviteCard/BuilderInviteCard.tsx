@@ -8,10 +8,13 @@ import { useRouter } from 'next/navigation';
 import { useGlobalModal } from '../../../providers/ModalProvider';
 import { useUser } from '../../../providers/UserProvider';
 
-export function BuilderPageInviteCard() {
+import { WalletConnect } from './WalletConnect';
+
+export function BuilderPageInviteCard({ primaryWallet }: { primaryWallet?: string }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
   const router = useRouter();
+  const hasPrimaryWallet = !!primaryWallet;
 
   const handleButtonClick = () => {
     if (user) {
@@ -51,16 +54,20 @@ export function BuilderPageInviteCard() {
         </Box>
       </Stack>
       <Typography variant='h6' lineHeight={1.3} textAlign='center'>
-        Become a developer in the Scout Game and earn rewards for contributing to over a thousand open source crypto
-        repositories.
+        {hasPrimaryWallet ? 'Become a developer in the Scout Game' : 'Connect your primary wallet'} and earn rewards for
+        contributing to over a thousand open source crypto repositories.
       </Typography>
-      <Button
-        onClick={handleButtonClick}
-        color='primary'
-        sx={{ cursor: 'pointer', width: 200, textAlign: 'center', fontWeight: 400, margin: '0 auto' }}
-      >
-        Get Started
-      </Button>
+      {hasPrimaryWallet ? (
+        <Button
+          onClick={handleButtonClick}
+          color='primary'
+          sx={{ cursor: 'pointer', width: 200, textAlign: 'center', fontWeight: 400, margin: '0 auto' }}
+        >
+          Get Started
+        </Button>
+      ) : (
+        <WalletConnect />
+      )}
       <Box display={{ xs: 'none', md: 'flex' }} justifyContent='center'>
         <Image src='/images/profile/builder-dog.png' alt='be a builder' width={300} height={300} />
       </Box>
