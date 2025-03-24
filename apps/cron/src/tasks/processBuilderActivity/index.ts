@@ -6,6 +6,7 @@ import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refresh
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
 import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
 import type Koa from 'koa';
+import { DateTime } from 'luxon';
 
 import { processBuilderActivity } from './processBuilderActivity';
 import { reviewAppliedBuilders } from './reviewAppliedBuilders';
@@ -62,7 +63,7 @@ export async function processAllBuilderActivity(
       }
     }
   });
-
+  const timer = DateTime.now();
   log.info(`Processing activity for ${builders.length} builders`);
 
   for (const builder of builders) {
@@ -94,7 +95,9 @@ export async function processAllBuilderActivity(
       });
     }
   }
-  log.info('Finished processing Github activity for builders', { leaderBoard });
+  log.info('Finished processing Github activity for builders', {
+    durationMinutes: timer.diff(DateTime.now(), 'minutes')
+  });
 
   const week = getCurrentWeek();
 
