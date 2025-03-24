@@ -4,7 +4,7 @@ import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
+import type { DeveloperMetadata, DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -27,14 +27,14 @@ function SortIcon({ columnName, order, sort }: { columnName: string; order: stri
   );
 }
 
-export function BuildersTable({
-  builders,
+export function DevelopersTable({
+  developers,
   order,
   sort
 }: {
-  builders: BuilderMetadata[];
+  developers: DeveloperMetadata[];
   order: string;
-  sort: BuildersSortBy;
+  sort: DevelopersSortBy;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -137,7 +137,7 @@ export function BuildersTable({
         </TableRow>
       </TableHead>
       <TableBody>
-        {builders.map((builder, index) => (
+        {developers.map((builder, index) => (
           <TableRow
             key={builder.path}
             sx={tableRowNoPaddingSx}

@@ -32,9 +32,10 @@ export const getDevelopersForTableAction = actionClient
   .action(async ({ parsedInput, ctx }) => {
     const scoutId = ctx.session.scoutId;
 
-    return getDevelopersForTable({
+    const { developers, nextCursor } = await getDevelopersForTable({
       ...parsedInput,
       cursor: (parsedInput.cursor as DeveloperTableCursor) || undefined,
       loggedInScoutId: scoutId
     });
+    return { data: developers, nextCursor };
   });

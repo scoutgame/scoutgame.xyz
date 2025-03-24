@@ -21,7 +21,7 @@ export type ScoutCursor = {
 };
 
 export async function getPaginatedScouts({
-  limit = 20,
+  limit = 50,
   sortBy = 'rank',
   order = 'asc',
   season = getCurrentSeasonStart(),

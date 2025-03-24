@@ -30,7 +30,7 @@ export type DeveloperMetadata = {
 };
 
 export async function getDevelopersForTable({
-  limit = 30,
+  limit = 50,
   sortBy = 'week_gems',
   order = 'asc',
   loggedInScoutId,

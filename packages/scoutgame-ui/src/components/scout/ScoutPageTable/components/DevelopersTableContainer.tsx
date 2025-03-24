@@ -11,7 +11,7 @@ import { useCallback } from 'react';
 
 import { useInfiniteScroll } from '../../../../hooks/useInfiniteScroll';
 
-import { BuildersTable } from './BuildersTable';
+import { DevelopersTable } from './DevelopersTable';
 
 export function DevelopersTableContainer({
   initialDevelopers = [],
@@ -40,7 +40,7 @@ export function DevelopersTableContainer({
 
   const {
     observedTarget,
-    data: builders,
+    data: developers,
     isLoading,
     hasMore,
     error
@@ -50,22 +50,22 @@ export function DevelopersTableContainer({
     initialCursor
   );
 
-  const buildersData = builders.map((builder) => ({
-    path: builder.path,
-    avatar: builder.avatar,
-    displayName: builder.displayName,
-    price: builder.price,
-    level: builder.level,
-    gemsCollected: builder.gemsCollected,
-    estimatedPayout: builder.estimatedPayout,
-    last14Days: builder.last14Days,
-    nftsSoldToLoggedInScout: builder.nftsSoldToLoggedInScout,
-    rank: builder.rank
+  const developersData = developers.map((developer) => ({
+    path: developer.path,
+    avatar: developer.avatar,
+    displayName: developer.displayName,
+    price: developer.price,
+    level: developer.level,
+    gemsCollected: developer.gemsCollected,
+    estimatedPayout: developer.estimatedPayout,
+    last14Days: developer.last14Days,
+    nftsSoldToLoggedInScout: developer.nftsSoldToLoggedInScout,
+    rank: developer.rank
   }));
 
   return (
     <div>
-      <BuildersTable builders={buildersData} order={order} sort={sortBy} />
+      <DevelopersTable developers={developersData} order={order} sort={sortBy} />
       {hasMore && <div ref={observedTarget} style={{ height: '50px', width: '100%' }} />}
       {isLoading && (
         <Box display='flex' justifyContent='center' my={2}>

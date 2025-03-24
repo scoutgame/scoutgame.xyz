@@ -27,7 +27,7 @@ export function useInfiniteScroll<T, U>(
       // console.log('loading data', result.nextCursor);
       const actionResponse = await loadData({ cursor: result.nextCursor });
       if (actionResponse?.data) {
-        const { data: newData, nextCursor } = actionResponse.data;
+        const { data: newData = [], nextCursor } = actionResponse.data;
         setResult((prev) => ({
           data: [...prev.data, ...newData],
           nextCursor

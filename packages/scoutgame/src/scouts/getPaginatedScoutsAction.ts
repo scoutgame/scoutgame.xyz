@@ -19,7 +19,6 @@ export const getPaginatedScoutsAction = actionClient
     const { cursor, sort, order } = parsedInput;
 
     const { scouts, nextCursor } = await getPaginatedScouts({
-      limit: 20, // 20 rows per page
       sortBy: sort as any,
       order: order as 'asc' | 'desc',
       cursor: (cursor as ScoutCursor) || undefined
