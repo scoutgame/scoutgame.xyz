@@ -65,7 +65,7 @@ export function DevelopersTableContainer({
 
   return (
     <div>
-      <DevelopersTable developers={developersData} order={order} sort={sortBy} />
+      <DevelopersTable developers={developersData} order={order} sort={sortBy} nftType={nftType} />
       {hasMore && <div ref={observedTarget} style={{ height: '50px', width: '100%' }} />}
       {isLoading && (
         <Box display='flex' justifyContent='center' my={2}>

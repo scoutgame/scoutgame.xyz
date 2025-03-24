@@ -70,6 +70,14 @@ export function useInfiniteScroll<T, U>(
     };
   }, [callLoadData, targetRef]);
 
+  // reset the data when the initial data is changed due to change of inputs into the loadMore method (e.g. nftType)
+  useEffect(() => {
+    setResult({
+      data: initialData,
+      nextCursor: initialCursor
+    });
+  }, [initialData, initialCursor]);
+
   return {
     observedTarget: targetRef,
     error,
