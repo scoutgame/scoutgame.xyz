@@ -8,8 +8,6 @@ import { useRouter } from 'next/navigation';
 import { useGlobalModal } from '../../../providers/ModalProvider';
 import { useUser } from '../../../providers/UserProvider';
 
-import { WalletConnect } from './WalletConnect';
-
 export function BuilderPageInviteCard({ isBuilder }: { isBuilder: boolean }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
@@ -56,17 +54,13 @@ export function BuilderPageInviteCard({ isBuilder }: { isBuilder: boolean }) {
         {!isBuilder ? 'Become a developer in the Scout Game' : 'Connect your primary wallet'} and earn rewards for
         contributing to over a thousand open source crypto repositories.
       </Typography>
-      {!isBuilder ? (
-        <Button
-          onClick={handleButtonClick}
-          color='primary'
-          sx={{ cursor: 'pointer', width: 200, textAlign: 'center', fontWeight: 400, margin: '0 auto' }}
-        >
-          Get Started
-        </Button>
-      ) : (
-        <WalletConnect />
-      )}
+      <Button
+        onClick={handleButtonClick}
+        color='primary'
+        sx={{ cursor: 'pointer', width: 200, textAlign: 'center', fontWeight: 400, margin: '0 auto' }}
+      >
+        Get Started
+      </Button>
       <Box display={{ xs: 'none', md: 'flex' }} justifyContent='center'>
         <Image src='/images/profile/builder-dog.png' alt='be a builder' width={300} height={300} />
       </Box>

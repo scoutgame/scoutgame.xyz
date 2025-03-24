@@ -15,15 +15,15 @@ import { useUser } from '../../../providers/UserProvider';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function WalletConnect() {
+export function WalletConnect({ onSuccess }: { onSuccess: () => void }) {
   return (
     <RainbowKitProvider>
-      <WalletConnectButton />
+      <WalletConnectButton onSuccess={onSuccess} />
     </RainbowKitProvider>
   );
 }
 
-function WalletConnectButton() {
+function WalletConnectButton({ onSuccess }: { onSuccess: () => void }) {
   const { refreshUser } = useUser();
   const { address, chainId, isConnected } = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
@@ -40,6 +40,7 @@ function WalletConnectButton() {
     {
       onSuccess: () => {
         refreshUser();
+        onSuccess();
       },
       onError: connectAccountOnError
     }

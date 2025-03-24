@@ -6,10 +6,10 @@ import { Suspense } from 'react';
 import { useUser } from '../../../providers/UserProvider';
 import { Dialog } from '../../common/Dialog';
 import { JoinGithubButton } from '../../common/JoinGithubButton';
+import { WalletConnect } from '../BuilderInviteCard/WalletConnect';
 
 export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClose: () => void; signedIn: boolean }) {
   const { user } = useUser();
-  const isBuilder = !!user?.builderStatus;
   const hasPrimaryWallet = !!user?.primaryWallet;
 
   return (
@@ -29,14 +29,21 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
         <Typography variant='h6' color='secondary' textAlign='center'>
           Be a Scout Game Developer
         </Typography>
-        <Image src='/images/github-logo.png' width={120} height={30} alt='github' style={{ margin: '10px auto' }} />
+        <Image
+          src={hasPrimaryWallet ? '/images/github-logo.png' : '/images/crypto/metamask.png'}
+          width={hasPrimaryWallet ? 120 : 50}
+          height={hasPrimaryWallet ? 30 : 50}
+          alt='github'
+          style={{ margin: '10px auto' }}
+        />
         <Typography mb={1}>
-          Apply to be a Developer by connecting your GitHub. You'll be in the game once you make your first qualified
-          contribution.
+          {!hasPrimaryWallet
+            ? 'Connect your primary wallet to earn rewards for your github contributions.'
+            : "Apply to be a Developer by connecting your GitHub. You'll be in the game once you make your first qualified contribution."}
         </Typography>
         {signedIn ? (
           <Suspense>
-            <JoinGithubButton text='Apply' />
+            {hasPrimaryWallet ? <JoinGithubButton text='Apply' /> : <WalletConnect onSuccess={onClose} />}
           </Suspense>
         ) : (
           <Button variant='contained' color='primary' href={builderLoginUrl}>
