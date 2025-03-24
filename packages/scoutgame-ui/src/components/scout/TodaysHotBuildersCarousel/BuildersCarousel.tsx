@@ -8,8 +8,6 @@ import { useTrackEvent } from '../../../hooks/useTrackEvent';
 import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
 import { Carousel } from '../../common/Carousel/Carousel';
 
-import { PromoCard } from './PromoCard';
-
 const promoInsertIndex = 2;
 
 export function BuildersCarousel({
@@ -32,16 +30,6 @@ export function BuildersCarousel({
 
   const builderCards = showPromoCards
     ? [
-        <PromoCard
-          data-test='promo-card-optimism'
-          key='op-new-scout-ad'
-          size={size}
-          path='/info/partner-rewards/optimism'
-          src='/images/home/op-new-scout-ad.png'
-          onClick={() => {
-            trackEvent('click_optimism_promo');
-          }}
-        />,
         ...builderCardsList.slice(0, promoInsertIndex),
         // <PromoCard
         //   data-test='promo-card-moxie'
