@@ -25,12 +25,10 @@ type Props = {
   tab: string;
   builderSort?: string;
   builderOrder?: string;
-  // eslint-disable-next-line react/no-unused-prop-types
-  primaryWallet?: string;
   user?: SessionUser | null;
 };
 
-export async function BuildersPage({ week, tab, builderSort, builderOrder, user, primaryWallet }: Props) {
+export async function BuildersPage({ week, tab, builderSort, builderOrder, user }: Props) {
   return (
     <>
       <Suspense>
@@ -54,32 +52,24 @@ export async function BuildersPage({ week, tab, builderSort, builderOrder, user,
             builderSort={builderSort as BuildersSortBy}
             builderOrder={builderOrder}
             user={user}
-            primaryWallet={primaryWallet}
           />
         </Grid>
         <Grid size={4} sx={{ pr: 1, height: '100%', overflowX: 'hidden', display: { xs: 'none', md: 'block' } }}>
-          <SidebarContent user={user} week={week} primaryWallet={primaryWallet} />
+          <SidebarContent user={user} week={week} />
         </Grid>
       </Grid>
     </>
   );
 }
 
-export function MainContent({ week, tab, builderSort, builderOrder, user, primaryWallet }: Props) {
+export function MainContent({ week, tab, builderSort, builderOrder, user }: Props) {
   const isBuilder = !!user?.builderStatus;
-  const hasPrimaryWallet = !!primaryWallet;
+  const hasPrimaryWallet = !!user?.primaryWallet;
 
   return isBuilder && hasPrimaryWallet ? (
-    <BuildersMainContent
-      week={week}
-      tab={tab}
-      builderSort={builderSort}
-      builderOrder={builderOrder}
-      user={user}
-      primaryWallet={primaryWallet}
-    />
+    <BuildersMainContent week={week} tab={tab} builderSort={builderSort} builderOrder={builderOrder} user={user} />
   ) : (
-    <ScoutsMainContent isBuilder={isBuilder} primaryWallet={primaryWallet} />
+    <ScoutsMainContent isBuilder={isBuilder} />
   );
 }
 
@@ -118,12 +108,12 @@ export async function BuildersMainContent({ week, tab, builderSort, builderOrder
   );
 }
 
-export async function ScoutsMainContent({ primaryWallet, isBuilder }: Pick<Props, 'primaryWallet' | 'isBuilder'>) {
+export async function ScoutsMainContent({ isBuilder }: { isBuilder: boolean }) {
   return (
     <>
       {/* Scout mobile */}
       <Stack display={{ xs: 'block', md: 'none' }}>
-        <BuilderPageInviteCard isBuilder={isBuilder} primaryWallet={primaryWallet} />
+        <BuilderPageInviteCard isBuilder={isBuilder} />
       </Stack>
       {/* Scout desktop and mobile */}
       <ScoutsInfo />
@@ -131,9 +121,9 @@ export async function ScoutsMainContent({ primaryWallet, isBuilder }: Pick<Props
   );
 }
 
-export async function SidebarContent({ user, week, primaryWallet }: Pick<Props, 'user' | 'week' | 'primaryWallet'>) {
+export async function SidebarContent({ user, week }: Pick<Props, 'user' | 'week'>) {
   const isBuilder = !!user?.builderStatus;
-  const hasPrimaryWallet = !!primaryWallet;
+  const hasPrimaryWallet = !!user?.primaryWallet;
 
   return isBuilder && hasPrimaryWallet ? (
     <Stack>
@@ -146,7 +136,7 @@ export async function SidebarContent({ user, week, primaryWallet }: Pick<Props, 
     </Stack>
   ) : (
     <Stack>
-      <BuilderPageInviteCard isBuilder={isBuilder} primaryWallet={primaryWallet} />
+      <BuilderPageInviteCard isBuilder={isBuilder} />
     </Stack>
   );
 }

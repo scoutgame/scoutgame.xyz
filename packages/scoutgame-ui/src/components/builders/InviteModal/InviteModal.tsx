@@ -3,10 +3,15 @@ import { builderLoginUrl } from '@packages/scoutgame/constants';
 import Image from 'next/image';
 import { Suspense } from 'react';
 
+import { useUser } from '../../../providers/UserProvider';
 import { Dialog } from '../../common/Dialog';
 import { JoinGithubButton } from '../../common/JoinGithubButton';
 
 export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClose: () => void; signedIn: boolean }) {
+  const { user } = useUser();
+  const isBuilder = !!user?.builderStatus;
+  const hasPrimaryWallet = !!user?.primaryWallet;
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth='xs'>
       <Stack

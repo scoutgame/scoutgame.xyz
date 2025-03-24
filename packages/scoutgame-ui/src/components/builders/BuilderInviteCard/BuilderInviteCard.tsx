@@ -10,11 +10,10 @@ import { useUser } from '../../../providers/UserProvider';
 
 import { WalletConnect } from './WalletConnect';
 
-export function BuilderPageInviteCard({ isBuilder, primaryWallet }: { isBuilder: boolean; primaryWallet?: string }) {
+export function BuilderPageInviteCard({ isBuilder }: { isBuilder: boolean }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
   const router = useRouter();
-  const hasPrimaryWallet = !!primaryWallet;
 
   const handleButtonClick = () => {
     if (user) {

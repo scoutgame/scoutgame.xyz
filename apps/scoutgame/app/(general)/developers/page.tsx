@@ -1,4 +1,3 @@
-import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, validateISOWeek } from '@packages/dates/utils';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
@@ -20,15 +19,6 @@ export default async function Developers({
   const builderOrder = (searchParams.builderOrder as string | undefined) || 'asc';
   const [, user] = await safeAwaitSSRData(getUserFromSession());
 
-  const wallet = user
-    ? await prisma.scoutWallet.findFirst({
-        where: {
-          primary: true,
-          scoutId: user.id
-        }
-      })
-    : null;
-
   return (
     <BuildersPage
       tab={tab}
@@ -36,7 +26,6 @@ export default async function Developers({
       builderSort={builderSort}
       builderOrder={builderOrder}
       user={user}
-      primaryWallet={wallet?.address}
     />
   );
 }
