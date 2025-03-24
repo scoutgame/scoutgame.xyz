@@ -10,7 +10,7 @@ import { useUser } from '../../../providers/UserProvider';
 
 import { WalletConnect } from './WalletConnect';
 
-export function BuilderPageInviteCard({ primaryWallet }: { primaryWallet?: string }) {
+export function BuilderPageInviteCard({ isBuilder, primaryWallet }: { isBuilder: boolean; primaryWallet?: string }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
   const router = useRouter();
@@ -54,10 +54,10 @@ export function BuilderPageInviteCard({ primaryWallet }: { primaryWallet?: strin
         </Box>
       </Stack>
       <Typography variant='h6' lineHeight={1.3} textAlign='center'>
-        {hasPrimaryWallet ? 'Become a developer in the Scout Game' : 'Connect your primary wallet'} and earn rewards for
+        {!isBuilder ? 'Become a developer in the Scout Game' : 'Connect your primary wallet'} and earn rewards for
         contributing to over a thousand open source crypto repositories.
       </Typography>
-      {hasPrimaryWallet ? (
+      {!isBuilder ? (
         <Button
           onClick={handleButtonClick}
           color='primary'

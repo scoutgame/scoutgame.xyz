@@ -79,7 +79,7 @@ export function MainContent({ week, tab, builderSort, builderOrder, user, primar
       primaryWallet={primaryWallet}
     />
   ) : (
-    <ScoutsMainContent primaryWallet={primaryWallet} />
+    <ScoutsMainContent isBuilder={isBuilder} primaryWallet={primaryWallet} />
   );
 }
 
@@ -118,12 +118,12 @@ export async function BuildersMainContent({ week, tab, builderSort, builderOrder
   );
 }
 
-export async function ScoutsMainContent({ primaryWallet }: Pick<Props, 'primaryWallet'>) {
+export async function ScoutsMainContent({ primaryWallet, isBuilder }: Pick<Props, 'primaryWallet' | 'isBuilder'>) {
   return (
     <>
       {/* Scout mobile */}
       <Stack display={{ xs: 'block', md: 'none' }}>
-        <BuilderPageInviteCard primaryWallet={primaryWallet} />
+        <BuilderPageInviteCard isBuilder={isBuilder} primaryWallet={primaryWallet} />
       </Stack>
       {/* Scout desktop and mobile */}
       <ScoutsInfo />
@@ -146,7 +146,7 @@ export async function SidebarContent({ user, week, primaryWallet }: Pick<Props, 
     </Stack>
   ) : (
     <Stack>
-      <BuilderPageInviteCard primaryWallet={primaryWallet} />
+      <BuilderPageInviteCard isBuilder={isBuilder} primaryWallet={primaryWallet} />
     </Stack>
   );
 }
