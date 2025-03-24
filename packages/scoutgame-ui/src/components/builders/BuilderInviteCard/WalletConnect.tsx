@@ -4,6 +4,7 @@ import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
 import { connectWalletAccountAction } from '@packages/scoutgame/wallets/connectWalletAccountAction';
+import { fancyTrim } from '@packages/utils/strings';
 import { RainbowKitProvider, useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useEffect, useState } from 'react';
@@ -15,15 +16,15 @@ import { useUser } from '../../../providers/UserProvider';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function WalletConnect({ onSuccess }: { onSuccess: () => void }) {
+export function WalletConnect({ onSuccess, connected }: { onSuccess: () => void; connected: boolean }) {
   return (
     <RainbowKitProvider>
-      <WalletConnectButton onSuccess={onSuccess} />
+      <WalletConnectButton onSuccess={onSuccess} connected={connected} />
     </RainbowKitProvider>
   );
 }
 
-function WalletConnectButton({ onSuccess }: { onSuccess: () => void }) {
+function WalletConnectButton({ onSuccess, connected }: { onSuccess: () => void; connected: boolean }) {
   const { refreshUser } = useUser();
   const { address, chainId, isConnected } = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
@@ -99,13 +100,13 @@ function WalletConnectButton({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Stack direction='column' justifyContent='center' alignItems='center' gap={1} width='100%'>
       <LoadingButton
-        disabled={isLoading}
+        disabled={isLoading || connected}
         loading={isLoading}
         sx={{ width: 'fit-content' }}
         onClick={onClick}
         variant='contained'
       >
-        {isConnecting ? 'Connecting...' : 'Connect'}
+        {connected ? `Connected as ${fancyTrim(address, 10)}` : isConnecting ? 'Connecting...' : 'Connect'}
       </LoadingButton>
 
       {connectionError && (
