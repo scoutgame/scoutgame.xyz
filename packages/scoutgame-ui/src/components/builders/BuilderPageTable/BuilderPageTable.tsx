@@ -35,7 +35,9 @@ export async function BuilderPageTable({
     }
     // empty state
     else {
-      return <ScoutPageTable tab='builders' sort={builderSort} order={builderOrder} userId={userId} />;
+      return (
+        <ScoutPageTable tab='builders' sort={builderSort} order={builderOrder} userId={userId} nftType='default' />
+      );
     }
   }
   return null;

@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
@@ -113,6 +112,4 @@ export async function refreshEstimatedPayouts({
       }
     }
   }
-
-  log.info('Estimated payouts refreshed', { week, userId: builderIdToRefresh });
 }

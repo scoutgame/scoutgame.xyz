@@ -50,7 +50,7 @@ export function BuilderCard({
         {builder.builderStatus === 'banned' ? (
           <Typography textAlign='center'>SUSPENDED</Typography>
         ) : hideDetails ? null : (
-          <BuilderCardStats {...builder} starterPack={type === 'starter_pack'} size={size} />
+          <BuilderCardStats {...builder} isStarterCard={type === 'starter_pack'} size={size} />
         )}
       </BuilderCardNftDisplay>
       {typeof builder.price !== 'undefined' && showPurchaseButton && (

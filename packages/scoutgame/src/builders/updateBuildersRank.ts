@@ -20,6 +20,5 @@ export async function updateBuildersRank({ week = getCurrentWeek(), season }: { 
       }
     });
   }
-
-  log.info(`Updated ${buildersLeaderboard.length} builders rank for week ${week}`);
+  return buildersLeaderboard;
 }

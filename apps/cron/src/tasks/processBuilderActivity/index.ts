@@ -94,14 +94,31 @@ export async function processAllBuilderActivity(
       });
     }
   }
+  log.info('Finished processing Github activity for builders', { leaderBoard });
 
   const week = getCurrentWeek();
 
-  await updateBuildersRank({ week });
+  await updateBuildersRank({ week })
+    .then((leaderBoard) => {
+      log.info('Builders rank updated', { week, leaderBoard });
+    })
+    .catch((error) => {
+      log.error('Error updating builders rank', { error, week });
+    });
 
-  await refreshBuilderLevels({ season: getCurrentSeasonStart() });
+  await refreshBuilderLevels({ season: getCurrentSeasonStart() })
+    .then((levels) => {
+      log.info(`Refreshed builder levels for season ${season}. Ranked ${levels.length} builders`);
+    })
+    .catch((error) => {
+      log.error('Error refreshing builder levels', { error, week, season: getCurrentSeasonStart() });
+    });
 
-  await refreshEstimatedPayouts({ week }).catch((error) => {
-    log.error('Error refreshing estimated payouts', { error, week });
-  });
+  await refreshEstimatedPayouts({ week })
+    .then(() => {
+      log.info('Estimated payouts refreshed', { week });
+    })
+    .catch((error) => {
+      log.error('Error refreshing estimated payouts', { error, week });
+    });
 }

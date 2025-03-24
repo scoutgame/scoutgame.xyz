@@ -1,13 +1,14 @@
 import 'server-only';
 
+import { getCurrentWeek } from '@packages/dates/utils';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
-import { getBuilders } from '@packages/scoutgame/builders/getBuilders';
-import { getRankedNewScoutsForCurrentWeek } from '@packages/scoutgame/scouts/getNewScouts';
-import { getScouts, type ScoutsSortBy } from '@packages/scoutgame/scouts/getScouts';
+import type { DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
+import { getDevelopersForTable } from '@packages/scoutgame/builders/getDevelopersForTable';
+import type { ScoutsSortBy } from '@packages/scoutgame/scouts/getPaginatedScouts';
+import { getPaginatedScouts } from '@packages/scoutgame/scouts/getPaginatedScouts';
 
-import { BuildersTable } from './components/BuildersTable';
-import { ScoutsTable } from './components/ScoutsTable';
+import { DevelopersTableContainer } from './components/DevelopersTableContainer';
+import { ScoutsTableContainer } from './components/ScoutsTableContainer';
 
 export async function ScoutPageTable({
   tab,
@@ -22,22 +23,42 @@ export async function ScoutPageTable({
   sort?: string;
   nftType: 'default' | 'starter';
 }) {
+  // await new Promise((resolve) => setTimeout(resolve, 10000));
   if (tab === 'builders') {
-    const [, builders = []] = await safeAwaitSSRData(
-      getBuilders({
-        limit: 200,
-        sortBy: sort as BuildersSortBy,
+    const [, data = { developers: [], nextCursor: null }] = await safeAwaitSSRData(
+      getDevelopersForTable({
+        sortBy: sort as DevelopersSortBy,
         order: order as 'asc' | 'desc',
         loggedInScoutId: userId,
         nftType
       })
     );
-    return <BuildersTable builders={builders} order={order ?? 'desc'} sort={(sort as BuildersSortBy) ?? 'week_gems'} />;
-  } else if (tab === 'scouts') {
-    const [, scouts = []] = await safeAwaitSSRData(
-      getScouts({ limit: 200, sortBy: sort as ScoutsSortBy, order: order as 'asc' | 'desc' })
+
+    return (
+      <DevelopersTableContainer
+        initialDevelopers={data.developers}
+        initialCursor={data.nextCursor}
+        order={(order as 'asc' | 'desc') ?? 'desc'}
+        sortBy={(sort as DevelopersSortBy) ?? 'week_gems'}
+        nftType={nftType === 'default' ? 'default' : 'starter'}
+      />
     );
-    return <ScoutsTable scouts={scouts} order={order ?? 'asc'} sort={sort ?? 'rank'} />;
+  } else if (tab === 'scouts') {
+    const [, data = { scouts: [], nextCursor: null }] = await safeAwaitSSRData(
+      getPaginatedScouts({
+        sortBy: sort as ScoutsSortBy,
+        order: order as 'asc' | 'desc'
+      })
+    );
+
+    return (
+      <ScoutsTableContainer
+        initialScouts={data.scouts}
+        initialCursor={data.nextCursor}
+        order={(order as 'asc' | 'desc') ?? 'asc'}
+        sort={(sort as ScoutsSortBy) ?? 'rank'}
+      />
+    );
   }
 
   return null;

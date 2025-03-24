@@ -29,20 +29,20 @@ function addTask(path: string, handler: (ctx: Koa.Context) => any) {
   router.post(path, async (ctx) => {
     // just in case we need to disable cron in production
     if (process.env.DISABLE_CRON === 'true') {
-      log.info(`${path}: Cron disabled, skipping`);
+      log.info(`Cron disabled, skipping`);
       return;
     }
     const timer = DateTime.now();
-    log.info(`${path}: Task triggered`, { body: ctx.body, headers: ctx.headers });
+    log.info(`Task triggered`, { body: ctx.body, headers: ctx.headers });
 
     try {
       const result = await handler(ctx);
 
-      log.info(`${path}: Completed task`, { durationMinutes: timer.diff(DateTime.now(), 'minutes') });
+      log.info(`Completed task`, { durationMinutes: timer.diff(DateTime.now(), 'minutes') });
 
       ctx.body = result || { success: true };
     } catch (error) {
-      log.error(`${path}: Error processing task`, {
+      log.error(`Error processing task`, {
         durationMinutes: timer.diff(DateTime.now(), 'minutes'),
         error
       });
