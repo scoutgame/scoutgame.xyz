@@ -171,12 +171,7 @@ export function DevelopersTable({
                       />
                     </Stack>
                   ) : null}
-                  <TableCellText
-                    fontSize={isMdScreen ? '16px' : '10.5px'}
-                    overflow='hidden'
-                    textOverflow='ellipsis'
-                    noWrap
-                  >
+                  <TableCellText deskTopfontSize='16px' overflow='hidden' textOverflow='ellipsis' noWrap>
                     {builder.displayName}
                   </TableCellText>
                 </Stack>
@@ -221,7 +216,7 @@ export function DevelopersTable({
                 ml={1.5}
                 justifyContent='flex-end'
               >
-                <TableCellText fontSize={isMdScreen ? '16px' : '10.5px'}>{builder.gemsCollected}</TableCellText>
+                <TableCellText deskTopfontSize='16px'>{builder.gemsCollected}</TableCellText>
                 <Image
                   width={isMdScreen ? 15 : 12.5}
                   height={isMdScreen ? 15 : 12.5}

@@ -71,6 +71,9 @@ export async function getDevelopersForTable({
           level: order
         },
         {
+          pointsEarnedAsBuilder: order
+        },
+        {
           id: order
         }
       ],
@@ -83,7 +86,6 @@ export async function getDevelopersForTable({
         : undefined,
       select: {
         id: true,
-        userId: true,
         user: {
           select: {
             path: true,
@@ -132,7 +134,7 @@ export async function getDevelopersForTable({
       }
     });
 
-    const developers = usersSeasonStats.map(({ user, level, userId }) => ({
+    const developers = usersSeasonStats.map(({ user, level }) => ({
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
@@ -372,6 +374,9 @@ export async function getDevelopersForTable({
       orderBy: [
         {
           gemsCollected: order
+        },
+        {
+          rank: order
         },
         {
           id: order

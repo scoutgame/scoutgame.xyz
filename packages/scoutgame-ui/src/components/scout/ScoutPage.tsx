@@ -49,7 +49,7 @@ export async function ScoutPage({
   nftType: 'starter' | 'default';
   userId?: string;
 }) {
-  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder })
+  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder, nftType })
     .filter(([, value]) => isTruthy(value))
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
@@ -130,7 +130,7 @@ export async function ScoutPage({
                   nftType={nftType}
                 />
               )}
-              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} />}
+              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} nftType={nftType} />}
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>

@@ -50,22 +50,9 @@ export function DevelopersTableContainer({
     initialCursor
   );
 
-  const developersData = developers.map((developer) => ({
-    path: developer.path,
-    avatar: developer.avatar,
-    displayName: developer.displayName,
-    price: developer.price,
-    level: developer.level,
-    gemsCollected: developer.gemsCollected,
-    estimatedPayout: developer.estimatedPayout,
-    last14Days: developer.last14Days,
-    nftsSoldToLoggedInScout: developer.nftsSoldToLoggedInScout,
-    rank: developer.rank
-  }));
-
   return (
     <div>
-      <DevelopersTable developers={developersData} order={order} sort={sortBy} nftType={nftType} />
+      <DevelopersTable developers={developers} order={order} sort={sortBy} />
       {hasMore && <div ref={observedTarget} style={{ height: '50px', width: '100%' }} />}
       {isLoading && (
         <Box display='flex' justifyContent='center' my={2}>

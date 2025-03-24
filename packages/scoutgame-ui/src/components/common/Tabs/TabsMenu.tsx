@@ -1,6 +1,9 @@
+'use client';
+
 import type { SxProps } from '@mui/material';
 import { Badge, Box, Tab, Tabs, tabClasses, tabsClasses } from '@mui/material';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export type TabItem = {
   label: string;
@@ -17,6 +20,9 @@ type TabsMenuProps = {
 
 export function TabsMenu({ value, tabs, sx, queryKey = 'tab' }: TabsMenuProps) {
   const tabValue = tabs.some((t) => t.value === value) ? value : false;
+  // create a memoized object of the URL query params
+  const searchParams = useSearchParams();
+  const params = Object.fromEntries(searchParams.entries());
   return (
     <Box sx={sx}>
       <Tabs
@@ -61,7 +67,7 @@ export function TabsMenu({ value, tabs, sx, queryKey = 'tab' }: TabsMenuProps) {
               </Badge>
             }
             href={{
-              query: { [queryKey]: tab.value }
+              query: { ...params, [queryKey]: tab.value }
             }}
             value={tab.value}
             scroll={false}

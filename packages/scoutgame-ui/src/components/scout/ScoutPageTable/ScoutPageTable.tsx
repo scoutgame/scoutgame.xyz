@@ -23,7 +23,6 @@ export async function ScoutPageTable({
   sort?: string;
   nftType: 'default' | 'starter';
 }) {
-  // await new Promise((resolve) => setTimeout(resolve, 10000));
   if (tab === 'builders') {
     const [, data = { developers: [], nextCursor: null }] = await safeAwaitSSRData(
       getDevelopersForTable({
