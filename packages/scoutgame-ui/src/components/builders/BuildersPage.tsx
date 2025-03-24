@@ -25,10 +25,12 @@ type Props = {
   tab: string;
   builderSort?: string;
   builderOrder?: string;
+  // eslint-disable-next-line react/no-unused-prop-types
+  primaryWallet?: string;
   user?: SessionUser | null;
 };
 
-export async function BuildersPage({ week, tab, builderSort, builderOrder, user }: Props) {
+export async function BuildersPage({ week, tab, builderSort, builderOrder, user, primaryWallet }: Props) {
   return (
     <>
       <Suspense>
@@ -52,21 +54,30 @@ export async function BuildersPage({ week, tab, builderSort, builderOrder, user 
             builderSort={builderSort as BuildersSortBy}
             builderOrder={builderOrder}
             user={user}
+            primaryWallet={primaryWallet}
           />
         </Grid>
         <Grid size={4} sx={{ pr: 1, height: '100%', overflowX: 'hidden', display: { xs: 'none', md: 'block' } }}>
-          <SidebarContent user={user} week={week} />
+          <SidebarContent user={user} week={week} primaryWallet={primaryWallet} />
         </Grid>
       </Grid>
     </>
   );
 }
 
-export function MainContent({ week, tab, builderSort, builderOrder, user }: Props) {
+export function MainContent({ week, tab, builderSort, builderOrder, user, primaryWallet }: Props) {
   const isBuilder = !!user?.builderStatus;
+  const hasPrimaryWallet = !!primaryWallet;
 
-  return isBuilder ? (
-    <BuildersMainContent week={week} tab={tab} builderSort={builderSort} builderOrder={builderOrder} user={user} />
+  return isBuilder && hasPrimaryWallet ? (
+    <BuildersMainContent
+      week={week}
+      tab={tab}
+      builderSort={builderSort}
+      builderOrder={builderOrder}
+      user={user}
+      primaryWallet={primaryWallet}
+    />
   ) : (
     <ScoutsMainContent />
   );
@@ -120,10 +131,11 @@ export async function ScoutsMainContent() {
   );
 }
 
-export async function SidebarContent({ user, week }: Pick<Props, 'user' | 'week'>) {
+export async function SidebarContent({ user, week, primaryWallet }: Pick<Props, 'user' | 'week' | 'primaryWallet'>) {
   const isBuilder = !!user?.builderStatus;
+  const hasPrimaryWallet = !!primaryWallet;
 
-  return isBuilder ? (
+  return isBuilder && hasPrimaryWallet ? (
     <Stack>
       <Typography variant='h5' color='secondary' textAlign='center' my={1}>
         Recent Activity
