@@ -20,8 +20,11 @@ type ScoutWithGithubUser = {
   fid?: number;
   farcasterName?: string;
   currentBalance: number;
-  nftsPurchased: number;
-  nftsSold: number;
+  regularNftsPurchased: number;
+  regularNftsSold: number;
+  starterNftsPurchased: number;
+  starterNftsSold: number;
+  usdcPaidForNfts: number;
   pointsEarnedAsScout: number;
   pointsEarnedAsDeveloper: number;
   pointsEarnedTotal: number;
@@ -52,7 +55,11 @@ export async function GET() {
       farcasterName: true,
       currentBalance: true,
       currentBalanceDevToken: true,
-      githubUsers: true,
+      githubUsers: {
+        select: {
+          login: true
+        }
+      },
       events: {
         where: {
           type: {
@@ -67,28 +74,63 @@ export async function GET() {
           }
         }
       },
-      socialQuests: true,
-      userSeasonStats: true,
+      socialQuests: {
+        select: {
+          season: true
+        }
+      },
+      wallets: {
+        select: {
+          purchaseEvents: {
+            select: {
+              paidInPoints: true,
+              pointsValue: true,
+              tokensPurchased: true,
+              builderNft: {
+                select: {
+                  nftType: true,
+                  season: true
+                }
+              }
+            }
+          }
+        }
+      },
+      userSeasonStats: {
+        select: {
+          season: true,
+          pointsEarnedAsScout: true,
+          pointsEarnedAsBuilder: true,
+          level: true
+        }
+      },
       userWeeklyStats: true,
       pointsReceived: true,
       builderNfts: {
-        where: {
-          season: getCurrentSeasonStart()
+        select: {
+          season: true,
+          nftType: true,
+          tokenId: true,
+          nftSoldEvents: {
+            select: {
+              tokensPurchased: true
+            }
+          }
         }
       }
     }
   });
   const rows: ScoutWithGithubUser[] = users.flatMap((user) => {
+    const allUserPurchaseEvents = user.wallets.flatMap((wallet) => wallet.purchaseEvents);
     // Create a map with shared user data
     const sharedUserData = {
       id: user.id,
       onboardedAt: user.onboardedAt?.toDateString(),
-      path: `https://scoutgame.xyz/${user.path!}`,
+      path: `https://scoutgame.xyz/u/${user.path!}`,
       createdAt: user.createdAt.toDateString(),
       email: user.email || undefined,
       optedInToMarketing: user.sendMarketing ? 'Yes' : '',
       builderStatus: user.builderStatus || undefined,
-      tokenId: user.builderNfts[0]?.tokenId || undefined,
       fid: user.farcasterId || undefined,
       farcasterName: user.farcasterName || undefined,
       githubLogin: user.githubUsers[0]?.login,
@@ -99,96 +141,82 @@ export async function GET() {
         .filter((p) => p.season === getCurrentSeasonStart())
         .reduce((acc, curr) => acc + curr.value, 0)
     };
-    const seasonBasedOnPoints = [...user.events, ...user.pointsReceived]
+    const activeSeasons = [
+      ...user.userSeasonStats,
+      ...user.events,
+      ...user.pointsReceived,
+      ...allUserPurchaseEvents.map((e) => e.builderNft)
+    ]
       .filter(({ season }) => whitelistedSeasons.includes(season))
       .reduce<string[]>((acc, curr) => {
-        if (acc.includes(curr.season)) {
-          return acc;
+        if (!acc.includes(curr.season) && whitelistedSeasons.includes(curr.season)) {
+          acc.push(curr.season);
         }
-        acc.push(curr.season);
         return acc;
       }, []);
-
     // If user has no season stats, create one row with default values
-    if (user.userSeasonStats.length === 0) {
-      if (seasonBasedOnPoints.length > 0) {
-        return seasonBasedOnPoints.map((season) => {
-          const builderEvents = user.events.filter((e) => e.season === season);
-          const socialQuests = user.socialQuests.filter((q) => q.season === season);
-          return {
-            ...sharedUserData,
-            pointsEarnedAsScout: 0,
-            pointsEarnedAsDeveloper: 0,
-            pointsEarnedTotal: user.pointsReceived.reduce((acc, curr) => {
-              if (curr.season === season) {
-                return acc + curr.value;
-              }
-              return acc;
-            }, 0),
-            referrals: builderEvents.filter((e) => e.type === 'referral').length,
-            referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
-              .length,
-            dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
-            questsCompleted: socialQuests.length,
-            waitlistTier:
-              builderEvents
-                .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
-                ?.description?.match(/achieving (.*?) status/)?.[1] || '',
-            nftsPurchased: 0,
-            nftsSold: 0,
-            season
-          };
-        });
-      }
+    if (activeSeasons.length === 0) {
       return [
         // If user has no season stats, return one row with default values
         {
           ...sharedUserData,
           pointsEarnedAsScout: 0,
           pointsEarnedAsDeveloper: 0,
-          nftsPurchased: 0,
-          nftsSold: 0,
           referrals: 0,
           dailyClaimsCount: 0,
           questsCompleted: 0,
           referralsCompleted: 0,
+          regularNftsPurchased: 0,
+          regularNftsSold: 0,
+          starterNftsPurchased: 0,
+          starterNftsSold: 0,
+          usdcPaidForNfts: 0,
           season: '',
           waitlistTier: ''
         }
       ];
     }
 
-    // Create one row per season stat
-    return user.userSeasonStats
-      .filter(({ season }) => whitelistedSeasons.includes(season))
-      .map((seasonStat) => {
-        const builderEvents = user.events.filter((e) => e.season === seasonStat.season);
-        const socialQuests = user.socialQuests.filter((q) => q.season === seasonStat.season);
-        return {
-          ...sharedUserData,
-          pointsEarnedAsScout: seasonStat.pointsEarnedAsScout,
-          pointsEarnedAsDeveloper: seasonStat.pointsEarnedAsBuilder,
-          pointsEarnedTotal: user.pointsReceived.reduce((acc, curr) => {
-            if (curr.season === seasonStat.season) {
-              return acc + curr.value;
-            }
-            return acc;
-          }, 0),
-          nftsPurchased: seasonStat.nftsPurchased,
-          nftsSold: seasonStat.nftsSold || 0,
-          developerLevel: seasonStat.level,
-          season: seasonStat.season,
-          referrals: builderEvents.filter((e) => e.type === 'referral').length,
-          referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
-            .length,
-          dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
-          questsCompleted: socialQuests.length,
-          waitlistTier:
-            builderEvents
-              .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
-              ?.description?.match(/achieving (.*?) status/)?.[1] || ''
-        };
-      });
+    // Create one row per season
+    return activeSeasons.map((season) => {
+      const seasonStat = user.userSeasonStats.find((s) => s.season === season);
+      const purchaseEvents = allUserPurchaseEvents.filter((e) => e.builderNft?.season === season);
+      const builderEvents = user.events.filter((e) => e.season === season);
+      const socialQuests = user.socialQuests.filter((q) => q.season === season);
+      const regularNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'default');
+      const starterNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'starter_pack');
+      return {
+        ...sharedUserData,
+        tokenId: regularNft?.tokenId || undefined,
+        pointsEarnedAsScout: seasonStat?.pointsEarnedAsScout || 0,
+        pointsEarnedAsDeveloper: seasonStat?.pointsEarnedAsBuilder || 0,
+        pointsEarnedTotal: user.pointsReceived
+          .filter((p) => p.season === season)
+          .reduce((acc, curr) => acc + curr.value, 0),
+        regularNftsPurchased: purchaseEvents
+          .filter((e) => e.builderNft?.nftType === 'default')
+          .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
+        regularNftsSold: regularNft?.nftSoldEvents.reduce((acc, curr) => acc + curr.tokensPurchased, 0) || 0,
+        starterNftsPurchased: purchaseEvents
+          .filter((e) => e.builderNft?.nftType === 'starter_pack')
+          .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
+        starterNftsSold: starterNft?.nftSoldEvents.reduce((acc, curr) => acc + curr.tokensPurchased, 0) || 0,
+        usdcPaidForNfts: purchaseEvents
+          .filter((e) => !e.paidInPoints)
+          .reduce((acc, curr) => acc + curr.pointsValue / 10, 0),
+        developerLevel: seasonStat?.level,
+        season,
+        referrals: builderEvents.filter((e) => e.type === 'referral').length,
+        referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
+          .length,
+        dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
+        questsCompleted: socialQuests.length,
+        waitlistTier:
+          builderEvents
+            .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
+            ?.description?.match(/achieving (.*?) status/)?.[1] || ''
+      };
+    });
   });
 
   return respondWithTSV(rows, 'scout_users_export.tsv');
