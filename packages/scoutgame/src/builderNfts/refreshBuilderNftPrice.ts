@@ -43,7 +43,7 @@ export async function refreshBuilderNftPrice({
       },
       data: {
         currentPrice: isOnchain ? undefined : Number(currentPrice),
-        currentPriceInScoutToken: isOnchain ? currentPrice.toString() : undefined
+        currentPriceDevToken: isOnchain ? currentPrice.toString() : undefined
       }
     });
 

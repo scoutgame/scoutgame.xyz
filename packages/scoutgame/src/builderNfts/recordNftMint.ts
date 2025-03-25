@@ -263,7 +263,7 @@ export async function recordNftMint(
           },
           select: {
             currentPrice: true,
-            currentPriceInScoutToken: true
+            currentPriceDevToken: true
           }
         })
       ]);

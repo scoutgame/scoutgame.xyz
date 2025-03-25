@@ -15,7 +15,7 @@ export async function getBuilderNft(builderId: string, nftType: BuilderNftType =
     select: {
       imageUrl: true,
       currentPrice: true,
-      currentPriceInScoutToken: true
+      currentPriceDevToken: true
     }
   });
 
@@ -23,6 +23,6 @@ export async function getBuilderNft(builderId: string, nftType: BuilderNftType =
 
   return {
     imageUrl: builderNft?.imageUrl as string,
-    currentPrice: isOnchain ? BigInt(builderNft?.currentPriceInScoutToken ?? 0) : builderNft?.currentPrice || BigInt(0)
+    currentPrice: isOnchain ? BigInt(builderNft?.currentPriceDevToken ?? 0) : builderNft?.currentPrice || BigInt(0)
   };
 }

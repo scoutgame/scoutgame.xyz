@@ -65,7 +65,7 @@ export async function createBuilderNftStarterPack({
       tokenId: Number(tokenId),
       season,
       currentPrice: isOnchain ? undefined : currentPrice,
-      currentPriceInScoutToken: isOnchain ? currentPrice.toString() : undefined,
+      currentPriceDevToken: isOnchain ? currentPrice.toString() : undefined,
       imageUrl: fileUrl,
       congratsImageUrl,
       nftType: 'starter_pack'

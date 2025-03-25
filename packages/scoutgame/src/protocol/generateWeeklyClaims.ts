@@ -95,7 +95,7 @@ export async function generateWeeklyClaims({
         merkleTreeRoot: rootHashWithNullByte,
         season: getCurrentSeasonStart(),
         totalClaimable: claims.reduce((acc, claim) => acc + Number(claim.amount), 0),
-        totalClaimableInScoutToken: claims.reduce((acc, claim) => acc + BigInt(claim.amount), BigInt(0)).toString(),
+        totalClaimableDevToken: claims.reduce((acc, claim) => acc + BigInt(claim.amount), BigInt(0)).toString(),
         claims: claimsBody,
         proofsMap
       }

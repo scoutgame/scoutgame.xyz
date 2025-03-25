@@ -40,7 +40,7 @@ export async function recordOnchainNftMint({
       tokenId: true,
       builderId: true,
       season: true,
-      currentPriceInScoutToken: true,
+      currentPriceDevToken: true,
       imageUrl: true,
       builder: {
         select: {
@@ -94,7 +94,7 @@ export async function recordOnchainNftMint({
       id: scoutId
     },
     data: {
-      currentBalanceInScoutToken: currentBalanceInScoutToken.toString()
+      currentBalanceDevToken: currentBalanceInScoutToken.toString()
     }
   });
   const balance = await refreshScoutNftBalance({
@@ -134,7 +134,7 @@ export async function recordOnchainNftMint({
       });
 
       const currentCardPrice = Number(
-        BigInt(builderNft.currentPriceInScoutToken || 0) / BigInt(10 ** scoutTokenDecimals)
+        BigInt(builderNft.currentPriceDevToken || 0) / BigInt(10 ** scoutTokenDecimals)
       ).toFixed(2);
 
       await sendNotifications({
