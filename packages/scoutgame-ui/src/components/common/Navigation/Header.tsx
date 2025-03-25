@@ -100,10 +100,7 @@ export function Header() {
                           <IoIosNotificationsOutline
                             style={{
                               fontSize: '26px',
-                              color: 'var(--mui-palette-secondary-light)',
-                              animation: unreadNotificationsCount?.count
-                                ? 'bell-ring 1.5s ease-in-out infinite'
-                                : 'none'
+                              color: 'var(--mui-palette-secondary-light)'
                             }}
                           />
                         </Badge>
