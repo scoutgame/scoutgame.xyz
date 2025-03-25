@@ -29,6 +29,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
+import { IoIosNotificationsOutline } from 'react-icons/io';
 
 import { useGetUnreadNotificationsCount } from '../../../hooks/api/notifications';
 import { useIsFarcasterFrame } from '../../../hooks/useIsFarcasterFrame';
@@ -96,10 +97,13 @@ export function Header() {
                     <Link href='/notifications'>
                       <IconButton size='small' sx={{ mr: { xs: 1, md: unreadNotificationsCount?.count ? 1.5 : 1 } }}>
                         <Badge badgeContent={unreadNotificationsCount?.count ?? 0} color='error'>
-                          <NotificationsOutlinedIcon
-                            sx={{
-                              color: 'text.primary',
-                              animation: unreadNotificationsCount?.count ? 'bell-ring 2s ease-in-out infinite' : 'none'
+                          <IoIosNotificationsOutline
+                            style={{
+                              fontSize: '26px',
+                              color: 'var(--mui-palette-secondary-light)',
+                              animation: unreadNotificationsCount?.count
+                                ? 'bell-ring 1.5s ease-in-out infinite'
+                                : 'none'
                             }}
                           />
                         </Badge>
