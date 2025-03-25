@@ -47,7 +47,12 @@ export async function getUser(userId?: string): Promise<SessionUser | null> {
     user.avatar = replaceS3Domain(user.avatar);
   }
 
-  return user;
+  const { wallets, ...rest } = user;
+
+  return {
+    ...rest,
+    primaryWallet: wallets[0]?.address
+  };
 }
 
 export const cacheGetUser = cache(getUser);
