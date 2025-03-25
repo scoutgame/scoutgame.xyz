@@ -34,7 +34,7 @@ import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokens
 import {
   getScoutProtocolBuilderNFTReadonlyContract,
   scoutProtocolChainId,
-  scoutTokenDecimals,
+  devTokenDecimals,
   scoutTokenErc20ContractAddress
 } from '@packages/scoutgame/protocol/constants';
 import type { MinimalUserInfo } from '@packages/users/interfaces';
@@ -101,7 +101,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const initialQuantities = [1, 11, 111];
   const pricePerNft = builder.price
     ? isOnchain
-      ? Number(builder.price) / 10 ** scoutTokenDecimals
+      ? Number(builder.price) / 10 ** devTokenDecimals
       : convertCostToPoints(builder.price).toLocaleString()
     : '';
 
@@ -151,9 +151,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const { purchaseCostInPoints, notEnoughPoints } = isOnchain
     ? {
-        purchaseCostInPoints: purchaseCost / BigInt(10 ** scoutTokenDecimals),
+        purchaseCostInPoints: purchaseCost / BigInt(10 ** devTokenDecimals),
         notEnoughPoints:
-          user && user.currentBalance && user.currentBalance < purchaseCost / BigInt(10 ** scoutTokenDecimals)
+          user && user.currentBalance && user.currentBalance < purchaseCost / BigInt(10 ** devTokenDecimals)
       }
     : {
         purchaseCostInPoints: convertCostToPoints(purchaseCost),
@@ -515,7 +515,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             Qty
           </Typography>
           <Typography variant='caption' color='secondary' align='left' flexGrow={1}>
-            {isOnchain ? '$SCOUT' : 'Points'}
+            {isOnchain ? 'DEV' : 'Points'}
           </Typography>
         </Stack>
         <Stack flexDirection='row' justifyContent='space-between'>
@@ -657,7 +657,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           erc20Address={getCurrencyContract(selectedPaymentOption) as Address}
           amount={amountToPay}
           onSuccess={() => refreshAllowance()}
-          decimals={selectedPaymentOption.currency === 'USDC' ? 6 : scoutTokenDecimals}
+          decimals={selectedPaymentOption.currency === 'USDC' ? 6 : devTokenDecimals}
           currency={selectedPaymentOption.currency}
         />
       )}

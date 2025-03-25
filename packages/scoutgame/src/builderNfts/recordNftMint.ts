@@ -6,18 +6,20 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { sendNotifications } from '../notifications/sendNotifications';
+import { devTokenDecimals } from '../protocol/constants';
 import { recordNftPurchaseQuests } from '../quests/recordNftPurchaseQuests';
 
-import { builderTokenDecimals } from './constants';
 import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
 import type { MintNFTParams } from './mintNFT';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
+import { convertCostToPoints } from './utils';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType' | 'scoutId'> & {
@@ -267,7 +269,9 @@ export async function recordNftMint(
           }
         })
       ]);
-      const currentCardPrice = (Number(nft.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2);
+      const currentCardPrice = isOnchainPlatform()
+        ? Number(nft.currentPriceDevToken) / 10 ** devTokenDecimals
+        : convertCostToPoints(nft.currentPrice || BigInt(0));
 
       await sendNotifications({
         notificationType: 'builder_card_scouted',
@@ -281,7 +285,7 @@ export async function recordNftMint(
             builder_card_image: builderNft.imageUrl,
             scout_name: scout.displayName,
             scout_profile_link: `https://scoutgame.xyz/u/${scout.path}`,
-            current_card_price: currentCardPrice
+            current_card_price: currentCardPrice.toString()
           }
         },
         farcaster: {

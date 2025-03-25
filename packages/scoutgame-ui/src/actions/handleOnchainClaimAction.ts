@@ -2,7 +2,7 @@
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { getScoutTokenERC20Contract, scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { getScoutTokenERC20Contract } from '@packages/scoutgame/protocol/constants';
 import { revalidatePath } from 'next/cache';
 import type { Address } from 'viem';
 import * as yup from 'yup';

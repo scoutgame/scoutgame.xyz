@@ -4,7 +4,7 @@ import { getCurrentWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
 import { sendNotifications } from '../notifications/sendNotifications';
-import { getScoutTokenERC20Contract, scoutTokenDecimals } from '../protocol/constants';
+import { getScoutTokenERC20Contract, devTokenDecimals } from '../protocol/constants';
 
 import { refreshBuilderNftPrice } from './refreshBuilderNftPrice';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
@@ -134,7 +134,7 @@ export async function recordOnchainNftMint({
       });
 
       const currentCardPrice = Number(
-        BigInt(builderNft.currentPriceDevToken || 0) / BigInt(10 ** scoutTokenDecimals)
+        BigInt(builderNft.currentPriceDevToken || 0) / BigInt(10 ** devTokenDecimals)
       ).toFixed(2);
 
       await sendNotifications({

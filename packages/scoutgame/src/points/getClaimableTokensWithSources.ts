@@ -7,7 +7,7 @@ import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
 
 import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
-import { scoutTokenDecimals } from '../protocol/constants';
+import { devTokenDecimals } from '../protocol/constants';
 import type { WeeklyClaimsTyped } from '../protocol/generateWeeklyClaims';
 
 import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
@@ -81,11 +81,11 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     if (receipt.event.type === 'gems_payout' && receipt.event.builderId !== userId) {
       if (!builderIdScoutPointsRecord[receipt.event.builderId]) {
         builderIdScoutPointsRecord[receipt.event.builderId] = Number(
-          BigInt(receipt.value) / BigInt(10 ** scoutTokenDecimals)
+          BigInt(receipt.value) / BigInt(10 ** devTokenDecimals)
         );
       } else {
         builderIdScoutPointsRecord[receipt.event.builderId] += Number(
-          BigInt(receipt.value) / BigInt(10 ** scoutTokenDecimals)
+          BigInt(receipt.value) / BigInt(10 ** devTokenDecimals)
         );
       }
     }

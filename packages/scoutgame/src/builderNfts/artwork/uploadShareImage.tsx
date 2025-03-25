@@ -5,8 +5,8 @@ import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
-import { scoutTokenDecimals } from '../../protocol/constants';
-import { builderTokenDecimals } from '../constants';
+import { devTokenDecimals } from '../../protocol/constants';
+import { convertCostToPoints } from '../utils';
 
 import { builderNftArtworkContractName } from './constants';
 import { generateShareImage } from './generateShareImage';
@@ -36,8 +36,8 @@ export async function uploadShareImage({
     stats,
     builderScouts,
     builderPrice: isOnchainPlatform()
-      ? (Number(builderNft?.currentPrice || 0) / 10 ** scoutTokenDecimals).toFixed(2)
-      : (Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals).toFixed(2)
+      ? (Number(builderNft?.currentPrice || 0) / 10 ** devTokenDecimals).toFixed(2)
+      : convertCostToPoints(builderNft?.currentPrice || BigInt(0)).toFixed(2)
   });
 
   const imagePath = getShareImagePath({

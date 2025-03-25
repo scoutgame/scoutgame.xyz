@@ -4,7 +4,7 @@ import type { BuilderStatus } from '@charmverse/core/prisma';
 import { LoadingButton } from '@mui/lab';
 import { Button, Stack, Typography } from '@mui/material';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import { scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -36,7 +36,7 @@ export function ScoutButton({
   const isAuthenticated = Boolean(user?.id);
 
   const purchaseCostInPoints = isOnchainPlatform()
-    ? Number(builder?.price || 0) / 10 ** scoutTokenDecimals
+    ? Number(builder?.price || 0) / 10 ** devTokenDecimals
     : convertCostToPoints(builder?.price || BigInt(0));
 
   const handleClick = () => {

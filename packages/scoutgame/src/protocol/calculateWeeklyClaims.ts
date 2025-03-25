@@ -11,7 +11,7 @@ import { type Address } from 'viem';
 
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 
-import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId, scoutTokenDecimals } from './constants';
+import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId, devTokenDecimals } from './constants';
 import type { TokenOwnership } from './resolveTokenOwnership';
 
 type ClaimsBody = {
@@ -183,7 +183,7 @@ export async function calculateWeeklyClaims({
 
         const builderTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
           eventId: builderEventId,
-          value: (BigInt(tokensForBuilder) * BigInt(10 ** scoutTokenDecimals)).toString(),
+          value: (BigInt(tokensForBuilder) * BigInt(10 ** devTokenDecimals)).toString(),
           recipientWalletAddress: builderWallet
         };
 
@@ -228,7 +228,7 @@ export async function calculateWeeklyClaims({
   // Convert to final claims array
   const claims: ProvableClaim[] = Array.from(claimsByWallet.entries()).map(([address, amount]) => ({
     address: address as Address,
-    amount: (BigInt(amount) * BigInt(10 ** scoutTokenDecimals)).toString()
+    amount: (BigInt(amount) * BigInt(10 ** devTokenDecimals)).toString()
   }));
 
   const merkleProofs = generateMerkleTree(claims);

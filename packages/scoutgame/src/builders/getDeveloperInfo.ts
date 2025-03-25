@@ -6,7 +6,7 @@ import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
-import { scoutTokenDecimals } from '../protocol/constants';
+import { devTokenDecimals } from '../protocol/constants';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -253,7 +253,7 @@ export async function getDeveloperInfo({
     last14DaysRank: normalizeLast14DaysRank(developer.builderCardActivities[0]),
     starterCard: {
       estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(starterCard.estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(starterCard.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals))
         : starterCard.estimatedPayout || 0,
       price: isOnchainPlatform()
         ? BigInt(starterCard.currentPriceDevToken || 0)
@@ -265,7 +265,7 @@ export async function getDeveloperInfo({
     },
     regularCard: {
       estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(regularCard.estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(regularCard.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals))
         : regularCard.estimatedPayout || 0,
       price: isOnchainPlatform()
         ? BigInt(regularCard.currentPriceDevToken || 0)

@@ -5,7 +5,7 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
-import { scoutTokenDecimals } from '../protocol/constants';
+import { devTokenDecimals } from '../protocol/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -143,7 +143,7 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       builderStatus: builder.builderStatus!,
       level: builder.userSeasonStats[0]?.level || 0,
       estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
         : builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default,
