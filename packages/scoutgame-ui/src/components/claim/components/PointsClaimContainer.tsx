@@ -4,7 +4,7 @@ import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getCla
 import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getUnclaimedPartnerRewards } from '@packages/scoutgame/points/getPartnerRewards';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import { Suspense } from 'react';
 
 import { LoadingTable } from '../../common/Loading/LoadingTable';
@@ -20,9 +20,7 @@ export async function PointsClaimContainer() {
     return null;
   }
 
-  const platform = getPlatform();
-
-  const isOnchainApp = platform === 'onchain_webapp';
+  const isOnchainApp = isOnchainPlatform();
 
   const [err, data] = await safeAwaitSSRData(
     Promise.all([

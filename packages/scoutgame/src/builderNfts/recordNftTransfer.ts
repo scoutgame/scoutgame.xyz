@@ -11,6 +11,7 @@ import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
 import { builderNftChain } from './constants';
 import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
+import { refreshNftPurchaseStats } from './refreshNftPurchaseStats';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 type RecordNftTransferParams = {
@@ -29,6 +30,11 @@ export async function recordNftTransfer({
         equals: contractAddress,
         mode: 'insensitive'
       }
+    },
+    select: {
+      builderId: true,
+      season: true,
+      id: true
     }
   });
 
@@ -119,12 +125,35 @@ export async function recordNftTransfer({
   }
 
   if (toWallet) {
+    // To wallet is the new owner of the NFT ie the scout
     await refreshScoutNftBalance({
       wallet: toWallet as Address,
       tokenId: Number(transferSingleEvent.args.id),
       contractAddress,
       nftType: 'default'
     });
+
+    try {
+      const scoutWallet = await prisma.scoutWallet.findUniqueOrThrow({
+        where: {
+          address: toWallet
+        },
+        select: {
+          scoutId: true
+        }
+      });
+
+      await refreshNftPurchaseStats({
+        scoutId: scoutWallet.scoutId,
+        builderId: matchingNft.builderId,
+        season: matchingNft.season
+      });
+    } catch (error) {
+      log.error('Error finding scout wallet', {
+        error,
+        scoutWalletAddress: transferSingleEvent.args.to.toLowerCase()
+      });
+    }
   }
 
   scoutgameMintsLogger.info(

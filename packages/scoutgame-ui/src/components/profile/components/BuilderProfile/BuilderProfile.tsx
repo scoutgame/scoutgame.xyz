@@ -3,11 +3,14 @@ import 'server-only';
 import { prisma } from '@charmverse/core/prisma-client';
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderActivities';
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
@@ -18,13 +21,7 @@ import { BuilderActivitiesList } from './BuilderActivitiesList';
 import { BuilderStats } from './BuilderStats';
 import { BuilderWeeklyStats } from './BuilderWeeklyStats';
 
-export async function BuilderProfile({
-  builder,
-  hideGithubButton
-}: {
-  builder: BuilderUserInfo;
-  hideGithubButton?: boolean;
-}) {
+export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) {
   const [builderNft, builderStats, builderActivities = [], { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {}] =
     builder.builderStatus === 'approved'
       ? await Promise.all([
@@ -38,7 +35,7 @@ export async function BuilderProfile({
             },
             select: {
               imageUrl: true,
-              // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+              currentPriceDevToken: true,
               currentPrice: true
             }
           }),
@@ -109,8 +106,11 @@ export async function BuilderProfile({
         builderPoints={builderStats?.seasonPoints}
         totalScouts={totalScouts}
         totalNftsSold={totalNftsSold}
-        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-        currentNftPrice={builderNft?.currentPrice}
+        currentNftPrice={
+          isOnchainPlatform()
+            ? Number(builderNft?.currentPriceDevToken || 0) / 10 ** devTokenDecimals
+            : convertCostToPoints(builderNft?.currentPrice || BigInt(0))
+        }
       />
       <Stack gap={0.5}>
         <Typography color='secondary'>This Week</Typography>

@@ -969,6 +969,7 @@ export async function mockWeeklyClaims({ week, season }: { week: string; season:
       claims: [],
       proofsMap: {},
       totalClaimable: 0,
+      totalClaimableDevToken: '0',
       merkleTreeRoot: ''
     }
   });

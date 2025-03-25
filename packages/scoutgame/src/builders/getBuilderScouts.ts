@@ -2,7 +2,10 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BasicUserInfoSelect } from '@packages/users/queries';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import { isTruthy } from '@packages/utils/types';
+
+import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
 
 export type ScoutInfo = BasicUserInfo & {
   displayName: string;

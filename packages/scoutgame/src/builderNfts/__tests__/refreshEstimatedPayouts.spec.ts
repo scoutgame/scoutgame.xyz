@@ -1,12 +1,14 @@
 import { BuilderEventType, BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
+import { seasons } from '@packages/dates/config';
 import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 
 import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 
 jest.unstable_mockModule('@packages/dates/utils', () => ({
-  getCurrentSeasonStart: jest.fn((week) => week)
+  getCurrentSeasonStart: jest.fn((week) => week),
+  getCurrentSeason: jest.fn(() => seasons[2])
 }));
 
 const defaultScoutShare = 0.7;

@@ -1,9 +1,12 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
+import { devTokenDecimals } from '../../protocol/constants';
+import { convertCostToPoints } from '../utils';
 
 import { builderNftArtworkContractName } from './constants';
 import { generateShareImage } from './generateShareImage';
@@ -26,19 +29,15 @@ export async function uploadShareImage({
     getBuilderScouts(builderId),
     getBuilderNft(builderId)
   ]);
-  // Just for testing
-  // const activities = await getBuilderActivities({ builderId: '745c9ffd-278f-4e91-8b94-beaded2ebcd1', limit: 3 });
-  // const stats = await getBuilderStats('745c9ffd-278f-4e91-8b94-beaded2ebcd1');
-  // const builderScouts = await getBuilderScouts('745c9ffd-278f-4e91-8b94-beaded2ebcd1');
-  // const builderNft = await getBuilderNft('745c9ffd-278f-4e91-8b94-beaded2ebcd1');
 
   const imageBuffer = await generateShareImage({
     userImage,
     activities,
     stats,
     builderScouts,
-    // TODO: use currentPriceInScoutToken when we move to $SCOUT
-    builderPrice: builderNft?.currentPrice || BigInt(0)
+    builderPrice: isOnchainPlatform()
+      ? (Number(builderNft?.currentPrice || 0) / 10 ** devTokenDecimals).toFixed(2)
+      : convertCostToPoints(builderNft?.currentPrice || BigInt(0)).toFixed(2)
   });
 
   const imagePath = getShareImagePath({

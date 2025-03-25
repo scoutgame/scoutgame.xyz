@@ -4,13 +4,11 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
-import { optimism } from 'viem/chains';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from './constants';
 import { mintNFT } from './mintNFT';
 import { schema } from './purchaseWithPointsSchema';
 import { convertCostToPoints } from './utils';
@@ -49,23 +47,17 @@ export const purchaseWithPointsAction = authActionClient
       throw new Error('Scout not found');
     }
 
-    // TODO: use the correct client for the season when we move to $SCOUT
     const currentPrice = await (parsedInput.nftType === 'starter_pack'
-      ? getBuilderNftStarterPackReadonlyClient({
-          chain: optimism,
-          contractAddress: getBuilderNftStarterPackContractAddress(getCurrentSeasonStart())
-        }).getTokenPurchasePrice({
+      ? getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
           args: { amount: BigInt(parsedInput.amount) }
         })
-      : getPreSeasonTwoBuilderNftContractReadonlyClient({
-          chain: optimism,
-          contractAddress: getBuilderNftContractAddress(getCurrentSeasonStart())
-        }).getTokenPurchasePrice({
+      : getBuilderNftContractReadonlyClient().getTokenPurchasePrice({
           args: { tokenId: BigInt(builderNft.tokenId), amount: BigInt(parsedInput.amount) }
         }));
 
     const pointsValue = convertCostToPoints(currentPrice);
-    if (scout.currentBalance < pointsValue) {
+
+    if ((scout.currentBalance || 0) < pointsValue) {
       throw new Error('Insufficient points');
     }
 

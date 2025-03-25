@@ -2,7 +2,6 @@ import env from '@beam-australia/react-env';
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import { createPublicClient, http } from 'viem';
-import { optimism } from 'viem/chains';
 
 import { getChainById } from './chains';
 import { getAlchemyBaseUrl } from './getAlchemyBaseUrl';

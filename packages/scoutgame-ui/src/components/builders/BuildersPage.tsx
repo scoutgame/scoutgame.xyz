@@ -64,11 +64,12 @@ export async function BuildersPage({ week, tab, builderSort, builderOrder, user 
 
 export function MainContent({ week, tab, builderSort, builderOrder, user }: Props) {
   const isBuilder = !!user?.builderStatus;
+  const hasPrimaryWallet = !!user?.primaryWallet;
 
-  return isBuilder ? (
+  return isBuilder && hasPrimaryWallet ? (
     <BuildersMainContent week={week} tab={tab} builderSort={builderSort} builderOrder={builderOrder} user={user} />
   ) : (
-    <ScoutsMainContent />
+    <ScoutsMainContent isBuilder={isBuilder} />
   );
 }
 
@@ -107,12 +108,12 @@ export async function BuildersMainContent({ week, tab, builderSort, builderOrder
   );
 }
 
-export async function ScoutsMainContent() {
+export async function ScoutsMainContent({ isBuilder }: { isBuilder: boolean }) {
   return (
     <>
       {/* Scout mobile */}
       <Stack display={{ xs: 'block', md: 'none' }}>
-        <BuilderPageInviteCard />
+        <BuilderPageInviteCard isBuilder={isBuilder} />
       </Stack>
       {/* Scout desktop and mobile */}
       <ScoutsInfo />
@@ -122,8 +123,9 @@ export async function ScoutsMainContent() {
 
 export async function SidebarContent({ user, week }: Pick<Props, 'user' | 'week'>) {
   const isBuilder = !!user?.builderStatus;
+  const hasPrimaryWallet = !!user?.primaryWallet;
 
-  return isBuilder ? (
+  return isBuilder && hasPrimaryWallet ? (
     <Stack>
       <Typography variant='h5' color='secondary' textAlign='center' my={1}>
         Recent Activity
@@ -134,7 +136,7 @@ export async function SidebarContent({ user, week }: Pick<Props, 'user' | 'week'
     </Stack>
   ) : (
     <Stack>
-      <BuilderPageInviteCard />
+      <BuilderPageInviteCard isBuilder={isBuilder} />
     </Stack>
   );
 }

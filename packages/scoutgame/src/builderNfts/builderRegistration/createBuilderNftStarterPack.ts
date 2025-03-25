@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
 import { uploadMetadata } from '../artwork/uploadMetadata';
@@ -29,7 +30,6 @@ export async function createBuilderNftStarterPack({
 }) {
   contractAddress = contractAddress ?? getBuilderNftStarterPackContractAddress(season);
 
-  // TODO: use the correct client for the season when we move to $SCOUT
   const currentPrice = await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
     args: { amount: BigInt(1) }
   });
@@ -55,6 +55,8 @@ export async function createBuilderNftStarterPack({
     starterPack: true
   });
 
+  const isOnchain = isOnchainPlatform();
+
   const builderNft = await prisma.builderNft.create({
     data: {
       builderId,
@@ -62,7 +64,8 @@ export async function createBuilderNftStarterPack({
       contractAddress,
       tokenId: Number(tokenId),
       season,
-      currentPrice,
+      currentPrice: isOnchain ? undefined : currentPrice,
+      currentPriceDevToken: isOnchain ? currentPrice.toString() : undefined,
       imageUrl: fileUrl,
       congratsImageUrl,
       nftType: 'starter_pack'

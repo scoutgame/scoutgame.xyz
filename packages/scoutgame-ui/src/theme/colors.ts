@@ -2,7 +2,7 @@ export const brandColor = '#A06CD5'; // purple
 export const purpleDisabled = '#332245';
 export const secondaryText = '#69DDFF'; // blue
 export const blackText = '#191919'; // black
-export const secondaryLightText = '#D8E1FF'; // light blue
+export const secondaryLightText = '#D8E1FF'; // light grey
 export const secondaryDarkText = '#0580A4'; // dark blue
 export const primaryTextColorDarkMode = '#D8E1FF';
 

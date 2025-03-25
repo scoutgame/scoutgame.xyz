@@ -2,7 +2,7 @@ import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import type { ISOWeek } from '@packages/dates/config';
 import type { Address } from 'viem';
-import { baseSepolia, optimism } from 'viem/chains';
+import { base, baseSepolia, optimism } from 'viem/chains';
 
 import { getTransferSingleWithBatchMerged } from '../builderNfts/accounting/getTransferSingleWithBatchMerged';
 /**
@@ -23,7 +23,15 @@ export async function resolveTokenOwnership({
 
   const allEvents = await getTransferSingleWithBatchMerged({
     // These from number correspond to the earliest activity ranges for our NFTs
-    fromBlock: chainId === baseSepolia.id ? 19_000_000 : chainId === optimism.id ? 126_000_000 : 1,
+    fromBlock:
+      chainId === baseSepolia.id
+        ? 19_000_000
+        : chainId === base.id
+          ? // TODO: Change the block number once the nft contract is deployed
+            27_250_000
+          : chainId === optimism.id
+            ? 126_000_000
+            : 1,
     toBlock: lastBlock,
     chainId,
     contractAddress
