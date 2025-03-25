@@ -110,7 +110,7 @@ export async function writeSeededBuildersToDatabase({
       chainId: 10,
       contractAddress: `0x${season}`,
       tokenId: index + 1,
-      currentPriceInScoutToken: String(20 * 10 ** 18),
+      currentPriceDevToken: String(20 * 10 ** 18),
       currentPrice: BigInt(20),
       imageUrl: `https://example.com/image-${index}.png`,
       season

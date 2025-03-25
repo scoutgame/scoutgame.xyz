@@ -41,7 +41,7 @@ export async function BuilderProfile({
             },
             select: {
               imageUrl: true,
-              currentPriceInScoutToken: true,
+              currentPriceDevToken: true,
               currentPrice: true
             }
           }),
@@ -114,7 +114,7 @@ export async function BuilderProfile({
         totalNftsSold={totalNftsSold}
         currentNftPrice={
           isOnchainPlatform()
-            ? Number(builderNft?.currentPriceInScoutToken || 0) / 10 ** scoutTokenDecimals
+            ? Number(builderNft?.currentPriceDevToken || 0) / 10 ** scoutTokenDecimals
             : Number(builderNft?.currentPrice || 0) / 10 ** builderTokenDecimals
         }
       />

@@ -53,14 +53,14 @@ export async function getBuildersByFid({
             contractAddress: true,
             imageUrl: true,
             congratsImageUrl: true,
-            currentPriceInScoutToken: true,
+            currentPriceDevToken: true,
             currentPrice: true,
             nftSoldEvents: {
               distinct: 'walletAddress'
             },
             nftType: true,
             estimatedPayout: true,
-            estimatedPayoutInScoutToken: true
+            estimatedPayoutDevToken: true
           }
         },
         builderCardActivities: {
@@ -95,7 +95,7 @@ export async function getBuildersByFid({
         path: scout.path,
         displayName: scout.displayName,
         price: isOnchainPlatform()
-          ? BigInt(scout.builderNfts?.[0]?.currentPriceInScoutToken ?? 0)
+          ? BigInt(scout.builderNfts?.[0]?.currentPriceDevToken ?? 0)
           : (scout.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
         scoutedBy: scout.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
         rank: scout.userWeeklyStats[0]?.rank ?? -1,
@@ -103,7 +103,7 @@ export async function getBuildersByFid({
         farcasterId: scout.farcasterId,
         level: scout.userSeasonStats[0]?.level ?? 0,
         estimatedPayout: isOnchainPlatform()
-          ? Number(BigInt(scout.builderNfts?.[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+          ? Number(BigInt(scout.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
           : (scout.builderNfts?.[0]?.estimatedPayout ?? 0),
         last14DaysRank: normalizeLast14DaysRank(scout.builderCardActivities[0]),
         contractAddress: scout.builderNfts[0]?.contractAddress || '',

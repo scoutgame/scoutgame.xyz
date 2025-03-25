@@ -116,9 +116,9 @@ export async function getDeveloperInfo({
         },
         select: {
           estimatedPayout: true,
-          estimatedPayoutInScoutToken: true,
+          estimatedPayoutDevToken: true,
           currentPrice: true,
-          currentPriceInScoutToken: true,
+          currentPriceDevToken: true,
           imageUrl: true,
           congratsImageUrl: true,
           nftType: true,
@@ -253,10 +253,10 @@ export async function getDeveloperInfo({
     last14DaysRank: normalizeLast14DaysRank(developer.builderCardActivities[0]),
     starterCard: {
       estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(starterCard.estimatedPayoutInScoutToken || 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(starterCard.estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
         : starterCard.estimatedPayout || 0,
       price: isOnchainPlatform()
-        ? BigInt(starterCard.currentPriceInScoutToken || 0)
+        ? BigInt(starterCard.currentPriceDevToken || 0)
         : BigInt(starterCard.currentPrice || 0),
       cardsSold: starterCardsSold,
       cardsSoldToScout: starterCardsSoldToScout,
@@ -265,10 +265,10 @@ export async function getDeveloperInfo({
     },
     regularCard: {
       estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(regularCard.estimatedPayoutInScoutToken || 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(regularCard.estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
         : regularCard.estimatedPayout || 0,
       price: isOnchainPlatform()
-        ? BigInt(regularCard.currentPriceInScoutToken || 0)
+        ? BigInt(regularCard.currentPriceDevToken || 0)
         : BigInt(regularCard.currentPrice || 0),
       cardsSold: regularCardsSold,
       cardsSoldToScout: regularCardsSoldToScout,

@@ -46,7 +46,7 @@ export async function getBuilderCardStats({
         },
         select: {
           estimatedPayout: true,
-          estimatedPayoutInScoutToken: true,
+          estimatedPayoutDevToken: true,
           nftType: true,
           nftOwners: loggedInScoutId
             ? {
@@ -77,7 +77,7 @@ export async function getBuilderCardStats({
   return {
     level: builder.userSeasonStats[0]?.level,
     estimatedPayout: isOnchain
-      ? Number(BigInt(defaultNft?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+      ? Number(BigInt(defaultNft?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
       : defaultNft?.estimatedPayout,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     gemsCollected: builder.userWeeklyStats[0]?.gemsCollected,

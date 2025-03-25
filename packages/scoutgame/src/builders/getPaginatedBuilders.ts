@@ -77,12 +77,12 @@ export async function getPaginatedBuilders({
               select: {
                 contractAddress: true,
                 currentPrice: true,
-                currentPriceInScoutToken: true,
+                currentPriceDevToken: true,
                 imageUrl: true,
                 nftType: true,
                 congratsImageUrl: true,
                 estimatedPayout: true,
-                estimatedPayoutInScoutToken: true,
+                estimatedPayoutDevToken: true,
                 nftSoldEvents: {
                   where: {
                     ...validMintNftPurchaseEvent,
@@ -144,7 +144,7 @@ export async function getPaginatedBuilders({
         displayName: stat.user.displayName,
         builderPoints: stat.user.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
         price: isOnchainPlatform()
-          ? BigInt(stat.user.builderNfts?.[0]?.currentPriceInScoutToken ?? 0)
+          ? BigInt(stat.user.builderNfts?.[0]?.currentPriceDevToken ?? 0)
           : (stat.user.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
         scoutedBy: uniqueValues(
           stat.user.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
@@ -154,9 +154,7 @@ export async function getPaginatedBuilders({
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
         estimatedPayout: isOnchainPlatform()
-          ? Number(
-              BigInt(stat.user.builderNfts?.[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals)
-            )
+          ? Number(BigInt(stat.user.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
           : (stat.user.builderNfts?.[0]?.estimatedPayout ?? 0),
         gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
         nftsSoldToScout:

@@ -47,7 +47,7 @@ export async function getStarterPackBuilders({
           nftType: BuilderNftType.starter_pack
         },
         select: {
-          currentPriceInScoutToken: true,
+          currentPriceDevToken: true,
           currentPrice: true,
           nftSoldEvents: userId
             ? {
@@ -62,7 +62,7 @@ export async function getStarterPackBuilders({
               }
             : undefined,
           estimatedPayout: true,
-          estimatedPayoutInScoutToken: true,
+          estimatedPayoutDevToken: true,
           imageUrl: true,
           congratsImageUrl: true
         }
@@ -98,11 +98,11 @@ export async function getStarterPackBuilders({
       displayName: builder.displayName,
       rank: builder.userWeeklyStats[0]?.rank || -1,
       price: isOnchainPlatform()
-        ? BigInt(builder.builderNfts[0]?.currentPriceInScoutToken ?? 0)
+        ? BigInt(builder.builderNfts[0]?.currentPriceDevToken ?? 0)
         : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
       level: builder.userSeasonStats[0]?.level || 0,
       estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
         : builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       builderStatus: 'approved',

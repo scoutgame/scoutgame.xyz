@@ -62,7 +62,7 @@ export async function getLeaderboard({
             },
             select: {
               currentPrice: true,
-              currentPriceInScoutToken: true,
+              currentPriceDevToken: true,
               season: true,
               imageUrl: true,
               nftType: true,
@@ -79,7 +79,7 @@ export async function getLeaderboard({
       const maxGemsCollected = weeklyTopBuilders[0].gemsCollected;
       const progress = (weeklyTopBuilder.gemsCollected / maxGemsCollected) * 100;
       const nft = weeklyTopBuilder.user.builderNfts.find((n) => n.season === season);
-      const price = isOnchainPlatform() ? BigInt(nft?.currentPriceInScoutToken ?? 0) : (nft?.currentPrice ?? BigInt(0));
+      const price = isOnchainPlatform() ? BigInt(nft?.currentPriceDevToken ?? 0) : (nft?.currentPrice ?? BigInt(0));
       return {
         id: weeklyTopBuilder.user.id,
         avatar: weeklyTopBuilder.user.avatar,

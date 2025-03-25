@@ -40,12 +40,12 @@ const userSelect = (week: string, season: string, userId?: string) =>
         nftType: BuilderNftType.default
       },
       select: {
-        currentPriceInScoutToken: true,
+        currentPriceDevToken: true,
         currentPrice: true,
         imageUrl: true,
         congratsImageUrl: true,
         estimatedPayout: true,
-        estimatedPayoutInScoutToken: true,
+        estimatedPayoutDevToken: true,
         nftSoldEvents: userId
           ? {
               where: {
@@ -136,14 +136,14 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       path: builder.path,
       displayName: builder.displayName,
       price: isOnchainPlatform()
-        ? BigInt(builder.builderNfts[0]?.currentPriceInScoutToken ?? 0)
+        ? BigInt(builder.builderNfts[0]?.currentPriceDevToken ?? 0)
         : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
       nftImageUrl: builder.builderNfts[0]?.imageUrl,
       congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl,
       builderStatus: builder.builderStatus!,
       level: builder.userSeasonStats[0]?.level || 0,
       estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
         : builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default,

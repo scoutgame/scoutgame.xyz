@@ -72,7 +72,7 @@ export async function searchBuilders({
         },
         select: {
           currentPrice: true,
-          currentPriceInScoutToken: true,
+          currentPriceDevToken: true,
           nftSoldEvents: {
             select: {
               scoutWallet: {
@@ -103,7 +103,7 @@ export async function searchBuilders({
       builder.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
     ).length,
     price: isOnchainPlatform()
-      ? Number(BigInt(builder.builderNfts?.[0]?.currentPriceInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+      ? Number(BigInt(builder.builderNfts?.[0]?.currentPriceDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
       : Number(builder.builderNfts?.[0]?.currentPrice ?? 0)
   }));
 }

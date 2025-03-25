@@ -65,7 +65,7 @@ export const handleOnchainClaimAction = authActionClient
         id: scout.id
       },
       data: {
-        currentBalanceInScoutToken: balance.toString()
+        currentBalanceDevToken: balance.toString()
       }
     });
 
