@@ -99,7 +99,7 @@ function SelectField(
             (_chain.currency === 'ETH'
               ? t.address === NULL_EVM_ADDRESS
               : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase() ||
-                t.address?.toLowerCase() === scoutTokenErc20ContractAddress().toLowerCase())
+                t.address?.toLowerCase() === scoutTokenErc20ContractAddress()?.toLowerCase())
         );
         let _balance = Number(_tokenBalanceInfo?.balance);
 
