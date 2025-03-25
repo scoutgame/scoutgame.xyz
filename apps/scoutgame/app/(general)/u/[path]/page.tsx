@@ -43,7 +43,7 @@ export default async function Profile({ params, searchParams }: Props) {
   const user = await getUserByPathCached(params.path);
   const tab = searchParams.tab || (user?.builderStatus === 'approved' ? 'builder' : 'scout');
   const session = await getSession();
-  const scoutId = session?.scoutId;
+  const loggedInUserId = session?.scoutId;
 
   if (!user || typeof tab !== 'string') {
     return notFound();
@@ -55,7 +55,7 @@ export default async function Profile({ params, searchParams }: Props) {
     <>
       <FarcasterMetadata user={user} />
       <PageContainer>
-        <PublicProfilePage scoutId={scoutId} user={user} tab={tab} scoutProjects={scoutProjects} />
+        <PublicProfilePage loggedInUserId={loggedInUserId} user={user} tab={tab} scoutProjects={scoutProjects} />
       </PageContainer>
     </>
   );

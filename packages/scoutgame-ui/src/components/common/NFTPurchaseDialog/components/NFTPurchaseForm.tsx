@@ -618,7 +618,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       ) : null}
       {addressError && (
         <Typography variant='caption' color='error' align='center' data-test='address-error'>
-          {`Address ${address} is already in use. Please connect a different wallet`}
+          {'message' in addressError
+            ? addressError.message
+            : `Address ${address} is already in use. Please connect a different wallet`}
         </Typography>
       )}
       {submitError && (

@@ -54,6 +54,10 @@ export async function getDeveloperInfo({
   path: string;
   scoutId?: string;
 }): Promise<DeveloperInfo | null> {
+  if (typeof path !== 'string') {
+    log.error('Path is not a string when looking for developer info', { path, scoutId });
+    return null;
+  }
   const season = getCurrentSeasonStart();
   const week = getCurrentWeek();
   const oneMonthAgo = DateTime.now().minus({ months: 1 }).toJSDate();
@@ -229,13 +233,13 @@ export async function getDeveloperInfo({
     firstContributionDate: firstContributionDate?.createdAt || developer.createdAt,
     level: developer.userSeasonStats[0]?.level || 0,
     cardsSold: developer.userSeasonStats[0]?.nftsSold || 0,
+    scoutedBy: developer.userSeasonStats[0]?.nftOwners || 0,
     rank: developer.userWeeklyStats[0]?.rank || 0,
     gemsCollected: developer.userWeeklyStats[0]?.gemsCollected || 0,
     githubConnectedAt: developer.githubUsers[0].createdAt,
     githubLogin: developer.githubUsers[0].login,
     farcasterUsername: developer.farcasterName || null,
     seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
-    scoutedBy: developer.userSeasonStats[0]?.nftOwners || 0,
     githubActivities: developer.events
       .filter((event) => event.githubEvent && event.gemsReceipt)
       .map((event) => ({

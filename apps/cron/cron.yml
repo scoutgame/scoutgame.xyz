@@ -2,8 +2,8 @@ version: 1
 cron:
   - name: 'process-builder-activity'
     url: '/process-builder-activity'
-    # every 20 minutes
-    schedule: '*/20 * * * *'
+    # every two hours
+    schedule: '0 */2 * * *'
 
   - name: 'process-gems-payout'
     url: '/process-gems-payout'

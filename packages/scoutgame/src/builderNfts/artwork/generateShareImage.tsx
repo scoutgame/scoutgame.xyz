@@ -8,7 +8,7 @@ import type { BuilderStats } from '../../builders/getBuilderStats';
 
 import { BuilderShareImage } from './components/BuilderShareImage';
 
-const blacklistedEmojis = ['⌐◨', '-◨', '◨-'];
+const blacklistedEmojis = ['⌐◨', '-◨', '◨-', '₊'];
 
 export async function generateShareImage({
   userImage,

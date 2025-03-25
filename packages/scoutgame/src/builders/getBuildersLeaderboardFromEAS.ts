@@ -22,7 +22,7 @@ export async function getBuildersLeaderboardFromEAS({
   const seasonBuilderEvents = await fetchAttestations({
     season,
     chainId: scoutGameAttestationChainId,
-    type: 'builderStatusEvent'
+    type: 'developerStatusEvent'
   }).then((events) =>
     events.reduce(
       (acc, event) => {

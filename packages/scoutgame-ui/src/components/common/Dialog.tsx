@@ -29,6 +29,7 @@ function CloseButton({ onClick }: { onClick: () => void }) {
       aria-label='close'
       onClick={onClick}
       sx={{
+        zIndex: 1, // necessary for iOS for some reason
         position: 'absolute',
         right: 8,
         top: 8

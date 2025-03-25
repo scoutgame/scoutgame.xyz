@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { getUser } from '@packages/nextjs/session/getUser';
 
 import { sendNotifications } from '../notifications/sendNotifications';
@@ -43,6 +42,12 @@ export async function handleEmailFailedTransaction({
         }
       },
       farcaster: {
+        templateVariables: {
+          builderName: user.displayName,
+          builderPath: user.path
+        }
+      },
+      app: {
         templateVariables: {
           builderName: user.displayName,
           builderPath: user.path

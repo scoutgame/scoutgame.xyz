@@ -202,7 +202,9 @@ async function deployEASSchemas({chainId, resolverAddress, selectedSchemas}: {ch
       abi: registerSchemaAbi,
       functionName: 'register',
       args: [schema, resolverAddress, true],
-      address: easSchemaRegistryAddress
+      address: easSchemaRegistryAddress,
+      account: deployerAddress,
+      chain: chain
     });
 
     const registerReceipt = await walletClient.waitForTransactionReceipt({ hash: registerTx });
@@ -233,7 +235,9 @@ async function deployEASSchemas({chainId, resolverAddress, selectedSchemas}: {ch
           refUID: NULL_EAS_REF_UID,
           data
         }
-      }]
+      }],
+      account: deployerAddress,
+      chain: chain
     });
 
     await walletClient.waitForTransactionReceipt({ hash: namingTx });
@@ -245,6 +249,6 @@ async function deployEASSchemas({chainId, resolverAddress, selectedSchemas}: {ch
 
 
 deployEASSchemas({
-  chainId: 84532,
+  chainId: 10,
   resolverAddress: '0x0CF1faf544bF98b062995848cc03cC8714BBca52'
 })

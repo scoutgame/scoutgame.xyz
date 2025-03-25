@@ -2,33 +2,195 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isOnchainPlatform } from '@packages/utils/platform';
+import { isTruthy } from '@packages/utils/types';
+import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
-import { scoutTokenDecimals } from '../protocol/constants';
+import {
+  scoutProtocolBuilderNftContractAddress,
+  scoutProtocolChainId,
+  scoutTokenDecimals
+} from '../protocol/constants';
 
-export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Promise<BuilderInfo[]> {
-  const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
+async function getScoutedBuildersUsingProtocolBuilderNfts({
+  scoutIdInView,
+  loggedInScoutId
+}: {
+  scoutIdInView: string;
+  loggedInScoutId?: string;
+}): Promise<BuilderInfo[]> {
+  const scoutIds = [loggedInScoutId, scoutIdInView].filter(isTruthy);
+
+  const scoutedNfts = await prisma.scoutNft.findMany({
     where: {
-      builderNft: {
-        season: getCurrentSeasonStart()
-      },
       scoutWallet: {
-        scoutId
+        scoutId: scoutIdInView
+      },
+      builderNft: {
+        chainId: scoutProtocolChainId,
+        contractAddress: scoutProtocolBuilderNftContractAddress
       }
     },
     select: {
-      tokensPurchased: true,
+      balance: true,
       builderNft: {
         select: {
-          builderId: true,
-          nftType: true
+          tokenId: true
+        }
+      },
+      scoutWallet: {
+        select: {
+          scoutId: true
         }
       }
     }
   });
 
-  const uniqueBuilderIds = Array.from(new Set(nftPurchaseEvents.map((event) => event.builderNft.builderId)));
+  // Get unique builder token IDs since multiple wallets may own the same NFT
+  const uniqueTokenIds = Array.from(new Set(scoutedNfts.map((nft) => nft.builderNft.tokenId)));
+
+  // Get builder info for each unique token ID
+  const builders = await prisma.scout.findMany({
+    where: {
+      builderNfts: {
+        some: {
+          tokenId: {
+            in: uniqueTokenIds
+          },
+          chainId: scoutProtocolChainId,
+          contractAddress: scoutProtocolBuilderNftContractAddress
+        }
+      },
+      deletedAt: null
+    },
+    select: {
+      ...BasicUserInfoSelect,
+      events: {
+        where: {
+          createdAt: {
+            gte: DateTime.utc().minus({ days: 7 }).toJSDate()
+          },
+          gemsReceipt: {
+            isNot: null
+          }
+        },
+        select: {
+          createdAt: true,
+          gemsReceipt: {
+            select: {
+              value: true
+            }
+          }
+        }
+      },
+      userSeasonStats: {
+        where: {
+          season: getCurrentSeasonStart()
+        },
+        select: {
+          level: true
+        }
+      },
+      builderCardActivities: true,
+      builderNfts: {
+        where: {
+          season: getCurrentSeasonStart(),
+          contractAddress: scoutProtocolBuilderNftContractAddress
+        },
+        select: {
+          contractAddress: true,
+          imageUrl: true,
+          currentPriceDevToken: true,
+          nftType: true,
+          tokenId: true,
+          congratsImageUrl: true,
+          estimatedPayoutDevToken: true,
+          nftOwners:
+            scoutIds.length > 0
+              ? {
+                  where: {
+                    scoutWallet: {
+                      scoutId: {
+                        in: scoutIds
+                      }
+                    }
+                  }
+                }
+              : undefined
+        }
+      }
+    }
+  });
+
+  return builders
+    .map((builder) => {
+      const nftsSoldToLoggedInScout = scoutedNfts.find((s) => s.scoutWallet.scoutId === loggedInScoutId)?.balance || 0;
+      const nftsSoldToScoutInView =
+        loggedInScoutId === scoutIdInView
+          ? 0 // dont show this number if scout is looking at their own profile
+          : scoutedNfts.find((s) => s.scoutWallet.scoutId === scoutIdInView)?.balance || 0;
+      if (nftsSoldToScoutInView === 0 || loggedInScoutId === scoutIdInView) {
+        return null;
+      }
+      return {
+        ...builder,
+        nftImageUrl: builder.builderNfts[0].imageUrl,
+        nftType: builder.builderNfts[0].nftType,
+        congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
+        price: BigInt(builder.builderNfts[0].currentPriceDevToken ?? 0),
+        level: builder.userSeasonStats[0]?.level ?? 0,
+        estimatedPayout:
+          Number(BigInt(builder.builderNfts[0].estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals)) ?? 0,
+        last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
+        nftsSoldToScoutInView,
+        nftsSoldToLoggedInScout
+      };
+    })
+    .filter(isTruthy);
+}
+
+export async function getScoutedBuilders({
+  loggedInScoutId,
+  scoutIdInView
+}: {
+  loggedInScoutId?: string;
+  scoutIdInView: string;
+}): Promise<BuilderInfo[]> {
+  const scoutIds = [loggedInScoutId, scoutIdInView].filter(isTruthy);
+  if (isOnchainPlatform()) {
+    return getScoutedBuildersUsingProtocolBuilderNfts({ scoutIdInView, loggedInScoutId });
+  }
+
+  const scoutedNfts = await prisma.scoutNft.findMany({
+    where: {
+      scoutWallet: {
+        scoutId: {
+          in: scoutIds
+        }
+      },
+      builderNft: {
+        season: getCurrentSeasonStart()
+      }
+    },
+    select: {
+      balance: true,
+      builderNft: {
+        select: {
+          id: true,
+          builderId: true,
+          nftType: true
+        }
+      },
+      scoutWallet: {
+        select: {
+          scoutId: true
+        }
+      }
+    }
+  });
+
+  const uniqueBuilderIds = Array.from(new Set(scoutedNfts.map((nft) => nft.builderNft.builderId)));
 
   const builders = await prisma.scout.findMany({
     where: {
@@ -49,31 +211,18 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
       },
       builderNfts: {
         where: {
-          season: getCurrentSeasonStart()
+          season: getCurrentSeasonStart(),
+          id: {
+            in: scoutedNfts.map((nft) => nft.builderNft.id)
+          }
         },
         select: {
           contractAddress: true,
           imageUrl: true,
           currentPrice: true,
-          currentPriceInScoutToken: true,
           nftType: true,
-          nftSoldEvents: {
-            where: {
-              walletAddress: {
-                not: null
-              }
-            },
-            include: {
-              scoutWallet: {
-                select: {
-                  scoutId: true
-                }
-              }
-            }
-          },
           congratsImageUrl: true,
-          estimatedPayout: true,
-          estimatedPayoutInScoutToken: true
+          estimatedPayout: true
         }
       },
       builderCardActivities: {
@@ -94,20 +243,25 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
   });
 
   return builders.flatMap((builder) => {
+    const nftsSoldToLoggedInScout = scoutedNfts
+      .filter((s) => s.builderNft.builderId === builder.id && s.scoutWallet.scoutId === loggedInScoutId)
+      .reduce((acc, nft) => acc + nft.balance, 0);
+
     return builder.builderNfts
       .map((nft) => {
-        const nftsSoldData = nft.nftSoldEvents.reduce(
-          (acc, event) => {
-            acc.total += event.tokensPurchased;
-            if (event.scoutWallet?.scoutId === scoutId) {
-              acc.toScout += event.tokensPurchased;
-            }
-            return acc;
-          },
-          { total: 0, toScout: 0 }
-        );
+        const nftsSoldToScoutInView =
+          loggedInScoutId === scoutIdInView
+            ? 0 // dont show this number if scout is looking at their own profile
+            : scoutedNfts
+                .filter(
+                  (s) =>
+                    s.builderNft.builderId === builder.id &&
+                    s.builderNft.nftType === nft.nftType &&
+                    s.scoutWallet.scoutId === scoutIdInView
+                )
+                .reduce((acc, _nft) => acc + _nft.balance, 0);
 
-        if (nftsSoldData.toScout === 0) {
+        if (nftsSoldToScoutInView === 0 && loggedInScoutId !== scoutIdInView) {
           return null;
         }
 
@@ -117,20 +271,19 @@ export async function getScoutedBuilders({ scoutId }: { scoutId: string }): Prom
           path: builder.path,
           displayName: builder.displayName,
           builderStatus: builder.builderStatus!,
-          nftsSoldToScout: nftsSoldData.toScout,
-          price: isOnchainPlatform() ? BigInt(nft.currentPriceInScoutToken ?? 0) : (nft.currentPrice ?? BigInt(0)),
+          nftsSoldToScoutInView,
+          nftsSoldToLoggedInScout,
+          price: nft.currentPrice ?? BigInt(0),
           last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
           nftType: nft.nftType,
           gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
           congratsImageUrl: nft.congratsImageUrl,
-          estimatedPayout: isOnchainPlatform()
-            ? Number(BigInt(nft.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
-            : (nft.estimatedPayout ?? 0),
+          estimatedPayout: nft.estimatedPayout ?? 0,
           level: builder.userSeasonStats[0]?.level ?? 0
         };
 
         return nftData;
       })
-      .filter((nft) => nft !== null) as BuilderInfo[];
+      .filter(isTruthy);
   });
 }

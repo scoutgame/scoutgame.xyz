@@ -64,6 +64,9 @@ export async function approveBuilder({
       },
       farcaster: {
         templateVariables: undefined
+      },
+      app: {
+        templateVariables: undefined
       }
     });
   } catch (error) {

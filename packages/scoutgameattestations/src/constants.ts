@@ -1,9 +1,9 @@
 import env from '@beam-australia/react-env';
 import { scoutProtocolBuilderNftContractAddress } from '@packages/scoutgame/protocol/constants';
-import { isOnchainPlatform } from '@packages/utils/platform';
-import { base } from 'viem/chains';
+import { isOnchainPlatform, getPlatform } from '@packages/utils/platform';
+import { base, baseSepolia, optimism } from 'viem/chains';
 
-export const scoutGameAttestationChain = base;
+export const scoutGameAttestationChain = getPlatform() === 'onchain_webapp' ? optimism : baseSepolia;
 
 export const scoutGameAttestationChainId = scoutGameAttestationChain.id;
 

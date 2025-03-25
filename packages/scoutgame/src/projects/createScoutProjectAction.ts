@@ -1,10 +1,8 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
-import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { baseUrl } from '@packages/utils/constants';
 import { revalidatePath } from 'next/cache';
 
 import { sendNotifications } from '../notifications/sendNotifications';
@@ -42,6 +40,12 @@ export const createScoutProjectAction = authActionClient
               }
             },
             farcaster: {
+              templateVariables: {
+                projectName: createdScoutProject.name,
+                projectPath: createdScoutProject.path
+              }
+            },
+            app: {
               templateVariables: {
                 projectName: createdScoutProject.name,
                 projectPath: createdScoutProject.path

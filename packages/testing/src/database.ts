@@ -664,6 +664,8 @@ export async function mockScoutedNft({
 }
 
 export async function mockBuilderNft({
+  // ensure createdAt is unique for sorting purposes
+  createdAt = new Date(Date.now() + Math.floor(Math.random() * 1000)),
   builderId,
   chainId = 1,
   tokenId = Math.round(Math.random() * 10000000),
@@ -674,6 +676,7 @@ export async function mockBuilderNft({
   nftType,
   estimatedPayout
 }: {
+  createdAt?: Date;
   builderId: string;
   chainId?: number;
   contractAddress?: string;
@@ -722,6 +725,7 @@ export async function mockBuilderNft({
 
   const nft = await prisma.builderNft.create({
     data: {
+      createdAt,
       builderId,
       chainId,
       contractAddress,

@@ -18,7 +18,8 @@ export type BuilderMetadata = {
   gemsCollected: number;
   estimatedPayout: number | null;
   last14Days: (number | null)[];
-  nftsSoldToScout: number | null;
+  nftsSoldToLoggedInScout: number | null;
+  // nftsSoldToScoutInView: number | null;
   rank: number | null;
 };
 
@@ -26,9 +27,9 @@ export async function getBuilders({
   limit = 200,
   sortBy = 'week_gems',
   order = 'asc',
-  userId
+  loggedInScoutId
 }: {
-  userId?: string;
+  loggedInScoutId?: string;
   limit?: number;
   sortBy?: BuildersSortBy;
   order?: 'asc' | 'desc';
@@ -57,6 +58,7 @@ export async function getBuilders({
       },
       take: limit,
       select: {
+        level: true,
         user: {
           select: {
             path: true,
@@ -69,33 +71,21 @@ export async function getBuilders({
               },
               select: {
                 estimatedPayout: true,
-                estimatedPayoutInScoutToken: true,
+                estimatedPayoutDevToken: true,
                 currentPrice: true,
-                currentPriceInScoutToken: true,
-                nftSoldEvents: userId
+                currentPriceDevToken: true,
+                nftOwners: loggedInScoutId
                   ? {
                       where: {
-                        builderEvent: {
-                          season
-                        },
                         scoutWallet: {
-                          scoutId: userId
-                        },
-                        senderWalletAddress: null
+                          scoutId: loggedInScoutId
+                        }
                       },
                       select: {
-                        tokensPurchased: true
+                        balance: true
                       }
                     }
                   : undefined
-              }
-            },
-            userSeasonStats: {
-              where: {
-                season
-              },
-              select: {
-                level: true
               }
             },
             builderCardActivities: {
@@ -113,28 +103,26 @@ export async function getBuilders({
               }
             }
           }
-        },
-        level: true
+        }
       }
     });
 
-    return usersSeasonStats.map(({ user }) => ({
+    return usersSeasonStats.map(({ user, level }) => ({
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
       price: isOnchain
-        ? BigInt(user.builderNfts[0].currentPriceInScoutToken ?? 0)
+        ? BigInt(user.builderNfts[0].currentPriceDevToken ?? 0)
         : user.builderNfts[0]?.currentPrice || BigInt(0),
-      level: user.userSeasonStats[0]?.level || 0,
+      level,
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       gemsCollected: user.userWeeklyStats[0]?.gemsCollected || 0,
       estimatedPayout: isOnchain
-        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutInScoutToken || 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
         : user.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       rank: user.userWeeklyStats[0]?.rank,
-      nftsSoldToScout:
-        user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
+      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce((acc, nft) => acc + nft.balance, 0)
     }));
   } else if (sortBy === 'estimated_payout') {
     const builderNfts = await prisma.builderNft.findMany({
@@ -157,22 +145,18 @@ export async function getBuilders({
       take: limit,
       select: {
         currentPrice: true,
-        currentPriceInScoutToken: true,
+        currentPriceDevToken: true,
         estimatedPayout: true,
-        estimatedPayoutInScoutToken: true,
-        nftSoldEvents: userId
+        estimatedPayoutDevToken: true,
+        nftOwners: loggedInScoutId
           ? {
               where: {
-                builderEvent: {
-                  season
-                },
                 scoutWallet: {
-                  scoutId: userId
-                },
-                senderWalletAddress: null
+                  scoutId: loggedInScoutId
+                }
               },
               select: {
-                tokensPurchased: true
+                balance: true
               }
             }
           : undefined,
@@ -209,26 +193,19 @@ export async function getBuilders({
     });
 
     return builderNfts.map(
-      ({
-        builder,
-        nftSoldEvents,
-        currentPrice,
-        currentPriceInScoutToken,
-        estimatedPayout,
-        estimatedPayoutInScoutToken
-      }) => ({
+      ({ builder, nftOwners, currentPrice, estimatedPayout, currentPriceDevToken, estimatedPayoutDevToken }) => ({
         path: builder.path,
         avatar: builder.avatar as string,
         displayName: builder.displayName,
-        price: isOnchain ? BigInt(currentPriceInScoutToken ?? 0) : currentPrice || BigInt(0),
+        price: isOnchain ? BigInt(currentPriceDevToken ?? 0) : currentPrice || BigInt(0),
         estimatedPayout: isOnchain
-          ? Number(BigInt(estimatedPayoutInScoutToken || 0) / BigInt(10 ** scoutTokenDecimals))
+          ? Number(BigInt(estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
           : estimatedPayout || 0,
         gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
         last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
         level: builder.userSeasonStats[0]?.level || 0,
         rank: builder.userWeeklyStats[0]?.rank,
-        nftsSoldToScout: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
+        nftsSoldToLoggedInScout: nftOwners.reduce((acc, nft) => acc + nft.balance, 0) || null
       })
     );
   } else if (sortBy === 'price') {
@@ -247,19 +224,15 @@ export async function getBuilders({
       take: limit,
       select: {
         estimatedPayout: true,
-        nftSoldEvents: userId
+        nftOwners: loggedInScoutId
           ? {
               where: {
-                builderEvent: {
-                  season
-                },
                 scoutWallet: {
-                  scoutId: userId
-                },
-                senderWalletAddress: null
+                  scoutId: loggedInScoutId
+                }
               },
               select: {
-                tokensPurchased: true
+                balance: true
               }
             }
           : undefined,
@@ -293,32 +266,25 @@ export async function getBuilders({
           }
         },
         currentPrice: true,
-        currentPriceInScoutToken: true,
-        estimatedPayoutInScoutToken: true
+        currentPriceDevToken: true,
+        estimatedPayoutDevToken: true
       }
     });
 
     return builderNfts.map(
-      ({
-        builder,
-        nftSoldEvents,
-        currentPrice,
-        currentPriceInScoutToken,
-        estimatedPayout,
-        estimatedPayoutInScoutToken
-      }) => ({
+      ({ builder, nftOwners, currentPrice, estimatedPayout, currentPriceDevToken, estimatedPayoutDevToken }) => ({
         path: builder.path,
         avatar: builder.avatar as string,
         displayName: builder.displayName,
-        price: isOnchain ? BigInt(currentPriceInScoutToken ?? 0) : currentPrice || BigInt(0),
+        price: isOnchain ? BigInt(currentPriceDevToken ?? 0) : currentPrice || BigInt(0),
         gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
         last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
         level: builder.userSeasonStats[0]?.level || 0,
         rank: builder.userWeeklyStats[0]?.rank,
         estimatedPayout: isOnchain
-          ? Number(BigInt(estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+          ? Number(BigInt(estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
           : estimatedPayout || 0,
-        nftsSoldToScout: nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null
+        nftsSoldToLoggedInScout: nftOwners.reduce((acc, nft) => acc + nft.balance, 0)
       })
     );
   } else if (sortBy === 'week_gems') {
@@ -351,22 +317,18 @@ export async function getBuilders({
               },
               select: {
                 currentPrice: true,
-                currentPriceInScoutToken: true,
+                currentPriceDevToken: true,
                 estimatedPayout: true,
-                estimatedPayoutInScoutToken: true,
-                nftSoldEvents: userId
+                estimatedPayoutDevToken: true,
+                nftOwners: loggedInScoutId
                   ? {
                       where: {
-                        builderEvent: {
-                          season
-                        },
                         scoutWallet: {
-                          scoutId: userId
-                        },
-                        senderWalletAddress: null
+                          scoutId: loggedInScoutId
+                        }
                       },
                       select: {
-                        tokensPurchased: true
+                        balance: true
                       }
                     }
                   : undefined
@@ -398,13 +360,12 @@ export async function getBuilders({
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       level: user.userSeasonStats[0]?.level || 0,
       estimatedPayout: isOnchain
-        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutInScoutToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
         : user.builderNfts[0]?.estimatedPayout || 0,
       rank,
-      nftsSoldToScout:
-        user.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || null,
+      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce((acc, nft) => acc + nft.balance, 0) || null,
       price: isOnchain
-        ? BigInt(user.builderNfts[0].currentPriceInScoutToken ?? 0)
+        ? BigInt(user.builderNfts[0].currentPriceDevToken ?? 0)
         : user.builderNfts[0]?.currentPrice || BigInt(0)
     }));
   }

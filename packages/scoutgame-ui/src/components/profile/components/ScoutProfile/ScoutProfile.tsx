@@ -13,7 +13,11 @@ import { ScoutStats } from './ScoutStats';
 
 export async function ScoutProfile({ userId }: { userId: string }) {
   const [error, data] = await safeAwaitSSRData(
-    Promise.all([getUserSeasonStats(userId), getScoutStats(userId), getScoutedBuilders({ scoutId: userId })])
+    Promise.all([
+      getUserSeasonStats(userId),
+      getScoutStats(userId),
+      getScoutedBuilders({ loggedInScoutId: userId, scoutIdInView: userId })
+    ])
   );
 
   if (error) {
@@ -21,6 +25,11 @@ export async function ScoutProfile({ userId }: { userId: string }) {
   }
 
   const [seasonStats, { nftsPurchased }, scoutedBuilders] = data;
+
+  const nftsPurchasedThisSeason = scoutedBuilders.reduce(
+    (acc, builder) => acc + (builder.nftsSoldToLoggedInScout || 0),
+    0
+  );
 
   return (
     <Stack gap={1}>

@@ -19,15 +19,14 @@ export type BuilderScouts = {
 };
 
 export async function getBuilderScouts(builderId: string): Promise<BuilderScouts> {
-  const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
+  const nftPurchaseEvents = await prisma.scoutNft.findMany({
     where: {
-      // Make sure that the event is not due to a nft burn
-      walletAddress: {
-        not: null
+      builderNft: {
+        season: getCurrentSeasonStart(),
+        builderId
       },
-      builderEvent: {
-        builderId,
-        season: getCurrentSeasonStart()
+      balance: {
+        gt: 0
       },
       scoutWallet: {
         scout: {
@@ -43,7 +42,7 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
           }
         }
       },
-      tokensPurchased: true
+      balance: true
     }
   });
 
@@ -60,7 +59,7 @@ export async function getBuilderScouts(builderId: string): Promise<BuilderScouts
         nfts: 0
       };
     }
-    scoutsRecord[event.scoutWallet!.scout.id].nfts += event.tokensPurchased;
+    scoutsRecord[event.scoutWallet!.scout.id].nfts += event.balance;
   });
 
   const totalNftsSold = Object.values(scoutsRecord).reduce((acc, scout) => acc + scout.nfts, 0);

@@ -289,6 +289,12 @@ export async function recordNftMint(
             scouterName: scout.displayName,
             scouterPath: scout.path
           }
+        },
+        app: {
+          templateVariables: {
+            scouterName: scout.displayName,
+            scouterPath: scout.path
+          }
         }
       });
     } catch (error) {
