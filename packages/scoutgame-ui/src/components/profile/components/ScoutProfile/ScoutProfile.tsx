@@ -3,6 +3,7 @@ import 'server-only';
 import { Typography, Stack, Paper } from '@mui/material';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
+import { getScoutStats } from '@packages/scoutgame/scouts/getScoutStats';
 import { getUserSeasonStats } from '@packages/scoutgame/scouts/getUserSeasonStats';
 
 import { ErrorSSRMessage } from '../../../common/ErrorSSRMessage';
@@ -12,14 +13,18 @@ import { ScoutStats } from './ScoutStats';
 
 export async function ScoutProfile({ userId }: { userId: string }) {
   const [error, data] = await safeAwaitSSRData(
-    Promise.all([getUserSeasonStats(userId), getScoutedBuilders({ loggedInScoutId: userId, scoutIdInView: userId })])
+    Promise.all([
+      getUserSeasonStats(userId),
+      getScoutStats(userId),
+      getScoutedBuilders({ loggedInScoutId: userId, scoutIdInView: userId })
+    ])
   );
 
   if (error) {
     return <ErrorSSRMessage />;
   }
 
-  const [seasonStats, scoutedBuilders] = data;
+  const [seasonStats, { nftsPurchased }, scoutedBuilders] = data;
 
   const nftsPurchasedThisSeason = scoutedBuilders.reduce(
     (acc, builder) => acc + (builder.nftsSoldToLoggedInScout || 0),
@@ -30,7 +35,7 @@ export async function ScoutProfile({ userId }: { userId: string }) {
     <Stack gap={1}>
       <ScoutStats
         buildersScouted={scoutedBuilders.length}
-        nftsPurchased={nftsPurchasedThisSeason}
+        nftsPurchased={nftsPurchased}
         scoutPoints={seasonStats?.pointsEarnedAsScout}
       />
       <Stack>

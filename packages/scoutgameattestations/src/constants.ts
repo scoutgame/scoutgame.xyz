@@ -1,12 +1,15 @@
 import env from '@beam-australia/react-env';
-import { getPlatform } from '@packages/utils/platform';
-import { baseSepolia, optimism } from 'viem/chains';
+import { scoutProtocolBuilderNftContractAddress } from '@packages/scoutgame/protocol/constants';
+import { isOnchainPlatform, getPlatform } from '@packages/utils/platform';
+import { base, baseSepolia, optimism } from 'viem/chains';
 
 export const scoutGameAttestationChain = getPlatform() === 'onchain_webapp' ? optimism : baseSepolia;
 
 export const scoutGameAttestationChainId = scoutGameAttestationChain.id;
 
-export const SCOUTGAME_METADATA_PATH_PREFIX = process.env.SCOUTGAME_METADATA_PATH_PREFIX || 'dev';
+export const SCOUTGAME_METADATA_PATH_PREFIX = isOnchainPlatform()
+  ? scoutProtocolBuilderNftContractAddress
+  : process.env.SCOUTGAME_METADATA_PATH_PREFIX || 'dev';
 
 /**
  * See attestations on https://optimism.easscan.org/schema/view/0x90a9d88d59bf8a6ff8371f9570111ae634caa46c016f7205a94f40a1c70fa4e9

@@ -1,28 +1,24 @@
 'use server';
 
 import { InvalidInputError } from '@charmverse/core/errors';
-import { log } from '@charmverse/core/log';
 import { prisma, TransactionStatus } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import {
   DecentTxFailedPermanently,
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import {
-  getScoutProtocolBuilderNFTContract,
   scoutProtocolBuilderNftContractAddress,
+  scoutProtocolBuilderStarterNftContractAddress,
   scoutTokenDecimalsMultiplier
 } from '../protocol/constants';
 
-import { isPreseason01Contract, isStarterPackContract } from './constants';
 import { recordNftMint } from './recordNftMint';
-import { refreshScoutProtocolBuilderNftPrice } from './refreshScoutProtocolBuilderNftPrice';
+import { recordOnchainNftMint } from './recordOnchainNftMint';
 import { convertCostToPoints } from './utils';
-import { validatePreseason01orStarterPackMint } from './validatePreseason01orStarterPackMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
 export async function handlePendingTransaction({
@@ -89,20 +85,12 @@ export async function handlePendingTransaction({
             sourceTxHashChainId: pendingTx.sourceChainId
           });
 
-    const useScoutIdValidation =
-      isPreseason01Contract(pendingTx.contractAddress) || isStarterPackContract(pendingTx.contractAddress);
-
     scoutgameMintsLogger.info('Transaction settled', { txHash });
 
-    const validatedMint = useScoutIdValidation
-      ? await validatePreseason01orStarterPackMint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        })
-      : await validateTransferrableNftMint({
-          chainId: pendingTx.destinationChainId,
-          txHash
-        });
+    const validatedMint = await validateTransferrableNftMint({
+      chainId: pendingTx.destinationChainId,
+      txHash
+    });
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {
@@ -121,47 +109,32 @@ export async function handlePendingTransaction({
         }
       });
 
-      if (pendingTx.contractAddress.toLowerCase() === scoutProtocolBuilderNftContractAddress()) {
-        await refreshScoutProtocolBuilderNftPrice({
-          season: getCurrentSeasonStart(),
-          builderId: builderNft.builderId
-        });
+      const pendingTxContractAddress = pendingTx.contractAddress.toLowerCase();
 
-        const balance = await getScoutProtocolBuilderNFTContract().balanceOf({
-          args: {
-            account: pendingTx.senderAddress as `0x${string}`,
-            tokenId: BigInt(pendingTx.tokenId)
-          }
-        });
+      const pointsValue = isOnchainPlatform()
+        ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
+        : convertCostToPoints(pendingTx.targetAmountReceived);
 
-        await prisma.scoutNft.upsert({
-          where: {
-            builderNftId_walletAddress: {
-              builderNftId: builderNft.id,
-              walletAddress: pendingTx.senderAddress.toLowerCase() as `0x${string}`
-            }
-          },
-          update: {
-            balance: Number(balance)
-          },
-          create: {
-            builderNftId: builderNft.id,
-            walletAddress: pendingTx.senderAddress.toLowerCase() as `0x${string}`,
-            balance: Number(balance)
-          }
+      if (
+        pendingTxContractAddress === scoutProtocolBuilderNftContractAddress.toLowerCase() ||
+        pendingTxContractAddress === scoutProtocolBuilderStarterNftContractAddress.toLowerCase()
+      ) {
+        await recordOnchainNftMint({
+          builderNftId: builderNft.id,
+          recipientAddress: pendingTx.senderAddress as `0x${string}`,
+          scoutId: pendingTx.userId,
+          amount: pendingTx.tokenAmount,
+          pointsValue,
+          txLogIndex: validatedMint.txLogIndex,
+          txHash
         });
-
-        log.info('Builder NFT balance', { balance });
       } else {
         await recordNftMint({
           amount: pendingTx.tokenAmount,
           builderNftId: builderNft.id,
           mintTxHash: txHash,
           paidWithPoints: false,
-          pointsValue:
-            getPlatform() === 'onchain_webapp'
-              ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
-              : convertCostToPoints(pendingTx.targetAmountReceived),
+          pointsValue,
           recipientAddress: pendingTx.senderAddress,
           mintTxLogIndex: validatedMint.txLogIndex
         });
@@ -169,6 +142,7 @@ export async function handlePendingTransaction({
     }
   } catch (error) {
     if (error instanceof DecentTxFailedPermanently) {
+      // Update the pending transaction status to 'failed'
       await prisma.pendingNftTransaction.update({
         where: {
           id: pendingTransactionId
@@ -179,7 +153,6 @@ export async function handlePendingTransaction({
       });
       throw error; // Rethrow the error after updating the status
     } else {
-      // Update the pending transaction status to 'failed'
       await prisma.pendingNftTransaction.update({
         where: {
           id: pendingTransactionId

@@ -13,9 +13,7 @@ async function createBuilder({ fid, githubLogin }: { fid: number; githubLogin: s
   if (!process.env.BUILDER_SMART_CONTRACT_MINTER_PRIVKEY) {
     throw new Error('BUILDER_SMART_CONTRACT_MINTER_PRIVKEY is not set');
   }
-  if (!process.env.REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41) {
-    throw new Error('REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS_2024_W41 is not set');
-  }
+
   const githubUser = await octokit.rest.users.getByUsername({ username: githubLogin });
   const profile = await getFarcasterUserById(fid);
   if (!profile) {

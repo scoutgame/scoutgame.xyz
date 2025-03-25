@@ -3,12 +3,20 @@
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
-import { getProtocolReadonlyClient } from '@packages/scoutgame/builderNfts/clients/protocol/getProtocolReadonlyClient';
+import type { ReadWriteWalletClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
+import { ScoutProtocolImplementationClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
-import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
-import { getPlatform } from '@packages/utils/platform';
+import {
+  getScoutProtocolAddress,
+  scoutProtocolChain,
+  scoutProtocolChainId,
+  devTokenDecimals
+} from '@packages/scoutgame/protocol/constants';
+import { getPlatform, isOnchainPlatform } from '@packages/utils/platform';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
@@ -44,15 +52,7 @@ const PartnerRewardRecord: Record<string, { label: string; icon: string; chain: 
   }
 };
 
-export function PointsClaimScreen({
-  totalUnclaimedPoints,
-  bonusPartners,
-  partnerRewards,
-  builders,
-  repos,
-  onchainClaimData,
-  processingPayouts
-}: {
+type PointsClaimScreenProps = {
   totalUnclaimedPoints: number;
   bonusPartners: BonusPartner[];
   partnerRewards: UnclaimedPartnerReward[];
@@ -63,7 +63,25 @@ export function PointsClaimScreen({
   repos: string[];
   onchainClaimData?: ClaimData;
   processingPayouts: boolean;
-}) {
+};
+
+export function PointsClaimScreen(props: PointsClaimScreenProps) {
+  return (
+    <RainbowKitProvider>
+      <PointsClaimScreenComponent {...props} />
+    </RainbowKitProvider>
+  );
+}
+
+function PointsClaimScreenComponent({
+  totalUnclaimedPoints,
+  bonusPartners,
+  partnerRewards,
+  builders,
+  repos,
+  onchainClaimData,
+  processingPayouts
+}: PointsClaimScreenProps) {
   const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
   const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction, {
     onSuccess() {
@@ -104,7 +122,12 @@ export function PointsClaimScreen({
       });
     }
 
-    const protocolClient = getProtocolReadonlyClient();
+    const protocolClient = new ScoutProtocolImplementationClient({
+      chain: scoutProtocolChain,
+      contractAddress: getScoutProtocolAddress(),
+      publicClient: getPublicClient(scoutProtocolChain.id),
+      walletClient: walletClient as ReadWriteWalletClient
+    });
 
     const tx = await protocolClient.multiClaim({
       args: {
@@ -165,7 +188,7 @@ export function PointsClaimScreen({
           {totalUnclaimedPoints ? (
             <>
               <Typography variant='h5' textAlign='center'>
-                You have earned Scout {platform === 'onchain_webapp' ? 'Tokens' : 'Points'}!
+                You have earned Scout {isOnchainPlatform() ? 'Tokens' : 'Points'}!
               </Typography>
 
               <Stack
@@ -186,7 +209,7 @@ export function PointsClaimScreen({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {totalUnclaimedPoints.toLocaleString()}
+                      {(totalUnclaimedPoints / 10 ** devTokenDecimals).toLocaleString()}
                     </Typography>
                     <Image
                       width={35}

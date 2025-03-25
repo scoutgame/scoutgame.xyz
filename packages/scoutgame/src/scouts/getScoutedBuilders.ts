@@ -1,14 +1,13 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
-import { getPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
-import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
+import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId, devTokenDecimals } from '../protocol/constants';
 
 async function getScoutedBuildersUsingProtocolBuilderNfts({
   scoutIdInView,
@@ -26,7 +25,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
       },
       builderNft: {
         chainId: scoutProtocolChainId,
-        contractAddress: scoutProtocolBuilderNftContractAddress()
+        contractAddress: scoutProtocolBuilderNftContractAddress
       }
     },
     select: {
@@ -56,7 +55,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
             in: uniqueTokenIds
           },
           chainId: scoutProtocolChainId,
-          contractAddress: scoutProtocolBuilderNftContractAddress()
+          contractAddress: scoutProtocolBuilderNftContractAddress
         }
       },
       deletedAt: null
@@ -93,17 +92,16 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
       builderNfts: {
         where: {
           season: getCurrentSeasonStart(),
-          contractAddress: scoutProtocolBuilderNftContractAddress()
+          contractAddress: scoutProtocolBuilderNftContractAddress
         },
         select: {
           contractAddress: true,
           imageUrl: true,
-          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-          currentPrice: true,
+          currentPriceDevToken: true,
           nftType: true,
           tokenId: true,
           congratsImageUrl: true,
-          estimatedPayout: true,
+          estimatedPayoutDevToken: true,
           nftOwners:
             scoutIds.length > 0
               ? {
@@ -136,9 +134,10 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
         nftImageUrl: builder.builderNfts[0].imageUrl,
         nftType: builder.builderNfts[0].nftType,
         congratsImageUrl: builder.builderNfts[0].congratsImageUrl,
-        price: builder.builderNfts[0].currentPrice ?? BigInt(0),
+        price: BigInt(builder.builderNfts[0].currentPriceDevToken ?? 0),
         level: builder.userSeasonStats[0]?.level ?? 0,
-        estimatedPayout: builder.builderNfts[0]?.estimatedPayout ?? 0,
+        estimatedPayout:
+          Number(BigInt(builder.builderNfts[0].estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0,
         last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
         nftsSoldToScoutInView,
         nftsSoldToLoggedInScout
@@ -155,7 +154,7 @@ export async function getScoutedBuilders({
   scoutIdInView: string;
 }): Promise<BuilderInfo[]> {
   const scoutIds = [loggedInScoutId, scoutIdInView].filter(isTruthy);
-  if (getPlatform() === 'onchain_webapp') {
+  if (isOnchainPlatform()) {
     return getScoutedBuildersUsingProtocolBuilderNfts({ scoutIdInView, loggedInScoutId });
   }
 
@@ -216,7 +215,6 @@ export async function getScoutedBuilders({
         select: {
           contractAddress: true,
           imageUrl: true,
-          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
           nftType: true,
           congratsImageUrl: true,
@@ -271,7 +269,7 @@ export async function getScoutedBuilders({
           builderStatus: builder.builderStatus!,
           nftsSoldToScoutInView,
           nftsSoldToLoggedInScout,
-          price: nft.currentPrice ?? 0,
+          price: nft.currentPrice ?? BigInt(0),
           last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
           nftType: nft.nftType,
           gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,

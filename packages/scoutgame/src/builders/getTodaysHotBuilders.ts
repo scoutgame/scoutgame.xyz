@@ -2,8 +2,10 @@ import type { Prisma } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+import { devTokenDecimals } from '../protocol/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -38,11 +40,12 @@ const userSelect = (week: string, season: string, userId?: string) =>
         nftType: BuilderNftType.default
       },
       select: {
-        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+        currentPriceDevToken: true,
         currentPrice: true,
         imageUrl: true,
         congratsImageUrl: true,
         estimatedPayout: true,
+        estimatedPayoutDevToken: true,
         nftSoldEvents: userId
           ? {
               where: {
@@ -132,12 +135,16 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       id: builder.id,
       path: builder.path,
       displayName: builder.displayName,
-      price: builder.builderNfts[0]?.currentPrice ?? 0,
+      price: isOnchainPlatform()
+        ? BigInt(builder.builderNfts[0]?.currentPriceDevToken ?? 0)
+        : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
       nftImageUrl: builder.builderNfts[0]?.imageUrl,
       congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl,
       builderStatus: builder.builderStatus!,
       level: builder.userSeasonStats[0]?.level || 0,
-      estimatedPayout: builder.builderNfts[0]?.estimatedPayout || 0,
+      estimatedPayout: isOnchainPlatform()
+        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
+        : builder.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default,
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
