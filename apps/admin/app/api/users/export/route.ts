@@ -107,9 +107,6 @@ export async function GET() {
       userWeeklyStats: true,
       pointsReceived: true,
       builderNfts: {
-        where: {
-          nftType: 'default'
-        },
         select: {
           season: true,
           nftType: true,
