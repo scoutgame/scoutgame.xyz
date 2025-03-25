@@ -4,12 +4,12 @@ import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
+import type { DeveloperMetadata, DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
@@ -28,14 +28,14 @@ function SortIcon({ columnName, order, sort }: { columnName: string; order: stri
   );
 }
 
-export function BuildersTable({
-  builders,
+export function DevelopersTable({
+  developers,
   order,
   sort
 }: {
-  builders: BuilderMetadata[];
+  developers: DeveloperMetadata[];
   order: string;
-  sort: BuildersSortBy;
+  sort: DevelopersSortBy;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -137,7 +137,7 @@ export function BuildersTable({
         </TableRow>
       </TableHead>
       <TableBody>
-        {builders.map((builder, index) => (
+        {developers.map((builder, index) => (
           <TableRow
             key={builder.path}
             sx={tableRowNoPaddingSx}
@@ -171,12 +171,7 @@ export function BuildersTable({
                       />
                     </Stack>
                   ) : null}
-                  <TableCellText
-                    fontSize={isMdScreen ? '16px' : '10.5px'}
-                    overflow='hidden'
-                    textOverflow='ellipsis'
-                    noWrap
-                  >
+                  <TableCellText deskTopfontSize='16px' overflow='hidden' textOverflow='ellipsis' noWrap>
                     {builder.displayName}
                   </TableCellText>
                 </Stack>
@@ -221,7 +216,7 @@ export function BuildersTable({
                 ml={1.5}
                 justifyContent='flex-end'
               >
-                <TableCellText fontSize={isMdScreen ? '16px' : '10.5px'}>{builder.gemsCollected}</TableCellText>
+                <TableCellText deskTopfontSize='16px'>{builder.gemsCollected}</TableCellText>
                 <Image
                   width={isMdScreen ? 15 : 12.5}
                   height={isMdScreen ? 15 : 12.5}

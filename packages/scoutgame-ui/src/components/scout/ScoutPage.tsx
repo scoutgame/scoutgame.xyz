@@ -19,11 +19,13 @@ import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/Sc
 import { SearchBuildersInput } from './components/SearchBuildersInput';
 import { ScoutPageTable } from './ScoutPageTable/ScoutPageTable';
 
-export const scoutTabOptions: TabItem[] = [{ label: 'All Scouts', value: 'scouts' }];
+export const scoutTabOptions: TabItem[] = [{ label: 'Top Scouts', value: 'scouts' }];
 
-export const scoutTabMobileOptions: TabItem[] = [
-  { label: 'Developers', value: 'builders' },
-  { label: 'All Scouts', value: 'scouts' }
+export const scoutTabMobileOptions: TabItem[] = [{ label: 'Developers', value: 'builders' }, ...scoutTabOptions];
+
+const nftTypeOptions = [
+  { label: 'Developers', value: 'default' },
+  { label: 'Starters', value: 'starter' }
 ];
 
 export async function ScoutPage({
@@ -34,6 +36,7 @@ export async function ScoutPage({
   scoutTab,
   buildersLayout,
   tab,
+  nftType,
   userId
 }: {
   scoutSort: string;
@@ -43,9 +46,10 @@ export async function ScoutPage({
   scoutTab: string;
   buildersLayout: string;
   tab: string;
+  nftType: 'starter' | 'default';
   userId?: string;
 }) {
-  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder })
+  const urlString = Object.entries({ tab, scoutSort, builderSort, scoutOrder, builderOrder, nftType })
     .filter(([, value]) => isTruthy(value))
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
@@ -70,8 +74,9 @@ export async function ScoutPage({
             gap: 2
           }}
         >
+          <TabsMenu value={nftType} tabs={nftTypeOptions} queryKey='nftType' sx={{ width: '100%' }} />
           <Suspense key='scout-page-carousel' fallback={<LoadingCards count={3} withTitle={true} />}>
-            <ScoutPageCarousel />
+            <ScoutPageCarousel nftType={nftType} />
           </Suspense>
           <Stack
             position='sticky'
@@ -117,9 +122,15 @@ export async function ScoutPage({
               }
             >
               {buildersLayout === 'table' && (
-                <ScoutPageTable tab='builders' order={builderOrder} sort={builderSort} userId={userId} />
+                <ScoutPageTable
+                  tab='builders'
+                  order={builderOrder}
+                  sort={builderSort}
+                  userId={userId}
+                  nftType={nftType}
+                />
               )}
-              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} />}
+              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} nftType={nftType} />}
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -138,6 +149,7 @@ export async function ScoutPage({
                 order={tab === 'builders' ? builderOrder : scoutOrder}
                 sort={tab === 'builders' ? builderSort : scoutSort}
                 userId={userId}
+                nftType={nftType}
               />
             </Suspense>
           </Stack>
@@ -157,7 +169,7 @@ export async function ScoutPage({
             <InfoModal sx={{ position: 'absolute', right: 10, top: 3.5 }} />
           </Box>
           <Suspense fallback={<LoadingTable />}>
-            <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} userId={userId} />
+            <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} userId={userId} nftType={nftType} />
           </Suspense>
         </Grid>
       </Grid>

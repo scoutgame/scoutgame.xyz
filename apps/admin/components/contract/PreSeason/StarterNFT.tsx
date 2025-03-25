@@ -4,9 +4,9 @@ import type { ISOWeek } from '@packages/dates/config';
 
 import { getStarterPackContractData } from 'lib/contract/getStarterPackContractData';
 
-import { StarterPackView } from './StarterPackView';
+import { StarterNFTView } from './StarterNFTView';
 
-export async function StarterPack({ season }: { season: ISOWeek }) {
+export async function StarterNFT({ season }: { season: ISOWeek }) {
   const data = await getStarterPackContractData({ season });
-  return <StarterPackView {...data} />;
+  return <StarterNFTView {...data} />;
 }

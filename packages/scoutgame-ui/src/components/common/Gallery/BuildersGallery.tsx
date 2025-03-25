@@ -15,7 +15,7 @@ export function BuildersGallery({
   markStarterCardPurchased?: boolean;
 }) {
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box flexGrow={1}>
       <Grid
         container
         rowSpacing={2}

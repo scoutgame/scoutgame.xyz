@@ -1,13 +1,20 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
   builderNftChain,
+  getBuilderNftContractAddress,
   getDecentApiKey,
-  isStarterPackContract,
+  isPreseason01Contract,
+  isStarterNftContract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
-import { scoutProtocolChainId, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
+import {
+  scoutProtocolBuilderNftContractAddress,
+  scoutProtocolChainId,
+  scoutTokenErc20ContractAddress
+} from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
@@ -73,6 +80,12 @@ export function useDecentTransaction({
   contractAddress,
   useScoutToken
 }: DecentTransactionProps) {
+  const _contractAddress =
+    contractAddress ||
+    (useScoutToken ? scoutProtocolBuilderNftContractAddress : getBuilderNftContractAddress(getCurrentSeasonStart()));
+
+  const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterNftContract(_contractAddress);
+
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
@@ -90,7 +103,7 @@ export function useDecentTransaction({
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
       signature: transferableNftMintSignature,
-      args: isStarterPackContract(contractAddress)
+      args: isStarterNftContract(contractAddress)
         ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
         : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }

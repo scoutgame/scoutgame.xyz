@@ -364,7 +364,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const handleQuantityChange = (value: number | 'custom') => {
     if (builder.nftType === 'starter_pack') {
-      throw new Error('Only one starter pack can be purchased at a time');
+      throw new Error('Only one Starter card can be purchased at a time');
     }
     if (value === 'custom') {
       setSelectedQuantity('custom');

@@ -315,9 +315,18 @@ export async function recordNftMint(
   await refreshEstimatedPayouts({
     week,
     builderIdToRefresh: builderNft.builderId
-  }).catch((error) => {
-    log.error('Error refreshing estimated payouts', { error, builderId: builderNft.builderId, userId: scoutId, week });
-  });
+  })
+    .catch((error) => {
+      log.error('Error refreshing estimated payouts', {
+        error,
+        builderId: builderNft.builderId,
+        userId: scoutId,
+        week
+      });
+    })
+    .then(() => {
+      log.info('Estimated payouts refreshed', { week, userId: builderNft.builderId });
+    });
 
   await refreshScoutNftBalance({
     contractAddress: builderNft.contractAddress as Address,

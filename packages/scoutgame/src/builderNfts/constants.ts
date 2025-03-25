@@ -51,11 +51,6 @@ export function getBuilderNftStarterPackContractAddress(season: ISOWeek): Addres
   return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address;
 }
 
-/**
- * Max amount of starter pack NFTs a user can mint
- */
-export const MAX_STARTER_PACK_PURCHASES = 3;
-
 export function getBuilderNftContractAddressForNftType({
   nftType,
   season
@@ -89,7 +84,22 @@ export function getDecentApiKey() {
 // Selecting the top 100 builders
 export const weeklyRewardableBuilders = 100;
 
-export function isStarterPackContract(contractAddress: string): boolean {
+export function isPreseason01Contract(contractAddress: string): boolean {
+  const preseason01 = '2024-W41';
+
+  const preseason01Addresses = [
+    getBuilderNftContractAddress(preseason01),
+    getBuilderNftStarterPackContractAddress(preseason01)
+  ];
+
+  if (preseason01Addresses.includes(contractAddress.toLowerCase() as Address)) {
+    return true;
+  }
+
+  return false;
+}
+
+export function isStarterNftContract(contractAddress: string): boolean {
   const starterPackAddresses = [
     getBuilderNftStarterPackContractAddress('2024-W41'),
     getBuilderNftStarterPackContractAddress('2025-W02'),

@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
@@ -29,7 +28,6 @@ export async function refreshBuilderLevels({ season = getCurrentSeasonStart() }:
       }
     });
   }
-  log.info(`Refreshed builder levels for season ${season}. Ranked ${levels.length} builders`);
 
   return levels;
 }

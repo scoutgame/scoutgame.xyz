@@ -20,12 +20,12 @@ import { SignInModalMessage } from './SignInModalMessage';
 export function ScoutButton({
   builder,
   markStarterCardPurchased = false,
-  showLabel = false,
+  isStarterCard = false,
   type = 'default'
 }: {
   builder: Omit<NFTPurchaseProps['builder'], 'nftType'> & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
-  showLabel?: boolean;
+  isStarterCard?: boolean;
   type?: 'default' | 'starter_pack';
 }) {
   const trackEvent = useTrackEvent();
@@ -65,7 +65,7 @@ export function ScoutButton({
       <DynamicLoadingContext.Provider value={setDialogLoadingStatus}>
         {type === 'starter_pack' && markStarterCardPurchased ? (
           <Button variant='outlined' fullWidth disabled>
-            Purchased
+            Owned
           </Button>
         ) : (
           <LoadingButton
@@ -80,9 +80,9 @@ export function ScoutButton({
             }}
           >
             <Stack px={1} direction='row' alignItems='center' justifyContent='center' width='100%'>
-              {showLabel && (
+              {isStarterCard && (
                 <Typography variant='body2' color='inherit' sx={{ mr: 1, textTransform: 'uppercase' }}>
-                  Starter pack
+                  Starter
                 </Typography>
               )}{' '}
               <div>

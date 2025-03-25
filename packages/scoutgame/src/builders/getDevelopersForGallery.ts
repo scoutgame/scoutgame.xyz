@@ -15,20 +15,23 @@ export type CompositeCursor = {
   rank?: number | null;
 };
 
-export async function getPaginatedBuilders({
-  limit,
+export async function getDevelopersForGallery({
+  limit = 12, // multiple of 3, since we have 3 columns in the gallery
   week,
   cursor,
-  scoutId
+  scoutId,
+  nftType: _nftType
 }: {
-  limit: number;
+  limit?: number;
   week: ISOWeek;
-  cursor: CompositeCursor | null;
+  cursor?: CompositeCursor | null;
+  nftType: 'default' | 'starter';
   scoutId?: string;
-}): Promise<{ builders: BuilderInfo[]; nextCursor: CompositeCursor | null }> {
+}): Promise<{ developers: BuilderInfo[]; nextCursor: CompositeCursor | null }> {
+  const nftType = _nftType === 'default' ? BuilderNftType.default : BuilderNftType.starter_pack;
   const season = getCurrentSeasonStart(week);
 
-  const builders = await prisma.userWeeklyStats
+  const developers = await prisma.userWeeklyStats
     .findMany({
       where: {
         user: {
@@ -36,7 +39,7 @@ export async function getPaginatedBuilders({
           builderNfts: {
             some: {
               season,
-              nftType: BuilderNftType.default
+              nftType
             }
           }
         },
@@ -72,7 +75,7 @@ export async function getPaginatedBuilders({
             builderNfts: {
               where: {
                 season,
-                nftType: BuilderNftType.default
+                nftType
               },
               select: {
                 contractAddress: true,
@@ -163,7 +166,7 @@ export async function getPaginatedBuilders({
             .reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || undefined
       }))
     );
-  const userId = builders[builders.length - 1]?.id;
-  const rank = builders[builders.length - 1]?.rank;
-  return { builders, nextCursor: builders.length === limit ? { userId, rank } : null };
+  const userId = developers[developers.length - 1]?.id;
+  const rank = developers[developers.length - 1]?.rank;
+  return { developers, nextCursor: developers.length === limit ? { userId, rank } : null };
 }

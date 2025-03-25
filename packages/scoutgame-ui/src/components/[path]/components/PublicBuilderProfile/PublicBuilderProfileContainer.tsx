@@ -105,7 +105,7 @@ export function PublicBuilderProfileContainer({
                           nftImageUrl: starterPackNft.imageUrl,
                           price: starterPackNft.currentPrice || BigInt(0)
                         }}
-                        showLabel
+                        isStarterCard
                         markStarterCardPurchased={starterNftSoldToLoggedInScout}
                         type='starter_pack'
                       />
@@ -175,7 +175,7 @@ export function PublicBuilderProfileContainer({
                             nftImageUrl: starterPackNft.imageUrl,
                             price: starterPackNft.currentPrice || BigInt(0)
                           }}
-                          showLabel
+                          isStarterCard
                           markStarterCardPurchased={starterNftSoldToLoggedInScout}
                           type='starter_pack'
                         />

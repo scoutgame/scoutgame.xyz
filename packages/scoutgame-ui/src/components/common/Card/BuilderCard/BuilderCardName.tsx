@@ -10,13 +10,13 @@ import { useMdScreen } from '../../../../hooks/useMediaScreens';
 export function BuilderCardName({
   name,
   size,
-  starterPack,
+  isStarterCard,
   nftsSoldToLoggedInScout
 }: {
   nftsSoldToLoggedInScout?: number | null;
   name: string;
   size: 'x-small' | 'small' | 'medium' | 'large';
-  starterPack?: boolean;
+  isStarterCard?: boolean;
 }) {
   const maxFontSize = size === 'medium' || size === 'large' ? 16 : size === 'small' ? 12 : 11.5;
   const minFontSize = size === 'medium' || size === 'large' ? 12 : size === 'small' ? 9.5 : 8.5;
@@ -40,7 +40,7 @@ export function BuilderCardName({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        background: starterPack
+        background: isStarterCard
           ? 'linear-gradient(90deg, #86ff9e 0%, #fcff6c 50%, #86ff9e 100%)'
           : 'linear-gradient(90deg, #A06CD5 0%, #FFAC81 50%, #A06CD5 100%)'
       }}

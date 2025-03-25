@@ -1,59 +1,38 @@
-'use client';
-
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import { useState } from 'react';
 
 import { StarterPackCarousel } from '../StarterPackCarousel/StarterPackCarousel';
 import { BuildersCarousel } from '../TodaysHotBuildersCarousel/BuildersCarousel';
 
+const CAROUSEL_CONFIG = {
+  starter: {
+    title: 'Scout a Starter Card!',
+    color: 'green.main'
+  },
+  default: {
+    title: "Scout today's HOT Developers!",
+    color: 'secondary'
+  }
+};
 export function ScoutPageCarousel({
   builders,
-  starterPackBuilders,
-  remainingStarterCards,
-  scoutId
+  starterCardDevs,
+  nftType
 }: {
   builders: BuilderInfo[];
-  starterPackBuilders: StarterPackBuilder[];
-  remainingStarterCards: number;
-  scoutId?: string;
+  starterCardDevs: StarterPackBuilder[];
+  nftType: 'default' | 'starter';
 }) {
-  const [tab, setTab] = useState<'top_builders' | 'starter_pack'>('starter_pack');
+  const tabConfig = CAROUSEL_CONFIG[nftType];
 
-  const isStarterPackEnabled = starterPackBuilders.length > 0 && scoutId;
-  const nextTab = tab === 'starter_pack' ? 'top_builders' : 'starter_pack';
-  const text = tab === 'starter_pack' && isStarterPackEnabled ? 'Top Developers' : 'Starter Pack';
-  const title =
-    tab === 'starter_pack' && isStarterPackEnabled ? 'Scout the Starter Pack!' : "Scout today's HOT Developers!";
-  const color = tab === 'starter_pack' && isStarterPackEnabled ? 'green.main' : 'secondary';
-
-  const handleTabSwitch = () => setTab(nextTab);
   return (
     <Box position='relative' mb={3}>
-      {isStarterPackEnabled && (
-        <Box width='100%' display='flex' justifyContent='flex-end'>
-          <Button
-            variant='text'
-            data-test='carousel-tab-switch'
-            onClick={handleTabSwitch}
-            sx={{
-              position: { md: 'absolute' },
-              right: 0,
-              top: 18,
-              textDecoration: 'underline',
-              color: 'text.primary'
-            }}
-          >
-            {text}
-          </Button>
-        </Box>
-      )}
-      <Typography variant='h5' color={color} textAlign='center' fontWeight='bold' mb={2} mt={2}>
-        {title}
+      <Typography variant='h5' color={tabConfig.color} textAlign='center' fontWeight='bold' mb={2} mt={2}>
+        {tabConfig.title}
       </Typography>
-      {tab === 'starter_pack' && isStarterPackEnabled ? (
-        <StarterPackCarousel builders={starterPackBuilders} remainingStarterCards={remainingStarterCards} />
+      {nftType === 'starter' ? (
+        <StarterPackCarousel builders={starterCardDevs} />
       ) : (
         <BuildersCarousel builders={builders} showPromoCards />
       )}
