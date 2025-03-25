@@ -50,8 +50,8 @@ export function InviteModal({ open, onClose, signedIn }: { open: boolean; onClos
           style={{ margin: '10px auto' }}
         />
         <Typography mb={1}>
-          {tab === 'github'
-            ? 'Connect your primary wallet to earn rewards for your github contributions and weekly claims.'
+          {tab === 'wallet'
+            ? 'Connect your primary wallet to earn rewards for your github contributions and onchain activities.'
             : "Apply to be a Developer by connecting your GitHub. You'll be in the game once you make your first qualified contribution."}
         </Typography>
         {signedIn ? (
