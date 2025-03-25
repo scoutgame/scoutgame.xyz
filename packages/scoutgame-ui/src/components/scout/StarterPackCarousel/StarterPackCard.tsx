@@ -1,20 +1,14 @@
-'use client';
-
 import { Box, Button, Paper, Stack } from '@mui/material';
 import { getBuilderData } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
 import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
 import { useState } from 'react';
 
-import { useLgScreen, useMdScreen } from '../../../hooks/useMediaScreens';
 import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
 import { Dialog } from '../../common/Dialog';
 
 import { StarterPackCardDetails } from './StarterPackCardDetails';
 
 export function StarterPackCard({ builder, hasPurchased }: StarterPackBuilder) {
-  const isDesktop = useMdScreen();
-  const isLgScreen = useLgScreen();
-  const size = isLgScreen ? 'large' : isDesktop ? 'small' : 'small';
   const builderData = getBuilderData({ fid: builder.farcasterId });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -36,13 +30,7 @@ export function StarterPackCard({ builder, hasPurchased }: StarterPackBuilder) {
       }}
     >
       <Box>
-        <BuilderCard
-          builder={builder}
-          showPurchaseButton
-          markStarterCardPurchased={hasPurchased}
-          type='starter_pack'
-          size={size}
-        />
+        <BuilderCard builder={builder} showPurchaseButton markStarterCardPurchased={hasPurchased} type='starter_pack' />
       </Box>
       <Stack component={Paper} p={1} pr={{ xs: 2, md: 1 }} position='relative' justifyContent='center'>
         <StarterPackCardDetails

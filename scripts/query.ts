@@ -4,9 +4,12 @@ import { DateTime } from 'luxon';
 import { getCurrentWeek } from '@packages/dates/utils';
 
 async function query() {
-  const result = await prisma.githubRepo.count({
+  const result = await prisma.scout.findFirst({
     where: {
-      deletedAt: null
+      farcasterName: 'bdutz'
+    },
+    include: {
+      events: true
     }
   });
   prettyPrint(result);

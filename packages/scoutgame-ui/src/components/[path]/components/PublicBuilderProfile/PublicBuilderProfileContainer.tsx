@@ -158,7 +158,6 @@ export function PublicBuilderProfileContainer({
                       type='default'
                       builder={{ ...builder, nftImageUrl: defaultNft?.imageUrl, price: defaultNft?.currentPrice }}
                       showPurchaseButton
-                      size={isLgScreen ? 'large' : 'medium'}
                     />
                     {starterPackNft && (
                       <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
