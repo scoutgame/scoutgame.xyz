@@ -2,9 +2,11 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType, Prisma } from '@charmverse/core/prisma';
 import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeason } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
-import { optimism, optimismSepolia } from 'viem/chains';
+import { base, optimism, optimismSepolia } from 'viem/chains';
 
 export const decentApiKey = env('DECENT_API_KEY') || (process.env.REACT_APP_DECENT_API_KEY as string);
 
@@ -15,17 +17,16 @@ export const useTestnets = false;
  */
 export const builderTokenDecimals = 6;
 
-export const builderNftChain: Chain = useTestnets ? optimismSepolia : optimism;
+const currentSeason = getCurrentSeason();
 
-if (builderNftChain.id !== optimism.id) {
-  log.warn(`Builder NFT chain is using "${builderNftChain.name}" not Optimism`);
-}
+export const builderNftChain: Chain =
+  !currentSeason.preseason || isOnchainPlatform() ? base : useTestnets ? optimismSepolia : optimism;
 
 // Dev contracts we also deployed for easier use
-const devOptimismSepoliaBuildersContract = '0x2f6093b70562729952bf379633dee3e89922d717';
-const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9fe8a4dd';
+// const devOptimismSepoliaBuildersContract = '0x2f6093b70562729952bf379633dee3e89922d717';
+// const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9fe8a4dd';
 
-const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
+// const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
 export const realOptimismMainnetBuildersContract = '0x743ec903fe6d05e73b19a6db807271bb66100e83';
 
 export function getBuilderNftContractAddress(season: ISOWeek): Address {
@@ -88,25 +89,11 @@ export function getDecentApiKey() {
 // Selecting the top 100 builders
 export const weeklyRewardableBuilders = 100;
 
-export function isPreseason01Contract(contractAddress: string): boolean {
-  const preseason01 = '2024-W41';
-
-  const preseason01Addresses = [
-    getBuilderNftContractAddress(preseason01),
-    getBuilderNftStarterPackContractAddress(preseason01)
-  ];
-
-  if (preseason01Addresses.includes(contractAddress.toLowerCase() as Address)) {
-    return true;
-  }
-
-  return false;
-}
-
 export function isStarterPackContract(contractAddress: string): boolean {
   const starterPackAddresses = [
     getBuilderNftStarterPackContractAddress('2024-W41'),
-    getBuilderNftStarterPackContractAddress('2025-W02')
+    getBuilderNftStarterPackContractAddress('2025-W02'),
+    getBuilderNftStarterPackContractAddress('2025-W17')
   ];
 
   if (starterPackAddresses.includes(contractAddress.toLowerCase() as Address)) {

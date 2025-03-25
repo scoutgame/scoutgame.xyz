@@ -1,6 +1,9 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
+import { isOnchainPlatform } from '@packages/utils/platform';
+
+import { devTokenDecimals } from '../protocol/constants';
 
 export type BuilderSearchResult = {
   id: string;
@@ -68,8 +71,8 @@ export async function searchBuilders({
           nftType: BuilderNftType.default
         },
         select: {
-          // TODO: use the currentPriceInScoutToken when we move to $SCOUT
           currentPrice: true,
+          currentPriceDevToken: true,
           nftSoldEvents: {
             select: {
               scoutWallet: {
@@ -99,6 +102,8 @@ export async function searchBuilders({
     scoutedBy: uniqueValues(
       builder.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
     ).length,
-    price: Number(builder.builderNfts?.[0]?.currentPrice ?? 0)
+    price: isOnchainPlatform()
+      ? Number(BigInt(builder.builderNfts?.[0]?.currentPriceDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
+      : Number(builder.builderNfts?.[0]?.currentPrice ?? 0)
   }));
 }

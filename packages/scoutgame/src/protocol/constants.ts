@@ -1,22 +1,28 @@
 import env from '@beam-australia/react-env';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
+import { getCurrentSeason, getCurrentSeasonStart } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
-import { baseSepolia } from 'viem/chains';
+import { base, optimism } from 'viem/chains';
 
 import { LockupWeeklyStreamCreatorClient } from '../builderNfts/clients/protocol/wrappers/LockupWeeklyStreamCreatorClient';
 import { ScoutProtocolBuilderNFTImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutProtocolBuilderNFTImplementation';
 import { ScoutTokenERC20ImplementationClient } from '../builderNfts/clients/protocol/wrappers/ScoutTokenERC20Implementation';
+import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../builderNfts/constants';
 
 export const sablierLockupContractAddress = process.env.SABLIER_LOCKUP_CONTRACT_ADDRESS as Address;
 
 export const sablierStreamId = process.env.SABLIER_STREAM_ID as Address;
 
-export const scoutProtocolChain = baseSepolia;
+const season = getCurrentSeason();
+
+// If we are onchain or not in preseason, use base, otherwise use optimism
+export const scoutProtocolChain = isOnchainPlatform() || !season.preseason ? base : optimism;
 
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
-export const scoutTokenDecimals = 18;
+export const devTokenDecimals = 18;
 
 export const protocolStartBlock = 19_000_000;
 
@@ -38,16 +44,18 @@ export function getScoutAdminWalletClient() {
   });
 }
 
-export function getScoutProtocolBuilderNFTContract() {
-  const contractAddress = scoutProtocolBuilderNftContractAddress();
+export const scoutProtocolBuilderNftContractAddress = getBuilderNftContractAddress(getCurrentSeasonStart());
+export const scoutProtocolBuilderStarterNftContractAddress =
+  getBuilderNftStarterPackContractAddress(getCurrentSeasonStart());
 
-  if (!contractAddress) {
-    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
+export function getScoutProtocolBuilderNFTContract() {
+  if (!scoutProtocolBuilderNftContractAddress) {
+    throw new Error('REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS is not set');
   }
 
   const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
     chain: scoutProtocolChain,
-    contractAddress,
+    contractAddress: getBuilderNftContractAddress(getCurrentSeasonStart()),
     walletClient: getScoutAdminWalletClient()
   });
 
@@ -55,15 +63,13 @@ export function getScoutProtocolBuilderNFTContract() {
 }
 
 export function getScoutProtocolBuilderNFTReadonlyContract() {
-  const contractAddress = scoutProtocolBuilderNftContractAddress();
-
-  if (!contractAddress) {
-    throw new Error('REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS is not set');
+  if (!scoutProtocolBuilderNftContractAddress) {
+    throw new Error('REACT_APP_BUILDER_NFT_CONTRACT_ADDRESS is not set');
   }
 
   const builderNFTContract = new ScoutProtocolBuilderNFTImplementationClient({
     chain: scoutProtocolChain,
-    contractAddress,
+    contractAddress: scoutProtocolBuilderNftContractAddress,
     publicClient: getPublicClient(scoutProtocolChainId)
   });
 
@@ -109,11 +115,4 @@ export function getSablierLockupContract() {
 
 export function getScoutProtocolAddress(): Address {
   return (env('SCOUTPROTOCOL_CONTRACT_ADDRESS') || process.env.REACT_APP_SCOUTPROTOCOL_CONTRACT_ADDRESS) as Address;
-}
-
-export function scoutProtocolBuilderNftContractAddress() {
-  return (
-    (env('SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS') as Address) ||
-    (process.env.REACT_APP_SCOUT_PROTOCOL_BUILDER_NFT_CONTRACT_ADDRESS as Address)
-  )?.toLowerCase() as Address;
 }

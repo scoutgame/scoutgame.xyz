@@ -3,8 +3,10 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { uniqueValues } from '@packages/utils/array';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
+import { devTokenDecimals } from '../protocol/constants';
 
 export async function getBuildersByFid({
   fids,
@@ -51,13 +53,14 @@ export async function getBuildersByFid({
             contractAddress: true,
             imageUrl: true,
             congratsImageUrl: true,
-            // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+            currentPriceDevToken: true,
             currentPrice: true,
             nftSoldEvents: {
               distinct: 'walletAddress'
             },
             nftType: true,
-            estimatedPayout: true
+            estimatedPayout: true,
+            estimatedPayoutDevToken: true
           }
         },
         builderCardActivities: {
@@ -91,13 +94,17 @@ export async function getBuildersByFid({
         congratsImageUrl: scout.builderNfts[0]?.congratsImageUrl,
         path: scout.path,
         displayName: scout.displayName,
-        price: scout.builderNfts?.[0]?.currentPrice ?? 0,
+        price: isOnchainPlatform()
+          ? BigInt(scout.builderNfts?.[0]?.currentPriceDevToken ?? 0)
+          : (scout.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
         scoutedBy: scout.builderNfts?.[0]?.nftSoldEvents?.length ?? 0,
         rank: scout.userWeeklyStats[0]?.rank ?? -1,
         builderStatus: scout.builderStatus!,
         farcasterId: scout.farcasterId,
         level: scout.userSeasonStats[0]?.level ?? 0,
-        estimatedPayout: scout.builderNfts[0]?.estimatedPayout ?? 0,
+        estimatedPayout: isOnchainPlatform()
+          ? Number(BigInt(scout.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
+          : (scout.builderNfts?.[0]?.estimatedPayout ?? 0),
         last14DaysRank: normalizeLast14DaysRank(scout.builderCardActivities[0]),
         contractAddress: scout.builderNfts[0]?.contractAddress || '',
         nftType: scout.builderNfts[0]?.nftType || 'default'

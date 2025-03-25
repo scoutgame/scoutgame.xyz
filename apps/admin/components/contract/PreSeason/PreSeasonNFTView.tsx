@@ -8,18 +8,20 @@ function ContractLink({
   address,
   linkType = 'address',
   title,
-  subtitle
+  subtitle,
+  chainName
 }: {
   address: string;
   linkType?: 'address' | 'token' | 'contract';
   title: string;
   subtitle?: string;
+  chainName: string;
 }) {
   return (
     <Box gap={1} display='flex' flexDirection='column'>
       <Typography variant='h6'>{title}</Typography>
       <Box sx={{ minHeight: '40px' }}>{subtitle && <Typography variant='body2'>{subtitle}</Typography>}</Box>
-      <Link href={`https://optimism.blockscout.com/${linkType}/${address}`} target='_blank'>
+      <Link href={`https://${chainName}.blockscout.com/${linkType}/${address}`} target='_blank'>
         {address}
         <IconButton size='small' color='primary'>
           <MdLaunch size='16px' />
@@ -56,6 +58,7 @@ export function PreSeasonNFTView(data: PreSeasonNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.contractAddress}
           title='Proxy address'
           linkType='token'
@@ -64,6 +67,7 @@ export function PreSeasonNFTView(data: PreSeasonNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName='optimism'
           address={data.currentImplementation}
           title='Current Implementation'
           subtitle='This contract is called by the proxy and handles the minting logic. We upgrade to a new implementation multiple times over the season.'
@@ -120,6 +124,7 @@ export function PreSeasonNFTView(data: PreSeasonNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.currentAdmin}
           title='Admin'
           subtitle='Admin wallet can upgrade the contract, update the wallet that receives proceeds from NFT sales, modify pricing, register builders and mint tokens.'
@@ -127,6 +132,7 @@ export function PreSeasonNFTView(data: PreSeasonNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.currentMinter}
           title='Minter'
           subtitle='Minter wallet can register new builder nfts and mint tokens to any address.'
@@ -134,6 +140,7 @@ export function PreSeasonNFTView(data: PreSeasonNFTContractData) {
       </Grid2>
       <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
+          chainName={data.chainName}
           address={data.proceedsReceiver}
           title='Proceeds Receiver'
           subtitle='This is the wallet address that receives funds paid to mint builder NFTs.'

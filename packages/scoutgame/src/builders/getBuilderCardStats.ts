@@ -1,5 +1,8 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
+
+import { devTokenDecimals } from '../protocol/constants';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -19,6 +22,7 @@ export async function getBuilderCardStats({
   builderId: string;
   loggedInScoutId?: string;
 }): Promise<BuilderCardStats> {
+  const isOnchain = isOnchainPlatform();
   const season = getCurrentSeasonStart();
   const builder = await prisma.scout.findUniqueOrThrow({
     where: { id: builderId },
@@ -42,6 +46,7 @@ export async function getBuilderCardStats({
         },
         select: {
           estimatedPayout: true,
+          estimatedPayoutDevToken: true,
           nftType: true,
           nftOwners: loggedInScoutId
             ? {
@@ -71,7 +76,9 @@ export async function getBuilderCardStats({
   const starterPackNft = builder.builderNfts.find((nft) => nft.nftType === BuilderNftType.starter_pack);
   return {
     level: builder.userSeasonStats[0]?.level,
-    estimatedPayout: defaultNft?.estimatedPayout,
+    estimatedPayout: isOnchain
+      ? Number(BigInt(defaultNft?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
+      : defaultNft?.estimatedPayout,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     gemsCollected: builder.userWeeklyStats[0]?.gemsCollected,
     nftsSoldToLoggedInScout: defaultNft?.nftOwners?.[0]?.balance || 0,

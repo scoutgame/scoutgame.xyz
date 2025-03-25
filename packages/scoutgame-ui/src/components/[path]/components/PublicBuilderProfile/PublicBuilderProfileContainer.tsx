@@ -1,6 +1,6 @@
 'use client';
 
-import type { BuilderNftType, BuilderStatus } from '@charmverse/core/prisma';
+import type { BuilderStatus } from '@charmverse/core/prisma';
 import { Box, Paper, Stack, styled, Typography } from '@mui/material';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import type { BuilderCardStats } from '@packages/scoutgame/builders/getBuilderCardStats';
@@ -27,12 +27,11 @@ export type BuilderProfileProps = {
   } & Omit<BuilderCardStats, 'starterNftSoldToLoggedInScout'>;
   defaultNft: {
     imageUrl: string;
-    // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-    currentPrice: bigint;
+    currentPrice: bigint | null;
   } | null;
   starterPackNft: {
     imageUrl: string;
-    currentPrice: bigint;
+    currentPrice: bigint | null;
   } | null;
   builderActivities: BuilderActivity[];
   scoutProjects?: ScoutProjectMinimal[];
@@ -90,7 +89,11 @@ export function PublicBuilderProfileContainer({
                 <Box minWidth='fit-content'>
                   <BuilderCard
                     type='default'
-                    builder={{ ...builder, nftImageUrl: defaultNft?.imageUrl, price: defaultNft?.currentPrice }}
+                    builder={{
+                      ...builder,
+                      nftImageUrl: defaultNft?.imageUrl,
+                      price: defaultNft?.currentPrice || BigInt(0)
+                    }}
                     showPurchaseButton
                     size='small'
                   />
@@ -100,7 +103,7 @@ export function PublicBuilderProfileContainer({
                         builder={{
                           ...builder,
                           nftImageUrl: starterPackNft.imageUrl,
-                          price: starterPackNft.currentPrice
+                          price: starterPackNft.currentPrice || BigInt(0)
                         }}
                         showLabel
                         markStarterCardPurchased={starterNftSoldToLoggedInScout}
@@ -156,7 +159,11 @@ export function PublicBuilderProfileContainer({
                   <div>
                     <BuilderCard
                       type='default'
-                      builder={{ ...builder, nftImageUrl: defaultNft?.imageUrl, price: defaultNft?.currentPrice }}
+                      builder={{
+                        ...builder,
+                        nftImageUrl: defaultNft?.imageUrl,
+                        price: defaultNft?.currentPrice || BigInt(0)
+                      }}
                       showPurchaseButton
                       size={isLgScreen ? 'large' : 'medium'}
                     />
@@ -166,7 +173,7 @@ export function PublicBuilderProfileContainer({
                           builder={{
                             ...builder,
                             nftImageUrl: starterPackNft.imageUrl,
-                            price: starterPackNft.currentPrice
+                            price: starterPackNft.currentPrice || BigInt(0)
                           }}
                           showLabel
                           markStarterCardPurchased={starterNftSoldToLoggedInScout}

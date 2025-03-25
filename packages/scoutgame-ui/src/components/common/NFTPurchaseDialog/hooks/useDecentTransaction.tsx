@@ -1,20 +1,13 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
   builderNftChain,
-  getBuilderNftContractAddress,
   getDecentApiKey,
-  isPreseason01Contract,
   isStarterPackContract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
-import {
-  scoutProtocolBuilderNftContractAddress,
-  scoutProtocolChainId,
-  scoutTokenErc20ContractAddress
-} from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChainId, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
@@ -29,11 +22,9 @@ export type DecentTransactionProps = {
   builderTokenId: bigint;
   tokensToPurchase: bigint;
   scoutId?: string;
-  contractAddress?: string;
+  contractAddress: string;
   useScoutToken?: boolean;
 };
-
-const preseason01NftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount, string scout)';
 
 const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
 
@@ -82,12 +73,6 @@ export function useDecentTransaction({
   contractAddress,
   useScoutToken
 }: DecentTransactionProps) {
-  const _contractAddress =
-    contractAddress ||
-    (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress(getCurrentSeasonStart()));
-
-  const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterPackContract(_contractAddress);
-
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
@@ -98,14 +83,14 @@ export function useDecentTransaction({
     actionType: ActionType.NftMint,
     actionConfig: {
       chainId: useScoutToken ? scoutProtocolChainId : optimism.id,
-      contractAddress: _contractAddress,
+      contractAddress,
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: useScoutIdValidation ? preseason01NftMintSignature : transferableNftMintSignature,
-      args: useScoutIdValidation
+      signature: transferableNftMintSignature,
+      args: isStarterPackContract(contractAddress)
         ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
         : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }
@@ -116,7 +101,7 @@ export function useDecentTransaction({
     data: decentTransactionInfo
   } = useSWR(
     address && paymentAmountOut
-      ? `buy-token-${contractAddress}-${_contractAddress}-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
+      ? `buy-token-${contractAddress}-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
       : null,
     () =>
       prepareDecentTransaction({

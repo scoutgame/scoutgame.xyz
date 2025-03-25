@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -30,6 +31,7 @@ type ScoutWithGithubUser = {
   referralsCompleted: number;
   developerLevel?: number;
   season: string;
+  waitlistTier: string;
 };
 
 export async function GET() {
@@ -49,11 +51,12 @@ export async function GET() {
       farcasterId: true,
       farcasterName: true,
       currentBalance: true,
+      currentBalanceDevToken: true,
       githubUsers: true,
       events: {
         where: {
           type: {
-            in: ['referral', 'daily_claim']
+            in: ['referral', 'daily_claim', 'misc_event']
           }
         },
         include: {
@@ -89,7 +92,9 @@ export async function GET() {
       fid: user.farcasterId || undefined,
       farcasterName: user.farcasterName || undefined,
       githubLogin: user.githubUsers[0]?.login,
-      currentBalance: user.currentBalance,
+      currentBalance: isOnchainPlatform()
+        ? Number(BigInt(user.currentBalanceDevToken ?? 0) / BigInt(10 ** 18))
+        : user.currentBalance || 0,
       pointsEarnedTotal: user.pointsReceived
         .filter((p) => p.season === getCurrentSeasonStart())
         .reduce((acc, curr) => acc + curr.value, 0)
@@ -106,7 +111,7 @@ export async function GET() {
 
     // If user has no season stats, create one row with default values
     if (user.userSeasonStats.length === 0) {
-      if (seasonBasedOnPoints.length > 1) {
+      if (seasonBasedOnPoints.length > 0) {
         return seasonBasedOnPoints.map((season) => {
           const builderEvents = user.events.filter((e) => e.season === season);
           const socialQuests = user.socialQuests.filter((q) => q.season === season);
@@ -125,6 +130,10 @@ export async function GET() {
               .length,
             dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
             questsCompleted: socialQuests.length,
+            waitlistTier:
+              builderEvents
+                .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
+                ?.description?.match(/achieving (.*?) status/)?.[1] || '',
             nftsPurchased: 0,
             nftsSold: 0,
             season
@@ -143,7 +152,8 @@ export async function GET() {
           dailyClaimsCount: 0,
           questsCompleted: 0,
           referralsCompleted: 0,
-          season: ''
+          season: '',
+          waitlistTier: ''
         }
       ];
     }
@@ -172,7 +182,11 @@ export async function GET() {
           referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
             .length,
           dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
-          questsCompleted: socialQuests.length
+          questsCompleted: socialQuests.length,
+          waitlistTier:
+            builderEvents
+              .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
+              ?.description?.match(/achieving (.*?) status/)?.[1] || ''
         };
       });
   });

@@ -209,99 +209,102 @@ describe('calculateWeeklyClaims', () => {
       tokenReceipts: expect.arrayContaining<WeeklyClaimsCalculated['tokenReceipts'][number]>([
         {
           eventId: expect.any(String),
-          value: 6,
+          value: '6',
           recipientWalletAddress: builder1Wallet
         },
         {
           eventId: expect.any(String),
-          value: 9,
+          value: '9',
           recipientWalletAddress: builder1Wallet
         },
         {
           eventId: expect.any(String),
-          value: 4,
+          value: '4',
           recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          value: 2,
+          value: '2',
           recipientWalletAddress: scout2Wallet
         },
         {
           eventId: expect.any(String),
-          value: 3,
+          value: '3',
           recipientWalletAddress: scout3Wallet
         },
         {
           eventId: expect.any(String),
-          value: 1,
+          value: '1',
           recipientWalletAddress: scout4Wallet
         },
         {
           eventId: expect.any(String),
-          value: 5,
+          value: '5',
           recipientWalletAddress: builder2Wallet
         },
         {
           eventId: expect.any(String),
-          value: 7,
+          value: '7',
           recipientWalletAddress: builder2Wallet
         },
         {
           eventId: expect.any(String),
-          value: 4,
+          value: '4',
           recipientWalletAddress: scout3Wallet
         },
         {
           eventId: expect.any(String),
-          value: 3,
+          value: '3',
           recipientWalletAddress: scout4Wallet
         },
         {
           eventId: expect.any(String),
-          value: 2,
+          value: '2',
           recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          value: 3,
+          value: '3',
           recipientWalletAddress: scout5Wallet
         },
         {
           eventId: expect.any(String),
-          value: 5,
+          value: '5',
           recipientWalletAddress: builder3Wallet
         },
         {
           eventId: expect.any(String),
-          value: 6,
+          value: '6',
           recipientWalletAddress: builder3Wallet
         },
         {
           eventId: expect.any(String),
-          value: 4,
+          value: '4',
           recipientWalletAddress: scout5Wallet
         },
         {
           eventId: expect.any(String),
-          value: 3,
+          value: '3',
           recipientWalletAddress: scout2Wallet
         },
         {
           eventId: expect.any(String),
-          value: 1,
+          value: '1',
           recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          value: 3,
+          value: '3',
           recipientWalletAddress: scout4Wallet
         }
       ])
     });
 
     const totalTokensInClaims = weeklyClaimsData.claims.reduce((sum, claim) => sum + Number(claim.amount), 0);
-    const totalTokensInReceipts = weeklyClaimsData.tokenReceipts.reduce((sum, receipt) => sum + receipt.value, 0);
+    const totalTokensInReceipts = weeklyClaimsData.tokenReceipts.reduce(
+      (sum, receipt) => sum + Number(receipt.value),
+      0
+    );
 
     expect(totalTokensInClaims).toBe(totalTokensInReceipts);
 

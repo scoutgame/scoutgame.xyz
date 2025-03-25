@@ -2,8 +2,10 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+import { devTokenDecimals } from '../protocol/constants';
 
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -74,12 +76,13 @@ export async function getPaginatedBuilders({
               },
               select: {
                 contractAddress: true,
-                // TODO: use the currentPriceInScoutToken when we move to $SCOUT
                 currentPrice: true,
+                currentPriceDevToken: true,
                 imageUrl: true,
                 nftType: true,
                 congratsImageUrl: true,
                 estimatedPayout: true,
+                estimatedPayoutDevToken: true,
                 nftSoldEvents: {
                   where: {
                     ...validMintNftPurchaseEvent,
@@ -140,7 +143,9 @@ export async function getPaginatedBuilders({
         path: stat.user.path,
         displayName: stat.user.displayName,
         builderPoints: stat.user.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
-        price: stat.user.builderNfts?.[0]?.currentPrice ?? 0,
+        price: isOnchainPlatform()
+          ? BigInt(stat.user.builderNfts?.[0]?.currentPriceDevToken ?? 0)
+          : (stat.user.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
         scoutedBy: uniqueValues(
           stat.user.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
         ).length,
@@ -148,7 +153,9 @@ export async function getPaginatedBuilders({
         builderStatus: stat.user.builderStatus!,
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
-        estimatedPayout: stat.user.builderNfts?.[0]?.estimatedPayout ?? 0,
+        estimatedPayout: isOnchainPlatform()
+          ? Number(BigInt(stat.user.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
+          : (stat.user.builderNfts?.[0]?.estimatedPayout ?? 0),
         gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
         nftsSoldToScout:
           stat.user.builderNfts?.[0]?.nftSoldEvents

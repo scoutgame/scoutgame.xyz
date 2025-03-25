@@ -92,18 +92,25 @@ export function Header() {
               </Hidden>
               {user ? (
                 <>
-                  <Link href='/notifications'>
-                    <IconButton size='small' sx={{ mr: { xs: 1, md: 3 } }}>
-                      <Badge badgeContent={unreadNotificationsCount?.count ?? 0} color='secondary'>
-                        <NotificationsOutlinedIcon />
-                      </Badge>
-                    </IconButton>
-                  </Link>
-                  <Link href='/info'>
-                    <IconButton size='small' sx={{ mr: { xs: 1, md: 3 } }}>
-                      <InfoIcon color='secondary' />
-                    </IconButton>
-                  </Link>
+                  <Stack direction='row' alignItems='center'>
+                    <Link href='/notifications'>
+                      <IconButton size='small' sx={{ mr: { xs: 1, md: unreadNotificationsCount?.count ? 1.5 : 1 } }}>
+                        <Badge badgeContent={unreadNotificationsCount?.count ?? 0} color='error'>
+                          <NotificationsOutlinedIcon
+                            sx={{
+                              color: 'text.primary',
+                              animation: unreadNotificationsCount?.count ? 'bell-ring 2s ease-in-out infinite' : 'none'
+                            }}
+                          />
+                        </Badge>
+                      </IconButton>
+                    </Link>
+                    <Link href='/info'>
+                      <IconButton size='small' sx={{ mr: { xs: 1, md: 1.5 } }}>
+                        <InfoIcon color='secondary' />
+                      </IconButton>
+                    </Link>
+                  </Stack>
                   <Box
                     borderColor='secondary.main'
                     borderRadius='30px'
@@ -175,7 +182,7 @@ export function Header() {
                           Projects
                         </MenuItem>
                       ) : null}
-                      {platform === 'webapp' && !isFarcasterFrame && (
+                      {(platform === 'webapp' || platform === 'onchain_webapp') && !isFarcasterFrame && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out
                         </MenuItem>
@@ -191,7 +198,7 @@ export function Header() {
                       <InfoIcon color='secondary' />
                     </IconButton>
                   </Link>
-                  {platform === 'webapp' && (
+                  {(platform === 'webapp' || platform === 'onchain_webapp') && (
                     <Button variant='gradient' href='/login' data-test='sign-in-button'>
                       Sign in
                     </Button>
