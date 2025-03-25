@@ -2,9 +2,10 @@
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { LoadingButton } from '@mui/lab';
-import { Stack, Button, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import { getPlatform } from '@packages/utils/platform';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -34,11 +35,9 @@ export function ScoutButton({
   const { openModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
 
-  const platform = getPlatform();
-
-  // We need to migrate $SCOUT based NFT prices to numeric column. Until then, we are storing the price as the human friendly version
-  const purchaseCostInPoints =
-    platform === 'onchain_webapp' ? Number(builder?.price || 0) : convertCostToPoints(builder?.price || BigInt(0));
+  const purchaseCostInPoints = isOnchainPlatform()
+    ? Number(builder?.price || 0) / 10 ** devTokenDecimals
+    : convertCostToPoints(builder?.price || BigInt(0));
 
   const handleClick = () => {
     trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });

@@ -5,7 +5,7 @@ import { stringUtils } from '@charmverse/core/utilities';
 import { attestDeveloperStatusEvent } from '@packages/scoutgameattestations/attestDeveloperStatusEvent';
 import type { Address, Chain } from 'viem';
 
-import { getPreSeasonTwoBuilderNftContractMinterClient } from '../clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
+import { getBuilderNftContractMinterClient } from '../clients/builderNftContractReadonlyClient';
 import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
@@ -34,7 +34,7 @@ export async function registerBuilderNFT({
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
 
-  const minterClient = getPreSeasonTwoBuilderNftContractMinterClient({ chain, contractAddress });
+  const minterClient = getBuilderNftContractMinterClient();
 
   const existingBuilderNft = await prisma.builderNft.findFirst({
     where: {
@@ -60,7 +60,15 @@ export async function registerBuilderNFT({
       avatar: true,
       path: true,
       displayName: true,
-      builderStatus: true
+      builderStatus: true,
+      wallets: {
+        where: {
+          primary: true
+        },
+        select: {
+          address: true
+        }
+      }
     }
   });
 
@@ -68,11 +76,18 @@ export async function registerBuilderNFT({
     throw new InvalidInputError('Scout profile does not have a github user');
   }
 
+  const primaryWallet = builder.wallets[0];
+
+  if (!primaryWallet) {
+    throw new InvalidInputError('Builder does not have a primary wallet');
+  }
+
   let tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } }).catch(() => null);
 
   if (!tokenId) {
     log.info(`Registering builder token for builder`, { userId: builderId });
-    await minterClient.registerBuilderToken({ args: { builderId } });
+    await minterClient.registerBuilderToken({ args: { builderId, account: primaryWallet.address } });
+
     tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } });
 
     await attestDeveloperStatusEvent({

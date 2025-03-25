@@ -1,7 +1,7 @@
 import { MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChain, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
@@ -12,7 +12,7 @@ import { ChainComponent } from './ChainComponent';
 import type { ChainWithCurrency } from './chains';
 import { getChainOptions } from './chains';
 
-export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'SCOUT' };
+export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'DEV' };
 
 function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency;
@@ -46,14 +46,17 @@ function SelectField(
           chain: scoutProtocolChain,
           icon: '/images/crypto/base64.png',
           id: scoutProtocolChain.id,
-          name: 'Base Sepolia',
+          name: 'Base',
           usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-          currency: 'SCOUT'
+          currency: 'DEV'
         }
       ]
     : getChainOptions({ useTestnets });
 
-  const { tokens } = useGetTokenBalances({ address: address as Address });
+  const { tokens } = useGetTokenBalances({
+    address: address as Address,
+    useScoutToken
+  });
 
   return (
     <Select<SelectedPaymentOption>
@@ -95,12 +98,13 @@ function SelectField(
             t.chainId === _chain.id &&
             (_chain.currency === 'ETH'
               ? t.address === NULL_EVM_ADDRESS
-              : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase())
+              : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase() ||
+                t.address?.toLowerCase() === scoutTokenErc20ContractAddress()?.toLowerCase())
         );
         let _balance = Number(_tokenBalanceInfo?.balance);
 
         if (_balance) {
-          if (_chain.currency === 'ETH') {
+          if (_chain.currency === 'ETH' || _chain.currency === 'DEV') {
             _balance /= 1e18;
           } else {
             _balance /= 1e6;

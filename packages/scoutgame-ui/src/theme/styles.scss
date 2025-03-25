@@ -132,27 +132,3 @@ body [data-sonner-toaster][data-theme=dark] {
     border-color: var(--mui-palette-success-dark);
   }
 }
-
-@keyframes bell-ring {
-  0% {
-    transform: rotate(-15deg);
-    scale: 1.2;
-    transform-origin: top center;
-  }
-  25% {
-    scale: 1.15;
-  }
-  50% {
-    transform: rotate(15deg);
-    scale: 1.2;
-    transform-origin: top center;
-  }
-  75% {
-    scale: 1.15;
-  }
-  100% {
-    transform: rotate(-15deg);
-    scale: 1.2;
-    transform-origin: top center;
-  }
-}

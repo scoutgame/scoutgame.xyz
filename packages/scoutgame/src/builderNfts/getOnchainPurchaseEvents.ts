@@ -2,7 +2,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
 import type { Address } from 'viem';
-import { optimism } from 'viem/chains';
 
 import type { BuilderScoutedEvent } from './accounting/getBuilderScoutedEvents';
 import { getBuilderScoutedEvents } from './accounting/getBuilderScoutedEvents';
@@ -66,7 +65,7 @@ export async function getOnchainPurchaseEvents({
   ]);
 
   const fromBlockTimestamp = fromBlock
-    ? await getPublicClient(optimism.id)
+    ? await getPublicClient(builderNftChain.id)
         .getBlock({ blockNumber: BigInt(fromBlock), includeTransactions: false })
         .then((block) => new Date(Number(block.timestamp) * 1000))
     : undefined;

@@ -7,6 +7,7 @@ export const weeksPerSeason = 13;
 export type SeasonConfig = {
   title: string;
   start: ISOWeek;
+  preseason?: boolean;
 };
 
 // the end of each season is the start of the next season
@@ -24,12 +25,20 @@ export const seasons = [
   // Preseason 1
   {
     start: '2024-W41',
-    title: 'Season 1'
+    title: 'Season 1',
+    preseason: true
   },
   // Preseason 2
   {
     start: '2025-W02',
-    title: 'Season 2'
+    title: 'Season 2',
+    preseason: true
+  },
+  // Season 1
+  {
+    // April 28th 2025
+    start: '2025-W17',
+    title: 'Season 1'
   }
 ] satisfies SeasonConfig[];
 

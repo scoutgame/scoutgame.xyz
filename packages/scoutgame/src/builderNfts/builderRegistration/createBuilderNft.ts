@@ -1,9 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
+import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
 import { builderNftChain, getBuilderNftContractAddress } from '../constants';
 
 export async function createBuilderNft({
@@ -28,8 +29,7 @@ export async function createBuilderNft({
 }) {
   contractAddress = contractAddress ?? getBuilderNftContractAddress(season);
 
-  // TODO: use the correct client for the season when we move to $SCOUT
-  const currentPrice = await getPreSeasonTwoBuilderNftContractReadonlyClient().getTokenPurchasePrice({
+  const currentPrice = await getBuilderNftContractReadonlyClient().getTokenPurchasePrice({
     args: { tokenId, amount: BigInt(1) }
   });
 
@@ -53,6 +53,8 @@ export async function createBuilderNft({
     path
   });
 
+  const isOnchain = isOnchainPlatform();
+
   const builderNft = await prisma.builderNft.create({
     data: {
       builderId,
@@ -60,7 +62,8 @@ export async function createBuilderNft({
       contractAddress,
       tokenId: Number(tokenId),
       season,
-      currentPrice,
+      currentPrice: isOnchain ? undefined : currentPrice,
+      currentPriceDevToken: isOnchain ? currentPrice.toString() : undefined,
       imageUrl: fileUrl,
       congratsImageUrl
     }

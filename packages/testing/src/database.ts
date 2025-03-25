@@ -672,9 +672,9 @@ export async function mockBuilderNft({
   contractAddress = '0x1',
   owners = [],
   season = mockSeason,
-  currentPrice = Math.floor(Math.random() * 1000) + 1, // use random price for testing purposes
+  currentPrice = Math.floor(Math.random() * 10000000000) + 1, // use random price for testing purposes
   nftType,
-  estimatedPayout
+  estimatedPayout = Math.floor(Math.random() * 10000000000) + 1
 }: {
   createdAt?: Date;
   builderId: string;
@@ -969,6 +969,7 @@ export async function mockWeeklyClaims({ week, season }: { week: string; season:
       claims: [],
       proofsMap: {},
       totalClaimable: 0,
+      totalClaimableDevToken: '0',
       merkleTreeRoot: ''
     }
   });

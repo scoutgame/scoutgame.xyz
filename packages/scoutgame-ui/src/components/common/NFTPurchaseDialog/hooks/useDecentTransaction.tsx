@@ -29,11 +29,9 @@ export type DecentTransactionProps = {
   builderTokenId: bigint;
   tokensToPurchase: bigint;
   scoutId?: string;
-  contractAddress?: string;
+  contractAddress: string;
   useScoutToken?: boolean;
 };
-
-const preseason01NftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount, string scout)';
 
 const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
 
@@ -84,7 +82,7 @@ export function useDecentTransaction({
 }: DecentTransactionProps) {
   const _contractAddress =
     contractAddress ||
-    (useScoutToken ? scoutProtocolBuilderNftContractAddress() : getBuilderNftContractAddress(getCurrentSeasonStart()));
+    (useScoutToken ? scoutProtocolBuilderNftContractAddress : getBuilderNftContractAddress(getCurrentSeasonStart()));
 
   const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterNftContract(_contractAddress);
 
@@ -98,14 +96,14 @@ export function useDecentTransaction({
     actionType: ActionType.NftMint,
     actionConfig: {
       chainId: useScoutToken ? scoutProtocolChainId : optimism.id,
-      contractAddress: _contractAddress,
+      contractAddress,
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: useScoutIdValidation ? preseason01NftMintSignature : transferableNftMintSignature,
-      args: useScoutIdValidation
+      signature: transferableNftMintSignature,
+      args: isStarterNftContract(contractAddress)
         ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
         : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }
@@ -116,7 +114,7 @@ export function useDecentTransaction({
     data: decentTransactionInfo
   } = useSWR(
     address && paymentAmountOut
-      ? `buy-token-${contractAddress}-${_contractAddress}-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
+      ? `buy-token-${contractAddress}-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
       : null,
     () =>
       prepareDecentTransaction({

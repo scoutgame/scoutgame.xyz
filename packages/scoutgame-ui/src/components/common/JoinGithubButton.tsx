@@ -3,7 +3,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import { usePathname, useSearchParams } from 'next/navigation';
 
-export function JoinGithubButton({ text = 'Connect & Sign up' }: { text?: string }) {
+export function JoinGithubButton({ text = 'Connect & Sign up', connected }: { text?: string; connected?: boolean }) {
   const params = useSearchParams();
   const connectError = params.get('connect_error');
   const pathname = usePathname();
@@ -17,8 +17,9 @@ export function JoinGithubButton({ text = 'Connect & Sign up' }: { text?: string
         variant='contained'
         color='primary'
         size='large'
+        disabled={connected}
       >
-        {text}
+        {connected ? `Connected` : text}
       </Button>
       {connectError && (
         <Box>

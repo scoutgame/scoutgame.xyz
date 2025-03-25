@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useGlobalModal } from '../../../providers/ModalProvider';
 import { useUser } from '../../../providers/UserProvider';
 
-export function BuilderPageInviteCard() {
+export function BuilderPageInviteCard({ isBuilder }: { isBuilder: boolean }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
   const router = useRouter();
@@ -51,8 +51,8 @@ export function BuilderPageInviteCard() {
         </Box>
       </Stack>
       <Typography variant='h6' lineHeight={1.3} textAlign='center'>
-        Become a developer in the Scout Game and earn rewards for contributing to over a thousand open source crypto
-        repositories.
+        {!isBuilder ? 'Become a developer in the Scout Game' : 'Connect your primary wallet'} and earn rewards for
+        contributing to over a thousand open source crypto repositories.
       </Typography>
       <Button
         onClick={handleButtonClick}
