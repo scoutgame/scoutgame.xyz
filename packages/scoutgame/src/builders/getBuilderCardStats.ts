@@ -2,7 +2,7 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
-import { scoutTokenDecimals } from '../protocol/constants';
+import { devTokenDecimals } from '../protocol/constants';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -77,7 +77,7 @@ export async function getBuilderCardStats({
   return {
     level: builder.userSeasonStats[0]?.level,
     estimatedPayout: isOnchain
-      ? Number(BigInt(defaultNft?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+      ? Number(BigInt(defaultNft?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
       : defaultNft?.estimatedPayout,
     last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
     gemsCollected: builder.userWeeklyStats[0]?.gemsCollected,

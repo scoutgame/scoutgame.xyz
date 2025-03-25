@@ -3,7 +3,7 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
-import { scoutTokenDecimals } from '../protocol/constants';
+import { devTokenDecimals } from '../protocol/constants';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -118,7 +118,7 @@ export async function getBuilders({
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       gemsCollected: user.userWeeklyStats[0]?.gemsCollected || 0,
       estimatedPayout: isOnchain
-        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals))
         : user.builderNfts[0]?.estimatedPayout || 0,
       last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       rank: user.userWeeklyStats[0]?.rank,
@@ -199,7 +199,7 @@ export async function getBuilders({
         displayName: builder.displayName,
         price: isOnchain ? BigInt(currentPriceDevToken ?? 0) : currentPrice || BigInt(0),
         estimatedPayout: isOnchain
-          ? Number(BigInt(estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
+          ? Number(BigInt(estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals))
           : estimatedPayout || 0,
         gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
         last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
@@ -282,7 +282,7 @@ export async function getBuilders({
         level: builder.userSeasonStats[0]?.level || 0,
         rank: builder.userWeeklyStats[0]?.rank,
         estimatedPayout: isOnchain
-          ? Number(BigInt(estimatedPayoutDevToken || 0) / BigInt(10 ** scoutTokenDecimals))
+          ? Number(BigInt(estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals))
           : estimatedPayout || 0,
         nftsSoldToLoggedInScout: nftOwners.reduce((acc, nft) => acc + nft.balance, 0)
       })
@@ -360,7 +360,7 @@ export async function getBuilders({
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       level: user.userSeasonStats[0]?.level || 0,
       estimatedPayout: isOnchain
-        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+        ? Number(BigInt(user.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
         : user.builderNfts[0]?.estimatedPayout || 0,
       rank,
       nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce((acc, nft) => acc + nft.balance, 0) || null,

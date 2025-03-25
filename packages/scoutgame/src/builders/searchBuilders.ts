@@ -3,7 +3,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
-import { scoutTokenDecimals } from '../protocol/constants';
+import { devTokenDecimals } from '../protocol/constants';
 
 export type BuilderSearchResult = {
   id: string;
@@ -103,7 +103,7 @@ export async function searchBuilders({
       builder.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
     ).length,
     price: isOnchainPlatform()
-      ? Number(BigInt(builder.builderNfts?.[0]?.currentPriceDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals))
+      ? Number(BigInt(builder.builderNfts?.[0]?.currentPriceDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
       : Number(builder.builderNfts?.[0]?.currentPrice ?? 0)
   }));
 }

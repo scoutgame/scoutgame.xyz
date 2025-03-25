@@ -15,7 +15,7 @@ import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTran
 import { recordOnchainNftMint } from '@packages/scoutgame/builderNfts/recordOnchainNftMint';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { prefix0x } from '@packages/utils/prefix0x';
 import type { Address } from 'viem';
@@ -170,7 +170,7 @@ export async function findAndIndexMissingPurchases({
             }));
 
         const asPoints = isOnchainPlatform()
-          ? Number(price / BigInt(10 ** scoutTokenDecimals))
+          ? Number(price / BigInt(10 ** devTokenDecimals))
           : convertCostToPoints(price);
 
         const singleEvent = transferSingleEventsMapped[uniqueNftPurchaseEventKey(missingTx)];

@@ -7,11 +7,7 @@ import { DateTime } from 'luxon';
 
 import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
-import {
-  scoutProtocolBuilderNftContractAddress,
-  scoutProtocolChainId,
-  scoutTokenDecimals
-} from '../protocol/constants';
+import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId, devTokenDecimals } from '../protocol/constants';
 
 async function getScoutedBuildersUsingProtocolBuilderNfts({
   scoutIdInView,
@@ -141,7 +137,7 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
         price: BigInt(builder.builderNfts[0].currentPriceDevToken ?? 0),
         level: builder.userSeasonStats[0]?.level ?? 0,
         estimatedPayout:
-          Number(BigInt(builder.builderNfts[0].estimatedPayoutDevToken ?? 0) / BigInt(10 ** scoutTokenDecimals)) ?? 0,
+          Number(BigInt(builder.builderNfts[0].estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0,
         last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
         nftsSoldToScoutInView,
         nftsSoldToLoggedInScout

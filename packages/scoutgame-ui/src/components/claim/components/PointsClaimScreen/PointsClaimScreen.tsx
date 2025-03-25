@@ -13,7 +13,7 @@ import {
   getScoutProtocolAddress,
   scoutProtocolChain,
   scoutProtocolChainId,
-  scoutTokenDecimals
+  devTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
 import { getPlatform, isOnchainPlatform } from '@packages/utils/platform';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -209,7 +209,7 @@ function PointsClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {(totalUnclaimedPoints / 10 ** scoutTokenDecimals).toLocaleString()}
+                      {(totalUnclaimedPoints / 10 ** devTokenDecimals).toLocaleString()}
                     </Typography>
                     <Image
                       width={35}

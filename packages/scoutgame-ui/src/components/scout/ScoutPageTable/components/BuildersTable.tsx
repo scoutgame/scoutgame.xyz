@@ -5,7 +5,7 @@ import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { BuilderMetadata, BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
-import { scoutTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -240,7 +240,7 @@ export function BuildersTable({
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>
                   {isOnchainPlatform()
-                    ? Number(builder.price || 0) / 10 ** scoutTokenDecimals
+                    ? Number(builder.price || 0) / 10 ** devTokenDecimals
                     : convertCostToPoints(builder.price || BigInt(0))}
                 </TableCellText>
                 {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon ' />}
