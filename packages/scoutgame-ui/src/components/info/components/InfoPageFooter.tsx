@@ -91,6 +91,9 @@ export function InfoPageFooter() {
           >
             <Typography>Protocol Whitepaper</Typography>
           </MuiLink>
+          <MuiLink href='https://hashlock.com/audits/scout-game' target='_blank'>
+            <Typography>Audit</Typography>
+          </MuiLink>
           <MuiLink href='/info/privacy-policy'>
             <Typography>Privacy Policy</Typography>
           </MuiLink>
