@@ -33,6 +33,7 @@ export function ScoutPageCarousel({
       {nftType === 'starter' ? (
         <DevelopersCarousel
           developers={starterCardDevs}
+          slidesPerView={2}
           infoCard={
             <Box display='flex' flexDirection='column' gap={2}>
               <Typography variant='h6' fontWeight={600} textAlign={{ xs: 'center', md: 'left' }} color='green.main'>
@@ -53,14 +54,15 @@ export function ScoutPageCarousel({
           developers={builders.map((builder) => ({
             builder
           }))}
-          infoCard={
-            <Box display='flex' flexDirection='column' gap={2}>
-              <Typography variant='h6' fontWeight={600} textAlign={{ xs: 'center', md: 'left' }} color='green.main'>
-                Earn Scout Points
-              </Typography>
-              <Typography>Start your collection by purchasing a Developer Card!</Typography>
-            </Box>
-          }
+          slidesPerView={3}
+          // infoCard={
+          //   <Box display='flex' flexDirection='column' gap={2}>
+          //     <Typography variant='h6' fontWeight={600} textAlign={{ xs: 'center', md: 'left' }} color='green.main'>
+          //       Earn Scout Points
+          //     </Typography>
+          //     <Typography>Start your collection by purchasing a Developer Card!</Typography>
+          //   </Box>
+          // }
         />
       )}
     </Box>

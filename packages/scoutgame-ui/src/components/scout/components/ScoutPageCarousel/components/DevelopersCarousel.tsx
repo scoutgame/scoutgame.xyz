@@ -7,10 +7,12 @@ import { Carousel } from '../../../../common/Carousel/Carousel';
 
 export function DevelopersCarousel({
   developers,
+  slidesPerView,
   infoCard
 }: {
   developers: StarterCardDeveloper[];
-  infoCard: ReactNode;
+  infoCard?: ReactNode;
+  slidesPerView: number;
 }) {
   // const theme = useTheme();
   // const breakpointsValues = theme.breakpoints.values;
@@ -41,9 +43,9 @@ export function DevelopersCarousel({
     />
   ));
   return (
-    <Stack gap={{ xs: 2, md: 4 }} flexDirection={{ xs: 'column-reverse', md: 'row' }} ml={{ md: 2 }}>
+    <Stack gap={{ xs: 2, md: 4 }} flexDirection={{ xs: 'column-reverse', md: 'row' }} ml={{ md: infoCard ? 3 : 0 }}>
       <Carousel
-        slidesPerView={2}
+        slidesPerView={slidesPerView}
         // navigation={{
         //   nextEl: '.swiper-starter-pack-button-next',
         //   prevEl: '.swiper-starter-pack-button-prev'
@@ -59,7 +61,7 @@ export function DevelopersCarousel({
               }
             }
           },
-          boxProps: { width: { xs: '100%', md: '70%' }, margin: '0 auto' }
+          boxProps: { width: { xs: '100%', md: slidesPerView === 3 ? '90%' : '70%' }, margin: '0 auto', px: 2 }
         }}
         // breakpoints={{
         //   [breakpointsValues.xs]: {
