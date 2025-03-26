@@ -12,6 +12,7 @@
     "./builderNfts/artwork/generateArtwork": "./src/builderNfts/artwork/generateArtwork.tsx"
   },
   "dependencies": {
+    "@opensea/seaport-js": "^4.0.4",
     "@packages/aws": "^0.0.0",
     "@packages/beehiiv": "^0.0.0",
     "@packages/blockchain": "^0.0.0",

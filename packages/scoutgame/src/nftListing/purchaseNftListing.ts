@@ -1,18 +1,24 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { OrderParameters } from '@opensea/seaport-js/lib/types';
+import type { ethers } from 'ethers';
 import { isAddress } from 'viem';
+
+import { purchaseSeaportListing } from '../seaport/purchaseSeaportListing';
 
 export async function purchaseNftListing({
   listingId,
   buyerWallet: _buyerWallet,
   txHash,
   txLogIndex,
-  scoutId
+  scoutId,
+  signer
 }: {
   listingId: string;
   buyerWallet: string;
   txHash: string;
   txLogIndex: number;
   scoutId: string;
+  signer: ethers.JsonRpcSigner;
 }) {
   const buyerWallet = _buyerWallet.toLowerCase();
 
@@ -36,13 +42,29 @@ export async function purchaseNftListing({
       amount: true,
       completedAt: true,
       cancelledAt: true,
-      sellerWallet: true
+      sellerWallet: true,
+      orderHash: true,
+      order: true,
+      signature: true
     }
   });
 
   // Ensure the listing is active
   if (listing.completedAt || listing.cancelledAt) {
     throw new Error('This listing is no longer active');
+  }
+
+  // Purchase the NFT on-chain using Seaport if we have the order data
+  if (listing.orderHash && listing.order) {
+    const order = listing.order as OrderParameters;
+
+    await purchaseSeaportListing({
+      orderHash: listing.orderHash,
+      signature: listing.signature,
+      orderParameters: order,
+      buyerWallet,
+      signer
+    });
   }
 
   const { updatedListing, createdNftPurchaseEvent } = await prisma.$transaction(async (tx) => {
