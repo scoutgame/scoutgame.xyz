@@ -7,6 +7,7 @@ import { ScoutButton } from '../../ScoutButton/ScoutButton';
 
 import { BuilderCardNftDisplay } from './BuilderCardNftDisplay';
 import { BuilderCardStats } from './BuilderCardStats';
+import { ListDeveloperCardButton } from './ListDeveloperCardButton';
 
 type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path';
 
@@ -17,7 +18,8 @@ export function BuilderCard({
   size = 'medium',
   disableProfileUrl = false,
   markStarterCardPurchased = false,
-  type
+  type,
+  showListButton = false
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
@@ -26,6 +28,7 @@ export function BuilderCard({
   disableProfileUrl?: boolean;
   markStarterCardPurchased?: boolean;
   type: 'default' | 'starter_pack';
+  showListButton?: boolean;
 }) {
   return (
     <Card
@@ -56,6 +59,11 @@ export function BuilderCard({
       {typeof builder.price !== 'undefined' && showPurchaseButton && (
         <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
           <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} type={type} />
+        </Stack>
+      )}
+      {showListButton && type !== 'starter_pack' && (
+        <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
+          <ListDeveloperCardButton builder={builder} />
         </Stack>
       )}
     </Card>
