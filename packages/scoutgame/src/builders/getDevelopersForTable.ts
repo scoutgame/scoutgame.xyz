@@ -138,7 +138,7 @@ export async function getDevelopersForTable({
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
-      price: user.builderNfts[0]?.currentPrice,
+      price: user.builderNfts[0]?.currentPrice || BigInt(0),
       level,
       last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       gemsCollected: user.userWeeklyStats[0]?.gemsCollected || 0,
@@ -243,7 +243,7 @@ export async function getDevelopersForTable({
       avatar: builder.avatar as string,
       displayName: builder.displayName,
       // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-      price: currentPrice,
+      price: currentPrice || BigInt(0),
       estimatedPayout: estimatedPayout || 0,
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
@@ -256,7 +256,7 @@ export async function getDevelopersForTable({
     const lastItem = builderNfts[builderNfts.length - 1];
     const nextCursor =
       lastItem && developers.length === limit
-        ? { id: lastItem.createdAt.toISOString(), value: lastItem.estimatedPayout, order, sortType: sortBy }
+        ? { id: lastItem.createdAt.toISOString(), value: lastItem.estimatedPayout || 0, order, sortType: sortBy }
         : null;
 
     return { developers, nextCursor };
@@ -343,7 +343,7 @@ export async function getDevelopersForTable({
       avatar: builder.avatar as string,
       displayName: builder.displayName,
       // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-      price: currentPrice,
+      price: currentPrice || BigInt(0),
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
       level: builder.userSeasonStats[0]?.level || 0,
@@ -376,7 +376,8 @@ export async function getDevelopersForTable({
           gemsCollected: order
         },
         {
-          rank: order
+          // rank is reverse
+          rank: order === 'asc' ? 'desc' : 'asc'
         },
         {
           id: order
