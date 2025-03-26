@@ -672,9 +672,9 @@ export async function mockBuilderNft({
   contractAddress = '0x1',
   owners = [],
   season = mockSeason,
-  currentPrice = Math.floor(Math.random() * 10000000000) + 1, // use random price for testing purposes
+  currentPrice = Math.floor(Math.random() * 10000000) + 1, // use random price for testing purposes
   nftType,
-  estimatedPayout = Math.floor(Math.random() * 10000000000) + 1
+  estimatedPayout = Math.floor(Math.random() * 10000000) + 1
 }: {
   createdAt?: Date;
   builderId: string;
