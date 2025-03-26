@@ -5,9 +5,12 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 async function query() {
-  const result = await prisma.builderNft.findFirst({
+  const result = await prisma.scout.findFirst({
     where: {
-      season: getCurrentSeasonStart()
+      farcasterName: 'bdutz'
+    },
+    include: {
+      events: true
     }
   });
   prettyPrint(result);

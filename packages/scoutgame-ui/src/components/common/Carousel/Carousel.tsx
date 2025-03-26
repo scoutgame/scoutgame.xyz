@@ -36,7 +36,7 @@ export function Carousel({ children, slotProps, autoplay, ...swiperProps }: Caro
   const nextButtonId = (swiperProps.navigation as NavigationOptions)?.nextEl ?? '.swiper-button-next';
 
   if (!isMounted) {
-    return null;
+    return <Box mb={2} mx='auto' px={{ md: 4 }} {...boxProps} />;
   }
 
   return (

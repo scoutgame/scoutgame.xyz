@@ -5,7 +5,7 @@ import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderAct
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { getLeaderboard } from '@packages/scoutgame/builders/getLeaderboard';
 
-import { ScoutPageTable } from '../../scout/ScoutPageTable/ScoutPageTable';
+import { ScoutPageTable } from '../../scout/components/ScoutPageTable/ScoutPageTable';
 
 import { ActivityTable } from './components/ActivityTable';
 import { LeaderboardTable } from './components/LeaderboardTable';

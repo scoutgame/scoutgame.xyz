@@ -9,7 +9,7 @@ import type {
 import { getDevelopersForTableAction } from '@packages/scoutgame/builders/getDevelopersForTableAction';
 import { useCallback } from 'react';
 
-import { useInfiniteScroll } from '../../../../hooks/useInfiniteScroll';
+import { useInfiniteScroll } from '../../../../../hooks/useInfiniteScroll';
 
 import { DevelopersTable } from './DevelopersTable';
 

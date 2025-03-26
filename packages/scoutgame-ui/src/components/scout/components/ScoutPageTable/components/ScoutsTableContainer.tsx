@@ -4,7 +4,7 @@ import { Alert, Box, CircularProgress } from '@mui/material';
 import type { ScoutCursor, ScoutInfo, ScoutsSortBy } from '@packages/scoutgame/scouts/getPaginatedScouts';
 import { getPaginatedScoutsAction } from '@packages/scoutgame/scouts/getPaginatedScoutsAction';
 
-import { useInfiniteScroll } from '../../../../hooks/useInfiniteScroll';
+import { useInfiniteScroll } from '../../../../../hooks/useInfiniteScroll';
 
 import { ScoutsTable } from './ScoutsTable';
 

@@ -2,11 +2,11 @@ import 'server-only';
 
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { getStarterPackBuilders } from '@packages/scoutgame/builders/getStarterPackBuilders';
+import { getStarterCardDevelopers } from '@packages/scoutgame/builders/getStarterCardDevelopers';
 import { getTodaysHotBuilders } from '@packages/scoutgame/builders/getTodaysHotBuilders';
 import { countStarterPackTokensPurchased } from '@packages/scoutgame/scouts/countStarterPackTokensPurchased';
 
-import { ScoutPageCarousel } from './ScoutPageCarousel';
+import { ScoutPageCarousel } from './ScoutPageCarousel/ScoutPageCarousel';
 
 export async function ScoutPageCarouselContainer({ nftType }: { nftType: 'default' | 'starter' }) {
   const session = await getSession();
@@ -16,7 +16,7 @@ export async function ScoutPageCarouselContainer({ nftType }: { nftType: 'defaul
   const [, purchasedCards] = await safeAwaitSSRData(countStarterPackTokensPurchased(scoutId));
 
   const [, starterCardBuilders = []] = scoutId
-    ? await safeAwaitSSRData(getStarterPackBuilders({ userId: scoutId }))
+    ? await safeAwaitSSRData(getStarterCardDevelopers({ userId: scoutId }))
     : [null, []];
 
   return <ScoutPageCarousel nftType={nftType} builders={builders} starterCardDevs={starterCardBuilders} />;
