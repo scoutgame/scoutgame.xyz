@@ -39,7 +39,7 @@ function NFTListingDialogComponent({ builder, open, onClose }: NFTListingDialogP
       onClose={onClose}
       fullScreen={!isDesktop}
     >
-      <NFTListingForm builder={builder} />
+      <NFTListingForm builder={builder} onSuccess={onClose} />
     </Dialog>
   );
 }

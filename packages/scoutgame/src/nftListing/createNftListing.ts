@@ -1,22 +1,21 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { isAddress } from 'viem';
-
-import { createSeaportListing } from '../seaport/createSeaportListing';
 
 export async function createNftListing({
   builderNftId,
   sellerWallet: _sellerWallet,
   price,
   amount,
-  scoutId,
-  signature
+  order,
+  scoutId
 }: {
-  signature: string;
   builderNftId: string;
   sellerWallet: string;
-  price: string | number | bigint;
+  price: bigint;
   amount: number;
   scoutId: string;
+  order: OrderWithCounter;
 }) {
   const sellerWallet = _sellerWallet.toLowerCase();
 
@@ -43,37 +42,17 @@ export async function createNftListing({
     }
   });
 
-  const nft = await prisma.builderNft.findUniqueOrThrow({
-    where: { id: builderNftId },
-    select: {
-      contractAddress: true,
-      tokenId: true
-    }
-  });
-
-  // Create the seaport on-chain listing
-  const order = await createSeaportListing({
-    sellerWallet,
-    price,
-    amount,
-    contractAddress: nft.contractAddress,
-    tokenId: nft.tokenId.toString()
-  });
-
   // Create the listing in our database
   const listing = await prisma.builderNftListing.create({
     data: {
       builderNftId,
       sellerWallet,
-      price: BigInt(price),
+      price,
       amount,
-      signature,
+      signature: order.signature,
       order: JSON.stringify(order)
     }
   });
 
-  return {
-    listing,
-    order
-  };
+  return listing;
 }

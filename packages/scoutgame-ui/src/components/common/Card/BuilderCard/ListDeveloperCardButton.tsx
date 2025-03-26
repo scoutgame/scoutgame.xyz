@@ -1,5 +1,4 @@
 import { LoadingButton } from '@mui/lab';
-import { Stack } from '@mui/material';
 import { useState } from 'react';
 
 import { useTrackEvent } from '../../../../hooks/useTrackEvent';
@@ -20,7 +19,7 @@ export function ListDeveloperCardButton({ builder }: { builder: NFTListingFormPr
   const handleClick = () => {
     trackEvent('click_list_button', { builderPath: builder.path });
     if (isAuthenticated) {
-      openModal('nftListing', { builder });
+      openModal('nftListing', builder);
     } else {
       setAuthPopup(true);
     }
@@ -39,9 +38,7 @@ export function ListDeveloperCardButton({ builder }: { builder: NFTListingFormPr
     <div>
       <DynamicLoadingContext.Provider value={setDialogLoadingStatus}>
         <LoadingButton loading={dialogLoadingStatus} fullWidth onClick={handleClick} variant='buy'>
-          <Stack px={1} direction='row' alignItems='center' justifyContent='center' width='100%'>
-            <div>List</div>
-          </Stack>
+          List
         </LoadingButton>
         <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>

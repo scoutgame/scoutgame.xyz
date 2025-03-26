@@ -10,11 +10,15 @@ export async function createSeaportListing({
   tokenId
 }: {
   sellerWallet: string;
-  price: string | number | bigint;
+  price: bigint;
   amount: number;
   contractAddress: string;
   tokenId: string;
 }) {
+  if (!contractAddress || !tokenId || !price || !amount || !sellerWallet) {
+    throw new Error('Missing required parameters');
+  }
+
   const seaport = await getSeaport();
 
   const { executeAllActions } = await seaport.createOrder(
