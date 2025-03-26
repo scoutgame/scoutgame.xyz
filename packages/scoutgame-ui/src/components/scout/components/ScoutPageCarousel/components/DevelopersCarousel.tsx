@@ -14,6 +14,23 @@ export function DevelopersCarousel({
 }) {
   // const theme = useTheme();
   // const breakpointsValues = theme.breakpoints.values;
+
+  // const cardsWithPromos = [
+  //   ...developers.slice(0, 2),
+  //   // <PromoCard
+  //   //   data-test='promo-card-moxie'
+  //   //   key='moxie-fan-reward-ad'
+  //   //   size={size}
+  //   //   path='/info/partner-rewards/moxie'
+  //   //   src='/images/home/moxie-fan-reward-ad.png'
+  //   //   onClick={() => {
+  //   //     trackEvent('click_moxie_promo');
+  //   //   }}
+  //   // />,
+  //   ...developers.slice(2, 4),
+  //   ...developers.slice(4)
+  // ];
+
   const cards = developers.map(({ builder, hasPurchased }) => (
     <BuilderCard
       type={builder.nftType}
