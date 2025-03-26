@@ -7,7 +7,7 @@ import { Carousel } from '../../../../common/Carousel/Carousel';
 
 export function DevelopersCarousel({
   developers,
-  slidesPerView,
+  slidesPerView = 3,
   infoCard
 }: {
   developers: StarterCardDeveloper[];
@@ -43,7 +43,7 @@ export function DevelopersCarousel({
     />
   ));
   return (
-    <Stack gap={{ xs: 2, md: 4 }} flexDirection={{ xs: 'column-reverse', md: 'row' }} ml={{ md: infoCard ? 3 : 0 }}>
+    <Stack gap={{ xs: 2 }} flexDirection={{ xs: 'column-reverse' }}>
       <Carousel
         slidesPerView={slidesPerView}
         // navigation={{
@@ -61,7 +61,7 @@ export function DevelopersCarousel({
               }
             }
           },
-          boxProps: { width: { xs: '100%', md: slidesPerView === 3 ? '90%' : '70%' }, margin: '0 auto', px: 2 }
+          boxProps: { width: { xs: '100%', md: '90%', margin: '0 auto', px: 2 } }
         }}
         // breakpoints={{
         //   [breakpointsValues.xs]: {

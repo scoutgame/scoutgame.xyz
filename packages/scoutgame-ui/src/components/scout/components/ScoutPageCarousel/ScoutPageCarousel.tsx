@@ -33,18 +33,10 @@ export function ScoutPageCarousel({
       {nftType === 'starter' ? (
         <DevelopersCarousel
           developers={starterCardDevs}
-          slidesPerView={2}
           infoCard={
-            <Box display='flex' flexDirection='column' gap={2}>
-              <Typography variant='h6' fontWeight={600} textAlign={{ xs: 'center', md: 'left' }} color='green.main'>
-                Earn Scout Points
-              </Typography>
-              <Typography>Start your collection by purchasing a Starter Card!</Typography>
-              <Typography>
-                Starter Cards cost only 20 Scout Points, up to 95% off from regular Developer Cards!
-              </Typography>
-              <Typography variant='caption'>
-                <sup>*</sup>Starter Cards earn 1/10 Scout Points compared to regular Developer Cards.
+            <Box maxWidth='25em' margin='0 auto'>
+              <Typography align='center' gutterBottom>
+                A Starter Developer Card costs only 20 Scout Points for 1/10 the rewards of a Standard Developer Card.
               </Typography>
             </Box>
           }
@@ -54,15 +46,13 @@ export function ScoutPageCarousel({
           developers={builders.map((builder) => ({
             builder
           }))}
-          slidesPerView={3}
-          // infoCard={
-          //   <Box display='flex' flexDirection='column' gap={2}>
-          //     <Typography variant='h6' fontWeight={600} textAlign={{ xs: 'center', md: 'left' }} color='green.main'>
-          //       Earn Scout Points
-          //     </Typography>
-          //     <Typography>Start your collection by purchasing a Developer Card!</Typography>
-          //   </Box>
-          // }
+          infoCard={
+            <Typography align='center' gutterBottom>
+              Earn Scout Points by purchasing Developer Cards.
+              <br />
+              When your Developer contributes, both of you will be rewarded!
+            </Typography>
+          }
         />
       )}
     </Box>

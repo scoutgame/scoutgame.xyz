@@ -16,15 +16,15 @@ import { TabsMenu, type TabItem } from '../common/Tabs/TabsMenu';
 import { InfoModal } from './components/InfoModal';
 import { ScoutPageBuildersGallery } from './components/ScoutPageBuildersGallery';
 import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/ScoutPageCarouselContainer';
+import { ScoutPageTable } from './components/ScoutPageTable/ScoutPageTable';
 import { SearchBuildersInput } from './components/SearchBuildersInput';
-import { ScoutPageTable } from './ScoutPageTable/ScoutPageTable';
 
 export const scoutTabOptions: TabItem[] = [{ label: 'Top Scouts', value: 'scouts' }];
 
 export const scoutTabMobileOptions: TabItem[] = [{ label: 'Developers', value: 'builders' }, ...scoutTabOptions];
 
 const nftTypeOptions = [
-  { label: 'Developers', value: 'default' },
+  { label: 'Standard', value: 'default' },
   { label: 'Starters', value: 'starter' }
 ];
 
