@@ -3,10 +3,10 @@
 import { useTheme } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
-import { useLgScreen, useMdScreen } from '../../../hooks/useMediaScreens';
-import { useTrackEvent } from '../../../hooks/useTrackEvent';
-import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
-import { Carousel } from '../../common/Carousel/Carousel';
+import { useLgScreen, useMdScreen } from '../../../../../hooks/useMediaScreens';
+import { useTrackEvent } from '../../../../../hooks/useTrackEvent';
+import { BuilderCard } from '../../../../common/Card/BuilderCard/BuilderCard';
+import { Carousel } from '../../../../common/Carousel/Carousel';
 
 const promoInsertIndex = 2;
 

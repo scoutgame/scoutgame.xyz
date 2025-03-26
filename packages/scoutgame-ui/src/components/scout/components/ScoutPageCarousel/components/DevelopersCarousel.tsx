@@ -1,16 +1,20 @@
 import { Stack, useTheme } from '@mui/material';
-import type { StarterPackBuilder } from '@packages/scoutgame/builders/getStarterPackBuilders';
+import type { StarterCardDeveloper } from '@packages/scoutgame/builders/getStarterCardDevelopers';
+import type { ReactNode } from 'react';
 
-import { BuilderCard } from '../../common/Card/BuilderCard/BuilderCard';
-import { Carousel } from '../../common/Carousel/Carousel';
+import { BuilderCard } from '../../../../common/Card/BuilderCard/BuilderCard';
+import { Carousel } from '../../../../common/Carousel/Carousel';
 
-import { StarterPackCard } from './StarterPackCard';
-import { StarterPackInfo } from './StarterPackInfo';
-
-export function StarterPackCarousel({ builders }: { builders: StarterPackBuilder[] }) {
+export function DevelopersCarousel({
+  developers,
+  infoCard
+}: {
+  developers: StarterCardDeveloper[];
+  infoCard: ReactNode;
+}) {
   // const theme = useTheme();
   // const breakpointsValues = theme.breakpoints.values;
-  const cards = builders.map(({ builder, hasPurchased }) => (
+  const cards = developers.map(({ builder, hasPurchased }) => (
     <BuilderCard
       type={builder.nftType}
       key={builder.id}
@@ -51,7 +55,7 @@ export function StarterPackCarousel({ builders }: { builders: StarterPackBuilder
       >
         {cards}
       </Carousel>
-      <StarterPackInfo />
+      {infoCard}
     </Stack>
   );
 }

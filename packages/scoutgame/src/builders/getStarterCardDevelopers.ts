@@ -8,9 +8,9 @@ import { devTokenDecimals } from '../protocol/constants';
 import type { BuilderInfo } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
-export type StarterPackBuilder = { builder: BuilderInfo; hasPurchased: boolean };
+export type StarterCardDeveloper = { builder: BuilderInfo; hasPurchased?: boolean };
 
-export async function getStarterPackBuilders({
+export async function getStarterCardDevelopers({
   week = getCurrentWeek(),
   limit,
   userId
@@ -18,7 +18,7 @@ export async function getStarterPackBuilders({
   week?: string;
   limit?: number;
   userId?: string;
-} = {}): Promise<StarterPackBuilder[]> {
+} = {}): Promise<StarterCardDeveloper[]> {
   const season = getCurrentSeason(week).start;
   const result = await prisma.scout.findMany({
     where: {
