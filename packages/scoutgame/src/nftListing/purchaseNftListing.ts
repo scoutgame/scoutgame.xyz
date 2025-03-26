@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import type { OrderParameters } from '@opensea/seaport-js/lib/types';
-import type { ethers } from 'ethers';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { isAddress } from 'viem';
 
 import { purchaseSeaportListing } from '../seaport/purchaseSeaportListing';
@@ -10,15 +9,13 @@ export async function purchaseNftListing({
   buyerWallet: _buyerWallet,
   txHash,
   txLogIndex,
-  scoutId,
-  signer
+  scoutId
 }: {
   listingId: string;
   buyerWallet: string;
   txHash: string;
   txLogIndex: number;
   scoutId: string;
-  signer: ethers.JsonRpcSigner;
 }) {
   const buyerWallet = _buyerWallet.toLowerCase();
 
@@ -43,9 +40,7 @@ export async function purchaseNftListing({
       completedAt: true,
       cancelledAt: true,
       sellerWallet: true,
-      orderHash: true,
-      order: true,
-      signature: true
+      order: true
     }
   });
 
@@ -55,15 +50,12 @@ export async function purchaseNftListing({
   }
 
   // Purchase the NFT on-chain using Seaport if we have the order data
-  if (listing.orderHash && listing.order) {
-    const order = listing.order as OrderParameters;
+  if (listing.order) {
+    const order = listing.order as OrderWithCounter;
 
     await purchaseSeaportListing({
-      orderHash: listing.orderHash,
-      signature: listing.signature,
-      orderParameters: order,
-      buyerWallet,
-      signer
+      order,
+      buyerWallet
     });
   }
 

@@ -1,26 +1,15 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderComponents } from '@opensea/seaport-js/lib/types';
-import type { ethers } from 'ethers';
 
 import { cancelSeaportListing } from '../seaport/cancelSeaportListing';
 
-export async function cancelNftListing({
-  listingId,
-  scoutId,
-  signer
-}: {
-  listingId: string;
-  scoutId: string;
-  signer: ethers.JsonRpcSigner;
-}) {
+export async function cancelNftListing({ listingId, scoutId }: { listingId: string; scoutId: string }) {
   const listing = await prisma.builderNftListing.findUniqueOrThrow({
     where: { id: listingId },
     select: {
       sellerWallet: true,
       completedAt: true,
       cancelledAt: true,
-      signature: true,
-      orderHash: true,
       order: true
     }
   });
@@ -42,7 +31,6 @@ export async function cancelNftListing({
 
     await cancelSeaportListing({
       order,
-      signer,
       sellerWallet: listing.sellerWallet
     });
   }

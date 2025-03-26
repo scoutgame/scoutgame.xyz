@@ -1,35 +1,17 @@
-import type { OrderComponents } from '@opensea/seaport-js/lib/types';
-import type { ethers } from 'ethers';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 
 import { getSeaport } from './seaport';
 
 // Utility function to purchase a seaport listing
-export async function purchaseSeaportListing({
-  signature,
-  orderHash,
-  order,
-  buyerWallet,
-  signer
-}: {
-  signature: string;
-  orderHash: string;
-  order: OrderComponents;
-  buyerWallet: string;
-  signer: ethers.JsonRpcSigner;
-}) {
-  const seaport = await getSeaport(signer);
+export async function purchaseSeaportListing({ order, buyerWallet }: { order: OrderWithCounter; buyerWallet: string }) {
+  const seaport = await getSeaport();
 
   const { executeAllActions } = await seaport.fulfillOrder({
-    order: {
-      parameters: order,
-      signature
-    },
+    order,
     accountAddress: buyerWallet
   });
 
   const tx = await executeAllActions();
 
-  const receipt = await signer.sendTransaction(tx);
-
-  return receipt;
+  return tx;
 }

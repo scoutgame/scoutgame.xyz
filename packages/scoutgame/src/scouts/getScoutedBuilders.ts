@@ -114,6 +114,20 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
                   }
                 }
               : undefined
+        },
+        include: {
+          nftOwners: true,
+          nftSoldEvents: true,
+          BuilderNftListing: {
+            where: {
+              completedAt: null,
+              cancelledAt: null
+            },
+            orderBy: {
+              price: 'asc'
+            },
+            take: 1
+          }
         }
       }
     }
@@ -129,6 +143,22 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
       if (nftsSoldToScoutInView === 0 || loggedInScoutId === scoutIdInView) {
         return null;
       }
+
+      // Check for available listings - handle possible type issues
+      const hasListings = builder.builderNfts.some((nft) => {
+        // @ts-ignore - Handle possible type issues with BuilderNftListing
+        return nft.BuilderNftListing && nft.BuilderNftListing.length > 0;
+      });
+
+      // Find the lowest priced listing
+      const allListings = builder.builderNfts.flatMap((nft) => {
+        // @ts-ignore - Handle possible type issues with BuilderNftListing
+        return nft.BuilderNftListing || [];
+      });
+
+      const lowestListing =
+        allListings.length > 0 ? allListings.sort((a, b) => (Number(a.price) < Number(b.price) ? -1 : 1))[0] : null;
+
       return {
         ...builder,
         nftImageUrl: builder.builderNfts[0].imageUrl,
@@ -140,7 +170,10 @@ async function getScoutedBuildersUsingProtocolBuilderNfts({
           Number(BigInt(builder.builderNfts[0].estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0,
         last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
         nftsSoldToScoutInView,
-        nftsSoldToLoggedInScout
+        nftsSoldToLoggedInScout,
+        // Add marketplace properties
+        hasMarketplaceListings: hasListings,
+        lowestListingPrice: lowestListing ? Number(lowestListing.price) : null
       };
     })
     .filter(isTruthy);

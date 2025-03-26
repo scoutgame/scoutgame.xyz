@@ -6,7 +6,7 @@ import type { Address } from 'viem';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from '../artwork/uploadStarterPackArtwork';
 import { getBuilderNftStarterPackReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import { builderNftChain, getBuilderNftStarterPackContractAddress } from '../constants';
+import { nftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 export async function createBuilderNftStarterPack({
   avatar,
@@ -15,7 +15,7 @@ export async function createBuilderNftStarterPack({
   displayName,
   path,
   season = getCurrentSeasonStart(),
-  chainId = builderNftChain.id,
+  chainId = nftChain.id,
   contractAddress
 }: {
   displayName: string;

@@ -1,5 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import type { ethers } from 'ethers';
 import { isAddress } from 'viem';
 
 import { createSeaportListing } from '../seaport/createSeaportListing';
@@ -10,14 +9,14 @@ export async function createNftListing({
   price,
   amount,
   scoutId,
-  signer
+  signature
 }: {
+  signature: string;
   builderNftId: string;
   sellerWallet: string;
   price: string | number | bigint;
   amount: number;
   scoutId: string;
-  signer: ethers.JsonRpcSigner;
 }) {
   const sellerWallet = _sellerWallet.toLowerCase();
 
@@ -53,13 +52,12 @@ export async function createNftListing({
   });
 
   // Create the seaport on-chain listing
-  const { order, orderHash } = await createSeaportListing({
+  const order = await createSeaportListing({
     sellerWallet,
     price,
     amount,
     contractAddress: nft.contractAddress,
-    tokenId: nft.tokenId.toString(),
-    signer
+    tokenId: nft.tokenId.toString()
   });
 
   // Create the listing in our database
@@ -69,11 +67,8 @@ export async function createNftListing({
       sellerWallet,
       price: BigInt(price),
       amount,
-      signature: order.signature,
-      orderHash,
-      order: JSON.stringify({
-        parameters: order.parameters
-      })
+      signature,
+      order: JSON.stringify(order)
     }
   });
 

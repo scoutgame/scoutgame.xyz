@@ -8,7 +8,7 @@ import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accoun
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import { builderNftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
+import { nftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
@@ -29,14 +29,14 @@ export async function findAndIndexMissingPurchases({
 }) {
   const weekBeforeSeason = getPreviousWeek(season);
 
-  const startBlockNumber = await getLastBlockOfWeek({ week: weekBeforeSeason, chainId: builderNftChain.id });
+  const startBlockNumber = await getLastBlockOfWeek({ week: weekBeforeSeason, chainId: nftChain.id });
 
   const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
 
   const transferSingleEvents = await getTransferSingleWithBatchMerged({
     fromBlock: startBlockNumber,
     contractAddress,
-    chainId: builderNftChain.id
+    chainId: nftChain.id
   });
   const transferSingleEventsMapped = transferSingleEvents.reduce(
     (acc, val) => {
@@ -182,7 +182,7 @@ export async function findAndIndexMissingPurchases({
         }
 
         if (isOnchainPlatform()) {
-          const _sentAt = await getPublicClient(builderNftChain.id)
+          const _sentAt = await getPublicClient(nftChain.id)
             .getBlock({
               blockNumber: singleEvent.blockNumber
             })

@@ -1,25 +1,21 @@
 import { ItemType } from '@opensea/seaport-js/lib/constants';
-import type { ethers } from 'ethers';
 
 import { getSeaport } from './seaport';
 
-// Utility function to create a seaport listing
 export async function createSeaportListing({
   sellerWallet,
   price,
   amount,
   contractAddress,
-  tokenId,
-  signer
+  tokenId
 }: {
   sellerWallet: string;
   price: string | number | bigint;
   amount: number;
   contractAddress: string;
   tokenId: string;
-  signer: ethers.JsonRpcSigner;
 }) {
-  const seaport = await getSeaport(signer);
+  const seaport = await getSeaport();
 
   const { executeAllActions } = await seaport.createOrder(
     {
@@ -43,8 +39,5 @@ export async function createSeaportListing({
 
   const order = await executeAllActions();
 
-  return {
-    order,
-    orderHash: seaport.getOrderHash(order.parameters)
-  };
+  return order;
 }

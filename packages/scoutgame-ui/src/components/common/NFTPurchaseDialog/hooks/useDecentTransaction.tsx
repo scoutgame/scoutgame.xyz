@@ -3,7 +3,7 @@ import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common
 import { ActionType } from '@decent.xyz/box-common';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
-  builderNftChain,
+  nftChain,
   getBuilderNftContractAddress,
   getDecentApiKey,
   isPreseason01Contract,
@@ -91,7 +91,7 @@ export function useDecentTransaction({
     srcToken: sourceToken,
     dstToken: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress,
     srcChainId: sourceChainId,
-    dstChainId: useScoutToken ? scoutProtocolChainId : builderNftChain.id,
+    dstChainId: useScoutToken ? scoutProtocolChainId : nftChain.id,
     slippage: 1,
     actionType: ActionType.NftMint,
     actionConfig: {

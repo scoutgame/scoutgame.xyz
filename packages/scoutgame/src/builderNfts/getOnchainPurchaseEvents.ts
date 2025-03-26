@@ -8,7 +8,7 @@ import { getBuilderScoutedEvents } from './accounting/getBuilderScoutedEvents';
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
 import { getTransferSingleEvents } from './accounting/getTransferSingleEvents';
 import {
-  builderNftChain,
+  nftChain,
   getBuilderNftContractAddress,
   getBuilderNftStarterPackContractAddress,
   validMintNftPurchaseEvent
@@ -54,18 +54,18 @@ export async function getOnchainPurchaseEvents({
       fromBlock,
       toBlock,
       contractAddress: getBuilderNftContractAddress(season),
-      chainId: builderNftChain.id
+      chainId: nftChain.id
     }),
     getOnchainEvents({
       fromBlock,
       toBlock,
       contractAddress: getBuilderNftStarterPackContractAddress(season),
-      chainId: builderNftChain.id
+      chainId: nftChain.id
     })
   ]);
 
   const fromBlockTimestamp = fromBlock
-    ? await getPublicClient(builderNftChain.id)
+    ? await getPublicClient(nftChain.id)
         .getBlock({ blockNumber: BigInt(fromBlock), includeTransactions: false })
         .then((block) => new Date(Number(block.timestamp) * 1000))
     : undefined;
