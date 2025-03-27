@@ -1,6 +1,9 @@
+import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { AppProviders } from '@packages/scoutgame-ui/providers/AppProviders';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+
+import { ClientGlobals } from '@/components/common/ClientGlobals';
 
 import '@/theme/styles.scss';
 
@@ -38,13 +41,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const user = await getUserFromSession();
+
   return (
     <html lang='en' dir='ltr'>
       <body>
         {/* load env vars for the frontend - note that the parent body tag is required for React to not complain */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src='/__ENV.js' />
-        <AppProviders>{children}</AppProviders>
+        <AppProviders user={user}>
+          <ClientGlobals userId={user?.id} />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

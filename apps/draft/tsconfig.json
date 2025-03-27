@@ -1,12 +1,18 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "outDir": "../../dist/apps/draft",
+    "rootDir": "../../",
     "jsx": "preserve",
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ],
+      "@charmverse/core/prisma": ["../../node_modules/@charmverse/core/dist/cjs/prisma"],
+      "@charmverse/core/prisma-client": ["../../node_modules/@charmverse/core/dist/cjs/prisma-client"],
+      "@charmverse/core/log": ["../../node_modules/@charmverse/core/dist/cjs/lib/log"],
+      "@charmverse/core/utilities": ["../../node_modules/@charmverse/core/dist/cjs/utilities"],
+      "@charmverse/core/errors": ["../../node_modules/@charmverse/core/dist/cjs/errors"]
     },
     "plugins": [
       {
@@ -20,12 +26,12 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "noEmit": true,
     "incremental": true,
     "module": "esnext",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "isolatedModules": true
   },
   "include": [
