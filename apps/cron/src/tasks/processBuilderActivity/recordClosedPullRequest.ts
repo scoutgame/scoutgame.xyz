@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
@@ -10,6 +9,7 @@ import { isTruthy } from '@packages/utils/types';
 import { v4 as uuid } from 'uuid';
 
 import { getClosedPullRequest } from './github/getClosedPullRequest';
+import { log } from './logger';
 
 type RepoInput = Pick<GithubRepo, 'owner' | 'name'>;
 

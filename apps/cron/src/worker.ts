@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
 import { approveBuilders, log as approveBuildersLog } from './tasks/approveBuilders';
-import { processAllBuilderActivity } from './tasks/processBuilderActivity';
+import { processAllBuilderActivity, log as processBuilderActivityLog } from './tasks/processBuilderActivity';
 import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
 import { processDuneAnalytics } from './tasks/processDuneAnalytics';
 import { processGemsPayout } from './tasks/processGemsPayout';
@@ -39,7 +39,7 @@ function addTask(path: string, handler: (ctx: Koa.Context) => any, _log?: Return
     try {
       const result = await handler(ctx);
 
-      log.info(`Completed task`, { durationMinutes: timer.diff(DateTime.now(), 'minutes') });
+      log.info(`Completed task`, { durationMinutes: timer.diff(DateTime.now(), 'minutes').minutes });
 
       ctx.body = result || { success: true };
     } catch (error) {
@@ -56,7 +56,7 @@ addTask('/hello-world', (ctx) => {
   getLogger('hello-world').info('Hello World triggered', { body: ctx.body, headers: ctx.headers });
 });
 
-addTask('/process-builder-activity', processAllBuilderActivity);
+addTask('/process-builder-activity', processAllBuilderActivity, processBuilderActivityLog);
 
 addTask('/approve-builders', approveBuilders, approveBuildersLog);
 

@@ -2,11 +2,11 @@ import { processAllBuilderActivity } from '../apps/cron/src/tasks/processBuilder
 import { processBuilderActivity } from '../apps/cron/src/tasks/processBuilderActivity/processBuilderActivity';
 import { getUserContributions } from '@packages/github/getUserContributions';
 import { DateTime } from 'luxon';
-import { getCurrentWeek, getWeekFromDate, getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentWeek, getStartOfWeek, getCurrentSeasonStart } from '@packages/dates/utils';
 import { prisma } from '@charmverse/core/prisma-client';
 import { prettyPrint } from '@packages/utils/strings';
 
-const windowStart = DateTime.fromISO('2024-10-28', { zone: 'utc' }).toJSDate();
+const windowStart = DateTime.fromISO('2025-03-24', { zone: 'utc' }).toJSDate();
 
 async function resetBuilderEvents(builderId: string, githubUser: any) {
   await deleteBuilderEvents(builderId, githubUser.id);
@@ -16,6 +16,29 @@ async function resetBuilderEvents(builderId: string, githubUser: any) {
     createdAfter: windowStart,
     season: getCurrentSeasonStart()
   });
+}
+
+async function resetAllBuilderEvents(week = getCurrentWeek()) {
+  const result = await prisma.$transaction([
+    prisma.githubEvent.deleteMany({
+      where: {
+        createdAt: {
+          gt: getStartOfWeek(week).toJSDate()
+        }
+      }
+    }),
+    prisma.builderEvent.deleteMany({
+      where: {
+        week: week,
+        type: {
+          in: ['merged_pull_request', 'daily_commit']
+        }
+      }
+    })
+  ]);
+  console.log('Deleted', result[0], 'github events');
+  console.log('Deleted', result[1], 'builder events');
+  await processAllBuilderActivity();
 }
 
 async function deleteBuilderEvents(builderId: string, githubUserId: number) {
@@ -55,16 +78,17 @@ async function getSavedBuilderEvents(builderId: string, week: string = getCurren
 }
 
 (async () => {
+  await resetAllBuilderEvents();
+  console.log('Done!');
+  return;
+
   const newApproved = await prisma.scout.findMany({
     where: {
-      builderStatus: 'approved',
-      createdAt: {
-        gt: DateTime.fromISO('2025-01-20', { zone: 'utc' }).toJSDate()
-      }
+      builderStatus: 'approved'
     },
     include: { githubUsers: true }
   });
-  console.log('Found', newApproved.length, 'newly approved builders');
+  console.log('Found', newApproved.length, 'approved builders');
   for (const builder of newApproved) {
     // const builder = await prisma.scout.findFirstOrThrow({
     //   where: { path: 'zod' },
@@ -82,35 +106,34 @@ async function getSavedBuilderEvents(builderId: string, week: string = getCurren
     const { commits, pullRequests } = await getUserContributions({
       login: builder.githubUsers[0].login,
       githubUserId: builder.githubUsers[0]?.id,
-      after: DateTime.fromISO('2025-02-10', { zone: 'utc' }).toJSDate()
+      after: DateTime.fromISO('2025-03-24', { zone: 'utc' }).toJSDate()
     });
-    if (commits.length > 0) {
-      console.log('Found Commits', commits.length);
-    }
-    //prettyPrint(commits);
-    for (const commit of commits) {
-      const date = new Date(commit.commit.committer!.date!);
-      console.log(commit.repository.full_name, date.toISOString().split('T')[0], getWeekFromDate(date));
-      //console.log(builder.displayName + '\t' + builder.email + '\t' + commit.repository.full_name +'\t' +  new Date(commit.commit.committer!.date!).toDateString());
-    }
-    const mergedPullRequests = pullRequests.filter((pr) => pr.mergedAt);
-    if (mergedPullRequests.length > 0) {
-      console.log('Found Pull Requests', mergedPullRequests.length);
-    }
-    // prettyPrint(pullRequests);
-    for (const pr of mergedPullRequests) {
-      const date = new Date(pr.mergedAt!);
-      console.log('week', getWeekFromDate(date));
-      console.log(
-        [
-          builder.displayName,
-          'https://scoutgame.xyz/u/' + builder.path,
-          builder.email,
-          pr.repository.nameWithOwner,
-          date.toDateString(),
-          pr.url
-        ].join('\t')
-      );
-    }
+    console.log('Found Commits', commits.length, pullRequests.length);
+
+    // //prettyPrint(commits);
+    // for (const commit of commits) {
+    //   const date = new Date(commit.commit.committer!.date!);
+    //   console.log(commit.repository.full_name, date.toISOString().split('T')[0], getWeekFromDate(date));
+    //   //console.log(builder.displayName + '\t' + builder.email + '\t' + commit.repository.full_name +'\t' +  new Date(commit.commit.committer!.date!).toDateString());
+    // }
+    // const mergedPullRequests = pullRequests.filter((pr) => pr.mergedAt);
+    // if (mergedPullRequests.length > 0) {
+    //   console.log('Found Pull Requests', mergedPullRequests.length);
+    // }
+    // // prettyPrint(pullRequests);
+    // for (const pr of mergedPullRequests) {
+    //   const date = new Date(pr.mergedAt!);
+    //   console.log('week', getWeekFromDate(date));
+    //   console.log(
+    //     [
+    //       builder.displayName,
+    //       'https://scoutgame.xyz/u/' + builder.path,
+    //       builder.email,
+    //       pr.repository.nameWithOwner,
+    //       date.toDateString(),
+    //       pr.url
+    //     ].join('\t')
+    //   );
+    // }
   }
 })();

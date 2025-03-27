@@ -1,30 +1,29 @@
-import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getStartOfWeek, getCurrentWeek, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
+import { getStartOfWeek, getCurrentWeek, getCurrentSeasonStart } from '@packages/dates/utils';
 import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refreshEstimatedPayouts';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
 import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
 import type Koa from 'koa';
 import { DateTime } from 'luxon';
 
+import { log } from './logger';
 import { processBuilderActivity } from './processBuilderActivity';
 
+export { log };
 type ProcessPullRequestsOptions = {
   createdAfter?: Date;
   season?: Season;
 };
 
-const log = getLogger('cron-process-builder-activity');
-
 export async function processAllBuilderActivity(
-  ctx: Koa.Context | null,
+  ctx?: Koa.Context | null,
   {
     createdAfter = getStartOfWeek(getCurrentWeek()).toJSDate(),
     season = getCurrentSeasonStart()
   }: ProcessPullRequestsOptions = {}
 ) {
-  const builders = await prisma.scout.findMany({
+  const developers = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
       builderNfts: {
@@ -34,12 +33,14 @@ export async function processAllBuilderActivity(
       },
       deletedAt: null
     },
-    // sort by id so that we can start mid-way if we need to
+    // Add a sort so that we can start mid-way if we need to (when running from a script)
     orderBy: {
-      id: 'asc'
+      // createdAt: 'asc'
+      currentBalance: 'desc'
     },
     select: {
       createdAt: true,
+      currentBalance: true,
       id: true,
       githubUsers: {
         select: {
@@ -56,57 +57,47 @@ export async function processAllBuilderActivity(
     }
   });
   const timer = DateTime.now();
-  log.info(`Processing activity for ${builders.length} builders`);
+  log.info(`Processing activity for ${developers.length} developers`);
 
-  for (const builder of builders) {
-    // If the builder was created less than and hr and has no existing events
-    const newBuilder = builder.createdAt > new Date(Date.now() - 60 * 60 * 1000) && !builder.githubUsers[0]?.events[0];
-
-    if (newBuilder) {
-      log.info(`Detected new builder. Pulling in github data for this season`, {
-        userId: builder.id,
-        githubUserId: builder.githubUsers[0]?.id
-      });
-    }
-
+  for (const developer of developers) {
     await processBuilderActivity({
-      builderId: builder.id,
-      githubUser: builder.githubUsers[0]!,
-      createdAfter: newBuilder ? getDateFromISOWeek(getCurrentWeek()).toJSDate() : createdAfter,
+      builderId: developer.id,
+      githubUser: developer.githubUsers[0]!,
+      createdAfter,
       season
     }).catch((error) => {
-      log.error('Error processing builder activity', { error, userId: builder.id });
+      log.error('Error processing developer activity', { error, userId: developer.id });
     });
 
-    if (builders.indexOf(builder) % 10 === 0) {
-      log.debug(`Processed ${builders.indexOf(builder)}/${builders.length} builders.`, {
-        lastId: builder.id, // log last id in case we want to start in the middle of the process
-        builders: builders
-          .slice(builders.indexOf(builder), builders.indexOf(builder) + 10)
-          .map((b) => b.githubUsers[0].login)
+    if (developers.indexOf(developer) % 30 === 0) {
+      log.debug(`Processed ${developers.indexOf(developer)}/${developers.length} developers`, {
+        lastCreatedAt: developer.currentBalance // log last createdAt in case we want to start in the middle of the process
       });
+      // await updateStats({ week: getCurrentWeek(), season });
     }
   }
-  log.info('Finished processing Github activity for builders', {
-    durationMinutes: timer.diff(DateTime.now(), 'minutes')
+  log.info('Finished processing Github activity for developers', {
+    durationMinutes: timer.diff(DateTime.now(), 'minutes').minutes
   });
 
-  const week = getCurrentWeek();
+  await updateStats({ week: getCurrentWeek(), season });
+}
 
+async function updateStats({ week, season }: { week: string; season: Season }) {
   await updateBuildersRank({ week })
     .then((leaderBoard) => {
-      log.info('Builders rank updated', { week, leaderBoard });
+      log.info('Developers rank updated', { week, leaderBoard });
     })
     .catch((error) => {
-      log.error('Error updating builders rank', { error, week });
+      log.error('Error updating developers rank', { error, week });
     });
 
-  await refreshBuilderLevels({ season: getCurrentSeasonStart() })
+  await refreshBuilderLevels({ season })
     .then((levels) => {
-      log.info(`Refreshed builder levels for season ${season}. Ranked ${levels.length} builders`);
+      log.info(`Refreshed developer levels for season ${season}. Ranked ${levels.length} developers`);
     })
     .catch((error) => {
-      log.error('Error refreshing builder levels', { error, week, season: getCurrentSeasonStart() });
+      log.error('Error refreshing developer levels', { error, week, season });
     });
 
   await refreshEstimatedPayouts({ week })

@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getWeekFromDate } from '@packages/dates/utils';
@@ -7,6 +6,7 @@ import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemRece
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
+import { log } from './logger';
 import { recordClosedPullRequest } from './recordClosedPullRequest';
 import { recordCommit } from './recordCommit';
 import { recordMergedPullRequest } from './recordMergedPullRequest';
@@ -55,7 +55,7 @@ export async function processBuilderActivity({
     (pr) => !githubEvents.some((e) => e.pullRequestNumber === pr.number && e.repoId === pr.repository.id)
   );
 
-  log.debug(`Retrieved builder activity in ${timer.diff(DateTime.now(), 'minutes')} minutes`, {
+  log.debug(`Retrieved builder activity in ${timer.diff(DateTime.now(), 'minutes').minutes} minutes`, {
     commits: commits.length,
     newCommits: newCommits.length,
     prs: pullRequests.length,

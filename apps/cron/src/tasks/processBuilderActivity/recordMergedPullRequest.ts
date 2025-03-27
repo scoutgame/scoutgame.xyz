@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import type {
   ActivityRecipientType,
   GemsReceiptType,
@@ -19,6 +18,7 @@ import { DateTime } from 'luxon';
 
 import { gemsValues } from './config';
 import { getRecentMergedPullRequestsByUser } from './github/getRecentMergedPullRequestsByUser';
+import { log } from './logger';
 
 type RepoInput = Pick<GithubRepo, 'defaultBranch' | 'bonusPartner'>;
 
