@@ -117,7 +117,7 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
             }}
           />
           <FormControl sx={{ width: 150 }}>
-            <InputLabel size='small'>Builder status</InputLabel>
+            <InputLabel size='small'>Developer status</InputLabel>
             <Select
               value={builderFilter || ''}
               onChange={(e) => setBuilderFilter(e.target.value as BuilderStatus | undefined)}
@@ -188,7 +188,7 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
                   direction={sortField === 'builderStatus' ? sortOrder : 'asc'}
                   onClick={() => handleSort('builderStatus')}
                 >
-                  Builder Status
+                  Developer Status
                 </TableSortLabel>
               </TableCell>
               <TableCell>{/** Actions */}</TableCell>

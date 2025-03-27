@@ -13,18 +13,23 @@ import { apps } from '../config';
 
 const app = new cdk.App();
 
-// Command example: cdk deploy --context name=stg-scoutgame
+// Command example: cdk deploy --context name=stg-scoutgame-123
 const stackNameParam: string = app.node.getContext('name');
-const nameParamParts = stackNameParam.split('-');
-const env = nameParamParts.shift() as string;
-
-let appName = nameParamParts[0];
-// hack to allow for onchain- apps that have a hyphen in their name
-if (appName === 'onchain') {
-  appName += '-' + nameParamParts[1];
+const env = stackNameParam.startsWith('prd-') ? 'prd' : 'stg';
+let appName = stackNameParam.replace(/^prd-/, '').replace(/^stg-/, '');
+if (env === 'stg') {
+  // find the index of a hyphen followed by a number (e.g. the PR number included in staging stack names)
+  const hyphenIndex = appName.search(/-\d$/);
+  if (hyphenIndex !== -1) {
+    appName = appName.substring(0, hyphenIndex);
+  }
 }
 
 const stackOptions = apps[appName]?.[env];
+
+if (env === 'prd' && !stackOptions) {
+  throw new Error('Invalid stack env: ' + stackNameParam);
+}
 
 console.log('Deploying stack env: ' + env + ' app: ' + appName);
 

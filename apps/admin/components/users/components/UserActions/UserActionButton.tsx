@@ -30,8 +30,8 @@ export function UserActionButton({ user, onChange }: { user: ScoutGameUser; onCh
         <MoreHorizIcon />
       </IconButton>
       <Menu id='user-menu' anchorEl={anchorEl} open={open} onClose={handleClose} onClick={handleClose}>
-        {user.builderStatus && <MenuItem onClick={() => setIsBuilderModalOpen(true)}>Review builder profile</MenuItem>}
-        {!user.builderStatus && <MenuItem onClick={() => setIsBuilderModalOpen(true)}>Add builder profile</MenuItem>}
+        {user.builderStatus && <MenuItem onClick={() => setIsBuilderModalOpen(true)}>Review developer</MenuItem>}
+        {!user.builderStatus && <MenuItem onClick={() => setIsBuilderModalOpen(true)}>Add developer profile</MenuItem>}
         <MenuItem onClick={() => setIsTransactionsModalOpen(true)}>View NFT transactions</MenuItem>
         <Divider />
         <MenuItemNoAction>

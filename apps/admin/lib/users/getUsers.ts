@@ -11,6 +11,7 @@ export type ScoutGameUser = Pick<
   | 'avatar'
   | 'displayName'
   | 'createdAt'
+  | 'reappliedAt'
   | 'farcasterName'
   | 'currentBalance'
   | 'email'
