@@ -4,6 +4,8 @@ import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { isTruthy } from '@packages/utils/types';
 
+import { builderTokenDecimals } from '../builderNfts/constants';
+import { convertCostToPoints } from '../builderNfts/utils';
 import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 import { devTokenDecimals } from '../protocol/constants';
@@ -78,7 +80,13 @@ export async function getScoutedBuilders({
           nftType: true,
           congratsImageUrl: true,
           estimatedPayout: true,
-          estimatedPayoutDevToken: true
+          estimatedPayoutDevToken: true,
+          BuilderNftListing: {
+            select: {
+              id: true,
+              price: true
+            }
+          }
         }
       },
       builderCardActivities: {
@@ -121,6 +129,28 @@ export async function getScoutedBuilders({
           return null;
         }
 
+        const listing = nft.BuilderNftListing.sort((a, b) => {
+          const aPrice = BigInt(a.price);
+          const bPrice = BigInt(b.price);
+          return aPrice < bPrice ? -1 : aPrice > bPrice ? 1 : 0;
+        })[0];
+
+        const isOnchain = isOnchainPlatform();
+
+        const price = isOnchain ? BigInt(nft.currentPriceDevToken ?? 0) : BigInt(nft.currentPrice ?? 0);
+
+        let isListingPriceLower = false;
+
+        if (listing) {
+          if (isOnchain) {
+            isListingPriceLower = listing.price < BigInt(nft.currentPriceDevToken ?? 0);
+          } else {
+            const listingPriceInPoints = Number(BigInt(listing.price) / BigInt(10 ** builderTokenDecimals));
+            const priceInPoints = convertCostToPoints(nft.currentPrice ?? BigInt(0));
+            isListingPriceLower = listingPriceInPoints < priceInPoints;
+          }
+        }
+
         const nftData: BuilderInfo = {
           id: builder.id,
           nftImageUrl: nft.imageUrl,
@@ -129,15 +159,22 @@ export async function getScoutedBuilders({
           builderStatus: builder.builderStatus!,
           nftsSoldToScoutInView,
           nftsSoldToLoggedInScout,
-          price: isOnchainPlatform() ? BigInt(nft.currentPriceDevToken ?? 0) : (nft.currentPrice ?? BigInt(0)),
+          price,
           last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
           nftType: nft.nftType,
           gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
           congratsImageUrl: nft.congratsImageUrl,
-          estimatedPayout: isOnchainPlatform()
+          estimatedPayout: isOnchain
             ? (Number(BigInt(nft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0)
             : (nft.estimatedPayout ?? 0),
-          level: builder.userSeasonStats[0]?.level ?? 0
+          level: builder.userSeasonStats[0]?.level ?? 0,
+          listing: listing
+            ? {
+                isLower: isListingPriceLower,
+                id: listing.id,
+                price: listing.price.toString()
+              }
+            : null
         };
 
         return nftData;

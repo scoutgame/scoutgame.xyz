@@ -28,6 +28,12 @@ export type BuilderInfo = BasicUserInfo &
     farcasterId?: number | null;
     nftImageUrl?: string | null;
     congratsImageUrl: string | null;
+    listing?: {
+      id: string;
+      price: string;
+      // indicates whether the listing price is lower than the current price
+      isLower: boolean;
+    } | null;
   };
 
 export type Last14DaysRank = { date: string; rank: number | null; gems: number }[];
