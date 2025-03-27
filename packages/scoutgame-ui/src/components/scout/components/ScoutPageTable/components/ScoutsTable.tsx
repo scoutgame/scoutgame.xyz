@@ -7,7 +7,7 @@ import type { ScoutInfo } from '@packages/scoutgame/scouts/getScouts';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Avatar } from '../../../common/Avatar';
+import { Avatar } from '../../../../../components/common/Avatar';
 
 import { CommonTableRow, tableRowSx } from './CommonTableRow';
 import { TableCellText } from './TableCellText';

@@ -1,5 +1,5 @@
-import type { TabItem } from '../../../common/Tabs/TabsMenu';
-import { TabsMenu } from '../../../common/Tabs/TabsMenu';
+import type { TabItem } from '../../../../../components/common/Tabs/TabsMenu';
+import { TabsMenu } from '../../../../../components/common/Tabs/TabsMenu';
 
 export const scoutTabs: TabItem[] = [
   { label: 'Scouts', value: 'scouts' },

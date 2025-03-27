@@ -165,7 +165,6 @@ export function PublicBuilderProfileContainer({
                         price: defaultNft?.currentPrice || BigInt(0)
                       }}
                       showPurchaseButton
-                      size={isLgScreen ? 'large' : 'medium'}
                     />
                     {starterPackNft && (
                       <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>

@@ -3,6 +3,7 @@
 import { Card, Stack, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
+import { useLgScreen, useMdScreen } from '../../../../hooks/useMediaScreens';
 import { ScoutButton } from '../../ScoutButton/ScoutButton';
 
 import { BuilderCardNftDisplay } from './BuilderCardNftDisplay';
@@ -16,7 +17,7 @@ export function BuilderCard({
   builder,
   showPurchaseButton = false,
   hideDetails = false,
-  size = 'medium',
+  size: sizeOverride,
   disableProfileUrl = false,
   markStarterCardPurchased = false,
   type,
@@ -31,6 +32,9 @@ export function BuilderCard({
   type: 'default' | 'starter_pack';
   showListButton?: boolean;
 }) {
+  const isDesktop = useMdScreen();
+  const isLgScreen = useLgScreen();
+  const size = sizeOverride || (isLgScreen ? 'large' : isDesktop ? 'small' : 'x-small');
   return (
     <Card
       sx={{

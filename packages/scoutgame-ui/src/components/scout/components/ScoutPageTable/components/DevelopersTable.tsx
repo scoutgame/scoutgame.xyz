@@ -11,10 +11,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { useMdScreen } from '../../../../hooks/useMediaScreens';
-import { useDeveloperInfoModal } from '../../../../providers/DeveloperInfoModalProvider';
-import { Avatar } from '../../../common/Avatar';
-import { BuilderCardRankGraph } from '../../../common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
+import { Avatar } from '../../../../../components/common/Avatar';
+import { BuilderCardRankGraph } from '../../../../../components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
+import { useMdScreen } from '../../../../../hooks/useMediaScreens';
+import { useDeveloperInfoModal } from '../../../../../providers/DeveloperInfoModalProvider';
 
 import { tableRowNoPaddingSx } from './CommonTableRow';
 import { TableCellText } from './TableCellText';
