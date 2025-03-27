@@ -9,6 +9,7 @@ import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats'
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
+import type { BuilderInfo } from '../../../../../../scoutgame/src/builders/interfaces';
 import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
 import { BuilderCard } from '../../../common/Card/BuilderCard/BuilderCard';
@@ -23,6 +24,7 @@ import { PublicBuilderStats } from './PublicBuilderStats';
 
 export type BuilderProfileProps = {
   builder: BasicUserInfo & {
+    listings?: BuilderInfo['listings'];
     builderStatus: BuilderStatus | null;
   } & Omit<BuilderCardStats, 'starterNftSoldToLoggedInScout'>;
   defaultNft: {
