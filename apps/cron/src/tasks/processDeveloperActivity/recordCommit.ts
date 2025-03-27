@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GemsReceiptType, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
@@ -9,6 +8,7 @@ import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { isTruthy } from '@packages/utils/types';
 
 import { gemsValues } from './config';
+import { log } from './logger';
 
 export type RequiredCommitFields = Pick<Commit, 'sha' | 'html_url'> & {
   author: Pick<NonNullable<Commit['author']>, 'id' | 'login'> | null;

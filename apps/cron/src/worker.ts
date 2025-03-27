@@ -5,8 +5,9 @@ import { DateTime } from 'luxon';
 
 import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
-import { processAllBuilderActivity } from './tasks/processBuilderActivity';
+import { approveDevelopers, log as approveDevelopersLog } from './tasks/approveDevelopers';
 import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
+import { processAllDeveloperActivity, log as processAllDeveloperActivityLog } from './tasks/processDeveloperActivity';
 import { processDuneAnalytics } from './tasks/processDuneAnalytics';
 import { processGemsPayout } from './tasks/processGemsPayout';
 import { processNftMints } from './tasks/processNftMints';
@@ -23,8 +24,8 @@ const app = new Koa();
 const router = new Router();
 
 // add a task endpoint which will be configured in cron.yml
-function addTask(path: string, handler: (ctx: Koa.Context) => any) {
-  const log = getLogger(`cron-${path.split('/').pop()}`);
+function addTask(path: string, handler: (ctx: Koa.Context) => any, _log?: ReturnType<typeof getLogger>) {
+  const log = _log || getLogger(`cron-${path.split('/').pop()}`);
 
   router.post(path, async (ctx) => {
     // just in case we need to disable cron in production
@@ -38,7 +39,7 @@ function addTask(path: string, handler: (ctx: Koa.Context) => any) {
     try {
       const result = await handler(ctx);
 
-      log.info(`Completed task`, { durationMinutes: timer.diff(DateTime.now(), 'minutes') });
+      log.info(`Completed task`, { durationMinutes: timer.diff(DateTime.now(), 'minutes').minutes });
 
       ctx.body = result || { success: true };
     } catch (error) {
@@ -55,7 +56,9 @@ addTask('/hello-world', (ctx) => {
   getLogger('hello-world').info('Hello World triggered', { body: ctx.body, headers: ctx.headers });
 });
 
-addTask('/process-builder-activity', processAllBuilderActivity);
+addTask('/process-developer-activity', processAllDeveloperActivity, processAllDeveloperActivityLog);
+
+addTask('/approve-developers', approveDevelopers, approveDevelopersLog);
 
 addTask('/send-push-notifications', sendNotifications);
 

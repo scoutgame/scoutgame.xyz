@@ -13,7 +13,7 @@ jest.unstable_mockModule('@packages/github/getCommitsByUser', () => ({
   getCommitsByUser: jest.fn()
 }));
 
-jest.unstable_mockModule('../github/getPullRequestsByUser', () => ({
+jest.unstable_mockModule('@packages/github/getPullRequestsByUser', () => ({
   getPullRequestsByUser: jest.fn()
 }));
 
@@ -31,11 +31,11 @@ jest.unstable_mockModule('../github/getRecentMergedPullRequestsByUser', () => ({
 const { getRecentMergedPullRequestsByUser } = await import('../github/getRecentMergedPullRequestsByUser');
 
 const { getCommitsByUser } = await import('@packages/github/getCommitsByUser');
-const { getPullRequestsByUser } = await import('../github/getPullRequestsByUser');
-const { processBuilderActivity } = await import('../processBuilderActivity');
+const { getPullRequestsByUser } = await import('@packages/github/getPullRequestsByUser');
+const { processDeveloperActivity } = await import('../processDeveloperActivity');
 const { recordMergedPullRequest } = await import('../recordMergedPullRequest');
 const { recordCommit } = await import('../recordCommit');
-describe('processBuilderActivity', () => {
+describe('processDeveloperActivity', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -64,7 +64,7 @@ describe('processBuilderActivity', () => {
     (getPullRequestsByUser as jest.Mock<typeof getPullRequestsByUser>).mockResolvedValue([pullRequest]);
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await processBuilderActivity({
+    await processDeveloperActivity({
       builderId: builder.id,
       githubUser: builder.githubUser,
       createdAfter: new Date(),
@@ -115,7 +115,7 @@ describe('processBuilderActivity', () => {
     (getPullRequestsByUser as jest.Mock<typeof getPullRequestsByUser>).mockResolvedValue([pullRequest]);
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await processBuilderActivity({
+    await processDeveloperActivity({
       builderId: builder.id,
       githubUser: builder.githubUser,
       createdAfter: new Date(),

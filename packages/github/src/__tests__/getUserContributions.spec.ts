@@ -1,21 +1,21 @@
 import { jest } from '@jest/globals';
 import { mockRepo, mockGithubUser } from '@packages/testing/database';
 
-import { mockCommit, mockPullRequest } from '@/testing/generators';
+import { mockCommit, mockPullRequest } from './generators';
 
-jest.unstable_mockModule('@packages/github/getCommitsByUser', () => ({
+jest.unstable_mockModule('./getCommitsByUser', () => ({
   getCommitsByUser: jest.fn()
 }));
 
-jest.unstable_mockModule('../github/getPullRequestsByUser', () => ({
+jest.unstable_mockModule('./getPullRequestsByUser', () => ({
   getPullRequestsByUser: jest.fn()
 }));
 
 const { getCommitsByUser } = await import('@packages/github/getCommitsByUser');
-const { getPullRequestsByUser } = await import('../github/getPullRequestsByUser');
-const { getBuilderActivity } = await import('../getBuilderActivity');
+const { getPullRequestsByUser } = await import('@packages/github/getPullRequestsByUser');
+const { getUserContributions } = await import('@packages/github/getUserContributions');
 
-describe('getBuilderActivity', () => {
+describe('getUserContributions', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -43,7 +43,7 @@ describe('getBuilderActivity', () => {
     (getCommitsByUser as jest.Mock<typeof getCommitsByUser>).mockResolvedValue([commit]);
     (getPullRequestsByUser as jest.Mock<typeof getPullRequestsByUser>).mockResolvedValue([pullRequest]);
 
-    const { commits, pullRequests } = await getBuilderActivity({
+    const { commits, pullRequests } = await getUserContributions({
       login: githubUser.login,
       after: new Date()
     });
@@ -67,7 +67,7 @@ describe('getBuilderActivity', () => {
     (getCommitsByUser as jest.Mock<typeof getCommitsByUser>).mockResolvedValue([commit]);
     (getPullRequestsByUser as jest.Mock<typeof getPullRequestsByUser>).mockResolvedValue([pullRequest]);
 
-    const { commits, pullRequests } = await getBuilderActivity({
+    const { commits, pullRequests } = await getUserContributions({
       login: githubUser.login,
       after: new Date()
     });
