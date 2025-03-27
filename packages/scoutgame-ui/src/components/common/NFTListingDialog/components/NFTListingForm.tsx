@@ -94,6 +94,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
   }, [builder, priceInUsdc, sellerWallet, isExecuting, chainId, switchChainAsync]);
 
   const isOwner = developerToken && developerToken.scoutAddress.toLowerCase() === sellerWallet?.toLowerCase();
+  const isDisabled = !sellerWallet || !developerToken || !isOwner;
 
   return (
     <Stack gap={2} width='400px' maxWidth='100%' mx='auto'>
@@ -149,6 +150,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
               setPriceInUsdc(value);
             }
           }}
+          disabled={isDisabled}
           disableArrows
           sx={{ '& input': { textAlign: 'center' } }}
         />
@@ -156,7 +158,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
       <LoadingButton
         variant='contained'
         color='primary'
-        disabled={priceInUsdc === 0 || !sellerWallet || !developerToken || !isOwner}
+        disabled={priceInUsdc === 0 || isDisabled}
         onClick={onListing}
         loading={isListing || isLoading || isExecuting}
       >

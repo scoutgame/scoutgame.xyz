@@ -1,4 +1,5 @@
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
+import type { ethers } from 'ethers';
 
 import { getSeaport } from './seaport';
 
@@ -13,5 +14,5 @@ export async function purchaseSeaportListing({ order, buyerWallet }: { order: Or
 
   const tx = await executeAllActions();
 
-  return tx;
+  return tx as ethers.TransactionResponse;
 }

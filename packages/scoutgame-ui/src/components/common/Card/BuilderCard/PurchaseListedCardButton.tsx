@@ -82,20 +82,11 @@ function PurchaseListedCardButtonComponent({ listing }: { listing: NonNullable<B
         buyerWallet: _address
       });
 
-      const txHash = await walletClient.sendTransaction({
-        to: preparedTx.to as `0x${string}`,
-        data: preparedTx.data as `0x${string}`,
-        ...(preparedTx.value ? { value: preparedTx.value } : {}),
-        ...(preparedTx.gasLimit ? { gasLimit: preparedTx.gasLimit } : {}),
-        ...(preparedTx.gasPrice ? { gasPrice: preparedTx.gasPrice } : {}),
-        ...(preparedTx.nonce ? { nonce: preparedTx.nonce } : {})
-      });
-
       const publicClient = getPublicClient(scoutProtocolChainId);
 
       // Wait for transaction receipt
       const receipt = await publicClient.waitForTransactionReceipt({
-        hash: txHash
+        hash: preparedTx.hash as `0x${string}`
       });
 
       const receiptLogs = parseEventLogs({
@@ -140,6 +131,7 @@ function PurchaseListedCardButtonComponent({ listing }: { listing: NonNullable<B
           onSuccess={() => refreshAllowance()}
           decimals={isOnchain ? devTokenDecimals : builderTokenDecimals}
           currency={isOnchain ? 'DEV' : 'USDC'}
+          actionType='purchase'
         />
       </Stack>
     );
