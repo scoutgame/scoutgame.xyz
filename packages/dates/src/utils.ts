@@ -188,3 +188,17 @@ export function getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }: { season
 
   return weeks;
 }
+
+export function getSeasonFromDate(date: Date) {
+  const dateTime = DateTime.fromJSDate(date, { zone: 'utc' });
+  const isoWeek = _formatWeek(dateTime);
+
+  try {
+    // Find the season this date belongs to
+    const season = getCurrentSeason(isoWeek);
+    return season.start;
+  } catch (error) {
+    // If the date is before the first season or doesn't belong to any season
+    return null;
+  }
+}
