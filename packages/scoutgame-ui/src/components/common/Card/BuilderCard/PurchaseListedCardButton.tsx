@@ -24,7 +24,7 @@ import { useGetERC20Allowance } from '../../NFTPurchaseDialog/hooks/useGetERC20A
 
 const seaportContractAddress = '0x0000000000000068F116a894984e2DB1123eB395';
 
-function PurchaseListedCardButtonComponent({ listing }: { listing: NonNullable<BuilderInfo['listing']> }) {
+function PurchaseListedCardButtonComponent({ listing }: { listing: NonNullable<BuilderInfo['listings'][number]> }) {
   const [isLoading, setIsLoading] = useState(false);
   const { data: walletClient } = useWalletClient();
 
@@ -158,7 +158,7 @@ function PurchaseListedCardButtonComponent({ listing }: { listing: NonNullable<B
   );
 }
 
-export function PurchaseListedCardButton({ listing }: { listing: BuilderInfo['listing'] }) {
+export function PurchaseListedCardButton({ listing }: { listing: BuilderInfo['listings'][number] }) {
   if (!listing) {
     return null;
   }

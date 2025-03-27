@@ -29,7 +29,7 @@ export async function purchaseNftListing({
   });
 
   // Find the listing
-  const listing = await prisma.builderNftListing.findUniqueOrThrow({
+  const listing = await prisma.developerNftListing.findUniqueOrThrow({
     where: { id: listingId },
     select: {
       builderNftId: true,
@@ -48,11 +48,12 @@ export async function purchaseNftListing({
 
   const { updatedListing, createdNftPurchaseEvent } = await prisma.$transaction(async (tx) => {
     // Mark the listing as completed
-    const _updatedListing = await tx.builderNftListing.update({
+    const _updatedListing = await tx.developerNftListing.update({
       where: { id: listingId },
       data: {
         completedAt: new Date(),
-        buyerWallet
+        buyerWallet,
+        hash: txHash
       }
     });
 

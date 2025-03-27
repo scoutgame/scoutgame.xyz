@@ -111,7 +111,8 @@ export async function getStarterPackBuilders({
       farcasterId: builder.farcasterId,
       congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl || '',
       purchased: !!builder.builderNfts[0]?.nftSoldEvents?.length,
-      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0
+      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
+      listings: []
     }
   }));
 }

@@ -6,8 +6,6 @@ import { isOnchainPlatform } from '@packages/utils/platform';
 import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
 
-import { builderTokenDecimals } from '../builderNfts/constants';
-import { convertCostToPoints } from '../builderNfts/utils';
 import type { BuilderInfo } from '../builders/interfaces';
 import { normalizeLast14DaysRank } from '../builders/utils/normalizeLast14DaysRank';
 import { devTokenDecimals } from '../protocol/constants';
@@ -83,10 +81,11 @@ export async function getScoutedBuilders({
           congratsImageUrl: true,
           estimatedPayout: true,
           estimatedPayoutDevToken: true,
-          BuilderNftListing: {
+          listings: {
             select: {
               id: true,
               price: true,
+              priceDevToken: true,
               order: true
             }
           }
@@ -132,27 +131,9 @@ export async function getScoutedBuilders({
           return null;
         }
 
-        const listing = nft.BuilderNftListing.sort((a, b) => {
-          const aPrice = BigInt(a.price);
-          const bPrice = BigInt(b.price);
-          return aPrice < bPrice ? -1 : aPrice > bPrice ? 1 : 0;
-        })[0];
-
         const isOnchain = isOnchainPlatform();
 
         const price = isOnchain ? BigInt(nft.currentPriceDevToken ?? 0) : BigInt(nft.currentPrice ?? 0);
-
-        let isListingPriceLower = false;
-
-        if (listing) {
-          if (isOnchain) {
-            isListingPriceLower = listing.price < BigInt(nft.currentPriceDevToken ?? 0);
-          } else {
-            const listingPriceInPoints = Number(BigInt(listing.price) / BigInt(10 ** builderTokenDecimals));
-            const priceInPoints = convertCostToPoints(nft.currentPrice ?? BigInt(0));
-            isListingPriceLower = listingPriceInPoints < priceInPoints;
-          }
-        }
 
         const nftData: BuilderInfo = {
           id: builder.id,
@@ -171,15 +152,12 @@ export async function getScoutedBuilders({
             ? (Number(BigInt(nft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0)
             : (nft.estimatedPayout ?? 0),
           level: builder.userSeasonStats[0]?.level ?? 0,
-          listing: listing
-            ? {
-                isLower: isListingPriceLower,
-                id: listing.id,
-                price: listing.price.toString(),
-                order: listing.order as OrderWithCounter,
-                contractAddress: nft.contractAddress as Address
-              }
-            : null
+          listings: nft.listings.map((listing) => ({
+            id: listing.id,
+            price: isOnchain ? BigInt(listing.priceDevToken || 0) : listing.price || BigInt(0),
+            order: listing.order as OrderWithCounter,
+            contractAddress: nft.contractAddress as Address
+          }))
         };
 
         return nftData;

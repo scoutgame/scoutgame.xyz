@@ -27,7 +27,7 @@ export const createNftListingAction = authActionClient
 
     await createNftListing({
       builderNftId,
-      price: BigInt(price * 10 ** 6),
+      price,
       amount,
       order: order as OrderWithCounter,
       scoutId,
