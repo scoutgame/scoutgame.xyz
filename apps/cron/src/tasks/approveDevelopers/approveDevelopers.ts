@@ -7,7 +7,7 @@ import { log } from './logger';
 /**
  * Review builders status and update it if they had activity in the last 28 days in our repos
  */
-export async function approveBuilders() {
+export async function approveDevelopers() {
   const last28Days = DateTime.utc().minus({ days: 28 }).toJSDate();
 
   const builders = await prisma.scout.findMany({

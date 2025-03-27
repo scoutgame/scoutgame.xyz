@@ -5,9 +5,9 @@ import { DateTime } from 'luxon';
 
 import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
-import { approveBuilders, log as approveBuildersLog } from './tasks/approveBuilders';
-import { processAllBuilderActivity, log as processBuilderActivityLog } from './tasks/processBuilderActivity';
+import { approveDevelopers, log as approveDevelopersLog } from './tasks/approveDevelopers';
 import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
+import { processAllDeveloperActivity, log as processAllDeveloperActivityLog } from './tasks/processDeveloperActivity';
 import { processDuneAnalytics } from './tasks/processDuneAnalytics';
 import { processGemsPayout } from './tasks/processGemsPayout';
 import { processNftMints } from './tasks/processNftMints';
@@ -56,9 +56,9 @@ addTask('/hello-world', (ctx) => {
   getLogger('hello-world').info('Hello World triggered', { body: ctx.body, headers: ctx.headers });
 });
 
-addTask('/process-builder-activity', processAllBuilderActivity, processBuilderActivityLog);
+addTask('/process-developer-activity', processAllDeveloperActivity, processAllDeveloperActivityLog);
 
-addTask('/approve-builders', approveBuilders, approveBuildersLog);
+addTask('/approve-developers', approveDevelopers, approveDevelopersLog);
 
 addTask('/send-push-notifications', sendNotifications);
 

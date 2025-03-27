@@ -22,7 +22,7 @@ type Props = {
   now?: DateTime;
 };
 
-export async function processBuilderActivity({
+export async function processDeveloperActivity({
   builderId,
   githubUser,
   createdAfter,
@@ -55,7 +55,7 @@ export async function processBuilderActivity({
     (pr) => !githubEvents.some((e) => e.pullRequestNumber === pr.number && e.repoId === pr.repository.id)
   );
 
-  log.debug(`Retrieved builder activity in ${timer.diff(DateTime.now(), 'minutes').minutes} minutes`, {
+  log.debug(`Retrieved developer activity in ${timer.diff(DateTime.now(), 'minutes').minutes} minutes`, {
     commits: commits.length,
     newCommits: newCommits.length,
     prs: pullRequests.length,

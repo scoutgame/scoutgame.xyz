@@ -1,5 +1,5 @@
-import { processAllBuilderActivity } from '../apps/cron/src/tasks/processBuilderActivity';
-import { processBuilderActivity } from '../apps/cron/src/tasks/processBuilderActivity/processBuilderActivity';
+import { processAllDeveloperActivity } from '../apps/cron/src/tasks/processDeveloperActivity';
+import { processDeveloperActivity } from '../apps/cron/src/tasks/processDeveloperActivity/processDeveloperActivity';
 import { getUserContributions } from '@packages/github/getUserContributions';
 import { DateTime } from 'luxon';
 import { getCurrentWeek, getStartOfWeek, getCurrentSeasonStart } from '@packages/dates/utils';
@@ -8,9 +8,9 @@ import { prettyPrint } from '@packages/utils/strings';
 
 const windowStart = DateTime.fromISO('2025-03-24', { zone: 'utc' }).toJSDate();
 
-async function resetBuilderEvents(builderId: string, githubUser: any) {
-  await deleteBuilderEvents(builderId, githubUser.id);
-  await processBuilderActivity({
+async function resetDeveloperEvents(builderId: string, githubUser: any) {
+  await deleteDeveloperEvents(builderId, githubUser.id);
+  await processDeveloperActivity({
     builderId: builderId,
     githubUser: githubUser,
     createdAfter: windowStart,
@@ -18,7 +18,7 @@ async function resetBuilderEvents(builderId: string, githubUser: any) {
   });
 }
 
-async function resetAllBuilderEvents(week = getCurrentWeek()) {
+async function resetAllDeveloperEvents(week = getCurrentWeek()) {
   const result = await prisma.$transaction([
     prisma.githubEvent.deleteMany({
       where: {
@@ -37,11 +37,11 @@ async function resetAllBuilderEvents(week = getCurrentWeek()) {
     })
   ]);
   console.log('Deleted', result[0], 'github events');
-  console.log('Deleted', result[1], 'builder events');
-  await processAllBuilderActivity();
+  console.log('Deleted', result[1], 'developer events');
+  await processAllDeveloperActivity();
 }
 
-async function deleteBuilderEvents(builderId: string, githubUserId: number) {
+async function deleteDeveloperEvents(builderId: string, githubUserId: number) {
   const result = await prisma.$transaction([
     prisma.githubEvent.deleteMany({
       where: {
@@ -65,7 +65,7 @@ async function deleteBuilderEvents(builderId: string, githubUserId: number) {
   console.log('Deleted', result[1], 'builder events');
 }
 
-async function getSavedBuilderEvents(builderId: string, week: string = getCurrentWeek()) {
+async function getSavedDeveloperEvents(builderId: string, week: string = getCurrentWeek()) {
   return prisma.builderEvent.findMany({
     where: {
       builderId: builderId,
@@ -78,7 +78,7 @@ async function getSavedBuilderEvents(builderId: string, week: string = getCurren
 }
 
 (async () => {
-  await resetAllBuilderEvents();
+  await resetAllDeveloperEvents();
   console.log('Done!');
   return;
 
@@ -88,20 +88,20 @@ async function getSavedBuilderEvents(builderId: string, week: string = getCurren
     },
     include: { githubUsers: true }
   });
-  console.log('Found', newApproved.length, 'approved builders');
+  console.log('Found', newApproved.length, 'approved developer');
   for (const builder of newApproved) {
     // const builder = await prisma.scout.findFirstOrThrow({
     //   where: { path: 'zod' },
     //   include: { githubUsers: true }
     // });
 
-    // await resetBuilderEvents(builder.id, builder.githubUsers[0]!);
+    // await resetDeveloperEvents(builder.id, builder.githubUsers[0]!);
 
-    // const events = await getSavedBuilderEvents(builder.id, '2025-W07');
+    // const events = await getSavedDeveloperEvents(builder.id, '2025-W07');
     // prettyPrint(events);
 
     // return;
-    console.log('Getting builder activity for ' + builder.displayName);
+    console.log('Getting developer activity for ' + builder.displayName);
 
     const { commits, pullRequests } = await getUserContributions({
       login: builder.githubUsers[0].login,

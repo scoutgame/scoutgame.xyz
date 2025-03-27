@@ -8,7 +8,7 @@ import type Koa from 'koa';
 import { DateTime } from 'luxon';
 
 import { log } from './logger';
-import { processBuilderActivity } from './processBuilderActivity';
+import { processDeveloperActivity } from './processDeveloperActivity';
 
 export { log };
 type ProcessPullRequestsOptions = {
@@ -16,7 +16,7 @@ type ProcessPullRequestsOptions = {
   season?: Season;
 };
 
-export async function processAllBuilderActivity(
+export async function processAllDeveloperActivity(
   ctx?: Koa.Context | null,
   {
     createdAfter = getStartOfWeek(getCurrentWeek()).toJSDate(),
@@ -60,7 +60,7 @@ export async function processAllBuilderActivity(
   log.info(`Processing activity for ${developers.length} developers`);
 
   for (const developer of developers) {
-    await processBuilderActivity({
+    await processDeveloperActivity({
       builderId: developer.id,
       githubUser: developer.githubUsers[0]!,
       createdAfter,
@@ -73,7 +73,7 @@ export async function processAllBuilderActivity(
       log.debug(`Processed ${developers.indexOf(developer)}/${developers.length} developers`, {
         lastCreatedAt: developer.currentBalance // log last createdAt in case we want to start in the middle of the process
       });
-      // await updateStats({ week: getCurrentWeek(), season });
+      await updateStats({ week: getCurrentWeek(), season });
     }
   }
   log.info('Finished processing Github activity for developers', {

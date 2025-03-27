@@ -32,10 +32,10 @@ const { getRecentMergedPullRequestsByUser } = await import('../github/getRecentM
 
 const { getCommitsByUser } = await import('@packages/github/getCommitsByUser');
 const { getPullRequestsByUser } = await import('@packages/github/getPullRequestsByUser');
-const { processBuilderActivity } = await import('../processBuilderActivity');
+const { processDeveloperActivity } = await import('../processDeveloperActivity');
 const { recordMergedPullRequest } = await import('../recordMergedPullRequest');
 const { recordCommit } = await import('../recordCommit');
-describe('processBuilderActivity', () => {
+describe('processDeveloperActivity', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -64,7 +64,7 @@ describe('processBuilderActivity', () => {
     (getPullRequestsByUser as jest.Mock<typeof getPullRequestsByUser>).mockResolvedValue([pullRequest]);
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await processBuilderActivity({
+    await processDeveloperActivity({
       builderId: builder.id,
       githubUser: builder.githubUser,
       createdAfter: new Date(),
@@ -115,7 +115,7 @@ describe('processBuilderActivity', () => {
     (getPullRequestsByUser as jest.Mock<typeof getPullRequestsByUser>).mockResolvedValue([pullRequest]);
     (getRecentMergedPullRequestsByUser as jest.Mock<typeof getRecentMergedPullRequestsByUser>).mockResolvedValue([]);
 
-    await processBuilderActivity({
+    await processDeveloperActivity({
       builderId: builder.id,
       githubUser: builder.githubUser,
       createdAfter: new Date(),
