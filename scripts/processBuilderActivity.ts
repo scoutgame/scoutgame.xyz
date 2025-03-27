@@ -1,6 +1,6 @@
 import { processAllBuilderActivity } from '../apps/cron/src/tasks/processBuilderActivity';
 import { processBuilderActivity } from '../apps/cron/src/tasks/processBuilderActivity/processBuilderActivity';
-import { getBuilderActivity } from '../apps/cron/src/tasks/processBuilderActivity/getBuilderActivity';
+import { getUserContributions } from '@packages/github/getUserContributions';
 import { DateTime } from 'luxon';
 import { getCurrentWeek, getWeekFromDate, getCurrentSeasonStart } from '@packages/dates/utils';
 import { prisma } from '@charmverse/core/prisma-client';
@@ -79,7 +79,7 @@ async function getSavedBuilderEvents(builderId: string, week: string = getCurren
     // return;
     console.log('Getting builder activity for ' + builder.displayName);
 
-    const { commits, pullRequests } = await getBuilderActivity({
+    const { commits, pullRequests } = await getUserContributions({
       login: builder.githubUsers[0].login,
       githubUserId: builder.githubUsers[0]?.id,
       after: DateTime.fromISO('2025-02-10', { zone: 'utc' }).toJSDate()

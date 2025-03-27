@@ -6,7 +6,7 @@ import { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
 import { generatePullRequest } from './generatePullRequest';
 import { randomTimeOfDay } from './generator';
-import { PullRequest } from '../../tasks/processBuilderActivity/github/getPullRequestsByUser';
+import { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { recordClosedPullRequest } from '../../tasks/processBuilderActivity/recordClosedPullRequest';
 import { recordMergedPullRequest } from '../../tasks/processBuilderActivity/recordMergedPullRequest';
 import { log } from '@charmverse/core/log';

@@ -9,6 +9,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { streakWindow } from '@packages/dates/config';
 import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
+import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
@@ -17,7 +18,6 @@ import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
 import { gemsValues } from './config';
-import type { PullRequest } from './github/getPullRequestsByUser';
 import { getRecentMergedPullRequestsByUser } from './github/getRecentMergedPullRequestsByUser';
 
 type RepoInput = Pick<GithubRepo, 'defaultBranch' | 'bonusPartner'>;

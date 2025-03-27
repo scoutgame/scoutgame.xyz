@@ -2,6 +2,7 @@ import { log } from '@charmverse/core/log';
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { attestDeveloperStatusEvent } from '@packages/scoutgameattestations/attestDeveloperStatusEvent';
@@ -9,7 +10,6 @@ import { isTruthy } from '@packages/utils/types';
 import { v4 as uuid } from 'uuid';
 
 import { getClosedPullRequest } from './github/getClosedPullRequest';
-import type { PullRequest } from './github/getPullRequestsByUser';
 
 type RepoInput = Pick<GithubRepo, 'owner' | 'name'>;
 

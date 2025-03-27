@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 
 import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
+import { approveBuilders, log as approveBuildersLog } from './tasks/approveBuilders';
 import { processAllBuilderActivity } from './tasks/processBuilderActivity';
 import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
 import { processDuneAnalytics } from './tasks/processDuneAnalytics';
@@ -23,8 +24,8 @@ const app = new Koa();
 const router = new Router();
 
 // add a task endpoint which will be configured in cron.yml
-function addTask(path: string, handler: (ctx: Koa.Context) => any) {
-  const log = getLogger(`cron-${path.split('/').pop()}`);
+function addTask(path: string, handler: (ctx: Koa.Context) => any, _log?: ReturnType<typeof getLogger>) {
+  const log = _log || getLogger(`cron-${path.split('/').pop()}`);
 
   router.post(path, async (ctx) => {
     // just in case we need to disable cron in production
@@ -56,6 +57,8 @@ addTask('/hello-world', (ctx) => {
 });
 
 addTask('/process-builder-activity', processAllBuilderActivity);
+
+addTask('/approve-builders', approveBuilders, approveBuildersLog);
 
 addTask('/send-push-notifications', sendNotifications);
 

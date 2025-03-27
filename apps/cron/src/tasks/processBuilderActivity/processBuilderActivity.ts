@@ -2,11 +2,11 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getWeekFromDate } from '@packages/dates/utils';
+import { getUserContributions } from '@packages/github/getUserContributions';
 import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
-import { getBuilderActivity } from './getBuilderActivity';
 import { recordClosedPullRequest } from './recordClosedPullRequest';
 import { recordCommit } from './recordCommit';
 import { recordMergedPullRequest } from './recordMergedPullRequest';
@@ -32,7 +32,7 @@ export async function processBuilderActivity({
   const timer = DateTime.now();
   const week = getWeekFromDate(now.toJSDate());
 
-  const { commits, pullRequests } = await getBuilderActivity({
+  const { commits, pullRequests } = await getUserContributions({
     login: githubUser.login,
     githubUserId: githubUser.id,
     after: createdAfter

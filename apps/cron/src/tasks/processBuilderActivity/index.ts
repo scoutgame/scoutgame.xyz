@@ -1,7 +1,7 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getCurrentWeek, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
+import { getStartOfWeek, getCurrentWeek, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
 import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refreshEstimatedPayouts';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
 import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
@@ -9,7 +9,6 @@ import type Koa from 'koa';
 import { DateTime } from 'luxon';
 
 import { processBuilderActivity } from './processBuilderActivity';
-import { reviewAppliedBuilders } from './reviewAppliedBuilders';
 
 type ProcessPullRequestsOptions = {
   createdAfter?: Date;
@@ -21,17 +20,10 @@ const log = getLogger('cron-process-builder-activity');
 export async function processAllBuilderActivity(
   ctx: Koa.Context | null,
   {
-    createdAfter = new Date(Date.now() - 30 * 60 * 1000),
+    createdAfter = getStartOfWeek(getCurrentWeek()).toJSDate(),
     season = getCurrentSeasonStart()
   }: ProcessPullRequestsOptions = {}
 ) {
-  try {
-    // check to see if any builders have been applied in the last 28 days and approve them if they have activity
-    await reviewAppliedBuilders();
-  } catch (error) {
-    log.error('Error reviewing new builders', { error });
-  }
-
   const builders = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',

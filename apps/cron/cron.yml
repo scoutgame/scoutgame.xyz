@@ -5,6 +5,11 @@ cron:
     # every two hours
     schedule: '0 */2 * * *'
 
+  - name: 'approve-builders'
+    url: '/approve-builders'
+    # once a day at 1am UTC
+    schedule: '0 1 * * *'
+
   - name: 'process-gems-payout'
     url: '/process-gems-payout'
     # Start of every hour
