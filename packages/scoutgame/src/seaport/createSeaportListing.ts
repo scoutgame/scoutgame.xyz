@@ -1,6 +1,14 @@
-import { ItemType } from '@opensea/seaport-js/lib/constants';
+import { isOnchainPlatform } from '@packages/utils/platform';
+
+import { scoutTokenErc20ContractAddress } from '../protocol/constants';
 
 import { getSeaport } from './seaport';
+
+const isOnchain = isOnchainPlatform();
+
+export const nftListingErc20Address = isOnchain
+  ? scoutTokenErc20ContractAddress()
+  : '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
 export async function createSeaportListing({
   sellerWallet,
@@ -25,7 +33,6 @@ export async function createSeaportListing({
     {
       offer: [
         {
-          itemType: ItemType.ERC1155,
           token: contractAddress,
           identifier: tokenId,
           amount: amount.toString()
@@ -33,6 +40,8 @@ export async function createSeaportListing({
       ],
       consideration: [
         {
+          // If onchain, use the scout token, otherwise use USDC on base
+          token: nftListingErc20Address,
           amount: price.toString(),
           recipient: sellerWallet
         }

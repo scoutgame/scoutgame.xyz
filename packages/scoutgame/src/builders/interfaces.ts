@@ -1,5 +1,7 @@
 import type { BuilderNftType, BuilderStatus } from '@charmverse/core/prisma';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import type { BasicUserInfo } from '@packages/users/interfaces';
+import type { Address } from 'viem';
 
 export type PointMetrics = {
   seasonPoints: number;
@@ -29,10 +31,12 @@ export type BuilderInfo = BasicUserInfo &
     nftImageUrl?: string | null;
     congratsImageUrl: string | null;
     listing?: {
+      contractAddress: Address;
       id: string;
       price: string;
       // indicates whether the listing price is lower than the current price
       isLower: boolean;
+      order: OrderWithCounter;
     } | null;
   };
 

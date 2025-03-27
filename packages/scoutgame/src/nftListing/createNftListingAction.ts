@@ -2,6 +2,7 @@
 
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
 
 import { createNftListing } from './createNftListing';
@@ -32,6 +33,8 @@ export const createNftListingAction = authActionClient
       scoutId,
       sellerWallet
     });
+
+    revalidatePath(`/profile`);
 
     return {
       success: true

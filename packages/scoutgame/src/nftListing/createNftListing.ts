@@ -1,3 +1,4 @@
+import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { isAddress } from 'viem';
@@ -50,7 +51,7 @@ export async function createNftListing({
       price,
       amount,
       signature: order.signature,
-      order: JSON.stringify(order)
+      order: order as unknown as Prisma.InputJsonValue
     }
   });
 

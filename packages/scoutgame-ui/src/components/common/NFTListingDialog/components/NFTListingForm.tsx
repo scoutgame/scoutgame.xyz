@@ -3,7 +3,8 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Button, FormLabel, Stack, Typography } from '@mui/material';
+import { Alert, Box, FormLabel, Stack, Typography } from '@mui/material';
+import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import { createNftListingAction } from '@packages/scoutgame/nftListing/createNftListingAction';
 import { devTokenDecimals, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import { createSeaportListing } from '@packages/scoutgame/seaport/createSeaportListing';
@@ -13,6 +14,7 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { formatUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { NumberInputField } from '../../NFTPurchaseDialog/components/NumberField';
@@ -40,8 +42,9 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
   const [isListing, setIsListing] = useState(false);
 
   const currentPriceInUsdc = isOnchain
-    ? (Number(builder.price || 0) / 10 ** devTokenDecimals) * 0.02
-    : (Number(builder.price || 0) / 10 ** 6) * 0.1;
+    ? // TODO: Dev tokens prices will be dynamic in the future post listing so remove the hard coded 0.02
+      (Number(builder.price || 0) / 10 ** devTokenDecimals) * 0.02
+    : formatUnits(builder.price || BigInt(0), builderTokenDecimals);
 
   const onListing = useCallback(async () => {
     try {

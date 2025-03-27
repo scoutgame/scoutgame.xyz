@@ -1,8 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { isTruthy } from '@packages/utils/types';
+import type { Address } from 'viem';
 
 import { builderTokenDecimals } from '../builderNfts/constants';
 import { convertCostToPoints } from '../builderNfts/utils';
@@ -84,7 +86,8 @@ export async function getScoutedBuilders({
           BuilderNftListing: {
             select: {
               id: true,
-              price: true
+              price: true,
+              order: true
             }
           }
         }
@@ -172,7 +175,9 @@ export async function getScoutedBuilders({
             ? {
                 isLower: isListingPriceLower,
                 id: listing.id,
-                price: listing.price.toString()
+                price: listing.price.toString(),
+                order: listing.order as OrderWithCounter,
+                contractAddress: nft.contractAddress as Address
               }
             : null
         };
