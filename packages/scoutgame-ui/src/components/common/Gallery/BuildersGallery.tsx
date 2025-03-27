@@ -8,8 +8,10 @@ export function BuildersGallery({
   columns = 6,
   size = 'medium',
   markStarterCardPurchased = false,
-  showListButton = false
+  showListButton = false,
+  scoutInView
 }: {
+  scoutInView?: string;
   builders: BuilderInfo[];
   columns?: number;
   size?: 'small' | 'medium' | 'large';
@@ -32,6 +34,7 @@ export function BuildersGallery({
                 </Typography>
               )}
               <BuilderCard
+                scoutInView={scoutInView}
                 builder={builder}
                 showPurchaseButton
                 size={size}

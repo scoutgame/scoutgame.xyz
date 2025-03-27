@@ -42,6 +42,7 @@ export async function ScoutProfile({ userId }: { userId: string }) {
             showListButton
             builders={scoutedBuilders}
             columns={3}
+            scoutInView={userId}
             size='small'
             markStarterCardPurchased
           />

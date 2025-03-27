@@ -71,7 +71,12 @@ export function PublicScoutProfileContainer({
           Scouted Developers
         </Typography>
         {scoutedBuilders.length > 0 ? (
-          <BuildersGallery builders={scoutedBuilders} columns={5} size={isDesktop ? 'large' : 'small'} />
+          <BuildersGallery
+            scoutInView={scout.id}
+            builders={scoutedBuilders}
+            columns={5}
+            size={isDesktop ? 'large' : 'small'}
+          />
         ) : (
           <Paper sx={{ p: 2 }}>
             <Typography>This Scout hasn't discovered any Developers yet. Check back to see who they find!</Typography>

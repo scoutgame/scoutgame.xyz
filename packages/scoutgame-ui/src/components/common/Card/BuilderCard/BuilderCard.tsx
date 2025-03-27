@@ -23,7 +23,8 @@ export function BuilderCard({
   disableProfileUrl = false,
   markStarterCardPurchased = false,
   type,
-  showListButton = false
+  showListButton = false,
+  scoutInView
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
@@ -33,6 +34,7 @@ export function BuilderCard({
   markStarterCardPurchased?: boolean;
   type: 'default' | 'starter_pack';
   showListButton?: boolean;
+  scoutInView?: string;
 }) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
@@ -41,10 +43,16 @@ export function BuilderCard({
 
   const userListings =
     (user && builder.listings && builder.listings.filter((listing) => listing.scoutId === user.id)) ?? [];
+
   const lowerPricedNonUserListings: BuilderInfo['listings'] = [];
+
   if (price && builder.listings) {
     builder.listings.forEach((listing) => {
-      if (listing.scoutId !== user?.id && listing.price < price) {
+      if (
+        listing.scoutId !== user?.id &&
+        listing.price < price &&
+        (scoutInView ? listing.scoutId === scoutInView : true)
+      ) {
         lowerPricedNonUserListings.push(listing);
       }
     });
