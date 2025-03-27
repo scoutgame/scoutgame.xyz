@@ -1,6 +1,7 @@
-import type { Commit } from '@packages/github/getCommitsByUser';
-import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { randomLargeInt } from '@packages/testing/generators';
+
+import type { Commit } from '../getCommitsByUser';
+import type { PullRequest } from '../getPullRequestsByUser';
 
 export function mockPullRequest(
   fields: Partial<Omit<PullRequest, 'repository'>> & {
