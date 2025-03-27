@@ -10,7 +10,7 @@ export async function getNftListings({
   sellerWallet?: string | null;
   isActive?: boolean;
 }) {
-  const filters: Prisma.BuilderNftListingWhereInput = {};
+  const filters: Prisma.DeveloperNftListingWhereInput = {};
 
   if (builderNftId) {
     filters.builderNftId = builderNftId;
@@ -25,7 +25,7 @@ export async function getNftListings({
     filters.cancelledAt = null;
   }
 
-  const listings = await prisma.builderNftListing.findMany({
+  const listings = await prisma.developerNftListing.findMany({
     where: filters,
     include: {
       builderNft: true

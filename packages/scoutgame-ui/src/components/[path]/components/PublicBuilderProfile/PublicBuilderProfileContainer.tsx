@@ -9,7 +9,7 @@ import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats'
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
-import { useLgScreen, useMdScreen } from '../../../../hooks/useMediaScreens';
+import { useMdScreen } from '../../../../hooks/useMediaScreens';
 import { BackButton } from '../../../common/Button/BackButton';
 import { BuilderCard } from '../../../common/Card/BuilderCard/BuilderCard';
 import { ScoutsGallery } from '../../../common/Gallery/ScoutsGallery';
@@ -71,7 +71,6 @@ export function PublicBuilderProfileContainer({
   starterNftSoldToLoggedInScout
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
-  const isLgScreen = useLgScreen();
   return (
     <Box>
       <Stack

@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
-import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 
 import { ERC20ApproveButton } from '../NFTPurchaseDialog/components/ERC20Approve';
 import { useGetERC20Allowance } from '../NFTPurchaseDialog/hooks/useGetERC20Allowance';
@@ -39,7 +39,6 @@ export type NFTListingPurchaseFormProps = {
 
 export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListingPurchaseFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { data: walletClient } = useWalletClient();
 
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId } = useAccount();
@@ -58,6 +57,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
   const { executeAsync: purchaseNftListing, isExecuting } = useAction(purchaseNftListingAction, {
     onSuccess: () => {
       toast.success('NFT purchased successfully!');
+      onSuccess?.();
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : 'Failed to purchase NFT');
@@ -69,11 +69,6 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
     : Number(listing.price) / 10 ** builderTokenDecimals;
 
   async function handlePurchase() {
-    if (!walletClient) {
-      toast.error('No wallet client found');
-      return;
-    }
-
     if (!address) {
       toast.error('No wallet address found');
       return;
@@ -162,7 +157,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
           handlePurchase();
         }
       }}
-      disabled={!address || !walletClient}
+      disabled={!address}
       loading={isLoading || isExecuting}
     >
       {listingPrice} &nbsp;{' '}

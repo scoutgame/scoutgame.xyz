@@ -6,6 +6,7 @@ import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { useLgScreen, useMdScreen } from '../../../../hooks/useMediaScreens';
 import { useUser } from '../../../../providers/UserProvider';
 import { NFTListingButton } from '../../NFTListing/NFTListingButton';
+import { NFTListingEditButton } from '../../NFTListing/NFTListingEditButton';
 import { NFTListingPurchaseButton } from '../../NFTListingPurchase/NFTListingPurchaseButton';
 import { ScoutButton } from '../../ScoutButton/ScoutButton';
 
@@ -98,7 +99,9 @@ export function BuilderCard({
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
             <NFTListingButton builder={builder} />
           </Stack>
-        ) : null)}
+        ) : (
+          <NFTListingEditButton listing={userListings[0]} />
+        ))}
     </Card>
   );
 }
