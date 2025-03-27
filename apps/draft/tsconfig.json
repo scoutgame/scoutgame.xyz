@@ -7,12 +7,7 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-      "@charmverse/core/prisma": ["../../node_modules/@charmverse/core/dist/cjs/prisma"],
-      "@charmverse/core/prisma-client": ["../../node_modules/@charmverse/core/dist/cjs/prisma-client"],
-      "@charmverse/core/log": ["../../node_modules/@charmverse/core/dist/cjs/lib/log"],
-      "@charmverse/core/utilities": ["../../node_modules/@charmverse/core/dist/cjs/utilities"],
-      "@charmverse/core/errors": ["../../node_modules/@charmverse/core/dist/cjs/errors"]
+      ]
     },
     "plugins": [
       {
@@ -32,7 +27,8 @@
     "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "bundler",
-    "isolatedModules": true
+    "isolatedModules": true,
+    "resolveJsonModule": true
   },
   "include": [
     "next-env.d.ts",
