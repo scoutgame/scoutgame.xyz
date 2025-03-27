@@ -105,7 +105,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <Stack gap={2}>
-            <Stack direction='row'>
+            <Stack direction='row' alignItems='center'>
               <Typography sx={{ width: '120px' }}>Status:</Typography>
               <Chip
                 size='small'
@@ -115,6 +115,11 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                 }
                 label={capitalize(user.builderStatus)}
               />
+              {user.builderStatus === 'applied' && (
+                <Typography variant='caption' color='secondary' sx={{ ml: 1 }}>
+                  Applied on {new Date(user.reappliedAt || user.createdAt).toLocaleDateString()}
+                </Typography>
+              )}
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '120px' }}>Scout Game:</Typography>
