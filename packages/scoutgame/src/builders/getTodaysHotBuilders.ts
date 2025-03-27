@@ -54,6 +54,7 @@ const userSelect = (week: string, season: string, userId?: string) =>
             price: true,
             priceDevToken: true,
             order: true,
+            createdAt: true,
             seller: {
               select: {
                 scoutId: true

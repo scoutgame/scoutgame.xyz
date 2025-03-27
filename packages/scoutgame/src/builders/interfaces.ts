@@ -23,12 +23,13 @@ export type BuilderMetrics = {
   nftsSoldToScoutInView?: number;
 };
 
-export type DeveloperNftListing = {
+export type NftListing = {
   contractAddress: Address;
   id: string;
   price: bigint;
   scoutId: string;
   order: OrderWithCounter;
+  createdAt: Date;
 };
 
 export type BuilderInfo = BasicUserInfo &
@@ -38,7 +39,7 @@ export type BuilderInfo = BasicUserInfo &
     farcasterId?: number | null;
     nftImageUrl?: string | null;
     congratsImageUrl: string | null;
-    listings: DeveloperNftListing[];
+    listings: NftListing[];
   };
 
 export type Last14DaysRank = { date: string; rank: number | null; gems: number }[];

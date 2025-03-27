@@ -89,6 +89,7 @@ export async function getDevelopersForGallery({
                 estimatedPayoutDevToken: true,
                 listings: {
                   select: {
+                    createdAt: true,
                     id: true,
                     seller: {
                       select: {

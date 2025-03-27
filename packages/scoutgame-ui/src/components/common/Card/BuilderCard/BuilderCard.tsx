@@ -15,6 +15,12 @@ import { BuilderCardStats } from './BuilderCardStats';
 
 type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path';
 
+const whiteListedUserIds = [
+  '2dc25032-4efa-4168-b515-01b2e304d3e6',
+  '16fd0183-3083-47e4-b556-0118227cd84b',
+  'f9d23170-14cb-4f9f-8506-09d15c900afa'
+];
+
 export function BuilderCard({
   builder,
   showPurchaseButton = false,
@@ -42,11 +48,13 @@ export function BuilderCard({
   const price = builder.price;
 
   const userListings =
-    (user && builder.listings && builder.listings.filter((listing) => listing.scoutId === user.id)) ?? [];
+    user && whiteListedUserIds.includes(user.id) && builder.listings
+      ? builder.listings.filter((listing) => listing.scoutId === user.id)
+      : [];
 
   const lowerPricedNonUserListings: BuilderInfo['listings'] = [];
 
-  if (price && builder.listings) {
+  if (price && builder.listings && user && whiteListedUserIds.includes(user.id)) {
     builder.listings.forEach((listing) => {
       if (
         listing.scoutId !== user?.id &&
@@ -61,6 +69,11 @@ export function BuilderCard({
   const lowestNonUserListing = lowerPricedNonUserListings.sort((a, b) => {
     const aPrice = a.price;
     const bPrice = b.price;
+
+    if (aPrice === bPrice) {
+      return a.createdAt.getTime() - b.createdAt.getTime();
+    }
+
     return Number(aPrice - bPrice);
   })[0];
 

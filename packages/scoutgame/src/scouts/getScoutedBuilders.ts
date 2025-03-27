@@ -87,6 +87,7 @@ export async function getScoutedBuilders({
               price: true,
               priceDevToken: true,
               order: true,
+              createdAt: true,
               seller: {
                 select: {
                   scoutId: true

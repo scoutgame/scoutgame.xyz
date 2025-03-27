@@ -4,7 +4,7 @@ import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
-import type { DeveloperNftListing } from '../builders/interfaces';
+import type { NftListing } from '../builders/interfaces';
 
 export async function getNftListings({
   builderNftId,
@@ -43,7 +43,7 @@ export async function getNftListings({
   return { listings };
 }
 
-export async function getDeveloperNftListings(developerId: string): Promise<DeveloperNftListing[]> {
+export async function getDeveloperNftListings(developerId: string): Promise<NftListing[]> {
   const developerNftListings = await prisma.developerNftListing.findMany({
     where: {
       builderNft: {
@@ -55,6 +55,7 @@ export async function getDeveloperNftListings(developerId: string): Promise<Deve
       price: true,
       priceDevToken: true,
       order: true,
+      createdAt: true,
       seller: {
         select: {
           scoutId: true
