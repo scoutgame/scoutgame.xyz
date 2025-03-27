@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
 
-import 'theme/styles.scss';
+import '@packages/scoutgame-ui/theme/styles.scss';
 
 export default function Layout({
   children

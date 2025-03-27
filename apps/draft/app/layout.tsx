@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 
 import { ClientGlobals } from '@/components/common/ClientGlobals';
 
-import '@/theme/styles.scss';
+import '@packages/scoutgame-ui/theme/styles.scss';
 
 const appName = 'Scout Game Draft';
 
