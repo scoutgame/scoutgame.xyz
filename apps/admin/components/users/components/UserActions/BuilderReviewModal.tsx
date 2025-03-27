@@ -28,7 +28,10 @@ import { setBuilderStatusAction } from 'lib/users/updateUserAction';
 
 type Props = {
   open: boolean;
-  user: Pick<ScoutGameUser, 'builderStatus' | 'id' | 'githubLogin' | 'farcasterName' | 'path'>;
+  user: Pick<
+    ScoutGameUser,
+    'builderStatus' | 'id' | 'githubLogin' | 'farcasterName' | 'path' | 'createdAt' | 'reappliedAt' | 'displayName'
+  >;
   onClose: () => void;
   onSave: () => void;
 };
@@ -107,14 +110,22 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
           <Stack gap={2}>
             <Stack direction='row' alignItems='center'>
               <Typography sx={{ width: '120px' }}>Status:</Typography>
-              <Chip
-                size='small'
-                variant='outlined'
-                color={
-                  user.builderStatus === 'applied' ? 'warning' : user.builderStatus === 'rejected' ? 'error' : 'inherit'
-                }
-                label={capitalize(user.builderStatus)}
-              />
+              {user.builderStatus ? (
+                <Chip
+                  size='small'
+                  variant='outlined'
+                  color={
+                    user.builderStatus === 'applied'
+                      ? 'warning'
+                      : user.builderStatus === 'rejected'
+                        ? 'error'
+                        : undefined
+                  }
+                  label={capitalize(user.builderStatus)}
+                />
+              ) : (
+                'N/A'
+              )}
               {user.builderStatus === 'applied' && (
                 <Typography variant='caption' color='secondary' sx={{ ml: 1 }}>
                   Applied on {new Date(user.reappliedAt || user.createdAt).toLocaleDateString()}
