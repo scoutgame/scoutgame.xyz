@@ -86,7 +86,12 @@ export async function getScoutedBuilders({
               id: true,
               price: true,
               priceDevToken: true,
-              order: true
+              order: true,
+              seller: {
+                select: {
+                  scoutId: true
+                }
+              }
             }
           }
         }
@@ -152,8 +157,9 @@ export async function getScoutedBuilders({
             ? (Number(BigInt(nft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0)
             : (nft.estimatedPayout ?? 0),
           level: builder.userSeasonStats[0]?.level ?? 0,
-          listings: nft.listings.map((listing) => ({
-            id: listing.id,
+          listings: nft.listings.map(({ seller, ...listing }) => ({
+            ...listing,
+            scoutId: seller.scoutId,
             price: isOnchain ? BigInt(listing.priceDevToken || 0) : listing.price || BigInt(0),
             order: listing.order as OrderWithCounter,
             contractAddress: nft.contractAddress as Address

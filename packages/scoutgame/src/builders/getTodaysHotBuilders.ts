@@ -53,7 +53,12 @@ const userSelect = (week: string, season: string, userId?: string) =>
             id: true,
             price: true,
             priceDevToken: true,
-            order: true
+            order: true,
+            seller: {
+              select: {
+                scoutId: true
+              }
+            }
           }
         },
         nftSoldEvents: userId
@@ -162,8 +167,9 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
       nftsSoldToScout:
         builder.builderNfts[0]?.nftSoldEvents?.reduce((acc, event) => acc + (event.tokensPurchased || 0), 0) || 0,
-      listings: builder.builderNfts[0]?.listings.map((listing) => ({
-        id: listing.id,
+      listings: builder.builderNfts[0]?.listings.map(({ seller, ...listing }) => ({
+        ...listing,
+        scoutId: seller.scoutId,
         price: isOnchain ? BigInt(listing.priceDevToken ?? 0) : (listing.price ?? BigInt(0)),
         contractAddress: builder.builderNfts[0]?.contractAddress as `0x${string}`,
         order: listing.order as OrderWithCounter

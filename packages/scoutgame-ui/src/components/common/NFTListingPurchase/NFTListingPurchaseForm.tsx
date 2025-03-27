@@ -1,4 +1,5 @@
 import { log } from '@charmverse/core/log';
+import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
 import { Stack } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
@@ -10,7 +11,7 @@ import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/prot
 import { nftListingErc20Address } from '@packages/scoutgame/seaport/createSeaportListing';
 import { purchaseSeaportListing } from '@packages/scoutgame/seaport/purchaseSeaportListing';
 import { isOnchainPlatform } from '@packages/utils/platform';
-import { RainbowKitProvider, useConnectModal } from '@rainbow-me/rainbowkit';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
@@ -19,12 +20,24 @@ import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 
-import { ERC20ApproveButton } from '../../NFTPurchaseDialog/components/ERC20Approve';
-import { useGetERC20Allowance } from '../../NFTPurchaseDialog/hooks/useGetERC20Allowance';
+import { ERC20ApproveButton } from '../NFTPurchaseDialog/components/ERC20Approve';
+import { useGetERC20Allowance } from '../NFTPurchaseDialog/hooks/useGetERC20Allowance';
 
 const seaportContractAddress = '0x0000000000000068F116a894984e2DB1123eB395';
 
-function PurchaseListedCardButtonComponent({ listing }: { listing: NonNullable<BuilderInfo['listings'][number]> }) {
+export type NFTListingPurchaseFormProps = {
+  listing: NonNullable<BuilderInfo['listings'][number]>;
+  builder: {
+    path: string;
+    builderStatus: BuilderStatus | null;
+    displayName: string;
+    nftImageUrl?: string | null;
+    price?: bigint;
+  };
+  onSuccess?: () => void;
+};
+
+export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListingPurchaseFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { data: walletClient } = useWalletClient();
 
@@ -155,17 +168,5 @@ function PurchaseListedCardButtonComponent({ listing }: { listing: NonNullable<B
       {listingPrice} &nbsp;{' '}
       {isOnchain ? 'DEV' : <Image src='/images/crypto/usdc.png' alt='usdc' width={18} height={18} />}
     </LoadingButton>
-  );
-}
-
-export function PurchaseListedCardButton({ listing }: { listing: BuilderInfo['listings'][number] }) {
-  if (!listing) {
-    return null;
-  }
-
-  return (
-    <RainbowKitProvider>
-      <PurchaseListedCardButtonComponent listing={listing} />
-    </RainbowKitProvider>
   );
 }

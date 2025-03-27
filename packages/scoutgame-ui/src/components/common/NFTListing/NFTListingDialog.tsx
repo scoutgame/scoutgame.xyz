@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi';
 import { useSmScreen } from '../../../hooks/useMediaScreens';
 import { Dialog } from '../Dialog';
 
-import { NFTListingForm, type NFTListingFormProps } from './components/NFTListingForm';
+import { NFTListingForm, type NFTListingFormProps } from './NFTListingForm';
 
 type NFTListingDialogProps = {
   open: boolean;

@@ -90,6 +90,11 @@ export async function getDevelopersForGallery({
                 listings: {
                   select: {
                     id: true,
+                    seller: {
+                      select: {
+                        scoutId: true
+                      }
+                    },
                     price: true,
                     priceDevToken: true,
                     order: true
@@ -170,8 +175,9 @@ export async function getDevelopersForGallery({
           : (stat.user.builderNfts?.[0]?.estimatedPayout ?? 0),
         gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
         listings:
-          stat.user.builderNfts?.[0]?.listings.map((listing) => ({
+          stat.user.builderNfts?.[0]?.listings.map(({ seller, ...listing }) => ({
             ...listing,
+            scoutId: seller.scoutId,
             order: listing.order as OrderWithCounter,
             price: isOnchainPlatform() ? BigInt(listing.priceDevToken ?? 0) : (listing.price ?? BigInt(0)),
             contractAddress: stat.user.builderNfts?.[0]?.contractAddress as `0x${string}`

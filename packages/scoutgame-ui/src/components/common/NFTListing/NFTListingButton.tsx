@@ -1,14 +1,15 @@
 import { LoadingButton } from '@mui/lab';
 import { useState } from 'react';
 
-import { useTrackEvent } from '../../../../hooks/useTrackEvent';
-import { useGlobalModal } from '../../../../providers/ModalProvider';
-import { useUser } from '../../../../providers/UserProvider';
-import { DynamicLoadingContext } from '../../Loading/DynamicLoading';
-import type { NFTListingFormProps } from '../../NFTListingDialog/components/NFTListingForm';
-import { SignInModalMessage } from '../../ScoutButton/SignInModalMessage';
+import { useTrackEvent } from '../../../hooks/useTrackEvent';
+import { useGlobalModal } from '../../../providers/ModalProvider';
+import { useUser } from '../../../providers/UserProvider';
+import { DynamicLoadingContext } from '../Loading/DynamicLoading';
+import { SignInModalMessage } from '../ScoutButton/SignInModalMessage';
 
-export function ListDeveloperCardButton({ builder }: { builder: NFTListingFormProps['builder'] }) {
+import type { NFTListingFormProps } from './NFTListingForm';
+
+export function NFTListingButton({ builder }: { builder: NFTListingFormProps['builder'] }) {
   const trackEvent = useTrackEvent();
   const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [dialogLoadingStatus, setDialogLoadingStatus] = useState<boolean>(false);

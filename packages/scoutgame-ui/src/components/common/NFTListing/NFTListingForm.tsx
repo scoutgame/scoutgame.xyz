@@ -17,8 +17,9 @@ import { toast } from 'sonner';
 import { formatUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
-import { NumberInputField } from '../../NFTPurchaseDialog/components/NumberField';
-import { useGetDeveloperToken } from '../hooks/useGetDeveloperToken';
+import { NumberInputField } from '../NFTPurchaseDialog/components/NumberField';
+
+import { useGetDeveloperToken } from './hooks/useGetDeveloperToken';
 
 export type NFTListingFormProps = {
   builder: {

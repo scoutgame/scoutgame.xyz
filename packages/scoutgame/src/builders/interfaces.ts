@@ -34,6 +34,7 @@ export type BuilderInfo = BasicUserInfo &
       contractAddress: Address;
       id: string;
       price: bigint;
+      scoutId: string;
       order: OrderWithCounter;
     }[];
   };
