@@ -1,8 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { isAddress } from 'viem';
-
-import { purchaseSeaportListing } from '../seaport/purchaseSeaportListing';
 
 export async function purchaseNftListing({
   listingId,
@@ -47,16 +44,6 @@ export async function purchaseNftListing({
   // Ensure the listing is active
   if (listing.completedAt || listing.cancelledAt) {
     throw new Error('This listing is no longer active');
-  }
-
-  // Purchase the NFT on-chain using Seaport if we have the order data
-  if (listing.order) {
-    const order = listing.order as OrderWithCounter;
-
-    await purchaseSeaportListing({
-      order,
-      buyerWallet
-    });
   }
 
   const { updatedListing, createdNftPurchaseEvent } = await prisma.$transaction(async (tx) => {

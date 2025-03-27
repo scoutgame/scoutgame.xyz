@@ -93,7 +93,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
     }
   }, [builder, priceInUsdc, sellerWallet, isExecuting, chainId, switchChainAsync]);
 
-  const isOwner = !isLoading && developerToken?.scoutAddress.toLowerCase() === sellerWallet?.toLowerCase();
+  const isOwner = developerToken && developerToken.scoutAddress.toLowerCase() === sellerWallet?.toLowerCase();
 
   return (
     <Stack gap={2} width='400px' maxWidth='100%' mx='auto'>
@@ -123,7 +123,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         <Typography variant='h6'>Current price: {currentPriceInUsdc}</Typography>
         <Image src='/images/crypto/usdc.png' alt='usdc' width={20} height={20} />
       </Box>
-      {!isOwner && (
+      {!isLoading && !isOwner && (
         <Alert severity='warning'>
           You must be the owner of the NFT to list it. Please transfer the NFT to your wallet or switch to the correct
           wallet and try again. <br />
@@ -156,9 +156,9 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
       <LoadingButton
         variant='contained'
         color='primary'
-        disabled={priceInUsdc === 0 || !sellerWallet || isExecuting || !developerToken || !isOwner}
+        disabled={priceInUsdc === 0 || !sellerWallet || !developerToken || !isOwner}
         onClick={onListing}
-        loading={isListing}
+        loading={isListing || isLoading || isExecuting}
       >
         List
       </LoadingButton>

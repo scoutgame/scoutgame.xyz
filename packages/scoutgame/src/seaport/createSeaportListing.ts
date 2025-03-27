@@ -1,3 +1,4 @@
+import { ItemType } from '@opensea/seaport-js/lib/constants';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { scoutTokenErc20ContractAddress } from '../protocol/constants';
@@ -31,8 +32,10 @@ export async function createSeaportListing({
 
   const { executeAllActions } = await seaport.createOrder(
     {
+      domain: 'scoutgame.xyz',
       offer: [
         {
+          itemType: ItemType.ERC1155,
           token: contractAddress,
           identifier: tokenId,
           amount: amount.toString()
