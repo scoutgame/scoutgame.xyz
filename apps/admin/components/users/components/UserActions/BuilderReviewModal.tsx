@@ -9,12 +9,13 @@ import {
   Button,
   TextField,
   Tooltip,
+  Chip,
   Link,
   Typography,
   IconButton,
   Box
 } from '@mui/material';
-import { fancyTrimWords } from '@packages/utils/strings';
+import { capitalize, fancyTrimWords } from '@packages/utils/strings';
 import { useAction } from 'next-safe-action/hooks';
 import React, { useState } from 'react';
 import { mutate } from 'swr';
@@ -69,6 +70,10 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
     await setBuilderStatus({ userId: user.id, status: 'rejected' });
   }
 
+  async function reapplyBuilder() {
+    await setBuilderStatus({ userId: user.id, status: 'applied' });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (user.builderStatus === 'banned') {
@@ -94,14 +99,27 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
 
   return (
     <Dialog open={open} onClose={onClose} PaperProps={{ sx: { maxWidth: 600 } }} fullWidth>
-      <DialogTitle>{user?.builderStatus ? 'Review' : 'Add'} builder profile</DialogTitle>
+      <DialogTitle sx={{}}>
+        {user.builderStatus ? 'Review ' : 'Add '} {user.displayName}
+      </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <Stack gap={2}>
             <Stack direction='row'>
+              <Typography sx={{ width: '120px' }}>Status:</Typography>
+              <Chip
+                size='small'
+                variant='outlined'
+                color={
+                  user.builderStatus === 'applied' ? 'warning' : user.builderStatus === 'rejected' ? 'error' : 'inherit'
+                }
+                label={capitalize(user.builderStatus)}
+              />
+            </Stack>
+            <Stack direction='row'>
               <Typography sx={{ width: '120px' }}>Scout Game:</Typography>
-              <Link href={`https://scoutgame.xyz/u/${user.path}`} target='_blank'>
-                https://scoutgame.xyz/u/{user.path}
+              <Link href={`https://scoutgame.xyz/u/${user.path}`} target='_blank' sx={{ mr: 2 }}>
+                {`https://scoutgame.xyz/u/${user.path}`}
               </Link>
             </Stack>
             {user.farcasterName && (
@@ -232,6 +250,16 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                     onClick={rejectBuilder}
                   >
                     Reject
+                  </LoadingButton>
+                )}
+                {user.builderStatus === 'rejected' && (
+                  <LoadingButton
+                    disabled={!githubLoginDisplayed}
+                    loading={isExecutingUpdate}
+                    variant='outlined'
+                    onClick={reapplyBuilder}
+                  >
+                    Reapply
                   </LoadingButton>
                 )}
                 <Tooltip

@@ -33,6 +33,7 @@ export async function reviewAppliedBuilders() {
         });
 
         const mergedPullRequests = pullRequests.filter((pr) => pr.mergedAt);
+        const applicationDate = builder.reappliedAt || builder.createdAt;
 
         // If the builder has activity in the last 28 days approve it
         if (commits.length > 0 || mergedPullRequests.length > 0) {
@@ -43,7 +44,7 @@ export async function reviewAppliedBuilders() {
             userId: builder.id
           });
           // If the builder has no activity in the last 28 days reject it
-        } else if (builder.createdAt < last28Days) {
+        } else if (applicationDate < last28Days) {
           await prisma.scout.update({
             where: {
               id: builder.id
@@ -53,7 +54,7 @@ export async function reviewAppliedBuilders() {
             }
           });
 
-          log.info('Builder rejected after 28 days of no activity', { userId: builder.id });
+          log.info('Builder rejected after 28 days of no activity', { applicationDate, userId: builder.id });
         }
       }
     } catch (error) {
