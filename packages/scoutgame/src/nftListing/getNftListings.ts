@@ -27,7 +27,6 @@ export async function getNftListings({
 
   if (isActive) {
     filters.completedAt = null;
-    filters.cancelledAt = null;
   }
 
   const listings = await prisma.developerNftListing.findMany({

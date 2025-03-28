@@ -52,9 +52,14 @@ jobs:
         id: setup_variables
         # source https://github.com/orgs/community/discussions/28474
         run: |
-          echo "commit_message=$(git show -s --format=%s)" >> "$GITHUB_OUTPUT"
+          # Check if commit message contains skip-tests and set variable
+          if [[ "$(git show -s --format=%s)" == *"skip-tests"* ]]; then
+            should_skip_tests=true
+          else
+            should_skip_tests=false
+          fi
+          echo "skip_tests=$should_skip_tests" >> $GITHUB_OUTPUT
           echo "deploy_staging=${{(github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy-agents') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy-agents'))}}" >> $GITHUB_OUTPUT
-          echo "skip_tests=${{ contains(env.commit_message, 'skip-tests') }}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         uses: ./.github/actions/install
