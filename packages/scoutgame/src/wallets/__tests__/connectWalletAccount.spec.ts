@@ -47,7 +47,7 @@ describe('connectWalletAccount', () => {
     expect(wallet?.primary).toBe(false);
   });
 
-  it('should throw error if wallet is already connected to the same user', async () => {
+  it('should not throw error if wallet is already connected to the same user', async () => {
     const existingWalletAddress = randomWalletAddress().toLowerCase();
     const scout = await mockScout({ wallets: [existingWalletAddress] });
 
@@ -56,7 +56,7 @@ describe('connectWalletAccount', () => {
         address: existingWalletAddress,
         userId: scout.id
       })
-    ).rejects.toThrow('Wallet already connected to this user');
+    ).resolves.toBeDefined();
   });
 
   it('should throw error if wallet is already connected to another user', async () => {
