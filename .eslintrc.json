@@ -85,6 +85,7 @@
           "./apps/cron/",
           "./apps/draft/",
           "./packages/blockchain/",
+          "./packages/discord/",
           "./packages/github/",
           "./packages/loops/",
           "./packages/mailer/",

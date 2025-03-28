@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { sendDiscordEvent } from '@packages/discord/sendDiscordEvent';
 import { getUserContributions } from '@packages/github/getUserContributions';
 import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 import { DateTime } from 'luxon';
@@ -37,6 +38,11 @@ export async function approveDevelopers() {
         // If the builder has activity in the last 28 days approve it
         if (commits.length > 0 || mergedPullRequests.length > 0) {
           await approveBuilder({ builderId: builder.id });
+          await sendDiscordEvent({
+            title: '🎉 Developer Approved',
+            description: `Developer ${builder.displayName} has been approved`,
+            fields: [{ name: 'Profile', value: `https://scoutgame.xyz/u/${builder.path}` }]
+          });
           log.info('Builder approved due to activity', {
             commits: commits.map((c) => `${c.repository.full_name} - ${c.sha}`),
             pullRequests: mergedPullRequests.map((pr) => `${pr.repository.nameWithOwner} - PR# ${pr.number}`),

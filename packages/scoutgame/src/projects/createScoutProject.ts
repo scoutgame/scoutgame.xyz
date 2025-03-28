@@ -202,7 +202,8 @@ export async function createScoutProject(payload: CreateScoutProjectFormValues, 
             userId: true,
             user: {
               select: {
-                displayName: true
+                displayName: true,
+                path: true
               }
             }
           }

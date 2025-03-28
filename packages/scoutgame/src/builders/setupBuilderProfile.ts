@@ -1,5 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { sendDiscordEvent } from '@packages/discord/sendDiscordEvent';
 import { authSecret, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@packages/utils/constants';
 import { GET as httpGET, POST as httpPOST } from '@packages/utils/http';
 import { unsealData } from 'iron-session';
@@ -122,6 +123,11 @@ export async function setupBuilderProfile({ code, state }: { code: string; state
         builderStatus: 'applied',
         onboardedAt: new Date()
       }
+    });
+    await sendDiscordEvent({
+      title: '🎉 Developer Applied',
+      description: `Developer ${scout.displayName} has applied`,
+      fields: [{ name: 'Profile', value: `https://scoutgame.xyz/u/${scout.path}` }]
     });
   } else if (scout.builderStatus === 'rejected') {
     await prisma.scout.update({
