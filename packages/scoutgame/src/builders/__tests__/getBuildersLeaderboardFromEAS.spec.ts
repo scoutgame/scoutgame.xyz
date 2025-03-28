@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
-import { encodeBuilderStatusEventAttestation } from '@packages/scoutgameattestations/easSchemas/builderStatusEventSchema';
 import { encodeContributionReceiptAttestation } from '@packages/scoutgameattestations/easSchemas/contributionReceiptSchema';
+import { encodeDeveloperStatusEventAttestation } from '@packages/scoutgameattestations/easSchemas/developerStatusEventSchema';
 import type { QueryResult } from '@packages/scoutgameattestations/queries/fetchAttestations';
 import { getEasGraphQlClient } from '@packages/scoutgameattestations/queries/graphql';
 import type { MockBuilder } from '@packages/testing/database';
@@ -111,7 +111,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x1',
                 refUID: builder01OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   description: 'Registered',
                   type: 'registered',
                   season
@@ -122,7 +122,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x2',
                 refUID: builder02OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   description: 'Registered',
                   type: 'registered',
                   season
@@ -237,7 +237,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x1',
                 refUID: builder01OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'registered',
                   description: 'Registered',
                   season
@@ -248,7 +248,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x2',
                 refUID: builder01OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'banned',
                   description: 'Banned',
                   season
@@ -259,7 +259,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x3',
                 refUID: builder02OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'registered',
                   description: 'Registered',
                   season
@@ -348,7 +348,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x1',
                 refUID: builder01OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'registered',
                   description: 'Registered',
                   season
@@ -360,7 +360,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x2',
                 refUID: builder02OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'banned',
                   description: 'Banned',
                   season
@@ -372,7 +372,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x3',
                 refUID: builder03OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'registered',
                   description: 'Registered',
                   season
@@ -383,7 +383,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x4',
                 refUID: builder03OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'banned',
                   description: 'Banned',
                   season
@@ -394,7 +394,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x5',
                 refUID: builder03OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'unbanned',
                   description: 'Unbanned',
                   season
@@ -536,7 +536,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x1',
                 refUID: builder01OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'registered',
                   description: 'Registered',
                   season
@@ -612,7 +612,7 @@ describe('getBuildersLeaderboardFromEAS', () => {
               {
                 id: '0x1',
                 refUID: builder01OnchainProfileAttestationUid,
-                data: encodeBuilderStatusEventAttestation({
+                data: encodeDeveloperStatusEventAttestation({
                   type: 'registered',
                   description: 'Registered',
                   season
@@ -636,8 +636,8 @@ describe('getBuildersLeaderboardFromEAS', () => {
 
     // Monday, 6 January 2025 00:00:00
     const expectedSeasonGte = 1_736_121_600;
-    // Sunday, 6 April 2025 23:59:59
-    const expectedSeasonLte = 1_743_983_999;
+    // Sunday, 20 April 2025 23:59:59
+    const expectedSeasonLte = 1_745_193_599;
 
     // Monday, 13 January 2025 00:00:00
     const expectedWeekGte = 1_736_121_600;

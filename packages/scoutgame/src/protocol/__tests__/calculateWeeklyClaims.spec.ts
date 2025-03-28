@@ -5,8 +5,7 @@ import { randomWalletAddress } from '@packages/testing/generators';
 import { prettyPrint } from '@packages/utils/strings';
 
 import type { WeeklyClaimsCalculated } from '../calculateWeeklyClaims';
-import { getScoutProtocolAddress, scoutProtocolChainId } from '../constants';
-import { generateWeeklyClaims } from '../generateWeeklyClaims';
+import { scoutProtocolChainId } from '../constants';
 
 jest.unstable_mockModule('@packages/scoutgame/points/getPointsCountForWeekWithNormalisation', () => ({
   getPointsCountForWeekWithNormalisation: jest.fn()
@@ -23,6 +22,8 @@ describe('calculateWeeklyClaims', () => {
 
     const mockWeek = '2024-W42';
 
+    const mockAddress = randomWalletAddress().toLowerCase();
+
     const builder1 = await mockBuilder({
       wallets: [{ address: builder1Wallet }]
     });
@@ -31,7 +32,7 @@ describe('calculateWeeklyClaims', () => {
       builderId: builder1.id,
       tokenId: 1,
       chainId: scoutProtocolChainId,
-      contractAddress: getScoutProtocolAddress()
+      contractAddress: mockAddress
     });
 
     const builder2Wallet = randomWalletAddress().toLowerCase();
@@ -43,7 +44,7 @@ describe('calculateWeeklyClaims', () => {
       builderId: builder2.id,
       tokenId: 2,
       chainId: scoutProtocolChainId,
-      contractAddress: getScoutProtocolAddress()
+      contractAddress: mockAddress
     });
 
     const builder3Wallet = randomWalletAddress().toLowerCase();
@@ -55,7 +56,7 @@ describe('calculateWeeklyClaims', () => {
       builderId: builder3.id,
       tokenId: 3,
       chainId: scoutProtocolChainId,
-      contractAddress: getScoutProtocolAddress()
+      contractAddress: mockAddress
     });
 
     const scout1Wallet = randomWalletAddress().toLowerCase();
@@ -110,6 +111,7 @@ describe('calculateWeeklyClaims', () => {
     });
 
     const weeklyClaimsData = await calculateWeeklyClaims({
+      nftContractAddress: mockAddress,
       week: mockWeek,
       tokenBalances: {
         1: {
@@ -170,35 +172,35 @@ describe('calculateWeeklyClaims', () => {
       claims: expect.arrayContaining([
         {
           address: builder1Wallet,
-          amount: '15'
+          amount: '15000000000000000000'
         },
         {
           address: builder2Wallet,
-          amount: '12'
+          amount: '12000000000000000000'
         },
         {
           address: builder3Wallet,
-          amount: '11'
+          amount: '11000000000000000000'
         },
         {
           address: scout1Wallet,
-          amount: '7'
+          amount: '7000000000000000000'
         },
         {
           address: scout2Wallet,
-          amount: '5'
+          amount: '5000000000000000000'
         },
         {
           address: scout3Wallet,
-          amount: '7'
+          amount: '7000000000000000000'
         },
         {
           address: scout4Wallet,
-          amount: '7'
+          amount: '7000000000000000000'
         },
         {
           address: scout5Wallet,
-          amount: '7'
+          amount: '7000000000000000000'
         }
       ]),
       weeklyClaimId,
@@ -209,92 +211,92 @@ describe('calculateWeeklyClaims', () => {
       tokenReceipts: expect.arrayContaining<WeeklyClaimsCalculated['tokenReceipts'][number]>([
         {
           eventId: expect.any(String),
-          value: '6',
+          value: '6000000000000000000',
           recipientWalletAddress: builder1Wallet
         },
         {
           eventId: expect.any(String),
-          value: '9',
+          value: '9000000000000000000',
           recipientWalletAddress: builder1Wallet
         },
         {
           eventId: expect.any(String),
-          value: '4',
+          value: '4000000000000000000',
           recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          value: '2',
+          value: '2000000000000000000',
           recipientWalletAddress: scout2Wallet
         },
         {
           eventId: expect.any(String),
-          value: '3',
+          value: '3000000000000000000',
           recipientWalletAddress: scout3Wallet
         },
         {
           eventId: expect.any(String),
-          value: '1',
+          value: '1000000000000000000',
           recipientWalletAddress: scout4Wallet
         },
         {
           eventId: expect.any(String),
-          value: '5',
+          value: '5000000000000000000',
           recipientWalletAddress: builder2Wallet
         },
         {
           eventId: expect.any(String),
-          value: '7',
+          value: '7000000000000000000',
           recipientWalletAddress: builder2Wallet
         },
         {
           eventId: expect.any(String),
-          value: '4',
+          value: '4000000000000000000',
           recipientWalletAddress: scout3Wallet
         },
         {
           eventId: expect.any(String),
-          value: '3',
+          value: '3000000000000000000',
           recipientWalletAddress: scout4Wallet
         },
         {
           eventId: expect.any(String),
-          value: '2',
+          value: '2000000000000000000',
           recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          value: '3',
+          value: '3000000000000000000',
           recipientWalletAddress: scout5Wallet
         },
         {
           eventId: expect.any(String),
-          value: '5',
+          value: '5000000000000000000',
           recipientWalletAddress: builder3Wallet
         },
         {
           eventId: expect.any(String),
-          value: '6',
+          value: '6000000000000000000',
           recipientWalletAddress: builder3Wallet
         },
         {
           eventId: expect.any(String),
-          value: '4',
+          value: '4000000000000000000',
           recipientWalletAddress: scout5Wallet
         },
         {
           eventId: expect.any(String),
-          value: '3',
+          value: '3000000000000000000',
           recipientWalletAddress: scout2Wallet
         },
         {
           eventId: expect.any(String),
-          value: '1',
+          value: '1000000000000000000',
           recipientWalletAddress: scout1Wallet
         },
         {
           eventId: expect.any(String),
-          value: '3',
+          value: '3000000000000000000',
           recipientWalletAddress: scout4Wallet
         }
       ])

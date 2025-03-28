@@ -22,6 +22,7 @@
     "@packages/mailer": "^0.0.0",
     "@packages/mixpanel": "^0.0.0",
     "@packages/nextjs": "^0.0.0",
+    "@packages/scoutgameattestations": "^0.0.0",
     "@packages/users": "^0.0.0",
     "@packages/utils": "^1.0.0",
     "@twa-dev/sdk": "^8.0.1",

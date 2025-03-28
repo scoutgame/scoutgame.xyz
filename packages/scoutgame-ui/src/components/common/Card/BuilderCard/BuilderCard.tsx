@@ -50,10 +50,12 @@ export function BuilderCard({
   const { user } = useUser();
   const price = builder.price;
 
-  const userListings =
-    user && whiteListedUserIds.includes(user.id) && builder.listings
-      ? builder.listings.filter((listing) => listing.scoutId === user.id)
-      : [];
+  const isWhitelisted = user && whiteListedUserIds.includes(user.id);
+  if (showListButton && !isWhitelisted) {
+    showListButton = false;
+  }
+
+  const userListings = (builder.listings || []).filter((listing) => listing.scoutId === user?.id);
 
   const lowerPricedNonUserListings: BuilderInfo['listings'] = [];
 
