@@ -121,6 +121,8 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
   await prisma.builderNft.createMany({
     data: builders.map((builder, index) => ({
       builderId: builder.id,
+      // add variability
+      createdAt: new Date(Date.now() + index * 10000 * Math.random()),
       chainId: 10,
       contractAddress: `0x${season}-${Math.floor(Math.random() * 1000000)}`,
       tokenId: index + 1,

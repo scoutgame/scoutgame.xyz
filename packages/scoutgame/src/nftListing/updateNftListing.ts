@@ -6,12 +6,11 @@ export async function cancelNftListing({ listingId, scoutId }: { listingId: stri
     select: {
       sellerWallet: true,
       completedAt: true,
-      cancelledAt: true,
       order: true
     }
   });
 
-  if (listing.completedAt || listing.cancelledAt) {
+  if (listing.completedAt) {
     throw new Error('This listing is no longer active');
   }
 
@@ -25,12 +24,11 @@ export async function completeNftListing({ listingId, buyerWallet }: { listingId
     where: { id: listingId },
     select: {
       sellerWallet: true,
-      completedAt: true,
-      cancelledAt: true
+      completedAt: true
     }
   });
 
-  if (listing.completedAt || listing.cancelledAt) {
+  if (listing.completedAt) {
     throw new Error('This listing is no longer active');
   }
 
