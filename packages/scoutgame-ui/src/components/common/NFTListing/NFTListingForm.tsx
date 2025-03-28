@@ -5,7 +5,7 @@ import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Box, FormLabel, Stack, Typography } from '@mui/material';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
-import { createNftListingAction } from '@packages/scoutgame/nftListing/createNftListingAction';
+import { recordNftListingAction } from '@packages/scoutgame/nftListing/recordNftListingAction';
 import { devTokenDecimals, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import { createSeaportListing } from '@packages/scoutgame/seaport/createSeaportListing';
 import { isOnchainPlatform } from '@packages/utils/platform';
@@ -17,9 +17,8 @@ import { toast } from 'sonner';
 import { formatUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
+import { useGetDeveloperToken } from '../../../hooks/api/builders';
 import { NumberInputField } from '../NFTPurchaseDialog/components/NumberField';
-
-import { useGetDeveloperToken } from './hooks/useGetDeveloperToken';
 
 export type NFTListingFormProps = {
   builder: {
@@ -37,7 +36,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
   const isOnchain = isOnchainPlatform();
   const [priceInUsdc, setPriceInUsdc] = useState(0);
   const { address: sellerWallet, chainId } = useAccount();
-  const { executeAsync: createNftListing, isExecuting } = useAction(createNftListingAction);
+  const { executeAsync: recordNftListing, isExecuting } = useAction(recordNftListingAction);
   const { data: developerToken, isLoading } = useGetDeveloperToken({ builderId: builder.id, nftType: 'default' });
   const { switchChainAsync } = useSwitchChain();
   const [isListing, setIsListing] = useState(false);
@@ -81,7 +80,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         developerWallet: developerToken.developerWallet
       });
 
-      await createNftListing({
+      await recordNftListing({
         builderNftId: developerToken.builderNftId,
         price: priceInUsdc,
         amount: 1,

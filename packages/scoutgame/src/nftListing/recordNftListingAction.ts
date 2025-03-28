@@ -5,9 +5,9 @@ import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
 
-import { createNftListing } from './createNftListing';
+import { recordNftListing } from './recordNftListing';
 
-const createNftListingSchema = yup.object({
+const recordNftListingSchema = yup.object({
   builderNftId: yup.string().required(),
   price: yup.number().required(),
   amount: yup.number().required(),
@@ -15,17 +15,17 @@ const createNftListingSchema = yup.object({
   sellerWallet: yup.string().required()
 });
 
-export const createNftListingAction = authActionClient
+export const recordNftListingAction = authActionClient
   .metadata({
     actionName: 'create-nft-listing'
   })
-  .schema(createNftListingSchema)
+  .schema(recordNftListingSchema)
   .action(async ({ parsedInput, ctx }) => {
     const scoutId = ctx.session.scoutId;
 
     const { builderNftId, price, amount, order, sellerWallet } = parsedInput;
 
-    await createNftListing({
+    await recordNftListing({
       builderNftId,
       price,
       amount,

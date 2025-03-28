@@ -24,10 +24,6 @@ export const purchaseNftListingAction = authActionClient
   .action(async ({ parsedInput, ctx }) => {
     const scoutId = ctx.session.scoutId;
 
-    if (!scoutId) {
-      throw new Error('User must be authenticated');
-    }
-
     const { listingId, buyerWallet, txHash, txLogIndex } = parsedInput;
 
     const result = await purchaseNftListing({

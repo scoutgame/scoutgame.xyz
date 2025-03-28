@@ -7,7 +7,7 @@ import { isAddress } from 'viem';
 import { builderTokenDecimals } from '../builderNfts/constants';
 import { devTokenDecimals } from '../protocol/constants';
 
-export async function createNftListing({
+export async function recordNftListing({
   builderNftId,
   sellerWallet: _sellerWallet,
   price,
