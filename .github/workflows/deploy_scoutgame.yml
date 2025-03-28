@@ -53,13 +53,13 @@ jobs:
         # source https://github.com/orgs/community/discussions/28474
         run: |
           # Check if commit message contains skip-tests and set variable
-          if [[ "$(git show -s --format=%s)" == *"into"* ]]; then
+          if [[ "$(git show -s --format=%s)" == *"skip-tests"* ]]; then
             should_skip_tests=true
           else
             should_skip_tests=false
           fi
-          echo "deploy_staging=${{(github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy-scoutgame') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy-scoutgame'))}}" >> $GITHUB_OUTPUT
           echo "skip_tests=$should_skip_tests" >> $GITHUB_OUTPUT
+          echo "deploy_staging=${{(github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy-scoutgame') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy-scoutgame'))}}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         uses: ./.github/actions/install
