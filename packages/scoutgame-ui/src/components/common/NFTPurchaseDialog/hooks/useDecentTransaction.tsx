@@ -6,7 +6,6 @@ import {
   builderNftChain,
   getBuilderNftContractAddress,
   getDecentApiKey,
-  isPreseason01Contract,
   isStarterNftContract,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
@@ -34,6 +33,8 @@ export type DecentTransactionProps = {
 };
 
 const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
+const transferableStarterNftMintSignature =
+  'function mint(address account, uint256 tokenId, uint256 amount, string memory scoutId)';
 
 export function _appendDecentQueryParams(path: string, data: any) {
   const queryString = Object.keys(data)
@@ -84,7 +85,7 @@ export function useDecentTransaction({
     contractAddress ||
     (useScoutToken ? scoutProtocolBuilderNftContractAddress : getBuilderNftContractAddress(getCurrentSeasonStart()));
 
-  const useScoutIdValidation = isPreseason01Contract(_contractAddress) || isStarterNftContract(_contractAddress);
+  const isStarterContract = isStarterNftContract(_contractAddress);
 
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
@@ -102,8 +103,8 @@ export function useDecentTransaction({
         isNative: false,
         tokenAddress: useScoutToken ? scoutTokenErc20ContractAddress() : optimismUsdcContractAddress
       },
-      signature: transferableNftMintSignature,
-      args: isStarterNftContract(contractAddress)
+      signature: isStarterContract ? transferableStarterNftMintSignature : transferableNftMintSignature,
+      args: isStarterContract
         ? [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase), scoutId]
         : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }
