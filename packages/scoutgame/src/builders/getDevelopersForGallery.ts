@@ -1,4 +1,5 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
@@ -86,6 +87,23 @@ export async function getDevelopersForGallery({
                 congratsImageUrl: true,
                 estimatedPayout: true,
                 estimatedPayoutDevToken: true,
+                listings: {
+                  where: {
+                    completedAt: null
+                  },
+                  select: {
+                    createdAt: true,
+                    id: true,
+                    seller: {
+                      select: {
+                        scoutId: true
+                      }
+                    },
+                    price: true,
+                    priceDevToken: true,
+                    order: true
+                  }
+                },
                 nftSoldEvents: {
                   where: {
                     ...validMintNftPurchaseEvent,
@@ -160,6 +178,14 @@ export async function getDevelopersForGallery({
           ? Number(BigInt(stat.user.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
           : (stat.user.builderNfts?.[0]?.estimatedPayout ?? 0),
         gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
+        listings:
+          stat.user.builderNfts?.[0]?.listings.map(({ seller, ...listing }) => ({
+            ...listing,
+            scoutId: seller.scoutId,
+            order: listing.order as OrderWithCounter,
+            price: isOnchainPlatform() ? BigInt(listing.priceDevToken ?? 0) : (listing.price ?? BigInt(0)),
+            contractAddress: stat.user.builderNfts?.[0]?.contractAddress as `0x${string}`
+          })) ?? [],
         nftsSoldToScout:
           stat.user.builderNfts?.[0]?.nftSoldEvents
             ?.filter((event) => event.scoutWallet?.scoutId === scoutId)

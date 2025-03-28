@@ -107,7 +107,8 @@ export async function getBuildersByFid({
           : (scout.builderNfts?.[0]?.estimatedPayout ?? 0),
         last14DaysRank: normalizeLast14DaysRank(scout.builderCardActivities[0]),
         contractAddress: scout.builderNfts[0]?.contractAddress || '',
-        nftType: scout.builderNfts[0]?.nftType || 'default'
+        nftType: scout.builderNfts[0]?.nftType || 'default',
+        listings: []
       }));
     });
 

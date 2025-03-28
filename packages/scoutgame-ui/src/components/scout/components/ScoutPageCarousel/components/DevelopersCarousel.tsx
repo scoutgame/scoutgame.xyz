@@ -12,7 +12,7 @@ export function DevelopersCarousel({
 }: {
   developers: StarterCardDeveloper[];
   infoCard?: ReactNode;
-  slidesPerView: number;
+  slidesPerView?: number;
 }) {
   // const theme = useTheme();
   // const breakpointsValues = theme.breakpoints.values;

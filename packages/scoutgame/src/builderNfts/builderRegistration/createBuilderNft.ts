@@ -5,7 +5,7 @@ import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
 import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
-import { builderNftChain, getBuilderNftContractAddress } from '../constants';
+import { nftChain, getBuilderNftContractAddress } from '../constants';
 
 export async function createBuilderNft({
   avatar,
@@ -14,7 +14,7 @@ export async function createBuilderNft({
   displayName,
   path,
   season,
-  chainId = builderNftChain.id,
+  chainId = nftChain.id,
   contractAddress
 }: {
   displayName: string;

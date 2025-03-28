@@ -1,7 +1,7 @@
 'use client';
 
 import { checkDecentTransactionAction } from '@packages/scoutgame/builderNfts/checkDecentTransactionAction';
-import { builderNftChain, optimismUsdcContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { nftChain, optimismUsdcContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { saveDecentTransactionAction } from '@packages/scoutgame/builderNfts/saveDecentTransactionAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import {
@@ -157,9 +157,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
               },
               transactionInfo: {
                 destinationChainId:
-                  contractAddress === scoutProtocolBuilderNftContractAddress
-                    ? scoutProtocolChainId
-                    : builderNftChain.id,
+                  contractAddress === scoutProtocolBuilderNftContractAddress ? scoutProtocolChainId : nftChain.id,
                 sourceChainId,
                 sourceChainTxHash: _data
               },

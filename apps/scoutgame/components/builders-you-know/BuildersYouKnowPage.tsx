@@ -21,7 +21,7 @@ export function BuildersYouKnowPage({ builders }: { builders: BuilderInfo[] }) {
         </Button>
       </Box>
       <Suspense fallback={<LoadingGallery />}>
-        <BuildersGalleryContainer initialCursor={null} initialBuilders={builders} />
+        <BuildersGalleryContainer nftType='default' initialCursor={null} initialBuilders={builders} />
       </Suspense>
     </PageContainer>
   );

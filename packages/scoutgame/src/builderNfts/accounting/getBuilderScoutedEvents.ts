@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { builderNftChain } from '../constants';
+import { nftChain } from '../constants';
 
 import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
@@ -47,7 +47,7 @@ export function getBuilderScoutedEvents({
   fromBlock,
   toBlock,
   contractAddress,
-  chainId = builderNftChain.id
+  chainId = nftChain.id
 }: BlockRange & { contractAddress: Address; chainId?: number }): Promise<BuilderScoutedEvent[]> {
   return getPublicClient(chainId)
     .getLogs({

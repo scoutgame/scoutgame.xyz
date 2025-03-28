@@ -19,7 +19,7 @@ export const builderTokenDecimals = 6;
 
 const currentSeason = getCurrentSeason();
 
-export const builderNftChain: Chain =
+export const nftChain: Chain =
   !currentSeason.preseason || isOnchainPlatform() ? base : useTestnets ? optimismSepolia : optimism;
 
 // Dev contracts we also deployed for easier use
@@ -119,10 +119,10 @@ export function isStarterNftContract(contractAddress: string): boolean {
  */
 export const lastBlockOfPreSeason01 = 130_261_411;
 
-// const serverClient = getWalletClient({ chainId: builderNftChain.id, privateKey: builderSmartContractMinterKey });
+// const serverClient = getWalletClient({ chainId: nftChain.id, privateKey: builderSmartContractMinterKey });
 
 // const apiClient = new BuilderNFTSeasonOneClient({
-//   chain: builderNftChain,
+//   chain: nftChain,
 //   contractAddress: getBuilderNftContractAddress(),
 //   walletClient: serverClient
 // });
