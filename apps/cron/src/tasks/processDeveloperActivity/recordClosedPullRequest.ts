@@ -1,6 +1,7 @@
 import type { ActivityRecipientType, GithubRepo, ScoutGameActivityType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { sendDiscordEvent } from '@packages/discord/sendDiscordEvent';
 import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
@@ -43,6 +44,7 @@ export async function recordClosedPullRequest({
     select: {
       id: true,
       displayName: true,
+      path: true,
       builderStatus: true,
       strikes: {
         select: {
@@ -215,6 +217,18 @@ export async function recordClosedPullRequest({
           app: {
             templateVariables: undefined
           }
+        });
+
+        await sendDiscordEvent({
+          title: '🚨 Builder Suspended',
+          description: `Builder ${builder.displayName} has been suspended`,
+          fields: [
+            {
+              name: 'Profile',
+              value: `https://scoutgame.xyz/u/${builder.path}`
+            },
+            { name: 'Strikes', value: currentStrikesCount.toString() }
+          ]
         });
 
         log.info('Banned builder', { userId: builder.id, strikes: currentStrikesCount });

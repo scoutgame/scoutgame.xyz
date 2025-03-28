@@ -1,6 +1,7 @@
 'use server';
 
 import { log } from '@charmverse/core/log';
+import { sendDiscordEvent } from '@packages/discord/sendDiscordEvent';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
@@ -64,6 +65,17 @@ export const createScoutProjectAction = authActionClient
       userId
     });
     revalidatePath('/profile/projects');
+
+    const creator = createdScoutProject.members.find((member) => member.userId === userId);
+
+    await sendDiscordEvent({
+      title: '🎉 Project Created',
+      description: `Project ${createdScoutProject.name} has been created`,
+      fields: [
+        { name: 'Project', value: `https://scoutgame.xyz/p/${createdScoutProject.path}` },
+        { name: 'Creator', value: `https://scoutgame.xyz/u/${creator?.user.path}` }
+      ]
+    });
 
     return createdScoutProject;
   });
