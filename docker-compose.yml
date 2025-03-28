@@ -154,6 +154,36 @@ services:
     profiles:
       - stg-scoutgameadmin
 
+  prd-scoutgame-draft:
+    extends:
+      service: defaults
+    ports:
+      - '80:3000'
+    command:
+      [
+        'sh',
+        '-c',
+        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/draft/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/draft --keepAliveTimeout 70000'
+      ]
+    profiles:
+      - prd-scoutgame-draft
+
+  stg-scoutgame-draft:
+    extends:
+      service: defaults
+    ports:
+      - '80:3000'
+    command:
+      [
+        'sh',
+        '-c',
+        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/draft/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start  apps/draft --keepAliveTimeout 70000'
+      ]
+    environment:
+      - REACT_APP_APP_ENV=staging
+    profiles:
+      - stg-scoutgame-draft
+
   prd-scoutgametelegram:
     extends:
       service: defaults
