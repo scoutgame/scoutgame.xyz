@@ -16,9 +16,12 @@ import { BuilderCardStats } from './BuilderCardStats';
 type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path';
 
 const whiteListedUserIds = [
-  '2dc25032-4efa-4168-b515-01b2e304d3e6',
-  '16fd0183-3083-47e4-b556-0118227cd84b',
-  'f9d23170-14cb-4f9f-8506-09d15c900afa'
+  // Matt casey
+  '00c4af4f-b0f8-41e8-b27d-29996d694034',
+  // Chris
+  'b6cb2938-91dd-4274-8d85-aa2e00eb97e2',
+  // Safwan
+  'f534b485-b7d5-47c3-92d8-02d107158558'
 ];
 
 export function BuilderCard({

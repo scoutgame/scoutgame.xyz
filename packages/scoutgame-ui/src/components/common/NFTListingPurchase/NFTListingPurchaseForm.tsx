@@ -8,8 +8,8 @@ import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants'
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { purchaseNftListingAction } from '@packages/scoutgame/nftListing/purchaseNftListingAction';
 import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
-import { nftListingErc20Address } from '@packages/scoutgame/seaport/createSeaportListing';
 import { purchaseSeaportListing } from '@packages/scoutgame/seaport/purchaseSeaportListing';
+import { nftListingErc20Address } from '@packages/scoutgame/seaport/recordSeaportListing';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';

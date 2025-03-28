@@ -7,7 +7,7 @@ import { Alert, Box, FormLabel, Stack, Typography } from '@mui/material';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftListingAction } from '@packages/scoutgame/nftListing/recordNftListingAction';
 import { devTokenDecimals, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
-import { createSeaportListing } from '@packages/scoutgame/seaport/createSeaportListing';
+import { recordSeaportListing } from '@packages/scoutgame/seaport/recordSeaportListing';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { fancyTrim } from '@packages/utils/strings';
 import Image from 'next/image';
@@ -71,7 +71,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         });
       }
 
-      const order = await createSeaportListing({
+      const order = await recordSeaportListing({
         sellerWallet,
         price: BigInt(priceInUsdc * 10 ** 6),
         amount: 1,

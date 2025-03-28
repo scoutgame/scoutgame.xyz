@@ -1,6 +1,7 @@
 import { ItemType } from '@opensea/seaport-js/lib/constants';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
+import { treasuryAddress } from '../builderNfts/constants';
 import { scoutTokenErc20ContractAddress } from '../protocol/constants';
 
 import { getSeaport } from './seaport';
@@ -9,11 +10,10 @@ const isOnchain = isOnchainPlatform();
 
 export const nftListingErc20Address = isOnchain
   ? scoutTokenErc20ContractAddress()
-  : '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+  : // USDC on optimism
+    '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 
-const TREASURY_WALLET = '0xb1b9FFF08F3827875F91ddE929036a65f2A5d27d';
-
-export async function createSeaportListing({
+export async function recordSeaportListing({
   sellerWallet,
   price,
   amount,
@@ -67,7 +67,7 @@ export async function createSeaportListing({
           // 4% to treasury
           token: nftListingErc20Address,
           amount: treasuryFee.toString(),
-          recipient: TREASURY_WALLET
+          recipient: treasuryAddress
         }
       ]
     },
