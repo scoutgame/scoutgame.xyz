@@ -163,7 +163,7 @@ services:
       [
         'sh',
         '-c',
-        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/draft/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/draft --keepAliveTimeout 70000'
+        'npx react-env --path .env --dest ./apps/draft/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/draft --keepAliveTimeout 70000'
       ]
     profiles:
       - prd-scoutgame-draft
