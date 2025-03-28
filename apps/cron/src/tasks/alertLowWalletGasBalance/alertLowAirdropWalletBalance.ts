@@ -2,13 +2,12 @@ import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getCurrentWeek } from '@packages/dates/utils';
+import { sendDiscordAlert } from '@packages/discord/sendDiscordAlert';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { getNewScoutRewards } from '@packages/scoutgame/scouts/getNewScoutRewards';
 import { formatUnits, parseUnits, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-
-import { sendDiscordAlert } from '../../utils/sendDiscordAlert';
 
 const log = getLogger('cron-alert-low-wallet-gas-balance');
 

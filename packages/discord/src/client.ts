@@ -1,16 +1,16 @@
 import { log } from '@charmverse/core/log';
 import { POST } from '@packages/utils/http';
 
-type DiscordAlertField = {
+export type DiscordMessageField = {
   name: string;
   value: string;
   inline?: boolean;
 };
 
-type DiscordAlertOptions = {
+export type DiscordMessageOptions = {
   title: string;
   description: string;
-  fields?: DiscordAlertField[];
+  fields?: DiscordMessageField[];
   color?: number; // Discord embed color (decimal value)
   url?: string;
   content?: string;
@@ -19,9 +19,7 @@ type DiscordAlertOptions = {
 /**
  * Sends an alert to Discord webhook
  */
-export async function sendDiscordAlert(options: DiscordAlertOptions): Promise<void> {
-  const webhookUrl = process.env.DISCORD_ALERTS_WEBHOOK;
-
+export async function sendToWebhook(webhookUrl: string | undefined, options: DiscordMessageOptions): Promise<void> {
   if (!webhookUrl) {
     log.warn('Discord webhook URL not configured. Cannot send alert.');
     return;
@@ -44,8 +42,8 @@ export async function sendDiscordAlert(options: DiscordAlertOptions): Promise<vo
 
     await POST(webhookUrl, payload);
 
-    log.info('Discord alert sent successfully', { title: options.title });
+    log.info('Discord message sent successfully', { webhookUrl, title: options.title });
   } catch (error) {
-    log.error('Failed to send Discord alert', { error, title: options.title });
+    log.error('Failed to send Discord message', { error, webhookUrl, title: options.title });
   }
 }
