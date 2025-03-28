@@ -109,6 +109,8 @@ export async function writeSeededBuildersToDatabase({
       builderId: builder.id,
       chainId: 10,
       contractAddress: `0x${season}`,
+      // add variability
+      createdAt: new Date(Date.now() + index * 10000 * Math.random()),
       tokenId: index + 1,
       currentPriceDevToken: String(20 * 10 ** 18),
       currentPrice: BigInt(20),
