@@ -39,10 +39,12 @@ export type WeeklyClaimsCalculated = {
  */
 export async function calculateWeeklyClaims({
   week,
-  tokenBalances
+  tokenBalances,
+  nftContractAddress = scoutProtocolBuilderNftContractAddress
 }: {
   week: string;
   tokenBalances: TokenOwnership;
+  nftContractAddress?: string;
 }): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } =
     await getPointsCountForWeekWithNormalisation({
@@ -111,7 +113,7 @@ export async function calculateWeeklyClaims({
   const builderNfts = await prisma.builderNft.findMany({
     where: {
       chainId: scoutProtocolChainId,
-      contractAddress: scoutProtocolBuilderNftContractAddress
+      contractAddress: nftContractAddress
     },
     select: {
       tokenId: true,

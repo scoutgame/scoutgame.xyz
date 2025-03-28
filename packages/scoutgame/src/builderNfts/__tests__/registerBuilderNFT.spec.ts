@@ -8,7 +8,9 @@ import { randomLargeInt } from '@packages/testing/generators';
 jest.unstable_mockModule('../constants', () => ({
   builderNftChain: { id: 10 },
   getBuilderNftContractAddress: () => '0x1234567890123456789012345678901234567890',
-  scoutProtocolBuilderNftContractAddress: '0x1234567890123456789012345678901234567890'
+  getBuilderNftStarterPackContractAddress: () => '0x1234567890123456789012345678901234567890',
+  scoutProtocolBuilderNftContractAddress: '0x1234567890123456789012345678901234567890',
+  nftChain: { id: 10 }
 }));
 
 // Import constants after mocking
