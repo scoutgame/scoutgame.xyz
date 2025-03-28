@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 
 import type { ISOWeek, Season, SeasonConfig } from './config';
-import { weeksPerSeason, seasons } from './config';
+import { seasons } from './config';
 
 export function getCurrentSeason(
   _currentWeek: ISOWeek = getCurrentWeek(),
@@ -165,7 +165,7 @@ export function getAllISOWeeksFromSeasonStart({
 }: { season?: Season } = {}): string[] {
   const start = getStartOfWeek(season);
   const end = DateTime.now();
-
+  const weeksPerSeason = getSeasonConfig(season).weeksPerSeason;
   let current = start;
   const weeks: string[] = [];
   while (current <= end && weeks.length < weeksPerSeason) {
@@ -178,6 +178,7 @@ export function getAllISOWeeksFromSeasonStart({
 
 export function getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }: { season: Season }): ISOWeek[] {
   const start = getStartOfWeek(season);
+  const weeksPerSeason = getSeasonConfig(season).weeksPerSeason;
   let current = start;
   const weeks: ISOWeek[] = [];
 
@@ -187,4 +188,18 @@ export function getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }: { season
   }
 
   return weeks;
+}
+
+export function getSeasonFromDate(date: Date) {
+  const dateTime = DateTime.fromJSDate(date, { zone: 'utc' });
+  const isoWeek = _formatWeek(dateTime);
+
+  try {
+    // Find the season this date belongs to
+    const season = getCurrentSeason(isoWeek);
+    return season.start;
+  } catch (error) {
+    // If the date is before the first season or doesn't belong to any season
+    return null;
+  }
 }

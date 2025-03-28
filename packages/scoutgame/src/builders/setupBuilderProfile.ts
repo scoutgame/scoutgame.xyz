@@ -62,7 +62,7 @@ export async function setupBuilderProfile({
   }
 
   // Fetch the GitHub user's info
-  const userResponse = await httpGET<{ login: string; name: string; email: string; id: number }>(
+  const apiGithubUser = await httpGET<{ login: string; name: string; email: string; id: number }>(
     'https://api.github.com/user',
     undefined,
     {
@@ -72,7 +72,7 @@ export async function setupBuilderProfile({
     }
   );
 
-  const githubLogin = userResponse.login;
+  const githubLogin = apiGithubUser.login;
 
   if (!githubLogin) {
     throw new Error('Failed to fetch Github user');
@@ -80,7 +80,7 @@ export async function setupBuilderProfile({
 
   const githubUser = await prisma.githubUser.findFirst({
     where: {
-      login: githubLogin
+      id: apiGithubUser.id
     }
   });
 
@@ -103,7 +103,7 @@ export async function setupBuilderProfile({
 
   await prisma.githubUser.upsert({
     where: {
-      login: githubLogin
+      id: apiGithubUser.id
     },
     create: {
       builderId: unsealedUserId,
@@ -113,7 +113,8 @@ export async function setupBuilderProfile({
       id: userResponse.id
     },
     update: {
-      builderId: unsealedUserId
+      builderId: unsealedUserId,
+      login: githubLogin // in case this has changed
     }
   });
 
@@ -128,8 +129,21 @@ export async function setupBuilderProfile({
         onboardedAt: new Date()
       }
     });
+  } else if (scout.builderStatus === 'rejected') {
+    await prisma.scout.update({
+      where: {
+        id: unsealedUserId
+      },
+      data: {
+        builderStatus: 'applied',
+        reappliedAt: new Date()
+      }
+    });
+    log.info(`Developer reapplied`, {
+      userId: unsealedUserId
+    });
   } else {
-    log.info(`Builder already applied: ${scout.builderStatus}`, {
+    log.info(`Developer already applied: ${scout.builderStatus}`, {
       userId: unsealedUserId
     });
   }

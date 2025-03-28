@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
@@ -79,6 +80,13 @@ export async function GET() {
           season: true
         }
       },
+      pendingNftTransactions: {
+        select: {
+          status: true,
+          destinationChainTxHash: true,
+          targetAmountReceived: true
+        }
+      },
       wallets: {
         select: {
           purchaseEvents: {
@@ -86,6 +94,7 @@ export async function GET() {
               paidInPoints: true,
               pointsValue: true,
               tokensPurchased: true,
+              txHash: true,
               builderNft: {
                 select: {
                   nftType: true,
@@ -121,7 +130,22 @@ export async function GET() {
     }
   });
   const rows: ScoutWithGithubUser[] = users.flatMap((user) => {
-    const allUserPurchaseEvents = user.wallets.flatMap((wallet) => wallet.purchaseEvents);
+    const allUserPurchaseEvents = user.wallets
+      .flatMap((wallet) => wallet.purchaseEvents)
+      .filter(
+        (e) =>
+          !e.paidInPoints &&
+          user.pendingNftTransactions.some((tx) => {
+            const isMatch = tx.destinationChainTxHash === e.txHash && tx.status === 'completed';
+            const isAmountMatch = Number(tx.targetAmountReceived) / 10 ** 6 === e.pointsValue / 10;
+            // TODO: pointsValue is sometimes higher than the target amount received. This is a hack to fix it.
+            if (isMatch && !isAmountMatch) {
+              // console.log('mismatched values.', convertCostToPoints(tx.targetAmountReceived), 'tx', tx, 'e', e);
+              e.pointsValue = convertCostToPoints(tx.targetAmountReceived);
+            }
+            return isMatch;
+          })
+      );
     // Create a map with shared user data
     const sharedUserData = {
       id: user.id,
@@ -185,6 +209,7 @@ export async function GET() {
       const socialQuests = user.socialQuests.filter((q) => q.season === season);
       const regularNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'default');
       const starterNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'starter_pack');
+      const usdcPaidForNfts = purchaseEvents.reduce((acc, curr) => acc + curr.pointsValue / 10, 0);
       return {
         ...sharedUserData,
         tokenId: regularNft?.tokenId || undefined,
@@ -201,9 +226,7 @@ export async function GET() {
           .filter((e) => e.builderNft?.nftType === 'starter_pack')
           .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
         starterNftsSold: starterNft?.nftSoldEvents.reduce((acc, curr) => acc + curr.tokensPurchased, 0) || 0,
-        usdcPaidForNfts: purchaseEvents
-          .filter((e) => !e.paidInPoints)
-          .reduce((acc, curr) => acc + curr.pointsValue / 10, 0),
+        usdcPaidForNfts,
         developerLevel: seasonStat?.level,
         season,
         referrals: builderEvents.filter((e) => e.type === 'referral').length,

@@ -1,14 +1,13 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getUserContributions } from '@packages/github/getUserContributions';
 import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 import { DateTime } from 'luxon';
 
-import { getBuilderActivity } from './getBuilderActivity';
-
+import { log } from './logger';
 /**
  * Review builders status and update it if they had activity in the last 28 days in our repos
  */
-export async function reviewAppliedBuilders() {
+export async function approveDevelopers() {
   const last28Days = DateTime.utc().minus({ days: 28 }).toJSDate();
 
   const builders = await prisma.scout.findMany({
@@ -26,13 +25,14 @@ export async function reviewAppliedBuilders() {
 
       if (githubUser?.login) {
         // Get the activity of the builder in the last 28 days
-        const { commits, pullRequests } = await getBuilderActivity({
+        const { commits, pullRequests } = await getUserContributions({
           login: githubUser.login,
           githubUserId: githubUser.id,
           after: last28Days
         });
 
         const mergedPullRequests = pullRequests.filter((pr) => pr.mergedAt);
+        const applicationDate = builder.reappliedAt || builder.createdAt;
 
         // If the builder has activity in the last 28 days approve it
         if (commits.length > 0 || mergedPullRequests.length > 0) {
@@ -43,7 +43,7 @@ export async function reviewAppliedBuilders() {
             userId: builder.id
           });
           // If the builder has no activity in the last 28 days reject it
-        } else if (builder.createdAt < last28Days) {
+        } else if (applicationDate < last28Days) {
           await prisma.scout.update({
             where: {
               id: builder.id
@@ -53,7 +53,7 @@ export async function reviewAppliedBuilders() {
             }
           });
 
-          log.info('Builder rejected after 28 days of no activity', { userId: builder.id });
+          log.info('Builder rejected after 28 days of no activity', { applicationDate, userId: builder.id });
         }
       }
     } catch (error) {

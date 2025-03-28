@@ -1,11 +1,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import type { Commit } from '@packages/github/getCommitsByUser';
-import { getCommitsByUser } from '@packages/github/getCommitsByUser';
 
-import type { PullRequest } from './github/getPullRequestsByUser';
-import { getPullRequestsByUser } from './github/getPullRequestsByUser';
+import type { Commit } from './getCommitsByUser';
+import { getCommitsByUser } from './getCommitsByUser';
+import type { PullRequest } from './getPullRequestsByUser';
+import { getPullRequestsByUser } from './getPullRequestsByUser';
 
-export type BuilderActivities = {
+type UserContributions = {
   commits: Commit[];
   pullRequests: PullRequest[];
   newOwnerRepos: {
@@ -19,7 +19,7 @@ export type BuilderActivities = {
   }[];
 };
 
-export async function getBuilderActivity({
+export async function getUserContributions({
   login,
   githubUserId,
   after
@@ -27,7 +27,7 @@ export async function getBuilderActivity({
   login: string;
   githubUserId?: number;
   after: Date;
-}): Promise<BuilderActivities> {
+}): Promise<UserContributions> {
   const commits = await getCommitsByUser({
     login,
     after,
