@@ -54,8 +54,17 @@ jobs:
         run: |
           echo "commit_message=$(git show -s --format=%s)" >> "$GITHUB_OUTPUT"
           echo "commit_message=$(git show -s --format=%s)"
+          # Check if commit message contains skip-tests and set variable
+          if [[ "$(git show -s --format=%s)" == *"skip-tests"* ]]; then
+            echo "should_skip_tests=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_skip_tests=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "should skip: $should_skip_tests"
           echo "deploy_staging=${{(github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy-scoutgame') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy-scoutgame'))}}" >> $GITHUB_OUTPUT
           echo "skip_tests=${{ contains(env.commit_message, 'skip-tests') }}" >> $GITHUB_OUTPUT
+          echo "skip_tests=${{ contains(env.commit_message, 'skip-tests') }}"
 
       - name: Install dependencies
         uses: ./.github/actions/install
