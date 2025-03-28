@@ -1,0 +1,14 @@
+{
+  "name": "@packages/discord",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": ""
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@packages/utils": "^1.0.0"
+  }
+}

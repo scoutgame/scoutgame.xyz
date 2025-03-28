@@ -28,7 +28,7 @@ jest.unstable_mockModule('viem/accounts', () => ({
   privateKeyToAccount: jest.fn()
 }));
 
-jest.unstable_mockModule('../../../utils/sendDiscordAlert', () => ({
+jest.unstable_mockModule('@packages/discord/sendDiscordAlert', () => ({
   sendDiscordAlert: jest.fn()
 }));
 
@@ -42,7 +42,7 @@ const { getBuilderEventsForPartnerRewards } = await import(
 const { getReferralsToReward } = await import('@packages/scoutgame/quests/getReferralsToReward');
 const { getNewScoutRewards } = await import('@packages/scoutgame/scouts/getNewScoutRewards');
 const { privateKeyToAccount } = await import('viem/accounts');
-const { sendDiscordAlert } = await import('../../../utils/sendDiscordAlert');
+const { sendDiscordAlert } = await import('@packages/discord/sendDiscordAlert');
 
 // Import the function to test after all mocks are set up
 const { alertLowAirdropWalletBalance } = await import('../alertLowAirdropWalletBalance');

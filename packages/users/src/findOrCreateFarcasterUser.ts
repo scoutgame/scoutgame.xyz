@@ -67,15 +67,16 @@ export async function findOrCreateFarcasterUser({
     utmCampaign: utmCampaign || undefined
   });
 
-  if (user?.isNew && referralCode) {
-    await createReferralEvent(referralCode, user.id).catch((error) => {
-      // There can be a case where the referrer is not found. Maybe someone will try to guess referral codes to get rewards.
-      log.warn('Error creating referral event.', { error, startParam: referralCode, referrerId: user.id });
-    });
-
+  if (user?.isNew) {
     await completeQuests(user.id, ['link-farcaster-account']).catch((error) => {
       log.error('Error completing quest: link-farcaster-account', { error, userId: user.id });
     });
+    if (referralCode) {
+      await createReferralEvent(referralCode, user.id).catch((error) => {
+        // There can be a case where the referrer is not found. Maybe someone will try to guess referral codes to get rewards.
+        log.warn('Error creating referral event.', { error, startParam: referralCode, referrerId: user.id });
+      });
+    }
   }
 
   return user;

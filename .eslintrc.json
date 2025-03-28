@@ -86,6 +86,7 @@
           "./apps/draft/",
           "./packages/blockchain/",
           "./packages/dune/",
+          "./packages/discord/",
           "./packages/github/",
           "./packages/loops/",
           "./packages/mailer/",
