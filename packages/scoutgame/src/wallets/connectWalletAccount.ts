@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getUserProfile } from '@packages/users/getUserProfile';
 
@@ -6,7 +7,11 @@ export async function connectWalletAccount({ address, userId }: { address: strin
 
   if (existingWalletUser) {
     if (existingWalletUser.id === userId) {
-      throw new Error('Wallet already connected to this user');
+      log.debug('Wallet already connected to user', {
+        address,
+        userId,
+        existingWalletUser
+      });
     }
     return existingWalletUser;
   }

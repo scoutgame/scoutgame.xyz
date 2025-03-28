@@ -4,17 +4,7 @@ import { authSecret, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@packages/ut
 import { GET as httpGET, POST as httpPOST } from '@packages/utils/http';
 import { unsealData } from 'iron-session';
 
-import { approveBuilder } from './approveBuilder';
-
-export async function setupBuilderProfile({
-  code,
-  state,
-  inviteCode
-}: {
-  code: string;
-  state: string;
-  inviteCode: string | null;
-}) {
+export async function setupBuilderProfile({ code, state }: { code: string; state: string }) {
   const clientId = GITHUB_CLIENT_ID;
   const clientSecret = GITHUB_CLIENT_SECRET;
 
@@ -58,6 +48,10 @@ export async function setupBuilderProfile({
   const accessToken = tokenData.access_token;
 
   if (!accessToken) {
+    log.warn('Failed to authenticate Github account', {
+      code,
+      tokenData
+    });
     throw new Error('Failed to authenticate Github account');
   }
 
@@ -96,8 +90,8 @@ export async function setupBuilderProfile({
   log.info('Connecting github profile to new builder', {
     githubLogin,
     alreadyExists: !!githubUser,
-    displayName: userResponse.name,
-    id: userResponse.id,
+    displayName: apiGithubUser.name,
+    id: apiGithubUser.id,
     userId: unsealedUserId
   });
 
@@ -108,9 +102,9 @@ export async function setupBuilderProfile({
     create: {
       builderId: unsealedUserId,
       login: githubLogin,
-      displayName: userResponse.name,
-      email: userResponse.email,
-      id: userResponse.id
+      displayName: apiGithubUser.name,
+      email: apiGithubUser.email,
+      id: apiGithubUser.id
     },
     update: {
       builderId: unsealedUserId,
