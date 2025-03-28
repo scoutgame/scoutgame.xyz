@@ -29,7 +29,7 @@ export const setupBuilderProfileAction = authActionClient
     }
 
     const { code, state } = parsedInput;
-    const builder = await setupBuilderProfile({ code, state, inviteCode });
+    const builder = await setupBuilderProfile({ code, state });
 
     trackUserAction('connect_github_success', {
       userId: builder.id
