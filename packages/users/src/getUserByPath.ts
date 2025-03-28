@@ -17,7 +17,6 @@ export async function getUserByPath(path: string): Promise<
       builderStatus: BuilderStatus | null;
       displayName: string;
       talentProfile: TalentProfile | null;
-      hasMoxieProfile: boolean;
     })
   | null
 > {
@@ -36,7 +35,6 @@ export async function getUserByPath(path: string): Promise<
         }
       },
       farcasterName: true,
-      hasMoxieProfile: true,
       talentProfile: {
         select: {
           id: true,
@@ -55,7 +53,6 @@ export async function getUserByPath(path: string): Promise<
     nftImageUrl: user?.builderNfts[0]?.imageUrl,
     congratsImageUrl: user?.builderNfts[0]?.congratsImageUrl,
     githubLogin: user?.githubUsers[0]?.login,
-    talentProfile: user.talentProfile,
-    hasMoxieProfile: user.hasMoxieProfile
+    talentProfile: user.talentProfile
   };
 }

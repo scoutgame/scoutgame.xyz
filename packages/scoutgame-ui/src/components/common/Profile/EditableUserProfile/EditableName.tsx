@@ -17,7 +17,6 @@ type EditableDisplayNameProps = {
   isLoading?: boolean;
   githubLogin?: string;
   farcasterName?: string | null;
-  hasMoxieProfile?: boolean;
   talentProfile?: TalentProfile;
   userPath: string;
   hideShareProfile?: boolean;
@@ -30,7 +29,6 @@ export function EditableName({
   isLoading,
   githubLogin,
   farcasterName,
-  hasMoxieProfile,
   talentProfile,
   userPath,
   hideShareProfile
@@ -98,13 +96,8 @@ export function EditableName({
               color='primary'
               fontSize='small'
             />
-            {farcasterName || githubLogin || talentProfile || hasMoxieProfile ? (
-              <ProfileLinks
-                farcasterName={farcasterName}
-                githubLogin={githubLogin}
-                hasMoxieProfile={hasMoxieProfile}
-                talentProfile={talentProfile}
-              />
+            {farcasterName || githubLogin || talentProfile ? (
+              <ProfileLinks farcasterName={farcasterName} githubLogin={githubLogin} talentProfile={talentProfile} />
             ) : null}
             {!hideShareProfile ? <ShareProfile userPath={userPath} /> : null}
           </Stack>

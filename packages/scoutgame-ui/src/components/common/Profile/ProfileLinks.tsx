@@ -8,13 +8,11 @@ import { useMdScreen } from '../../../hooks/useMediaScreens';
 export function ProfileLinks({
   farcasterName,
   githubLogin,
-  talentProfile,
-  hasMoxieProfile
+  talentProfile
 }: {
   farcasterName?: string | null;
   githubLogin?: string | null;
   talentProfile?: TalentProfile | null;
-  hasMoxieProfile?: boolean;
 }) {
   const isDesktop = useMdScreen();
   return (
@@ -63,23 +61,6 @@ export function ProfileLinks({
             label={talentProfile.score}
             variant='outlined'
           />
-        </Tooltip>
-      ) : null}
-      {hasMoxieProfile ? (
-        <Tooltip title='Moxie profile'>
-          <IconButton
-            href={`https://airstack.xyz/users/fc_fname%3A${farcasterName}`}
-            target='_blank'
-            rel='noopener noreferrer'
-            sx={{ px: 0 }}
-          >
-            <Image
-              src='/images/moxie.svg'
-              alt='moxie icon'
-              width={isDesktop ? '22' : '18'}
-              height={isDesktop ? '22' : '18'}
-            />
-          </IconButton>
         </Tooltip>
       ) : null}
     </>

@@ -38,7 +38,6 @@ export async function getUserProfile({
       farcasterName: true,
       builderStatus: true,
       talentProfile: true,
-      hasMoxieProfile: true,
       id: true,
       path: true,
       wallets: {
@@ -74,7 +73,6 @@ export async function getUserProfile({
     githubLogin: user.githubUsers[0]?.login,
     farcasterName: user.farcasterName,
     talentProfile: user.talentProfile,
-    hasMoxieProfile: user.hasMoxieProfile,
     id: user.id,
     path: user.path,
     builderStatus: user.builderStatus,
