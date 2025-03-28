@@ -9,7 +9,8 @@ const mockSeason = `2020-W01${Math.random()}`;
 jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentWeek: jest.fn(() => '2020-W40'),
   getPreviousWeek: jest.fn(() => '2020-W39'),
-  getCurrentSeason: jest.fn(() => ({ start: mockSeason }))
+  getCurrentSeason: jest.fn(() => ({ start: mockSeason })),
+  getCurrentSeasonStart: jest.fn(() => mockSeason)
 }));
 
 const { getTodaysHotBuilders } = await import('../getTodaysHotBuilders');

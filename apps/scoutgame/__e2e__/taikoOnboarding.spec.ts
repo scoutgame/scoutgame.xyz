@@ -106,6 +106,6 @@ test.describe('Taiko Developer Onboarding flow', () => {
     await page.goto('/taiko');
     await page.waitForURL('/info/partner-rewards/taiko');
     const registerButtonAfterGithub = taikoDevelopersPage.getStartedButton.locator('a');
-    expect(await registerButtonAfterGithub.getAttribute('href')).toContain('/welcome?type=builder&step=3');
+    expect(await registerButtonAfterGithub.getAttribute('href')).toContain('/profile/projects/create');
   });
 });
