@@ -13,12 +13,12 @@ export const apps: { [key: string]: { stg?: Options; prd?: Options } } = {
       sslCert: scoutgameCert
     }
   },
-  draft: {
+  'scoutgame-draft': {
     prd: {
       sslCert: scoutgameCert
     }
   },
-  airdrop: {
+  'scoutgame-airdrop': {
     prd: {
       sslCert: scoutgameCert
     }
