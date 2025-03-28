@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 
-import { updateMoxieProfile, updateTalentProfile } from './updateTalentMoxieProfile';
+import { updateTalentProfile } from './updateTalentMoxieProfile';
 
 export async function updateTalentMoxieProfiles() {
   const builders = await prisma.scout.findMany({
@@ -30,7 +30,6 @@ export async function updateTalentMoxieProfiles() {
   log.info(`Updating talent & moxie profiles for ${builders.length} builders`);
 
   let updatedTalentProfiles = 0;
-  let updatedMoxieProfiles = 0;
 
   for (const builder of builders) {
     try {
@@ -46,19 +45,10 @@ export async function updateTalentMoxieProfiles() {
     } catch (error) {
       log.error('Error updating talent profile', { builderId: builder.id, error });
     }
-    if (builder.farcasterId) {
-      try {
-        await updateMoxieProfile({ farcasterId: builder.farcasterId, builderId: builder.id });
-        updatedMoxieProfiles += 1;
-      } catch (error) {
-        log.error('Error updating moxie profile', { builderId: builder.id, error });
-      }
-    }
   }
 
   log.info(`Updated profiles`, {
     totalBuilders: builders.length,
-    updatedTalentProfiles,
-    updatedMoxieProfiles
+    updatedTalentProfiles
   });
 }
