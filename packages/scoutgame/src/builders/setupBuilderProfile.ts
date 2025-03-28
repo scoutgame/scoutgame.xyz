@@ -58,6 +58,10 @@ export async function setupBuilderProfile({
   const accessToken = tokenData.access_token;
 
   if (!accessToken) {
+    log.warn('Failed to authenticate Github account', {
+      code,
+      tokenData
+    });
     throw new Error('Failed to authenticate Github account');
   }
 
@@ -96,8 +100,8 @@ export async function setupBuilderProfile({
   log.info('Connecting github profile to new builder', {
     githubLogin,
     alreadyExists: !!githubUser,
-    displayName: userResponse.name,
-    id: userResponse.id,
+    displayName: apiGithubUser.name,
+    id: apiGithubUser.id,
     userId: unsealedUserId
   });
 
@@ -108,9 +112,9 @@ export async function setupBuilderProfile({
     create: {
       builderId: unsealedUserId,
       login: githubLogin,
-      displayName: userResponse.name,
-      email: userResponse.email,
-      id: userResponse.id
+      displayName: apiGithubUser.name,
+      email: apiGithubUser.email,
+      id: apiGithubUser.id
     },
     update: {
       builderId: unsealedUserId,
