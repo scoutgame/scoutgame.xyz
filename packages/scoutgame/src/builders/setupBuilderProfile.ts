@@ -4,17 +4,7 @@ import { authSecret, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@packages/ut
 import { GET as httpGET, POST as httpPOST } from '@packages/utils/http';
 import { unsealData } from 'iron-session';
 
-import { approveBuilder } from './approveBuilder';
-
-export async function setupBuilderProfile({
-  code,
-  state,
-  inviteCode
-}: {
-  code: string;
-  state: string;
-  inviteCode: string | null;
-}) {
+export async function setupBuilderProfile({ code, state }: { code: string; state: string }) {
   const clientId = GITHUB_CLIENT_ID;
   const clientSecret = GITHUB_CLIENT_SECRET;
 
