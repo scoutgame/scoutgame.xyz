@@ -137,29 +137,24 @@ async function getWalletTokenBalance({
   tokenAddress: string;
   chainId: number;
 }): Promise<bigint> {
-  try {
-    const publicClient = getPublicClient(chainId);
+  const publicClient = getPublicClient(chainId);
 
-    const balance = await publicClient.readContract({
-      address: tokenAddress as `0x${string}`,
-      abi: [
-        {
-          name: 'balanceOf',
-          type: 'function',
-          stateMutability: 'view',
-          inputs: [{ name: 'account', type: 'address' }],
-          outputs: [{ name: '', type: 'uint256' }]
-        }
-      ],
-      functionName: 'balanceOf',
-      args: [walletAddress as `0x${string}`]
-    });
+  const balance = await publicClient.readContract({
+    address: tokenAddress as `0x${string}`,
+    abi: [
+      {
+        name: 'balanceOf',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'account', type: 'address' }],
+        outputs: [{ name: '', type: 'uint256' }]
+      }
+    ],
+    functionName: 'balanceOf',
+    args: [walletAddress as `0x${string}`]
+  });
 
-    return balance as bigint;
-  } catch (error) {
-    log.error('Error fetching wallet token balance:', { error });
-    return BigInt(0);
-  }
+  return balance as bigint;
 }
 
 async function calculateUpcomingPayout({
