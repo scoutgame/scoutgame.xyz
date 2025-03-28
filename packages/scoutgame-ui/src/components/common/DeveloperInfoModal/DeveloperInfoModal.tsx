@@ -1,4 +1,4 @@
-import { BuilderNftType } from '@charmverse/core/prisma-client';
+import { BuilderNftType } from '@charmverse/core/prisma';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Button, IconButton, Stack, Typography } from '@mui/material';
 import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';

@@ -83,6 +83,7 @@
           "./apps/agents/",
           "./apps/admin/",
           "./apps/cron/",
+          "./apps/draft/",
           "./packages/blockchain/",
           "./packages/github/",
           "./packages/loops/",
