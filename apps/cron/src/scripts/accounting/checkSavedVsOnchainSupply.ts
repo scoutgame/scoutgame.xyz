@@ -4,7 +4,7 @@ import { getPreSeasonTwoBuilderNftContractReadonlyClient } from "@packages/scout
 import path from "node:path";
 import fs from "node:fs"
 import { validatePreseason01orStarterPackMint } from "@packages/scoutgame/builderNfts/validatePreseason01orStarterPackMint";
-import { builderNftChain } from "@packages/scoutgame/builderNfts/constants";
+import { nftChain } from "@packages/scoutgame/builderNfts/constants";
 
 async function checkSavedVsOnchainSupply() {
   const builderNfts = await prisma.builderNft.findMany({
@@ -59,7 +59,7 @@ async function checkSavedVsOnchainSupply() {
 
     for (const purchaseEvent of nft.nftSoldEvents) {
       const validatedMint = await validatePreseason01orStarterPackMint({
-        chainId: builderNftChain.id,
+        chainId: nftChain.id,
         txHash: purchaseEvent.txHash
       });
 

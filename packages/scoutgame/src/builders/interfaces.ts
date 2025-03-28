@@ -1,5 +1,7 @@
 import type { BuilderNftType, BuilderStatus } from '@charmverse/core/prisma';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import type { BasicUserInfo } from '@packages/users/interfaces';
+import type { Address } from 'viem';
 
 export type PointMetrics = {
   seasonPoints: number;
@@ -21,6 +23,15 @@ export type BuilderMetrics = {
   nftsSoldToScoutInView?: number;
 };
 
+export type NftListing = {
+  contractAddress: Address;
+  id: string;
+  price: bigint;
+  scoutId: string;
+  order: OrderWithCounter;
+  createdAt: Date;
+};
+
 export type BuilderInfo = BasicUserInfo &
   BuilderMetrics & {
     nftType: BuilderNftType;
@@ -28,6 +39,7 @@ export type BuilderInfo = BasicUserInfo &
     farcasterId?: number | null;
     nftImageUrl?: string | null;
     congratsImageUrl: string | null;
+    listings: NftListing[];
   };
 
 export type Last14DaysRank = { date: string; rank: number | null; gems: number }[];

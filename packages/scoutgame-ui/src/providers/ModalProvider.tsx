@@ -4,12 +4,14 @@ import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 import { InviteModal } from '../components/builders/InviteModal/InviteModal';
+import { NFTListingDialog } from '../components/common/NFTListing/NFTListingDialog';
+import { NFTListingPurchaseDialog } from '../components/common/NFTListingPurchase/NFTListingPurchaseDialog';
 import { NFTPurchaseDialog } from '../components/common/NFTPurchaseDialog/NFTPurchaseDialog';
 
 import { useUser } from './UserProvider';
 
 // Add here all the modal names you need
-type ModalType = 'newBuilder' | 'nftPurchase';
+type ModalType = 'newBuilder' | 'nftPurchase' | 'nftListing' | 'nftListingPurchase';
 
 type ModalState = {
   [key in ModalType]: { open: boolean; data?: any };
@@ -26,7 +28,9 @@ const ModalContext = createContext<ModalContextType | null>(null);
 export function ModalProvider({ children }: { children: ReactNode }) {
   const [modalState, setModalState] = useState<ModalState>({
     newBuilder: { open: false, data: null },
-    nftPurchase: { open: false, data: null }
+    nftPurchase: { open: false, data: null },
+    nftListing: { open: false, data: null },
+    nftListingPurchase: { open: false, data: null }
   });
   const { user } = useUser();
 
@@ -62,6 +66,17 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         builder={modalState?.nftPurchase?.data}
         open={modalState?.nftPurchase?.open}
         onClose={() => closeModal('nftPurchase')}
+      />
+      <NFTListingDialog
+        builder={modalState?.nftListing?.data}
+        open={modalState?.nftListing?.open}
+        onClose={() => closeModal('nftListing')}
+      />
+      <NFTListingPurchaseDialog
+        listing={modalState?.nftListingPurchase?.data?.listing}
+        builder={modalState?.nftListingPurchase?.data?.builder}
+        open={modalState?.nftListingPurchase?.open}
+        onClose={() => closeModal('nftListingPurchase')}
       />
     </ModalContext.Provider>
   );

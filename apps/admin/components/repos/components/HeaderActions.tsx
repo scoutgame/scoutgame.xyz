@@ -1,12 +1,10 @@
 'use client';
 
-import { log } from '@charmverse/core/log';
 import { Add as AddIcon } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Box, Dialog, DialogTitle, DialogContent, Stack, Button } from '@mui/material';
-import { getLastWeek, getWeekStartEndFormatted, getDateFromISOWeek } from '@packages/dates/utils';
+import { Button, Dialog, DialogContent, DialogTitle, Stack } from '@mui/material';
+import { getDateFromISOWeek, getLastWeek, getWeekStartEndFormatted } from '@packages/dates/utils';
 import { useGETtrigger } from '@packages/scoutgame-ui/hooks/helpers';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
 

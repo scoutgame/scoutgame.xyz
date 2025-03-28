@@ -110,7 +110,7 @@ export function ProfilePage({ user, tab, hideGithubButton, scoutProjects }: Prof
               <Typography variant='h6' color='text.secondary'>
                 Build
               </Typography>
-              <BuilderProfile hideGithubButton={hideGithubButton} builder={user as BuilderUserInfo} />
+              <BuilderProfile builder={user as BuilderUserInfo} />
             </Paper>
           </Stack>
         )}

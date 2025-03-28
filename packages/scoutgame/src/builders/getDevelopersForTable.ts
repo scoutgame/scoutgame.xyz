@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { isTruthy } from '@packages/utils/types';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 

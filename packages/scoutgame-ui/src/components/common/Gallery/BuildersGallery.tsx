@@ -7,12 +7,16 @@ export function BuildersGallery({
   builders,
   columns = 6,
   size = 'medium',
-  markStarterCardPurchased = false
+  markStarterCardPurchased = false,
+  showListButton = false,
+  scoutInView
 }: {
+  scoutInView?: string;
   builders: BuilderInfo[];
   columns?: number;
   size?: 'small' | 'medium' | 'large';
   markStarterCardPurchased?: boolean;
+  showListButton?: boolean;
 }) {
   return (
     <Box flexGrow={1}>
@@ -30,11 +34,13 @@ export function BuildersGallery({
                 </Typography>
               )}
               <BuilderCard
+                scoutInView={scoutInView}
                 builder={builder}
                 showPurchaseButton
                 size={size}
                 type={builder.nftType}
                 markStarterCardPurchased={markStarterCardPurchased}
+                showListButton={showListButton}
               />
             </Box>
           </Grid>

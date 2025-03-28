@@ -659,6 +659,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           onSuccess={() => refreshAllowance()}
           decimals={selectedPaymentOption.currency === 'USDC' ? 6 : devTokenDecimals}
           currency={selectedPaymentOption.currency}
+          actionType='mint'
         />
       )}
     </Stack>

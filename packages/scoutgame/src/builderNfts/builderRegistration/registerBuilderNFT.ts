@@ -6,7 +6,7 @@ import { attestDeveloperStatusEvent } from '@packages/scoutgameattestations/atte
 import type { Address, Chain } from 'viem';
 
 import { getBuilderNftContractMinterClient } from '../clients/builderNftContractReadonlyClient';
-import { builderNftChain, getBuilderNftContractAddress } from '../constants';
+import { nftChain, getBuilderNftContractAddress } from '../constants';
 import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
 import { createBuilderNft } from './createBuilderNft';
@@ -14,7 +14,7 @@ import { createBuilderNft } from './createBuilderNft';
 export async function registerBuilderNFT({
   builderId,
   season,
-  chain = builderNftChain,
+  chain = nftChain,
   contractAddress
 }: {
   builderId: string;

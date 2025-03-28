@@ -9,7 +9,7 @@ import type { Address } from 'viem';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
-import { builderNftChain } from './constants';
+import { nftChain } from './constants';
 import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
 import { refreshNftPurchaseStats } from './refreshNftPurchaseStats';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
@@ -70,7 +70,7 @@ export async function recordNftTransfer({
     await findOrCreateWalletUser({ wallet: toWallet });
   }
 
-  const _sentAt = await getPublicClient(builderNftChain.id)
+  const _sentAt = await getPublicClient(nftChain.id)
     .getBlock({
       blockNumber: transferSingleEvent.blockNumber
     })

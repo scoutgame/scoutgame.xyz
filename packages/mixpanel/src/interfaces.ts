@@ -31,6 +31,10 @@ export type ClickScoutButton = FrontendEvent & {
   builderPath: string;
 };
 
+export type ClickListButton = FrontendEvent & {
+  builderPath: string;
+};
+
 export type ClaimPartnerRewardEvent = BaseEvent & {
   partner: string;
   week: string;
@@ -78,6 +82,7 @@ export type MixpanelEventMap = {
   daily_claim_streak: BaseEvent;
   connect_github_success: BaseEvent;
   click_scout_button: ClickScoutButton;
+  click_list_button: ClickListButton;
   click_moxie_promo: FrontendEvent;
   click_optimism_promo: FrontendEvent;
   page_view: FrontendEvent;

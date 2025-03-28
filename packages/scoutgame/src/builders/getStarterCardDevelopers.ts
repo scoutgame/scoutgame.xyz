@@ -100,7 +100,8 @@ export async function getStarterCardDevelopers({
       farcasterId: builder.farcasterId,
       congratsImageUrl: nft.congratsImageUrl || '',
       purchased: !!nft.nftSoldEvents?.length,
-      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0
+      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
+      listings: []
     }
   }));
 }

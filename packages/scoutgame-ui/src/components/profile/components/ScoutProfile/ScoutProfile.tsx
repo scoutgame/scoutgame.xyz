@@ -26,11 +26,6 @@ export async function ScoutProfile({ userId }: { userId: string }) {
 
   const [seasonStats, { nftsPurchased }, scoutedBuilders] = data;
 
-  const nftsPurchasedThisSeason = scoutedBuilders.reduce(
-    (acc, builder) => acc + (builder.nftsSoldToLoggedInScout || 0),
-    0
-  );
-
   return (
     <Stack gap={1}>
       <ScoutStats
@@ -43,7 +38,14 @@ export async function ScoutProfile({ userId }: { userId: string }) {
           Scouted Developers
         </Typography>
         {scoutedBuilders.length > 0 ? (
-          <BuildersGallery builders={scoutedBuilders} columns={3} size='small' markStarterCardPurchased />
+          <BuildersGallery
+            showListButton
+            builders={scoutedBuilders}
+            columns={3}
+            scoutInView={userId}
+            size='small'
+            markStarterCardPurchased
+          />
         ) : (
           <Paper sx={{ p: 2 }}>
             <Typography>You haven't scouted any Developers yet. Start exploring and discover talent!</Typography>
