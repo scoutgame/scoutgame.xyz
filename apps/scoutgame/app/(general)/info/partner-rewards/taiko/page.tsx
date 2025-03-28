@@ -263,8 +263,8 @@ export default async function Taiko() {
     : user.githubUsers.length === 0
       ? '/welcome?type=builder&step=2'
       : user.scoutProjectMembers.length === 0
-        ? '/welcome?type=builder&step=3'
-        : '/profile/projects/create';
+        ? '/profile/projects/create'
+        : '/welcome?type=builder&step=3';
 
   return (
     <Stack maxWidth='854px' width='100%' mx='auto' gap={{ xs: 2, md: 4 }}>
