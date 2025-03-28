@@ -91,7 +91,7 @@ const mockContractAddress = randomWalletAddress();
  */
 const indexOffset = 12344;
 
-describe.skip('calculateBuilderLevels', () => {
+describe('calculateBuilderLevels', () => {
   beforeEach(() => {
     jest.useFakeTimers();
 
