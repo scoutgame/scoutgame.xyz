@@ -84,6 +84,13 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           LinkComponent={Link}
         />
         <BottomNavigationAction
+          label='Match Up'
+          href='/matchup'
+          value='matchup'
+          icon={<ScoutIcon size='24px' />}
+          LinkComponent={Link}
+        />
+        <BottomNavigationAction
           label='Developers'
           href='/developers'
           value='developers'
@@ -134,6 +141,8 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
 function getActiveButton(pathname: string) {
   if (pathname.startsWith('/scout') || pathname.startsWith('/u/')) {
     return 'scout';
+  } else if (pathname.startsWith('/matchup')) {
+    return 'matchup';
   } else if (pathname.startsWith('/claim')) {
     return 'claim';
   } else if (pathname.startsWith('/developers')) {
