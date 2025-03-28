@@ -118,16 +118,24 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
     }))
   });
 
+  const newestNft = await prisma.builderNft.findFirst({
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+  const seedStart = (newestNft?.createdAt || new Date()).getTime();
+
   await prisma.builderNft.createMany({
     data: builders.map((builder, index) => ({
       builderId: builder.id,
       // add variability
-      createdAt: new Date(Date.now() + index * 10000 * Math.random()),
+      createdAt: new Date(seedStart + index * 1000000 * Math.random()),
       chainId: 10,
       contractAddress: `0x${season}-${Math.floor(Math.random() * 1000000)}`,
       tokenId: index + 1,
       currentPriceDevToken: String(20 * 10 ** 18),
-      currentPrice: BigInt(20),
+      currentPrice: BigInt(20 + index),
+      estimatedPayout: 20 + index,
       imageUrl: `https://example.com/image-${index}.png`,
       season
     }))

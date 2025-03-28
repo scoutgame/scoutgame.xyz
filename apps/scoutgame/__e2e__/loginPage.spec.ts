@@ -14,7 +14,7 @@ test.describe('Login page', () => {
     await page.waitForURL('**/login');
 
     const signInWithWarpcast = page.locator('data-test=sign-in-with-warpcast');
-    await expect(signInWithWarpcast).not.toBeDisabled();
+    await expect(signInWithWarpcast).toBeVisible();
     await signInWithWarpcast.click();
 
     const warpcastModal = page.locator('data-test=farcaster-modal');
