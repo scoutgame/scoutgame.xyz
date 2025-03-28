@@ -8,6 +8,7 @@ export function useGetDeveloperToken({ builderId, nftType }: { builderId: string
     contractAddress: string;
     scoutAddress: string;
     builderNftId: string;
+    developerWallet?: string;
   }>(`/api/builders/${builderId}/token`, {
     nftType
   });

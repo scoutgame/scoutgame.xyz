@@ -48,7 +48,8 @@ export async function getDeveloperNftListings(developerId: string): Promise<NftL
     where: {
       builderNft: {
         builderId: developerId
-      }
+      },
+      completedAt: null
     },
     select: {
       id: true,

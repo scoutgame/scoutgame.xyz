@@ -27,6 +27,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     },
     select: {
       id: true,
+      builder: {
+        select: {
+          wallets: {
+            where: {
+              primary: true
+            },
+            select: {
+              address: true
+            }
+          }
+        }
+      },
       tokenId: true,
       contractAddress: true
     }
@@ -52,6 +64,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     tokenId: builderNft.tokenId,
     contractAddress: builderNft.contractAddress,
     scoutAddress: scoutNft.scoutWallet.address,
-    builderNftId: builderNft.id
+    builderNftId: builderNft.id,
+    developerWallet: builderNft.builder.wallets[0]?.address
   });
 }

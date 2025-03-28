@@ -51,11 +51,19 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
     try {
       setIsListing(true);
       if (!developerToken) {
-        return;
+        throw new Error('No developer token found');
       }
 
       if (!sellerWallet) {
         throw new Error('No wallet address found');
+      }
+
+      if (!developerToken.contractAddress) {
+        throw new Error('No contract address found');
+      }
+
+      if (!developerToken.developerWallet) {
+        throw new Error('No developer wallet found');
       }
 
       if (chainId !== scoutProtocolChain.id) {
@@ -69,7 +77,8 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         price: BigInt(priceInUsdc * 10 ** 6),
         amount: 1,
         contractAddress: developerToken.contractAddress,
-        tokenId: developerToken.tokenId.toString()
+        tokenId: developerToken.tokenId.toString(),
+        developerWallet: developerToken.developerWallet
       });
 
       await createNftListing({

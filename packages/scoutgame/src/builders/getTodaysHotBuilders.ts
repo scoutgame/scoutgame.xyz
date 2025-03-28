@@ -49,6 +49,9 @@ const userSelect = (week: string, season: string, userId?: string) =>
         estimatedPayoutDevToken: true,
         contractAddress: true,
         listings: {
+          where: {
+            completedAt: null
+          },
           select: {
             id: true,
             price: true,

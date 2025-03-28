@@ -36,7 +36,7 @@ function NFTListingPurchaseDialogComponent({ listing, open, onClose, builder }: 
   return (
     <Dialog
       open={open && !!address}
-      title={`List ${builder.displayName}`}
+      title={`Purchase ${builder.displayName}`}
       maxWidth='md'
       onClose={onClose}
       fullScreen={!isDesktop}

@@ -20,6 +20,9 @@ export async function getScoutedBuilders({
   const scoutIds = [loggedInScoutId, scoutIdInView].filter(isTruthy);
   const scoutedNfts = await prisma.scoutNft.findMany({
     where: {
+      balance: {
+        gt: 0
+      },
       scoutWallet: {
         scoutId: {
           in: scoutIds
@@ -82,6 +85,9 @@ export async function getScoutedBuilders({
           estimatedPayout: true,
           estimatedPayoutDevToken: true,
           listings: {
+            where: {
+              completedAt: null
+            },
             select: {
               id: true,
               price: true,
