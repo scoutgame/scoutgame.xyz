@@ -7,7 +7,7 @@ import { randomWalletAddress } from '@packages/testing/generators';
 import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 
 jest.unstable_mockModule('@packages/dates/utils', () => ({
-  getCurrentSeasonStart: jest.fn((week) => week),
+  getCurrentSeasonStart: jest.fn(() => '2024-TEST78'),
   getCurrentSeason: jest.fn(() => seasons[2])
 }));
 
