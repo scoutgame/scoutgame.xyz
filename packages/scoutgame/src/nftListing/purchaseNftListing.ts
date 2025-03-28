@@ -35,14 +35,13 @@ export async function purchaseNftListing({
       builderNftId: true,
       amount: true,
       completedAt: true,
-      cancelledAt: true,
       sellerWallet: true,
       order: true
     }
   });
 
   // Ensure the listing is active
-  if (listing.completedAt || listing.cancelledAt) {
+  if (listing.completedAt) {
     throw new Error('This listing is no longer active');
   }
 
