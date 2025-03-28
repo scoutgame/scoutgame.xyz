@@ -167,8 +167,13 @@ export async function ScoutPage({
         >
           <Box sx={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: 'background.default' }}>
             <WeeklyMatchupCallout />
-            <TabsMenu value={scoutTab} tabs={scoutTabOptions} queryKey='scoutTab' />
-            <InfoModal sx={{ position: 'absolute', right: 10, top: 3.5 }} />
+            <TabsMenu
+              value={scoutTab}
+              tabs={scoutTabOptions}
+              queryKey='scoutTab'
+              sx={{ position: 'relative' }}
+              infoIcon={<InfoModal sx={{ position: 'absolute', right: 10, top: 3.5 }} />}
+            />
           </Box>
           <Suspense fallback={<LoadingTable />}>
             <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} userId={userId} nftType={nftType} />

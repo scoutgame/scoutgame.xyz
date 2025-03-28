@@ -138,6 +138,10 @@ function _formatWeek(date: DateTime): ISOWeek {
   return date.toFormat(`kkkk-'W'WW`);
 }
 
+export function dateTimeToWeek(date: DateTime): ISOWeek {
+  return _formatWeek(date);
+}
+
 export function getStartOfDay(date: Date) {
   return DateTime.fromJSDate(date, { zone: 'utc' }).startOf('day');
 }

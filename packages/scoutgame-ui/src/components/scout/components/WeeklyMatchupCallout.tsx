@@ -1,41 +1,35 @@
-import { Box, Button, Typography } from '@mui/material';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Box, Button, Paper, Card, CardActionArea, Typography } from '@mui/material';
+import { getNextMatchup } from '@packages/matchup/getNextMatchup';
 import { DateTime } from 'luxon';
 import Link from 'next/link';
 
-export function WeeklyMatchupCallout() {
-  const currentWeek = DateTime.now().weekNumber;
+export async function WeeklyMatchupCallout() {
+  const { week, weekNumber, matchupPool, opPrize } = await getNextMatchup();
 
   return (
-    <Box
+    <Card
       sx={{
-        background: 'linear-gradient(88.35deg, #96CDFF 0%, #A06CD5 29.5%, #96CDFF 75.47%, #A06CD5 100%)',
-        borderRadius: 1,
-        p: 3,
-        mb: 3,
-        color: 'white'
+        mb: 2,
+        mt: {
+          xs: 0,
+          md: 2
+        }
       }}
     >
-      <Typography variant='h6' gutterBottom>
-        Week {currentWeek} Match Up
-      </Typography>
-      <Typography variant='body1' gutterBottom>
-        Choose your team and face-off with your fellow Scouts! Who will be this week's Champion Scout?
-      </Typography>
-      <Button
-        component={Link}
-        href='/matchup'
-        variant='contained'
-        sx={{
-          mt: 2,
-          backgroundColor: 'white',
-          color: 'primary.main',
-          '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.9)'
-          }
-        }}
-      >
-        Join Match Up
-      </Button>
-    </Box>
+      <CardActionArea href='/matchup' sx={{ p: 2 }}>
+        <Box display='flex' alignItems='center' justifyContent='space-between'>
+          <Box>
+            <Typography variant='h6' gutterBottom color='secondary'>
+              Week {weekNumber} Match Up
+            </Typography>
+            <Typography variant='body1' gutterBottom>
+              Choose your team and face-off with your fellow Scouts! Who will be this week's Champion Scout?
+            </Typography>
+          </Box>
+          <ChevronRightIcon color='secondary' fontSize='large' />
+        </Box>
+      </CardActionArea>
+    </Card>
   );
 }

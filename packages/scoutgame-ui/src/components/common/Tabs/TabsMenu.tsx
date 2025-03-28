@@ -16,9 +16,10 @@ type TabsMenuProps = {
   tabs: TabItem[];
   sx?: SxProps;
   queryKey?: string;
+  infoIcon?: React.ReactNode;
 };
 
-export function TabsMenu({ value, tabs, sx, queryKey = 'tab' }: TabsMenuProps) {
+export function TabsMenu({ value, tabs, sx, queryKey = 'tab', infoIcon }: TabsMenuProps) {
   const tabValue = tabs.some((t) => t.value === value) ? value : false;
   // create a memoized object of the URL query params
   const searchParams = useSearchParams();
@@ -75,6 +76,7 @@ export function TabsMenu({ value, tabs, sx, queryKey = 'tab' }: TabsMenuProps) {
           />
         ))}
       </Tabs>
+      {infoIcon}
     </Box>
   );
 }

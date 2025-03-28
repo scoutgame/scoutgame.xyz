@@ -1,0 +1,3 @@
+export const MATCHUP_REGISTRATION_FEE = 50;
+export const MATCHUP_REGISTRATION_POOL = 40;
+export const MATCHUP_OP_PRIZE = 200;
