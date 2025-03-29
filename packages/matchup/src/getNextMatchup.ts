@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonWeekNumber, dateTimeToWeek } from '@packages/dates/utils';
+import { getCurrentSeasonWeekNumber, dateTimeToWeek, getStartOfWeek } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
 import { MATCHUP_REGISTRATION_POOL, MATCHUP_OP_PRIZE } from './config';
@@ -12,8 +12,12 @@ export function getNextMatchupWeek(now = DateTime.utc()) {
   return dateTimeToWeek(now.plus({ weeks: 1 }));
 }
 
-export async function getNextMatchup() {
-  const nextWeek = getNextMatchupWeek();
+function getStartOfMatchup(week: string) {
+  return getStartOfWeek(week).plus({ days: 1 }).toJSDate();
+}
+
+export async function getNextMatchup(now = DateTime.utc()) {
+  const nextWeek = getNextMatchupWeek(now);
   const matchups = await prisma.scoutMatchUp.count({
     where: {
       week: nextWeek
@@ -24,6 +28,7 @@ export async function getNextMatchup() {
     week: nextWeek,
     weekNumber,
     matchupPool: matchups * MATCHUP_REGISTRATION_POOL,
-    opPrize: MATCHUP_OP_PRIZE
+    opPrize: MATCHUP_OP_PRIZE,
+    startOfMatchup: getStartOfMatchup(nextWeek).getTime()
   };
 }
