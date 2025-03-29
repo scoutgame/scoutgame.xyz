@@ -18,6 +18,7 @@ import { ScoutPageBuildersGallery } from './components/ScoutPageBuildersGallery'
 import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/ScoutPageCarouselContainer';
 import { ScoutPageTable } from './components/ScoutPageTable/ScoutPageTable';
 import { SearchBuildersInput } from './components/SearchBuildersInput';
+import { WeeklyMatchupCallout } from './components/WeeklyMatchupCallout';
 
 export const scoutTabOptions: TabItem[] = [{ label: 'Top Scouts', value: 'scouts' }];
 
@@ -165,8 +166,14 @@ export async function ScoutPage({
           }}
         >
           <Box sx={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: 'background.default' }}>
-            <TabsMenu value={scoutTab} tabs={scoutTabOptions} queryKey='scoutTab' />
-            <InfoModal sx={{ position: 'absolute', right: 10, top: 3.5 }} />
+            <WeeklyMatchupCallout />
+            <TabsMenu
+              value={scoutTab}
+              tabs={scoutTabOptions}
+              queryKey='scoutTab'
+              sx={{ position: 'relative' }}
+              infoIcon={<InfoModal sx={{ position: 'absolute', right: 10, top: 3.5 }} />}
+            />
           </Box>
           <Suspense fallback={<LoadingTable />}>
             <ScoutPageTable tab={scoutTab} order={scoutOrder} sort={scoutSort} userId={userId} nftType={nftType} />
