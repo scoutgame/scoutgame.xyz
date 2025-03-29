@@ -20,7 +20,6 @@ export type ProfileTab = 'build' | 'scout' | 'scout-build';
 export type UserWithProfiles = SessionUser & {
   githubLogin?: string;
   talentProfile?: TalentProfile;
-  hasMoxieProfile: boolean;
 };
 
 type ProfilePageProps = {

@@ -81,7 +81,6 @@ export async function recordNftMint(
       builder: {
         select: {
           path: true,
-          hasMoxieProfile: true,
           displayName: true
         }
       }

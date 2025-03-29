@@ -33,11 +33,3 @@ export async function updateTalentProfile({
     });
   }
 }
-
-export async function updateMoxieProfile({ farcasterId, builderId }: { farcasterId: number; builderId: string }) {
-  const moxieToken = await getMoxieFanToken(farcasterId);
-  await prisma.scout.update({
-    where: { id: builderId },
-    data: { hasMoxieProfile: !!moxieToken }
-  });
-}

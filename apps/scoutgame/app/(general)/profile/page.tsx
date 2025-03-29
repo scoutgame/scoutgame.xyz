@@ -52,7 +52,6 @@ export default async function Profile({
             login: true
           }
         },
-        hasMoxieProfile: true,
         talentProfile: {
           select: {
             id: true,
@@ -71,7 +70,6 @@ export default async function Profile({
         user={{
           ...user,
           githubLogin: userExternalProfiles?.githubUsers?.[0]?.login,
-          hasMoxieProfile: userExternalProfiles?.hasMoxieProfile ?? false,
           talentProfile: userExternalProfiles?.talentProfile ?? undefined
         }}
         scoutProjects={scoutProjects}
