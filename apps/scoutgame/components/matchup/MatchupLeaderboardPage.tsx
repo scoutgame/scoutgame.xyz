@@ -1,7 +1,6 @@
 import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/material';
 import { getNextMatchup } from '@packages/matchup/getNextMatchup';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
-import { WeeklyMatchupCalloutTimer } from '@packages/scoutgame-ui/components/scout/components/WeeklyMatchupCalloutTimer';
 import Image from 'next/image';
 
 export function MatchupLeaderboardPage({

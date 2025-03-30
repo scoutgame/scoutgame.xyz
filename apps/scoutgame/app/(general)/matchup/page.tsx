@@ -5,7 +5,7 @@ import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { DateTime } from 'luxon';
 
-import { MatchupLeaderboardPage } from 'components/matchup/leaderboard/MatchupLeaderboardPage';
+import { MatchupLeaderboardPage } from 'components/matchup/MatchupLeaderboardPage';
 import { MatchupRegistrationPage } from 'components/matchup/registration/MatchupRegistrationPage';
 
 export default async function MatchupPageWrapper() {
