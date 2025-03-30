@@ -18,7 +18,7 @@ function getStartOfMatchup(week: string) {
 
 export async function getNextMatchup(now = DateTime.utc()) {
   const nextWeek = getNextMatchupWeek(now);
-  const matchups = await prisma.scoutMatchUp.count({
+  const matchups = await prisma.scoutMatchup.count({
     where: {
       week: nextWeek
     }

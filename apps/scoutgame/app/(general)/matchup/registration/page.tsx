@@ -10,18 +10,8 @@ import { MatchupRegistrationPage } from 'components/matchup/registration/Matchup
 
 export default async function MatchupPageWrapper() {
   const [, user] = await safeAwaitSSRData(getUserFromSession());
-  const currentWeek = getCurrentWeek();
   const nextMatchup = await getNextMatchup();
-  const [myActiveMatchup, myNextMatchup] = await safeAwaitSSRData(
-    Promise.all([
-      getMatchupByScout({ scoutId: user?.id, week: currentWeek }),
-      getMatchupByScout({ scoutId: user?.id, week: nextMatchup.week })
-    ])
-  );
+  const myNextMatchup = await safeAwaitSSRData(getMatchupByScout({ scoutId: user?.id, week: nextMatchup.week }));
 
-  // on Monday, the 'next matchup' is the current week
-  if (currentWeek === nextMatchup.week) {
-    return <MatchupRegistrationPage matchup={myNextMatchup} weekNumber={nextMatchup.weekNumber} />;
-  }
-  return <MatchupLeaderboardPage matchup={myActiveMatchup} weekNumber={currentWeek} />;
+  return <MatchupRegistrationPage matchup={myNextMatchup} weekNumber={nextMatchup.weekNumber} />;
 }

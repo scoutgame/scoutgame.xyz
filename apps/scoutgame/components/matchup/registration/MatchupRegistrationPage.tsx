@@ -1,11 +1,12 @@
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Paper, Card, CardActionArea, Typography } from '@mui/material';
+import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/material';
 import { getNextMatchup } from '@packages/matchup/getNextMatchup';
-import { DateTime } from 'luxon';
+import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
+import { WeeklyMatchupCalloutTimer } from '@packages/scoutgame-ui/components/scout/components/WeeklyMatchupCalloutTimer';
 import Image from 'next/image';
-import Link from 'next/link';
 
-import { WeeklyMatchupCalloutTimer } from './WeeklyMatchupCalloutTimer';
+import { MatchUpRegistrationView } from './components/MatchupRegistrationView';
+import { MatchUpSelectionView } from './components/MatchupSelectionView';
+import { MatchUpSubmittedView } from './components/MatchupSubmittedView';
 
 export async function WeeklyMatchupCallout() {
   const { weekNumber, matchupPool, opPrize, startOfMatchup } = await getNextMatchup();
@@ -44,9 +45,45 @@ export async function WeeklyMatchupCallout() {
             </Typography>
             <WeeklyMatchupCalloutTimer upcomingTime={startOfMatchup} />
           </Box>
-          <ChevronRightIcon fontSize='large' />
         </Box>
       </CardActionArea>
     </Card>
+  );
+}
+
+export function MatchupRegistrationPage({
+  matchup,
+  weekNumber
+}: {
+  matchup?: { submittedAt?: Date };
+  weekNumber: number;
+}) {
+  return (
+    <PageContainer>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          {matchup?.submittedAt ? (
+            <MatchUpSubmittedView weekNumber={weekNumber} />
+          ) : matchup ? (
+            <MatchUpSelectionView weekNumber={weekNumber} />
+          ) : (
+            <MatchUpRegistrationView weekNumber={weekNumber} />
+          )}
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card>
+            <Typography variant='h5' gutterBottom>
+              Play Weekly Match Up!
+            </Typography>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant='subtitle1' gutterBottom>
+                Registered Scouts:
+              </Typography>
+              {/* TODO: Add registered scouts table */}
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
+    </PageContainer>
   );
 }
