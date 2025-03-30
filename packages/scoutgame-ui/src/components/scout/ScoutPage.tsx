@@ -135,6 +135,7 @@ export async function ScoutPage({
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <WeeklyMatchupCallout />
             <Box sx={{ position: 'absolute', right: 0, top: 3.5, zIndex: 2 }}>
               <InfoModal builder={tab === 'builders'} />
             </Box>
