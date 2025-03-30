@@ -13,7 +13,7 @@ export function MatchupLeaderboardPage({
   return (
     <PageContainer>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 8 }}></Grid>
+        <Grid size={{ xs: 12, md: 8 }}>Leaderboard</Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <Card>
             <Typography variant='h5' gutterBottom>

@@ -8,7 +8,7 @@ import { MatchUpRegistrationView } from './components/MatchupRegistrationView';
 import { MatchUpSelectionView } from './components/MatchupSelectionView';
 import { MatchUpSubmittedView } from './components/MatchupSubmittedView';
 
-export async function WeeklyMatchupCallout() {
+async function WeeklyMatchupCallout() {
   const { weekNumber, matchupPool, opPrize, startOfMatchup } = await getNextMatchup();
 
   return (

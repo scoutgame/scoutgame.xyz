@@ -17,7 +17,6 @@ export async function getMatchupByScout({ scoutId, week }: { scoutId: string; we
               id: true,
               displayName: true,
               path: true,
-              name: true,
               avatar: true
             }
           }
