@@ -52,22 +52,23 @@ async function WeeklyMatchupCallout() {
 }
 
 export function MatchupRegistrationPage({
+  myMatchup,
   matchup,
   weekNumber
 }: {
-  matchup?: { submittedAt?: Date };
-  weekNumber: number;
+  myMatchup?: { submittedAt?: Date };
+  matchup: { weekNumber: number; matchupPool: number };
 }) {
   return (
     <PageContainer>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
-          {matchup?.submittedAt ? (
-            <MatchUpSubmittedView weekNumber={weekNumber} />
-          ) : matchup ? (
-            <MatchUpSelectionView weekNumber={weekNumber} />
+          {myMatchup?.submittedAt ? (
+            <MatchUpSubmittedView myMatchup={myMatchup} matchup={matchup} />
+          ) : myMatchup ? (
+            <MatchUpSelectionView myMatchup={myMatchup} matchup={matchup} />
           ) : (
-            <MatchUpRegistrationView weekNumber={weekNumber} />
+            <MatchUpRegistrationView matchup={matchup} />
           )}
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>

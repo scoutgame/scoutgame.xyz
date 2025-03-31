@@ -1,6 +1,8 @@
 import { Card, Typography } from '@mui/material';
+import type { MyMatchup } from '@packages/matchup/getMyMatchup';
+import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 
-export function MatchUpSelectionView({ weekNumber }: { weekNumber: number }) {
+export function MatchUpSelectionView({ myMatchup, matchup }: { myMatchup: MyMatchup; matchup: MatchupDetails }) {
   return (
     <>
       <Card

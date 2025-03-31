@@ -8,5 +8,7 @@
   "exports": {
     "./*": "./src/*.ts"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@packages/nextjs": "^0.0.0"
+  }
 }

@@ -1,10 +1,11 @@
 import { getCurrentWeek } from '@packages/dates/utils';
-import { getMatchupByScout } from '@packages/matchup/getMatchupByScout';
+import { getMyMatchup } from '@packages/matchup/getMyMatchup';
 import { getNextMatchup } from '@packages/matchup/getNextMatchup';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { DateTime } from 'luxon';
 
+// import { MatchupProvider } from 'components/matchup/hooks/useMatchup';
 import { MatchupLeaderboardPage } from 'components/matchup/MatchupLeaderboardPage';
 import { MatchupRegistrationPage } from 'components/matchup/registration/MatchupRegistrationPage';
 
@@ -12,16 +13,21 @@ export default async function MatchupPageWrapper() {
   const [, user] = await safeAwaitSSRData(getUserFromSession());
   const currentWeek = getCurrentWeek();
   const nextMatchup = await getNextMatchup();
-  const [myActiveMatchup, myNextMatchup] = await safeAwaitSSRData(
+  const [, [myActiveMatchup, myNextMatchup]] = await safeAwaitSSRData(
     Promise.all([
-      getMatchupByScout({ scoutId: user?.id, week: currentWeek }),
-      getMatchupByScout({ scoutId: user?.id, week: nextMatchup.week })
+      getMyMatchup({ scoutId: user?.id, week: currentWeek }),
+      getMyMatchup({ scoutId: user?.id, week: nextMatchup.week })
     ])
   );
 
-  // on Monday, the 'next matchup' is the current week
-  if (currentWeek === nextMatchup.week) {
-    return <MatchupRegistrationPage matchup={myNextMatchup} weekNumber={nextMatchup.weekNumber} />;
-  }
-  return <MatchupLeaderboardPage matchup={myActiveMatchup} weekNumber={currentWeek} />;
+  return (
+    // <MatchupProvider myNextMatchup={myNextMatchup}>
+    // on Monday, the 'next matchup' is the current week
+    currentWeek === nextMatchup.week ? (
+      <MatchupRegistrationPage myMatchup={myNextMatchup} matchup={nextMatchup} />
+    ) : (
+      <MatchupLeaderboardPage matchup={myActiveMatchup} weekNumber={currentWeek} />
+    )
+    // </MatchupProvider>
+  );
 }

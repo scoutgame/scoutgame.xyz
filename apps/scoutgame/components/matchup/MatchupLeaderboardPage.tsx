@@ -1,15 +1,9 @@
 import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/material';
-import { getNextMatchup } from '@packages/matchup/getNextMatchup';
+import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
 import Image from 'next/image';
 
-export function MatchupLeaderboardPage({
-  matchup,
-  weekNumber
-}: {
-  matchup?: { submittedAt?: Date };
-  weekNumber: number;
-}) {
+export function MatchupLeaderboardPage({ matchup }: { matchup: MatchupDetails }) {
   return (
     <PageContainer>
       <Grid container spacing={2}>

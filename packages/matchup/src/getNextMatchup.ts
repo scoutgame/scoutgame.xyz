@@ -3,8 +3,17 @@ import { getCurrentSeasonWeekNumber, dateTimeToWeek, getStartOfWeek } from '@pac
 import { DateTime } from 'luxon';
 
 import { MATCHUP_REGISTRATION_POOL, MATCHUP_OP_PRIZE } from './config';
+
+export type MatchupDetails = {
+  week: string;
+  weekNumber: number;
+  matchupPool: number;
+  opPrize: number;
+  startOfMatchup: Date;
+};
+
 // get the next week, unless it is monday. then use the current week
-export function getNextMatchupWeek(now = DateTime.utc()) {
+export function getNextMatchupWeek(now = DateTime.utc()): string {
   const dayOfWeek = now.weekday;
   if (dayOfWeek === 1) {
     return dateTimeToWeek(now);
@@ -16,7 +25,7 @@ function getStartOfMatchup(week: string) {
   return getStartOfWeek(week).plus({ days: 1 }).toJSDate();
 }
 
-export async function getNextMatchup(now = DateTime.utc()) {
+export async function getNextMatchup(now = DateTime.utc()): Promise<MatchupDetails> {
   const nextWeek = getNextMatchupWeek(now);
   const matchups = await prisma.scoutMatchup.count({
     where: {

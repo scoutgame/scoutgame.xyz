@@ -1,6 +1,11 @@
+import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
-export async function getMatchupByScout({ scoutId, week }: { scoutId: string; week: string }) {
+export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'> & {
+  selections: { developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> }[];
+};
+
+export async function getMyMatchup({ scoutId, week }: { scoutId: string; week: string }): Promise<MyMatchup | null> {
   const matchup = await prisma.scoutMatchup.findFirst({
     where: {
       scoutId,
@@ -11,7 +16,7 @@ export async function getMatchupByScout({ scoutId, week }: { scoutId: string; we
       totalScore: true,
       rank: true,
       selections: {
-        include: {
+        select: {
           developer: {
             select: {
               id: true,
