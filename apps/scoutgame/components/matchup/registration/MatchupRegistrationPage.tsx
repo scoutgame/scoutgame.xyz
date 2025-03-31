@@ -1,4 +1,5 @@
 import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/material';
+import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 import { getNextMatchup } from '@packages/matchup/getNextMatchup';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
 import { WeeklyMatchupCalloutTimer } from '@packages/scoutgame-ui/components/scout/components/WeeklyMatchupCalloutTimer';
@@ -54,11 +55,10 @@ async function WeeklyMatchupCallout() {
 
 export function MatchupRegistrationPage({
   myMatchup,
-  matchup,
-  weekNumber
+  matchup
 }: {
   myMatchup?: { submittedAt?: Date };
-  matchup: { weekNumber: number; matchupPool: number };
+  matchup: MatchupDetails;
 }) {
   return (
     <PageContainer>

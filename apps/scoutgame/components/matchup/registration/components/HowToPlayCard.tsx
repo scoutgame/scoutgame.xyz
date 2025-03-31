@@ -1,9 +1,6 @@
 'use client';
 
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import { Box, Card, CardContent, MobileStepper, Stack, Typography, Button } from '@mui/material';
-import { Carousel } from '@packages/scoutgame-ui/components/common/Carousel/Carousel';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
+import { Box, Card, CardContent, Stack, Typography, Button } from '@mui/material';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
@@ -53,41 +50,39 @@ const slides: SlideContent[] = [
     iconSrc: '/images/matchup/howtoplay_trophy.svg',
     text: (
       <>
-        <Typography variant='body2'>Here’s what’s up for grabs every week:</Typography>
-        <Typography variant='body2'>🏆 1st Place: 50% of the prize pool + 120</Typography>
-        <Typography variant='body2'>🥈 2nd Place: 30% of the prize pool + 50 </Typography>
-        <Typography variant='body2' gutterBottom>
-          🥉 3rd Place: 20% of the prize pool + 30
+        <Typography variant='body2' sx={{ mb: 1 }}>
+          Here’s what’s up for grabs every week:
         </Typography>
-        <Typography variant='body2' align='center' gutterBottom>
-          🎟️ 4th Place & 5th Place: FREE ticket for a future match
+        <Typography fontSize='.8rem'>
+          🏆 1st Place: 50% of the prize pool + 120{' '}
+          <Image width={10} height={10} src='/images/crypto/op.png' alt='' style={{ display: 'inline' }} />
         </Typography>
-        <Typography variant='body2' align='center'>
-          Think you’ve got what it takes to build a winning team? Let’s find out!
+        <Typography fontSize='.8rem'>
+          🥈 2nd Place: 30% of the prize pool + 50 <Image width={10} height={10} src='/images/crypto/op.png' alt='' />
         </Typography>
+        <Typography fontSize='.8rem' sx={{ mb: 1 }}>
+          🥉 3rd Place: 20% of the prize pool + 30 <Image width={10} height={10} src='/images/crypto/op.png' alt='' />
+        </Typography>
+        <Box mr={3}>
+          <Typography fontSize='.8rem' align='center' sx={{ mb: 1 }}>
+            🎟️ 4th Place & 5th Place:
+            <br />
+            FREE ticket for a future match
+          </Typography>
+          <Typography fontSize='.8rem' align='center'>
+            Think you’ve got what it takes to build a winning team? Let’s find out!
+          </Typography>
+        </Box>
       </>
     )
   }
 ];
 
 export function HowToPlayCard() {
-  const [activeStep, setActiveStep] = useState(0);
-
-  const handleStepChange = (step: number) => {
-    setActiveStep(step);
-  };
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
   return (
     <Card sx={{ mb: 2, overflow: 'visible', borderColor: 'secondary.main' }}>
       <CardContent>
-        <Typography variant='h5' color='secondary' fontWeight={600} sx={{ mb: 2 }}>
+        <Typography variant='h5' color='secondary' fontWeight={600} sx={{ mb: 2, ml: 2, pl: '42px' }}>
           Play Weekly Match Up!
         </Typography>
 
@@ -96,11 +91,6 @@ export function HowToPlayCard() {
             align: 'center',
             slidesToScroll: 1
           }}
-          // sx={{
-          //   mb: 0,
-          //   px: 2,
-          //   py: 3
-          // }}
           slides={slides.map((slide) => (
             <SlideContent key={slide.subtitle} {...slide} />
           ))}

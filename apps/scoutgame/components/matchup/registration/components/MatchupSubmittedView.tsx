@@ -12,7 +12,7 @@ export function MatchUpSubmittedView({ myMatchup, matchup }: { myMatchup: MyMatc
         }}
       >
         <Typography variant='h4' color='secondary'>
-          Week {weekNumber} Match Up
+          {matchup.weekNumber} Match Up
         </Typography>
         <Typography variant='body1'>
           Choose your team and face-off with your fellow Scouts! Who will be this week's Champion Scout?
