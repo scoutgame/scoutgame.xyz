@@ -6,9 +6,9 @@ export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'
 };
 
 export async function getMyMatchup({ scoutId, week }: { scoutId: string; week: string }): Promise<MyMatchup | null> {
-  const matchup = await prisma.scoutMatchup.findFirst({
+  return prisma.scoutMatchup.findFirst({
     where: {
-      scoutId,
+      createdBy: scoutId,
       week
     },
     select: {
