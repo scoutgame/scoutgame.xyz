@@ -1,6 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { LoadingButton } from '@mui/lab';
 import {
   Button,
@@ -23,7 +24,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-export function RegistrationButton({ week }: Pick<MatchupDetails, 'week'>) {
+export function RegistrationButton({ registered, week }: { registered: boolean; week: string }) {
   const { user } = useUser();
   const trackEvent = useTrackEvent();
   const [authPopup, setAuthPopup] = useState<boolean>(false);
@@ -66,8 +67,14 @@ export function RegistrationButton({ week }: Pick<MatchupDetails, 'week'>) {
   }
   return (
     <>
-      <Button variant='contained' color='secondary' endIcon={<PointsIcon color='inherit' />} onClick={handleRegister}>
-        Register 50
+      <Button
+        disabled={registered}
+        variant='contained'
+        color='secondary'
+        endIcon={registered ? <CheckCircleIcon color='inherit' /> : <PointsIcon color='inherit' />}
+        onClick={handleRegister}
+      >
+        {registered ? 'Registered' : 'Register 50'}
       </Button>
       <Dialog open={isRegisterModalOpen} onClose={onClose} maxWidth='xs' fullWidth>
         <DialogTitle>Confirm Registration</DialogTitle>

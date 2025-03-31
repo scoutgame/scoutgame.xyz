@@ -32,6 +32,7 @@ export async function getNextMatchup(now = DateTime.utc()): Promise<MatchupDetai
       week: nextWeek
     }
   });
+  // console.log('matchups', matchups);
   const weekNumber = getCurrentSeasonWeekNumber(nextWeek);
   return {
     week: nextWeek,

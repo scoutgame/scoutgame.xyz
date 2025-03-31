@@ -2,6 +2,9 @@ import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'> & {
+  scout: {
+    displayName: string;
+  };
   selections: { developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> }[];
 };
 
@@ -12,6 +15,11 @@ export async function getMyMatchup({ scoutId, week }: { scoutId: string; week: s
       week
     },
     select: {
+      scout: {
+        select: {
+          displayName: true
+        }
+      },
       submittedAt: true,
       totalScore: true,
       rank: true,

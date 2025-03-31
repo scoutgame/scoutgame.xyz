@@ -1,26 +1,13 @@
-import { Card, Typography } from '@mui/material';
+import { Box, Card, Typography } from '@mui/material';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 
 export function MatchUpSubmittedView({ myMatchup, matchup }: { myMatchup: MyMatchup; matchup: MatchupDetails }) {
   return (
-    <>
-      <Card
-        sx={{
-          borderColor: 'secondary.main',
-          p: 2
-        }}
-      >
-        <Typography variant='h4' color='secondary'>
-          {matchup.weekNumber} Match Up
-        </Typography>
-        <Typography variant='body1'>
-          Choose your team and face-off with your fellow Scouts! Who will be this week's Champion Scout?
-        </Typography>
-      </Card>
+    <Box>
       <Typography variant='h5' color='secondary'>
         Submitted
       </Typography>
-    </>
+    </Box>
   );
 }

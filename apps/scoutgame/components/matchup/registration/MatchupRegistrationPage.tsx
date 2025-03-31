@@ -1,4 +1,5 @@
 import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/material';
+import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 import { getNextMatchup } from '@packages/matchup/getNextMatchup';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
@@ -9,6 +10,7 @@ import { HowToPlayCard } from './components/HowToPlayCard';
 import { MatchUpRegistrationView } from './components/MatchupRegistrationView';
 import { MatchUpSelectionView } from './components/MatchupSelectionView';
 import { MatchUpSubmittedView } from './components/MatchupSubmittedView';
+import { RegistrationHeader } from './components/RegistrationHeader';
 
 async function WeeklyMatchupCallout() {
   const { weekNumber, matchupPool, opPrize, startOfMatchup } = await getNextMatchup();
@@ -38,7 +40,7 @@ async function WeeklyMatchupCallout() {
                 🏆 Prize Pool:
               </Typography>{' '}
               <Typography component='span'>
-                {matchupPool ? `${matchupPool * 40} DEV` : ''}
+                {matchupPool ? `${matchupPool} DEV + ` : ''}
                 {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />
               </Typography>
             </Box>
@@ -53,21 +55,16 @@ async function WeeklyMatchupCallout() {
   );
 }
 
-export function MatchupRegistrationPage({
-  myMatchup,
-  matchup
-}: {
-  myMatchup?: { submittedAt?: Date };
-  matchup: MatchupDetails;
-}) {
+export function MatchupRegistrationPage({ myMatchup, matchup }: { myMatchup?: MyMatchup; matchup: MatchupDetails }) {
   return (
     <PageContainer>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
+          <RegistrationHeader matchup={matchup} registered={!!myMatchup} />
           {myMatchup?.submittedAt ? (
             <MatchUpSubmittedView myMatchup={myMatchup} matchup={matchup} />
           ) : myMatchup ? (
-            <MatchUpSelectionView myMatchup={myMatchup} matchup={matchup} />
+            <MatchUpSelectionView myMatchup={myMatchup} />
           ) : (
             <MatchUpRegistrationView matchup={matchup} />
           )}

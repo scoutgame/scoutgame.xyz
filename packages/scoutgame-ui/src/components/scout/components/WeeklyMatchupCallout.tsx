@@ -35,7 +35,7 @@ export async function WeeklyMatchupCallout() {
                 🏆 Prize Pool:
               </Typography>{' '}
               <Typography component='span'>
-                {matchupPool ? `${matchupPool * 40} DEV` : ''}
+                {matchupPool ? `${matchupPool} DEV + ` : ''}
                 {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />
               </Typography>
             </Box>
