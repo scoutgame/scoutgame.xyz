@@ -50,7 +50,7 @@ const slides: SlideContent[] = [
     iconSrc: '/images/matchup/howtoplay_trophy.svg',
     text: (
       <>
-        <Typography variant='body2' sx={{ mb: 1 }}>
+        <Typography variant='body2' sx={{ mb: 2 }}>
           Here’s what’s up for grabs every week:
         </Typography>
         <Typography fontSize='.8rem'>
@@ -64,7 +64,7 @@ const slides: SlideContent[] = [
           🥉 3rd Place: 20% of the prize pool + 30 <Image width={10} height={10} src='/images/crypto/op.png' alt='' />
         </Typography>
         <Box mr={3}>
-          <Typography fontSize='.8rem' align='center' sx={{ mb: 1 }}>
+          <Typography fontSize='.8rem' align='center' sx={{ mb: 2 }}>
             🎟️ 4th Place & 5th Place:
             <br />
             FREE ticket for a future match

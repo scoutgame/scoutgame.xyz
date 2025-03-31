@@ -1,11 +1,18 @@
+import { log } from '@charmverse/core/log';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
+import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { WeeklyMatchupCalloutTimer } from '@packages/scoutgame-ui/components/scout/components/WeeklyMatchupCalloutTimer';
 import Image from 'next/image';
+import { useAction } from 'next-safe-action/hooks';
+import { toast } from 'sonner';
+
+import { RegistrationButton } from './RegistrationButton';
 
 export function MatchUpRegistrationView({
-  matchup: { weekNumber, matchupPool, opPrize, startOfMatchup }
+  matchup: { week, weekNumber, matchupPool, opPrize, startOfMatchup }
 }: {
   matchup: MatchupDetails;
 }) {
@@ -26,9 +33,7 @@ export function MatchUpRegistrationView({
               Week {weekNumber} Match Up!
             </Typography>
             <Box>
-              <Button variant='contained' color='secondary' endIcon={<PointsIcon color='inherit' />}>
-                Register 50
-              </Button>
+              <RegistrationButton week={week} />
             </Box>
             <WeeklyMatchupCalloutTimer upcomingTime={startOfMatchup} />
           </Stack>

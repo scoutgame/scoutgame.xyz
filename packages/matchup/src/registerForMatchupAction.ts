@@ -1,4 +1,6 @@
-import { authActionClient } from '@charmverse/nextjs/actions/actionClient';
+'use server';
+
+import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import * as yup from 'yup';
 
 import { registerForMatchup, isValidRegistrationWeek } from './registerForMatchup';
@@ -12,7 +14,7 @@ const registerForMatchupSchema = yup.object({
 
 export const registerForMatchupAction = authActionClient
   .schema(registerForMatchupSchema)
-  .action(async ({ week }, { ctx }) => {
-    const result = await registerForMatchup(ctx.session.scoutId, week);
+  .action(async ({ parsedInput, ctx }) => {
+    const result = await registerForMatchup(ctx.session.scoutId, parsedInput.week);
     return result;
   });

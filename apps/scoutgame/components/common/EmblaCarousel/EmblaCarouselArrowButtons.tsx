@@ -51,9 +51,9 @@ export function PrevButton(props: PropType) {
   const { ...restProps } = props;
 
   return (
-    <Button size='small' variant='text' color='secondary' {...restProps}>
+    <Button size='small' variant='text' color='secondary' sx={{ pr: 2 }} {...restProps}>
       <KeyboardArrowLeft />
-      Back
+      back
     </Button>
   );
 }
@@ -62,8 +62,8 @@ export function NextButton(props: PropType) {
   const { ...restProps } = props;
 
   return (
-    <Button size='small' variant='text' color='secondary' {...restProps}>
-      Next
+    <Button size='small' variant='text' color='secondary' sx={{ pl: 2 }} {...restProps}>
+      next
       <KeyboardArrowRight />
     </Button>
   );

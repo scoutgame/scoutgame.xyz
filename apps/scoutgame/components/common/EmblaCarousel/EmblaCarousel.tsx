@@ -1,8 +1,8 @@
 import { Box, Stack, Typography, Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import type { EmblaOptionsType } from 'embla-carousel';
 import useEmblaCarousel from 'embla-carousel-react';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useState } from 'react';
 
 import { PrevButton, NextButton, usePrevNextButtons } from './EmblaCarouselArrowButtons';
 import { DotButton, useDotButton } from './EmblaCarouselDotButton';
@@ -12,6 +12,31 @@ type PropType = {
   options?: EmblaOptionsType;
 };
 
+const Embla = styled('div')`
+  max-width: 48rem;
+  margin: auto;
+  --slide-height: 19rem;
+  --slide-spacing: 1rem;
+  --slide-size: 100%;
+`;
+
+const EmblaViewport = styled('div')`
+  overflow: hidden;
+`;
+
+const EmblaContainer = styled('div')`
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-left: calc(var(--slide-spacing) * -1);
+`;
+
+const EmblaSlide = styled('div')`
+  transform: translate3d(0, 0, 0);
+  flex: 0 0 var(--slide-size);
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+`;
+
 export function EmblaCarousel({ slides, options }: PropType) {
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
 
@@ -20,21 +45,21 @@ export function EmblaCarousel({ slides, options }: PropType) {
   const { prevBtnDisabled, nextBtnDisabled, onPrevButtonClick, onNextButtonClick } = usePrevNextButtons(emblaApi);
 
   return (
-    <section className='embla'>
-      <div className='embla__viewport' ref={emblaRef}>
-        <div className='embla__container'>
+    <Embla>
+      <EmblaViewport ref={emblaRef}>
+        <EmblaContainer>
           {slides.map((slide, index) => (
             // eslint-disable-next-line react/no-array-index-key
-            <div className='embla__slide' key={index}>
-              {slide}
-            </div>
+            <EmblaSlide key={index}>{slide}</EmblaSlide>
           ))}
-        </div>
-      </div>
+        </EmblaContainer>
+      </EmblaViewport>
 
-      <Stack direction='row' width='100%'>
-        <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-        <Stack direction='row' flexGrow={1} justifyContent='center'>
+      <Stack direction='row' alignItems='center' justifyContent='center'>
+        <div>
+          <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
+        </div>
+        <Stack direction='row' justifyContent='center'>
           {scrollSnaps.map((_, index) => (
             <DotButton
               // eslint-disable-next-line react/no-array-index-key
@@ -44,8 +69,10 @@ export function EmblaCarousel({ slides, options }: PropType) {
             />
           ))}
         </Stack>
-        <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+        <div>
+          <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+        </div>
       </Stack>
-    </section>
+    </Embla>
   );
 }

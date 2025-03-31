@@ -9,7 +9,7 @@ export type MatchupDetails = {
   weekNumber: number;
   matchupPool: number;
   opPrize: number;
-  startOfMatchup: Date;
+  startOfMatchup: number;
 };
 
 // get the next week, unless it is monday. then use the current week

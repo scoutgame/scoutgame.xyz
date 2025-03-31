@@ -20,7 +20,7 @@ const pointsSrc = {
   default: '/images/icons/binoculars.svg'
 } as const;
 
-export function PointsIcon({ size = 20, color }: { size?: number; color?: 'orange' | 'green' | 'blue' }) {
+export function PointsIcon({ size = 20, color }: { size?: number; color?: 'orange' | 'green' | 'blue' | 'inherit' }) {
   const src = (color && pointsSrc[color]) || pointsSrc.default;
   return <Image width={size} height={size} src={src} alt='' style={{ fill: 'red !important' }} />;
 }

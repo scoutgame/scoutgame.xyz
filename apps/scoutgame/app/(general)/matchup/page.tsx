@@ -26,7 +26,7 @@ export default async function MatchupPageWrapper() {
     currentWeek === nextMatchup.week ? (
       <MatchupRegistrationPage myMatchup={myNextMatchup} matchup={nextMatchup} />
     ) : (
-      <MatchupLeaderboardPage matchup={myActiveMatchup} weekNumber={currentWeek} />
+      <MatchupLeaderboardPage matchup={myActiveMatchup} />
     )
     // </MatchupProvider>
   );
