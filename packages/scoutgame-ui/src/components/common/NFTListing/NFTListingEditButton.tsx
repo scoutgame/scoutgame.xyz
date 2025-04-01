@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Button, Stack, Typography } from '@mui/material';
+import { Alert, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
@@ -86,31 +86,43 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
 
   return (
     <>
-      <Stack direction='row' pt={1} pb={{ xs: 1, md: 0 }} px={1} alignItems='center' justifyContent='space-between'>
+      <Stack
+        direction='row'
+        pt={1}
+        pb={{ xs: 1, md: 0 }}
+        px={1}
+        gap={1}
+        alignItems='center'
+        justifyContent='space-between'
+      >
         <Button variant='text' fullWidth>
           <Typography color='secondary'>{listingPrice} &nbsp;</Typography>
           {isOnchain ? 'DEV' : <Image src='/images/crypto/usdc.png' alt='usdc' width={18} height={18} />}
         </Button>
+        <Tooltip title='Delist your nft listing'>
+          <div>
+            <Button
+              variant='outlined'
+              color='error'
+              sx={{
+                width: 'fit-content',
+                minWidth: 16,
+                px: 0.75
+              }}
+              onClick={() => setIsConfirmModalOpen(true)}
+              disabled={isCancelling || !address || !walletClient}
+            >
+              <SettingsBackupRestoreIcon color='error' sx={{ mr: 0.5, fontSize: '16px' }} />
+            </Button>
+          </div>
+        </Tooltip>
       </Stack>
-      <Button
-        sx={{ mt: 0.5 }}
-        variant='outlined'
-        color='error'
-        fullWidth
-        onClick={() => setIsConfirmModalOpen(true)}
-        disabled={isCancelling || !address || !walletClient}
-      >
-        <DeleteOutlineOutlinedIcon color='error' sx={{ mr: 0.5, fontSize: '16px' }} />
-        <Typography color='error' variant='body2'>
-          Delete
-        </Typography>
-      </Button>
-      <Dialog title='Delete Listing' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
-        <Typography>Are you sure you want to delete this listing? This action cannot be undone.</Typography>
+      <Dialog title='Delist your nft listing' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
+        <Typography>Are you sure you want to delist this listing? This action cannot be undone.</Typography>
         {!isOwner && (
           <Alert sx={{ mt: 1 }} severity='warning'>
-            You are not the owner of this listing. Only the owner can delete the listing. Please switch to the owner's
-            wallet to delete it. <br />
+            You are not the owner of this nft listing. Only the owner can delist the listing. Please switch to the
+            owner's wallet to delist it. <br />
             Owner address: {fancyTrim(ownerAddress, 10)}
           </Alert>
         )}
@@ -123,8 +135,14 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
           >
             Cancel
           </Button>
-          <LoadingButton variant='contained' loading={isCancelling || !isOwner} color='error' onClick={onDeleteListing}>
-            Delete
+          <LoadingButton
+            variant='contained'
+            loading={isCancelling}
+            disabled={!isOwner}
+            color='error'
+            onClick={onDeleteListing}
+          >
+            Delist
           </LoadingButton>
         </Stack>
       </Dialog>
