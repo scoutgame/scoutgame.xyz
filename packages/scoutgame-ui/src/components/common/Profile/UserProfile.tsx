@@ -19,7 +19,6 @@ export type UserProfileData = Pick<Scout, 'id' | 'path'> & {
   githubLogin?: string;
   farcasterName?: string | null;
   talentProfile?: TalentProfile | null;
-  hasMoxieProfile?: boolean;
 };
 
 type UserProfileProps = {
@@ -78,12 +77,7 @@ export function UserProfile({
             }}
           >
             <Typography variant={isDesktop ? 'h5' : 'h6'}>{displayName}</Typography>
-            <ProfileLinks
-              farcasterName={farcasterName}
-              githubLogin={githubLogin}
-              talentProfile={user.talentProfile}
-              hasMoxieProfile={user.hasMoxieProfile}
-            />
+            <ProfileLinks farcasterName={farcasterName} githubLogin={githubLogin} talentProfile={user.talentProfile} />
             {!isDesktop && !hideShare ? <ShareProfile userPath={user.path} /> : null}
           </Stack>
           {isDesktop && !hideShare ? <ShareProfile userPath={user.path} /> : null}

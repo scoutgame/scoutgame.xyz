@@ -19,19 +19,12 @@ export async function recordNftPurchaseQuests(scoutId: string, skipMixpanel: boo
       builderNftId: true,
       builderNft: {
         select: {
-          nftType: true,
-          builder: {
-            select: {
-              hasMoxieProfile: true
-            }
-          }
+          nftType: true
         }
       },
       tokensPurchased: true
     }
   });
-
-  const hasMoxieProfile = scoutNftPurchaseEvents.some((event) => event.builderNft.builder.hasMoxieProfile);
 
   const starterPackCardPurchases = scoutNftPurchaseEvents.filter(
     (event) => event.builderNft.nftType === 'starter_pack'
@@ -67,11 +60,6 @@ export async function recordNftPurchaseQuests(scoutId: string, skipMixpanel: boo
   if (uniqueCardPurchases >= 5) {
     questTypes.push('scout-5-builders');
   }
-
-  // If the scout purchased a card of a moxie builder, mark the moxie quest as complete
-  // if (hasMoxieProfile) {
-  //   questTypes.push('scout-moxie-builder');
-  // }
 
   if (questTypes.length) {
     await completeQuests(scoutId, questTypes, skipMixpanel);

@@ -14,7 +14,6 @@ import { EditableName } from './EditableName';
 
 type UserProfileData = SessionUser & {
   githubLogin?: string;
-  hasMoxieProfile?: boolean;
   talentProfile?: TalentProfile;
 };
 
@@ -74,7 +73,6 @@ export function EditableUserProfile({
           farcasterName={user.farcasterName}
           githubLogin={user.githubLogin}
           talentProfile={user.talentProfile}
-          hasMoxieProfile={user.hasMoxieProfile}
           userPath={user.path}
           hideShareProfile={hideShareProfile}
         />
