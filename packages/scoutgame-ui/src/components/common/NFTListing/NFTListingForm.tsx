@@ -3,10 +3,9 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, FormLabel, Stack, Typography } from '@mui/material';
-import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
+import { Alert, Box, FormLabel, Stack } from '@mui/material';
 import { recordNftListingAction } from '@packages/scoutgame/nftListing/recordNftListingAction';
-import { devTokenDecimals, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import { recordSeaportListing } from '@packages/scoutgame/seaport/recordSeaportListing';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { fancyTrim } from '@packages/utils/strings';
@@ -14,7 +13,6 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { formatUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { useGetDeveloperToken } from '../../../hooks/api/builders';
@@ -40,11 +38,6 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
   const { data: developerToken, isLoading } = useGetDeveloperToken({ builderId: builder.id, nftType: 'default' });
   const { switchChainAsync } = useSwitchChain();
   const [isListing, setIsListing] = useState(false);
-
-  const currentPriceInUsdc = isOnchain
-    ? // TODO: Dev tokens prices will be dynamic in the future post listing so remove the hard coded 0.02
-      (Number(builder.price || 0) / 10 ** devTokenDecimals) * 0.02
-    : formatUnits(builder.price || BigInt(0), builderTokenDecimals);
 
   const onListing = useCallback(async () => {
     setIsListing(true);
@@ -128,10 +121,6 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         ) : (
           <Image src='/images/no_nft_person.png' alt='no nft image available' width={200} height={200} />
         )}
-      </Box>
-      <Box display='flex' alignItems='center' gap={0.5}>
-        <Typography variant='h6'>Current price: {currentPriceInUsdc}</Typography>
-        <Image src='/images/crypto/usdc.png' alt='usdc' width={20} height={20} />
       </Box>
       {!isLoading && !isOwner && (
         <Alert severity='warning'>

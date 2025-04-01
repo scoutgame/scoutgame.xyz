@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { transferSingleAbi } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
@@ -17,7 +17,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
-import { formatUnits, parseEventLogs } from 'viem';
+import { parseEventLogs } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { ERC20ApproveButton } from '../NFTPurchaseDialog/components/ERC20Approve';
@@ -51,11 +51,6 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
     owner: address as Address,
     spender: seaportContractAddress
   });
-
-  const currentPriceInUsdc = isOnchain
-    ? // TODO: Dev tokens prices will be dynamic in the future post listing so remove the hard coded 0.02
-      (Number(builder.price || 0) / 10 ** devTokenDecimals) * 0.02
-    : formatUnits(builder.price || BigInt(0), builderTokenDecimals);
 
   const approvalRequired = typeof allowance === 'bigint' && allowance < BigInt(listing.price);
 
@@ -156,10 +151,6 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
         ) : (
           <Image src='/images/no_nft_person.png' alt='no nft image available' width={200} height={200} />
         )}
-      </Box>
-      <Box display='flex' alignItems='center' gap={0.5}>
-        <Typography variant='h6'>Current price: {currentPriceInUsdc}</Typography>
-        <Image src='/images/crypto/usdc.png' alt='usdc' width={20} height={20} />
       </Box>
       {approvalRequired ? (
         <ERC20ApproveButton
