@@ -2,6 +2,7 @@
 
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import type { Hash } from 'viem';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
@@ -29,7 +30,7 @@ export const purchaseNftListingAction = authActionClient
     const result = await purchaseNftListing({
       listingId,
       buyerWallet,
-      txHash,
+      txHash: txHash as Hash,
       scoutId
     });
 

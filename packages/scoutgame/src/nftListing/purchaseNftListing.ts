@@ -14,8 +14,8 @@ export async function purchaseNftListing({
   scoutId
 }: {
   listingId: string;
-  buyerWallet: string;
-  txHash: string;
+  buyerWallet: Address;
+  txHash: Hash;
   scoutId: string;
 }) {
   const buyerWallet = _buyerWallet.toLowerCase();
@@ -62,7 +62,7 @@ export async function purchaseNftListing({
 
   // Get the block number from the tx hash
   const publicClient = getPublicClient(scoutProtocolChain.id);
-  const receipt = await publicClient.getTransactionReceipt({ hash: txHash as Hash });
+  const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
   const blockNumber = receipt.blockNumber;
 
   const transferEvents = await getTransferSingleWithBatchMerged({
