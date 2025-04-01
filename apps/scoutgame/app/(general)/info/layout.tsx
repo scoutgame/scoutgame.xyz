@@ -1,7 +1,8 @@
 import { Container, Stack } from '@mui/material';
-import { InfoPageFooter } from '@packages/scoutgame-ui/components/info/components/InfoPageFooter';
-import { SidebarInfo } from '@packages/scoutgame-ui/components/info/components/SidebarInfo';
 import type { ReactNode } from 'react';
+
+import { InfoPageFooter } from 'components/info/components/InfoPageFooter';
+import { SidebarInfo } from 'components/info/components/SidebarInfo';
 
 export default async function Layout({
   children

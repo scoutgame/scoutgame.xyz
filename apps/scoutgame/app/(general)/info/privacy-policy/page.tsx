@@ -1,5 +1,6 @@
-import { PrivacyPolicyPage } from '@packages/scoutgame-ui/components/info/privacy-policy/PrivacyPolicyPage';
 import type { Metadata } from 'next';
+
+import { PrivacyPolicyPage } from 'components/info/privacy-policy/PrivacyPolicyPage';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy'

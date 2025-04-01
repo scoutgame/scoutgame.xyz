@@ -1,5 +1,6 @@
-import { GoodDollarPage } from '@packages/scoutgame-ui/components/info/partner-rewards/GoodDollarPage';
 import type { Metadata } from 'next';
+
+import { GoodDollarPage } from 'components/info/partner-rewards/GoodDollarPage';
 
 export const metadata: Metadata = {
   title: 'GoodDollar Partner Rewards'

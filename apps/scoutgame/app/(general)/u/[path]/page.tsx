@@ -1,7 +1,6 @@
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
-import { PublicProfilePage } from '@packages/scoutgame-ui/components/[path]/PublicProfilePage';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import { getUserByPathCached } from '@packages/users/getUserByPathCached';
 import type { Metadata, ResolvingMetadata } from 'next';
@@ -9,6 +8,7 @@ import type { ResolvedOpenGraph } from 'next/dist/lib/metadata/types/opengraph-t
 import { notFound } from 'next/navigation';
 
 import { FarcasterMetadata } from 'components/[path]/FarcasterMetadata';
+import { PublicProfilePage } from 'components/[path]/PublicProfilePage';
 
 export const dynamic = 'force-dynamic';
 

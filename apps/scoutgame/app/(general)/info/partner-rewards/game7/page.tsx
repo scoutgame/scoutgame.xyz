@@ -1,5 +1,6 @@
-import { Game7Page } from '@packages/scoutgame-ui/components/info/partner-rewards/Game7Page';
 import type { Metadata } from 'next';
+
+import { Game7Page } from 'components/info/partner-rewards/Game7Page';
 
 export const metadata: Metadata = {
   title: 'Game7 Partner Rewards'

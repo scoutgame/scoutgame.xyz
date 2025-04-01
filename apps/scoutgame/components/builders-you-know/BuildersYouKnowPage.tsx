@@ -2,9 +2,10 @@ import { Box, Button, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { LoadingGallery } from '@packages/scoutgame-ui/components/common/Loading/LoadingGallery';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
-import { BuildersGalleryContainer } from '@packages/scoutgame-ui/components/scout/components/BuildersGalleryContainer';
 import Link from 'next/link';
 import { Suspense } from 'react';
+
+import { BuildersGalleryContainer } from 'components/scout/components/BuildersGalleryContainer';
 
 export function BuildersYouKnowPage({ builders }: { builders: BuilderInfo[] }) {
   return (

@@ -1,7 +1,8 @@
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { getProjectByPath } from '@packages/scoutgame/projects/getProjectByPath';
-import { EditProjectPage } from '@packages/scoutgame-ui/components/projects/[path]/edit/EditProjectPage';
 import { notFound, redirect } from 'next/navigation';
+
+import { EditProjectPage } from 'components/projects/[path]/edit/EditProjectPage';
 
 export default async function Page({ params }: { params: { path: string } }) {
   const project = await getProjectByPath(params.path);

@@ -4,10 +4,11 @@ import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
-import type { ProfileTab } from '@packages/scoutgame-ui/components/profile/ProfilePage';
-import { ProfilePage } from '@packages/scoutgame-ui/components/profile/ProfilePage';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+
+import type { ProfileTab } from 'components/profile/ProfilePage';
+import { ProfilePage } from 'components/profile/ProfilePage';
 
 export const dynamic = 'force-dynamic';
 

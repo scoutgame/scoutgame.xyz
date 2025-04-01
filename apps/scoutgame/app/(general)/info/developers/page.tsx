@@ -1,10 +1,11 @@
-import { BuildersPage } from '@packages/scoutgame-ui/components/info/pages/BuildersPage';
 import type { Metadata } from 'next';
+
+import { DevelopersPage } from 'components/info/pages/DevelopersPage';
 
 export const metadata: Metadata = {
   title: 'Developers'
 };
 
 export default async function Developers() {
-  return <BuildersPage />;
+  return <DevelopersPage />;
 }

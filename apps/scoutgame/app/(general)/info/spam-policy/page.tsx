@@ -1,5 +1,6 @@
-import { SpamPolicyPage } from '@packages/scoutgame-ui/components/info/pages/SpamPolicyPage';
 import type { Metadata } from 'next';
+
+import { SpamPolicyPage } from 'components/info/pages/SpamPolicyPage';
 
 export const metadata: Metadata = {
   title: 'Spam Policy'
