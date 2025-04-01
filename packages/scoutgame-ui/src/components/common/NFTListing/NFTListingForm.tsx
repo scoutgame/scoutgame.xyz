@@ -47,12 +47,12 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
     : formatUnits(builder.price || BigInt(0), builderTokenDecimals);
 
   const onListing = useCallback(async () => {
-    try {
-      setIsListing(true);
-      if (!developerToken) {
-        throw new Error('No developer token found');
-      }
+    setIsListing(true);
+    if (!developerToken) {
+      return;
+    }
 
+    try {
       if (!sellerWallet) {
         throw new Error('No wallet address found');
       }
@@ -96,11 +96,11 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         message = 'User rejected the transaction';
       }
       toast.error(message);
-      log.error('Error listing NFT', { error });
+      log.error('Error listing NFT', { error, developerNftId: developerToken.builderNftId });
     } finally {
       setIsListing(false);
     }
-  }, [builder, priceInUsdc, sellerWallet, isExecuting, chainId, switchChainAsync]);
+  }, [builder, priceInUsdc, sellerWallet, isExecuting, chainId, switchChainAsync, developerToken]);
 
   const isOwner = developerToken && developerToken.scoutAddress.toLowerCase() === sellerWallet?.toLowerCase();
   const isDisabled = !sellerWallet || !developerToken || !isOwner;

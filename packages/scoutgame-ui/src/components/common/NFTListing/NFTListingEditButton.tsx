@@ -28,12 +28,12 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
 
   const { executeAsync: cancelNftListing } = useAction(cancelNftListingAction, {
     onSuccess: () => {
-      toast.success('Listing cancelled successfully');
+      toast.success('Nft delisted successfully');
       setIsConfirmModalOpen(false);
     },
     onError: (error) => {
-      toast.error('Failed to cancel listing');
-      log.error('Failed to cancel listing', { error });
+      toast.error('Failed to delist nft listing');
+      log.error('Failed to delist nft listing', { error, listingId: listing.id });
     }
   });
 
@@ -77,8 +77,12 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
 
       await cancelNftListing({ listingId: listing.id });
     } catch (error) {
-      toast.error('Failed to delete listing');
-      log.error('Failed to delete listing', { error });
+      let message = error instanceof Error ? error.message : 'Failed to delist nft listing';
+      if (message.includes('denied')) {
+        message = 'User rejected the transaction';
+      }
+      toast.error(message);
+      log.error('Failed to delist nft listing', { error, listingId: listing.id });
     } finally {
       setIsCancelling(false);
     }

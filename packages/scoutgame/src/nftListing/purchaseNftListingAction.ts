@@ -1,5 +1,6 @@
 'use server';
 
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
@@ -32,6 +33,11 @@ export const purchaseNftListingAction = authActionClient
       txHash,
       txLogIndex,
       scoutId
+    });
+
+    trackUserAction('purchase_nft_listing', {
+      developerNftId: listingId,
+      userId: scoutId
     });
 
     return {
