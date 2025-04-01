@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import type { IMailgunClient } from 'mailgun.js/Interfaces';
+import type { Interfaces } from 'mailgun.js/definitions';
 
 import mailgunClient, { DOMAIN } from './mailgunClient';
 
@@ -155,7 +155,7 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
 }: {
   senderAddress: string;
   userId: string;
-  client?: IMailgunClient | null;
+  client?: Interfaces.IMailgunClient | null;
   templateVariables: Variables[T];
   notificationType: T;
   // send email even if user has opted out of emails
