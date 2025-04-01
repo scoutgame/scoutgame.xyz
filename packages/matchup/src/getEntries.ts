@@ -1,9 +1,12 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
 export type ScoutMatchupEntry = {
-  id: string;
-  displayName: string;
-  avatar: string;
+  scout: {
+    id: string;
+    displayName: string;
+    avatar: string;
+    path: string;
+  };
 };
 
 export async function getEntriesDuringRegistration(week: string): Promise<ScoutMatchupEntry[]> {
@@ -19,14 +22,18 @@ export async function getEntriesDuringRegistration(week: string): Promise<ScoutM
         select: {
           id: true,
           displayName: true,
-          avatar: true
+          avatar: true,
+          path: true
         }
       }
     }
   });
   return entries.map((entry) => ({
-    id: entry.scout.id,
-    displayName: entry.scout.displayName,
-    avatar: entry.scout.avatar || ''
+    scout: {
+      id: entry.scout.id,
+      displayName: entry.scout.displayName,
+      avatar: entry.scout.avatar || '',
+      path: entry.scout.path
+    }
   }));
 }

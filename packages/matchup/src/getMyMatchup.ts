@@ -14,10 +14,13 @@ export async function getMyMatchup({
   week,
   currentWeek = getCurrentWeek()
 }: {
-  scoutId: string;
+  scoutId?: string;
   week: string;
   currentWeek?: string;
 }): Promise<MyMatchup | null> {
+  if (!scoutId) {
+    return null;
+  }
   const matchup = await prisma.scoutMatchup.findFirst({
     where: {
       createdBy: scoutId

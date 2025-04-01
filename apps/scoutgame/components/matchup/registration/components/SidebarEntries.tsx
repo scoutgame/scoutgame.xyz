@@ -1,8 +1,7 @@
 import { QuestionMark } from '@mui/icons-material';
 import {
-  Avatar,
   Box,
-  Card,
+  Paper,
   Stack,
   Table,
   TableBody,
@@ -14,26 +13,30 @@ import {
 } from '@mui/material';
 import { getEntriesDuringRegistration, type ScoutMatchupEntry } from '@packages/matchup/getEntries';
 import { getNextMatchupWeek } from '@packages/matchup/getNextMatchup';
+import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
+
+const selections = Array.from({ length: 5 });
 
 export async function SidebarEntries({ week, weekNumber }: { week: string; weekNumber: number }) {
   const entries = await getEntriesDuringRegistration(week);
 
   return (
     <>
-      <Typography color='text.secondary' align='center'>
+      <Typography color='text.secondary' align='center' gutterBottom>
         Week {weekNumber} Teams
       </Typography>
 
-      <TableContainer>
+      <TableContainer className='contained-table'>
         <Table size='small'>
           <TableHead>
             <TableRow>
-              <TableCell>Rank</TableCell>
-              <TableCell>Scout</TableCell>
-              <TableCell>Team</TableCell>
-              <TableCell align='right'>Gems</TableCell>
+              <TableCell>RANK</TableCell>
+              <TableCell>SCOUT</TableCell>
+              <TableCell>TEAM</TableCell>
+              <TableCell align='right'>GEMS</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -47,28 +50,28 @@ export async function SidebarEntries({ week, weekNumber }: { week: string; weekN
               </TableRow>
             ) : (
               entries.map((entry, index) => (
-                <TableRow key={entry.id}>
+                <TableRow key={entry.scout.id}>
                   <TableCell>&ndash;</TableCell>
-                  <TableCell>
-                    <Stack direction='row' spacing={1} alignItems='center'>
+                  <TableCell align='center'>
+                    <Link href={`/u/${entry.scout.path}`} target='_blank'>
                       <Avatar
-                        src={entry.avatar || '/images/default-avatar.png'}
-                        alt={entry.displayName}
-                        sx={{ width: 24, height: 24 }}
+                        src={entry.scout.avatar}
+                        name={entry.scout.displayName}
+                        size='small'
+                        sx={{ display: 'inline-flex' }}
                       />
-                      <Typography variant='body2'>{entry.displayName}</Typography>
-                    </Stack>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <Stack direction='row' spacing={0.5}>
-                      {Array.from({ length: 5 }).map((_, i) => (
+                      {selections.map((_, i) => (
                         <Box
-                          key={`${entry.id}`}
+                          key={entry.scout.id}
                           sx={{
-                            width: 16,
-                            height: 16,
-                            bgcolor: 'action.disabled',
-                            borderRadius: 1,
+                            width: 30,
+                            height: 30,
+                            borderRadius: '1px',
+                            border: '1px solid var(--mui-palette-action-disabled)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center'

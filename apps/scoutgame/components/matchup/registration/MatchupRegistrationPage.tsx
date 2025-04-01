@@ -14,7 +14,13 @@ import { MatchUpSubmittedView } from './components/MatchupSubmittedView';
 import { RegistrationHeader } from './components/RegistrationHeader';
 import { SidebarEntries } from './components/SidebarEntries';
 
-export function MatchupRegistrationPage({ myMatchup, matchup }: { myMatchup?: MyMatchup; matchup: MatchupDetails }) {
+export function MatchupRegistrationPage({
+  myMatchup,
+  matchup
+}: {
+  myMatchup?: MyMatchup | null;
+  matchup: MatchupDetails;
+}) {
   return (
     <PageContainer>
       <Grid container spacing={2}>

@@ -15,21 +15,17 @@ export default async function MatchupPageWrapper() {
   const nextMatchup = await getNextMatchup();
   const [, data] = await safeAwaitSSRData(
     Promise.all([
-      user ? getMyMatchup({ scoutId: user.id, week: currentWeek }) : null,
-      user ? getMyMatchup({ scoutId: user.id, week: nextMatchup.week }) : null
+      getMyMatchup({ scoutId: user?.id, week: currentWeek }),
+      getMyMatchup({ scoutId: user?.id, week: nextMatchup.week })
     ])
   );
 
   const [myActiveMatchup, myNextMatchup] = data ?? [];
 
-  return (
-    // <MatchupProvider myNextMatchup={myNextMatchup}>
-    // on Monday, the 'next matchup' is the current week
-    currentWeek === nextMatchup.week ? (
-      <MatchupRegistrationPage myMatchup={myNextMatchup} matchup={nextMatchup} />
-    ) : (
-      <MatchupLeaderboardPage matchup={myActiveMatchup} />
-    )
-    // </MatchupProvider>
-  );
+  // on Monday, the 'next matchup' is the current week
+  if (currentWeek === nextMatchup.week) {
+    return <MatchupRegistrationPage myMatchup={myNextMatchup} matchup={nextMatchup} />;
+  }
+
+  return <MatchupLeaderboardPage matchup={myActiveMatchup} />;
 }

@@ -22,17 +22,19 @@ export function RegistrationHeader({
       }}
     >
       <Box display='flex' alignItems='center' justifyContent='space-between'>
-        <Box mr={{ xs: 0, md: 2 }}>
-          <Image src='/images/matchup/vs_icon.svg' alt='' width={80} height={80} />
-        </Box>
-        <Stack gap={1}>
-          <Typography variant='h4' color='secondary' fontWeight={400}>
-            Week {weekNumber} Match Up!
-          </Typography>
-          <Box>
-            <RegistrationButton registered={registered} week={week} />
+        <Stack direction='row' alignItems='center' gap={2}>
+          <Box mr={{ xs: 0, md: 2 }}>
+            <Image src='/images/matchup/vs_icon.svg' alt='' width={80} height={80} />
           </Box>
-          <WeeklyMatchupCalloutTimer upcomingTime={startOfMatchup} />
+          <Stack gap={1}>
+            <Typography variant='h4' color='secondary' fontWeight={400}>
+              Week {weekNumber} Match Up!
+            </Typography>
+            <Box>
+              <RegistrationButton registered={registered} week={week} />
+            </Box>
+            <WeeklyMatchupCalloutTimer upcomingTime={startOfMatchup} />
+          </Stack>
         </Stack>
         <Box display='flex' flexDirection='column' alignItems='center' gap={1}>
           <Typography variant='h6' color='secondary'>

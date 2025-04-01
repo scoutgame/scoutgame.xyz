@@ -133,3 +133,25 @@ body [data-sonner-toaster][data-theme=dark] {
   }
 }
 
+// Special styles
+.MuiTableContainer-root.contained-table {
+  
+  overflow: hidden;
+
+  .MuiTableCell-root {
+    background-color: var(--mui-palette-background-paper);
+    border-bottom: 2px solid var(--mui-palette-background-default);
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  // we have to apply rounded corners to the TD instead of TR tags
+  .MuiTableCell-root:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+  
+  .MuiTableCell-root:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+}
