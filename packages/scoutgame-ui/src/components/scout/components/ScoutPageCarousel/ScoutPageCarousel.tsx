@@ -10,7 +10,7 @@ const CAROUSEL_CONFIG = {
     color: 'green.main'
   },
   default: {
-    title: "Full Power with Standard Cards!",
+    title: 'Full Power with Standard Cards!',
     color: 'secondary'
   }
 };
