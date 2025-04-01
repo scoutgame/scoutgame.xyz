@@ -13,8 +13,7 @@ const purchaseNftListingSchema = yup.object({
     .string()
     .required('Buyer wallet address is required')
     .test('is-valid-address', 'Invalid wallet address', (value) => isAddress(value)),
-  txHash: yup.string().required('Transaction hash is required'),
-  txLogIndex: yup.number().required('Transaction log index is required')
+  txHash: yup.string().required('Transaction hash is required')
 });
 
 export const purchaseNftListingAction = authActionClient
@@ -25,13 +24,12 @@ export const purchaseNftListingAction = authActionClient
   .action(async ({ parsedInput, ctx }) => {
     const scoutId = ctx.session.scoutId;
 
-    const { listingId, buyerWallet, txHash, txLogIndex } = parsedInput;
+    const { listingId, buyerWallet, txHash } = parsedInput;
 
     const result = await purchaseNftListing({
       listingId,
       buyerWallet,
       txHash,
-      txLogIndex,
       scoutId
     });
 
@@ -42,7 +40,6 @@ export const purchaseNftListingAction = authActionClient
 
     return {
       success: true,
-      listing: result.listing,
-      purchaseEvent: result.purchaseEvent
+      listing: result.listing
     };
   });

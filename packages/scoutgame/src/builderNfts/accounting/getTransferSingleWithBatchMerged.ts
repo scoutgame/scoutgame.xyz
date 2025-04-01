@@ -2,7 +2,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
 import { parseEventLogs } from 'viem';
 
-import { nftChain, getBuilderNftContractAddress } from '../constants';
+import { nftChain } from '../constants';
 
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
@@ -82,7 +82,12 @@ export async function getTransferSingleWithBatchMerged({
   let singleEvents: TransferSingleEvent[] = [];
   let batchEvents: TransferBatchEvent[] = [];
 
-  for (let currentBlock = Number(startBlock); currentBlock < Number(latestBlock); currentBlock += MAX_BLOCK_RANGE) {
+  // Ensure we process at least one block when fromBlock equals toBlock
+  const blocksToProcess = Number(latestBlock) - Number(startBlock) + 1;
+  const iterations = Math.max(1, Math.ceil(blocksToProcess / MAX_BLOCK_RANGE));
+
+  for (let i = 0; i < iterations; i++) {
+    const currentBlock = Number(startBlock) + i * MAX_BLOCK_RANGE;
     const endBlock = Math.min(currentBlock + MAX_BLOCK_RANGE - 1, Number(latestBlock));
 
     const [pageSingleEvents, pageBatchEvents] = await Promise.all([

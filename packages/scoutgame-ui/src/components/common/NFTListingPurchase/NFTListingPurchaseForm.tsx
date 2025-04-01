@@ -3,7 +3,6 @@ import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { transferSingleAbi } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { purchaseNftListingAction } from '@packages/scoutgame/nftListing/purchaseNftListingAction';
@@ -17,7 +16,6 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
-import { parseEventLogs } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { ERC20ApproveButton } from '../NFTPurchaseDialog/components/ERC20Approve';
@@ -97,24 +95,11 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
         hash: preparedTx.hash as `0x${string}`
       });
 
-      const receiptLogs = parseEventLogs({
-        abi: [transferSingleAbi],
-        logs: receipt.logs,
-        eventName: ['TransferSingle']
-      });
-
-      const txLogIndex =
-        receiptLogs.find(
-          (receiptLog) =>
-            receiptLog.args.operator.toLowerCase() === _address || receiptLog.args.to.toLowerCase() === _address
-        )?.logIndex ?? 0;
-
       // Second step: Call the server action to update the database
       await purchaseNftListing({
         listingId: listing.id,
         buyerWallet: address as `0x${string}`,
-        txHash: receipt.transactionHash,
-        txLogIndex
+        txHash: receipt.transactionHash
       });
     } catch (error) {
       let message = error instanceof Error ? error.message : 'Error purchasing listed NFT';
