@@ -1,6 +1,7 @@
 import { getSession } from '@packages/nextjs/session/getSession';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
-import { ScoutPage } from '@packages/scoutgame-ui/components/scout/ScoutPage';
+
+import { ScoutPage } from 'components/scout/ScoutPage';
 
 export default async function Scout({
   searchParams

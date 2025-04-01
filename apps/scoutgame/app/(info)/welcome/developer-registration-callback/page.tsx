@@ -1,5 +1,6 @@
-import { BuilderSetupPage } from '@packages/scoutgame-ui/components/builder-registration-callback/BuilderSetupPage';
 import type { Metadata } from 'next';
+
+import { DeveloperSetupPage } from 'components/developer-registration-callback/DeveloperSetupPage';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,5 +16,5 @@ export default async function BuilderSetup({
 }: {
   searchParams: { state: string; code: string; error: string; 'profile-redirect': string };
 }) {
-  return <BuilderSetupPage state={state} code={code} githubRedirectError={error} />;
+  return <DeveloperSetupPage state={state} code={code} githubRedirectError={error} />;
 }

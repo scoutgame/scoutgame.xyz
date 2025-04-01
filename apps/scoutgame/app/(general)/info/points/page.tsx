@@ -1,5 +1,6 @@
-import { PointsPage } from '@packages/scoutgame-ui/components/info/pages/PointsPage';
 import type { Metadata } from 'next';
+
+import { PointsPage } from 'components/info/pages/PointsPage';
 
 export const metadata: Metadata = {
   title: 'Points'

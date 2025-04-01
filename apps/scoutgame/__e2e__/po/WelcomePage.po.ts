@@ -12,7 +12,7 @@ export class WelcomePage extends GeneralPageLayout {
     public submitExtraDetails = page.locator('data-test=submit-extra-details'),
     public continueButton = page.locator('data-test=continue-button'),
     public howItWorksPage = page.locator('data-test=how-it-works-page'),
-    public buildersPage = page.locator('data-test=welcome-builders-page'),
+    public developersPage = page.locator('data-test=welcome-builders-page'),
     public spamPolicyPage = page.locator('data-test=spam-policy-page')
   ) {
     super(page);

@@ -1,5 +1,6 @@
 'use server';
 
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
@@ -20,6 +21,11 @@ export const cancelNftListingAction = authActionClient
     const { listingId } = parsedInput;
 
     await cancelNftListing({ listingId, scoutId });
+
+    trackUserAction('delist_nft', {
+      developerNftId: listingId,
+      userId: scoutId
+    });
 
     revalidatePath(`/profile`);
 

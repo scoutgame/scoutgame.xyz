@@ -19,8 +19,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.json"
+    "src/**/*.tsx"
   ],
   "exclude": [
     "jest.config.ts",

@@ -1,7 +1,8 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
-import { WeeklyMatchupCalloutTimer } from '@packages/scoutgame-ui/components/scout/components/WeeklyMatchupCalloutTimer';
 import Image from 'next/image';
+
+import { WeeklyMatchupCalloutTimer } from 'components/scout/components/WeeklyMatchupCalloutTimer';
 
 import { RegistrationButton } from './RegistrationButton';
 

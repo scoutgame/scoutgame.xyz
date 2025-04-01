@@ -1,5 +1,6 @@
-import { OctantPage } from '@packages/scoutgame-ui/components/info/partner-rewards/OctantPage';
 import type { Metadata } from 'next';
+
+import { OctantPage } from 'components/info/partner-rewards/OctantPage';
 
 export const metadata: Metadata = {
   title: 'Octant Partner Rewards'

@@ -1,5 +1,6 @@
-import { WeeklyRewardsPage } from '@packages/scoutgame-ui/components/info/pages/WeeklyRewardsPage';
 import type { Metadata } from 'next';
+
+import { WeeklyRewardsPage } from 'components/info/pages/WeeklyRewardsPage';
 
 export const metadata: Metadata = {
   title: 'WeeklyRewards'

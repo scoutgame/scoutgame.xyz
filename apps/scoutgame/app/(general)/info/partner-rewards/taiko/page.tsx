@@ -4,10 +4,11 @@ import { Button, Container, Stack, Typography } from '@mui/material';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
-import { SidebarInfoDrawer } from '@packages/scoutgame-ui/components/info/components/SidebarInfoDrawer';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { SidebarInfoDrawer } from 'components/info/components/SidebarInfoDrawer';
 
 export const metadata: Metadata = {
   title: 'Taiko Partner Rewards'

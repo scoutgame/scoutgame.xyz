@@ -1,17 +1,21 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import type { Address, Hash } from 'viem';
 import { isAddress } from 'viem';
+
+import { getTransferSingleWithBatchMerged } from '../builderNfts/accounting/getTransferSingleWithBatchMerged';
+import { recordNftTransfer } from '../builderNfts/recordNftTransfer';
+import { scoutProtocolChain } from '../protocol/constants';
 
 export async function purchaseNftListing({
   listingId,
   buyerWallet: _buyerWallet,
   txHash,
-  txLogIndex,
   scoutId
 }: {
   listingId: string;
-  buyerWallet: string;
-  txHash: string;
-  txLogIndex: number;
+  buyerWallet: Address;
+  txHash: Hash;
   scoutId: string;
 }) {
   const buyerWallet = _buyerWallet.toLowerCase();
@@ -36,7 +40,18 @@ export async function purchaseNftListing({
       amount: true,
       completedAt: true,
       sellerWallet: true,
-      order: true
+      seller: {
+        select: {
+          scoutId: true
+        }
+      },
+      order: true,
+      builderNft: {
+        select: {
+          contractAddress: true,
+          tokenId: true
+        }
+      }
     }
   });
 
@@ -45,69 +60,46 @@ export async function purchaseNftListing({
     throw new Error('This listing is no longer active');
   }
 
-  const { updatedListing, createdNftPurchaseEvent } = await prisma.$transaction(async (tx) => {
-    // Mark the listing as completed
-    const _updatedListing = await tx.developerNftListing.update({
-      where: { id: listingId },
-      data: {
-        completedAt: new Date(),
-        buyerWallet,
-        hash: txHash
-      }
-    });
+  // Get the block number from the tx hash
+  const publicClient = getPublicClient(scoutProtocolChain.id);
+  const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
+  const blockNumber = receipt.blockNumber;
 
-    // Create NFT purchase event record
-    const _createdNftPurchaseEvent = await tx.nFTPurchaseEvent.create({
-      data: {
-        builderNftId: listing.builderNftId,
-        tokensPurchased: listing.amount,
-        pointsValue: 0,
-        txHash,
-        txLogIndex,
-        walletAddress: buyerWallet,
-        senderWalletAddress: listing.sellerWallet
-      }
-    });
+  const transferEvents = await getTransferSingleWithBatchMerged({
+    fromBlock: blockNumber,
+    toBlock: blockNumber,
+    contractAddress: listing.builderNft.contractAddress as Address,
+    chainId: scoutProtocolChain.id
+  });
 
-    // Update NFT ownership - subtract from seller
-    await tx.scoutNft.update({
-      where: {
-        builderNftId_walletAddress: {
-          builderNftId: listing.builderNftId,
-          walletAddress: listing.sellerWallet
-        }
-      },
-      data: {
-        balance: {
-          decrement: listing.amount
-        }
-      }
-    });
+  const transferEvent = transferEvents.find(
+    (event) =>
+      event.args.from.toLowerCase() === listing.sellerWallet.toLowerCase() &&
+      event.args.to.toLowerCase() === buyerWallet &&
+      event.args.id === BigInt(listing.builderNft.tokenId)
+  );
 
-    await tx.scoutNft.upsert({
-      where: {
-        builderNftId_walletAddress: {
-          builderNftId: listing.builderNftId,
-          walletAddress: buyerWallet
-        }
-      },
-      update: {
-        balance: {
-          increment: listing.amount
-        }
-      },
-      create: {
-        builderNftId: listing.builderNftId,
-        walletAddress: buyerWallet,
-        balance: listing.amount
-      }
-    });
+  if (!transferEvent) {
+    throw new Error('NFT transfer event not found');
+  }
 
-    return { updatedListing: _updatedListing, createdNftPurchaseEvent: _createdNftPurchaseEvent };
+  const updatedListing = await prisma.developerNftListing.update({
+    where: { id: listingId },
+    data: {
+      completedAt: new Date(),
+      buyerWallet,
+      hash: txHash
+    }
+  });
+
+  const contractAddress = listing.builderNft.contractAddress as Address;
+
+  await recordNftTransfer({
+    contractAddress,
+    transferSingleEvent: transferEvent
   });
 
   return {
-    listing: updatedListing,
-    purchaseEvent: createdNftPurchaseEvent
+    listing: updatedListing
   };
 }
