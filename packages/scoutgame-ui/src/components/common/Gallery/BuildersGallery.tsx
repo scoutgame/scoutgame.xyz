@@ -26,7 +26,7 @@ export function BuildersGallery({
         columns={{ xs: 2, sm: 3, md: builders.length < columns ? builders.length : columns }}
       >
         {builders.map((builder) => (
-          <Grid key={builder.path} size={{ xs: 1 }} display='flex' justifyContent='center' alignItems='center'>
+          <Grid key={builder.path} size={{ xs: 1 }} display='flex' justifyContent='center' alignItems='flex-start'>
             <Box>
               {builder.nftsSoldToScoutInView !== undefined && builder.nftsSoldToScoutInView > 0 && (
                 <Typography color='green.main' textAlign='right' mb={1}>

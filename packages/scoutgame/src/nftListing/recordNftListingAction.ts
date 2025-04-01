@@ -1,6 +1,7 @@
 'use server';
 
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
@@ -32,6 +33,12 @@ export const recordNftListingAction = authActionClient
       order: order as OrderWithCounter,
       scoutId,
       sellerWallet
+    });
+
+    trackUserAction('list_nft', {
+      developerNftId: builderNftId,
+      price,
+      userId: scoutId
     });
 
     revalidatePath(`/profile`);
