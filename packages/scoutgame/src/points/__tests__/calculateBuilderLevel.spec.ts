@@ -87,8 +87,6 @@ function validateCalculations({
   });
 }
 
-const mockContractAddress = randomWalletAddress();
-
 /**
  * We use this offset for the deterministic random generator to keep deterministic data but avoid collisions between tests
  */
