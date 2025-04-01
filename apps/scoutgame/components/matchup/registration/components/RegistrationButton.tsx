@@ -17,12 +17,13 @@ import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
-import { SignInModalMessage } from '@packages/scoutgame-ui/components/common/ScoutButton/SignInModalMessage';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
+import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
 
 export function RegistrationButton({ registered, week }: { registered: boolean; week: string }) {
   const { user } = useUser();
