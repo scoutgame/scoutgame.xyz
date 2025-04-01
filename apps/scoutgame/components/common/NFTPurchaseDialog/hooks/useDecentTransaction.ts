@@ -82,7 +82,6 @@ export function useDecentTransaction({
   useScoutToken
 }: DecentTransactionProps) {
   const isStarterContract = isStarterNftContract(contractAddress);
-
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,

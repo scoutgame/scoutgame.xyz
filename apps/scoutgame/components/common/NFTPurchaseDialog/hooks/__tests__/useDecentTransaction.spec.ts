@@ -22,21 +22,17 @@ const mockOptimismUsdcContractAddress = '0x0b2c639c533813f4aa9d7837caf62653d097f
 // Scout protocol info
 const mockScoutTokenAddress = '0xa5a71c88478894077650f27dd7b14fdabe3a03f0';
 const mockScoutProtocolChainId = baseSepolia.id;
-const mockScoutProtocolBuilderNftContractAddress = '0x5ba1cf70b94592e21ff1b68b3c0e68c0c2279865';
 
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   optimismUsdcContractAddress: mockOptimismUsdcContractAddress,
   builderNftChain: mockBuilderNftChain,
   getDecentApiKey: jest.fn().mockImplementation(() => '123'),
-  getBuilderNftContractAddress: jest.fn().mockImplementation(() => mockBuilderContractAddress),
   isStarterNftContract,
-  isPreseason01Contract
+  isPreseason01Contract,
+  nftChain: mockBuilderNftChain
 }));
 
 jest.unstable_mockModule('@packages/scoutgame/protocol/constants', () => ({
-  scoutProtocolBuilderNftContractAddress: jest
-    .fn()
-    .mockImplementation(() => mockScoutProtocolBuilderNftContractAddress),
   scoutProtocolChainId: mockScoutProtocolChainId,
   scoutTokenErc20ContractAddress: jest.fn().mockImplementation(() => mockScoutTokenAddress)
 }));
@@ -157,7 +153,7 @@ describe('useDecentTransaction', () => {
               isNative: false,
               tokenAddress
             },
-            signature: 'function mint(address account, uint256 tokenId, uint256 amount, string scout)',
+            signature: 'function mint(address account, uint256 tokenId, uint256 amount, string memory scoutId)',
             args: [
               address,
               `${testInput.builderTokenId.toString()}n`,
