@@ -25,6 +25,7 @@ export const decileTable = [
   { cutoff: 0, level: 1 }
 ];
 
+// To determine the level of a developer, we look at their average points earned per week over the course of the season
 export async function calculateBuilderLevels({
   season = getCurrentSeasonStart(),
   week
