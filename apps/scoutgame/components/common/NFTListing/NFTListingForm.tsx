@@ -3,10 +3,9 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, FormLabel, Stack, Typography } from '@mui/material';
-import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
+import { Alert, Box, FormLabel, Stack } from '@mui/material';
 import { recordNftListingAction } from '@packages/scoutgame/nftListing/recordNftListingAction';
-import { devTokenDecimals, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import { recordSeaportListing } from '@packages/scoutgame/seaport/recordSeaportListing';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import { fancyTrim } from '@packages/utils/strings';
@@ -14,7 +13,6 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { formatUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { useGetDeveloperToken } from '../../../hooks/api/builders';
@@ -41,18 +39,13 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
   const { switchChainAsync } = useSwitchChain();
   const [isListing, setIsListing] = useState(false);
 
-  const currentPriceInUsdc = isOnchain
-    ? // TODO: Dev tokens prices will be dynamic in the future post listing so remove the hard coded 0.02
-      (Number(builder.price || 0) / 10 ** devTokenDecimals) * 0.02
-    : formatUnits(builder.price || BigInt(0), builderTokenDecimals);
-
   const onListing = useCallback(async () => {
-    try {
-      setIsListing(true);
-      if (!developerToken) {
-        throw new Error('No developer token found');
-      }
+    setIsListing(true);
+    if (!developerToken) {
+      return;
+    }
 
+    try {
       if (!sellerWallet) {
         throw new Error('No wallet address found');
       }
@@ -96,11 +89,11 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         message = 'User rejected the transaction';
       }
       toast.error(message);
-      log.error('Error listing NFT', { error });
+      log.error('Error listing NFT', { error, developerNftId: developerToken.builderNftId });
     } finally {
       setIsListing(false);
     }
-  }, [builder, priceInUsdc, sellerWallet, isExecuting, chainId, switchChainAsync]);
+  }, [builder, priceInUsdc, sellerWallet, isExecuting, chainId, switchChainAsync, developerToken]);
 
   const isOwner = developerToken && developerToken.scoutAddress.toLowerCase() === sellerWallet?.toLowerCase();
   const isDisabled = !sellerWallet || !developerToken || !isOwner;
@@ -128,10 +121,6 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         ) : (
           <Image src='/images/no_nft_person.png' alt='no nft image available' width={200} height={200} />
         )}
-      </Box>
-      <Box display='flex' alignItems='center' gap={0.5}>
-        <Typography variant='h6'>Current price: {currentPriceInUsdc}</Typography>
-        <Image src='/images/crypto/usdc.png' alt='usdc' width={20} height={20} />
       </Box>
       {!isLoading && !isOwner && (
         <Alert severity='warning'>

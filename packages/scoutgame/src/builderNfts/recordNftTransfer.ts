@@ -122,6 +122,28 @@ export async function recordNftTransfer({
       contractAddress,
       nftType: 'default'
     });
+
+    try {
+      const scoutWallet = await prisma.scoutWallet.findUniqueOrThrow({
+        where: {
+          address: fromWallet
+        },
+        select: {
+          scoutId: true
+        }
+      });
+
+      await refreshNftPurchaseStats({
+        scoutId: scoutWallet.scoutId,
+        builderId: matchingNft.builderId,
+        season: matchingNft.season
+      });
+    } catch (error) {
+      log.error('Error finding scout wallet', {
+        error,
+        scoutWalletAddress: fromWallet
+      });
+    }
   }
 
   if (toWallet) {
@@ -151,7 +173,7 @@ export async function recordNftTransfer({
     } catch (error) {
       log.error('Error finding scout wallet', {
         error,
-        scoutWalletAddress: transferSingleEvent.args.to.toLowerCase()
+        scoutWalletAddress: toWallet
       });
     }
   }

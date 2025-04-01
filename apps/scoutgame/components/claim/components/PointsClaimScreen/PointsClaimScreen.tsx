@@ -155,8 +155,6 @@ function PointsClaimScreenComponent({
 
   const connectedAddress = walletClient?.account.address.toLowerCase();
 
-  const platform = getPlatform();
-
   return (
     <Paper
       sx={{
@@ -188,7 +186,7 @@ function PointsClaimScreenComponent({
           {totalUnclaimedPoints ? (
             <>
               <Typography variant='h5' textAlign='center'>
-                You have earned Scout {isOnchainPlatform() ? 'Tokens' : 'Points'}!
+                You have earned {isOnchainPlatform() ? 'DEV Tokens' : 'Scout Points'}!
               </Typography>
 
               <Stack
@@ -209,7 +207,10 @@ function PointsClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {(totalUnclaimedPoints / 10 ** devTokenDecimals).toLocaleString()}
+                      {(!isOnchainPlatform()
+                        ? totalUnclaimedPoints
+                        : totalUnclaimedPoints / 10 ** devTokenDecimals
+                      ).toLocaleString()}
                     </Typography>
                     <Image
                       width={35}
@@ -320,7 +321,9 @@ function PointsClaimScreenComponent({
             <Stack width='100%'>
               <PointsClaimSocialShare
                 isBuilder={repos.length > 0}
-                totalUnclaimedPoints={result.data.claimedPoints}
+                totalUnclaimedPoints={
+                  !isOnchainPlatform() ? result.data.claimedPoints : result.data.claimedPoints / 10 ** devTokenDecimals
+                }
                 builders={builders}
                 userPath={user.path}
                 week={result.data.week}

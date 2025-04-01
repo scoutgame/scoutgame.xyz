@@ -21,7 +21,9 @@ const whiteListedUserIds = [
   // Chris
   'b6cb2938-91dd-4274-8d85-aa2e00eb97e2',
   // Safwan
-  'f534b485-b7d5-47c3-92d8-02d107158558'
+  'f534b485-b7d5-47c3-92d8-02d107158558',
+  // test scout
+  'b5016a86-3a3e-4b0d-8f52-cf29599b9fc8'
 ];
 
 export function BuilderCard({

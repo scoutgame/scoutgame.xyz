@@ -105,6 +105,16 @@ export type MixpanelEventMap = {
   add_project_agent_address: AddProjectAgentAddressEvent;
   frame_added: FrameAddedEvent;
   frame_removed: FrameRemovedEvent;
+  delist_nft: BaseEvent & {
+    developerNftId: string;
+  };
+  list_nft: BaseEvent & {
+    developerNftId: string;
+    price: number;
+  };
+  purchase_nft_listing: BaseEvent & {
+    developerNftId: string;
+  };
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];
