@@ -25,6 +25,7 @@ export const decileTable = [
   { cutoff: 0, level: 1 }
 ];
 
+// To determine the level of a developer, we look at their average points earned per week over the course of the season
 export async function calculateBuilderLevels({
   season = getCurrentSeasonStart(),
   week
@@ -32,19 +33,6 @@ export async function calculateBuilderLevels({
   season?: ISOWeek;
   week?: ISOWeek;
 } = {}): Promise<BuilderAggregateScore[]> {
-  let weeksWindow = getAllISOWeeksFromSeasonStart({ season });
-
-  // for looking at historical data
-  if (week) {
-    weeksWindow = weeksWindow.filter((_week) => _week <= week);
-  }
-
-  // Filter out current week if season is the current season. We only want the historical data
-  if (season === getCurrentSeasonStart()) {
-    const currentWeek = getCurrentWeek();
-    weeksWindow = weeksWindow.filter((_week) => _week <= currentWeek);
-  }
-
   // Fetch all builders with their gem payouts
   const gemPayouts = await prisma.gemsPayoutEvent.findMany({
     where: {
@@ -83,6 +71,19 @@ export async function calculateBuilderLevels({
       }
     }
   });
+
+  let weeksWindow = getAllISOWeeksFromSeasonStart({ season });
+
+  // for looking at historical data, where the current week has been completed
+  if (week) {
+    weeksWindow = weeksWindow.filter((_week) => _week <= week);
+  }
+
+  // Filter out current week if season is the current season. We only want the historical data
+  if (season === getCurrentSeasonStart()) {
+    const currentWeek = getCurrentWeek();
+    weeksWindow = weeksWindow.filter((_week) => _week < currentWeek);
+  }
 
   const builderScores = gemPayouts.reduce(
     (acc, gemsPayout) => {
