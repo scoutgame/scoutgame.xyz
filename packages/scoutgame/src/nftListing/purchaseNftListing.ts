@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { Address } from 'viem';
+import type { Address, Hash } from 'viem';
 import { isAddress } from 'viem';
 
 import { getTransferSingleWithBatchMerged } from '../builderNfts/accounting/getTransferSingleWithBatchMerged';
@@ -62,7 +62,7 @@ export async function purchaseNftListing({
 
   // Get the block number from the tx hash
   const publicClient = getPublicClient(scoutProtocolChain.id);
-  const receipt = await publicClient.getTransactionReceipt({ hash: txHash as Address });
+  const receipt = await publicClient.getTransactionReceipt({ hash: txHash as Hash });
   const blockNumber = receipt.blockNumber;
 
   const transferEvents = await getTransferSingleWithBatchMerged({
