@@ -34,7 +34,7 @@ export async function calculateBuilderLevels({
 } = {}): Promise<BuilderAggregateScore[]> {
   let weeksWindow = getAllISOWeeksFromSeasonStart({ season });
 
-  // for looking at historical data
+  // for looking at historical data, where the current week has been completed
   if (week) {
     weeksWindow = weeksWindow.filter((_week) => _week <= week);
   }
@@ -42,7 +42,7 @@ export async function calculateBuilderLevels({
   // Filter out current week if season is the current season. We only want the historical data
   if (season === getCurrentSeasonStart()) {
     const currentWeek = getCurrentWeek();
-    weeksWindow = weeksWindow.filter((_week) => _week <= currentWeek);
+    weeksWindow = weeksWindow.filter((_week) => _week < currentWeek);
   }
 
   // Fetch all builders with their gem payouts

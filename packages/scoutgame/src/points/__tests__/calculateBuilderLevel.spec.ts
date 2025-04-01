@@ -63,7 +63,8 @@ function validateCalculations({
     averageGemsPerWeek: 2400,
     centile: 80,
     level: 9,
-    firstActiveWeek: '2025-W03'
+    firstActiveWeek: '2025-W03',
+    activeWeeks: 2
   });
   expect(builder87).toMatchObject<BuilderAggregateScore>({
     builderId: expect.any(String),
@@ -71,7 +72,8 @@ function validateCalculations({
     averageGemsPerWeek: 1600,
     centile: 57,
     level: 6,
-    firstActiveWeek: '2025-W04'
+    firstActiveWeek: '2025-W04',
+    activeWeeks: 1
   });
 
   expect(builder156).toMatchObject<BuilderAggregateScore>({
@@ -80,7 +82,8 @@ function validateCalculations({
     averageGemsPerWeek: 666,
     centile: 23,
     level: 3,
-    firstActiveWeek: '2025-W02'
+    firstActiveWeek: '2025-W02',
+    activeWeeks: 3
   });
 }
 
@@ -91,7 +94,7 @@ const mockContractAddress = randomWalletAddress();
  */
 const indexOffset = 12344;
 
-describe.skip('calculateBuilderLevels', () => {
+describe('calculateBuilderLevels', () => {
   beforeEach(() => {
     jest.useFakeTimers();
 
