@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { ImGift as QuestsIcon } from 'react-icons/im';
 import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
 
-import { useGetQuests } from '../../../hooks/api/quests';
+import { useGetQuests } from '../../../../../../apps/scoutgame/hooks/api/quests';
 import { useGetClaimablePoints } from '../../../hooks/api/session';
 import { useIsFarcasterFrame } from '../../../hooks/useIsFarcasterFrame';
 import { useUser } from '../../../providers/UserProvider';

@@ -1,3 +1,3 @@
-import Quests from '@packages/scoutgame-ui/components/quests/QuestsPageContainer';
+import Quests from 'components/quests/QuestsPageContainer';
 
 export default Quests;

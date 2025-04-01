@@ -1,4 +1,4 @@
-import { CeloLandingPage } from '@packages/scoutgame-ui/components/partners/CeloLandingPage';
+import { CeloLandingPage } from 'components/partners/CeloLandingPage';
 
 export default function LandingPage() {
   return <CeloLandingPage />;

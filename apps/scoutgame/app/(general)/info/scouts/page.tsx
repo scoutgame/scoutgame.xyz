@@ -1,5 +1,6 @@
-import { ScoutsPage } from '@packages/scoutgame-ui/components/info/pages/ScoutsPage';
 import type { Metadata } from 'next';
+
+import { ScoutsPage } from 'components/info/pages/ScoutsPage';
 
 export const metadata: Metadata = {
   title: 'Scouts'

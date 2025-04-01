@@ -1,5 +1,6 @@
-import { BuilderNftsPage } from '@packages/scoutgame-ui/components/info/pages/BuilderNftsPage';
 import type { Metadata } from 'next';
+
+import { BuilderNftsPage } from 'components/info/pages/BuilderNftsPage';
 
 export const metadata: Metadata = {
   title: 'Builder NFTs'

@@ -1,7 +1,8 @@
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { ClaimPage } from '@packages/scoutgame-ui/components/claim/ClaimPage';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import type { Metadata } from 'next';
+
+import { ClaimPage } from 'components/claim/ClaimPage';
 
 export const dynamic = 'force-dynamic';
 

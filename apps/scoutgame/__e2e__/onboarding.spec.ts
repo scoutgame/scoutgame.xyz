@@ -85,7 +85,7 @@ test.describe('Onboarding flow', () => {
 
   test('Save new user preferences and get through onboarding as a builder', async ({
     welcomePage,
-    buildersPage,
+    developersPage,
     page,
     utils
   }) => {
@@ -116,7 +116,7 @@ test.describe('Onboarding flow', () => {
 
     await welcomePage.submitExtraDetails.click();
 
-    await expect(welcomePage.buildersPage).toBeVisible();
+    await expect(welcomePage.developersPage).toBeVisible();
 
     // mock step 2
     await prisma.scout.update({
@@ -136,7 +136,7 @@ test.describe('Onboarding flow', () => {
 
     await Promise.all([page.waitForURL('**/developers', { waitUntil: 'load' }), welcomePage.continueButton.click()]);
 
-    await expect(buildersPage.container).toBeVisible();
+    await expect(developersPage.container).toBeVisible();
   });
 
   test('Require terms of service agreement for user that was onboarded somehow', async ({

@@ -1,6 +1,7 @@
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
-import { CreateProjectPage } from '@packages/scoutgame-ui/components/projects/create/CreateProjectPage';
 import { redirect } from 'next/navigation';
+
+import { CreateProjectPage } from 'components/projects/create/CreateProjectPage';
 
 export default async function Page() {
   const user = await getUserFromSession();

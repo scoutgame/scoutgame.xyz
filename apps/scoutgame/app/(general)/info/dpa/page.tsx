@@ -1,5 +1,6 @@
-import { DataProcessingPage } from '@packages/scoutgame-ui/components/info/dpa/DataProcessingPage';
 import type { Metadata } from 'next';
+
+import { DataProcessingPage } from 'components/info/dpa/DataProcessingPage';
 
 export const metadata: Metadata = {
   title: 'Data Processing Addendum'

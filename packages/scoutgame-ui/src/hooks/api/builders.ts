@@ -7,12 +7,6 @@ export function useRefreshShareImage() {
   return usePUT<{ builderId?: string }, void>('/api/builders/refresh-congrats');
 }
 
-export function useSearchBuilders(search: string) {
-  return useGETImmutable<BuilderSearchResult[]>(search ? '/api/builders/search' : null, {
-    search
-  });
-}
-
 export function useGetDeveloperToken({ builderId, nftType }: { builderId: string; nftType: BuilderNftType }) {
   return useGETImmutable<{
     tokenId: number;

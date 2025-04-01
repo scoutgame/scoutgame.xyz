@@ -1,9 +1,10 @@
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
-import { InfoPageFooter } from '@packages/scoutgame-ui/components/info/components/InfoPageFooter';
-import { InfoPageContent } from '@packages/scoutgame-ui/components/info/InfoPage';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { InfoPageFooter } from 'components/info/components/InfoPageFooter';
+import { InfoPageContent } from 'components/info/InfoPage';
 
 import { LoginButton } from './LoginButton';
 

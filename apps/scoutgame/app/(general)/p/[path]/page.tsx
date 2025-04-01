@@ -1,6 +1,7 @@
 import { getProjectByPath } from '@packages/scoutgame/projects/getProjectByPath';
-import { ProjectPage } from '@packages/scoutgame-ui/components/projects/[path]/ProjectPage';
 import { notFound } from 'next/navigation';
+
+import { ProjectPage } from 'components/projects/[path]/ProjectPage';
 
 export default async function Project({ params }: { params: { path: string } }) {
   const project = await getProjectByPath(params.path);

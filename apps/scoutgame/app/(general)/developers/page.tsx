@@ -1,8 +1,9 @@
 import { getCurrentWeek, validateISOWeek } from '@packages/dates/utils';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { BuildersPage } from '@packages/scoutgame-ui/components/builders/BuildersPage';
 import type { Metadata } from 'next';
+
+import { DevelopersPage } from 'components/developers/DevelopersPage';
 
 export const metadata: Metadata = {
   title: 'Developers'
@@ -20,7 +21,7 @@ export default async function Developers({
   const [, user] = await safeAwaitSSRData(getUserFromSession());
 
   return (
-    <BuildersPage
+    <DevelopersPage
       tab={tab}
       week={week && validateISOWeek(week) ? week : getCurrentWeek()}
       builderSort={builderSort}
