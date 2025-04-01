@@ -19,7 +19,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx", "../../apps/scoutgame/lib/actions/createUserClaimScreen.tsx", "../../apps/scoutgame/lib/actions/handleOnchainClaimAction.ts", "../../apps/scoutgame/lib/actions/revalidateClaimPointsAction.ts"],
+    "src/**/*.tsx"
+  ],
   "exclude": [
     "jest.config.ts",
     "jest.setup.ts"

@@ -4,8 +4,9 @@ import type { ScoutProjectMemberRole, OnchainAchievementTier } from '@charmverse
 import { Avatar, Stack, Typography } from '@mui/material';
 import type { ProjectTeamMember } from '@packages/scoutgame/projects/getProjectByPath';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
-import { useDeveloperInfoModal } from '@packages/scoutgame-ui/providers/DeveloperInfoModalProvider';
 import Link from 'next/link';
+
+import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
 
 import { ProjectRoleText } from '../../constants';
 

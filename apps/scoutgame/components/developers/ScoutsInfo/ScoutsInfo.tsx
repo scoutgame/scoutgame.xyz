@@ -3,11 +3,11 @@
 import { Button, Stack, Typography } from '@mui/material';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
-import { useGlobalModal } from '@packages/scoutgame-ui/providers/ModalProvider';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { useGlobalModal } from 'components/common/ModalProvider';
 import { InfoPageFooter } from 'components/info/components/InfoPageFooter';
 
 import { HowToPlaySection } from '../../partners/PartnerLandingPage';

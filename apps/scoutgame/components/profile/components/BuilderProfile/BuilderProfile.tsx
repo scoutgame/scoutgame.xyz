@@ -9,12 +9,13 @@ import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts'
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { appealUrl } from '@packages/scoutgame/constants';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
-import { ScoutsGallery } from '@packages/scoutgame-ui/components/common/Gallery/ScoutsGallery';
 import { JoinGithubButton } from '@packages/scoutgame-ui/components/common/JoinGithubButton';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import Link from 'next/link';
 import { Suspense } from 'react';
+
+import { ScoutsGallery } from 'components/common/Gallery/ScoutsGallery';
 
 import { BuilderActivitiesList } from './BuilderActivitiesList';
 import { BuilderStats } from './BuilderStats';

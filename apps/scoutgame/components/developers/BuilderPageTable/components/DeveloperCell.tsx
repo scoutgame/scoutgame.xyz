@@ -2,8 +2,9 @@
 
 import { Stack } from '@mui/material';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
-import { useDeveloperInfoModal } from '@packages/scoutgame-ui/providers/DeveloperInfoModalProvider';
 import Link from 'next/link';
+
+import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
 
 import { TableCellText } from './TableCellText';
 

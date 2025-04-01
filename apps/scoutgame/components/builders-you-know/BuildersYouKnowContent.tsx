@@ -2,9 +2,10 @@
 
 import { Button, Grid2, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import { BuildersGallery } from '@packages/scoutgame-ui/components/common/Gallery/BuildersGallery';
 import Link from 'next/link';
 import React from 'react';
+
+import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
 
 export function BuildersYouKnowContent({
   onClickContinue,

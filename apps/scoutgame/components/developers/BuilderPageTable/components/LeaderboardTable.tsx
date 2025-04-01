@@ -8,7 +8,8 @@ import type { ISOWeek } from '@packages/dates/config';
 import type { LeaderBoardRow } from '@packages/scoutgame/builders/getLeaderboard';
 import { getSXProps } from '@packages/scoutgame-ui/components/common/Hidden';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
-import { ScoutButton } from '@packages/scoutgame-ui/components/common/ScoutButton/ScoutButton';
+
+import { ScoutButton } from 'components/common/ScoutButton/ScoutButton';
 
 import { CommonTableRow } from './CommonTableRow';
 import { DeveloperCell } from './DeveloperCell';

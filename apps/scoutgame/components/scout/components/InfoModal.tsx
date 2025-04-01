@@ -3,9 +3,10 @@
 import InfoIcon from '@mui/icons-material/Info';
 import type { SxProps } from '@mui/material';
 import { IconButton, Stack, Typography } from '@mui/material';
-import { BuilderCardActivityTooltip } from '@packages/scoutgame-ui/components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardActivityTooltip';
 import { Dialog } from '@packages/scoutgame-ui/components/common/Dialog';
 import { useState } from 'react';
+
+import { BuilderCardActivityTooltip } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardActivityTooltip';
 
 function ScoutInfoContent() {
   return (

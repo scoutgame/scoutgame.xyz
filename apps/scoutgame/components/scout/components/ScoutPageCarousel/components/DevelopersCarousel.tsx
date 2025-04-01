@@ -1,8 +1,9 @@
 import { Stack, useTheme } from '@mui/material';
 import type { StarterCardDeveloper } from '@packages/scoutgame/builders/getStarterCardDevelopers';
-import { BuilderCard } from '@packages/scoutgame-ui/components/common/Card/BuilderCard/BuilderCard';
 import { Carousel } from '@packages/scoutgame-ui/components/common/Carousel/Carousel';
 import type { ReactNode } from 'react';
+
+import { BuilderCard } from 'components/common/Card/BuilderCard/BuilderCard';
 
 export function DevelopersCarousel({
   developers,

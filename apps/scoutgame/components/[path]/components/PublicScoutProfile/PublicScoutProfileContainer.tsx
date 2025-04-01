@@ -5,11 +5,11 @@ import { Box, Stack, Paper, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { BackButton } from '@packages/scoutgame-ui/components/common/Button/BackButton';
-import { BuildersGallery } from '@packages/scoutgame-ui/components/common/Gallery/BuildersGallery';
 import { UserProfile } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
+import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
 import { ProjectsTab } from 'components/projects/components/ProjectsTab';
 
 import { PublicScoutProfileStats } from './PublicScoutProfileStats';

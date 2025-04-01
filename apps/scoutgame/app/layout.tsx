@@ -4,6 +4,9 @@ import type { Metadata, Viewport } from 'next';
 import dynamic from 'next/dynamic';
 import type { ReactNode } from 'react';
 
+import { DeveloperInfoModalProvider } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
+import { ModalProvider } from 'components/common/ModalProvider';
+
 import '@packages/scoutgame-ui/theme/styles.scss';
 
 const ClientGlobals = dynamic(() => import('../components/common/ClientGlobals').then((comp) => comp.ClientGlobals), {
@@ -72,9 +75,13 @@ export default async function RootLayout({
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src='/__ENV.js' />
         <AppProviders user={user}>
-          <ClientGlobals userId={user?.id} />
-          {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
-          {children}
+          <ModalProvider>
+            <DeveloperInfoModalProvider>
+              <ClientGlobals userId={user?.id} />
+              {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
+              {children}
+            </DeveloperInfoModalProvider>
+          </ModalProvider>
         </AppProviders>
       </body>
     </html>

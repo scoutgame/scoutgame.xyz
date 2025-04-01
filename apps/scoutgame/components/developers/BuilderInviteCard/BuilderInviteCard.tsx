@@ -2,10 +2,11 @@
 
 import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
-import { useGlobalModal } from '@packages/scoutgame-ui/providers/ModalProvider';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+
+import { useGlobalModal } from 'components/common/ModalProvider';
 
 export function BuilderPageInviteCard({ isBuilder }: { isBuilder: boolean }) {
   const { openModal } = useGlobalModal();

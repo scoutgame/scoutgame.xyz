@@ -6,7 +6,8 @@ import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilder
 import { getScoutStats } from '@packages/scoutgame/scouts/getScoutStats';
 import { getUserSeasonStats } from '@packages/scoutgame/scouts/getUserSeasonStats';
 import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorSSRMessage';
-import { BuildersGallery } from '@packages/scoutgame-ui/components/common/Gallery/BuildersGallery';
+
+import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
 
 import { ScoutStats } from './ScoutStats';
 

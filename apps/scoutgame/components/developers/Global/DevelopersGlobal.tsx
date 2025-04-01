@@ -1,9 +1,10 @@
 'use client';
 
-import { useGlobalModal } from '@packages/scoutgame-ui/providers/ModalProvider';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+
+import { useGlobalModal } from 'components/common/ModalProvider';
 
 export function DevelopersGlobal() {
   const { user } = useUser();

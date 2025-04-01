@@ -5,11 +5,12 @@ import { Alert, Box } from '@mui/material';
 import type { CompositeCursor } from '@packages/scoutgame/builders/getDevelopersForGallery';
 import { getDevelopersForGalleryAction } from '@packages/scoutgame/builders/getDevelopersForGalleryAction';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import { BuildersGallery } from '@packages/scoutgame-ui/components/common/Gallery/BuildersGallery';
 import { LoadingCards } from '@packages/scoutgame-ui/components/common/Loading/LoadingCards';
 import { useInfiniteScroll } from '@packages/scoutgame-ui/hooks/useInfiniteScroll';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useCallback } from 'react';
+
+import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
 
 export function BuildersGalleryContainer({
   initialBuilders,

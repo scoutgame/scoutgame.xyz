@@ -1,9 +1,10 @@
 'use client';
 
 import { Paper, Typography, Stack } from '@mui/material';
-import { BuilderCardNftDisplay } from '@packages/scoutgame-ui/components/common/Card/BuilderCard/BuilderCardNftDisplay';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Image from 'next/image';
+
+import { BuilderCardNftDisplay } from 'components/common/Card/BuilderCard/BuilderCardNftDisplay';
 
 export function BuilderStats({
   nftImageUrl,

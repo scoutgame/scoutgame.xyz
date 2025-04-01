@@ -9,16 +9,16 @@ import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats'
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { BackButton } from '@packages/scoutgame-ui/components/common/Button/BackButton';
-import { BuilderCard } from '@packages/scoutgame-ui/components/common/Card/BuilderCard/BuilderCard';
-import { ScoutsGallery } from '@packages/scoutgame-ui/components/common/Gallery/ScoutsGallery';
 import { UserProfile } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
-import { ScoutButton } from '@packages/scoutgame-ui/components/common/ScoutButton/ScoutButton';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
-import { BuilderActivitiesList } from '../../../profile/components/BuilderProfile/BuilderActivitiesList';
-import { BuilderWeeklyStats } from '../../../profile/components/BuilderProfile/BuilderWeeklyStats';
-import { ProjectsTab } from '../../../projects/components/ProjectsTab';
+import { BuilderCard } from 'components/common/Card/BuilderCard/BuilderCard';
+import { ScoutsGallery } from 'components/common/Gallery/ScoutsGallery';
+import { ScoutButton } from 'components/common/ScoutButton/ScoutButton';
+import { BuilderActivitiesList } from 'components/profile/components/BuilderProfile/BuilderActivitiesList';
+import { BuilderWeeklyStats } from 'components/profile/components/BuilderProfile/BuilderWeeklyStats';
+import { ProjectsTab } from 'components/projects/components/ProjectsTab';
 
 import { PublicBuilderStats } from './PublicBuilderStats';
 

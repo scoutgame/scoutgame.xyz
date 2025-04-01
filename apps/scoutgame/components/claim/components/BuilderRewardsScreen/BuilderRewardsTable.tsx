@@ -3,8 +3,9 @@
 import { Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
 import type { BuilderReward } from '@packages/scoutgame/builders/getBuilderRewards';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
-import { useDeveloperInfoModal } from '@packages/scoutgame-ui/providers/DeveloperInfoModalProvider';
 import Link from 'next/link';
+
+import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
 
 import { PointsCell } from '../common/PointsCell';
 import { StyledTableBody, StyledTableHead } from '../common/StyledTable';

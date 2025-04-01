@@ -7,13 +7,14 @@ import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { DeveloperMetadata, DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
-import { BuilderCardRankGraph } from '@packages/scoutgame-ui/components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-import { useDeveloperInfoModal } from '@packages/scoutgame-ui/providers/DeveloperInfoModalProvider';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
+import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
 
 import { tableRowNoPaddingSx } from './CommonTableRow';
 import { TableCellText } from './TableCellText';
