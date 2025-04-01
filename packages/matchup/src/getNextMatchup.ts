@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonWeekNumber, dateTimeToWeek, getStartOfWeek } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
-import { MATCHUP_REGISTRATION_POOL, MATCHUP_OP_PRIZE } from './config';
+import { MATCHUP_REGISTRATION_POOL, MATCHUP_OP_PRIZE, REGISTRATION_DAY_OF_WEEK } from './config';
 
 export type MatchupDetails = {
   week: string;
@@ -15,14 +15,14 @@ export type MatchupDetails = {
 // get the next week, unless it is monday. then use the current week
 export function getNextMatchupWeek(now = DateTime.utc()): string {
   const dayOfWeek = now.weekday;
-  if (dayOfWeek === 1) {
+  if (dayOfWeek === REGISTRATION_DAY_OF_WEEK) {
     return dateTimeToWeek(now);
   }
   return dateTimeToWeek(now.plus({ weeks: 1 }));
 }
 
 function getStartOfMatchup(week: string) {
-  return getStartOfWeek(week).plus({ days: 1 }).toJSDate();
+  return getStartOfWeek(week).plus({ days: REGISTRATION_DAY_OF_WEEK }).toJSDate();
 }
 
 export async function getNextMatchup(now = DateTime.utc()): Promise<MatchupDetails> {

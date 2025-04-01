@@ -15,8 +15,8 @@ export default async function MatchupPageWrapper() {
   const nextMatchup = await getNextMatchup();
   const [, data] = await safeAwaitSSRData(
     Promise.all([
-      getMyMatchup({ scoutId: user?.id, week: currentWeek }),
-      getMyMatchup({ scoutId: user?.id, week: nextMatchup.week })
+      user ? getMyMatchup({ scoutId: user.id, week: currentWeek }) : null,
+      user ? getMyMatchup({ scoutId: user.id, week: nextMatchup.week }) : null
     ])
   );
 

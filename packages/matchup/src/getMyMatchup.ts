@@ -1,18 +1,26 @@
 import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek } from '@packages/dates/utils';
 
 export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'> & {
   scout: {
     displayName: string;
   };
-  selections: { developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> }[];
+  selections: { developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'>; credits: number }[];
 };
 
-export async function getMyMatchup({ scoutId, week }: { scoutId: string; week: string }): Promise<MyMatchup | null> {
-  return prisma.scoutMatchup.findFirst({
+export async function getMyMatchup({
+  scoutId,
+  week,
+  currentWeek = getCurrentWeek()
+}: {
+  scoutId: string;
+  week: string;
+  currentWeek?: string;
+}): Promise<MyMatchup | null> {
+  const matchup = await prisma.scoutMatchup.findFirst({
     where: {
-      createdBy: scoutId,
-      week
+      createdBy: scoutId
     },
     select: {
       scout: {
@@ -30,11 +38,29 @@ export async function getMyMatchup({ scoutId, week }: { scoutId: string; week: s
               id: true,
               displayName: true,
               path: true,
-              avatar: true
+              avatar: true,
+              userWeeklyStats: {
+                where: {
+                  week: currentWeek
+                },
+                select: {
+                  rank: true
+                }
+              }
             }
           }
         }
       }
     }
   });
+  if (!matchup) {
+    return null;
+  }
+  return {
+    ...matchup,
+    selections: matchup.selections.map((selection) => ({
+      ...selection,
+      credits: selection.developer.userWeeklyStats[0].rank || 0
+    }))
+  };
 }
