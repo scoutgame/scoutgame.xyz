@@ -10,7 +10,7 @@ import { RegistrationHeader } from '../components/RegistrationHeader';
 import { MatchUpRegistrationView } from './components/MatchupRegistration/MatchupRegistrationView';
 import { MatchUpSelectionView } from './components/MatchupSelection/MatchupSelectionView';
 import { MatchUpSubmittedView } from './components/MatchupSubmitted/MatchupSubmittedView';
-import { SidebarEntries } from './components/SidebarEntries';
+import { RegistrationsTable } from './components/RegistrationsTable';
 
 export function MatchupRegistrationPage({
   myMatchup,
@@ -35,7 +35,7 @@ export function MatchupRegistrationPage({
         <Grid size={{ xs: 12, md: 4 }}>
           <HowToPlayCard registrationOpen />
           <Suspense fallback={<div>Loading...</div>}>
-            <SidebarEntries week={matchup.week} weekNumber={matchup.weekNumber} />
+            <RegistrationsTable week={matchup.week} weekNumber={matchup.weekNumber} />
           </Suspense>
         </Grid>
       </Grid>

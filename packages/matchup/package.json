@@ -9,6 +9,7 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
+    "@packages/dates": "^0.0.0",
     "@packages/nextjs": "^0.0.0",
     "@packages/scoutgame": "^0.0.0"
   }

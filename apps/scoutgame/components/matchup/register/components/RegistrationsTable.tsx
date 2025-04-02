@@ -11,16 +11,15 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { getEntriesDuringRegistration, type ScoutMatchupEntry } from '@packages/matchup/getEntries';
+import { getRegistrations } from '@packages/matchup/getRegistrations';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 const selections = Array.from({ length: 5 });
 
-export async function SidebarEntries({ week, weekNumber }: { week: string; weekNumber: number }) {
-  const entries = await getEntriesDuringRegistration(week);
+export async function RegistrationsTable({ week, weekNumber }: { week: string; weekNumber: number }) {
+  const entries = await getRegistrations(week);
 
   return (
     <>
@@ -28,7 +27,14 @@ export async function SidebarEntries({ week, weekNumber }: { week: string; weekN
         Week {weekNumber} Teams
       </Typography>
 
-      <TableContainer className='contained-table'>
+      <TableContainer
+        className='contained-table'
+        sx={{
+          '.MuiTableCell-root': {
+            px: 1
+          }
+        }}
+      >
         <Table size='small'>
           <TableHead>
             <TableRow>

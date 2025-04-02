@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-export type ScoutMatchupEntry = {
+type MatchupRegistration = {
   scout: {
     id: string;
     displayName: string;
@@ -9,7 +9,8 @@ export type ScoutMatchupEntry = {
   };
 };
 
-export async function getEntriesDuringRegistration(week: string): Promise<ScoutMatchupEntry[]> {
+// get registrations but do not reveal which developers were selected
+export async function getRegistrations(week: string): Promise<MatchupRegistration[]> {
   const entries = await prisma.scoutMatchup.findMany({
     where: {
       week
