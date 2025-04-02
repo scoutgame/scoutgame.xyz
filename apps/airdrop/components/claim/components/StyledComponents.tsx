@@ -14,6 +14,9 @@ export const StyledCard = styled(Card, {
   display: 'flex',
   cursor: 'pointer',
   backgroundColor: selected ? theme.palette.primary.main : theme.palette.background.paper,
+  height: 175,
+  justifyContent: 'center',
+  alignItems: 'center',
   transition: theme.transitions.create(['background-color', 'border-color'], {
     duration: 150,
     easing: 'ease-in-out'
