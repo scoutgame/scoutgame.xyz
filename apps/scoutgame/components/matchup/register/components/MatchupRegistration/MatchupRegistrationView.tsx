@@ -1,14 +1,6 @@
-import { log } from '@charmverse/core/log';
-import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
-import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
-import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
-import { useAction } from 'next-safe-action/hooks';
-import { toast } from 'sonner';
-
-import { WeeklyMatchupCalloutTimer } from 'components/scout/components/WeeklyMatchupCalloutTimer';
 
 export function MatchUpRegistrationView({ matchup }: { matchup: MatchupDetails }) {
   return (

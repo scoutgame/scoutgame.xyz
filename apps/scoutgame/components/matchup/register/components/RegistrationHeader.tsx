@@ -3,12 +3,12 @@ import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 
-import { WeeklyMatchupCalloutTimer } from 'components/scout/components/WeeklyMatchupCalloutTimer';
+import { ReferenceTime } from 'components/common/ReferenceTime';
 
 import { RegistrationButton } from './RegistrationButton';
 
 export function RegistrationHeader({
-  matchup: { week, weekNumber, matchupPool, opPrize, startTime },
+  matchup: { week, weekNumber, matchupPool, opPrize, endTime, startTime },
   registered,
   registrationOpen
 }: {
@@ -42,8 +42,10 @@ export function RegistrationHeader({
                 </Typography>
               )}
             </Box>
-            {registrationOpen && <WeeklyMatchupCalloutTimer upcomingTime={startTime} />}
-            {!registrationOpen && registered && <WeeklyMatchupCalloutTimer upcomingTime={startTime} />}
+            <Typography variant='body2' component='em' color='secondary'>
+              {registrationOpen && <ReferenceTime prefix='Begins in' unixTimestamp={startTime} />}
+              {!registrationOpen && registered && <ReferenceTime prefix='Ends in' unixTimestamp={endTime} />}
+            </Typography>
           </Stack>
         </Stack>
         <Box display='flex' flexDirection='column' alignItems='center' gap={1}>

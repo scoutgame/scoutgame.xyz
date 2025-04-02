@@ -1,22 +1,21 @@
 'use client';
 
-import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-export function WeeklyMatchupCalloutTimer({ upcomingTime }: { upcomingTime: number }) {
-  const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr(upcomingTime));
+export function ReferenceTimeComponent({ prefix, unixTimestamp }: { prefix?: string; unixTimestamp: number }) {
+  const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr(unixTimestamp));
   useEffect(() => {
     const timeout = setInterval(() => {
-      setTimeStr(getTimeLeftStr(upcomingTime));
+      setTimeStr(getTimeLeftStr(unixTimestamp));
     }, 1000);
 
     return () => clearInterval(timeout);
-  }, [setTimeStr, upcomingTime]);
+  }, [setTimeStr, unixTimestamp]);
 
   return (
-    <Typography variant='body2' component='em' color='secondary'>
-      Begins in {timeLeftStr}
-    </Typography>
+    <span>
+      {prefix} {timeLeftStr}
+    </span>
   );
 }
 

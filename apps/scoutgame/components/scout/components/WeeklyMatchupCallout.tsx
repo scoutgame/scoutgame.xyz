@@ -4,7 +4,7 @@ import { getCurrentMatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 
-import { WeeklyMatchupCalloutTimer } from './WeeklyMatchupCalloutTimer';
+import { ReferenceTime } from 'components/common/ReferenceTime';
 
 export async function WeeklyMatchupCallout() {
   const { weekNumber, matchupPool, opPrize, startTime } = await getCurrentMatchupDetails();
@@ -45,7 +45,9 @@ export async function WeeklyMatchupCallout() {
             <Typography variant='body2'>
               Choose your team and face-off with your fellow Scouts! Who will be this week's Champion Scout?
             </Typography>
-            <WeeklyMatchupCalloutTimer upcomingTime={startTime} />
+            <Typography variant='body2' component='em' color='secondary'>
+              <ReferenceTime prefix='Begins in' unixTimestamp={startTime} />
+            </Typography>
           </Box>
           <ChevronRightIcon fontSize='large' />
         </Box>
