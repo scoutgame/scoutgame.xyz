@@ -1,6 +1,6 @@
 import {
   Box,
-  Paper,
+  Badge,
   Stack,
   Table,
   TableBody,
@@ -70,22 +70,53 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
                   <TableCell>
                     <Stack direction='row' spacing={0.5}>
                       {entry.developers.map((_, i) => (
-                        <Avatar
+                        <Badge
                           key={entry.scout.id + i.toString()}
-                          src={entry.developers[i].avatar}
-                          name={entry.developers[i].displayName}
-                          variant='rounded'
-                          size='small'
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            // borderRadius: '1px',
-                            // border: '1px solid var(--mui-palette-action-disabled)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
+                          overlap='rectangular'
+                          badgeContent={
+                            <Typography
+                              variant='caption'
+                              sx={{
+                                textShadow: '0px 1px 2px rgba(0, 0, 0, 1)',
+                                textAlign: 'right',
+                                letterSpacing: 0,
+                                fontWeight: 800
+                              }}
+                            >
+                              {entry.developers[i].gemsCollected}
+                            </Typography>
+                          }
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right'
                           }}
-                        />
+                          slotProps={{
+                            badge: {
+                              style: {
+                                height: 18,
+                                paddingRight: 2,
+                                transform: 'none'
+                              }
+                            }
+                          }}
+                        >
+                          <Avatar
+                            key={entry.scout.id + i.toString()}
+                            src={entry.developers[i].avatar}
+                            name={entry.developers[i].displayName}
+                            variant='rounded'
+                            size='small'
+                            sx={{
+                              width: 36,
+                              height: 36,
+                              // borderRadius: '1px',
+                              // border: '1px solid var(--mui-palette-action-disabled)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          />
+                        </Badge>
                       ))}
                     </Stack>
                   </TableCell>
