@@ -40,13 +40,31 @@ const StyledCard = styled(Card, {
       }
 }));
 
+const StyledAccountStack = styled(Stack)(({ theme }) => ({
+  borderColor: theme.palette.text.disabled,
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderRadius: theme.spacing(2),
+  paddingLeft: theme.spacing(1),
+  paddingRight: theme.spacing(1),
+  paddingTop: theme.spacing(0.5),
+  paddingBottom: theme.spacing(0.5),
+  gap: theme.spacing(1),
+  alignItems: 'center',
+  flexDirection: 'row',
+  width: 'fit-content'
+}));
+
 export function ClaimToken() {
-  const [step, setStep] = useState<'start' | 'continue' | 'choose' | 'confirm' | 'play'>('start');
+  const [step, setStep] = useState<
+    'start' | 'continue' | 'choose' | 'confirm' | 'play' | 'not_qualified' | 'already_claimed'
+  >('already_claimed');
+
   const [donationPercentage, setDonationPercentage] = useState<'donate_full' | 'donate_half' | 'donate_none'>(
     'donate_half'
   );
 
-  const { address = '0x1234566789012345678901234567890123456789' } = useAccount();
+  const { address = '' } = useAccount();
   const [isClaiming, setIsClaiming] = useState(false);
 
   useEffect(() => {
@@ -54,6 +72,81 @@ export function ClaimToken() {
       setStep('continue');
     }
   }, [address]);
+
+  if (step === 'not_qualified') {
+    return (
+      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
+        <Stack gap={1} alignItems='center' flex={1}>
+          <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
+            Hey, there's always <br />
+            next season!
+          </Typography>
+          <Typography variant='h6' textAlign='center'>
+            You did not qualify this time around.
+          </Typography>
+          <StyledAccountStack>
+            <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
+            <Typography variant='subtitle2' color='textDisabled'>
+              Connected: {shortenHex(address, 4)}
+            </Typography>
+          </StyledAccountStack>
+          <Typography variant='h6' textAlign='center' fontWeight={400}>
+            Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
+            before the season officially begins!
+          </Typography>
+          <Link href='https://draft.scoutgame.xyz'>
+            <Button variant='contained' sx={{ mt: 2, width: 'fit-content' }}>
+              Play
+            </Button>
+          </Link>
+        </Stack>
+        <Image
+          src='/images/scout-switch.png'
+          alt='Airdrop Banner'
+          width={350}
+          height={350}
+          style={{ borderRadius: '10px' }}
+        />
+      </Stack>
+    );
+  }
+
+  if (step === 'already_claimed') {
+    return (
+      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
+        <Stack gap={1} alignItems='center' flex={1}>
+          <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
+            That's all until next season!
+          </Typography>
+          <Typography variant='h6' textAlign='center'>
+            You already claimed this season’s airdrop.
+          </Typography>
+          <StyledAccountStack>
+            <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
+            <Typography variant='subtitle2' color='textDisabled'>
+              Connected: {shortenHex(address, 4)}
+            </Typography>
+          </StyledAccountStack>
+          <Typography variant='h6' textAlign='center' fontWeight={400}>
+            Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
+            before the season officially begins!
+          </Typography>
+          <Link href='https://draft.scoutgame.xyz'>
+            <Button variant='contained' sx={{ mt: 2, width: 'fit-content' }}>
+              Play
+            </Button>
+          </Link>
+        </Stack>
+        <Image
+          src='/images/scout-switch.png'
+          alt='Airdrop Banner'
+          width={350}
+          height={350}
+          style={{ borderRadius: '10px' }}
+        />
+      </Stack>
+    );
+  }
 
   if (step === 'start') {
     return (
@@ -93,25 +186,12 @@ export function ClaimToken() {
           <Typography variant='h6' textAlign='center'>
             You have earned DEV tokens!
           </Typography>
-          <Stack
-            sx={{
-              borderColor: 'text.disabled',
-              borderWidth: '1px',
-              borderStyle: 'solid',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 1,
-              borderRadius: '15px',
-              px: 1,
-              py: 0.5,
-              width: 'fit-content'
-            }}
-          >
+          <StyledAccountStack>
             <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
             <Typography variant='subtitle2' color='textDisabled'>
               Connected: {shortenHex(address, 4)}
             </Typography>
-          </Stack>
+          </StyledAccountStack>
           <Stack flexDirection='row' gap={1} alignItems='center' my={1}>
             <Typography variant='h4' fontWeight={600}>
               {DEV_TOKEN_AMOUNT}
