@@ -1,23 +1,15 @@
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
-import { Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { Container, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
+
+import { ClaimToken } from '@/components/claim/ClaimToken';
 
 export default function AirdropPage() {
   return (
     <Container maxWidth='lg' sx={{ py: 4 }}>
       <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
-        <Stack gap={2}>
-          <Typography variant='h4' color='secondary'>
-            Claim period for <br />
-            Season 1 Rewards is OPEN!
-          </Typography>
-          <Typography variant='h6'>
-            If you earned points in the Preaseason, you've <br />
-            secured your place in the airdrop! Claim your DEV <br />
-            tokens at the start of each season for the next 10 <br />
-            seasons.
-          </Typography>
-          <Button sx={{ width: 'fit-content' }}>Start</Button>
+        <Stack flex={1}>
+          <ClaimToken />
         </Stack>
         <Image src='/images/hero.png' alt='Airdrop Banner' width={350} height={350} style={{ borderRadius: '10px' }} />
       </Stack>
