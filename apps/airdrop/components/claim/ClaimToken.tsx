@@ -3,6 +3,7 @@
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, Card, Stack, styled, Typography } from '@mui/material';
+import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { shortenHex } from '@packages/utils/strings';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -58,7 +59,7 @@ const StyledAccountStack = styled(Stack)(({ theme }) => ({
 export function ClaimToken() {
   const [step, setStep] = useState<
     'start' | 'continue' | 'choose' | 'confirm' | 'play' | 'not_qualified' | 'already_claimed'
-  >('already_claimed');
+  >('start');
 
   const [donationPercentage, setDonationPercentage] = useState<'donate_full' | 'donate_half' | 'donate_none'>(
     'donate_half'
@@ -66,6 +67,7 @@ export function ClaimToken() {
 
   const { address = '' } = useAccount();
   const [isClaiming, setIsClaiming] = useState(false);
+  const isDesktop = useMdScreen();
 
   useEffect(() => {
     if (address) {
@@ -150,23 +152,69 @@ export function ClaimToken() {
 
   if (step === 'start') {
     return (
-      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
-        <Stack gap={2} flex={1}>
-          <Typography variant='h4' color='secondary'>
+      <Stack
+        flexDirection={{
+          xs: 'column-reverse',
+          md: 'row'
+        }}
+        justifyContent='space-between'
+        alignItems='center'
+        px={{
+          xs: 2,
+          md: 8
+        }}
+        mb={{
+          xs: 2,
+          md: 4
+        }}
+      >
+        <Stack
+          gap={2}
+          flex={1}
+          alignItems={{
+            xs: 'center',
+            md: 'flex-start'
+          }}
+        >
+          <Typography
+            variant='h4'
+            color='secondary'
+            textAlign={{
+              xs: 'center',
+              md: 'left'
+            }}
+            mt={{
+              xs: 2,
+              md: 0
+            }}
+          >
             Claim period for <br />
             Season 1 Rewards is OPEN!
           </Typography>
-          <Typography variant='h6'>
-            If you earned points in the Preaseason, you've <br />
-            secured your place in the airdrop! Claim your DEV <br />
-            tokens at the start of each season for the next 10 <br />
-            seasons.
-          </Typography>
+          {isDesktop ? (
+            <Typography variant='h6'>
+              If you earned points in the Preaseason, you've <br />
+              secured your place in the airdrop! Claim your DEV <br />
+              tokens at the start of each season for the next 10 <br />
+              seasons.
+            </Typography>
+          ) : (
+            <Typography>
+              If you earned points in the Preaseasons, you've secured your place in the airdrop! Claim your DEV tokens
+              at the start of each season for the next 10 seasons.
+            </Typography>
+          )}
           <Link href='/login'>
             <Button sx={{ width: 'fit-content' }}>Start</Button>
           </Link>
         </Stack>
-        <Image src='/images/hero.png' alt='Airdrop Banner' width={350} height={350} style={{ borderRadius: '10px' }} />
+        <Image
+          src='/images/hero.png'
+          alt='Airdrop Banner'
+          width={isDesktop ? 350 : 300}
+          height={isDesktop ? 350 : 300}
+          style={{ borderRadius: '10px' }}
+        />
       </Stack>
     );
   }

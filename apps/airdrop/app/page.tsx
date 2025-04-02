@@ -6,12 +6,54 @@ import { ClaimToken } from '@/components/claim/ClaimToken';
 
 export default function AirdropPage() {
   return (
-    <Container maxWidth='lg' sx={{ py: 4 }}>
-      <Stack sx={{ height: 400 }}>
+    <Container
+      maxWidth='lg'
+      sx={{
+        py: {
+          xs: 2,
+          md: 4
+        }
+      }}
+    >
+      <Stack
+        sx={{
+          height: {
+            xs: 'fit-content',
+            md: 400
+          }
+        }}
+      >
         <ClaimToken />
       </Stack>
-      <Stack flexDirection='row' gap={2}>
-        <Paper sx={{ py: 2, px: 3, flex: 1, gap: 1.5, display: 'flex', flexDirection: 'column' }}>
+      <Stack
+        flexDirection={{
+          xs: 'column',
+          md: 'row'
+        }}
+        gap={{
+          xs: 1,
+          md: 2
+        }}
+      >
+        <Paper
+          sx={{
+            py: {
+              xs: 1,
+              md: 2
+            },
+            px: {
+              xs: 1,
+              md: 3
+            },
+            flex: 1,
+            gap: {
+              xs: 1,
+              md: 1.5
+            },
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
           <Stack flexDirection='row' gap={1} alignItems='center'>
             <Image src='/images/diamond-icon.svg' alt='Diamond Icon' width={25} height={25} />
             <Typography variant='h5' color='secondary'>
@@ -78,8 +120,21 @@ export default function AirdropPage() {
             </Typography>
           </Stack>
         </Paper>
-        <Stack flex={1.5} gap={2}>
-          <Paper sx={{ p: 2 }}>
+        <Stack
+          flex={1.5}
+          gap={{
+            xs: 1,
+            md: 2
+          }}
+        >
+          <Paper
+            sx={{
+              p: {
+                xs: 1,
+                md: 2
+              }
+            }}
+          >
             <Stack flexDirection='row' gap={1} alignItems='center' mb={1}>
               <Image src='/images/one-icon.svg' alt='Step 1' width={25} height={25} />
               <Typography variant='h6' color='secondary'>
@@ -96,7 +151,14 @@ export default function AirdropPage() {
               bids are refunded.
             </Typography>
           </Paper>
-          <Paper sx={{ p: 2 }}>
+          <Paper
+            sx={{
+              p: {
+                xs: 1,
+                md: 2
+              }
+            }}
+          >
             <Stack flexDirection='row' gap={1} alignItems='center' mb={1}>
               <Image src='/images/two-icon.svg' alt='Step 2' width={25} height={25} />
               <Typography variant='h6' color='secondary'>
@@ -112,7 +174,14 @@ export default function AirdropPage() {
               projects.
             </Typography>
           </Paper>
-          <Paper sx={{ p: 2 }}>
+          <Paper
+            sx={{
+              p: {
+                xs: 1,
+                md: 2
+              }
+            }}
+          >
             <Stack flexDirection='row' gap={1} alignItems='center' mb={1}>
               <Image src='/images/three-icon.svg' alt='Diamond Icon' width={25} height={25} />
               <Typography variant='h6' color='secondary'>
