@@ -49,8 +49,8 @@ export function RegistrationHeader({
           </Stack>
         </Stack>
         <Box display='flex' flexDirection='column' alignItems='center' gap={1}>
-          <Typography variant='h6' color='secondary'>
-            Prize Pool
+          <Typography variant='h6' color='secondary' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Image src='/images/matchup/howtoplay_trophy.svg' alt='' width={20} height={20} /> Prize Pool
           </Typography>
           <Box>
             <Typography component='span' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

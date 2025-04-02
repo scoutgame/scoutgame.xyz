@@ -18,10 +18,13 @@ export type ScoutMatchupEntry = {
   }[];
 };
 
-export async function getLeaderboard(week: string): Promise<ScoutMatchupEntry[]> {
+export async function getLeaderboard(week: string, limit?: number): Promise<ScoutMatchupEntry[]> {
   const entries = await prisma.scoutMatchup.findMany({
     where: {
-      week
+      week,
+      submittedAt: {
+        not: null
+      }
     },
     orderBy: {
       createdAt: 'desc'
@@ -55,7 +58,7 @@ export async function getLeaderboard(week: string): Promise<ScoutMatchupEntry[]>
       }
     }
   });
-  return entries
+  const leaderboard = entries
     .map((entry, index) => {
       const developers = entry.selections.map((selection) => ({
         id: selection.developer.id,
@@ -82,4 +85,5 @@ export async function getLeaderboard(week: string): Promise<ScoutMatchupEntry[]>
       ...entry,
       rank: index + 1
     }));
+  return leaderboard.slice(0, limit);
 }

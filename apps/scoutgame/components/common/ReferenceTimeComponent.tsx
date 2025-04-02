@@ -19,9 +19,10 @@ export function ReferenceTimeComponent({ prefix, unixTimestamp }: { prefix?: str
   );
 }
 
-function getTimeLeftStr(upcomingTime: number) {
+// return the absolute amount of time from the unixTimestamp
+function getTimeLeftStr(unixTimestamp: number) {
   const now = new Date();
-  const timeLeft = upcomingTime - now.getTime();
+  const timeLeft = Math.abs(unixTimestamp - now.getTime());
 
   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
   const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
