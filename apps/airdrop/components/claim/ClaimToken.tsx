@@ -1,6 +1,7 @@
 'use client';
 
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, Card, Stack, styled, Typography } from '@mui/material';
 import { shortenHex } from '@packages/utils/strings';
 import Image from 'next/image';
@@ -129,7 +130,7 @@ export function ClaimToken() {
   if (step === 'choose') {
     return (
       <Stack gap={3} alignItems='center'>
-        <Typography variant='h4' color='secondary'>
+        <Typography variant='h5' color='secondary'>
           How would you like your {DEV_TOKEN_AMOUNT} DEV tokens?
         </Typography>
         <Stack flexDirection='row' gap={1} alignItems='center'>
@@ -253,7 +254,84 @@ export function ClaimToken() {
             </Stack>
           ) : null}
         </Stack>
-        <Image src='/images/scout-switch.png' alt='Scout Switch' width={350} height={350} />
+        <Image
+          src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
+          alt='Scout Switch'
+          width={350}
+          height={350}
+        />
+      </Stack>
+    );
+  }
+
+  if (step === 'play') {
+    return (
+      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
+        <Stack flex={1} justifyContent='center' alignItems='center' flexDirection='row'>
+          {donationPercentage === 'donate_half' ? (
+            <Stack gap={2} alignItems='center'>
+              <Stack flexDirection='row' gap={1} alignItems='center'>
+                <Typography variant='h4' fontWeight={600} color='secondary'>
+                  Claim successful!
+                </Typography>
+                <CheckCircleIcon color='secondary' />
+              </Stack>
+              <Typography variant='h5' textAlign='center'>
+                THANK YOU <br />
+                for your donation!
+              </Typography>
+              <Typography variant='h6' textAlign='center'>
+                Now, let's go Bid on some developers and <br /> build your team before the season begins!
+              </Typography>
+              <Link href='https://draft.scoutgame.xyz' style={{ marginTop: 20 }}>
+                <Button variant='contained' sx={{ width: 150 }}>
+                  Play
+                </Button>
+              </Link>
+            </Stack>
+          ) : donationPercentage === 'donate_none' ? (
+            <Stack gap={2} alignItems='center'>
+              <Stack flexDirection='row' gap={1} alignItems='center'>
+                <Typography variant='h4' fontWeight={600} color='secondary'>
+                  Claim successful!
+                </Typography>
+                <CheckCircleIcon color='secondary' />
+              </Stack>
+              <Typography variant='h6' textAlign='center'>
+                Now, let's go Bid on some <br /> developers and build your team <br /> before the season begins!
+              </Typography>
+              <Link href='https://draft.scoutgame.xyz' style={{ marginTop: 20 }}>
+                <Button variant='contained' sx={{ width: 150 }}>
+                  Play
+                </Button>
+              </Link>
+            </Stack>
+          ) : (
+            <Stack gap={2} alignItems='center'>
+              <Typography variant='h4' fontWeight={600} color='secondary'>
+                THANK YOU for your donation!
+              </Typography>
+              <Typography variant='h5' textAlign='center'>
+                You are an <br />
+                Open Source LEGEND!
+              </Typography>
+              <Typography variant='h6' textAlign='center'>
+                Now, let's go Bid on some developers and <br /> build your team before the season begins!
+              </Typography>
+              <Link href='https://draft.scoutgame.xyz' style={{ marginTop: 20 }}>
+                <Button variant='contained' sx={{ width: 150 }}>
+                  Play
+                </Button>
+              </Link>
+            </Stack>
+          )}
+        </Stack>
+        <Image
+          src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
+          alt='Scout Switch'
+          width={350}
+          height={350}
+        />
       </Stack>
     );
   }

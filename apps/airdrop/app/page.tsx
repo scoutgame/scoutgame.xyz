@@ -7,7 +7,7 @@ import { ClaimToken } from '@/components/claim/ClaimToken';
 export default function AirdropPage() {
   return (
     <Container maxWidth='lg' sx={{ py: 4 }}>
-      <Stack sx={{ minHeight: 350 }}>
+      <Stack sx={{ height: 400 }}>
         <ClaimToken />
       </Stack>
       <Stack flexDirection='row' gap={2}>
