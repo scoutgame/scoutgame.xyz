@@ -1,7 +1,8 @@
-import { Box, Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Link as MUILink, Stack, Typography } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { ReferenceTime } from 'components/common/ReferenceTime';
 
@@ -38,11 +39,14 @@ export function RegistrationHeader({
                 <RegistrationButton registered={registered} week={week} />
               ) : (
                 <Typography variant='body2' color='secondary' component='span'>
-                  Registration closed. Next match in 24 hours
+                  Registration closed.{' '}
+                  <MUILink component={Link} href='/matchup/register' sx={{ color: 'secondary.main' }}>
+                    <em>Register for next week →</em>
+                  </MUILink>
                 </Typography>
               )}
             </Box>
-            <Typography variant='body2' component='em' color='secondary'>
+            <Typography variant='body2' component='em' color='secondary.main'>
               {registrationOpen && <ReferenceTime prefix='Begins in' unixTimestamp={startTime} />}
               {!registrationOpen && registered && <ReferenceTime prefix='Ends in' unixTimestamp={endTime} />}
             </Typography>

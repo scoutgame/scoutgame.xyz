@@ -17,7 +17,7 @@ export function MatchupLeaderboardPage({
 }) {
   return (
     <PageContainer>
-      <Grid container spacing={2}>
+      <Grid container spacing={3} sx={{ mt: 2 }}>
         <Grid size={{ xs: 12, md: 8 }}>
           <RegistrationHeader matchup={matchup} registered={hasRegistered} />
           <Suspense fallback={<div>Loading...</div>}>

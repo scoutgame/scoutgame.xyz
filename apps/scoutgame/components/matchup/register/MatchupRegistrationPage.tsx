@@ -21,7 +21,7 @@ export function MatchupRegistrationPage({
 }) {
   return (
     <PageContainer>
-      <Grid container spacing={2}>
+      <Grid container spacing={3} sx={{ mt: 2 }}>
         <Grid size={{ xs: 12, md: 8 }} mb={10}>
           <RegistrationHeader matchup={matchup} registered={!!myMatchup} registrationOpen />
           {myMatchup?.submittedAt ? (
