@@ -723,6 +723,8 @@ export async function mockBuilderNft({
           })
         );
 
+  const colors = ['teal', 'orange', 'crimson', 'magenta', 'turquoise'];
+  const faces = ['▲ᴗ▲', '^ᴗ^', '◕_◕', '•`_´•', '•`ᴗ´•', 'o_O', '0ᴗo', '^_^', '0>0', '-_-'];
   const nft = await prisma.builderNft.create({
     data: {
       createdAt,
@@ -731,7 +733,7 @@ export async function mockBuilderNft({
       contractAddress,
       currentPrice,
       season,
-      imageUrl: 'https://placehold.co/600x400',
+      imageUrl: `https://placehold.co/300x200/${colors[Math.floor(Math.random() * colors.length)]}/fff?text=${faces[Math.floor(Math.random() * faces.length)]}`,
       tokenId,
       nftType: nftType ?? 'default',
       nftSoldEvents: {
@@ -787,12 +789,14 @@ export async function mockBuilderStrike({
 export function mockUserSeasonStats({
   userId,
   season,
+  level,
   nftsPurchased = 1,
   pointsEarnedAsBuilder = Math.floor(Math.random() * 1000),
   pointsEarnedAsScout = Math.floor(Math.random() * 1000)
 }: {
   userId: string;
   season: string;
+  level?: number;
   nftsPurchased?: number;
   pointsEarnedAsBuilder?: number;
   pointsEarnedAsScout?: number;
@@ -800,6 +804,7 @@ export function mockUserSeasonStats({
   return prisma.userSeasonStats.create({
     data: {
       userId,
+      level,
       season,
       nftsPurchased,
       pointsEarnedAsBuilder,

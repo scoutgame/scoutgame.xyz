@@ -92,18 +92,19 @@ function getAvatarCustomStyles(variant: AvatarVariant, size: AvatarSize) {
 }
 
 type InitialAvatarProps = Omit<AvatarProps, 'src'> & {
+  bgcolor?: string;
   name?: string;
   src?: string | null;
   size?: AvatarSize;
 };
 
-export function Avatar({ name, variant, src, size = 'medium', sx = {}, ...restProps }: InitialAvatarProps) {
+export function Avatar({ name, bgcolor, variant, src, size = 'medium', sx = {}, ...restProps }: InitialAvatarProps) {
   const nameStr = (name || '').replace('0x', ''); // ignore the universal prefix of addresses
 
   return (
     <MuiAvatar
       sx={{
-        backgroundColor: stringToColor(nameStr),
+        bgcolor: bgcolor || stringToColor(nameStr),
         ...getAvatarCustomStyles(variant, size),
         ...sx
       }}

@@ -51,7 +51,7 @@ export async function SidebarEntries({ week, weekNumber }: { week: string; weekN
             ) : (
               entries.map((entry, index) => (
                 <TableRow key={entry.scout.id}>
-                  <TableCell>&ndash;</TableCell>
+                  <TableCell align='center'>&ndash;</TableCell>
                   <TableCell align='center'>
                     <Link href={`/u/${entry.scout.path}`} target='_blank'>
                       <Avatar
@@ -66,7 +66,7 @@ export async function SidebarEntries({ week, weekNumber }: { week: string; weekN
                     <Stack direction='row' spacing={0.5}>
                       {selections.map((_, i) => (
                         <Box
-                          key={entry.scout.id}
+                          key={entry.scout.id + i.toString()}
                           sx={{
                             width: 30,
                             height: 30,

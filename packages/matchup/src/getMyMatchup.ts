@@ -4,6 +4,7 @@ import { getCurrentWeek } from '@packages/dates/utils';
 
 export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'> & {
   scout: {
+    id: string;
     displayName: string;
   };
   selections: { developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'>; credits: number }[];
@@ -28,6 +29,7 @@ export async function getMyMatchup({
     select: {
       scout: {
         select: {
+          id: true,
           displayName: true
         }
       },

@@ -5,12 +5,9 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 async function query() {
-  const result = await prisma.scout.findFirst({
+  const result = await prisma.scout.deleteMany({
     where: {
-      farcasterName: 'bdutz'
-    },
-    include: {
-      events: true
+      builderStatus: 'approved'
     }
   });
   prettyPrint(result);

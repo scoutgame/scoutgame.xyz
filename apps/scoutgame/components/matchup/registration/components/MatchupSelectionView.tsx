@@ -1,6 +1,12 @@
-import { Avatar, Box, Button, Card, Stack, Typography } from '@mui/material';
+import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
+import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
+import { TabsMenu } from '@packages/scoutgame-ui/components/common/Tabs/TabsMenu';
+
+import { AllDeveloperCards } from './AllDeveloperCards';
+import { MatchupSelectionGallery } from './MatchupSelectionGallery';
+import { MyDeveloperCards } from './MyDeveloperCards';
 
 export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
   return (
@@ -17,11 +23,11 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
 
             {/* Display selected developers or empty slots */}
             {Array.from({ length: 5 }).map((_, index) => {
-              const dev = myMatchup.selections?.[index]?.developer;
+              const { credits, developer } = myMatchup.selections?.[index] || {};
 
               return (
                 <Box
-                  key={dev?.id || `empty-${index}`}
+                  key={developer?.id || `empty-${index}`}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -30,34 +36,22 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
                     borderColor: 'divider'
                   }}
                 >
-                  {dev ? (
+                  {developer ? (
                     <>
                       <Box sx={{ mr: 2 }}>
-                        <Avatar src={dev.avatar || '/images/default-avatar.png'} alt='' />
+                        <Avatar src={developer.avatar || '/images/default-avatar.png'} alt='' />
                       </Box>
                       <Box sx={{ flexGrow: 1 }}>
-                        <Typography variant='body1'>{dev.displayName}</Typography>
+                        <Typography variant='body1'>{developer.displayName}</Typography>
                       </Box>
                       <Typography variant='body2' color='text.secondary'>
-                        {dev.cost || 0} credits
+                        {credits} credits
                       </Typography>
                     </>
                   ) : (
                     <>
                       <Box sx={{ mr: 2 }}>
-                        <Box
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: '50%',
-                            bgcolor: 'action.disabled',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
-                        >
-                          <Typography variant='body1'>?</Typography>
-                        </Box>
+                        <Avatar name='?' size='small' bgcolor='secondary.main' />
                       </Box>
                       <Box sx={{ flexGrow: 1 }}>
                         <Typography variant='body1' color='text.disabled'>
@@ -85,6 +79,17 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
           </Box>
         </Stack>
       </Card>
+      {/* <TabsMenu
+        value='my_cards'
+        tabs={[
+          { value: 'my_cards', label: 'My Cards' },
+          { value: 'cards_to_purchase', label: 'All Cards' }
+        ]}
+      /> */}
+      <MatchupSelectionGallery
+        myCardsView={<MyDeveloperCards userId={myMatchup.scout.id} />}
+        allCardsView={<AllDeveloperCards userId={myMatchup.scout.id} />}
+      />
     </Box>
   );
 }
