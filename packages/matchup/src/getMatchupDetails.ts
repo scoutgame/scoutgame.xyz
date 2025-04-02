@@ -41,7 +41,7 @@ export async function getMatchupDetails(week: string, now = DateTime.utc()): Pro
   });
   const startTime = getStartOfMatchup(week).getTime();
   const endTime = getEndOfMatchup(week).getTime();
-  const registrationOpen = now.diff(DateTime.fromMillis(startTime)).toMillis() > 0;
+  const registrationOpen = now.weekday === REGISTRATION_DAY_OF_WEEK && getWeekFromDate(now.toJSDate()) === week;
 
   const weekNumber = getCurrentSeasonWeekNumber(week);
   return {

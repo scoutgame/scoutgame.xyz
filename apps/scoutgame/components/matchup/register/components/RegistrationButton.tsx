@@ -13,7 +13,6 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';

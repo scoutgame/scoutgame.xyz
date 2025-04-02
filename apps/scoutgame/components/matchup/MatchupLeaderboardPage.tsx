@@ -1,7 +1,6 @@
 import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/material';
-import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
+import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
-import Image from 'next/image';
 
 import { RegistrationHeader } from './register/components/RegistrationHeader';
 

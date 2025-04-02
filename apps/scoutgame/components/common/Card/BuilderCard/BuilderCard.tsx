@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Stack, Typography } from '@mui/material';
+import { Card, Stack, Typography, type SxProps } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { useLgScreen, useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
@@ -38,7 +38,8 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
   showListButton = false,
   scoutInView,
   actionSlot: ActionSlotComponent,
-  actionSlotProps
+  actionSlotProps,
+  sx
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
@@ -51,6 +52,7 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
   scoutInView?: string;
   actionSlot?: ComponentType<T>;
   actionSlotProps?: Omit<T, 'builder'>;
+  sx?: SxProps;
 }) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
@@ -98,7 +100,8 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
         width: 'fit-content',
         height: 'fit-content',
         margin: '0 auto',
-        overflow: 'initial'
+        overflow: 'initial',
+        ...sx
       }}
     >
       <BuilderCardNftDisplay
