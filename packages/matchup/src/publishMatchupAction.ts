@@ -1,5 +1,6 @@
 'use server';
 
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
@@ -8,21 +9,17 @@ import * as yup from 'yup';
 
 import { MAX_SELECTIONS, MAX_CREDITS } from './config';
 
-export const addMatchupSelectionAction = authActionClient
+export const publishMatchupAction = authActionClient
   .metadata({ actionName: 'update_partner_reward_payout' })
   .schema(
     yup.object({
-      week: yup.string().required(),
-      developerId: yup.string().required()
+      matchupId: yup.string().required()
     })
   )
   .action(async ({ ctx, parsedInput }) => {
     const selections = await prisma.scoutMatchupSelection.findMany({
       where: {
-        matchup: {
-          createdBy: ctx.session.scoutId,
-          week: parsedInput.week
-        }
+        matchupId: parsedInput.matchupId
       },
       select: {
         developer: {
@@ -56,14 +53,16 @@ export const addMatchupSelectionAction = authActionClient
     // Add the selection to the matchup
     await prisma.scoutMatchup.update({
       where: {
-        createdBy_week: {
-          createdBy: ctx.session.scoutId,
-          week: parsedInput.week
-        }
+        id: parsedInput.matchupId
       },
       data: {
         submittedAt: new Date()
       }
+    });
+
+    log.info('User published matchup', {
+      userId: ctx.session.scoutId,
+      matchupId: parsedInput.matchupId
     });
 
     // Revalidate the matchup page

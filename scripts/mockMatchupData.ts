@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder, mockScoutedNft, mockUserSeasonStats } from '@packages/testing/database';
 
-const builderDisplayName = 'amber-polar-bear';
+const builderDisplayName = 'coral-beaver';
 
 // use this script to set up some mock data for weekly matchup
 

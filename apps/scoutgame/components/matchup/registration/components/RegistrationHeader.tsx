@@ -1,5 +1,6 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
+import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 
 import { WeeklyMatchupCalloutTimer } from 'components/scout/components/WeeklyMatchupCalloutTimer';
@@ -41,8 +42,12 @@ export function RegistrationHeader({
             Prize Pool
           </Typography>
           <Box>
-            <Typography component='span'>
-              {matchupPool ? `${matchupPool} DEV + ` : ''}
+            <Typography component='span' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              {matchupPool ? (
+                <>
+                  {matchupPool} <PointsIcon /> +{' '}
+                </>
+              ) : null}
               {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />
             </Typography>
           </Box>

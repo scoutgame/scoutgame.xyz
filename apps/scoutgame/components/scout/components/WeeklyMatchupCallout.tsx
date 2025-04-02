@@ -1,6 +1,7 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Paper, Card, CardActionArea, Typography } from '@mui/material';
 import { getNextMatchup } from '@packages/matchup/getNextMatchup';
+import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 
 import { WeeklyMatchupCalloutTimer } from './WeeklyMatchupCalloutTimer';
@@ -33,7 +34,11 @@ export async function WeeklyMatchupCallout() {
                 🏆 Prize Pool:
               </Typography>{' '}
               <Typography component='span'>
-                {matchupPool ? `${matchupPool} DEV + ` : ''}
+                {matchupPool ? (
+                  <>
+                    {matchupPool} <PointsIcon /> +{' '}
+                  </>
+                ) : null}
                 {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />
               </Typography>
             </Box>

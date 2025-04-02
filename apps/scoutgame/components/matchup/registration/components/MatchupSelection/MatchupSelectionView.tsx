@@ -1,18 +1,26 @@
+import { log } from '@charmverse/core/log';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { MAX_CREDITS } from '@packages/matchup/config';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
+import { publishMatchupAction } from '@packages/matchup/publishMatchupAction';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
-import { TabsMenu } from '@packages/scoutgame-ui/components/common/Tabs/TabsMenu';
+import { useAction } from 'next-safe-action/hooks';
+import { toast } from 'sonner';
 
 import { AllDevelopersTableServer } from './AllDevelopersTable/AllDeveloperTableServer';
 import { MatchupSelectionTabs } from './MatchupSelectionTabs';
 import { MyDeveloperCards } from './MyDeveloperCards';
+import { SubmitMatchupButton } from './SubmitMatchupButton';
 
 const slots = Array.from({ length: 5 });
 
 export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
   const totalCredits = myMatchup.selections?.reduce((acc, selection) => acc + selection.credits, 0) || 0;
+
+  const canSubmit = myMatchup.selections?.length === 5 && totalCredits <= MAX_CREDITS;
+
   return (
     <Box>
       <Typography variant='h5' color='secondary'>
@@ -82,9 +90,7 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
                 {totalCredits} / {MAX_CREDITS} credits
               </Typography>
             </Box>
-            <Button variant='contained' disabled={myMatchup.selections.length !== 5}>
-              Submit
-            </Button>
+            <SubmitMatchupButton matchupId={myMatchup.id} disabled={!canSubmit} />
           </Box>
         </Stack>
       </Card>
