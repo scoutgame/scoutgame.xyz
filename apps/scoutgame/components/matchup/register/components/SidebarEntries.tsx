@@ -12,7 +12,6 @@ import {
   Typography
 } from '@mui/material';
 import { getEntriesDuringRegistration, type ScoutMatchupEntry } from '@packages/matchup/getEntries';
-import { getNextMatchupWeek } from '@packages/matchup/getNextMatchup';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Link from 'next/link';

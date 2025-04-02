@@ -10,21 +10,16 @@ export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'
   selections: { developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'>; credits: number }[];
 };
 
-export async function getMyMatchup({
-  scoutId,
-  week
-  // currentWeek = getCurrentWeek()
-}: {
-  scoutId?: string;
-  week: string;
-  currentWeek?: string;
-}): Promise<MyMatchup | null> {
+export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: string }): Promise<MyMatchup | null> {
   if (!scoutId) {
     return null;
   }
-  const matchup = await prisma.scoutMatchup.findFirst({
+  const matchup = await prisma.scoutMatchup.findUnique({
     where: {
-      createdBy: scoutId
+      createdBy_week: {
+        createdBy: scoutId,
+        week
+      }
     },
     select: {
       id: true,
@@ -37,6 +32,7 @@ export async function getMyMatchup({
       submittedAt: true,
       totalScore: true,
       rank: true,
+      week: true,
       selections: {
         select: {
           developer: {
@@ -45,6 +41,14 @@ export async function getMyMatchup({
               displayName: true,
               path: true,
               avatar: true,
+              builderNfts: {
+                where: {
+                  season: getCurrentSeasonStart()
+                },
+                select: {
+                  imageUrl: true
+                }
+              },
               userSeasonStats: {
                 where: {
                   season: getCurrentSeasonStart()
@@ -66,6 +70,10 @@ export async function getMyMatchup({
     ...matchup,
     selections: matchup.selections.map((selection) => ({
       ...selection,
+      developer: {
+        ...selection.developer,
+        nftImageUrl: selection.developer.builderNfts[0].imageUrl
+      },
       credits: selection.developer.userSeasonStats[0].level || 0
     }))
   };

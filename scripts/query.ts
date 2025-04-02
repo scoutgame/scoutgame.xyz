@@ -5,11 +5,7 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 async function query() {
-  const result = await prisma.scout.deleteMany({
-    where: {
-      builderStatus: 'approved'
-    }
-  });
+  const result = await prisma.scoutMatchup.deleteMany({});
   prettyPrint(result);
 }
 

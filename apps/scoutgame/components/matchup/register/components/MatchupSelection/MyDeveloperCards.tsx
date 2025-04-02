@@ -8,15 +8,9 @@ import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorS
 
 import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
 
-import { ActionSlot } from './Action';
+import { SelectDeveloperButton } from './Action';
 
-export async function MyDeveloperCards({
-  userId,
-  onSelectDeveloper
-}: {
-  userId: string;
-  onSelectDeveloper?: (developerId: string) => void;
-}) {
+export async function MyDeveloperCards({ userId }: { userId: string }) {
   const [error, scoutedBuilders] = await safeAwaitSSRData(
     getScoutedBuilders({ loggedInScoutId: userId, scoutIdInView: userId })
   );
@@ -28,12 +22,11 @@ export async function MyDeveloperCards({
   return (
     <Stack gap={1}>
       <BuildersGallery
-        showListButton
         builders={scoutedBuilders}
         columns={4}
         scoutInView={userId}
         size='small'
-        actionSlot={ActionSlot}
+        actionSlot={SelectDeveloperButton}
       />
     </Stack>
   );

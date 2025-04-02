@@ -1,13 +1,13 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Paper, Card, CardActionArea, Typography } from '@mui/material';
-import { getNextMatchup } from '@packages/matchup/getNextMatchup';
+import { getCurrentMatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 
 import { WeeklyMatchupCalloutTimer } from './WeeklyMatchupCalloutTimer';
 
 export async function WeeklyMatchupCallout() {
-  const { weekNumber, matchupPool, opPrize, startOfMatchup } = await getNextMatchup();
+  const { weekNumber, matchupPool, opPrize, startTime } = await getCurrentMatchupDetails();
 
   return (
     <Card
@@ -45,7 +45,7 @@ export async function WeeklyMatchupCallout() {
             <Typography variant='body2'>
               Choose your team and face-off with your fellow Scouts! Who will be this week's Champion Scout?
             </Typography>
-            <WeeklyMatchupCalloutTimer upcomingTime={startOfMatchup} />
+            <WeeklyMatchupCalloutTimer upcomingTime={startTime} />
           </Box>
           <ChevronRightIcon fontSize='large' />
         </Box>

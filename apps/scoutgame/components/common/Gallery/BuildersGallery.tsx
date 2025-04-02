@@ -10,6 +10,7 @@ export function BuildersGallery({
   size = 'medium',
   markStarterCardPurchased = false,
   showListButton = false,
+  showPurchaseButton = true,
   scoutInView,
   actionSlot
 }: {
@@ -19,6 +20,7 @@ export function BuildersGallery({
   size?: 'small' | 'medium' | 'large';
   markStarterCardPurchased?: boolean;
   showListButton?: boolean;
+  showPurchaseButton?: boolean;
   actionSlot?: ComponentType<{ builder: any }>;
 }) {
   return (
@@ -39,7 +41,7 @@ export function BuildersGallery({
               <BuilderCard
                 scoutInView={scoutInView}
                 builder={builder}
-                showPurchaseButton
+                showPurchaseButton={showPurchaseButton}
                 size={size}
                 type={builder.nftType}
                 markStarterCardPurchased={markStarterCardPurchased}

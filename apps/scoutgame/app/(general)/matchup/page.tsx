@@ -1,31 +1,23 @@
-import { getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentMatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { getMyMatchup } from '@packages/matchup/getMyMatchup';
-import { getNextMatchup } from '@packages/matchup/getNextMatchup';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { DateTime } from 'luxon';
 
 // import { MatchupProvider } from 'components/matchup/hooks/useMatchup';
 import { MatchupLeaderboardPage } from 'components/matchup/MatchupLeaderboardPage';
-import { MatchupRegistrationPage } from 'components/matchup/registration/MatchupRegistrationPage';
+import { MatchupRegistrationPage } from 'components/matchup/register/MatchupRegistrationPage';
 
 export default async function MatchupPageWrapper() {
   const [, user] = await safeAwaitSSRData(getUserFromSession());
-  const currentWeek = getCurrentWeek();
-  const nextMatchup = await getNextMatchup();
-  const [, data] = await safeAwaitSSRData(
-    Promise.all([
-      getMyMatchup({ scoutId: user?.id, week: currentWeek }),
-      getMyMatchup({ scoutId: user?.id, week: nextMatchup.week })
-    ])
-  );
+  const [matchupError, matchupDetails] = await safeAwaitSSRData(getCurrentMatchupDetails());
+  if (matchupError) {
+    return <div>Error: {matchupError.message}</div>;
+  }
+  const [, myMatchup] = await safeAwaitSSRData(getMyMatchup({ scoutId: user?.id, week: matchupDetails.week }));
 
-  const [myActiveMatchup, myNextMatchup] = data ?? [];
-
-  // on Monday, the 'next matchup' is the current week
-  if (currentWeek === nextMatchup.week) {
-    return <MatchupRegistrationPage myMatchup={myNextMatchup} matchup={nextMatchup} />;
+  if (matchupDetails.registrationOpen) {
+    return <MatchupRegistrationPage matchup={matchupDetails} myMatchup={myMatchup} />;
   }
 
-  return <MatchupLeaderboardPage matchup={myActiveMatchup} />;
+  return <MatchupLeaderboardPage matchup={matchupDetails} hasRegistered={!!myMatchup} />;
 }

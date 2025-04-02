@@ -6,7 +6,7 @@ import { addMatchupSelectionAction } from '@packages/matchup/addMatchupSelection
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { useAction } from 'next-safe-action/hooks';
 
-export function ActionSlot({ builder }: { builder: BuilderInfo }) {
+export function SelectDeveloperButton({ builder }: { builder: BuilderInfo }) {
   const { execute, isExecuting } = useAction(addMatchupSelectionAction);
 
   function handleAddMatchupSelection() {

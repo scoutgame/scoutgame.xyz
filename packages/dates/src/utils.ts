@@ -117,6 +117,10 @@ export function getStartOfWeek(week: ISOWeek) {
   return getDateFromISOWeek(week);
 }
 
+export function getEndOfWeek(week: ISOWeek) {
+  return getDateFromISOWeek(week).endOf('week');
+}
+
 export function getWeekStartEndSecondTimestamps(week: ISOWeek) {
   const { start, end } = getWeekStartEnd(getStartOfWeek(week).toJSDate());
   return { start: Math.floor(start.toSeconds()), end: Math.floor(end.toSeconds()) };

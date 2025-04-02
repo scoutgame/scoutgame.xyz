@@ -1,5 +1,5 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
-import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
+import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 
@@ -8,11 +8,13 @@ import { WeeklyMatchupCalloutTimer } from 'components/scout/components/WeeklyMat
 import { RegistrationButton } from './RegistrationButton';
 
 export function RegistrationHeader({
-  matchup: { week, weekNumber, matchupPool, opPrize, startOfMatchup },
-  registered
+  matchup: { week, weekNumber, matchupPool, opPrize, startTime },
+  registered,
+  registrationOpen
 }: {
   matchup: MatchupDetails;
   registered: boolean;
+  registrationOpen?: boolean;
 }) {
   return (
     <Card
@@ -32,9 +34,16 @@ export function RegistrationHeader({
               Week {weekNumber} Match Up!
             </Typography>
             <Box>
-              <RegistrationButton registered={registered} week={week} />
+              {registrationOpen || registered ? (
+                <RegistrationButton registered={registered} week={week} />
+              ) : (
+                <Typography variant='body2' color='secondary' component='span'>
+                  Registration closed. Next match in 24 hours
+                </Typography>
+              )}
             </Box>
-            <WeeklyMatchupCalloutTimer upcomingTime={startOfMatchup} />
+            {registrationOpen && <WeeklyMatchupCalloutTimer upcomingTime={startTime} />}
+            {!registrationOpen && registered && <WeeklyMatchupCalloutTimer upcomingTime={startTime} />}
           </Stack>
         </Stack>
         <Box display='flex' flexDirection='column' alignItems='center' gap={1}>
