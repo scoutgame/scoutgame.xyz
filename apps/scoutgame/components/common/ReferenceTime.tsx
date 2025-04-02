@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 export const ReferenceTime = dynamic(
   () => import('./ReferenceTimeComponent').then((mod) => mod.ReferenceTimeComponent),
   {
-    ssr: false
+    ssr: false,
+    loading: () => <span>&nbsp;</span>
   }
 );
