@@ -37,5 +37,6 @@ export const getDevelopersForTableAction = actionClient
       cursor: (parsedInput.cursor as DeveloperTableCursor) || undefined,
       loggedInScoutId: scoutId
     });
+
     return { data: developers, nextCursor };
   });

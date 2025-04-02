@@ -4,9 +4,11 @@ import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { TabsMenu } from '@packages/scoutgame-ui/components/common/Tabs/TabsMenu';
 
-import { AllDeveloperCards } from './AllDeveloperCards';
-import { MatchupSelectionGallery } from './MatchupSelectionGallery';
+import { AllDevelopersTableServer } from './AllDevelopersTable/AllDeveloperTableServer';
+import { MatchupSelectionTabs } from './MatchupSelectionTabs';
 import { MyDeveloperCards } from './MyDeveloperCards';
+
+const slots = Array.from({ length: 5 });
 
 export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
   return (
@@ -22,7 +24,7 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
             </Typography>
 
             {/* Display selected developers or empty slots */}
-            {Array.from({ length: 5 }).map((_, index) => {
+            {slots.map((_, index) => {
               const { credits, developer } = myMatchup.selections?.[index] || {};
 
               return (
@@ -86,9 +88,9 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
           { value: 'cards_to_purchase', label: 'All Cards' }
         ]}
       /> */}
-      <MatchupSelectionGallery
+      <MatchupSelectionTabs
         myCardsView={<MyDeveloperCards userId={myMatchup.scout.id} />}
-        allCardsView={<AllDeveloperCards userId={myMatchup.scout.id} />}
+        allCardsView={<AllDevelopersTableServer userId={myMatchup.scout.id} />}
       />
     </Box>
   );

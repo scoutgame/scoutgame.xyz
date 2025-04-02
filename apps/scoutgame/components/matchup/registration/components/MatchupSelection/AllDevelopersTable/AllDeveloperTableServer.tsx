@@ -7,10 +7,9 @@ import { getDevelopersForTable } from '@packages/scoutgame/builders/getDeveloper
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorSSRMessage';
 
-import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
-import { DevelopersTableContainer } from 'components/scout/components/ScoutPageTable/components/DevelopersTableContainer';
+import { AllDevelopersTableContainer } from './AllDevelopersTableContainer';
 
-export async function AllDeveloperCards({
+export async function AllDevelopersTableServer({
   userId,
   onSelectDeveloper
 }: {
@@ -31,7 +30,7 @@ export async function AllDeveloperCards({
   }
 
   return (
-    <DevelopersTableContainer
+    <AllDevelopersTableContainer
       initialDevelopers={data.developers}
       initialCursor={data.nextCursor}
       order='desc'

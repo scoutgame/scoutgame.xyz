@@ -8,9 +8,9 @@ import Image from 'next/image';
 import { Suspense } from 'react';
 
 import { HowToPlayCard } from './components/HowToPlayCard';
-import { MatchUpRegistrationView } from './components/MatchupRegistrationView';
-import { MatchUpSelectionView } from './components/MatchupSelectionView';
-import { MatchUpSubmittedView } from './components/MatchupSubmittedView';
+import { MatchUpRegistrationView } from './components/MatchupRegistration/MatchupRegistrationView';
+import { MatchUpSelectionView } from './components/MatchupSelection/MatchupSelectionView';
+import { MatchUpSubmittedView } from './components/MatchupSubmitted/MatchupSubmittedView';
 import { RegistrationHeader } from './components/RegistrationHeader';
 import { SidebarEntries } from './components/SidebarEntries';
 

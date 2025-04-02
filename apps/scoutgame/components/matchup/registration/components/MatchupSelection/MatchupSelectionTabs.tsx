@@ -12,7 +12,7 @@ interface MatchupSelectionGalleryProps {
   allCardsView: React.ReactNode;
 }
 
-export function MatchupSelectionGallery({ myCardsView, allCardsView }: MatchupSelectionGalleryProps) {
+export function MatchupSelectionTabs({ myCardsView, allCardsView }: MatchupSelectionGalleryProps) {
   const [activeTab, setActiveTab] = useState<string>('my_cards');
   const { user } = useUser();
 
