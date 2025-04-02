@@ -7,12 +7,15 @@ import { HowToPlayCard } from '../components/HowToPlayCard';
 import { RegistrationHeader } from '../components/RegistrationHeader';
 
 import { MatchupLeaderboardTable } from './components/MatchupLeaderboardTable';
+import { MyMatchupResultsTable } from './components/MyMatchupResultsTable';
 
 export function MatchupLeaderboardPage({
   matchup,
+  scoutId,
   hasRegistered
 }: {
   matchup: MatchupDetails;
+  scoutId?: string;
   hasRegistered: boolean;
 }) {
   return (
@@ -26,6 +29,9 @@ export function MatchupLeaderboardPage({
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <HowToPlayCard registrationOpen={false} />
+          <Suspense fallback={<div></div>}>
+            <MyMatchupResultsTable week={matchup.week} scoutId={scoutId} />
+          </Suspense>
         </Grid>
       </Grid>
     </PageContainer>

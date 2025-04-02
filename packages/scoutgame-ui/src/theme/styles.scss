@@ -141,9 +141,9 @@ body [data-sonner-toaster][data-theme=dark] {
   .MuiTableCell-root {
     background-color: var(--mui-palette-background-paper);
     border-bottom: 4px solid var(--mui-palette-background-default);
-    &.MuiTableCell-sizeSmall {
-      border-bottom-width: 2px;
-    }
+    // &.MuiTableCell-sizeSmall {
+    //   border-bottom-width: 2px;
+    // }
   }
   // we have to apply rounded corners to the TD instead of TR tags
   .MuiTableCell-root:first-child {
