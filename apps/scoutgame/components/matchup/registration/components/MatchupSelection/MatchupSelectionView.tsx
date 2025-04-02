@@ -11,6 +11,7 @@ import { MyDeveloperCards } from './MyDeveloperCards';
 const slots = Array.from({ length: 5 });
 
 export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
+  const totalCredits = myMatchup.selections?.reduce((acc, selection) => acc + selection.credits, 0) || 0;
   return (
     <Box>
       <Typography variant='h5' color='secondary'>
@@ -41,9 +42,9 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
                   {developer ? (
                     <>
                       <Box sx={{ mr: 2 }}>
-                        <Avatar src={developer.avatar || '/images/default-avatar.png'} alt='' />
+                        <Avatar size='small' name={developer.displayName} src={developer.avatar} alt='' />
                       </Box>
-                      <Box sx={{ flexGrow: 1 }}>
+                      <Box sx={{ minWidth: 150 }}>
                         <Typography variant='body1'>{developer.displayName}</Typography>
                       </Box>
                       <Typography variant='body2' color='text.secondary'>
@@ -72,7 +73,7 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
                 BALANCE
               </Typography>
               <Typography gutterBottom textTransform='uppercase' align='center'>
-                {myMatchup.totalScore} / 35 credits
+                {totalCredits} / 35 credits
               </Typography>
             </Box>
             <Button variant='contained' disabled={myMatchup.selections.length !== 5}>

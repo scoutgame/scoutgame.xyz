@@ -13,7 +13,7 @@ async function query() {
     }
   });
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 12; i++) {
     const builder = await mockBuilder({ createNft: true, nftSeason: getCurrentSeasonStart() });
     const levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     await mockUserSeasonStats({
@@ -22,7 +22,7 @@ async function query() {
       level: Math.floor(Math.random() * levels.length)
     });
     // purchase a subset of the builders
-    if (i <= 3) {
+    if (i <= 6) {
       await mockScoutedNft({
         builderId: builder.id,
         scoutId: scout.id,

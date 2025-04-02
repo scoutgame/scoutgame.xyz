@@ -4,6 +4,7 @@ import { Card, Stack, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { useLgScreen, useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import type { ComponentType } from 'react';
 
 import { NFTListingButton } from '../../NFTListing/NFTListingButton';
 import { NFTListingEditButton } from '../../NFTListing/NFTListingEditButton';
@@ -35,7 +36,8 @@ export function BuilderCard({
   markStarterCardPurchased = false,
   type,
   showListButton = false,
-  scoutInView
+  scoutInView,
+  actionSlot: ActionSlotComponent
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
@@ -46,6 +48,7 @@ export function BuilderCard({
   type: 'default' | 'starter_pack';
   showListButton?: boolean;
   scoutInView?: string;
+  actionSlot?: ComponentType<{ builder: any }>;
 }) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
@@ -111,8 +114,10 @@ export function BuilderCard({
           <BuilderCardStats {...builder} isStarterCard={type === 'starter_pack'} size={size} />
         )}
       </BuilderCardNftDisplay>
-      {!showListButton &&
-        (lowestNonUserListing ? (
+      {ActionSlotComponent ? (
+        <ActionSlotComponent builder={builder} />
+      ) : !showListButton ? (
+        lowestNonUserListing ? (
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
             <NFTListingPurchaseButton builder={builder} listing={lowestNonUserListing} />
           </Stack>
@@ -120,8 +125,8 @@ export function BuilderCard({
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
             <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} type={type} />
           </Stack>
-        ) : null)}
-      {showListButton &&
+        ) : null
+      ) : (
         type !== 'starter_pack' &&
         (!userListings.length ? (
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
@@ -129,7 +134,8 @@ export function BuilderCard({
           </Stack>
         ) : (
           <NFTListingEditButton listing={userListings[0]} />
-        ))}
+        ))
+      )}
     </Card>
   );
 }

@@ -1,6 +1,6 @@
 import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'> & {
   scout: {
@@ -12,8 +12,8 @@ export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'
 
 export async function getMyMatchup({
   scoutId,
-  week,
-  currentWeek = getCurrentWeek()
+  week
+  // currentWeek = getCurrentWeek()
 }: {
   scoutId?: string;
   week: string;
@@ -44,12 +44,12 @@ export async function getMyMatchup({
               displayName: true,
               path: true,
               avatar: true,
-              userWeeklyStats: {
+              userSeasonStats: {
                 where: {
-                  week: currentWeek
+                  season: getCurrentSeasonStart()
                 },
                 select: {
-                  rank: true
+                  level: true
                 }
               }
             }
@@ -65,7 +65,7 @@ export async function getMyMatchup({
     ...matchup,
     selections: matchup.selections.map((selection) => ({
       ...selection,
-      credits: selection.developer.userWeeklyStats[0].rank || 0
+      credits: selection.developer.userSeasonStats[0].level || 0
     }))
   };
 }

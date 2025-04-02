@@ -1,10 +1,7 @@
-import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/material';
-import { getEntriesDuringRegistration, type ScoutMatchupEntry } from '@packages/matchup/getEntries';
+import { Box, Grid2 as Grid } from '@mui/material';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
-import { getNextMatchup } from '@packages/matchup/getNextMatchup';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
-import Image from 'next/image';
 import { Suspense } from 'react';
 
 import { HowToPlayCard } from './components/HowToPlayCard';
@@ -24,7 +21,7 @@ export function MatchupRegistrationPage({
   return (
     <PageContainer>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid size={{ xs: 12, md: 8 }} mb={10}>
           <RegistrationHeader matchup={matchup} registered={!!myMatchup} />
           {myMatchup?.submittedAt ? (
             <MatchUpSubmittedView myMatchup={myMatchup} matchup={matchup} />

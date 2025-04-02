@@ -96,17 +96,7 @@ export function AllDevelopersTable({
               <SortIcon columnName='week_gems' order={order} sort={sort} />
             </Stack>
           </TableCell>
-          <TableCell
-            onClick={() => handleSort('estimated_payout')}
-            sx={{
-              cursor: 'pointer'
-            }}
-          >
-            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
-              STARTER PRICE
-              <SortIcon columnName='estimated_payout' order={order} sort={sort} />
-            </Stack>
-          </TableCell>
+          <TableCell align='center'>STARTER PRICE</TableCell>
           <TableCell
             onClick={() => handleSort('price')}
             sx={{
@@ -212,7 +202,7 @@ export function AllDevelopersTable({
                   />
                 </Stack>
               </TableCell>
-              <TableCell align='right' width={isMdScreen ? 150 : 'auto'}>
+              <TableCell align='center'>
                 <ScoutButton
                   builder={{
                     ...builder,
