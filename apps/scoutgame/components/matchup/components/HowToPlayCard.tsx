@@ -1,9 +1,9 @@
 'use client';
 
 import { Box, Card, CardContent, Stack, Typography, Button } from '@mui/material';
+import { MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
 
 import { EmblaCarousel } from 'components/common/EmblaCarousel/EmblaCarousel';
 
@@ -19,8 +19,8 @@ const slides: SlideContent[] = [
     iconSrc: '/images/matchup/howtoplay_open.svg',
     text: (
       <Typography variant='body2'>
-        Kick things off by registering! Pay the 50 Scout Point entry fee before 11:59 PM Monday UTC to join this week’s
-        action.
+        Kick things off by registering! Pay the {MATCHUP_REGISTRATION_FEE} Scout Point entry fee before 11:59 PM Monday
+        UTC to join this week’s action.
       </Typography>
     )
   },
@@ -54,14 +54,15 @@ const slides: SlideContent[] = [
           Here’s what’s up for grabs every week:
         </Typography>
         <Typography fontSize='.8rem'>
-          🏆 1st Place: 50% of the prize pool + 120{' '}
+          🏆 1st Place: 50% of the prize pool + 60{' '}
           <Image width={10} height={10} src='/images/crypto/op.png' alt='' style={{ display: 'inline' }} />
         </Typography>
         <Typography fontSize='.8rem'>
-          🥈 2nd Place: 30% of the prize pool + 50 <Image width={10} height={10} src='/images/crypto/op.png' alt='' />
+          🥈 2nd Place: 30% of the prize pool + 25 <Image width={10} height={10} src='/images/crypto/op.png' alt='' />
         </Typography>
         <Typography fontSize='.8rem' sx={{ mb: 1 }}>
-          🥉 3rd Place: 20% of the prize pool + 30 <Image width={10} height={10} src='/images/crypto/op.png' alt='' />
+          🥉 3rd Place: 20% of the prize pool + 15
+          <Image width={10} height={10} src='/images/crypto/op.png' alt='' />
         </Typography>
         <Box mr={3}>
           <Typography fontSize='.8rem' align='center' sx={{ mb: 2 }}>
@@ -78,7 +79,19 @@ const slides: SlideContent[] = [
   }
 ];
 
-export function HowToPlayCard() {
+const closedRegistrationFirstSlide: SlideContent = {
+  subtitle: '1. Register',
+  iconSrc: '/images/matchup/howtoplay_closed.svg',
+  text: (
+    <Typography variant='body2'>
+      Registration for this week’s Match Up is closed. Come back Monday and pay the {MATCHUP_REGISTRATION_FEE} Scout
+      Point entry fee before 11:59 PM Monday UTC to join next week’s action..
+    </Typography>
+  )
+};
+
+export function HowToPlayCard({ registrationOpen }: { registrationOpen: boolean }) {
+  const slidesToShow = registrationOpen ? slides : [closedRegistrationFirstSlide, ...slides.slice(1)];
   return (
     <Card sx={{ mb: 2, overflow: 'visible', borderColor: 'secondary.main' }}>
       <CardContent>
@@ -91,7 +104,7 @@ export function HowToPlayCard() {
             align: 'center',
             slidesToScroll: 1
           }}
-          slides={slides.map((slide) => (
+          slides={slidesToShow.map((slide) => (
             <SlideContent key={slide.subtitle} {...slide} />
           ))}
         />

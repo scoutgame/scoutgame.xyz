@@ -2,7 +2,8 @@ import { Box, Grid2 as Grid, Card, Typography, CardActionArea } from '@mui/mater
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
 
-import { RegistrationHeader } from './register/components/RegistrationHeader';
+import { HowToPlayCard } from '../components/HowToPlayCard';
+import { RegistrationHeader } from '../components/RegistrationHeader';
 
 export function MatchupLeaderboardPage({
   matchup,
@@ -18,17 +19,7 @@ export function MatchupLeaderboardPage({
           <RegistrationHeader matchup={matchup} registered={hasRegistered} />
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Card>
-            <Typography variant='h5' gutterBottom>
-              Play Weekly Match Up!
-            </Typography>
-            <Box sx={{ mt: 2 }}>
-              <Typography variant='subtitle1' gutterBottom>
-                Registered Scouts:
-              </Typography>
-              {/* TODO: Add registered scouts table */}
-            </Box>
-          </Card>
+          <HowToPlayCard registrationOpen={false} />
         </Grid>
       </Grid>
     </PageContainer>

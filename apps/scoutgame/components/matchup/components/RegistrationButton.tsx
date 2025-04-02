@@ -13,6 +13,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
+import { MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
 import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
@@ -74,14 +75,16 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
         endIcon={registered ? <CheckCircleIcon color='inherit' /> : <PointsIcon color='inherit' />}
         onClick={handleRegister}
       >
-        {registered ? 'Registered' : 'Register 50'}
+        {registered ? 'Registered' : `Register ${MATCHUP_REGISTRATION_FEE}`}
       </Button>
       <Dialog open={isRegisterModalOpen} onClose={onClose} maxWidth='xs' fullWidth>
         <DialogTitle>Confirm Registration</DialogTitle>
         <DialogContent>
           <DialogContentText component='div'>
             <Stack spacing={2}>
-              <Typography>Are you sure you want to register?</Typography>
+              <Typography>
+                You will be charged {MATCHUP_REGISTRATION_FEE} Scout Points to register for this matchup.
+              </Typography>
             </Stack>
           </DialogContentText>
         </DialogContent>
@@ -96,7 +99,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
             endIcon={<PointsIcon color='inherit' />}
             loading={isExecuting}
           >
-            Register 50
+            Register {MATCHUP_REGISTRATION_FEE}
           </LoadingButton>
         </DialogActions>
       </Dialog>

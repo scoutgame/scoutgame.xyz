@@ -4,7 +4,7 @@ import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 
 // import { MatchupProvider } from 'components/matchup/hooks/useMatchup';
-import { MatchupLeaderboardPage } from 'components/matchup/MatchupLeaderboardPage';
+import { MatchupLeaderboardPage } from 'components/matchup/leaderboard/MatchupLeaderboardPage';
 import { MatchupRegistrationPage } from 'components/matchup/register/MatchupRegistrationPage';
 
 export default async function MatchupPageWrapper() {
