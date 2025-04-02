@@ -16,25 +16,23 @@ export function AllDevelopersTableContainer({
   initialDevelopers = [],
   initialCursor = null,
   sortBy = 'week_gems',
-  order = 'asc',
-  nftType = 'starter'
+  order = 'asc'
 }: {
   initialDevelopers?: DeveloperMetadata[];
   initialCursor?: DeveloperTableCursor | null;
   sortBy?: DevelopersSortBy;
   order?: 'asc' | 'desc';
-  nftType: 'default' | 'starter';
 }) {
   const fetchDevelopers = useCallback(
     (opts: { cursor: DeveloperTableCursor | null }) => {
       return getDevelopersForTableAction({
         sortBy,
         order,
-        nftType,
+        nftType: 'default',
         cursor: opts.cursor || null
       });
     },
-    [sortBy, order, nftType]
+    [sortBy, order]
   );
 
   const {

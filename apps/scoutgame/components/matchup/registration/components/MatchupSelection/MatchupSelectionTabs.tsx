@@ -23,8 +23,8 @@ export function MatchupSelectionTabs({ myCardsView, allCardsView }: MatchupSelec
   return (
     <Box sx={{ mt: 2 }}>
       <StyledTabs value={activeTab} onChange={handleTabChange}>
-        <StyledTab value='my_cards' label='My Cards' />
-        <StyledTab value='all_cards' label='All Cards' />
+        <StyledTab value='my_cards' label='Your Deck' />
+        <StyledTab value='all_cards' label='+ New Developer' />
       </StyledTabs>
 
       <Box sx={{ mt: 2 }}>
@@ -34,7 +34,7 @@ export function MatchupSelectionTabs({ myCardsView, allCardsView }: MatchupSelec
               myCardsView
             ) : (
               <Paper sx={{ p: 2 }}>
-                <Typography>Please sign in to view your cards.</Typography>
+                <Typography>Please sign in to view your deck</Typography>
               </Paper>
             )
           ) : (

@@ -59,6 +59,7 @@ export async function mockBuilder({
   const result = await prisma.scout.create({
     data: {
       id,
+      avatar: randomAvatar(),
       createdAt,
       currentBalance,
       path,
@@ -106,6 +107,7 @@ export async function mockBuilder({
 
   if (createNft) {
     await mockBuilderNft({ builderId: result.id, season: nftSeason });
+    await mockBuilderNft({ builderId: result.id, season: nftSeason, nftType: 'starter_pack' });
   }
   const { githubUsers, ...scout } = result;
   return { ...scout, githubUser: githubUsers[0]! };
@@ -130,7 +132,7 @@ export async function mockScout({
   farcasterName,
   referralCode = randomString(),
   currentBalance,
-  avatar,
+  avatar = randomAvatar(),
   farcasterId,
   deletedAt,
   telegramId,
@@ -723,8 +725,15 @@ export async function mockBuilderNft({
           })
         );
 
-  const colors = ['teal', 'orange', 'crimson', 'magenta', 'turquoise'];
-  const faces = ['▲ᴗ▲', '^ᴗ^', '◕_◕', '•`_´•', '•`ᴗ´•', 'o_O', '0ᴗo', '^_^', '0>0', '-_-'];
+  const builder = await prisma.scout.findFirst({
+    where: {
+      id: builderId
+    },
+    select: {
+      avatar: true
+    }
+  });
+
   const nft = await prisma.builderNft.create({
     data: {
       createdAt,
@@ -733,7 +742,7 @@ export async function mockBuilderNft({
       contractAddress,
       currentPrice,
       season,
-      imageUrl: `https://placehold.co/300x200/${colors[Math.floor(Math.random() * colors.length)]}/fff?text=${faces[Math.floor(Math.random() * faces.length)]}`,
+      imageUrl: builder?.avatar || randomAvatar(),
       tokenId,
       nftType: nftType ?? 'default',
       nftSoldEvents: {
@@ -758,6 +767,12 @@ export async function mockBuilderNft({
     });
   }
   return nft;
+}
+
+function randomAvatar() {
+  const colors = ['teal', 'orange', 'crimson', 'magenta', 'turquoise'];
+  const faces = ['▲ᴗ▲', '^ᴗ^', '◕_◕', '•`_´•', '•`ᴗ´•', 'o_O', '0ᴗo', '^_^', '0>0', '-_-'];
+  return `https://placehold.co/300x200/${colors[Math.floor(Math.random() * colors.length)]}/fff?text=${faces[Math.floor(Math.random() * faces.length)]}`;
 }
 
 export async function mockBuilderStrike({

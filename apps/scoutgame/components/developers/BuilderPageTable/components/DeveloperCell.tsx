@@ -5,8 +5,7 @@ import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import Link from 'next/link';
 
 import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
-
-import { TableCellText } from './TableCellText';
+import { TableCellText } from 'components/common/TableCellText';
 
 export function DeveloperCell({ displayName, avatar, path }: { displayName: string; avatar: string; path: string }) {
   const { openModal, isLoading } = useDeveloperInfoModal();

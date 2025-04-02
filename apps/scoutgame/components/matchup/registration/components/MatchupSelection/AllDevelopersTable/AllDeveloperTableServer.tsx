@@ -18,7 +18,7 @@ export async function AllDevelopersTableServer({
 }) {
   const [error, data = { developers: [], nextCursor: null }] = await safeAwaitSSRData(
     getDevelopersForTable({
-      sortBy: 'level' as DevelopersSortBy,
+      sortBy: 'level',
       order: 'desc',
       loggedInScoutId: userId,
       nftType: 'default'
@@ -35,7 +35,6 @@ export async function AllDevelopersTableServer({
       initialCursor={data.nextCursor}
       order='desc'
       sortBy='level'
-      nftType='default'
     />
   );
 }

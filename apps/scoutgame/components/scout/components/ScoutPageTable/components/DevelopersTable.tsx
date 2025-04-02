@@ -15,9 +15,9 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
+import { TableCellText } from 'components/common/TableCellText';
 
 import { tableRowNoPaddingSx } from './CommonTableRow';
-import { TableCellText } from './TableCellText';
 
 function SortIcon({ columnName, order, sort }: { columnName: string; order: string; sort: string }) {
   if (sort !== columnName) return null;
