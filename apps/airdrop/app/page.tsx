@@ -7,11 +7,8 @@ import { ClaimToken } from '@/components/claim/ClaimToken';
 export default function AirdropPage() {
   return (
     <Container maxWidth='lg' sx={{ py: 4 }}>
-      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
-        <Stack flex={1}>
-          <ClaimToken />
-        </Stack>
-        <Image src='/images/hero.png' alt='Airdrop Banner' width={350} height={350} style={{ borderRadius: '10px' }} />
+      <Stack sx={{ minHeight: 350 }}>
+        <ClaimToken />
       </Stack>
       <Stack flexDirection='row' gap={2}>
         <Paper sx={{ py: 2, px: 3, flex: 1, gap: 1.5, display: 'flex', flexDirection: 'column' }}>
