@@ -1,31 +1,11 @@
-import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, Stack, Typography } from '@mui/material';
-import { shortenHex } from '@packages/utils/strings';
+import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Link from 'next/link';
 
-import { StyledAccountStack } from './StyledComponents';
+import type { DonationPercentage } from './DonationStep';
 
-interface WalletAddressProps {
-  address: string;
-}
-
-export function WalletAddress({ address }: WalletAddressProps) {
-  return (
-    <StyledAccountStack>
-      <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
-      <Typography variant='subtitle2' color='textDisabled'>
-        Connected: {shortenHex(address, 4)}
-      </Typography>
-    </StyledAccountStack>
-  );
-}
-
-interface PlayButtonProps {
-  isDesktop: boolean;
-}
-
-export function PlayButton({ isDesktop }: PlayButtonProps) {
+export function PlayButton() {
   return (
     <Link href='https://draft.scoutgame.xyz'>
       <Button
@@ -44,12 +24,13 @@ export function PlayButton({ isDesktop }: PlayButtonProps) {
   );
 }
 
-interface SuccessMessageProps {
-  isDesktop: boolean;
-  donationPercentage: 'donate_full' | 'donate_half' | 'donate_none';
-}
+type SuccessMessageProps = {
+  donationPercentage: DonationPercentage;
+};
 
-export function SuccessMessage({ isDesktop, donationPercentage }: SuccessMessageProps) {
+export function SuccessMessage({ donationPercentage }: SuccessMessageProps) {
+  const isDesktop = useMdScreen();
+
   return (
     <Stack
       gap={{
@@ -91,7 +72,7 @@ export function SuccessMessage({ isDesktop, donationPercentage }: SuccessMessage
           Now, let's go Bid on some developers and build your team before the season begins!
         </Typography>
       )}
-      <PlayButton isDesktop={isDesktop} />
+      <PlayButton />
     </Stack>
   );
 }

@@ -1,14 +1,16 @@
 import { Stack } from '@mui/material';
+import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import type { ReactNode } from 'react';
 
 interface PageLayoutProps {
   children: ReactNode;
   imageSrc: string;
   imageAlt: string;
-  isDesktop: boolean;
 }
 
-export function PageLayout({ children, imageSrc, imageAlt, isDesktop }: PageLayoutProps) {
+export function PageLayout({ children, imageSrc, imageAlt }: PageLayoutProps) {
+  const isDesktop = useMdScreen();
+
   return (
     <Stack
       flexDirection={{

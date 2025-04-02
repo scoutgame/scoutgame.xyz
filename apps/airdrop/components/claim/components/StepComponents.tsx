@@ -1,16 +1,16 @@
 import { Button, Stack, Typography } from '@mui/material';
+import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Link from 'next/link';
 
-import { WalletAddress, PlayButton } from './ClaimComponents';
+import { PlayButton } from './ClaimStep';
+import { ConnectedWalletDisplay } from './ConnectedWalletDisplay';
 import { PageLayout } from './PageLayout';
 
-interface StartStepProps {
-  isDesktop: boolean;
-}
+export function StartStep() {
+  const isDesktop = useMdScreen();
 
-export function StartStep({ isDesktop }: StartStepProps) {
   return (
-    <PageLayout imageSrc='/images/hero.png' imageAlt='Airdrop Banner' isDesktop={isDesktop}>
+    <PageLayout imageSrc='/images/hero.png' imageAlt='Airdrop Banner'>
       <Stack
         gap={2}
         flex={1}
@@ -55,14 +55,11 @@ export function StartStep({ isDesktop }: StartStepProps) {
   );
 }
 
-interface NotQualifiedStepProps {
-  isDesktop: boolean;
-  address: string;
-}
+export function NotQualifiedStep() {
+  const isDesktop = useMdScreen();
 
-export function NotQualifiedStep({ isDesktop, address }: NotQualifiedStepProps) {
   return (
-    <PageLayout imageSrc='/images/scout-switch.png' imageAlt='Airdrop Banner' isDesktop={isDesktop}>
+    <PageLayout imageSrc='/images/scout-switch.png' imageAlt='Airdrop Banner'>
       <Stack gap={1} alignItems='center' flex={1}>
         <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
           Hey, there's always <br />
@@ -71,7 +68,7 @@ export function NotQualifiedStep({ isDesktop, address }: NotQualifiedStepProps) 
         <Typography variant='h6' textAlign='center'>
           You did not qualify this time around.
         </Typography>
-        <WalletAddress address={address} />
+        <ConnectedWalletDisplay />
         {isDesktop ? (
           <Typography variant='h6' textAlign='center' fontWeight={400}>
             Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
@@ -83,20 +80,16 @@ export function NotQualifiedStep({ isDesktop, address }: NotQualifiedStepProps) 
             officially begins!
           </Typography>
         )}
-        <PlayButton isDesktop={isDesktop} />
+        <PlayButton />
       </Stack>
     </PageLayout>
   );
 }
 
-interface AlreadyClaimedStepProps {
-  isDesktop: boolean;
-  address: string;
-}
-
-export function AlreadyClaimedStep({ isDesktop, address }: AlreadyClaimedStepProps) {
+export function AlreadyClaimedStep() {
+  const isDesktop = useMdScreen();
   return (
-    <PageLayout imageSrc='/images/scout-switch.png' imageAlt='Airdrop Banner' isDesktop={isDesktop}>
+    <PageLayout imageSrc='/images/scout-switch.png' imageAlt='Airdrop Banner'>
       <Stack gap={1} alignItems='center' flex={1}>
         <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
           That's all until next season!
@@ -104,7 +97,7 @@ export function AlreadyClaimedStep({ isDesktop, address }: AlreadyClaimedStepPro
         <Typography variant='h6' textAlign='center'>
           You already claimed this season's airdrop.
         </Typography>
-        <WalletAddress address={address} />
+        <ConnectedWalletDisplay />
         {isDesktop ? (
           <Typography variant='h6' textAlign='center' fontWeight={400}>
             Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
@@ -116,22 +109,22 @@ export function AlreadyClaimedStep({ isDesktop, address }: AlreadyClaimedStepPro
             officially begins!
           </Typography>
         )}
-        <PlayButton isDesktop={isDesktop} />
+        <PlayButton />
       </Stack>
     </PageLayout>
   );
 }
 
-interface ContinueStepProps {
-  isDesktop: boolean;
-  address: string;
+type ContinueStepProps = {
   onContinue: () => void;
   devTokenAmount: number;
-}
+};
 
-export function ContinueStep({ isDesktop, address, onContinue, devTokenAmount }: ContinueStepProps) {
+export function ContinueStep({ onContinue, devTokenAmount }: ContinueStepProps) {
+  const isDesktop = useMdScreen();
+
   return (
-    <PageLayout imageSrc='/images/hero.png' imageAlt='Airdrop Banner' isDesktop={isDesktop}>
+    <PageLayout imageSrc='/images/hero.png' imageAlt='Airdrop Banner'>
       <Stack gap={1} alignItems='center' flex={1}>
         <Stack
           mt={{
@@ -149,7 +142,7 @@ export function ContinueStep({ isDesktop, address, onContinue, devTokenAmount }:
         <Typography variant='h6' textAlign='center'>
           You have earned DEV tokens!
         </Typography>
-        <WalletAddress address={address} />
+        <ConnectedWalletDisplay />
         <Stack flexDirection='row' gap={1} alignItems='center' my={1}>
           <Typography variant={isDesktop ? 'h4' : 'h5'} fontWeight={600}>
             {devTokenAmount}

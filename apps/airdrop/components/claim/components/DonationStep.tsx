@@ -1,26 +1,20 @@
 import { Button, Stack, Typography } from '@mui/material';
+import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 
 import { StyledCard } from './StyledComponents';
 
-interface DonationOptionProps {
-  isDesktop: boolean;
+type DonationOptionProps = {
   selected: boolean;
   onClick: () => void;
   title: string;
   description: string;
   leftIcon?: string;
   rightIcon?: string;
-}
+};
 
-export function DonationOption({
-  isDesktop,
-  selected,
-  onClick,
-  title,
-  description,
-  leftIcon,
-  rightIcon
-}: DonationOptionProps) {
+function DonationOption({ selected, onClick, title, description, leftIcon, rightIcon }: DonationOptionProps) {
+  const isDesktop = useMdScreen();
+
   return (
     <StyledCard selected={selected} onClick={onClick}>
       <Stack flexDirection='row' gap={1} alignItems='center'>
@@ -35,21 +29,22 @@ export function DonationOption({
   );
 }
 
-interface DonationSelectionProps {
-  isDesktop: boolean;
+export type DonationPercentage = 'donate_full' | 'donate_half' | 'donate_none';
+
+type DonationSelectionProps = {
   devTokenAmount: number;
-  donationPercentage: 'donate_full' | 'donate_half' | 'donate_none';
-  onDonationChange: (percentage: 'donate_full' | 'donate_half' | 'donate_none') => void;
+  donationPercentage: DonationPercentage;
+  onDonationChange: (percentage: DonationPercentage) => void;
   onSelect: () => void;
-}
+};
 
 export function DonationSelection({
-  isDesktop,
   devTokenAmount,
   donationPercentage,
   onDonationChange,
   onSelect
 }: DonationSelectionProps) {
+  const isDesktop = useMdScreen();
   return (
     <Stack gap={3} alignItems='center'>
       <Typography variant='h4' color='secondary'>
@@ -64,7 +59,6 @@ export function DonationSelection({
         alignItems='center'
       >
         <DonationOption
-          isDesktop={isDesktop}
           selected={donationPercentage === 'donate_full'}
           onClick={() => onDonationChange('donate_full')}
           title='Donate 100% to Open Source'
@@ -72,7 +66,6 @@ export function DonationSelection({
           leftIcon='/images/quest-icon.svg'
         />
         <DonationOption
-          isDesktop={isDesktop}
           selected={donationPercentage === 'donate_half'}
           onClick={() => onDonationChange('donate_half')}
           title='Donate 50% & Keep 50%'
@@ -81,7 +74,6 @@ export function DonationSelection({
           rightIcon='/images/scout-icon.svg'
         />
         <DonationOption
-          isDesktop={isDesktop}
           selected={donationPercentage === 'donate_none'}
           onClick={() => onDonationChange('donate_none')}
           title='Keep 100% to play'
@@ -96,21 +88,21 @@ export function DonationSelection({
   );
 }
 
-interface DonationConfirmationProps {
-  isDesktop: boolean;
+type DonationConfirmationProps = {
   donationPercentage: 'donate_full' | 'donate_half' | 'donate_none';
   devTokenAmount: number;
   onCancel: () => void;
   onClaim: () => void;
-}
+};
 
 export function DonationConfirmation({
-  isDesktop,
   donationPercentage,
   devTokenAmount,
   onCancel,
   onClaim
 }: DonationConfirmationProps) {
+  const isDesktop = useMdScreen();
+
   const donationAmount =
     donationPercentage === 'donate_full'
       ? devTokenAmount

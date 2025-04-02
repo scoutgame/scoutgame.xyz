@@ -5,8 +5,8 @@ import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
-import { SuccessMessage } from './components/ClaimComponents';
-import { DonationSelection, DonationConfirmation } from './components/DonationComponents';
+import { SuccessMessage } from './components/ClaimStep';
+import { DonationSelection, DonationConfirmation } from './components/DonationStep';
 import { StartStep, NotQualifiedStep, AlreadyClaimedStep, ContinueStep } from './components/StepComponents';
 
 const DEV_TOKEN_AMOUNT = 2500;
@@ -21,42 +21,35 @@ export function ClaimToken() {
   );
 
   const { address = '' } = useAccount();
-  const [isClaiming, setIsClaiming] = useState(false);
   const isDesktop = useMdScreen();
 
   useEffect(() => {
     if (address) {
       setStep('continue');
+    } else {
+      setStep('start');
     }
   }, [address]);
 
   if (step === 'start') {
-    return <StartStep isDesktop={isDesktop} />;
+    return <StartStep />;
   }
 
   if (step === 'not_qualified') {
-    return <NotQualifiedStep isDesktop={isDesktop} address={address} />;
+    return <NotQualifiedStep />;
   }
 
   if (step === 'already_claimed') {
-    return <AlreadyClaimedStep isDesktop={isDesktop} address={address} />;
+    return <AlreadyClaimedStep />;
   }
 
   if (step === 'continue') {
-    return (
-      <ContinueStep
-        isDesktop={isDesktop}
-        address={address}
-        onContinue={() => setStep('choose')}
-        devTokenAmount={DEV_TOKEN_AMOUNT}
-      />
-    );
+    return <ContinueStep onContinue={() => setStep('choose')} devTokenAmount={DEV_TOKEN_AMOUNT} />;
   }
 
   if (step === 'choose') {
     return (
       <DonationSelection
-        isDesktop={isDesktop}
         devTokenAmount={DEV_TOKEN_AMOUNT}
         donationPercentage={donationPercentage}
         onDonationChange={setDonationPercentage}
@@ -68,7 +61,6 @@ export function ClaimToken() {
   if (step === 'confirm') {
     return (
       <DonationConfirmation
-        isDesktop={isDesktop}
         donationPercentage={donationPercentage}
         devTokenAmount={DEV_TOKEN_AMOUNT}
         onCancel={() => setStep('choose')}
@@ -96,7 +88,7 @@ export function ClaimToken() {
         }}
       >
         <Stack flex={1} justifyContent='center' alignItems='center' flexDirection='row'>
-          <SuccessMessage isDesktop={isDesktop} donationPercentage={donationPercentage} />
+          <SuccessMessage donationPercentage={donationPercentage} />
         </Stack>
         <img
           src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
