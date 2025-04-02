@@ -182,4 +182,79 @@ export function ClaimToken() {
       </Stack>
     );
   }
+
+  if (step === 'confirm') {
+    const donationAmount =
+      donationPercentage === 'donate_full'
+        ? DEV_TOKEN_AMOUNT
+        : donationPercentage === 'donate_half'
+          ? DEV_TOKEN_AMOUNT / 2
+          : 0;
+    const playAmount = DEV_TOKEN_AMOUNT - donationAmount;
+
+    return (
+      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
+        <Stack flex={1} gap={4} justifyContent='center' alignItems='center'>
+          <Typography variant='h5' color='secondary'>
+            Your Selection
+          </Typography>
+          <Stack flexDirection='row' gap={10} alignItems='center'>
+            {donationAmount ? (
+              <Stack gap={1.5} alignItems='center'>
+                <Image src='/images/quest-icon-primary.svg' alt='Quest Icon' width={75} height={75} />
+                <Typography variant='h6' textAlign='center'>
+                  Donate {donationPercentage === 'donate_full' ? '100%' : '50%'} <br />
+                  to Open Source
+                </Typography>
+                <Stack flexDirection='row' gap={1} alignItems='center'>
+                  <Typography variant='h4' fontWeight={600}>
+                    {donationAmount}
+                  </Typography>
+                  <Image src='/images/dev-token-logo.png' alt='DEV Icon' width={35} height={35} />
+                </Stack>
+                {donationPercentage !== 'donate_full' ? (
+                  <Button variant='outlined' sx={{ width: 150, mt: 2 }} onClick={() => setStep('choose')}>
+                    Cancel
+                  </Button>
+                ) : null}
+              </Stack>
+            ) : null}
+
+            {playAmount ? (
+              <Stack gap={1.5} alignItems='center'>
+                <Image src='/images/scout-icon-primary.svg' alt='Scout Icon' width={75} height={75} />
+                <Typography variant='h6' textAlign='center'>
+                  Claim {donationPercentage === 'donate_none' ? '100%' : '50%'} <br />
+                  to Play
+                </Typography>
+                <Stack flexDirection='row' gap={1} alignItems='center'>
+                  <Typography variant='h4' fontWeight={600}>
+                    {playAmount}
+                  </Typography>
+                  <Image src='/images/dev-token-logo.png' alt='DEV Icon' width={35} height={35} />
+                </Stack>
+                {donationPercentage !== 'donate_none' ? (
+                  <Button variant='contained' sx={{ width: 150, mt: 2 }} onClick={() => setStep('play')}>
+                    Claim
+                  </Button>
+                ) : null}
+              </Stack>
+            ) : null}
+          </Stack>
+
+          {donationPercentage !== 'donate_half' ? (
+            <Stack flexDirection='row' gap={4} alignItems='center'>
+              <Button variant='outlined' sx={{ width: 150 }} onClick={() => setStep('choose')}>
+                Cancel
+              </Button>
+              <Button variant='contained' sx={{ width: 150 }} onClick={() => setStep('play')}>
+                Claim
+              </Button>
+            </Stack>
+          ) : null}
+        </Stack>
+        <Image src='/images/scout-switch.png' alt='Scout Switch' width={350} height={350} />
+      </Stack>
+    );
+  }
 }
