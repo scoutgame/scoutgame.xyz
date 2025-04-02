@@ -184,6 +184,36 @@ services:
     profiles:
       - stg-scoutgame-draft
 
+  prd-scoutgame-airdrop:
+    extends:
+      service: defaults
+    ports:
+      - '80:3000'
+    command:
+      [
+        'sh',
+        '-c',
+        'npx react-env --path .env --dest ./apps/airdrop/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start apps/airdrop --keepAliveTimeout 70000'
+      ]
+    profiles:
+      - prd-scoutgame-airdrop
+
+  stg-scoutgame-airdrop:
+    extends:
+      service: defaults
+    ports:
+      - '80:3000'
+    command:
+      [
+        'sh',
+        '-c',
+        'npm run prisma:deploy && npx react-env --path .env --dest ./apps/airdrop/public -- node --max-old-space-size=8192 --require dd-trace/init node_modules/.bin/next start  apps/airdrop --keepAliveTimeout 70000'
+      ]
+    environment:
+      - REACT_APP_APP_ENV=staging
+    profiles:
+      - stg-scoutgame-airdrop
+
   prd-scoutgametelegram:
     extends:
       service: defaults
