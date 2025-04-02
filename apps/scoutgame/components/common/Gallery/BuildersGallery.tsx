@@ -12,7 +12,8 @@ export function BuildersGallery({
   showListButton = false,
   showPurchaseButton = true,
   scoutInView,
-  actionSlot
+  actionSlot,
+  actionSlotProps
 }: {
   scoutInView?: string;
   builders: BuilderInfo[];
@@ -21,7 +22,8 @@ export function BuildersGallery({
   markStarterCardPurchased?: boolean;
   showListButton?: boolean;
   showPurchaseButton?: boolean;
-  actionSlot?: ComponentType<{ builder: any }>;
+  actionSlot?: ComponentType<any>;
+  actionSlotProps?: Record<string, any>;
 }) {
   return (
     <Box flexGrow={1}>
@@ -47,6 +49,7 @@ export function BuildersGallery({
                 markStarterCardPurchased={markStarterCardPurchased}
                 showListButton={showListButton}
                 actionSlot={actionSlot}
+                actionSlotProps={actionSlotProps}
               />
             </Box>
           </Grid>

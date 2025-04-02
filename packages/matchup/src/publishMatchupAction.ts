@@ -24,6 +24,7 @@ export const publishMatchupAction = authActionClient
       select: {
         developer: {
           select: {
+            id: true,
             userSeasonStats: {
               where: {
                 season: getCurrentSeasonStart()
@@ -50,15 +51,30 @@ export const publishMatchupAction = authActionClient
       throw new Error('You have exceeded the maximum number of credits');
     }
 
-    // Add the selection to the matchup
-    await prisma.scoutMatchup.update({
-      where: {
-        id: parsedInput.matchupId
-      },
-      data: {
-        submittedAt: new Date()
-      }
-    });
+    // record the credits value for each selection just in case we need to review
+    await prisma.$transaction([
+      prisma.scoutMatchup.update({
+        where: {
+          id: parsedInput.matchupId
+        },
+        data: {
+          submittedAt: new Date()
+        }
+      }),
+      ...selections.map((selection) => {
+        return prisma.scoutMatchupSelection.update({
+          where: {
+            matchupId_developerId: {
+              matchupId: parsedInput.matchupId,
+              developerId: selection.developer.id
+            }
+          },
+          data: {
+            creditsValue: selection.developer.userSeasonStats[0].level
+          }
+        });
+      })
+    ]);
 
     log.info('User published matchup', {
       userId: ctx.session.scoutId,

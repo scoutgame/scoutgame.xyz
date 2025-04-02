@@ -27,7 +27,7 @@ const whiteListedUserIds = [
   'b5016a86-3a3e-4b0d-8f52-cf29599b9fc8'
 ];
 
-export function BuilderCard({
+export function BuilderCard<T extends { builder: any } = { builder: any }>({
   builder,
   showPurchaseButton = false,
   hideDetails = false,
@@ -37,7 +37,8 @@ export function BuilderCard({
   type,
   showListButton = false,
   scoutInView,
-  actionSlot: ActionSlotComponent
+  actionSlot: ActionSlotComponent,
+  actionSlotProps
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
@@ -48,7 +49,8 @@ export function BuilderCard({
   type: 'default' | 'starter_pack';
   showListButton?: boolean;
   scoutInView?: string;
-  actionSlot?: ComponentType<{ builder: any }>;
+  actionSlot?: ComponentType<T>;
+  actionSlotProps?: Omit<T, 'builder'>;
 }) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
@@ -115,7 +117,7 @@ export function BuilderCard({
         )}
       </BuilderCardNftDisplay>
       {ActionSlotComponent ? (
-        <ActionSlotComponent builder={builder} />
+        <ActionSlotComponent builder={builder} {...(actionSlotProps as any)} />
       ) : !showListButton ? (
         lowestNonUserListing ? (
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>

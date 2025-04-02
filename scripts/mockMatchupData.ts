@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder, mockScoutedNft, mockUserSeasonStats } from '@packages/testing/database';
+import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 
 const builderDisplayName = 'coral-beaver';
 
@@ -12,6 +13,15 @@ async function query() {
       path: builderDisplayName
     }
   });
+
+  await sendPointsForMiscEvent({
+    builderId: scout.id,
+    points: -1000,
+    description: 'Mock matchup data',
+    claimed: true,
+    hideFromNotifications: true
+  });
+  console.log('1000 Points added to wallet');
 
   for (let i = 0; i < 12; i++) {
     const builder = await mockBuilder({ createNft: true, nftSeason: getCurrentSeasonStart() });

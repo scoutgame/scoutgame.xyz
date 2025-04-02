@@ -11,17 +11,14 @@ export const addMatchupSelectionAction = authActionClient
   .metadata({ actionName: 'update_partner_reward_payout' })
   .schema(
     yup.object({
-      week: yup.string().required(),
+      matchupId: yup.string().required(),
       developerId: yup.string().required()
     })
   )
   .action(async ({ ctx, parsedInput }) => {
     const selections = await prisma.scoutMatchupSelection.count({
       where: {
-        matchup: {
-          createdBy: ctx.session.scoutId,
-          week: parsedInput.week
-        }
+        matchupId: parsedInput.matchupId
       }
     });
 
@@ -34,10 +31,7 @@ export const addMatchupSelectionAction = authActionClient
       data: {
         matchup: {
           connect: {
-            createdBy_week: {
-              createdBy: ctx.session.scoutId,
-              week: parsedInput.week
-            }
+            id: parsedInput.matchupId
           }
         },
         developer: {

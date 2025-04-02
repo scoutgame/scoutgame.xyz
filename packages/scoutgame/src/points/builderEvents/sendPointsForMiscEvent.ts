@@ -36,8 +36,9 @@ export async function sendPointsForMiscEvent({
         pointsReceipts: {
           create: {
             claimedAt: claimed ? new Date() : null,
-            value: points,
-            recipientId: builderId,
+            value: Math.abs(points),
+            recipientId: points > 0 ? builderId : null,
+            senderId: points > 0 ? null : builderId,
             season,
             activities: hideFromNotifications
               ? undefined

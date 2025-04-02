@@ -2,17 +2,12 @@ import { log } from '@charmverse/core/log';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { MAX_CREDITS } from '@packages/matchup/config';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
-import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
-import { publishMatchupAction } from '@packages/matchup/publishMatchupAction';
-import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
-import { useAction } from 'next-safe-action/hooks';
-import { toast } from 'sonner';
 
-import { AllDevelopersTableServer } from './AllDevelopersTable/AllDeveloperTableServer';
-import { MatchupSelectionTabs } from './MatchupSelectionTabs';
-import { MyDeveloperCards } from './MyDeveloperCards';
-import { SubmitMatchupButton } from './SubmitMatchupButton';
+import { AllDevelopersTableServer } from './components/AllDevelopersTable/AllDeveloperTableServer';
+import { MatchupSelectionTabs } from './components/MatchupSelectionTabs';
+import { MyDeveloperCards } from './components/MyDeveloperCards';
+import { SubmitMatchupButton } from './components/SubmitMatchupButton';
 
 const slots = Array.from({ length: 5 });
 
@@ -102,7 +97,13 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
         ]}
       /> */}
       <MatchupSelectionTabs
-        myCardsView={<MyDeveloperCards userId={myMatchup.scout.id} />}
+        myCardsView={
+          <MyDeveloperCards
+            matchupId={myMatchup.id}
+            selectedDevelopers={myMatchup.selections?.map((selection) => selection.developer.id)}
+            userId={myMatchup.scout.id}
+          />
+        }
         allCardsView={<AllDevelopersTableServer userId={myMatchup.scout.id} />}
       />
     </Box>
