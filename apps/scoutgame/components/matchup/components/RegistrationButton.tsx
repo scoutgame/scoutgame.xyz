@@ -31,6 +31,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
   const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const isAuthenticated = Boolean(user?.id);
+  const hasEnoughPoints = user?.currentBalance && user.currentBalance >= MATCHUP_REGISTRATION_FEE;
 
   function onClose() {
     setIsRegisterModalOpen(false);
@@ -82,9 +83,13 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
         <DialogContent>
           <DialogContentText component='div'>
             <Stack spacing={2}>
-              <Typography>
-                You will be charged {MATCHUP_REGISTRATION_FEE} Scout Points to register for this matchup.
-              </Typography>
+              {hasEnoughPoints ? (
+                <Typography>
+                  You will be charged {MATCHUP_REGISTRATION_FEE} Scout Points to register for this matchup.
+                </Typography>
+              ) : (
+                <Typography>You do not have enough Scout Points to register for this matchup.</Typography>
+              )}
             </Stack>
           </DialogContentText>
         </DialogContent>
@@ -98,6 +103,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
             color='secondary'
             endIcon={<PointsIcon color='inherit' />}
             loading={isExecuting}
+            disabled={!hasEnoughPoints}
           >
             Register {MATCHUP_REGISTRATION_FEE}
           </LoadingButton>
