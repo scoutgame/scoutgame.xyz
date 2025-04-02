@@ -16,25 +16,25 @@ const StyledCard = styled(Card, {
   shouldForwardProp: (prop) => prop !== 'selected'
 })<{ selected?: boolean }>(({ theme, selected }) => ({
   width: 'fit-content',
-  padding: theme.spacing(2),
-  borderRadius: '15px',
-  borderWidth: theme.spacing(0.25),
+  padding: theme.breakpoints.down('md') ? theme.spacing(1.5) : theme.spacing(2),
+  borderRadius: theme.breakpoints.down('md') ? theme.spacing(1) : theme.spacing(2),
+  borderWidth: theme.breakpoints.down('md') ? theme.spacing(0.125) : theme.spacing(0.25),
   borderColor: theme.palette.primary.main,
   flex: 1,
   flexDirection: 'column',
-  gap: theme.spacing(1),
+  gap: theme.breakpoints.down('md') ? theme.spacing(0.5) : theme.spacing(1),
   display: 'flex',
   cursor: 'pointer',
   backgroundColor: selected ? theme.palette.primary.main : theme.palette.background.paper,
   transition: theme.transitions.create(['background-color', 'border-color'], {
-    duration: 200,
+    duration: 150,
     easing: 'ease-in-out'
   }),
   '&:hover': selected
     ? undefined
     : {
         transition: theme.transitions.create(['background-color', 'border-color'], {
-          duration: 200,
+          duration: 150,
           easing: 'ease-in-out'
         }),
         backgroundColor: theme.palette.background.light
@@ -59,7 +59,7 @@ const StyledAccountStack = styled(Stack)(({ theme }) => ({
 export function ClaimToken() {
   const [step, setStep] = useState<
     'start' | 'continue' | 'choose' | 'confirm' | 'play' | 'not_qualified' | 'already_claimed'
-  >('start');
+  >('play');
 
   const [donationPercentage, setDonationPercentage] = useState<'donate_full' | 'donate_half' | 'donate_none'>(
     'donate_half'
@@ -74,81 +74,6 @@ export function ClaimToken() {
       setStep('continue');
     }
   }, [address]);
-
-  if (step === 'not_qualified') {
-    return (
-      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
-        <Stack gap={1} alignItems='center' flex={1}>
-          <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
-            Hey, there's always <br />
-            next season!
-          </Typography>
-          <Typography variant='h6' textAlign='center'>
-            You did not qualify this time around.
-          </Typography>
-          <StyledAccountStack>
-            <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
-            <Typography variant='subtitle2' color='textDisabled'>
-              Connected: {shortenHex(address, 4)}
-            </Typography>
-          </StyledAccountStack>
-          <Typography variant='h6' textAlign='center' fontWeight={400}>
-            Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
-            before the season officially begins!
-          </Typography>
-          <Link href='https://draft.scoutgame.xyz'>
-            <Button variant='contained' sx={{ mt: 2, width: 'fit-content' }}>
-              Play
-            </Button>
-          </Link>
-        </Stack>
-        <Image
-          src='/images/scout-switch.png'
-          alt='Airdrop Banner'
-          width={350}
-          height={350}
-          style={{ borderRadius: '10px' }}
-        />
-      </Stack>
-    );
-  }
-
-  if (step === 'already_claimed') {
-    return (
-      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
-        <Stack gap={1} alignItems='center' flex={1}>
-          <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
-            That's all until next season!
-          </Typography>
-          <Typography variant='h6' textAlign='center'>
-            You already claimed this season’s airdrop.
-          </Typography>
-          <StyledAccountStack>
-            <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
-            <Typography variant='subtitle2' color='textDisabled'>
-              Connected: {shortenHex(address, 4)}
-            </Typography>
-          </StyledAccountStack>
-          <Typography variant='h6' textAlign='center' fontWeight={400}>
-            Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
-            before the season officially begins!
-          </Typography>
-          <Link href='https://draft.scoutgame.xyz'>
-            <Button variant='contained' sx={{ mt: 2, width: 'fit-content' }}>
-              Play
-            </Button>
-          </Link>
-        </Stack>
-        <Image
-          src='/images/scout-switch.png'
-          alt='Airdrop Banner'
-          width={350}
-          height={350}
-          style={{ borderRadius: '10px' }}
-        />
-      </Stack>
-    );
-  }
 
   if (step === 'start') {
     return (
@@ -219,11 +144,168 @@ export function ClaimToken() {
     );
   }
 
+  if (step === 'not_qualified') {
+    return (
+      <Stack
+        flexDirection={{
+          xs: 'column-reverse',
+          md: 'row'
+        }}
+        justifyContent='space-between'
+        alignItems='center'
+        px={{
+          xs: 2,
+          md: 8
+        }}
+        mb={{
+          xs: 2,
+          md: 4
+        }}
+      >
+        <Stack gap={1} alignItems='center' flex={1}>
+          <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
+            Hey, there's always <br />
+            next season!
+          </Typography>
+          <Typography variant='h6' textAlign='center'>
+            You did not qualify this time around.
+          </Typography>
+          <StyledAccountStack>
+            <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
+            <Typography variant='subtitle2' color='textDisabled'>
+              Connected: {shortenHex(address, 4)}
+            </Typography>
+          </StyledAccountStack>
+          {isDesktop ? (
+            <Typography variant='h6' textAlign='center' fontWeight={400}>
+              Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
+              before the season officially begins!
+            </Typography>
+          ) : (
+            <Typography>
+              Play this season to earn your spot in the next airdrop. Get started by drafting Developers before the
+              season officially begins!
+            </Typography>
+          )}
+          <Link href='https://draft.scoutgame.xyz'>
+            <Button
+              variant='contained'
+              sx={{
+                mt: {
+                  xs: 1,
+                  md: 2
+                },
+                width: 'fit-content'
+              }}
+            >
+              Play
+            </Button>
+          </Link>
+        </Stack>
+        <Image
+          src='/images/scout-switch.png'
+          alt='Airdrop Banner'
+          width={isDesktop ? 350 : 300}
+          height={isDesktop ? 350 : 300}
+          style={{ borderRadius: '10px' }}
+        />
+      </Stack>
+    );
+  }
+
+  if (step === 'already_claimed') {
+    return (
+      <Stack
+        flexDirection={{
+          xs: 'column-reverse',
+          md: 'row'
+        }}
+        justifyContent='space-between'
+        alignItems='center'
+        px={{
+          xs: 2,
+          md: 8
+        }}
+        mb={{
+          xs: 2,
+          md: 4
+        }}
+      >
+        <Stack gap={1} alignItems='center' flex={1}>
+          <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
+            That's all until next season!
+          </Typography>
+          <Typography variant='h6' textAlign='center'>
+            You already claimed this season’s airdrop.
+          </Typography>
+          <StyledAccountStack>
+            <AccountBalanceWalletOutlinedIcon fontSize='small' color='disabled' />
+            <Typography variant='subtitle2' color='textDisabled'>
+              Connected: {shortenHex(address, 4)}
+            </Typography>
+          </StyledAccountStack>
+          {isDesktop ? (
+            <Typography variant='h6' textAlign='center' fontWeight={400}>
+              Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
+              before the season officially begins!
+            </Typography>
+          ) : (
+            <Typography>
+              Play this season to earn your spot in the next airdrop. Get started by drafting Developers before the
+              season officially begins!
+            </Typography>
+          )}
+          <Link href='https://draft.scoutgame.xyz'>
+            <Button
+              variant='contained'
+              sx={{
+                mt: {
+                  xs: 1,
+                  md: 2
+                },
+                width: 'fit-content'
+              }}
+            >
+              Play
+            </Button>
+          </Link>
+        </Stack>
+        <Image
+          src='/images/scout-switch.png'
+          alt='Airdrop Banner'
+          width={isDesktop ? 350 : 300}
+          height={isDesktop ? 350 : 300}
+          style={{ borderRadius: '10px' }}
+        />
+      </Stack>
+    );
+  }
+
   if (step === 'continue') {
     return (
-      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
+      <Stack
+        flexDirection={{
+          xs: 'column-reverse',
+          md: 'row'
+        }}
+        justifyContent='space-between'
+        alignItems='center'
+        px={{
+          xs: 2,
+          md: 8
+        }}
+        mb={{
+          xs: 2,
+          md: 4
+        }}
+      >
         <Stack gap={1} alignItems='center' flex={1}>
-          <Stack>
+          <Stack
+            mt={{
+              xs: 2,
+              md: 0
+            }}
+          >
             <Typography variant='h4' textAlign='center' fontWeight={600} color='secondary'>
               Congratulations
             </Typography>
@@ -241,16 +323,27 @@ export function ClaimToken() {
             </Typography>
           </StyledAccountStack>
           <Stack flexDirection='row' gap={1} alignItems='center' my={1}>
-            <Typography variant='h4' fontWeight={600}>
+            <Typography variant={isDesktop ? 'h4' : 'h5'} fontWeight={600}>
               {DEV_TOKEN_AMOUNT}
             </Typography>
-            <Image src='/images/dev-token-logo.png' alt='DEV Icon' width={35} height={35} />
+            <Image
+              src='/images/dev-token-logo.png'
+              alt='DEV Icon'
+              width={isDesktop ? 35 : 25}
+              height={isDesktop ? 35 : 25}
+            />
           </Stack>
           <Button variant='contained' sx={{ width: 'fit-content' }} onClick={() => setStep('choose')}>
             Continue
           </Button>
         </Stack>
-        <Image src='/images/hero.png' alt='Airdrop Banner' width={350} height={350} style={{ borderRadius: '10px' }} />
+        <Image
+          src='/images/hero.png'
+          alt='Airdrop Banner'
+          width={isDesktop ? 350 : 300}
+          height={isDesktop ? 350 : 300}
+          style={{ borderRadius: '10px' }}
+        />
       </Stack>
     );
   }
@@ -258,16 +351,28 @@ export function ClaimToken() {
   if (step === 'choose') {
     return (
       <Stack gap={3} alignItems='center'>
-        <Typography variant='h5' color='secondary'>
+        <Typography variant='h4' color='secondary'>
           How would you like your {DEV_TOKEN_AMOUNT} DEV tokens?
         </Typography>
-        <Stack flexDirection='row' gap={1} alignItems='center'>
+        <Stack
+          flexDirection={{
+            xs: 'column',
+            md: 'row'
+          }}
+          gap={1}
+          alignItems='center'
+        >
           <StyledCard
             selected={donationPercentage === 'donate_full'}
             onClick={() => setDonationPercentage('donate_full')}
           >
             <Stack flexDirection='row' gap={1} alignItems='center'>
-              <Image src='/images/quest-icon.svg' alt='Donate Full Icon' width={45} height={45} />
+              <Image
+                src='/images/quest-icon.svg'
+                alt='Donate Full Icon'
+                width={isDesktop ? 45 : 35}
+                height={isDesktop ? 45 : 35}
+              />
               <Typography variant='h5' fontWeight={600}>
                 Donate 100% to Open Source
               </Typography>
@@ -282,11 +387,21 @@ export function ClaimToken() {
             onClick={() => setDonationPercentage('donate_half')}
           >
             <Stack flexDirection='row' gap={1} alignItems='center'>
-              <Image src='/images/quest-icon.svg' alt='Donate Full Icon' width={75} height={75} />
-              <Typography variant='h5' fontWeight={600}>
+              <Image
+                src='/images/quest-icon.svg'
+                alt='Donate Full Icon'
+                width={isDesktop ? 75 : 35}
+                height={isDesktop ? 75 : 35}
+              />
+              <Typography variant={isDesktop ? 'h5' : 'h6'} fontWeight={600}>
                 Donate 50% & Keep 50%
               </Typography>
-              <Image src='/images/scout-icon.svg' alt='Scout Icon' width={75} height={75} />
+              <Image
+                src='/images/scout-icon.svg'
+                alt='Scout Icon'
+                width={isDesktop ? 75 : 35}
+                height={isDesktop ? 75 : 35}
+              />
             </Stack>
             <Typography>
               Donate half of your DEV tokens to the Grants program and keep half of it to play the game.
@@ -297,15 +412,20 @@ export function ClaimToken() {
             onClick={() => setDonationPercentage('donate_none')}
           >
             <Stack flexDirection='row' gap={1} alignItems='center'>
-              <Image src='/images/scout-icon.svg' alt='Scout Icon' width={75} height={75} />
-              <Typography variant='h5' fontWeight={600}>
+              <Image
+                src='/images/scout-icon.svg'
+                alt='Scout Icon'
+                width={isDesktop ? 75 : 45}
+                height={isDesktop ? 75 : 45}
+              />
+              <Typography variant={isDesktop ? 'h5' : 'h6'} fontWeight={600}>
                 Keep 100% to play
               </Typography>
             </Stack>
             <Typography>Use your DEV tokens to Draft hardworking developers and rake in the rewards!</Typography>
           </StyledCard>
         </Stack>
-        <Button variant='contained' sx={{ width: 'fit-content' }} onClick={() => setStep('confirm')}>
+        <Button variant='contained' sx={{ width: 'fit-content', mb: 2 }} onClick={() => setStep('confirm')}>
           Select
         </Button>
       </Stack>
@@ -322,27 +442,70 @@ export function ClaimToken() {
     const playAmount = DEV_TOKEN_AMOUNT - donationAmount;
 
     return (
-      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
+      <Stack
+        flexDirection={{
+          xs: 'column-reverse',
+          md: 'row'
+        }}
+        justifyContent='space-between'
+        alignItems='center'
+        px={{
+          xs: 2,
+          md: 8
+        }}
+        mb={{
+          xs: 2,
+          md: 4
+        }}
+      >
         <Stack flex={1} gap={4} justifyContent='center' alignItems='center'>
           <Typography variant='h5' color='secondary'>
             Your Selection
           </Typography>
-          <Stack flexDirection='row' gap={10} alignItems='center'>
+          <Stack
+            gap={{
+              xs: 4,
+              md: 10
+            }}
+            flexDirection='row'
+            alignItems='center'
+          >
             {donationAmount ? (
-              <Stack gap={1.5} alignItems='center'>
-                <Image src='/images/quest-icon-primary.svg' alt='Quest Icon' width={75} height={75} />
+              <Stack
+                gap={{
+                  xs: 1,
+                  md: 1.5
+                }}
+                flex={1}
+                alignItems='center'
+              >
+                <Image
+                  src='/images/quest-icon-primary.svg'
+                  alt='Quest Icon'
+                  width={isDesktop ? 75 : 50}
+                  height={isDesktop ? 75 : 50}
+                />
                 <Typography variant='h6' textAlign='center'>
                   Donate {donationPercentage === 'donate_full' ? '100%' : '50%'} <br />
                   to Open Source
                 </Typography>
                 <Stack flexDirection='row' gap={1} alignItems='center'>
-                  <Typography variant='h4' fontWeight={600}>
+                  <Typography variant={isDesktop ? 'h4' : 'h5'} fontWeight={600}>
                     {donationAmount}
                   </Typography>
-                  <Image src='/images/dev-token-logo.png' alt='DEV Icon' width={35} height={35} />
+                  <Image
+                    src='/images/dev-token-logo.png'
+                    alt='DEV Icon'
+                    width={isDesktop ? 35 : 25}
+                    height={isDesktop ? 35 : 25}
+                  />
                 </Stack>
                 {donationPercentage !== 'donate_full' ? (
-                  <Button variant='outlined' sx={{ width: 150, mt: 2 }} onClick={() => setStep('choose')}>
+                  <Button
+                    variant='outlined'
+                    sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 } }}
+                    onClick={() => setStep('choose')}
+                  >
                     Cancel
                   </Button>
                 ) : null}
@@ -350,20 +513,40 @@ export function ClaimToken() {
             ) : null}
 
             {playAmount ? (
-              <Stack gap={1.5} alignItems='center'>
-                <Image src='/images/scout-icon-primary.svg' alt='Scout Icon' width={75} height={75} />
+              <Stack
+                gap={{
+                  xs: 1,
+                  md: 1.5
+                }}
+                alignItems='center'
+              >
+                <Image
+                  src='/images/scout-icon-primary.svg'
+                  alt='Scout Icon'
+                  width={isDesktop ? 75 : 50}
+                  height={isDesktop ? 75 : 50}
+                />
                 <Typography variant='h6' textAlign='center'>
                   Claim {donationPercentage === 'donate_none' ? '100%' : '50%'} <br />
                   to Play
                 </Typography>
                 <Stack flexDirection='row' gap={1} alignItems='center'>
-                  <Typography variant='h4' fontWeight={600}>
+                  <Typography variant={isDesktop ? 'h4' : 'h5'} fontWeight={600}>
                     {playAmount}
                   </Typography>
-                  <Image src='/images/dev-token-logo.png' alt='DEV Icon' width={35} height={35} />
+                  <Image
+                    src='/images/dev-token-logo.png'
+                    alt='DEV Icon'
+                    width={isDesktop ? 35 : 25}
+                    height={isDesktop ? 35 : 25}
+                  />
                 </Stack>
                 {donationPercentage !== 'donate_none' ? (
-                  <Button variant='contained' sx={{ width: 150, mt: 2 }} onClick={() => setStep('play')}>
+                  <Button
+                    variant='contained'
+                    sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 } }}
+                    onClick={() => setStep('play')}
+                  >
                     Claim
                   </Button>
                 ) : null}
@@ -373,10 +556,10 @@ export function ClaimToken() {
 
           {donationPercentage !== 'donate_half' ? (
             <Stack flexDirection='row' gap={4} alignItems='center'>
-              <Button variant='outlined' sx={{ width: 150 }} onClick={() => setStep('choose')}>
+              <Button variant='outlined' sx={{ width: isDesktop ? 150 : 100 }} onClick={() => setStep('choose')}>
                 Cancel
               </Button>
-              <Button variant='contained' sx={{ width: 150 }} onClick={() => setStep('play')}>
+              <Button variant='contained' sx={{ width: isDesktop ? 150 : 100 }} onClick={() => setStep('play')}>
                 Claim
               </Button>
             </Stack>
@@ -385,8 +568,8 @@ export function ClaimToken() {
         <Image
           src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
           alt='Scout Switch'
-          width={350}
-          height={350}
+          width={isDesktop ? 350 : 300}
+          height={isDesktop ? 350 : 300}
         />
       </Stack>
     );
@@ -394,10 +577,31 @@ export function ClaimToken() {
 
   if (step === 'play') {
     return (
-      <Stack flexDirection='row' justifyContent='space-between' alignItems='center' px={8} mb={4}>
+      <Stack
+        flexDirection={{
+          xs: 'column-reverse',
+          md: 'row'
+        }}
+        justifyContent='space-between'
+        alignItems='center'
+        px={{
+          xs: 2,
+          md: 8
+        }}
+        mb={{
+          xs: 2,
+          md: 4
+        }}
+      >
         <Stack flex={1} justifyContent='center' alignItems='center' flexDirection='row'>
           {donationPercentage === 'donate_half' ? (
-            <Stack gap={2} alignItems='center'>
+            <Stack
+              gap={{
+                xs: 1,
+                md: 2
+              }}
+              alignItems='center'
+            >
               <Stack flexDirection='row' gap={1} alignItems='center'>
                 <Typography variant='h4' fontWeight={600} color='secondary'>
                   Claim successful!
@@ -408,34 +612,58 @@ export function ClaimToken() {
                 THANK YOU <br />
                 for your donation!
               </Typography>
-              <Typography variant='h6' textAlign='center'>
-                Now, let's go Bid on some developers and <br /> build your team before the season begins!
-              </Typography>
-              <Link href='https://draft.scoutgame.xyz' style={{ marginTop: 20 }}>
-                <Button variant='contained' sx={{ width: 150 }}>
+              {isDesktop ? (
+                <Typography variant='h6' textAlign='center'>
+                  Now, let's go Bid on some developers and <br /> build your team before the season begins!
+                </Typography>
+              ) : (
+                <Typography variant='h6' textAlign='center'>
+                  Now, let's go Bid on some developers and build your team before the season begins!
+                </Typography>
+              )}
+              <Link href='https://draft.scoutgame.xyz'>
+                <Button variant='contained' sx={{ width: 150, mt: { xs: 1, md: 2 } }}>
                   Play
                 </Button>
               </Link>
             </Stack>
           ) : donationPercentage === 'donate_none' ? (
-            <Stack gap={2} alignItems='center'>
+            <Stack
+              gap={{
+                xs: 1,
+                md: 2
+              }}
+              alignItems='center'
+            >
               <Stack flexDirection='row' gap={1} alignItems='center'>
                 <Typography variant='h4' fontWeight={600} color='secondary'>
                   Claim successful!
                 </Typography>
                 <CheckCircleIcon color='secondary' />
               </Stack>
-              <Typography variant='h6' textAlign='center'>
-                Now, let's go Bid on some <br /> developers and build your team <br /> before the season begins!
-              </Typography>
-              <Link href='https://draft.scoutgame.xyz' style={{ marginTop: 20 }}>
-                <Button variant='contained' sx={{ width: 150 }}>
+              {isDesktop ? (
+                <Typography variant='h6' textAlign='center'>
+                  Now, let's go Bid on some <br /> developers and build your team <br /> before the season begins!
+                </Typography>
+              ) : (
+                <Typography variant='h6' textAlign='center'>
+                  Now, let's go Bid on some developers and build your team before the season begins!
+                </Typography>
+              )}
+              <Link href='https://draft.scoutgame.xyz'>
+                <Button variant='contained' sx={{ width: 150, mt: { xs: 1, md: 2 } }}>
                   Play
                 </Button>
               </Link>
             </Stack>
           ) : (
-            <Stack gap={2} alignItems='center'>
+            <Stack
+              gap={{
+                xs: 1,
+                md: 2
+              }}
+              alignItems='center'
+            >
               <Typography variant='h4' fontWeight={600} color='secondary'>
                 THANK YOU for your donation!
               </Typography>
@@ -446,8 +674,8 @@ export function ClaimToken() {
               <Typography variant='h6' textAlign='center'>
                 Now, let's go Bid on some developers and <br /> build your team before the season begins!
               </Typography>
-              <Link href='https://draft.scoutgame.xyz' style={{ marginTop: 20 }}>
-                <Button variant='contained' sx={{ width: 150 }}>
+              <Link href='https://draft.scoutgame.xyz'>
+                <Button variant='contained' sx={{ width: 150, mt: { xs: 1, md: 2 } }}>
                   Play
                 </Button>
               </Link>
@@ -457,8 +685,8 @@ export function ClaimToken() {
         <Image
           src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
           alt='Scout Switch'
-          width={350}
-          height={350}
+          width={isDesktop ? 350 : 300}
+          height={isDesktop ? 350 : 300}
         />
       </Stack>
     );

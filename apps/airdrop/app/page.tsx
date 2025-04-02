@@ -1,5 +1,5 @@
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
-import { Container, Paper, Stack, Typography } from '@mui/material';
+import { Box, Container, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
 import { ClaimToken } from '@/components/claim/ClaimToken';
@@ -79,7 +79,12 @@ export default function AirdropPage() {
           </Stack>
           <Typography>Stack up bonuses in future airdrops!</Typography>
           <Stack flexDirection='row' gap={4} alignItems='center' justifyContent='center'>
-            <Image src='/images/diamond.png' alt='Diamond Icon' width={125} height={125} />
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Image src='/images/diamond.png' alt='Diamond Icon' width={125} height={125} />
+            </Box>
+            <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+              <Image src='/images/diamond.png' alt='Diamond Icon' width={90} height={90} />
+            </Box>
             <Stack flexDirection='column' gap={1}>
               <Typography>
                 Season 2:{' '}
