@@ -1,4 +1,5 @@
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { MAX_CREDITS } from '@packages/matchup/config';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import type { MatchupDetails } from '@packages/matchup/getNextMatchup';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
@@ -72,8 +73,13 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
               <Typography color='secondary' variant='h6' gutterBottom textTransform='uppercase' align='center'>
                 BALANCE
               </Typography>
-              <Typography gutterBottom textTransform='uppercase' align='center'>
-                {totalCredits} / 35 credits
+              <Typography
+                color={totalCredits > MAX_CREDITS ? 'error' : 'inherit'}
+                gutterBottom
+                textTransform='uppercase'
+                align='center'
+              >
+                {totalCredits} / {MAX_CREDITS} credits
               </Typography>
             </Box>
             <Button variant='contained' disabled={myMatchup.selections.length !== 5}>
