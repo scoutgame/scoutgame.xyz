@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import type { Interfaces } from 'mailgun.js';
+import type { Interfaces } from 'mailgun.js/definitions';
 
 import mailgunClient, { DOMAIN } from './mailgunClient';
 
