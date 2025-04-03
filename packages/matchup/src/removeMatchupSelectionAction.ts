@@ -13,7 +13,7 @@ export const removeMatchupSelectionAction = authActionClient
       developerId: yup.string().required()
     })
   )
-  .action(async ({ ctx, parsedInput }) => {
+  .action(async ({ parsedInput }) => {
     // Add the selection to the matchup
     await prisma.scoutMatchupSelection.delete({
       where: {
