@@ -2,6 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
+import type { ButtonProps, SxProps } from '@mui/material';
 import { Box } from '@mui/material';
 import { RainbowKitProvider, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Suspense, useEffect, useState } from 'react';
@@ -12,17 +13,33 @@ import { useAccount, useSignMessage } from 'wagmi';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function WalletLogin() {
+export function WalletLogin({
+  text = 'Sign in',
+  variant = 'gradient',
+  sx
+}: {
+  text?: string;
+  variant?: ButtonProps['variant'];
+  sx?: SxProps;
+}) {
   return (
     <RainbowKitProvider>
       <Suspense>
-        <WalletLoginButton />
+        <WalletLoginButton text={text} variant={variant} sx={sx} />
       </Suspense>
     </RainbowKitProvider>
   );
 }
 
-function WalletLoginButton() {
+function WalletLoginButton({
+  text = 'Sign in',
+  variant = 'gradient',
+  sx
+}: {
+  text?: string;
+  variant?: ButtonProps['variant'];
+  sx?: SxProps;
+}) {
   const [isConnecting, setIsConnecting] = useState(false);
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId, isConnected } = useAccount();
@@ -41,7 +58,7 @@ function WalletLoginButton() {
     const siweMessage = new SiweMessage(preparedMessage);
     const message = siweMessage.prepareMessage();
     try {
-      const signature = await signMessageAsync({ message });
+      await signMessageAsync({ message });
     } catch (error) {
       // examples: user cancels signature, user rejects signature
       log.warn('Error signing message', { error });
@@ -75,10 +92,8 @@ function WalletLoginButton() {
   const isLoading = isConnecting;
 
   return (
-    <Box width='100%'>
-      <LoadingButton loading={isLoading} size='large' variant='gradient' onClick={onClick}>
-        Sign in
-      </LoadingButton>
-    </Box>
+    <LoadingButton loading={isLoading} size='large' variant={variant} onClick={onClick} sx={sx}>
+      {text}
+    </LoadingButton>
   );
 }

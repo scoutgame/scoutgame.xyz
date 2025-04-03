@@ -1,6 +1,7 @@
 import { Button, Stack, Typography } from '@mui/material';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-import Link from 'next/link';
+
+import { WalletLogin } from 'components/common/WalletLogin';
 
 import { PageLayout } from './PageLayout';
 
@@ -45,9 +46,7 @@ export function StartClaimStep() {
             the start of each season for the next 10 seasons.
           </Typography>
         )}
-        <Link href='/login'>
-          <Button sx={{ width: 'fit-content' }}>Start</Button>
-        </Link>
+        <WalletLogin text='Start' variant='contained' sx={{ width: 250, py: 1, borderRadius: 2 }} />
       </Stack>
     </PageLayout>
   );

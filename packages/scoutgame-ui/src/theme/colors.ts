@@ -1,5 +1,5 @@
 export const brandColor = '#861FEF'; // purple
-export const purpleDisabled = '#332245';
+export const purpleDisabled = '#6616C9';
 export const secondaryText = '#69DDFF'; // blue
 export const blackText = '#191919'; // black
 export const secondaryLightText = '#D8E1FF'; // light grey
