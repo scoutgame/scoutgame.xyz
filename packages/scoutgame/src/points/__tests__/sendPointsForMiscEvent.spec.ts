@@ -13,8 +13,7 @@ describe('sendPointsForMiscEvent', () => {
       points: mockPoints,
       hideFromNotifications: true,
       claimed: true,
-      description: `Test points`,
-      season: getCurrentSeasonStart()
+      description: `Test points`
     });
     const updated = await prisma.scout.findUnique({
       where: {
