@@ -81,6 +81,10 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
         },
         yellow: {
           main: '#fcff6c'
+        },
+        blue: {
+          main: '#045BCA',
+          dark: '#034497'
         }
       }
     }
@@ -216,6 +220,22 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
           })
         },
         {
+          props: { variant: 'blue' },
+          style: ({ theme }) => ({
+            background: 'transparent',
+            borderRadius: theme.spacing(2),
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
+            paddingRight: theme.spacing(1),
+            paddingLeft: theme.spacing(1),
+            backgroundColor: theme.palette.blue.main,
+            '&:hover': {
+              backgroundColor: theme.palette.blue.dark,
+              transition: 'background-color 0.15s ease-in-out'
+            }
+          })
+        },
+        {
           props: { variant: 'buy' },
           style: ({ theme }) => ({
             background: 'transparent',
@@ -231,7 +251,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
             borderColor: theme.palette.secondary.main,
             '&:hover': {
               backgroundColor: alpha(theme.palette.secondary.main, 0.1),
-              transition: 'all 0.3s ease-in-out'
+              transition: 'background-color 0.3s ease-in-out'
             }
           })
         },
@@ -251,7 +271,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
             borderColor: theme.palette.green.main,
             '&:hover': {
               backgroundColor: alpha(theme.palette.green.main, 0.1),
-              transition: 'all 0.3s ease-in-out'
+              transition: 'background-color 0.3s ease-in-out'
             }
           })
         }

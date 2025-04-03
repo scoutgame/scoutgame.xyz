@@ -5,13 +5,15 @@ export function PlayButton() {
   return (
     <Link href='https://draft.scoutgame.xyz'>
       <Button
-        variant='contained'
+        variant='blue'
         sx={{
           mt: {
             xs: 1,
             md: 2
           },
-          width: 'fit-content'
+          width: 250,
+          py: 1,
+          borderRadius: 2
         }}
       >
         Play

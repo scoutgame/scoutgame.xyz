@@ -44,7 +44,7 @@ export function ShowClaimableTokensStep({
             height={isDesktop ? 35 : 25}
           />
         </Stack>
-        <Button variant='contained' sx={{ width: 'fit-content' }} onClick={onContinue}>
+        <Button variant='contained' sx={{ width: 250, py: 1, borderRadius: 2 }} onClick={onContinue}>
           Continue
         </Button>
       </Stack>

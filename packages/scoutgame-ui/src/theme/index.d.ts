@@ -16,6 +16,7 @@ declare module '@mui/material/styles' {
     orange: MuiPalette['primary'];
     green: MuiPalette['primary'];
     yellow: MuiPalette['primary'];
+    blue: MuiPalette['primary'];
   }
 
   export interface PaletteOptions extends MuiPaletteOptions {
@@ -24,6 +25,7 @@ declare module '@mui/material/styles' {
     orange: MuiPaletteOptions['primary'];
     green: MuiPaletteOptions['primary'];
     yellow: MuiPaletteOptions['primary'];
+    blue: MuiPaletteOptions['primary'];
   }
 
   export interface TypeBackground extends MuiTypeBackground {
@@ -47,5 +49,6 @@ declare module '@mui/material/Button' {
     gradient: true;
     buy: true;
     'buy-starter': true;
+    blue: true;
   }
 }

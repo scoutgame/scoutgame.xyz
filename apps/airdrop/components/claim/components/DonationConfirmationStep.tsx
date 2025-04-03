@@ -86,7 +86,7 @@ export function DonationConfirmationStep({
               {donationPercentage !== 'donate_full' ? (
                 <Button
                   variant='outlined'
-                  sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 } }}
+                  sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 }, py: 1, borderRadius: 2 }}
                   onClick={onCancel}
                 >
                   Cancel
@@ -127,7 +127,7 @@ export function DonationConfirmationStep({
               {donationPercentage !== 'donate_none' ? (
                 <Button
                   variant='contained'
-                  sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 } }}
+                  sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 }, py: 1, borderRadius: 2 }}
                   onClick={onClaim}
                 >
                   Claim
@@ -139,10 +139,10 @@ export function DonationConfirmationStep({
 
         {donationPercentage !== 'donate_half' ? (
           <Stack flexDirection='row' gap={4} alignItems='center'>
-            <Button variant='outlined' sx={{ width: isDesktop ? 150 : 100 }} onClick={onCancel}>
+            <Button variant='outlined' sx={{ width: isDesktop ? 150 : 100, py: 1, borderRadius: 2 }} onClick={onCancel}>
               Cancel
             </Button>
-            <Button variant='contained' sx={{ width: isDesktop ? 150 : 100 }} onClick={onClaim}>
+            <Button variant='contained' sx={{ width: isDesktop ? 150 : 100, py: 1, borderRadius: 2 }} onClick={onClaim}>
               Claim
             </Button>
           </Stack>

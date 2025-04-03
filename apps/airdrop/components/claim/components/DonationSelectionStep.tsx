@@ -80,7 +80,7 @@ export function DonationSelectionStep({
           leftIcon='/images/scout-icon.svg'
         />
       </Stack>
-      <Button variant='contained' sx={{ width: 'fit-content', mb: 2 }} onClick={onSelect}>
+      <Button variant='contained' sx={{ width: 250, py: 1, borderRadius: 2 }} onClick={onSelect}>
         Select
       </Button>
     </Stack>

@@ -31,6 +31,7 @@ export function TokenClaimSuccessStep({ donationPercentage }: { donationPercenta
             xs: 1,
             md: 2
           }}
+          flex={1}
           alignItems='center'
         >
           {donationPercentage !== 'donate_full' && (

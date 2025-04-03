@@ -87,4 +87,6 @@ export function ClaimTokenScreen() {
   if (step === 'token_claim_success') {
     return <TokenClaimSuccessStep donationPercentage={donationPercentage} />;
   }
+
+  return null;
 }
