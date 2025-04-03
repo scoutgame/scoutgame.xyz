@@ -81,6 +81,10 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
         },
         yellow: {
           main: '#fcff6c'
+        },
+        blue: {
+          main: '#045BCA',
+          dark: '#034497'
         }
       }
     }
@@ -204,7 +208,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
         {
           props: { variant: 'gradient' },
           style: ({ theme }) => ({
-            background: 'linear-gradient(90deg, #69DDFF 0%,#A06CD5 100%)',
+            background: `linear-gradient(90deg, #69DDFF 0%,${brandColor} 100%)`,
             borderRadius: '20px',
             paddingTop: 2,
             paddingBottom: 2,
@@ -213,9 +217,22 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
             fontSize: '0.9rem',
             fontWeight: '500',
             color: theme.palette.black.main
-            // '&:hover': {
-            //   backgroundColor: 'darkpurple'
-            // }
+          })
+        },
+        {
+          props: { variant: 'blue' },
+          style: ({ theme }) => ({
+            background: 'transparent',
+            borderRadius: theme.spacing(2),
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
+            paddingRight: theme.spacing(1),
+            paddingLeft: theme.spacing(1),
+            backgroundColor: theme.palette.blue.main,
+            '&:hover': {
+              backgroundColor: theme.palette.blue.dark,
+              transition: 'background-color 0.15s ease-in-out'
+            }
           })
         },
         {
@@ -234,7 +251,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
             borderColor: theme.palette.secondary.main,
             '&:hover': {
               backgroundColor: alpha(theme.palette.secondary.main, 0.1),
-              transition: 'all 0.3s ease-in-out'
+              transition: 'background-color 0.3s ease-in-out'
             }
           })
         },
@@ -254,7 +271,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
             borderColor: theme.palette.green.main,
             '&:hover': {
               backgroundColor: alpha(theme.palette.green.main, 0.1),
-              transition: 'all 0.3s ease-in-out'
+              transition: 'background-color 0.3s ease-in-out'
             }
           })
         }
