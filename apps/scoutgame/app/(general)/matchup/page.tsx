@@ -19,5 +19,7 @@ export default async function MatchupPageWrapper() {
     return <MatchupRegistrationPage matchup={matchupDetails} myMatchup={myMatchup} />;
   }
 
-  return <MatchupLeaderboardPage matchup={matchupDetails} scoutId={user?.id} hasRegistered={!!myMatchup} />;
+  return (
+    <MatchupLeaderboardPage matchup={matchupDetails} scoutId={user?.id} hasRegistered={!!myMatchup?.submittedAt} />
+  );
 }
