@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import Image from 'next/image';
 
-export function MatchUpRegistrationView({ matchup }: { matchup: MatchupDetails }) {
+export function MatchUpRegistrationView() {
   return (
     <Box
       sx={{

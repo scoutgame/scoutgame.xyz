@@ -29,7 +29,7 @@ export function MatchupRegistrationPage({
           ) : myMatchup ? (
             <MatchUpSelectionView myMatchup={myMatchup} />
           ) : (
-            <MatchUpRegistrationView matchup={matchup} />
+            <MatchUpRegistrationView />
           )}
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
