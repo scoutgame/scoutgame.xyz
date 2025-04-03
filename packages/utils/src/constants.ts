@@ -23,5 +23,9 @@ export const whiteListedUserIds = [
   // Safwan
   'f534b485-b7d5-47c3-92d8-02d107158558',
   // test scout
-  'b5016a86-3a3e-4b0d-8f52-cf29599b9fc8'
+  'b5016a86-3a3e-4b0d-8f52-cf29599b9fc8',
+  // Alex
+  '4cbfa422-70a2-400e-8b37-71e3d1e74dfb',
+  // Andy
+  '00b5a425-3c3c-4be7-9784-b7510a35bf37'
 ];

@@ -6,6 +6,7 @@ import { addMatchupSelectionAction } from '@packages/matchup/addMatchupSelection
 import { removeMatchupSelectionAction } from '@packages/matchup/removeMatchupSelectionAction';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { useAction } from 'next-safe-action/hooks';
+import { useEffect, useState } from 'react';
 
 export function SelectDeveloperButton({
   builder,
@@ -17,18 +18,34 @@ export function SelectDeveloperButton({
   selectedDevelopers: string[];
 }) {
   const isSelected = selectedDevelopers.includes(builder.id);
-  const { execute, isExecuting } = useAction(isSelected ? removeMatchupSelectionAction : addMatchupSelectionAction);
+  const { execute: executeRemove, isExecuting: isExecutingRemove } = useAction(removeMatchupSelectionAction);
+  const { execute: executeAdd, isExecuting: isExecutingAdd } = useAction(addMatchupSelectionAction);
 
-  function handleAddMatchupSelection() {
-    execute({
-      matchupId,
-      developerId: builder.id
-    });
+  // keep an internal state to avoid flickering when the button is clicked
+  const [_isSelected, setIsSelected] = useState(isSelected);
+
+  async function handleAddMatchupSelection() {
+    if (isSelected) {
+      await executeRemove({
+        matchupId,
+        developerId: builder.id
+      });
+    } else {
+      await executeAdd({
+        matchupId,
+        developerId: builder.id
+      });
+    }
+    setIsSelected(!isSelected);
   }
 
+  useEffect(() => {
+    setIsSelected(isSelected);
+  }, [isSelected]);
+
   return (
-    <LoadingButton fullWidth loading={isExecuting} onClick={handleAddMatchupSelection}>
-      {isSelected ? 'Selected' : 'Select'}
+    <LoadingButton fullWidth loading={isExecutingRemove || isExecutingAdd} onClick={handleAddMatchupSelection}>
+      {_isSelected ? 'Selected' : 'Select'}
     </LoadingButton>
   );
 }
