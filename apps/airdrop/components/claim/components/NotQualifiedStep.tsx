@@ -1,7 +1,6 @@
 import { Stack, Typography } from '@mui/material';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 
-import { ConnectedWalletDisplay } from './ConnectedWalletDisplay';
 import { PageLayout } from './PageLayout';
 import { PlayButton } from './PlayButton';
 
@@ -18,7 +17,6 @@ export function NotQualifiedStep() {
         <Typography variant='h6' textAlign='center'>
           You did not qualify this time around.
         </Typography>
-        <ConnectedWalletDisplay />
         {isDesktop ? (
           <Typography variant='h6' textAlign='center' fontWeight={400}>
             Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}

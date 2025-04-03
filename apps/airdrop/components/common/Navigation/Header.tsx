@@ -1,8 +1,10 @@
 'use client';
 
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
-import { AppBar, Box, Container, Menu, MenuItem, Stack, Toolbar, Typography } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import { AppBar, Box, Container, IconButton, Menu, MenuItem, Stack, Toolbar, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { shortenHex } from '@packages/utils/strings';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
@@ -17,6 +19,7 @@ export function Header() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const { address } = useAccount();
   const { disconnectAsync } = useDisconnect();
+  const isDesktop = useMdScreen();
 
   const disconnect = async () => {
     await disconnectAsync();
@@ -64,6 +67,11 @@ export function Header() {
               <Hidden mdDown>
                 <SiteNavigation topNav />
               </Hidden>
+              <Link href='https://scoutgame.xyz/info' target='_blank'>
+                <IconButton size='small' sx={{ mr: { xs: 1, md: 1.5 } }}>
+                  <InfoIcon color='secondary' />
+                </IconButton>
+              </Link>
               {address ? (
                 <Box
                   onClick={handleOpenUserMenu}
@@ -72,11 +80,24 @@ export function Header() {
                   sx={{
                     position: 'relative',
                     padding: '1px',
-                    px: 2,
+                    px: {
+                      xs: 1,
+                      md: 2
+                    },
                     py: 0.25,
                     display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-end',
+                    flexDirection: {
+                      xs: 'row',
+                      md: 'column'
+                    },
+                    gap: {
+                      xs: 1,
+                      md: 0
+                    },
+                    alignItems: {
+                      xs: 'center',
+                      md: 'flex-end'
+                    },
                     justifyContent: 'space-between',
                     borderColor: 'secondary.main',
                     borderWidth: '2px',
@@ -84,9 +105,16 @@ export function Header() {
                     cursor: 'pointer'
                   }}
                 >
-                  <Stack flexDirection='row' alignItems='center' gap={1}>
+                  <Stack
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={{
+                      xs: 0.25,
+                      md: 1
+                    }}
+                  >
                     <Typography fontSize='16px' color='text.primary'>
-                      123
+                      0
                     </Typography>
                     <Image
                       src='/images/dev-token-logo.png'
@@ -99,12 +127,11 @@ export function Header() {
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <AccountBalanceWalletOutlinedIcon color='disabled' sx={{ fontSize: '16px' }} />
                     <Typography color='textDisabled' fontSize='16px'>
-                      {shortenHex(address, 3)}
+                      {shortenHex(address, isDesktop ? 4 : 3)}
                     </Typography>
                   </Stack>
                   <Menu
                     sx={{ mt: 5 }}
-                    id='menu-appbar'
                     slotProps={{
                       paper: { sx: { '.MuiList-root': { pb: 0 }, maxWidth: '250px' } }
                     }}
@@ -122,9 +149,7 @@ export function Header() {
                     onClose={handleCloseUserMenu}
                     onClick={handleCloseUserMenu}
                   >
-                    <MenuItem onClick={disconnect} data-test='disconnect-button'>
-                      Disconnect
-                    </MenuItem>
+                    <MenuItem onClick={disconnect}>Disconnect</MenuItem>
                   </Menu>
                 </Box>
               ) : (

@@ -1,7 +1,6 @@
 import { Typography, Stack } from '@mui/material';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 
-import { ConnectedWalletDisplay } from './ConnectedWalletDisplay';
 import { PageLayout } from './PageLayout';
 import { PlayButton } from './PlayButton';
 
@@ -16,7 +15,6 @@ export function AlreadyClaimedStep() {
         <Typography variant='h6' textAlign='center'>
           You already claimed this season's airdrop.
         </Typography>
-        <ConnectedWalletDisplay />
         {isDesktop ? (
           <Typography variant='h6' textAlign='center' fontWeight={400}>
             Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}

@@ -1,7 +1,6 @@
 import { Button, Stack, Typography } from '@mui/material';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 
-import { ConnectedWalletDisplay } from './ConnectedWalletDisplay';
 import { PageLayout } from './PageLayout';
 
 export function ShowClaimableTokensStep({
@@ -32,7 +31,6 @@ export function ShowClaimableTokensStep({
         <Typography variant='h6' textAlign='center'>
           You have earned DEV tokens!
         </Typography>
-        <ConnectedWalletDisplay />
         <Stack flexDirection='row' gap={1} alignItems='center' my={1}>
           <Typography variant={isDesktop ? 'h4' : 'h5'} fontWeight={600}>
             {devTokenAmount}
