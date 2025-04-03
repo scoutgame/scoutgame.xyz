@@ -25,8 +25,14 @@ export function RegistrationHeader({
         mb: 2
       }}
     >
-      <Box display='flex' alignItems='center' justifyContent='space-between'>
-        <Stack direction='row' alignItems='center' gap={2}>
+      <Box
+        display='flex'
+        flexDirection={{ xs: 'column', md: 'row' }}
+        alignItems='center'
+        justifyContent='space-between'
+        gap={{ xs: 2, md: 0 }}
+      >
+        <Stack direction={{ xs: 'column', md: 'row' }} alignItems='center' gap={2}>
           <Box mr={{ xs: 0, md: 2 }}>
             <Image src='/images/matchup/vs_icon.svg' alt='' width={80} height={80} />
           </Box>
@@ -46,14 +52,24 @@ export function RegistrationHeader({
                 </Typography>
               )}
             </Box>
-            <Typography variant='body2' component='em' color='secondary.main'>
+            <Typography
+              variant='body2'
+              component='em'
+              color='secondary.main'
+              sx={{ textAlign: { xs: 'center', md: 'left' } }}
+            >
               {registrationOpen && <ReferenceTime prefix='Begins in' unixTimestamp={startTime} />}
               {!registrationOpen && registered && <ReferenceTime prefix='Ends in' unixTimestamp={endTime} />}
             </Typography>
           </Stack>
         </Stack>
-        <Box display='flex' flexDirection='column' alignItems='center' gap={1}>
-          <Typography variant='h6' color='secondary' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box display='flex' flexDirection={{ xs: 'row', md: 'column' }} alignItems='center' gap={2}>
+          <Typography
+            variant='h6'
+            color='secondary'
+            sx={{ fontSize: { xs: 14, md: 20 }, display: 'flex', alignItems: 'center', gap: 0.5 }}
+            noWrap
+          >
             <Image src='/images/matchup/howtoplay_trophy.svg' alt='' width={20} height={20} /> Prize Pool
           </Typography>
           <Box>
@@ -66,7 +82,7 @@ export function RegistrationHeader({
               {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />
             </Typography>
           </Box>
-          <Typography component='em' variant='body2' color='grey'>
+          <Typography component='em' variant='body2' color='grey' noWrap>
             *80% of registration fees
           </Typography>
         </Box>

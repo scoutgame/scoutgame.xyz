@@ -76,6 +76,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
         color='secondary'
         endIcon={registered ? <CheckCircleIcon color='inherit' /> : <PointsIcon color='inherit' />}
         onClick={handleRegister}
+        sx={{ whiteSpace: 'nowrap', width: { xs: '100%', md: 'auto' } }}
       >
         {registered ? 'Registered' : `Register ${MATCHUP_REGISTRATION_FEE}`}
       </Button>
@@ -105,6 +106,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
             endIcon={<PointsIcon color='inherit' />}
             loading={isExecuting}
             disabled={!hasEnoughPoints}
+            sx={{ whiteSpace: 'nowrap' }}
           >
             Register {MATCHUP_REGISTRATION_FEE}
           </LoadingButton>
