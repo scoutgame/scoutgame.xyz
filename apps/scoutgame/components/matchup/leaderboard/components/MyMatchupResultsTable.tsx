@@ -50,6 +50,7 @@ export async function MyMatchupResultsTable({ week, scoutId }: { week: string; s
             sx={{
               mb: 1,
               background: 'none',
+              boxShadow: 'none',
               '&::before': {
                 display: 'none'
               },
