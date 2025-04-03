@@ -137,7 +137,8 @@ export default function AirdropPage() {
               p: {
                 xs: 1,
                 md: 2
-              }
+              },
+              flex: 1
             }}
           >
             <Stack flexDirection='row' gap={1} alignItems='center' mb={1}>
@@ -161,7 +162,8 @@ export default function AirdropPage() {
               p: {
                 xs: 1,
                 md: 2
-              }
+              },
+              flex: 1
             }}
           >
             <Stack flexDirection='row' gap={1} alignItems='center' mb={1}>
@@ -184,7 +186,8 @@ export default function AirdropPage() {
               p: {
                 xs: 1,
                 md: 2
-              }
+              },
+              flex: 1
             }}
           >
             <Stack flexDirection='row' gap={1} alignItems='center' mb={1}>

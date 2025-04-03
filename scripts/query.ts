@@ -7,11 +7,8 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 async function query() {
   const result = await prisma.scout.findFirst({
     where: {
-      farcasterName: 'bdutz'
+      path: 'klin-hast'
     },
-    include: {
-      events: true
-    }
   });
   prettyPrint(result);
 }

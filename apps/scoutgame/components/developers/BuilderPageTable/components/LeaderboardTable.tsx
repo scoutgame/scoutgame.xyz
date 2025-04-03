@@ -65,7 +65,7 @@ export function LeaderboardTable({ data, week }: { data: LeaderBoardRow[]; week:
               <Box
                 sx={{
                   background:
-                    'linear-gradient(90deg, #A06CD5 0%, #9C74D8 7%, #908DE1 29%, #85A5EA 50%, #79BCF3 71%, #72CBF8 84.5%, #69DDFF 100%)',
+                    'linear-gradient(90deg, #861FEF 0%, #8A4AE9 16.67%, #8E75E3 33.33%, #85A5EA 50%, #7BBEF2 66.67%, #72CBF8 83.33%, #69DDFF 100%)',
                   height: '20px',
                   borderTopRightRadius: '10px',
                   borderBottomRightRadius: '10px',

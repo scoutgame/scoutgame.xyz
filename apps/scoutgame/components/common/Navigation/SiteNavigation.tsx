@@ -6,6 +6,7 @@ import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimI
 import { useGetClaimablePoints } from '@packages/scoutgame-ui/hooks/api/session';
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import { brandColor } from '@packages/scoutgame-ui/theme/colors.ts';
 import { getPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 import { usePathname } from 'next/navigation';
@@ -23,7 +24,7 @@ const StyledBottomNavigation = styled(BottomNavigation, {
 })<{ topNav?: boolean; largerNavbar?: boolean }>(({ theme, topNav, largerNavbar }) => ({
   background: topNav
     ? 'transparent'
-    : 'linear-gradient(88.35deg, #96CDFF 0%, #A06CD5 29.5%, #96CDFF 75.47%, #A06CD5 100%)',
+    : `linear-gradient(88.35deg, #96CDFF 0%, ${brandColor} 29.5%, #96CDFF 75.47%, ${brandColor} 100%)`,
   height: largerNavbar ? '71px' : undefined,
   '& > a': {
     color: topNav ? theme.palette.text.primary : theme.palette.common.black,

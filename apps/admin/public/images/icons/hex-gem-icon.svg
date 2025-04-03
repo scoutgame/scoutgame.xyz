@@ -10,7 +10,7 @@
 <path d="M0.693848 9.78638H6.77101V14.4933H0.693848V9.78638Z" fill="white"/>
 </mask>
 <g mask="url(#mask1_1296_2949)">
-<path d="M6.76994 11.5588L3.3169 9.79126L0.70459 11.3889L6.76994 14.4932V11.5588Z" fill="#A06CD5"/>
+<path d="M6.76994 11.5588L3.3169 9.79126L0.70459 11.3889L6.76994 14.4932V11.5588Z" fill="#861FEF"/>
 </g>
 <path d="M6.76946 3.44095V0.506348L0.704102 3.61085L3.31641 5.20831L6.76946 3.44095Z" fill="#69DDFF"/>
 <path d="M7.23047 3.44095L10.6835 5.20831L13.2958 3.61085L7.23047 0.506348V3.44095Z" fill="#69DDFF"/>
@@ -18,7 +18,7 @@
 <path d="M7.21436 9.78638H13.3079V14.4933H7.21436V9.78638Z" fill="white"/>
 </mask>
 <g mask="url(#mask2_1296_2949)">
-<path d="M7.23047 11.5588V14.4932L13.2958 11.3889L10.6835 9.79126L7.23047 11.5588Z" fill="#A06CD5"/>
+<path d="M7.23047 11.5588V14.4932L13.2958 11.3889L10.6835 9.79126L7.23047 11.5588Z" fill="#861FEF"/>
 </g>
 <mask id="mask3_1296_2949" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="10" y="3" width="4" height="9">
 <path d="M10.9102 3.98828H13.5368V11.0017H10.9102V3.98828Z" fill="white"/>
@@ -31,15 +31,15 @@
 <defs>
 <linearGradient id="paint0_linear_1296_2949" x1="1.77002" y1="4.00415" x2="1.77002" y2="10.9955" gradientUnits="userSpaceOnUse">
 <stop stop-color="#69DDFF"/>
-<stop offset="1" stop-color="#A06CD5"/>
+<stop offset="1" stop-color="#861FEF"/>
 </linearGradient>
 <linearGradient id="paint1_linear_1296_2949" x1="12.2305" y1="4.00415" x2="12.2305" y2="10.9955" gradientUnits="userSpaceOnUse">
 <stop stop-color="#69DDFF"/>
-<stop offset="1" stop-color="#A06CD5"/>
+<stop offset="1" stop-color="#861FEF"/>
 </linearGradient>
 <linearGradient id="paint2_linear_1296_2949" x1="7.00021" y1="3.84082" x2="7.00021" y2="11.1589" gradientUnits="userSpaceOnUse">
 <stop stop-color="#69DDFF"/>
-<stop offset="1" stop-color="#A06CD5"/>
+<stop offset="1" stop-color="#861FEF"/>
 </linearGradient>
 <clipPath id="clip0_1296_2949">
 <rect width="14" height="14" fill="white" transform="translate(0 0.5)"/>

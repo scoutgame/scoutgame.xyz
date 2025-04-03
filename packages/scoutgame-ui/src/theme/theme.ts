@@ -204,7 +204,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
         {
           props: { variant: 'gradient' },
           style: ({ theme }) => ({
-            background: 'linear-gradient(90deg, #69DDFF 0%,#A06CD5 100%)',
+            background: `linear-gradient(90deg, #69DDFF 0%,${brandColor} 100%)`,
             borderRadius: '20px',
             paddingTop: 2,
             paddingBottom: 2,

@@ -8,12 +8,14 @@ import { HiOutlineUsers } from 'react-icons/hi2';
 import { MdOutlineHandshake, MdDocumentScanner } from 'react-icons/md';
 import { SiFarcaster } from 'react-icons/si';
 
+import { brandColor } from 'theme/colors';
+
 const StyledBottomNavigation = styled(BottomNavigation, {
   shouldForwardProp: (prop) => prop !== 'topNav'
 })<{ topNav?: boolean }>(({ theme, topNav }) => ({
   background: topNav
     ? 'transparent'
-    : 'linear-gradient(88.35deg, #96CDFF 0%, #A06CD5 29.5%, #96CDFF 75.47%, #A06CD5 100%)',
+    : `linear-gradient(88.35deg, #96CDFF 0%, ${brandColor} 29.5%, #96CDFF 75.47%, ${brandColor} 100%)`,
   '& > a': {
     color: topNav ? theme.palette.text.primary : theme.palette.common.black,
     gap: '2px',
