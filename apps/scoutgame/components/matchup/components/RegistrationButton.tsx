@@ -26,7 +26,7 @@ import { toast } from 'sonner';
 import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
 
 export function RegistrationButton({ registered, week }: { registered: boolean; week: string }) {
-  const { user } = useUser();
+  const { refreshUser, user } = useUser();
   const trackEvent = useTrackEvent();
   const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -41,6 +41,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
     async onSuccess() {
       toast.success('Successfully registered for matchup');
       revalidatePathAction();
+      refreshUser();
       onClose();
     },
     onError(err) {
