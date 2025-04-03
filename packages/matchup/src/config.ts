@@ -1,3 +1,5 @@
+import { whiteListedUserIds } from '@packages/utils/constants';
+
 // Fee in points that scouts pay to register for a matchup
 export const MATCHUP_REGISTRATION_FEE = 50;
 // Portion of registration fee (80%) that goes into the prize pool for winners
@@ -10,3 +12,6 @@ export const REGISTRATION_DAY_OF_WEEK = 1; // day of the week to register for th
 export const MAX_SELECTIONS = 5;
 // Maximum total credits a player can spend when selecting scouts for their team
 export const MAX_CREDITS = 35;
+
+export const enableMatchupsFeatureFlag = (userId?: string) =>
+  process.env.NODE_ENV === 'development' || (userId && whiteListedUserIds.includes(userId));

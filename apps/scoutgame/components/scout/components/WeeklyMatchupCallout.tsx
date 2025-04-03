@@ -1,7 +1,9 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Paper, Card, CardActionArea, Typography } from '@mui/material';
+import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { getLeaderboard } from '@packages/matchup/getLeaderboard';
 import { getCurrentMatchupDetails } from '@packages/matchup/getMatchupDetails';
+import { getSession } from '@packages/nextjs/session/getSession';
 import { GemsIcon, PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
 import Image from 'next/image';
@@ -9,6 +11,11 @@ import Image from 'next/image';
 import { ReferenceTime } from 'components/common/ReferenceTime';
 
 export async function WeeklyMatchupCallout() {
+  const session = await getSession();
+  const enabled = enableMatchupsFeatureFlag(session?.scoutId);
+  if (!enabled) {
+    return null;
+  }
   const { weekNumber, registrationOpen, week, matchupPool, opPrize, startTime } = await getCurrentMatchupDetails();
   const leaderboard = registrationOpen ? [] : await getLeaderboard(week, 3);
   return (
