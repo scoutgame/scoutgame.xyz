@@ -36,6 +36,7 @@ const StyledBottomNavigation = styled(BottomNavigation, {
     }
   }
 }));
+
 export function SiteNavigation({ topNav, isAuthenticated = false }: { topNav?: boolean; isAuthenticated?: boolean }) {
   const pathname = usePathname();
   const value = getActiveButton(pathname);

@@ -12,6 +12,9 @@ export default function AirdropPage() {
         py: {
           xs: 2,
           md: 4
+        },
+        px: {
+          xs: 1
         }
       }}
     >
@@ -26,23 +29,25 @@ export default function AirdropPage() {
         <ClaimTokenScreen />
       </Stack>
       <Stack
-        flexDirection={{
-          xs: 'column',
-          md: 'row'
-        }}
-        gap={{
-          xs: 1,
-          md: 2
+        sx={{
+          flexDirection: {
+            xs: 'column',
+            md: 'row'
+          },
+          gap: {
+            xs: 1,
+            md: 2
+          }
         }}
       >
         <Paper
           sx={{
             py: {
-              xs: 1,
+              xs: 1.5,
               md: 2
             },
             px: {
-              xs: 1,
+              xs: 1.5,
               md: 3
             },
             flex: 1,
@@ -135,7 +140,7 @@ export default function AirdropPage() {
           <Paper
             sx={{
               p: {
-                xs: 1,
+                xs: 1.5,
                 md: 2
               },
               flex: 1
