@@ -1,12 +1,11 @@
 import { getChainById } from '@packages/blockchain/chains';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
-import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-import type { Chain } from 'thirdweb';
 import { createThirdwebClient } from 'thirdweb';
-import { generateMerkleTreeInfoERC20, airdropERC20 } from 'thirdweb/extensions/airdrop';
-import type { AccessList, AuthorizationList, SignedAuthorization } from 'viem';
+import { generateMerkleTreeInfoERC20 } from 'thirdweb/extensions/airdrop';
 import { parseEther } from 'viem';
 import { base } from 'viem/chains';
+
+import { deployAirdropContract } from './utils/airdropClaim';
 
 async function generateMerkleRoot() {
   const snapshot = [
@@ -16,40 +15,32 @@ async function generateMerkleRoot() {
   ];
 
   const chain = getChainById(base.id);
-
-  if (!chain) {
-    throw new Error('Chain not found');
-  }
+  if (!chain) throw new Error('Chain not found');
 
   const tokenAddress = '0xfcdc6813a75df7eff31382cb956c1bee4788dd34';
-
   const client = createThirdwebClient({
     clientId: process.env.THIRDWEB_CLIENT_ID as string,
     secretKey: process.env.THIRDWEB_SECRET_KEY as string
   });
-
-  const modifiedChain: Chain = {
-    ...chain,
-    id: base.id,
-    testnet: true,
-    rpc: chain.rpcUrls[0]
-  };
 
   const walletClient = getWalletClient({
     chainId: base.id,
     privateKey: process.env.PRIVATE_KEY as `0x${string}`
   });
 
-  if (!walletClient.account) {
-    throw new Error('Wallet not found');
-  }
+  if (!walletClient.account) throw new Error('Wallet not found');
 
   // Generate merkle tree info
   const { merkleRoot, snapshotUri } = await generateMerkleTreeInfoERC20({
     contract: {
       address: tokenAddress,
       client,
-      chain: modifiedChain
+      chain: {
+        ...chain,
+        id: base.id,
+        testnet: true,
+        rpc: chain.rpcUrls[0]
+      }
     },
     tokenAddress,
     snapshot: snapshot.map((item) => ({
@@ -58,38 +49,19 @@ async function generateMerkleRoot() {
     }))
   });
 
-  const transaction = airdropERC20({
-    contract: {
-      address: tokenAddress,
-      client,
-      chain: modifiedChain
-    },
+  const airdropContractAddress = await deployAirdropContract({
     tokenAddress,
-    contents: snapshot,
-    asyncParams: async () => {
-      return {
-        tokenAddress,
-        contents: snapshot
-      };
-    }
+    merkleRoot: merkleRoot as `0x${string}`,
+    totalAirdropAmount: snapshot.reduce((acc, item) => acc + item.amount, BigInt(0)),
+    // Unix timestamp after which tokens can't be claimed. Should be in seconds.
+    expirationTimestamp: BigInt(Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)), // 30 days from now in seconds
+    // Set it to 0 to make it only claimable based off the merkle root
+    openClaimLimitPerWallet: BigInt(0),
+    trustedForwarders: [],
+    proxyFactoryAddress: '0x25548ba29a0071f30e4bdcd98ea72f79341b07a1',
+    implementationAddress: '0x0f2f02D8fE02E9C14A65A5A33073bD1ADD9aa53B'
+    // Implementation: 0x0f2f02D8fE02E9C14A65A5A33073bD1ADD9aa53B
   });
-
-  const result = await walletClient.sendTransaction({
-    account: walletClient.account,
-    to: tokenAddress,
-    data: transaction.data as `0x${string}`,
-    value: transaction.value as bigint,
-    gas: transaction.gas as bigint,
-    nonce: transaction.nonce as number,
-    chain: base,
-    accessList: transaction.accessList as AccessList,
-    maxFeePerGas: transaction.maxFeePerGas as bigint,
-    maxPriorityFeePerGas: transaction.maxPriorityFeePerGas as bigint
-  });
-
-  console.log('Transaction Hash:', result);
-  console.log('Merkle Root:', merkleRoot);
-  console.log('Snapshot URI:', snapshotUri);
 
   return { merkleRoot, snapshotUri };
 }
