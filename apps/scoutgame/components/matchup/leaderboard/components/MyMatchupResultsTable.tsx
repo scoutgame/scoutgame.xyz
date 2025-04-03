@@ -74,20 +74,23 @@ export async function MyMatchupResultsTable({ week, scoutId }: { week: string; s
                       <ListItemText
                         primary={
                           <Box display='flex' justifyContent='space-between'>
-                            <Typography variant='body2'>
+                            <Typography variant='body2' flexGrow={1}>
                               <Link href={event.url} target='_blank'>
                                 {event.contributionType}
                               </Link>
                             </Typography>
-                            <Stack direction='row' spacing={0.5} alignItems='center'>
+                            <Stack direction='row' spacing={0.5} alignItems='center' justifyContent='flex-end'>
                               <Typography variant='body2'>{event.gemsCollected}</Typography>
                               <GemsIcon size={14} />
                             </Stack>
+                            <Typography variant='body2' sx={{ minWidth: 30, textAlign: 'right' }}>
+                              {event.createdAt}
+                            </Typography>
                           </Box>
                         }
                         secondary={
-                          <Typography variant='caption' color='text.secondary'>
-                            {new Date(event.createdAt).toLocaleString()}
+                          <Typography variant='caption' color='grey'>
+                            {event.repoFullName}
                           </Typography>
                         }
                       />

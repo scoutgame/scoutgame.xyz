@@ -25,6 +25,7 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
   if (!scoutId) {
     return null;
   }
+  const season = getCurrentSeasonStart(week);
   const matchup = await prisma.scoutMatchup.findUnique({
     where: {
       createdBy_week: {
@@ -59,7 +60,7 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
               },
               builderNfts: {
                 where: {
-                  season: getCurrentSeasonStart()
+                  season
                 },
                 select: {
                   imageUrl: true,
@@ -77,7 +78,7 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
               },
               userSeasonStats: {
                 where: {
-                  season: getCurrentSeasonStart()
+                  season
                 },
                 select: {
                   level: true

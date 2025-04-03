@@ -60,7 +60,6 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
                         <Avatar
                           src={entry.scout.avatar}
                           name={entry.scout.displayName}
-                          size='small'
                           sx={{ display: 'inline-flex' }}
                         />
                         <Typography variant='body2'>{entry.scout.displayName}</Typography>

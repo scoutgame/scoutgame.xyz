@@ -1,5 +1,7 @@
 import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
+import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 
 type DeveloperMeta = Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> & {
@@ -70,6 +72,11 @@ export async function getMyMatchupResults({
                       url: true
                     }
                   },
+                  onchainAchievement: {
+                    select: {
+                      tier: true
+                    }
+                  },
                   gemsReceipt: {
                     select: {
                       type: true,
@@ -95,7 +102,12 @@ export async function getMyMatchupResults({
         gemsCollected: event.gemsReceipt!.value,
         url: event.githubEvent?.url || '',
         repoFullName: event.githubEvent ? extractRepoFullName(event.githubEvent?.url) : '',
-        contributionType: event.gemsReceipt!.type
+        // @ts-ignore -- this is a temporary fix to get the correct type without unecssary data
+        contributionType: getActivityLabel({
+          type: event.githubEvent ? 'github_event' : 'onchain_achievement',
+          contributionType: event.gemsReceipt!.type,
+          tier: event.onchainAchievement?.tier
+        })
       })),
       totalGemsCollected: selection.developer.events.reduce((acc, event) => {
         if (event.gemsReceipt) {
