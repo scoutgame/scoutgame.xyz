@@ -73,7 +73,7 @@ export function RegistrationHeader({
             <Image src='/images/matchup/howtoplay_trophy.svg' alt='' width={20} height={20} /> Prize Pool
           </Typography>
           <Box>
-            <Typography component='span' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography component='span' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }} noWrap>
               {matchupPool ? (
                 <>
                   {matchupPool} <PointsIcon /> +{' '}

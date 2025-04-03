@@ -11,7 +11,7 @@ import {
   Typography
 } from '@mui/material';
 import { getLeaderboard } from '@packages/matchup/getLeaderboard';
-import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
+import { Avatar, getAvatarCustomStyles } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Link from 'next/link';
 
@@ -53,7 +53,9 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
             ) : (
               leaderboardRows.map((entry, index) => (
                 <TableRow key={entry.scout.id}>
-                  <TableCell align='center'>{entry.rank}</TableCell>
+                  <TableCell align='center'>
+                    <Typography fontSize={18}>{entry.rank}</Typography>
+                  </TableCell>
                   <TableCell align='center'>
                     <Link href={`/u/${entry.scout.path}`} target='_blank'>
                       <Box display='flex' alignItems='center' gap={1}>

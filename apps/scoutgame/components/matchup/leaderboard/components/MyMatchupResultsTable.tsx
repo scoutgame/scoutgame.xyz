@@ -45,7 +45,30 @@ export async function MyMatchupResultsTable({ week, scoutId }: { week: string; s
         }}
       >
         {matchup.developers.map((developer, index) => (
-          <Accordion key={developer.id} sx={{ mb: 1 }}>
+          <Accordion
+            key={developer.id}
+            sx={{
+              mb: 1,
+              background: 'none',
+              '&::before': {
+                display: 'none'
+              },
+              '& .MuiAccordionSummary-root': {
+                background: 'var(--mui-palette-background-paper)',
+                borderRadius: 1
+              },
+              '& .MuiAccordionDetails-root': {
+                px: 0
+              },
+              '& .MuiListItem-root': {
+                background: 'var(--mui-palette-background-paper)',
+                mb: 0.5,
+                mx: 0,
+                px: 2,
+                borderRadius: 1
+              }
+            }}
+          >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ '.MuiAccordionSummary-content': { margin: 0 } }}>
               <Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
                 <Box display='flex' alignItems='center' gap={1}>
