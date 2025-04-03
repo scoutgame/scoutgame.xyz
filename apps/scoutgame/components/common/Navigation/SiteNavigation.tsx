@@ -10,6 +10,7 @@ import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcaster
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { getPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Link } from 'next-view-transitions';
 import { useState } from 'react';
@@ -63,7 +64,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
             label='Match Up'
             href='/matchup'
             value='matchup'
-            icon={<ScoutIcon size='24px' />}
+            icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
             LinkComponent={Link}
           />
         )}
