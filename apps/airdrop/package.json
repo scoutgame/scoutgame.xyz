@@ -12,8 +12,9 @@
   },
   "dependencies": {
     "@packages/blockchain": "^0.0.0",
+    "@packages/scoutgame-ui": "^0.0.0",
     "@packages/utils": "^1.0.0",
-    "@packages/scoutgame-ui": "^0.0.0"
+    "thirdweb": "^5.93.12"
   },
   "devDependencies": {
     "@packages/testing": "^1.0.0"
