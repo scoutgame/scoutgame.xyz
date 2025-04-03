@@ -1,9 +1,10 @@
 'use client';
 
-import { Card, Stack, Typography } from '@mui/material';
+import { Card, Stack, Typography, type SxProps } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { useLgScreen, useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import type { ComponentType } from 'react';
 
 import { NFTListingButton } from '../../NFTListing/NFTListingButton';
 import { NFTListingEditButton } from '../../NFTListing/NFTListingEditButton';
@@ -26,7 +27,7 @@ const whiteListedUserIds = [
   'b5016a86-3a3e-4b0d-8f52-cf29599b9fc8'
 ];
 
-export function BuilderCard({
+export function BuilderCard<T extends { builder: any } = { builder: any }>({
   builder,
   showPurchaseButton = false,
   hideDetails = false,
@@ -35,7 +36,10 @@ export function BuilderCard({
   markStarterCardPurchased = false,
   type,
   showListButton = false,
-  scoutInView
+  scoutInView,
+  actionSlot: ActionSlotComponent,
+  actionSlotProps,
+  sx
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
   builder: Omit<Partial<BuilderInfo>, RequiredBuilderInfoFields> & Pick<BuilderInfo, RequiredBuilderInfoFields>;
@@ -46,6 +50,9 @@ export function BuilderCard({
   type: 'default' | 'starter_pack';
   showListButton?: boolean;
   scoutInView?: string;
+  actionSlot?: ComponentType<T>;
+  actionSlotProps?: Omit<T, 'builder'>;
+  sx?: SxProps;
 }) {
   const isDesktop = useMdScreen();
   const isLgScreen = useLgScreen();
@@ -93,7 +100,8 @@ export function BuilderCard({
         width: 'fit-content',
         height: 'fit-content',
         margin: '0 auto',
-        overflow: 'initial'
+        overflow: 'initial',
+        ...sx
       }}
     >
       <BuilderCardNftDisplay
@@ -111,8 +119,10 @@ export function BuilderCard({
           <BuilderCardStats {...builder} isStarterCard={type === 'starter_pack'} size={size} />
         )}
       </BuilderCardNftDisplay>
-      {!showListButton &&
-        (lowestNonUserListing ? (
+      {ActionSlotComponent ? (
+        <ActionSlotComponent builder={builder} {...(actionSlotProps as any)} />
+      ) : !showListButton ? (
+        lowestNonUserListing ? (
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
             <NFTListingPurchaseButton builder={builder} listing={lowestNonUserListing} />
           </Stack>
@@ -120,8 +130,8 @@ export function BuilderCard({
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
             <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} type={type} />
           </Stack>
-        ) : null)}
-      {showListButton &&
+        ) : null
+      ) : (
         type !== 'starter_pack' &&
         (!userListings.length ? (
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
@@ -129,7 +139,8 @@ export function BuilderCard({
           </Stack>
         ) : (
           <NFTListingEditButton listing={userListings[0]} />
-        ))}
+        ))
+      )}
     </Card>
   );
 }

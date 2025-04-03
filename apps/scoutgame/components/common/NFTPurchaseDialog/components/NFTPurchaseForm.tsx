@@ -249,7 +249,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
-  const contractAddress = getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season });
+  const contractAddress = getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }) || '';
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address: address as Address,

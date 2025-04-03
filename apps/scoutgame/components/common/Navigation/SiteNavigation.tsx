@@ -1,6 +1,7 @@
 'use client';
 
 import { BottomNavigation, BottomNavigationAction, styled } from '@mui/material';
+import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
 import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
 import { useGetClaimablePoints } from '@packages/scoutgame-ui/hooks/api/session';
@@ -62,6 +63,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   });
   const isFarcasterFrame = useIsFarcasterFrame();
 
+  const enableMatchups = enableMatchupsFeatureFlag(user?.id);
   const canClaim = todaysClaim ? !todaysClaim?.claimed : false;
   const [authPopup, setAuthPopup] = useState({
     open: false,
@@ -84,6 +86,15 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           icon={<ScoutIcon size='24px' />}
           LinkComponent={Link}
         />
+        {enableMatchups && (
+          <BottomNavigationAction
+            label='Match Up'
+            href='/matchup'
+            value='matchup'
+            icon={<ScoutIcon size='24px' />}
+            LinkComponent={Link}
+          />
+        )}
         <BottomNavigationAction
           label='Developers'
           href='/developers'
@@ -135,6 +146,8 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
 function getActiveButton(pathname: string) {
   if (pathname.startsWith('/scout') || pathname.startsWith('/u/')) {
     return 'scout';
+  } else if (pathname.startsWith('/matchup')) {
+    return 'matchup';
   } else if (pathname.startsWith('/claim')) {
     return 'claim';
   } else if (pathname.startsWith('/developers')) {

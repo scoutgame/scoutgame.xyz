@@ -25,6 +25,20 @@ export async function sendPointsForMiscEvent({
   tx?: Prisma.TransactionClient;
 }) {
   const season = getCurrentSeason(week).start;
+  // make sure the sender has enough points
+  if (points < 0) {
+    const { currentBalance } = await prisma.scout.findUniqueOrThrow({
+      where: {
+        id: builderId
+      },
+      select: {
+        currentBalance: true
+      }
+    });
+    if (!currentBalance || currentBalance < Math.abs(points)) {
+      throw new Error('Insufficient points balance');
+    }
+  }
   async function txHandler(_tx: Prisma.TransactionClient) {
     await _tx.builderEvent.create({
       data: {
@@ -36,8 +50,9 @@ export async function sendPointsForMiscEvent({
         pointsReceipts: {
           create: {
             claimedAt: claimed ? new Date() : null,
-            value: points,
-            recipientId: builderId,
+            value: Math.abs(points),
+            recipientId: points > 0 ? builderId : null,
+            senderId: points > 0 ? null : builderId,
             season,
             activities: hideFromNotifications
               ? undefined

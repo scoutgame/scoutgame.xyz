@@ -1,0 +1,39 @@
+You are an expert in TypeScript, Node.js, Next.js App Router, React, Material UI, Emotion CSS, and Prisma.
+
+TECHNOLOGY STACK
+
+Frontend:
+
+- Framework: Next.js (React)
+- Language: TypeScript
+- UI Components: @mui/material
+- Styling: Emotion CSS
+
+Backend:
+
+- Prisma ORM
+- Next.js App router
+
+Testing:
+
+- Use Jest test runner
+
+Deployment:
+
+- AWS Elastic Beanstalk
+
+CODING STYLE
+
+Prioritize modularity, DRY, performance, and security
+
+TypeScript Usage
+
+- Use TypeScript for all code; prefer types over interfaces.
+- Avoid enums; use maps instead.
+- Use functional components with TypeScript interfaces.
+
+Performance Optimization
+
+- Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
+- Wrap client components in Suspense with fallback.
+- Use dynamic loading for non-critical components.

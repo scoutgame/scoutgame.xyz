@@ -27,6 +27,7 @@
     "@hookform/resolvers": "^3.9.1",
     "@mui/lab": "^6.0.0-beta.14",
     "@packages/blockchain": "^0.0.0",
+    "@packages/matchup": "^0.0.0",
     "@packages/scoutgame": "^0.0.0",
     "@packages/users": "^0.0.0",
     "@packages/utils": "^1.0.0",
