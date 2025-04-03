@@ -44,7 +44,15 @@ export function TokenClaimSuccessStep({ donationPercentage }: { donationPercenta
           )}
           {donationPercentage === 'donate_full' ? (
             <>
-              <Typography variant='h4' fontWeight={600} color='secondary'>
+              <Typography
+                variant='h4'
+                fontWeight={600}
+                color='secondary'
+                textAlign={{
+                  xs: 'center',
+                  md: 'left'
+                }}
+              >
                 THANK YOU for your donation!
               </Typography>
               <Typography variant='h5' textAlign='center'>
@@ -52,12 +60,12 @@ export function TokenClaimSuccessStep({ donationPercentage }: { donationPercenta
                 Open Source LEGEND!
               </Typography>
             </>
-          ) : (
+          ) : donationPercentage === 'donate_half' ? (
             <Typography variant='h5' textAlign='center'>
               THANK YOU <br />
               for your donation!
             </Typography>
-          )}
+          ) : null}
           {isDesktop ? (
             <Typography variant='h6' textAlign='center'>
               Now, let's go Bid on some developers and <br /> build your team before the season begins!
@@ -69,12 +77,14 @@ export function TokenClaimSuccessStep({ donationPercentage }: { donationPercenta
           )}
           <PlayButton />
         </Stack>
-        <img
-          src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
-          alt='Scout Switch'
-          width={isDesktop ? 350 : 300}
-          height={isDesktop ? 350 : 300}
-        />
+        {isDesktop ? (
+          <img
+            src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
+            alt='Scout Switch'
+            width={isDesktop ? 350 : 300}
+            height={isDesktop ? 350 : 300}
+          />
+        ) : null}
       </Stack>
     </Stack>
   );

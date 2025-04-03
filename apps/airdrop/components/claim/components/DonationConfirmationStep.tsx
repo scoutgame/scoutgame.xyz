@@ -42,7 +42,7 @@ export function DonationConfirmationStep({
       }}
     >
       <Stack flex={1} gap={4} justifyContent='center' alignItems='center'>
-        <Typography variant='h5' color='secondary'>
+        <Typography variant='h4' color='secondary'>
           Your Selection
         </Typography>
         <Stack
@@ -148,12 +148,14 @@ export function DonationConfirmationStep({
           </Stack>
         ) : null}
       </Stack>
-      <img
-        src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
-        alt='Scout Switch'
-        width={isDesktop ? 350 : 300}
-        height={isDesktop ? 350 : 300}
-      />
+      {isDesktop ? (
+        <img
+          src={donationPercentage === 'donate_full' ? '/images/legendary.png' : '/images/scout-switch.png'}
+          alt='Scout Switch'
+          width={isDesktop ? 350 : 300}
+          height={isDesktop ? 350 : 300}
+        />
+      ) : null}
     </Stack>
   );
 }

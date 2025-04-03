@@ -1,7 +1,6 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Card, Stack, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-
-import { StyledCard } from './StyledComponents';
 
 type DonationOptionProps = {
   selected: boolean;
@@ -77,7 +76,13 @@ export function DonationSelectionStep({
   onSelect
 }: DonationSelectionProps) {
   return (
-    <Stack gap={3} alignItems='center'>
+    <Stack
+      gap={{
+        xs: 2,
+        md: 3
+      }}
+      alignItems='center'
+    >
       <Typography variant='h4' color='secondary'>
         How would you like your {devTokenAmount} DEV tokens?
       </Typography>
@@ -112,7 +117,7 @@ export function DonationSelectionStep({
           leftIcon='/images/scout-icon.svg'
         />
       </Stack>
-      <Button variant='contained' sx={{ width: 250, py: 1, borderRadius: 2 }} onClick={onSelect}>
+      <Button variant='contained' sx={{ width: 250, py: 1, borderRadius: 2, mb: 2 }} onClick={onSelect}>
         Select
       </Button>
     </Stack>
