@@ -49,7 +49,8 @@ export async function getBuilderNftStats({
     }),
     prisma.builderStrike.count({
       where: {
-        builderId
+        builderId,
+        deletedAt: null
       }
     })
   ]);
