@@ -1,7 +1,8 @@
 'use client';
 
-import { BottomNavigation, BottomNavigationAction, styled } from '@mui/material';
+import { BottomNavigationAction, BottomNavigation, styled } from '@mui/material';
 import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
+import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
 import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
 import { useGetClaimablePoints } from '@packages/scoutgame-ui/hooks/api/session';
@@ -18,35 +19,6 @@ import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
 import { useGetQuests } from 'hooks/api/quests';
 
 import { SignInModalMessage } from '../ScoutButton/SignInModalMessage';
-
-const StyledBottomNavigation = styled(BottomNavigation, {
-  shouldForwardProp: (prop) => prop !== 'topNav' && prop !== 'largerNavbar'
-})<{ topNav?: boolean; largerNavbar?: boolean }>(({ theme, topNav, largerNavbar }) => ({
-  background: topNav
-    ? 'transparent'
-    : 'linear-gradient(88.35deg, #96CDFF 0%, #A06CD5 29.5%, #96CDFF 75.47%, #A06CD5 100%)',
-  height: largerNavbar ? '71px' : undefined,
-  '& > a': {
-    color: topNav ? theme.palette.text.primary : theme.palette.common.black,
-    gap: '2px',
-    width: topNav ? '110px' : 'auto',
-    transition: 'background-color 0.3s ease',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 255, 255, 0.1)'
-    },
-    '&.Mui-selected': {
-      color: theme.palette.text.primary,
-      backgroundColor: topNav ? theme.palette.primary.main : 'rgba(44, 0, 90, 0.25)'
-    },
-    '&.MuiButtonBase-root': {
-      paddingBottom: largerNavbar ? '15px' : undefined,
-      minWidth: '60px'
-    },
-    '& .MuiBottomNavigationAction-label': {
-      fontSize: '.75rem'
-    }
-  }
-}));
 
 export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const platform = getPlatform();

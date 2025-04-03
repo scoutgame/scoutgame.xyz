@@ -4,6 +4,7 @@ import { Stack, Tooltip, Typography } from '@mui/material';
 import { useDynamicFontSize } from '@packages/scoutgame-ui/hooks/useDynamicFontSize';
 import { useIsMounted } from '@packages/scoutgame-ui/hooks/useIsMounted';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
+import { brandColor } from '@packages/scoutgame-ui/theme/colors.ts';
 import Image from 'next/image';
 
 export function BuilderCardName({
@@ -41,7 +42,7 @@ export function BuilderCardName({
         alignItems: 'center',
         background: isStarterCard
           ? 'linear-gradient(90deg, #86ff9e 0%, #fcff6c 50%, #86ff9e 100%)'
-          : 'linear-gradient(90deg, #A06CD5 0%, #FFAC81 50%, #A06CD5 100%)'
+          : `linear-gradient(90deg, ${brandColor} 0%, #FFAC81 50%, ${brandColor} 100%)`
       }}
     >
       <Stack

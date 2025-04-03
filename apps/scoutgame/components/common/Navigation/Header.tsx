@@ -2,7 +2,6 @@
 
 import { log } from '@charmverse/core/log';
 import InfoIcon from '@mui/icons-material/Info';
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import {
   Box,
   Container,
