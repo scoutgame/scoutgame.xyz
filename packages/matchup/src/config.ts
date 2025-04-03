@@ -1,4 +1,4 @@
-import { whiteListedUserIds } from '@packages/utils/constants';
+import { whiteListedUserIds, isProdEnv } from '@packages/utils/constants';
 
 // Fee in points that scouts pay to register for a matchup
 export const MATCHUP_REGISTRATION_FEE = 50;
@@ -14,4 +14,4 @@ export const MAX_SELECTIONS = 5;
 export const MAX_CREDITS = 35;
 
 export const enableMatchupsFeatureFlag = (userId?: string) =>
-  process.env.NODE_ENV === 'development' || (userId && whiteListedUserIds.includes(userId));
+  !isProdEnv || (userId && whiteListedUserIds.includes(userId));
