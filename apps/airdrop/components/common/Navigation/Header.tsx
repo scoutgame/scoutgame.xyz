@@ -1,42 +1,33 @@
 'use client';
 
-import { log } from '@charmverse/core/log';
-import InfoIcon from '@mui/icons-material/Info';
-import { AppBar, Box, Button, Container, IconButton, Menu, MenuItem, Stack, Toolbar, Typography } from '@mui/material';
-import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
-import { logoutAction } from '@packages/nextjs/session/logoutAction';
-import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import { AppBar, Box, Container, Menu, MenuItem, Stack, Toolbar, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
-import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { getPlatform } from '@packages/utils/platform';
+import { shortenHex } from '@packages/utils/strings';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useAction } from 'next-safe-action/hooks';
 import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
+import { useAccount, useDisconnect } from 'wagmi';
 
 import { SiteNavigation } from 'components/common/Navigation/SiteNavigation';
+import { WalletLogin } from 'components/common/WalletLogin';
 
 export function Header() {
-  const router = useRouter();
-  const platform = getPlatform();
-  const { user, refreshUser } = useUser();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const { address } = useAccount();
+  const { disconnectAsync } = useDisconnect();
 
-  const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction, {
-    onSuccess: async () => {
-      await refreshUser();
-      revalidatePathAction();
-      router.push('/');
-    },
-    onError(err) {
-      log.error('Error on logout', { error: err.error.serverError });
-    }
-  });
+  const disconnect = async () => {
+    await disconnectAsync();
+  };
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
+    if (anchorElUser) {
+      setAnchorElUser(null);
+    } else {
+      setAnchorElUser(event.currentTarget);
+    }
   };
 
   const handleCloseUserMenu = () => {
@@ -73,95 +64,71 @@ export function Header() {
               <Hidden mdDown>
                 <SiteNavigation topNav />
               </Hidden>
-              {user ? (
-                <>
-                  <Stack direction='row' alignItems='center'>
-                    <Link href='/info'>
-                      <IconButton size='small' sx={{ mr: { xs: 1, md: 1.5 } }}>
-                        <InfoIcon color='secondary' />
-                      </IconButton>
-                    </Link>
+              {address ? (
+                <Box
+                  onClick={handleOpenUserMenu}
+                  borderColor='secondary.main'
+                  borderRadius='30px'
+                  sx={{
+                    position: 'relative',
+                    padding: '1px',
+                    px: 2,
+                    py: 0.25,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    justifyContent: 'space-between',
+                    borderColor: 'secondary.main',
+                    borderWidth: '2px',
+                    borderStyle: 'solid',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Stack flexDirection='row' alignItems='center' gap={1}>
+                    <Typography fontSize='16px' color='text.primary'>
+                      123
+                    </Typography>
+                    <Image
+                      src='/images/dev-token-logo.png'
+                      width={18}
+                      height={18}
+                      alt='DEV token icon'
+                      priority={true}
+                    />
                   </Stack>
-                  <Box
-                    borderColor='secondary.main'
-                    borderRadius='30px'
-                    sx={{
-                      position: 'relative',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        borderColor: 'secondary.main',
-                        borderRadius: '28px',
-                        borderWidth: '2px',
-                        borderStyle: 'solid',
-                        pointerEvents: 'none'
-                      }
+                  <Stack flexDirection='row' alignItems='center' gap={1}>
+                    <AccountBalanceWalletOutlinedIcon color='disabled' sx={{ fontSize: '16px' }} />
+                    <Typography color='textDisabled' fontSize='16px'>
+                      {shortenHex(address, 3)}
+                    </Typography>
+                  </Stack>
+                  <Menu
+                    sx={{ mt: 5 }}
+                    id='menu-appbar'
+                    slotProps={{
+                      paper: { sx: { '.MuiList-root': { pb: 0 }, maxWidth: '250px' } }
                     }}
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right'
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                    onClick={handleCloseUserMenu}
                   >
-                    <Button
-                      variant='text'
-                      disabled={isExecutingLogout}
-                      onClick={handleOpenUserMenu}
-                      sx={{ p: 0, display: 'flex', alignItems: 'center', gap: 1 }}
-                      data-test='user-menu-pill'
-                    >
-                      <Typography fontSize='16px' sx={{ pl: 2 }} color='text.primary' data-test='user-points-balance'>
-                        {user.currentBalance}
-                      </Typography>
-                      <Image
-                        src='/images/icons/binoculars.svg'
-                        width={20}
-                        height={20}
-                        alt='Scout Game points icon'
-                        priority={true}
-                      />
-                      <Avatar src={user?.avatar || undefined} size='medium' name={user.displayName} />
-                    </Button>
-                    <Menu
-                      sx={{ mt: 5 }}
-                      id='menu-appbar'
-                      slotProps={{
-                        paper: { sx: { '.MuiList-root': { pb: 0 }, maxWidth: '250px' } }
-                      }}
-                      anchorEl={anchorElUser}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right'
-                      }}
-                      keepMounted
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right'
-                      }}
-                      open={Boolean(anchorElUser)}
-                      onClose={handleCloseUserMenu}
-                      onClick={handleCloseUserMenu}
-                    >
-                      {(platform === 'webapp' || platform === 'onchain_webapp') && (
-                        <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
-                          Sign Out
-                        </MenuItem>
-                      )}
-                    </Menu>
-                  </Box>
-                </>
+                    <MenuItem onClick={disconnect} data-test='disconnect-button'>
+                      Disconnect
+                    </MenuItem>
+                  </Menu>
+                </Box>
               ) : (
-                <>
-                  <Link href='/info'>
-                    <IconButton size='small' sx={{ mr: { xs: 1, md: 3 } }}>
-                      <InfoIcon color='secondary' />
-                    </IconButton>
-                  </Link>
-                  {(platform === 'webapp' || platform === 'onchain_webapp') && (
-                    <Button variant='gradient' href='/login' data-test='sign-in-button'>
-                      Sign in
-                    </Button>
-                  )}
-                </>
+                <WalletLogin />
               )}
             </Stack>
           </>

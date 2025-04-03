@@ -1,7 +1,11 @@
+import { Box } from '@mui/material';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { AppProviders } from '@packages/scoutgame-ui/providers/AppProviders';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+
+import { Header } from 'components/common/Navigation/Header';
+import { StickyFooter } from 'components/common/Navigation/StickyFooter';
 
 import { ClientGlobals } from '@/components/common/ClientGlobals';
 
@@ -51,7 +55,19 @@ export default async function RootLayout({
         <script src='/__ENV.js' />
         <AppProviders user={user}>
           <ClientGlobals userId={user?.id} />
-          {children}
+          <Box
+            display='grid'
+            gridTemplateRows='auto 1fr auto'
+            minHeight='100vh'
+            bgcolor='background.default'
+            height='100%'
+          >
+            <Header />
+            <Box component='main' minHeight='100%' sx={{ display: 'flex', flexDirection: 'column' }}>
+              {children}
+            </Box>
+            <StickyFooter />
+          </Box>
         </AppProviders>
       </body>
     </html>
