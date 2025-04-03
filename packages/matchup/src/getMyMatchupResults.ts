@@ -5,7 +5,13 @@ import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scou
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 
 type DeveloperMeta = Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> & {
-  events: { gemsCollected: number; url: string; repoFullName: string; contributionType: string; createdAt: string }[];
+  events: {
+    gemsCollected: number;
+    url: string;
+    repoFullName: string;
+    contributionType: string;
+    createdAt: string;
+  }[];
   totalGemsCollected: number;
 };
 
@@ -104,10 +110,10 @@ export async function getMyMatchupResults({
         repoFullName: event.githubEvent ? extractRepoFullName(event.githubEvent?.url) : '',
         // @ts-ignore -- this is a temporary fix to get the correct type without unecssary data
         contributionType: getActivityLabel({
-          type: event.githubEvent ? 'github_event' : 'onchain_achievement',
+          type: event.githubEvent ? 'github_event' : ('onchain_achievement' as const),
           contributionType: event.gemsReceipt!.type,
           tier: event.onchainAchievement?.tier
-        })
+        }) as string
       })),
       totalGemsCollected: selection.developer.events.reduce((acc, event) => {
         if (event.gemsReceipt) {
