@@ -26,7 +26,8 @@ export const StyledBottomNavigation = styled(BottomNavigation, {
       minWidth: '60px'
     },
     '& .MuiBottomNavigationAction-label': {
-      fontSize: '.75rem'
+      fontSize: '.75rem',
+      whiteSpace: 'nowrap'
     }
   }
 }));

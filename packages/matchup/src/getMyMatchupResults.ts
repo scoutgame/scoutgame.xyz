@@ -1,5 +1,7 @@
 import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
+import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
+import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 
 type DeveloperMeta = Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> & {
@@ -70,6 +72,11 @@ export async function getMyMatchupResults({
                       url: true
                     }
                   },
+                  onchainAchievement: {
+                    select: {
+                      tier: true
+                    }
+                  },
                   gemsReceipt: {
                     select: {
                       type: true,
@@ -93,9 +100,14 @@ export async function getMyMatchupResults({
       events: selection.developer.events.map((event) => ({
         createdAt: getShortenedRelativeTime(event.createdAt)!,
         gemsCollected: event.gemsReceipt!.value,
-        url: event.githubEvent!.url || '',
-        repoFullName: event.githubEvent!.url.split('/').slice(3).join('/') || '',
-        contributionType: event.gemsReceipt!.type
+        url: event.githubEvent?.url || '',
+        repoFullName: event.githubEvent ? extractRepoFullName(event.githubEvent?.url) : '',
+        // @ts-ignore -- this is a temporary fix to get the correct type without unecssary data
+        contributionType: getActivityLabel({
+          type: event.githubEvent ? 'github_event' : 'onchain_achievement',
+          contributionType: event.gemsReceipt!.type,
+          tier: event.onchainAchievement?.tier
+        })
       })),
       totalGemsCollected: selection.developer.events.reduce((acc, event) => {
         if (event.gemsReceipt) {
@@ -105,10 +117,17 @@ export async function getMyMatchupResults({
       }, 0)
     }))
     .sort((a, b) => b.totalGemsCollected - a.totalGemsCollected);
+
   const totalGemsCollected = developers.reduce((acc, developer) => acc + developer.totalGemsCollected, 0);
   return {
     ...matchup,
     totalGemsCollected,
     developers
   };
+}
+
+// example: https://github.com/scoutgame/scoutgame.xyz/pull/461
+function extractRepoFullName(url: string) {
+  const parts = url.split('/');
+  return `${parts[3]}/${parts[4]}`;
 }
