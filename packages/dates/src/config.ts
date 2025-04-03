@@ -14,7 +14,7 @@ export type SeasonConfig = {
 };
 
 // the end of each season is the start of the next season
-export const seasons = [
+export const seasons: SeasonConfig[] = [
   // dev season
   {
     start: '2024-W38',

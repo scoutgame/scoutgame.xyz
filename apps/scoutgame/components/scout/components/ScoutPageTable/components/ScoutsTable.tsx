@@ -8,8 +8,9 @@ import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { TableCellText } from 'components/common/TableCellText';
+
 import { CommonTableRow, tableRowSx } from './CommonTableRow';
-import { TableCellText } from './TableCellText';
 
 function SortIcon({ columnName, order, sort }: { columnName: string; order: string; sort: string }) {
   if (sort !== columnName) return null;

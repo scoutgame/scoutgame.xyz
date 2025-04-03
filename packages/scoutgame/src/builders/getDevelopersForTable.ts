@@ -15,6 +15,7 @@ export type DeveloperTableCursor = {
 };
 
 export type DeveloperMetadata = {
+  id: string;
   path: string;
   avatar: string;
   displayName: string;
@@ -87,6 +88,7 @@ export async function getDevelopersForTable({
         id: true,
         user: {
           select: {
+            id: true,
             path: true,
             avatar: true,
             displayName: true,
@@ -134,6 +136,7 @@ export async function getDevelopersForTable({
     });
 
     const developers = usersSeasonStats.map(({ user, level }) => ({
+      id: user.id,
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
@@ -207,6 +210,7 @@ export async function getDevelopersForTable({
           : undefined,
         builder: {
           select: {
+            id: true,
             path: true,
             avatar: true,
             displayName: true,
@@ -238,6 +242,7 @@ export async function getDevelopersForTable({
     });
 
     const developers = builderNfts.map(({ builder, nftOwners, currentPrice, estimatedPayout }) => ({
+      id: builder.id,
       path: builder.path,
       avatar: builder.avatar as string,
       displayName: builder.displayName,
@@ -306,6 +311,7 @@ export async function getDevelopersForTable({
           : undefined,
         builder: {
           select: {
+            id: true,
             path: true,
             avatar: true,
             displayName: true,
@@ -338,6 +344,7 @@ export async function getDevelopersForTable({
     });
 
     const developers = builderNfts.map(({ builder, nftOwners, currentPrice, estimatedPayout }) => ({
+      id: builder.id,
       path: builder.path,
       avatar: builder.avatar as string,
       displayName: builder.displayName,
@@ -441,6 +448,7 @@ export async function getDevelopersForTable({
     });
 
     const developers = userWeeklyStats.map(({ user, gemsCollected, rank }) => ({
+      id: user.id,
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,

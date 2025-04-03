@@ -36,7 +36,10 @@
     "@rainbow-me/rainbowkit": "^2.2.1",
     "@serwist/next": "^9.0.5",
     "@typeschema/yup": "^0.13.3",
+    "embla-carousel-react": "^8.5.2",
     "frames.js": "^0.21.2",
+    "install": "^0.13.0",
+    "npm": "^11.2.0",
     "server-only": "^0.0.1",
     "usehooks-ts": "^3.1.0",
     "web-push": "^3.6.7"

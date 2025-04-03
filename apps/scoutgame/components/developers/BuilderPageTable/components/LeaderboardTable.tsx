@@ -10,10 +10,10 @@ import { getSXProps } from '@packages/scoutgame-ui/components/common/Hidden';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 
 import { ScoutButton } from 'components/common/ScoutButton/ScoutButton';
+import { TableCellText } from 'components/common/TableCellText';
 
 import { CommonTableRow } from './CommonTableRow';
 import { DeveloperCell } from './DeveloperCell';
-import { TableCellText } from './TableCellText';
 import { WeekTableHead } from './WeekTableHead';
 
 export function LeaderboardTable({ data, week }: { data: LeaderBoardRow[]; week: ISOWeek }) {

@@ -10,7 +10,8 @@ import {
   getCurrentWeek,
   getCurrentSeasonStart,
   getAllISOWeeksFromSeasonStart,
-  getAllISOWeeksFromSeasonStartUntilSeasonEnd
+  dateTimeToWeek,
+  getEndOfWeek
 } from '../utils';
 
 describe('scoutgame date utils', () => {
@@ -31,12 +32,49 @@ describe('scoutgame date utils', () => {
     });
   });
 
+  describe('dateTimeToWeek', () => {
+    it('should convert DateTime to ISO week format', () => {
+      const date = DateTime.fromObject({ year: 2023, month: 1, day: 2 }, { zone: 'utc' });
+      expect(dateTimeToWeek(date)).toEqual('2023-W01');
+    });
+
+    it('should handle year boundary cases', () => {
+      const date = DateTime.fromObject({ year: 2023, month: 1, day: 1 }, { zone: 'utc' });
+      expect(dateTimeToWeek(date)).toEqual('2022-W52');
+    });
+
+    it('should handle leap years', () => {
+      const date = DateTime.fromObject({ year: 1982, month: 1, day: 3 }, { zone: 'utc' });
+      expect(dateTimeToWeek(date)).toEqual('1981-W53');
+    });
+  });
+
   describe('getWeekStartEnd', () => {
     it('should return start and end of the week', () => {
       const dec31 = new Date('2023-01-01T00:00:00.000Z'); // jan 1 is a Sunday
       const result = getWeekStartEnd(dec31);
       expect(result.start.toJSDate().toISOString()).toEqual('2022-12-26T00:00:00.000Z');
       expect(result.end.toJSDate().toISOString()).toEqual('2023-01-01T23:59:59.999Z');
+    });
+  });
+
+  describe('getEndOfWeek', () => {
+    it('should return the end of the week for a given ISO week', () => {
+      const week = '2023-W01';
+      const result = getEndOfWeek(week);
+      expect(result.toJSDate().toISOString()).toEqual('2023-01-08T23:59:59.999Z');
+    });
+
+    it('should handle year boundary cases', () => {
+      const week = '2022-W52';
+      const result = getEndOfWeek(week);
+      expect(result.toJSDate().toISOString()).toEqual('2023-01-01T23:59:59.999Z');
+    });
+
+    it('should handle leap years', () => {
+      const week = '2020-W53';
+      const result = getEndOfWeek(week);
+      expect(result.toJSDate().toISOString()).toEqual('2021-01-03T23:59:59.999Z');
     });
   });
 
@@ -77,11 +115,11 @@ describe('scoutgame date utils', () => {
   });
 
   describe('getCurrentSeasonStart', () => {
-    const seasons: SeasonConfig[] = [
+    const seasons = [
       { start: '2024-W01', title: 'season 1' },
       { start: '2024-W05', title: 'season 2' },
       { start: '2024-W10', title: 'season 3' }
-    ];
+    ] as SeasonConfig[];
 
     it('should return the season when the current week is the first week of a season', () => {
       const currentSeason = getCurrentSeasonStart('2024-W01', seasons);
@@ -99,19 +137,19 @@ describe('scoutgame date utils', () => {
     });
 
     it('Should throw an error when given an invalid season list', () => {
-      const missingSeason: SeasonConfig[] = [
+      const missingSeason = [
         { start: '2024-W03', title: 'season 1' },
         { start: '2024-W02', title: 'season 2' }
-      ];
+      ] as SeasonConfig[];
       expect(() => getCurrentSeasonStart('2024-W03', missingSeason)).toThrow();
     });
 
     it('Should throw an error when given an invalid season list', () => {
       const currentWeek = '2024-W03';
-      const unsortedSeasons: SeasonConfig[] = [
+      const unsortedSeasons = [
         { start: '2024-W03', title: 'season 1' },
         { start: '2024-W02', title: 'season 2' }
-      ];
+      ] as SeasonConfig[];
       expect(() => getCurrentSeasonStart(currentWeek, unsortedSeasons)).toThrow();
     });
 

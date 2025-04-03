@@ -201,7 +201,7 @@ export async function getDeveloperInfo({
 
   if (!regularCard) {
     log.error('No regular or starter card found', {
-      developerId: developer.id
+      userId: developer.id
     });
 
     throw new Error('No regular card found for developer');
@@ -209,7 +209,7 @@ export async function getDeveloperInfo({
 
   if (!starterCard) {
     log.error('No starter card found', {
-      developerId: developer.id
+      userId: developer.id
     });
 
     throw new Error('No starter card found for developer');

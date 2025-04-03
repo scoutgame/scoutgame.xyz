@@ -85,6 +85,7 @@ export type MixpanelEventMap = {
   click_list_button: ClickListButton;
   click_moxie_promo: FrontendEvent;
   click_optimism_promo: FrontendEvent;
+  click_register_matchup: FrontendEvent;
   page_view: FrontendEvent;
   referral_link_used: BaseEvent & {
     referralCode: string;

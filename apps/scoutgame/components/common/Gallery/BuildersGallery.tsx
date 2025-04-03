@@ -1,5 +1,6 @@
 import { Box, Grid2 as Grid, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
+import type { ComponentType } from 'react';
 
 import { BuilderCard } from '../Card/BuilderCard/BuilderCard';
 
@@ -9,7 +10,9 @@ export function BuildersGallery({
   size = 'medium',
   markStarterCardPurchased = false,
   showListButton = false,
-  scoutInView
+  scoutInView,
+  actionSlot,
+  actionSlotProps
 }: {
   scoutInView?: string;
   builders: BuilderInfo[];
@@ -17,6 +20,8 @@ export function BuildersGallery({
   size?: 'small' | 'medium' | 'large';
   markStarterCardPurchased?: boolean;
   showListButton?: boolean;
+  actionSlot?: ComponentType<any>;
+  actionSlotProps?: Record<string, any>;
 }) {
   return (
     <Box flexGrow={1}>
@@ -41,6 +46,8 @@ export function BuildersGallery({
                 type={builder.nftType}
                 markStarterCardPurchased={markStarterCardPurchased}
                 showListButton={showListButton}
+                actionSlot={actionSlot}
+                actionSlotProps={actionSlotProps}
               />
             </Box>
           </Grid>
