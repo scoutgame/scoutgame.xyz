@@ -93,8 +93,8 @@ export async function getMyMatchupResults({
       events: selection.developer.events.map((event) => ({
         createdAt: getShortenedRelativeTime(event.createdAt)!,
         gemsCollected: event.gemsReceipt!.value,
-        url: event.githubEvent!.url || '',
-        repoFullName: event.githubEvent!.url.split('/').slice(3).join('/') || '',
+        url: event.githubEvent?.url || '',
+        repoFullName: event.githubEvent ? extractRepoFullName(event.githubEvent?.url) : '',
         contributionType: event.gemsReceipt!.type
       })),
       totalGemsCollected: selection.developer.events.reduce((acc, event) => {
@@ -105,10 +105,17 @@ export async function getMyMatchupResults({
       }, 0)
     }))
     .sort((a, b) => b.totalGemsCollected - a.totalGemsCollected);
+
   const totalGemsCollected = developers.reduce((acc, developer) => acc + developer.totalGemsCollected, 0);
   return {
     ...matchup,
     totalGemsCollected,
     developers
   };
+}
+
+// example: https://github.com/scoutgame/scoutgame.xyz/pull/461
+function extractRepoFullName(url: string) {
+  const parts = url.split('/');
+  return `${parts[3]}/${parts[4]}`;
 }

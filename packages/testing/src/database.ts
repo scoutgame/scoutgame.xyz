@@ -2,6 +2,7 @@ import type {
   BuilderEvent,
   BuilderEventType,
   BuilderNftType,
+  GemsReceiptType,
   GithubRepo,
   Scout,
   ScoutProjectContract,
@@ -14,11 +15,6 @@ import { v4 as uuid } from 'uuid';
 import type { Address } from 'viem';
 
 import { randomLargeInt, mockSeason, randomWalletAddress } from './generators';
-
-type RepoAddress = {
-  repoOwner?: string;
-  repoName?: string;
-};
 
 export async function mockBuilder({
   id,
@@ -361,12 +357,16 @@ export async function mockBuilderEvent({
   builderId,
   eventType,
   week = getCurrentWeek(),
-  createdAt = new Date()
+  createdAt = new Date(),
+  gemsValue,
+  gemsReceiptType = 'first_pr'
 }: {
   builderId: string;
   eventType: BuilderEventType;
   week?: string;
   createdAt?: Date;
+  gemsValue?: number;
+  gemsReceiptType?: GemsReceiptType;
 }) {
   return prisma.builderEvent.create({
     data: {
@@ -374,7 +374,15 @@ export async function mockBuilderEvent({
       builderId,
       season: mockSeason,
       type: eventType,
-      week
+      week,
+      gemsReceipt: gemsValue
+        ? {
+            create: {
+              value: gemsValue,
+              type: gemsReceiptType
+            }
+          }
+        : undefined
     }
   });
 }
@@ -394,40 +402,58 @@ export async function mockGithubUser({ builderId }: { builderId?: string } = {})
 }
 
 export async function mockPullRequestBuilderEvent({
+  createdAt = new Date(),
   repoOwner,
   repoName,
+  repoId: _repoId,
   pullRequestNumber = randomLargeInt(),
   season = mockSeason,
-  builderId
+  week = getCurrentWeek(),
+  builderId,
+  gemsValue = 10,
+  gemsReceiptType = 'first_pr'
 }: {
-  pullRequestNumber?: number;
-  githubUserId: number;
+  createdAt?: Date;
   builderId: string;
+  pullRequestNumber?: number;
+  gemsValue?: number;
+  gemsReceiptType?: GemsReceiptType;
+  week?: string;
   season?: string;
   id?: number;
-} & RepoAddress): Promise<BuilderEvent> {
+  repoOwner?: string;
+  repoName?: string;
+  repoId?: number;
+}): Promise<BuilderEvent> {
   const githubUser = await prisma.githubUser.findFirstOrThrow({ where: { builderId } });
 
-  const repo = await mockRepo({ owner: repoOwner, name: repoName });
-
+  const repoId = _repoId || (await mockRepo({ owner: repoOwner, name: repoName })).id;
+  const repo = await prisma.githubRepo.findFirstOrThrow({ where: { id: repoId } });
   const githubEvent = await prisma.githubEvent.create({
     data: {
-      repoId: repo.id,
+      repoId,
       pullRequestNumber,
       title: `Mock Pull Request ${pullRequestNumber}`,
       type: 'merged_pull_request',
       createdBy: githubUser.id,
-      url: ``
+      url: `https://github.com/${repo.owner}/${repo.name}/pull/${pullRequestNumber}`
     }
   });
 
   const builderEvent = await prisma.builderEvent.create({
     data: {
+      createdAt,
       builderId: builderId as string,
       season,
       type: 'merged_pull_request',
       githubEventId: githubEvent.id,
-      week: getCurrentWeek()
+      week,
+      gemsReceipt: {
+        create: {
+          value: gemsValue,
+          type: gemsReceiptType
+        }
+      }
     }
   });
 
@@ -783,10 +809,10 @@ export async function mockBuilderStrike({
 }: {
   builderId: string;
   pullRequestNumber?: number;
-} & Partial<RepoAddress>) {
-  const githubUser = await prisma.githubUser.findFirstOrThrow({ where: { builderId } });
+  repoOwner?: string;
+  repoName?: string;
+}) {
   const githubBuilderEvent = await mockPullRequestBuilderEvent({
-    githubUserId: githubUser.id,
     pullRequestNumber,
     repoName,
     repoOwner,
@@ -1030,4 +1056,39 @@ export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: st
       rewardPayouts: true
     }
   });
+}
+
+export async function mockMatchup({
+  createdBy,
+  submittedAt,
+  withDevelopers,
+  selectedDevelopers = [],
+  week = getCurrentWeek()
+}: {
+  createdBy: string;
+  submittedAt?: Date;
+  withDevelopers?: boolean;
+  selectedDevelopers?: string[];
+  week?: string;
+}) {
+  const builders = withDevelopers
+    ? (await Promise.all(Array.from({ length: 5 }, () => mockBuilder()))).map((b) => b.id)
+    : selectedDevelopers;
+  const matchup = await prisma.scoutMatchup.create({
+    data: {
+      createdBy,
+      week,
+      submittedAt,
+      selections: {
+        createMany: {
+          data: builders
+            .map((builder) => ({
+              developerId: builder
+            }))
+            .concat()
+        }
+      }
+    }
+  });
+  return { matchup, builders };
 }

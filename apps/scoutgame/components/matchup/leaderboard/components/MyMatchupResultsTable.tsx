@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import {
   Accordion,
@@ -12,13 +13,17 @@ import {
   Typography
 } from '@mui/material';
 import { getMyMatchupResults } from '@packages/matchup/getMyMatchupResults';
+import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Link from 'next/link';
 
 export async function MyMatchupResultsTable({ week, scoutId }: { week: string; scoutId?: string }) {
-  const matchup = await getMyMatchupResults({ week, scoutId });
-  if (!matchup) {
+  const [error, matchup] = await safeAwaitSSRData(getMyMatchupResults({ week, scoutId }));
+  if (error || !matchup) {
+    if (error) {
+      log.error('error getting user matchup results', { userId: scoutId, error });
+    }
     return null;
   }
   return (
