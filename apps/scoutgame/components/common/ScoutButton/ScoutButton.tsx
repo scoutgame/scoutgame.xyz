@@ -10,6 +10,7 @@ import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
+import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
@@ -40,7 +41,8 @@ export function ScoutButton({
     ? Number(builder?.price || 0) / 10 ** devTokenDecimals
     : convertCostToPoints(builder?.price || BigInt(0));
 
-  const handleClick = () => {
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });
     if (isAuthenticated) {
       openModal('nftPurchase', { ...builder, nftType: type });
@@ -86,10 +88,10 @@ export function ScoutButton({
                   Starter
                 </Typography>
               )}{' '}
-              <div>
+              <Stack direction='row' alignItems='center' justifyContent='center'>
                 {purchaseCostInPoints}
                 <Image src={image} alt='' width={21} height={12} style={{ marginLeft: 4, marginRight: 4 }} />
-              </div>
+              </Stack>
             </Stack>
           </LoadingButton>
         )}
