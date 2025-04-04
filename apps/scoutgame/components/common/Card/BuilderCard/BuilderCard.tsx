@@ -16,17 +16,6 @@ import { BuilderCardStats } from './BuilderCardStats';
 
 type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path';
 
-const whiteListedUserIds = [
-  // Matt casey
-  '00c4af4f-b0f8-41e8-b27d-29996d694034',
-  // Chris
-  'b6cb2938-91dd-4274-8d85-aa2e00eb97e2',
-  // Safwan
-  'f534b485-b7d5-47c3-92d8-02d107158558',
-  // test scout
-  'b5016a86-3a3e-4b0d-8f52-cf29599b9fc8'
-];
-
 export function BuilderCard<T extends { builder: any } = { builder: any }>({
   builder,
   showPurchaseButton = false,
@@ -61,16 +50,11 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
   const { user } = useUser();
   const price = builder.price;
 
-  const isWhitelisted = user && whiteListedUserIds.includes(user.id);
-  if (showListButton && !isWhitelisted) {
-    showListButton = false;
-  }
-
   const userListings = (builder.listings || []).filter((listing) => listing.scoutId === user?.id);
 
   const lowerPricedNonUserListings: BuilderInfo['listings'] = [];
 
-  if (price && builder.listings && user && whiteListedUserIds.includes(user.id)) {
+  if (price && builder.listings) {
     builder.listings.forEach((listing) => {
       if (
         listing.scoutId !== user?.id &&
