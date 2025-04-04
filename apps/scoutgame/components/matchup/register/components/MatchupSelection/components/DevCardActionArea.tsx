@@ -51,7 +51,9 @@ export function DevCardActionArea({
   return (
     <Box
       sx={{
-        background: builderCardBackground(builder.nftType === 'starter_pack'),
+        background: _isSelected
+          ? 'var(--mui-palette-secondary-main)'
+          : builderCardBackground(builder.nftType === 'starter_pack'),
         borderBottomLeftRadius: '4px',
         borderBottomRightRadius: '4px',
         cursor: 'pointer'

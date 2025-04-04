@@ -28,12 +28,12 @@ export function BuilderCardStats({
         estimatedPayout={estimatedPayout ?? 0}
         gemsCollected={gemsCollected ?? 0}
       />
-      {/* <BuilderCardName
+      <BuilderCardName
         name={displayName}
         size={size}
         isStarterCard={isStarterCard}
         nftsSoldToLoggedInScout={nftsSoldToLoggedInScout}
-      /> */}
+      />
     </Stack>
   );
 }
