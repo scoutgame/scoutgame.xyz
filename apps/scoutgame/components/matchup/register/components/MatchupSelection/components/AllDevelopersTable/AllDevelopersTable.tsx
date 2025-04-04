@@ -2,24 +2,24 @@
 
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
-import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
-import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { DeveloperMetadata, DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
-import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
+import { getSXProps, Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { formatUnits } from 'viem';
 
 import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
 import { ScoutButton } from 'components/common/ScoutButton/ScoutButton';
 import { TableCellText } from 'components/common/TableCellText';
 import { tableRowNoPaddingSx } from 'components/scout/components/ScoutPageTable/components/CommonTableRow';
+
+const desktopSx = getSXProps({ mdDown: true, display: 'table-cell' });
+const mobileSx = getSXProps({ mdUp: true, display: 'table-cell' });
 
 function SortIcon({ columnName, order, sort }: { columnName: string; order: string; sort: string }) {
   if (sort !== columnName) return null;
@@ -84,29 +84,38 @@ export function AllDevelopersTable({
               <SortIcon columnName='level' order={order} sort={sort} />
             </Stack>
           </TableCell>
-          <TableCell>RANK</TableCell>
+          <TableCell align='center'>RANK</TableCell>
           <TableCell
             onClick={() => handleSort('week_gems')}
             sx={{
+              ...desktopSx,
               cursor: 'pointer'
             }}
           >
-            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
+            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5} textAlign='center'>
               WEEK'S GEMS
               <SortIcon columnName='week_gems' order={order} sort={sort} />
             </Stack>
           </TableCell>
-          <TableCell align='center'>STARTER PRICE</TableCell>
+          <TableCell align='center' sx={desktopSx}>
+            STARTER PRICE
+          </TableCell>
           <TableCell
             onClick={() => handleSort('price')}
             sx={{
+              ...desktopSx,
               cursor: 'pointer'
             }}
           >
-            <Stack direction='row' alignItems='center' justifyContent='flex-end'>
-              FULL PRICE
+            <Stack direction='row' alignItems='center' justifyContent='center' textAlign='center'>
+              FULL
+              <br />
+              PRICE
               <SortIcon columnName='price' order={order} sort={sort} />
             </Stack>
+          </TableCell>
+          <TableCell align='center' sx={mobileSx}>
+            {/* PURCHASE */}
           </TableCell>
         </TableRow>
       </TableHead>
@@ -131,10 +140,9 @@ export function AllDevelopersTable({
                   alignItems='center'
                   flexDirection='row'
                   gap={{ xs: 0.75, md: 1.5 }}
-                  maxWidth={{ xs: '65px', md: 'initial' }}
                 >
                   <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
-                  <Stack maxWidth={{ xs: '50px', md: 'initial' }}>
+                  <Stack maxWidth={{ xs: '100px', md: '160px' }}>
                     {builder.nftsSoldToLoggedInScout ? (
                       <Stack direction='row' alignItems='center' gap={0.5}>
                         <Typography fontSize={{ xs: '10.5px', md: '14px' }} color='green.main' noWrap>
@@ -148,13 +156,13 @@ export function AllDevelopersTable({
                         />
                       </Stack>
                     ) : null}
-                    <TableCellText deskTopfontSize='16px' overflow='hidden' textOverflow='ellipsis' noWrap>
+                    <TableCellText overflow='hidden' textOverflow='ellipsis' noWrap>
                       {builder.displayName}
                     </TableCellText>
                   </Stack>
                 </Stack>
               </TableCell>
-              <TableCell align='center' sx={{ display: 'table-cell' }}>
+              <TableCell align='center'>
                 <TableCellText color='orange.main'>{builder.level}</TableCellText>
               </TableCell>
               <TableCell
@@ -185,15 +193,16 @@ export function AllDevelopersTable({
                   </TableCellText>
                 </Stack>
               </TableCell>
-              <TableCell align='center'>
+              <TableCell align='center' sx={desktopSx}>
                 <Stack
                   alignItems='center'
                   flexDirection='row'
-                  gap={{ xs: 0.5, md: 1 }}
-                  ml={1.5}
+                  gap={{ xs: 0.5 }}
                   justifyContent='flex-end'
+                  width='50px'
+                  margin='0 auto'
                 >
-                  <TableCellText deskTopfontSize='16px'>{builder.gemsCollected}</TableCellText>
+                  <TableCellText>{builder.gemsCollected}</TableCellText>
                   <Image
                     width={isMdScreen ? 15 : 12.5}
                     height={isMdScreen ? 15 : 12.5}
@@ -202,7 +211,7 @@ export function AllDevelopersTable({
                   />
                 </Stack>
               </TableCell>
-              <TableCell align='center'>
+              <TableCell align='center' sx={desktopSx}>
                 <ScoutButton
                   builder={{
                     ...builder,
@@ -212,14 +221,18 @@ export function AllDevelopersTable({
                   type='starter_pack'
                 />
               </TableCell>
-              <TableCell align='center'>
+              <TableCell align='center' sx={desktopSx}>
                 <ScoutButton
                   builder={{
                     ...builder,
                     builderStatus: 'approved'
                   }}
-                  type='starter_pack'
                 />
+              </TableCell>
+              <TableCell align='center' sx={mobileSx}>
+                <Button sx={{ px: 1 }} variant='buy'>
+                  View
+                </Button>
               </TableCell>
             </TableRow>
           ))}

@@ -12,7 +12,8 @@ export function BuildersGallery({
   showListButton = false,
   scoutInView,
   actionSlot,
-  actionSlotProps
+  actionSlotProps,
+  cardVariant
 }: {
   scoutInView?: string;
   builders: BuilderInfo[];
@@ -22,6 +23,7 @@ export function BuildersGallery({
   showListButton?: boolean;
   actionSlot?: ComponentType<any>;
   actionSlotProps?: Record<string, any>;
+  cardVariant?: 'matchup_selection';
 }) {
   return (
     <Box flexGrow={1}>
@@ -48,6 +50,7 @@ export function BuildersGallery({
                 showListButton={showListButton}
                 actionSlot={actionSlot}
                 actionSlotProps={actionSlotProps}
+                variant={cardVariant}
               />
             </Box>
           </Grid>

@@ -7,7 +7,7 @@ import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorS
 
 import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
 
-import { SelectDeveloperButton } from './SelectDeveloperButton';
+import { DevCardActionArea } from './DevCardActionArea';
 
 export async function MyDeveloperCards({
   userId,
@@ -33,11 +33,12 @@ export async function MyDeveloperCards({
         columns={4}
         scoutInView={userId}
         size='small'
-        actionSlot={SelectDeveloperButton}
+        actionSlot={DevCardActionArea}
         actionSlotProps={{
           matchupId,
           selectedDevelopers
         }}
+        cardVariant='matchup_selection'
       />
     </Stack>
   );

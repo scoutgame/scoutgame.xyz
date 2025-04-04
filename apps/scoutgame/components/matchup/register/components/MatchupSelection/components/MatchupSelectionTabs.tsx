@@ -28,7 +28,7 @@ export function MatchupSelectionTabs({ myCardsView, allCardsView }: MatchupSelec
       </StyledTabs>
 
       <Box sx={{ mt: 2 }}>
-        <Suspense fallback={<LoadingCards />}>
+        <Suspense fallback={<LoadingCards count={4} />}>
           {activeTab === 'my_cards' ? (
             user ? (
               myCardsView
