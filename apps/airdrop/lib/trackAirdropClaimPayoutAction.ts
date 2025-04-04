@@ -24,8 +24,7 @@ export const trackAirdropClaimPayoutAction = actionClient
         airdropClaimId,
         amount,
         donationAmount,
-        txHash,
-        claimedAt: new Date()
+        txHash
       }
     });
 

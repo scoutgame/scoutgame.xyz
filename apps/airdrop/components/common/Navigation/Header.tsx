@@ -9,17 +9,24 @@ import { shortenHex } from '@packages/utils/strings';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
-import { useState } from 'react';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useEffect, useState } from 'react';
+import { erc20Abi } from 'viem';
+import { readContract } from 'viem/actions';
+import { useAccount, useDisconnect, usePublicClient } from 'wagmi';
 
 import { SiteNavigation } from 'components/common/Navigation/SiteNavigation';
 import { WalletLogin } from 'components/common/WalletLogin';
+
+import { useTokenBalance } from '@/hooks/useTokenBalance';
+
+// Token address for the DEV token
 
 export function Header() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const { address } = useAccount();
   const { disconnectAsync } = useDisconnect();
   const isDesktop = useMdScreen();
+  const { balance } = useTokenBalance();
 
   const disconnect = async () => {
     await disconnectAsync();
@@ -114,7 +121,7 @@ export function Header() {
                     }}
                   >
                     <Typography fontSize='16px' color='text.primary'>
-                      0
+                      {Number(balance)}
                     </Typography>
                     <Image
                       src='/images/dev-token-logo.png'
