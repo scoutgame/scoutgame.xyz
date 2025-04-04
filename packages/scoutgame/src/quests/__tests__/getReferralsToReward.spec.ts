@@ -1,5 +1,5 @@
 import { getCurrentWeek, getDateFromISOWeek } from '@packages/dates/utils';
-import { mockBuilder, mockScout } from '@packages/testing/database';
+import { mockBuilder, mockScout, mockScoutedNft, mockNFTPurchaseEvent } from '@packages/testing/database';
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import { v4 as uuid } from 'uuid';
@@ -42,7 +42,12 @@ async function mockReferrals(referralCode: string, week: string) {
   const referees: Awaited<ReturnType<typeof mockScout>>[] = [];
   for (let j = 0; j < 5; j++) {
     const builder = await mockBuilder({ createNft: true });
-    const referee = await mockScout({ verifiedEmail: true, builderId: builder.id });
+    const referee = await mockScout({ verifiedEmail: true });
+    await mockNFTPurchaseEvent({ builderId: builder.id, scoutId: referee.id, nftType: 'default' });
+    await mockScoutedNft({
+      builderId: builder.id,
+      scoutId: referee.id
+    });
     await createReferralEvent(referralCode, referee.id, week);
     await updateReferralUsers(referee.id, getDateFromISOWeek(week).plus({ days: 1 }).toJSDate());
     referees.push(referee);

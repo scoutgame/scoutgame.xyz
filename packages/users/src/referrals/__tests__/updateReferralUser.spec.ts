@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { mockBuilder, mockScout, mockScoutedNft } from '@packages/testing/database';
+import { mockBuilder, mockScout, mockScoutedNft, mockNFTPurchaseEvent } from '@packages/testing/database';
 
 import { createVerificationCode, verifyEmail } from '../../verifyEmail';
 import { createReferralEvent } from '../createReferralEvent';
@@ -38,6 +38,11 @@ describe('updateReferralUsers', () => {
     await mockScoutedNft({
       builderId: referral.id,
       scoutId: referee.id
+    });
+    await mockNFTPurchaseEvent({
+      builderId: referral.id,
+      scoutId: referee.id,
+      nftType: 'default'
     });
 
     expect((await updateReferralUsers(referee.id)).result).toBe('success');
