@@ -4,7 +4,7 @@ import { readContract } from 'viem/actions';
 import { base } from 'viem/chains';
 import { useAccount, usePublicClient, useSwitchChain } from 'wagmi';
 
-const TOKEN_ADDRESS = '0xfcdc6813a75df7eff31382cb956c1bee4788dd34';
+export const TOKEN_ADDRESS = '0xfcdc6813a75df7eff31382cb956c1bee4788dd34';
 
 export function useTokenBalance() {
   const publicClient = usePublicClient();

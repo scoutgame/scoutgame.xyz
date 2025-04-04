@@ -4,6 +4,7 @@ import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thi
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { erc20Abi } from 'viem';
 import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 import { base } from 'wagmi/chains';
 
@@ -16,6 +17,7 @@ import { ShowClaimableTokensStep } from './components/ShowClaimableTokensStep';
 import { StartClaimStep } from './components/StartClaimStep';
 import { TokenClaimSuccessStep } from './components/TokenClaimSuccessStep';
 
+import { TOKEN_ADDRESS } from '@/hooks/useTokenBalance';
 import { getAirdropTokenStatusAction } from '@/lib/getAirdropTokenStatusAction';
 import { trackAirdropClaimPayoutAction } from '@/lib/trackAirdropClaimPayoutAction';
 
@@ -98,23 +100,35 @@ export function ClaimTokenScreen() {
     }
 
     setIsClaimingTokens(true);
-    try {
-      const preparedTx = await claimThirdwebERC20AirdropToken({
-        airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
-        receiver: address as `0x${string}`,
-        quantity: BigInt(airdropInfo.claimableAmount * 10 ** 18),
-        proofs: airdropInfo.proofs,
-        proofMaxQuantityForWallet: BigInt(airdropInfo.proofMaxQuantityForWallet),
-        chainId: 8453,
-        walletClient
-      });
 
+    try {
       const donationAmount =
         donationPercentage === 'donate_half'
           ? airdropInfo.claimableAmount / 2
           : donationPercentage === 'donate_full'
             ? airdropInfo.claimableAmount
             : 0;
+
+      const preparedTx = await claimThirdwebERC20AirdropToken({
+        airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
+        receiver: address as `0x${string}`,
+        quantity: BigInt((airdropInfo.claimableAmount - donationAmount) * 10 ** 18),
+        proofs: airdropInfo.proofs,
+        proofMaxQuantityForWallet: BigInt(airdropInfo.proofMaxQuantityForWallet),
+        chainId: 8453,
+        walletClient
+      });
+
+      if (donationAmount > 0) {
+        // Send donation to safe wallet
+        const safeWallet = '0x78Ef4aFbE2BC6DF76B696c71fC1CeDCA4aD31561';
+        await walletClient.writeContract({
+          address: TOKEN_ADDRESS,
+          abi: erc20Abi,
+          functionName: 'transfer',
+          args: [safeWallet, BigInt(donationAmount * 10 ** 18)]
+        });
+      }
 
       await trackAirdropClaimPayout({
         address: address as `0x${string}`,
