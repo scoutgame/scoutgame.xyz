@@ -1,28 +1,31 @@
+import { LoadingButton } from '@mui/lab';
 import { Button, Stack, Typography } from '@mui/material';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 
 type DonationConfirmationProps = {
   donationPercentage: 'donate_full' | 'donate_half' | 'donate_none';
-  devTokenAmount: number;
+  claimableAmount: number;
   onCancel: () => void;
   onClaim: () => void;
+  isLoading: boolean;
 };
 
 export function DonationConfirmationStep({
   donationPercentage,
-  devTokenAmount,
+  claimableAmount,
   onCancel,
-  onClaim
+  onClaim,
+  isLoading
 }: DonationConfirmationProps) {
   const isDesktop = useMdScreen();
 
   const donationAmount =
     donationPercentage === 'donate_full'
-      ? devTokenAmount
+      ? claimableAmount
       : donationPercentage === 'donate_half'
-        ? devTokenAmount / 2
+        ? claimableAmount / 2
         : 0;
-  const playAmount = devTokenAmount - donationAmount;
+  const playAmount = claimableAmount - donationAmount;
 
   return (
     <Stack
@@ -88,6 +91,7 @@ export function DonationConfirmationStep({
                   variant='outlined'
                   sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 }, py: 1, borderRadius: 2 }}
                   onClick={onCancel}
+                  disabled={isLoading}
                 >
                   Cancel
                 </Button>
@@ -125,13 +129,14 @@ export function DonationConfirmationStep({
                 />
               </Stack>
               {donationPercentage !== 'donate_none' ? (
-                <Button
+                <LoadingButton
                   variant='contained'
                   sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 }, py: 1, borderRadius: 2 }}
                   onClick={onClaim}
+                  loading={isLoading}
                 >
                   Claim
-                </Button>
+                </LoadingButton>
               ) : null}
             </Stack>
           ) : null}
@@ -142,9 +147,14 @@ export function DonationConfirmationStep({
             <Button variant='outlined' sx={{ width: isDesktop ? 150 : 100, py: 1, borderRadius: 2 }} onClick={onCancel}>
               Cancel
             </Button>
-            <Button variant='contained' sx={{ width: isDesktop ? 150 : 100, py: 1, borderRadius: 2 }} onClick={onClaim}>
+            <LoadingButton
+              variant='contained'
+              sx={{ width: isDesktop ? 150 : 100, py: 1, borderRadius: 2 }}
+              onClick={onClaim}
+              loading={isLoading}
+            >
               Claim
-            </Button>
+            </LoadingButton>
           </Stack>
         ) : null}
       </Stack>

@@ -5,13 +5,12 @@ import { PageLayout } from './PageLayout';
 
 export function ShowClaimableTokensStep({
   onContinue,
-  devTokenAmount
+  claimableAmount
 }: {
   onContinue: () => void;
-  devTokenAmount: number;
+  claimableAmount: number;
 }) {
   const isDesktop = useMdScreen();
-
   return (
     <PageLayout imageSrc='/images/hero.png' imageAlt='Airdrop Banner'>
       <Stack gap={1} alignItems='center' flex={1}>
@@ -33,7 +32,7 @@ export function ShowClaimableTokensStep({
         </Typography>
         <Stack flexDirection='row' gap={1} alignItems='center' my={1}>
           <Typography variant={isDesktop ? 'h4' : 'h5'} fontWeight={600}>
-            {devTokenAmount}
+            {claimableAmount}
           </Typography>
           <img
             src='/images/dev-token-logo.png'
