@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { erc20Abi } from 'viem';
 import { readContract } from 'viem/actions';
-import { useAccount, usePublicClient } from 'wagmi';
+import { base } from 'viem/chains';
+import { useAccount, usePublicClient, useSwitchChain } from 'wagmi';
 
 const TOKEN_ADDRESS = '0xfcdc6813a75df7eff31382cb956c1bee4788dd34';
 
@@ -9,9 +10,14 @@ export function useTokenBalance() {
   const publicClient = usePublicClient();
   const { address } = useAccount();
   const [balance, setBalance] = useState('0');
+  const { switchChain } = useSwitchChain();
 
   const fetchTokenBalance = async () => {
     if (!address || !publicClient) return;
+
+    if (publicClient.chain.id !== base.id) {
+      switchChain({ chainId: base.id });
+    }
 
     try {
       // Get token balance
@@ -26,7 +32,6 @@ export function useTokenBalance() {
       const formattedBalance = (Number(tokenBalance) / 1e18).toFixed(2);
       setBalance(formattedBalance);
     } catch (error) {
-      // Error handling without console statement
       setBalance('0');
     }
   };
