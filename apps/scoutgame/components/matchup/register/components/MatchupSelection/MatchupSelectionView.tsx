@@ -12,9 +12,10 @@ import { SubmitMatchupButton } from './components/SubmitMatchupButton';
 const slots = Array.from({ length: 5 });
 
 export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
-  const totalCredits = myMatchup.selections?.reduce((acc, selection) => acc + selection.credits, 0) || 0;
+  const creditsRemaining =
+    MAX_CREDITS - (myMatchup.selections?.reduce((acc, selection) => acc + selection.credits, 0) || 0);
 
-  const canSubmit = myMatchup.selections?.length === 5 && totalCredits <= MAX_CREDITS;
+  const canSubmit = myMatchup.selections?.length === 5 && creditsRemaining > 0;
 
   return (
     <Box>
@@ -77,12 +78,12 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
                 BALANCE
               </Typography>
               <Typography
-                color={totalCredits > MAX_CREDITS ? 'error' : 'inherit'}
+                color={creditsRemaining < 0 ? 'error' : 'inherit'}
                 gutterBottom
                 textTransform='uppercase'
                 align='center'
               >
-                {totalCredits} / {MAX_CREDITS} credits
+                {creditsRemaining} / {MAX_CREDITS} credits
               </Typography>
             </Box>
             <SubmitMatchupButton matchupId={myMatchup.id} disabled={!canSubmit} />
