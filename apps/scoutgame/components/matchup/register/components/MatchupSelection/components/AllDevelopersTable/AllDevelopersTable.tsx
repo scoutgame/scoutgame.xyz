@@ -57,7 +57,11 @@ export function AllDevelopersTable({
     <Table
       aria-label='Builders table'
       size='small'
-      sx={{ px: { md: 10 }, backgroundColor: 'background.dark' }}
+      sx={{
+        px: { md: 10 },
+        backgroundColor: 'background.dark',
+        '& .MuiTableHead-root .MuiTableCell-root': { xs: { fontSize: 11 }, md: { fontSize: 14 } }
+      }}
       data-test='builders-table'
     >
       <TableHead
@@ -97,13 +101,10 @@ export function AllDevelopersTable({
               <SortIcon columnName='week_gems' order={order} sort={sort} />
             </Stack>
           </TableCell>
-          <TableCell align='center' sx={desktopSx}>
-            STARTER PRICE
-          </TableCell>
+          <TableCell align='center'>STARTER PRICE</TableCell>
           <TableCell
             onClick={() => handleSort('price')}
             sx={{
-              ...desktopSx,
               cursor: 'pointer'
             }}
           >
@@ -113,9 +114,6 @@ export function AllDevelopersTable({
               PRICE
               <SortIcon columnName='price' order={order} sort={sort} />
             </Stack>
-          </TableCell>
-          <TableCell align='center' sx={mobileSx}>
-            {/* PURCHASE */}
           </TableCell>
         </TableRow>
       </TableHead>
@@ -142,7 +140,7 @@ export function AllDevelopersTable({
                   gap={{ xs: 0.75, md: 1.5 }}
                 >
                   <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
-                  <Stack maxWidth={{ xs: '100px', md: '160px' }}>
+                  <Stack maxWidth={{ xs: '40px', md: '160px' }}>
                     {builder.nftsSoldToLoggedInScout ? (
                       <Stack direction='row' alignItems='center' gap={0.5}>
                         <Typography fontSize={{ xs: '10.5px', md: '14px' }} color='green.main' noWrap>
@@ -180,6 +178,7 @@ export function AllDevelopersTable({
                     md: 1
                   }}
                   height='100%'
+                  minWidth={80}
                 >
                   <BuilderCardRankGraph last14DaysRank={builder.last14DaysRank} />
                   <TableCellText
@@ -211,7 +210,7 @@ export function AllDevelopersTable({
                   />
                 </Stack>
               </TableCell>
-              <TableCell align='center' sx={desktopSx}>
+              <TableCell align='center'>
                 <ScoutButton
                   builder={{
                     ...builder,
@@ -221,18 +220,13 @@ export function AllDevelopersTable({
                   type='starter_pack'
                 />
               </TableCell>
-              <TableCell align='center' sx={desktopSx}>
+              <TableCell align='center'>
                 <ScoutButton
                   builder={{
                     ...builder,
                     builderStatus: 'approved'
                   }}
                 />
-              </TableCell>
-              <TableCell align='center' sx={mobileSx}>
-                <Button sx={{ px: 1 }} variant='buy'>
-                  View
-                </Button>
               </TableCell>
             </TableRow>
           ))}
