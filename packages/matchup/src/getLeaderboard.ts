@@ -68,11 +68,11 @@ export async function getLeaderboard(week: string, limit?: number): Promise<Scou
     .map((entry, index) => {
       const developers = entry.selections
         .map((selection) => ({
-          id: selection.developerNft.builder.id,
-          displayName: selection.developerNft.builder.displayName,
-          avatar: selection.developerNft.builder.avatar || '',
-          path: selection.developerNft.builder.path,
-          gemsCollected: selection.developerNft.builder.userWeeklyStats.reduce(
+          id: selection.developerNft!.builder.id,
+          displayName: selection.developerNft!.builder.displayName,
+          avatar: selection.developerNft!.builder.avatar || '',
+          path: selection.developerNft!.builder.path,
+          gemsCollected: selection.developerNft!.builder.userWeeklyStats.reduce(
             (acc, stat) => acc + stat.gemsCollected,
             0
           )

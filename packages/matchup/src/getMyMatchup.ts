@@ -94,19 +94,19 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
     .map((selection) => ({
       ...selection,
       developer: {
-        id: selection.developerNft.builder.id,
-        displayName: selection.developerNft.builder.displayName,
-        path: selection.developerNft.builder.path,
-        avatar: selection.developerNft.builder.avatar,
-        nftImageUrl: selection.developerNft.imageUrl,
-        gemsCollected: selection.developerNft.builder.userWeeklyStats[0]?.gemsCollected || 0,
-        level: selection.developerNft.builder.userSeasonStats[0]?.level || 0,
+        id: selection.developerNft!.builder.id,
+        displayName: selection.developerNft!.builder.displayName,
+        path: selection.developerNft!.builder.path,
+        avatar: selection.developerNft!.builder.avatar,
+        nftImageUrl: selection.developerNft!.imageUrl,
+        gemsCollected: selection.developerNft!.builder.userWeeklyStats[0]?.gemsCollected || 0,
+        level: selection.developerNft!.builder.userSeasonStats[0]?.level || 0,
         estimatedPayout: isOnchainPlatform()
-          ? Number(BigInt(selection.developerNft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
-          : (selection.developerNft.estimatedPayout ?? 0),
-        last14DaysRank: normalizeLast14DaysRank(selection.developerNft.builder.builderCardActivities[0])
+          ? Number(BigInt(selection.developerNft!.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
+          : (selection.developerNft!.estimatedPayout ?? 0),
+        last14DaysRank: normalizeLast14DaysRank(selection.developerNft!.builder.builderCardActivities[0])
       },
-      credits: selection.developerNft.builder.userSeasonStats[0].level || 0
+      credits: selection.developerNft!.builder.userSeasonStats[0].level || 0
     }))
     .sort((a, b) => b.developer.level - a.developer.level);
   return {

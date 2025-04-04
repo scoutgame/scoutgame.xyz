@@ -181,7 +181,7 @@ export function AllDevelopersTable({
                   }}
                   height='100%'
                 >
-                  <BuilderCardRankGraph last14DaysRank={builder.last14Days} />
+                  <BuilderCardRankGraph last14DaysRank={builder.last14DaysRank} />
                   <TableCellText
                     color='secondary'
                     minWidth={{

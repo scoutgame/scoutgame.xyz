@@ -33,12 +33,12 @@ export function DevCardActionArea({
     if (_isSelected) {
       await executeRemove({
         matchupId,
-        developerId: builder.id
+        developerNftId: builder.id
       });
     } else {
       await executeAdd({
         matchupId,
-        developerId: builder.id
+        developerNftId: builder.id
       });
     }
     setIsSelected(!_isSelected);

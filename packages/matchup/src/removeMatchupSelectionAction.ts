@@ -11,7 +11,7 @@ export const removeMatchupSelectionAction = authActionClient
   .schema(
     yup.object({
       matchupId: yup.string().required(),
-      developerId: yup.string().required()
+      developerNftId: yup.string().required()
     })
   )
   .action(async ({ parsedInput }) => {
@@ -19,9 +19,9 @@ export const removeMatchupSelectionAction = authActionClient
     try {
       await prisma.scoutMatchupSelection.delete({
         where: {
-          matchupId_developerId: {
+          matchupId_developerNftId: {
             matchupId: parsedInput.matchupId,
-            developerId: parsedInput.developerId
+            developerNftId: parsedInput.developerNftId
           }
         }
       });

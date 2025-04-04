@@ -106,8 +106,8 @@ export async function getMyMatchupResults({
   }
   const developers: DeveloperMeta[] = matchup.selections
     .map((selection) => ({
-      ...selection.developerNft.builder,
-      events: selection.developerNft.builder.events.map((event) => ({
+      ...selection.developerNft!.builder,
+      events: selection.developerNft!.builder.events.map((event) => ({
         createdAt: getShortenedRelativeTime(event.createdAt)!,
         gemsCollected: event.gemsReceipt!.value,
         url: event.githubEvent?.url || '',
@@ -119,7 +119,7 @@ export async function getMyMatchupResults({
           tier: event.onchainAchievement?.tier
         }) as string
       })),
-      totalGemsCollected: selection.developerNft.builder.events.reduce((acc, event) => {
+      totalGemsCollected: selection.developerNft!.builder.events.reduce((acc, event) => {
         if (event.gemsReceipt) {
           return acc + event.gemsReceipt.value;
         }

@@ -81,7 +81,9 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
                                 textShadow: '0px 1px 2px rgba(0, 0, 0, 1)',
                                 textAlign: 'right',
                                 letterSpacing: 0,
-                                fontWeight: 800
+                                fontWeight: 800,
+                                backgroundColor: '#5C4475',
+                                borderRadius: '2px'
                               }}
                             >
                               {entry.developers[i].gemsCollected}

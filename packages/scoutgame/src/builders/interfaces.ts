@@ -17,7 +17,7 @@ export type BuilderMetrics = {
   price: bigint;
   level?: number | null;
   estimatedPayout?: number | null;
-  last14DaysRank?: (number | null)[] | null;
+  last14DaysRank: (number | null)[];
   gemsCollected?: number;
   nftsSoldToLoggedInScout?: number;
   nftsSoldToScoutInView?: number;
@@ -37,7 +37,7 @@ export type BuilderInfo = BasicUserInfo &
     nftType: BuilderNftType;
     builderStatus: BuilderStatus | null;
     farcasterId?: number | null;
-    nftImageUrl?: string | null;
+    nftImageUrl: string | null;
     congratsImageUrl: string | null;
     listings: NftListing[];
   };
