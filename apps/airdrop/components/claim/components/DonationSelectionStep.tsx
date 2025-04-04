@@ -63,14 +63,14 @@ function DonationOption({ selected, onClick, title, description, leftIcon, right
 export type DonationPercentage = 'donate_full' | 'donate_half' | 'donate_none';
 
 type DonationSelectionProps = {
-  devTokenAmount: number;
+  claimableAmount: number;
   donationPercentage: DonationPercentage;
   onDonationChange: (percentage: DonationPercentage) => void;
   onSelect: () => void;
 };
 
 export function DonationSelectionStep({
-  devTokenAmount,
+  claimableAmount,
   donationPercentage,
   onDonationChange,
   onSelect
@@ -84,7 +84,7 @@ export function DonationSelectionStep({
       alignItems='center'
     >
       <Typography variant='h4' color='secondary'>
-        How would you like your {devTokenAmount} DEV tokens?
+        How would you like your {claimableAmount} DEV tokens?
       </Typography>
       <Stack
         flexDirection={{
