@@ -42,6 +42,9 @@ export async function recordSeaportListing({
   const { executeAllActions } = await seaport.createOrder(
     {
       domain: 'scoutgame.xyz',
+      // 1 year in unix timestamp
+      endTime: Math.floor(Date.now() / 1000) + 1000 * 60 * 60 * 24 * 365,
+      allowPartialFills: false,
       offer: [
         {
           itemType: ItemType.ERC1155,
