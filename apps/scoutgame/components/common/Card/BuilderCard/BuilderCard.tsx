@@ -39,6 +39,7 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
   scoutInView,
   actionSlot: ActionSlotComponent,
   actionSlotProps,
+  variant,
   sx
 }: {
   size?: 'x-small' | 'small' | 'medium' | 'large';
@@ -52,6 +53,7 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
   scoutInView?: string;
   actionSlot?: ComponentType<T>;
   actionSlotProps?: Omit<T, 'builder'>;
+  variant?: 'matchup_selection'; // has an actionSlot with a checkbox and dev name
   sx?: SxProps;
 }) {
   const isDesktop = useMdScreen();
@@ -112,6 +114,7 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
         hideDetails={hideDetails}
         disableProfileUrl={disableProfileUrl}
         isStarterCard={type === 'starter_pack'}
+        variant={variant}
       >
         {builder.builderStatus === 'banned' ? (
           <Typography textAlign='center'>SUSPENDED</Typography>

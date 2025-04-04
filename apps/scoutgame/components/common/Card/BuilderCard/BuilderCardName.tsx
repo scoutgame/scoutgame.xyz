@@ -7,6 +7,12 @@ import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { brandColor } from '@packages/scoutgame-ui/theme/colors.ts';
 import Image from 'next/image';
 
+export const builderCardBackground = (isStarterCard: boolean | undefined) => {
+  return isStarterCard
+    ? 'linear-gradient(90deg, #86ff9e 0%, #fcff6c 50%, #86ff9e 100%)'
+    : `linear-gradient(90deg, ${brandColor} 0%, #FFAC81 50%, ${brandColor} 100%)`;
+};
+
 export function BuilderCardName({
   name,
   size,
@@ -40,9 +46,7 @@ export function BuilderCardName({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        background: isStarterCard
-          ? 'linear-gradient(90deg, #86ff9e 0%, #fcff6c 50%, #86ff9e 100%)'
-          : `linear-gradient(90deg, ${brandColor} 0%, #FFAC81 50%, ${brandColor} 100%)`
+        background: builderCardBackground(isStarterCard)
       }}
     >
       <Stack

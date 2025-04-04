@@ -93,9 +93,8 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
   if (!matchup) {
     return null;
   }
-  return {
-    ...matchup,
-    selections: matchup.selections.map((selection) => ({
+  const selections = matchup.selections
+    .map((selection) => ({
       ...selection,
       developer: {
         id: selection.developer.id,
@@ -103,8 +102,8 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
         path: selection.developer.path,
         avatar: selection.developer.avatar,
         nftImageUrl: selection.developer.builderNfts[0].imageUrl,
-        gemsCollected: selection.developer.userWeeklyStats[0].gemsCollected,
-        level: selection.developer.userSeasonStats[0].level,
+        gemsCollected: selection.developer.userWeeklyStats[0]?.gemsCollected || 0,
+        level: selection.developer.userSeasonStats[0]?.level || 0,
         estimatedPayout: isOnchainPlatform()
           ? Number(
               BigInt(selection.developer.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) /
@@ -115,5 +114,9 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
       },
       credits: selection.developer.userSeasonStats[0].level || 0
     }))
+    .sort((a, b) => b.developer.level - a.developer.level);
+  return {
+    ...matchup,
+    selections
   };
 }

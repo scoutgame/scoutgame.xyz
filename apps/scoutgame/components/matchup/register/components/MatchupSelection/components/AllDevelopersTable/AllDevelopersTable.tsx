@@ -107,7 +107,7 @@ export function AllDevelopersTable({
               cursor: 'pointer'
             }}
           >
-            <Stack direction='row' alignItems='center' justifyContent='flex-end'>
+            <Stack direction='row' alignItems='center' justifyContent='center' textAlign='center'>
               FULL
               <br />
               PRICE
