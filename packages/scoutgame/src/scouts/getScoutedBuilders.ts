@@ -76,6 +76,7 @@ export async function getScoutedBuilders({
           }
         },
         select: {
+          id: true,
           contractAddress: true,
           imageUrl: true,
           currentPrice: true,
@@ -157,6 +158,7 @@ export async function getScoutedBuilders({
           nftsSoldToLoggedInScout,
           price,
           last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
+          nftId: nft.id,
           nftType: nft.nftType,
           gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
           congratsImageUrl: nft.congratsImageUrl,

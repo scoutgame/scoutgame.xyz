@@ -35,6 +35,7 @@ export type NftListing = {
 export type BuilderInfo = BasicUserInfo &
   BuilderMetrics & {
     nftType: BuilderNftType;
+    nftId?: string; // used for matchup
     builderStatus: BuilderStatus | null;
     farcasterId?: number | null;
     nftImageUrl: string | null;
