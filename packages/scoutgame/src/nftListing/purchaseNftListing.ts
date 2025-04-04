@@ -1,11 +1,15 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address, Hash } from 'viem';
 import { isAddress } from 'viem';
 
 import { getTransferSingleWithBatchMerged } from '../builderNfts/accounting/getTransferSingleWithBatchMerged';
+import { builderTokenDecimals } from '../builderNfts/constants';
 import { recordNftTransfer } from '../builderNfts/recordNftTransfer';
-import { scoutProtocolChain } from '../protocol/constants';
+import { sendAppNotification } from '../notifications/sendAppNotification';
+import { devTokenDecimals, scoutProtocolChain } from '../protocol/constants';
 
 export async function purchaseNftListing({
   listingId,
@@ -38,6 +42,8 @@ export async function purchaseNftListing({
     select: {
       builderNftId: true,
       amount: true,
+      price: true,
+      priceDevToken: true,
       completedAt: true,
       sellerWallet: true,
       seller: {
@@ -48,6 +54,12 @@ export async function purchaseNftListing({
       order: true,
       builderNft: {
         select: {
+          builder: {
+            select: {
+              id: true,
+              displayName: true
+            }
+          },
           contractAddress: true,
           tokenId: true
         }
@@ -98,6 +110,37 @@ export async function purchaseNftListing({
     contractAddress,
     transferSingleEvent: transferEvent
   });
+
+  const price = isOnchainPlatform() ? BigInt(listing.priceDevToken as string) : (listing.price as bigint);
+  const priceInDecimal = isOnchainPlatform()
+    ? Number(price) / 10 ** devTokenDecimals
+    : Number(price) / 10 ** builderTokenDecimals;
+  const developerEarnings = priceInDecimal * 0.01; // 1%
+  const sellerEarnings = priceInDecimal * 0.95; // 95%
+
+  try {
+    await sendAppNotification({
+      userId: listing.seller.scoutId,
+      notificationType: 'sold_nft_listing_seller',
+      notificationVariables: {
+        developerName: listing.builderNft.builder.displayName,
+        earnedAmount: sellerEarnings
+      }
+    });
+
+    await sendAppNotification({
+      userId: listing.builderNft.builder.id,
+      notificationType: 'sold_nft_listing_developer',
+      notificationVariables: {
+        earnedAmount: developerEarnings
+      }
+    });
+  } catch (error) {
+    log.error('Error sending notification', {
+      error,
+      listingId
+    });
+  }
 
   return {
     listing: updatedListing

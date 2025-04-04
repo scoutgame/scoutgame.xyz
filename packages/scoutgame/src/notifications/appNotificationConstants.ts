@@ -1,3 +1,5 @@
+import { isOnchainPlatform } from '@packages/utils/platform';
+
 type Variables = {
   weekly_claim: {
     points: number;
@@ -25,6 +27,13 @@ type Variables = {
   added_to_project: {
     projectName: string;
     projectPath: string;
+  };
+  sold_nft_listing_seller: {
+    developerName: string;
+    earnedAmount: number;
+  };
+  sold_nft_listing_developer: {
+    earnedAmount: number;
   };
 };
 
@@ -83,6 +92,18 @@ export const AppNotificationTypesRecord = {
     description: ({ projectName }: Variables['added_to_project']) =>
       `You have been added to the project ${projectName}`,
     targetUrl: ({ projectPath }: Variables['added_to_project']) => `/p/${projectPath}`
+  },
+  sold_nft_listing_seller: {
+    title: 'NFT listing sold',
+    description: ({ developerName, earnedAmount }: Variables['sold_nft_listing_seller']) =>
+      `Your nft listing for ${developerName} has been sold and your earned ${earnedAmount} ${isOnchainPlatform() ? 'DEV' : 'USDC'}`,
+    targetUrl: () => `/profile`
+  },
+  sold_nft_listing_developer: {
+    title: 'NFT listing sold',
+    description: ({ earnedAmount }: Variables['sold_nft_listing_developer']) =>
+      `Your nft was sold in the secondary market and you earned ${earnedAmount} ${isOnchainPlatform() ? 'DEV' : 'USDC'}`,
+    targetUrl: () => `/profile`
   }
 };
 
