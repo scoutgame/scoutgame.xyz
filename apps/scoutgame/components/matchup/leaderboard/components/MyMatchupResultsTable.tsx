@@ -74,14 +74,12 @@ export async function MyMatchupResultsTable({ week, scoutId }: { week: string; s
               <Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
                 <Box display='flex' alignItems='center' gap={1}>
                   <Typography variant='body2'>{index + 1}.</Typography>
-                  <Link href={`/u/${developer.path}`} target='_blank'>
-                    <Avatar
-                      src={developer.avatar}
-                      name={developer.displayName}
-                      size='small'
-                      sx={{ display: 'inline-flex' }}
-                    />
-                  </Link>
+                  <Avatar
+                    src={developer.avatar}
+                    name={developer.displayName}
+                    size='small'
+                    sx={{ display: 'inline-flex' }}
+                  />
                   <Typography variant='body2'>{developer.displayName}</Typography>
                 </Box>
                 <Stack direction='row' spacing={0.5} alignItems='center' mr={2}>
