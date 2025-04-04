@@ -118,7 +118,7 @@ export async function updateReferralUsers(refereeId: string, now = new Date()): 
     for (const purchaseEvent of wallet.purchaseEvents) {
       if (
         purchaseEvent.builderNft.nftType === 'default' &&
-        purchaseEvent.paidInPoints === false &&
+        !purchaseEvent.paidInPoints &&
         // has to be a fresh mint
         !purchaseEvent.senderWalletAddress
       ) {
@@ -129,7 +129,7 @@ export async function updateReferralUsers(refereeId: string, now = new Date()): 
   }
 
   if (!madeCryptoPurchase) {
-    log.debug('Ignore referral because referee has not purchased any NFTs', { userId: refereeId });
+    log.debug('Ignore referral because referee has not made a crypto purchase', { userId: refereeId });
     return { result: 'no_nft_purchase' };
   }
 
