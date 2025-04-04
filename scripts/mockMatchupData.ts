@@ -3,20 +3,20 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder, mockScoutedNft, mockUserSeasonStats } from '@packages/testing/database';
 import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 
-const builderDisplayName = 'coral-beaver';
+const builderDisplayName = 'Matt';
 
 // use this script to set up some mock data for weekly matchup
 
 async function query() {
   const scout = await prisma.scout.findFirstOrThrow({
     where: {
-      path: builderDisplayName
+      displayName: builderDisplayName
     }
   });
 
   await sendPointsForMiscEvent({
     builderId: scout.id,
-    points: -1000,
+    points: 1000,
     description: 'Mock matchup data',
     claimed: true,
     hideFromNotifications: true

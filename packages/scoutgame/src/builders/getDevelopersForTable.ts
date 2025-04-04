@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -14,21 +15,22 @@ export type DeveloperTableCursor = {
   order?: 'asc' | 'desc';
 };
 
-export type DeveloperMetadata = {
-  id: string;
-  path: string;
-  avatar: string;
-  displayName: string;
-  price: bigint;
-  level: number | null;
-  gemsCollected: number;
-  estimatedPayout: number | null;
-  last14Days: (number | null)[];
-  nftImageUrl: string | null;
-  nftsSoldToLoggedInScout: number | null;
-  // nftsSoldToScoutInView: number | null;
+export type DeveloperMetadata = Omit<BuilderInfo, 'nftType' | 'listings' | 'builderStatus'> & {
   rank: number | null;
 };
+
+// {
+//   id: string;
+//   path: string;
+//   avatar: string;
+//   displayName: string;
+//   price: bigint;
+//   level: number | null;
+//   gemsCollected: number;
+//   estimatedPayout: number | null;
+//   last14Days: (number | null)[];
+//   nftImageUrl: string | null;
+// };
 
 export async function getDevelopersForTable({
   limit = 50,
@@ -103,6 +105,7 @@ export async function getDevelopersForTable({
                 // TODO: use the currentPriceInScoutToken when we move to $SCOUT
                 currentPrice: true,
                 imageUrl: true,
+                congratsImageUrl: true,
                 nftOwners: loggedInScoutId
                   ? {
                       where: {
@@ -137,19 +140,20 @@ export async function getDevelopersForTable({
       }
     });
 
-    const developers = usersSeasonStats.map(({ user, level }) => ({
+    const developers: DeveloperMetadata[] = usersSeasonStats.map(({ user, level }) => ({
       id: user.id,
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
       price: user.builderNfts[0]?.currentPrice || BigInt(0),
       level,
+      congratsImageUrl: user.builderNfts[0]?.congratsImageUrl,
       nftImageUrl: user.builderNfts[0]?.imageUrl,
-      last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
+      last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       gemsCollected: user.userWeeklyStats[0]?.gemsCollected || 0,
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
       rank: user.userWeeklyStats[0]?.rank,
-      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce((acc, nft) => acc + nft.balance, 0) || null
+      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce((acc, nft) => acc + nft.balance, 0)
     }));
 
     const lastItem = usersSeasonStats[usersSeasonStats.length - 1];
@@ -196,6 +200,7 @@ export async function getDevelopersForTable({
       select: {
         createdAt: true,
         imageUrl: true,
+        congratsImageUrl: true,
         builderId: true,
         // TODO: use the currentPriceInScoutToken when we move to $SCOUT
         currentPrice: true,
@@ -245,22 +250,24 @@ export async function getDevelopersForTable({
       }
     });
 
-    const developers = builderNfts.map(({ builder, nftOwners, currentPrice, estimatedPayout, imageUrl }) => ({
-      id: builder.id,
-      path: builder.path,
-      avatar: builder.avatar as string,
-      displayName: builder.displayName,
-      // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-      price: currentPrice || BigInt(0),
-      estimatedPayout: estimatedPayout || 0,
-      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
-      last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
-      level: builder.userSeasonStats[0]?.level || 0,
-      rank: builder.userWeeklyStats[0]?.rank,
-      nftImageUrl: imageUrl,
-      nftsSoldToLoggedInScout:
-        nftOwners?.reduce((acc: number, nft: { balance: number }) => acc + nft.balance, 0) || null
-    }));
+    const developers: DeveloperMetadata[] = builderNfts.map(
+      ({ builder, nftOwners, currentPrice, estimatedPayout, imageUrl, congratsImageUrl }) => ({
+        id: builder.id,
+        path: builder.path,
+        avatar: builder.avatar as string,
+        displayName: builder.displayName,
+        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+        price: currentPrice || BigInt(0),
+        estimatedPayout: estimatedPayout || 0,
+        gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
+        last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
+        level: builder.userSeasonStats[0]?.level || 0,
+        rank: builder.userWeeklyStats[0]?.rank,
+        congratsImageUrl,
+        nftImageUrl: imageUrl,
+        nftsSoldToLoggedInScout: nftOwners?.reduce((acc: number, nft: { balance: number }) => acc + nft.balance, 0)
+      })
+    );
 
     const lastItem = builderNfts[builderNfts.length - 1];
     const nextCursor =
@@ -302,6 +309,7 @@ export async function getDevelopersForTable({
         createdAt: true,
         builderId: true,
         imageUrl: true,
+        congratsImageUrl: true,
         estimatedPayout: true,
         nftOwners: loggedInScoutId
           ? {
@@ -349,22 +357,24 @@ export async function getDevelopersForTable({
       }
     });
 
-    const developers = builderNfts.map(({ builder, nftOwners, currentPrice, estimatedPayout, imageUrl }) => ({
-      id: builder.id,
-      path: builder.path,
-      avatar: builder.avatar as string,
-      displayName: builder.displayName,
-      // TODO: use the currentPriceInScoutToken when we move to $SCOUT
-      price: currentPrice || BigInt(0),
-      gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
-      last14Days: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
-      level: builder.userSeasonStats[0]?.level || 0,
-      rank: builder.userWeeklyStats[0]?.rank,
-      estimatedPayout: estimatedPayout || 0,
-      nftImageUrl: imageUrl,
-      nftsSoldToLoggedInScout:
-        nftOwners?.reduce((acc: number, nft: { balance: number }) => acc + nft.balance, 0) || null
-    }));
+    const developers = builderNfts.map(
+      ({ builder, nftOwners, currentPrice, estimatedPayout, imageUrl, congratsImageUrl }) => ({
+        id: builder.id,
+        path: builder.path,
+        avatar: builder.avatar as string,
+        displayName: builder.displayName,
+        // TODO: use the currentPriceInScoutToken when we move to $SCOUT
+        price: currentPrice || BigInt(0),
+        gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
+        last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
+        level: builder.userSeasonStats[0]?.level || 0,
+        rank: builder.userWeeklyStats[0]?.rank,
+        estimatedPayout: estimatedPayout || 0,
+        congratsImageUrl,
+        nftImageUrl: imageUrl,
+        nftsSoldToLoggedInScout: nftOwners?.reduce((acc: number, nft: { balance: number }) => acc + nft.balance, 0)
+      })
+    );
 
     const lastItem = builderNfts[builderNfts.length - 1];
     const nextCursor =
@@ -423,6 +433,7 @@ export async function getDevelopersForTable({
                 currentPrice: true,
                 estimatedPayout: true,
                 imageUrl: true,
+                congratsImageUrl: true,
                 nftOwners: loggedInScoutId
                   ? {
                       where: {
@@ -455,19 +466,22 @@ export async function getDevelopersForTable({
       }
     });
 
-    const developers = userWeeklyStats.map(({ user, gemsCollected, rank }) => ({
+    const developers: DeveloperMetadata[] = userWeeklyStats.map(({ user, gemsCollected, rank }) => ({
       id: user.id,
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
       gemsCollected: gemsCollected || 0,
-      last14Days: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
+      last14DaysRank: normalizeLast14DaysRank(user.builderCardActivities[0]) || [],
       level: user.userSeasonStats[0]?.level || 0,
       estimatedPayout: user.builderNfts[0]?.estimatedPayout || 0,
       rank,
+      congratsImageUrl: user.builderNfts[0]?.congratsImageUrl,
       nftImageUrl: user.builderNfts[0]?.imageUrl,
-      nftsSoldToLoggedInScout:
-        user.builderNfts[0]?.nftOwners?.reduce((acc: number, nft: { balance: number }) => acc + nft.balance, 0) || null,
+      nftsSoldToLoggedInScout: user.builderNfts[0]?.nftOwners?.reduce(
+        (acc: number, nft: { balance: number }) => acc + nft.balance,
+        0
+      ),
       price: (user.builderNfts[0]?.currentPrice || 0) as bigint
     }));
 

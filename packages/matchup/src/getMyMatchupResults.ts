@@ -55,38 +55,42 @@ export async function getMyMatchupResults({
       week: true,
       selections: {
         select: {
-          developer: {
+          developerNft: {
             select: {
-              id: true,
-              displayName: true,
-              path: true,
-              avatar: true,
-              events: {
-                where: {
-                  week,
-                  type: {
-                    in: ['daily_commit', 'merged_pull_request', 'onchain_achievement']
-                  }
-                },
-                orderBy: {
-                  createdAt: 'desc'
-                },
+              builder: {
                 select: {
-                  createdAt: true,
-                  githubEvent: {
+                  id: true,
+                  displayName: true,
+                  path: true,
+                  avatar: true,
+                  events: {
+                    where: {
+                      week,
+                      type: {
+                        in: ['daily_commit', 'merged_pull_request', 'onchain_achievement']
+                      }
+                    },
+                    orderBy: {
+                      createdAt: 'desc'
+                    },
                     select: {
-                      url: true
-                    }
-                  },
-                  onchainAchievement: {
-                    select: {
-                      tier: true
-                    }
-                  },
-                  gemsReceipt: {
-                    select: {
-                      type: true,
-                      value: true
+                      createdAt: true,
+                      githubEvent: {
+                        select: {
+                          url: true
+                        }
+                      },
+                      onchainAchievement: {
+                        select: {
+                          tier: true
+                        }
+                      },
+                      gemsReceipt: {
+                        select: {
+                          type: true,
+                          value: true
+                        }
+                      }
                     }
                   }
                 }
@@ -102,8 +106,8 @@ export async function getMyMatchupResults({
   }
   const developers: DeveloperMeta[] = matchup.selections
     .map((selection) => ({
-      ...selection.developer,
-      events: selection.developer.events.map((event) => ({
+      ...selection.developerNft!.builder,
+      events: selection.developerNft!.builder.events.map((event) => ({
         createdAt: getShortenedRelativeTime(event.createdAt)!,
         gemsCollected: event.gemsReceipt!.value,
         url: event.githubEvent?.url || '',
@@ -115,7 +119,7 @@ export async function getMyMatchupResults({
           tier: event.onchainAchievement?.tier
         }) as string
       })),
-      totalGemsCollected: selection.developer.events.reduce((acc, event) => {
+      totalGemsCollected: selection.developerNft!.builder.events.reduce((acc, event) => {
         if (event.gemsReceipt) {
           return acc + event.gemsReceipt.value;
         }

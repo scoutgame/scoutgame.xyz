@@ -40,18 +40,22 @@ export async function getLeaderboard(week: string, limit?: number): Promise<Scou
       },
       selections: {
         select: {
-          developer: {
+          developerNft: {
             select: {
-              id: true,
-              displayName: true,
-              avatar: true,
-              path: true,
-              userWeeklyStats: {
-                where: {
-                  week
-                },
+              builder: {
                 select: {
-                  gemsCollected: true
+                  id: true,
+                  displayName: true,
+                  avatar: true,
+                  path: true,
+                  userWeeklyStats: {
+                    where: {
+                      week
+                    },
+                    select: {
+                      gemsCollected: true
+                    }
+                  }
                 }
               }
             }
@@ -64,11 +68,14 @@ export async function getLeaderboard(week: string, limit?: number): Promise<Scou
     .map((entry, index) => {
       const developers = entry.selections
         .map((selection) => ({
-          id: selection.developer.id,
-          displayName: selection.developer.displayName,
-          avatar: selection.developer.avatar || '',
-          path: selection.developer.path,
-          gemsCollected: selection.developer.userWeeklyStats.reduce((acc, stat) => acc + stat.gemsCollected, 0)
+          id: selection.developerNft!.builder.id,
+          displayName: selection.developerNft!.builder.displayName,
+          avatar: selection.developerNft!.builder.avatar || '',
+          path: selection.developerNft!.builder.path,
+          gemsCollected: selection.developerNft!.builder.userWeeklyStats.reduce(
+            (acc, stat) => acc + stat.gemsCollected,
+            0
+          )
         }))
         .sort((a, b) => b.gemsCollected - a.gemsCollected);
       const totalGemsCollected = developers.reduce((acc, selection) => acc + selection.gemsCollected, 0);
