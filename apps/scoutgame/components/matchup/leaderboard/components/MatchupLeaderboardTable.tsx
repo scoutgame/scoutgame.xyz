@@ -21,7 +21,7 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
   return (
     <>
       <Typography color='secondary' variant='h5' sx={{ mb: 2 }} align='center'>
-        This week's Leaderboard
+        This Week's Leaderboard
       </Typography>
 
       <TableContainer
