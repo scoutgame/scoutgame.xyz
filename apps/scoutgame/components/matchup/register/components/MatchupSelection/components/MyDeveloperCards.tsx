@@ -5,8 +5,9 @@ import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorSSRMessage';
 
-import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
+import { DevelopersGallery } from 'components/common/Gallery/DevelopersGallery';
 
+import { AddDeveloperCard } from './AddDeveloperCard';
 import { DevCardActionArea } from './DevCardActionArea';
 
 export async function MyDeveloperCards({
@@ -28,7 +29,7 @@ export async function MyDeveloperCards({
 
   return (
     <Stack gap={1}>
-      <BuildersGallery
+      <DevelopersGallery
         builders={scoutedBuilders}
         columns={4}
         scoutInView={userId}
@@ -39,6 +40,7 @@ export async function MyDeveloperCards({
           selectedDevelopers
         }}
         cardVariant='matchup_selection'
+        firstItem={<AddDeveloperCard />}
       />
     </Stack>
   );

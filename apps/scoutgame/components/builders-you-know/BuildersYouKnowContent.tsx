@@ -5,7 +5,7 @@ import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import Link from 'next/link';
 import React from 'react';
 
-import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
+import { DevelopersGallery } from 'components/common/Gallery/DevelopersGallery';
 
 export function BuildersYouKnowContent({
   onClickContinue,
@@ -22,7 +22,7 @@ export function BuildersYouKnowContent({
         </Typography>
       </Grid2>
 
-      <BuildersGallery size='small' builders={builders} />
+      <DevelopersGallery size='small' builders={builders} />
 
       <Grid2 size={{ xs: 12 }}>
         <Button

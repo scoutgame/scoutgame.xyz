@@ -7,7 +7,7 @@ import { getScoutStats } from '@packages/scoutgame/scouts/getScoutStats';
 import { getUserSeasonStats } from '@packages/scoutgame/scouts/getUserSeasonStats';
 import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorSSRMessage';
 
-import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
+import { DevelopersGallery } from 'components/common/Gallery/DevelopersGallery';
 
 import { ScoutStats } from './ScoutStats';
 
@@ -38,7 +38,7 @@ export async function ScoutProfile({ userId }: { userId: string }) {
           Scouted Developers
         </Typography>
         {scoutedBuilders.length > 0 ? (
-          <BuildersGallery
+          <DevelopersGallery
             showListButton
             builders={scoutedBuilders}
             columns={3}
