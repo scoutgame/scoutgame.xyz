@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 import { BuilderCardNftDisplay } from 'components/common/Card/BuilderCard/BuilderCardNftDisplay';
 
-export function BuilderStats({
+export function DeveloperStats({
   nftImageUrl,
   path,
   builderPoints,
@@ -35,6 +35,7 @@ export function BuilderStats({
         gap: 4,
         justifyContent: 'center'
       }}
+      data-test='developer-stats'
     >
       <Stack justifyContent='center'>
         <BuilderCardNftDisplay

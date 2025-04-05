@@ -1,4 +1,4 @@
-import { mockBuilder } from '@packages/testing/database';
+import { mockScout, mockBuilder } from '@packages/testing/database';
 
 import { expect, test } from './test';
 
@@ -11,12 +11,12 @@ test.describe('Profile page', () => {
     await expect(container).toBeVisible();
   });
 
-  test('An onboarded user can access the profile page', async ({ page, utils }) => {
-    const builder = await mockBuilder({
+  test('An onboarded user can access the profile page', async ({ page, profilePage, utils }) => {
+    const scout = await mockScout({
       agreedToTermsAt: new Date(),
       onboardedAt: new Date()
     });
-    await utils.loginAsUserId(builder.id);
+    await utils.loginAsUserId(scout.id);
 
     await page.goto('/scout');
 
@@ -29,7 +29,26 @@ test.describe('Profile page', () => {
 
     // Logged in user should be redirected
     await page.waitForURL('**/profile*');
-    const container = page.locator('data-test=profile-page');
-    await expect(container).toBeVisible();
+    await expect(profilePage.container).toBeVisible();
+
+    // make sure the non-dev view is visible
+    await expect(profilePage.noGithubProfileView).toBeVisible();
+  });
+
+  test('An approved dev can see the dev view', async ({ page, profilePage, utils }) => {
+    const builder = await mockBuilder({
+      agreedToTermsAt: new Date(),
+      onboardedAt: new Date()
+    });
+    await utils.loginAsUserId(builder.id);
+
+    await page.goto('/profile');
+
+    // Logged in user should be redirected
+    await page.waitForURL('**/profile*');
+    await expect(profilePage.container).toBeVisible();
+
+    // make sure the dev view is visible
+    await expect(profilePage.developerStats).toBeVisible();
   });
 });

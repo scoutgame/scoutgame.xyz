@@ -18,11 +18,11 @@ import { Suspense } from 'react';
 
 import { ScoutsGallery } from 'components/common/Gallery/ScoutsGallery';
 
-import { BuilderActivitiesList } from './BuilderActivitiesList';
-import { BuilderStats } from './BuilderStats';
-import { BuilderWeeklyStats } from './BuilderWeeklyStats';
+import { DeveloperActivitiesList } from './DeveloperActivitiesList';
+import { DeveloperStats } from './DeveloperStats';
+import { DeveloperWeeklyStats } from './DeveloperWeeklyStats';
 
-export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) {
+export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }) {
   const [builderNft, builderStats, builderActivities = [], { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {}] =
     builder.builderStatus === 'approved'
       ? await Promise.all([
@@ -48,7 +48,7 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
 
   if (!builder.githubLogin) {
     return (
-      <Stack alignItems='center' gap={4} pt={4}>
+      <Stack alignItems='center' gap={4} pt={4} data-test='developer-profile-no-github'>
         <Image
           src='/images/github-logo.png'
           alt=''
@@ -108,7 +108,7 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
           </Typography>
         </Alert>
       ) : null}
-      <BuilderStats
+      <DeveloperStats
         nftImageUrl={builderNft?.imageUrl}
         path={builder.path}
         builderPoints={builderStats?.seasonPoints}
@@ -122,7 +122,7 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
       />
       <Stack gap={0.5}>
         <Typography color='secondary'>This Week</Typography>
-        <BuilderWeeklyStats gemsCollected={builderStats?.gemsCollected} rank={builderStats?.rank} />
+        <DeveloperWeeklyStats gemsCollected={builderStats?.gemsCollected} rank={builderStats?.rank} />
       </Stack>
       <Stack gap={0.5}>
         <Stack direction='row' alignItems='center' justifyContent='space-between'>
@@ -130,7 +130,7 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
         </Stack>
         <Box maxHeight={{ md: '400px' }} overflow='auto'>
           {builderActivities.length > 0 ? (
-            <BuilderActivitiesList activities={builderActivities} />
+            <DeveloperActivitiesList activities={builderActivities} />
           ) : (
             <Typography>No activity yet. Start contributing or scouting to build your profile!</Typography>
           )}
