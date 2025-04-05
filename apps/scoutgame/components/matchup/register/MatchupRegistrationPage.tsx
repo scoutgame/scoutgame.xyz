@@ -1,6 +1,7 @@
 import { Box, Grid2 as Grid } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
+import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { PageContainer } from '@packages/scoutgame-ui/components/common/PageContainer';
 import { Suspense } from 'react';
 
@@ -22,8 +23,11 @@ export function MatchupRegistrationPage({
   return (
     <PageContainer>
       <Grid container spacing={3} sx={{ mt: 2 }}>
-        <Grid size={{ xs: 12, md: 8 }} mb={10}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <RegistrationHeader matchup={matchup} registered={!!myMatchup} registrationOpen />
+          <Hidden mdUp>
+            <HowToPlayCard registrationOpen />
+          </Hidden>
           {myMatchup?.submittedAt ? (
             <MatchUpSubmittedView myMatchup={myMatchup} />
           ) : myMatchup ? (
@@ -33,7 +37,9 @@ export function MatchupRegistrationPage({
           )}
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <HowToPlayCard registrationOpen />
+          <Hidden mdDown>
+            <HowToPlayCard registrationOpen />
+          </Hidden>
           <Suspense fallback={<div>Loading...</div>}>
             <RegistrationsTable week={matchup.week} weekNumber={matchup.weekNumber} />
           </Suspense>
