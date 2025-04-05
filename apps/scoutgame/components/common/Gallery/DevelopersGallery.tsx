@@ -1,10 +1,10 @@
 import { Box, Grid2 as Grid, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import type { ComponentType } from 'react';
+import type { ReactNode, ComponentType } from 'react';
 
 import { BuilderCard } from '../Card/BuilderCard/BuilderCard';
 
-export function BuildersGallery({
+export function DevelopersGallery({
   builders,
   columns = 6,
   size = 'medium',
@@ -13,7 +13,8 @@ export function BuildersGallery({
   scoutInView,
   actionSlot,
   actionSlotProps,
-  cardVariant
+  cardVariant,
+  firstItem
 }: {
   scoutInView?: string;
   builders: BuilderInfo[];
@@ -24,6 +25,7 @@ export function BuildersGallery({
   actionSlot?: ComponentType<any>;
   actionSlotProps?: Record<string, any>;
   cardVariant?: 'matchup_selection';
+  firstItem?: ReactNode;
 }) {
   return (
     <Box flexGrow={1}>
@@ -32,6 +34,7 @@ export function BuildersGallery({
         rowSpacing={2}
         columns={{ xs: 2, sm: 3, md: builders.length < columns ? builders.length : columns }}
       >
+        {firstItem && <Grid size={{ xs: 1 }}>{firstItem}</Grid>}
         {builders.map((builder) => (
           <Grid key={builder.path} size={{ xs: 1 }} display='flex' justifyContent='center' alignItems='flex-start'>
             <Box>

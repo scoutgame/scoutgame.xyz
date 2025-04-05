@@ -10,9 +10,9 @@ import { useInfiniteScroll } from '@packages/scoutgame-ui/hooks/useInfiniteScrol
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useCallback } from 'react';
 
-import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
+import { DevelopersGallery } from 'components/common/Gallery/DevelopersGallery';
 
-export function BuildersGalleryContainer({
+export function DevelopersGalleryContainer({
   initialBuilders,
   initialCursor,
   nftType
@@ -43,7 +43,7 @@ export function BuildersGalleryContainer({
 
   return (
     <>
-      <BuildersGallery builders={developers} size={isDesktop ? 'large' : 'small'} columns={3} />
+      <DevelopersGallery builders={developers} size={isDesktop ? 'large' : 'small'} columns={3} />
       {hasMore && <div ref={observedTarget} style={{ height: '50px', width: '100%' }} />}
       {isLoading && (
         <Box my={2}>

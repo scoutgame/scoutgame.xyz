@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { MAX_CREDITS } from '@packages/matchup/config';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
