@@ -16,7 +16,7 @@ import { InfoModal } from './components/InfoModal';
 import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/ScoutPageCarouselContainer';
 import { ScoutPageDevelopersGallery } from './components/ScoutPageDevelopersGallery';
 import { ScoutPageTable } from './components/ScoutPageTable/ScoutPageTable';
-import { SearchBuildersInput } from './components/SearchBuildersInput';
+import { SearchDevelopersInput } from './components/SearchDevelopersInput';
 import { WeeklyMatchupCallout } from './components/WeeklyMatchupCallout';
 
 export const scoutTabOptions: TabItem[] = [{ label: 'Top Scouts', value: 'scouts' }];
@@ -109,7 +109,7 @@ export async function ScoutPage({
                   <AppsIcon color={buildersLayout === 'gallery' ? 'secondary' : 'disabled'} />
                 </Link>
               </Stack>
-              <SearchBuildersInput sx={{ maxWidth: '500px' }} />
+              <SearchDevelopersInput sx={{ maxWidth: '500px' }} />
               <InfoModal builder />
             </Stack>
             <Suspense
