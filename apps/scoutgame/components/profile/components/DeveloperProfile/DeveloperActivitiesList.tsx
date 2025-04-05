@@ -10,11 +10,11 @@ import Link from 'next/link';
 import { BiLike } from 'react-icons/bi';
 import { LuBookMarked } from 'react-icons/lu';
 
-function BuilderActivityLabel({ activity }: { activity: BuilderActivity }) {
+function ActivityLabel({ activity }: { activity: BuilderActivity }) {
   return <Typography component='span'>{getActivityLabel(activity)}</Typography>;
 }
 
-function BuilderActivityDetail({ activity }: { activity: BuilderActivity }) {
+function ActivityDetail({ activity }: { activity: BuilderActivity }) {
   return (
     <Stack component='span' flexDirection='row' gap={0.5} alignItems='center'>
       {activity.type === 'nft_purchase' ? (
@@ -59,13 +59,7 @@ export function BuilderActivityGems({
   );
 }
 
-function BuilderActivityBonusPartner({
-  activity,
-  showEmpty = false
-}: {
-  activity: BuilderActivity;
-  showEmpty?: boolean;
-}) {
+function ActivityBonusPartner({ activity, showEmpty = false }: { activity: BuilderActivity; showEmpty?: boolean }) {
   return activity.type === 'github_event' &&
     activity.bonusPartner &&
     bonusPartnersRecord[activity.bonusPartner as BonusPartner] ? (
@@ -80,7 +74,7 @@ function BuilderActivityBonusPartner({
   ) : null;
 }
 
-export function BuilderActivitiesList({ activities }: { activities: BuilderActivity[] }) {
+export function DeveloperActivitiesList({ activities }: { activities: BuilderActivity[] }) {
   return (
     <Stack gap={0.5}>
       {activities.map((activity) => {
@@ -113,15 +107,15 @@ export function BuilderActivitiesList({ activities }: { activities: BuilderActiv
                   ) : activity.type === 'onchain_achievement' ? (
                     <TransactionIcon size={15} />
                   ) : null}
-                  <BuilderActivityLabel activity={activity} />
+                  <ActivityLabel activity={activity} />
                 </Stack>
                 <BuilderActivityGems activity={activity} />
-                <BuilderActivityBonusPartner activity={activity} />
+                <ActivityBonusPartner activity={activity} />
                 <Typography width={75} textAlign='right' variant='body2'>
                   {getRelativeTime(activity.createdAt)}
                 </Typography>
               </Stack>
-              <BuilderActivityDetail activity={activity} />
+              <ActivityDetail activity={activity} />
             </Stack>
           </Paper>
         );

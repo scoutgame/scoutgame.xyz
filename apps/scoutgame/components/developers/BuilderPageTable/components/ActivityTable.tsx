@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { BiLike } from 'react-icons/bi';
 import { LuBookMarked } from 'react-icons/lu';
 
-import { BuilderActivityGems } from '../../../profile/components/BuilderProfile/BuilderActivitiesList';
+import { BuilderActivityGems } from '../../../profile/components/DeveloperProfile/DeveloperActivitiesList';
 
 import { CommonTableRow } from './CommonTableRow';
 import { DeveloperCell } from './DeveloperCell';
