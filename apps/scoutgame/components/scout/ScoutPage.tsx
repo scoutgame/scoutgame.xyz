@@ -13,8 +13,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { InfoModal } from './components/InfoModal';
-import { ScoutPageBuildersGallery } from './components/ScoutPageBuildersGallery';
 import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/ScoutPageCarouselContainer';
+import { ScoutPageDevelopersGallery } from './components/ScoutPageDevelopersGallery';
 import { ScoutPageTable } from './components/ScoutPageTable/ScoutPageTable';
 import { SearchBuildersInput } from './components/SearchBuildersInput';
 import { WeeklyMatchupCallout } from './components/WeeklyMatchupCallout';
@@ -130,7 +130,7 @@ export async function ScoutPage({
                   nftType={nftType}
                 />
               )}
-              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} nftType={nftType} />}
+              {buildersLayout === 'gallery' && <ScoutPageDevelopersGallery userId={userId} nftType={nftType} />}
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>

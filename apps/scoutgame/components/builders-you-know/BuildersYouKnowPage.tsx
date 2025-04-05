@@ -5,7 +5,7 @@ import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageCont
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-import { BuildersGalleryContainer } from 'components/scout/components/BuildersGalleryContainer';
+import { DevelopersGalleryContainer } from 'components/scout/components/DevelopersGalleryContainer';
 
 export function BuildersYouKnowPage({ builders }: { builders: BuilderInfo[] }) {
   return (
@@ -22,7 +22,7 @@ export function BuildersYouKnowPage({ builders }: { builders: BuilderInfo[] }) {
         </Button>
       </Box>
       <Suspense fallback={<LoadingGallery />}>
-        <BuildersGalleryContainer nftType='default' initialCursor={null} initialBuilders={builders} />
+        <DevelopersGalleryContainer nftType='default' initialCursor={null} initialBuilders={builders} />
       </Suspense>
     </PageContainer>
   );

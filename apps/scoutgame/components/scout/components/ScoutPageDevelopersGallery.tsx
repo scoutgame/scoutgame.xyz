@@ -2,9 +2,9 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getDevelopersForGallery } from '@packages/scoutgame/builders/getDevelopersForGallery';
 
-import { BuildersGalleryContainer } from './BuildersGalleryContainer';
+import { DevelopersGalleryContainer } from './DevelopersGalleryContainer';
 
-export async function ScoutPageBuildersGallery({
+export async function ScoutPageDevelopersGallery({
   userId,
   nftType
 }: {
@@ -25,5 +25,5 @@ export async function ScoutPageBuildersGallery({
 
   const { developers, nextCursor } = data;
 
-  return <BuildersGalleryContainer initialCursor={nextCursor} initialBuilders={developers} nftType={nftType} />;
+  return <DevelopersGalleryContainer initialCursor={nextCursor} initialBuilders={developers} nftType={nftType} />;
 }
