@@ -1,5 +1,5 @@
+import { getCurrentWeek } from '@packages/dates/utils';
 import { whiteListedUserIds, isProdEnv } from '@packages/utils/constants';
-
 // Fee in points that scouts pay to register for a matchup
 export const MATCHUP_REGISTRATION_FEE = 50;
 // Portion of registration fee (80%) that goes into the prize pool for winners
@@ -14,4 +14,4 @@ export const MAX_SELECTIONS = 5;
 export const MAX_CREDITS = 35;
 
 export const enableMatchupsFeatureFlag = (userId?: string) =>
-  !isProdEnv || (userId && whiteListedUserIds.includes(userId));
+  !isProdEnv || (userId && whiteListedUserIds.includes(userId)) || getCurrentWeek() >= '2025-W15';
