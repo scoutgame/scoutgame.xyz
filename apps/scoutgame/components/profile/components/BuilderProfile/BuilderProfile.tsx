@@ -12,6 +12,7 @@ import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { JoinGithubButton } from '@packages/scoutgame-ui/components/common/JoinGithubButton';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { isOnchainPlatform } from '@packages/utils/platform';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
@@ -45,16 +46,23 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
         ])
       : [];
 
-  // if (!builder.githubLogin && !hideGithubButton) {
-  //   return (
-  //     <Stack gap={2} alignItems='center'>
-  //       <Typography>Connect your GitHub account to apply as a Developer.</Typography>
-  //       <Suspense>
-  //         <JoinGithubButton />
-  //       </Suspense>
-  //     </Stack>
-  //   );
-  // }
+  if (!builder.githubLogin) {
+    return (
+      <Stack alignItems='center' gap={4} pt={4}>
+        <Image
+          src='/images/github-logo.png'
+          alt=''
+          width={740}
+          height={181}
+          style={{ width: '100%', height: 'auto', maxWidth: '200px' }}
+        />
+        <Typography>Connect your GitHub account to apply as a Developer.</Typography>
+        <Suspense>
+          <JoinGithubButton />
+        </Suspense>
+      </Stack>
+    );
+  }
 
   if (builder.builderStatus === 'applied') {
     return (
