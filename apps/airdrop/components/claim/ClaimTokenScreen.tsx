@@ -109,15 +109,27 @@ export function ClaimTokenScreen() {
             ? airdropInfo.claimableAmount
             : 0;
 
-      const preparedTx = await claimThirdwebERC20AirdropToken({
-        airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
-        receiver: address as `0x${string}`,
-        quantity: BigInt((airdropInfo.claimableAmount - donationAmount) * 10 ** 18),
-        proofs: airdropInfo.proofs,
-        proofMaxQuantityForWallet: BigInt(airdropInfo.proofMaxQuantityForWallet),
-        chainId: 8453,
-        walletClient
-      });
+      const airdropAmount = airdropInfo.claimableAmount - donationAmount;
+
+      if (airdropAmount) {
+        const preparedTx = await claimThirdwebERC20AirdropToken({
+          airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
+          receiver: address as `0x${string}`,
+          quantity: BigInt(airdropAmount * 10 ** 18),
+          proofs: airdropInfo.proofs,
+          proofMaxQuantityForWallet: BigInt(airdropInfo.proofMaxQuantityForWallet),
+          chainId: 8453,
+          walletClient
+        });
+
+        await trackAirdropClaimPayout({
+          address: address as `0x${string}`,
+          amount: BigInt(airdropAmount * 10 ** 18).toString(),
+          airdropClaimId: airdropInfo.airdropId,
+          donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
+          txHash: preparedTx
+        });
+      }
 
       if (donationAmount) {
         // Send donation to safe wallet
@@ -127,16 +139,6 @@ export function ClaimTokenScreen() {
           abi: erc20Abi,
           functionName: 'transfer',
           args: [safeWallet, BigInt(donationAmount * 10 ** 18)]
-        });
-      }
-
-      if (airdropInfo.claimableAmount) {
-        await trackAirdropClaimPayout({
-          address: address as `0x${string}`,
-          amount: BigInt(airdropInfo.claimableAmount * 10 ** 18).toString(),
-          airdropClaimId: airdropInfo.airdropId,
-          donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
-          txHash: preparedTx
         });
       }
 
