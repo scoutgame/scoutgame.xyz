@@ -119,7 +119,7 @@ export function ClaimTokenScreen() {
         walletClient
       });
 
-      if (donationAmount > 0) {
+      if (donationAmount) {
         // Send donation to safe wallet
         const safeWallet = '0x78Ef4aFbE2BC6DF76B696c71fC1CeDCA4aD31561';
         await walletClient.writeContract({
@@ -130,13 +130,15 @@ export function ClaimTokenScreen() {
         });
       }
 
-      await trackAirdropClaimPayout({
-        address: address as `0x${string}`,
-        amount: BigInt(airdropInfo.claimableAmount * 10 ** 18).toString(),
-        airdropClaimId: airdropInfo.airdropId,
-        donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
-        txHash: preparedTx
-      });
+      if (airdropInfo.claimableAmount) {
+        await trackAirdropClaimPayout({
+          address: address as `0x${string}`,
+          amount: BigInt(airdropInfo.claimableAmount * 10 ** 18).toString(),
+          airdropClaimId: airdropInfo.airdropId,
+          donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
+          txHash: preparedTx
+        });
+      }
 
       setStep('token_claim_success');
     } catch (error) {
