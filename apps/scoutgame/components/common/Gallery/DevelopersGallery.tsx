@@ -37,7 +37,7 @@ export function DevelopersGallery({
         {firstItem && <Grid size={{ xs: 1 }}>{firstItem}</Grid>}
         {builders.map((builder) => (
           <Grid key={builder.path} size={{ xs: 1 }} display='flex' justifyContent='center' alignItems='flex-start'>
-            <Box>
+            <Box position='relative'>
               {builder.nftsSoldToScoutInView !== undefined && builder.nftsSoldToScoutInView > 0 && (
                 <Typography color='green.main' textAlign='right' mb={1}>
                   X {builder.nftsSoldToScoutInView}
@@ -54,7 +54,26 @@ export function DevelopersGallery({
                 actionSlot={actionSlot}
                 actionSlotProps={actionSlotProps}
                 variant={cardVariant}
+                sx={{
+                  boxShadow: '3px -3px 4px #000'
+                }}
               />
+              {builder.showAdditionalStarterCard && (
+                <Box position='absolute' top={-7} left={7} zIndex={1}>
+                  <BuilderCard
+                    builder={{
+                      ...builder,
+                      nftType: 'starter_pack',
+                      nftImageUrl: builder.starterCardImage
+                    }}
+                    size={size}
+                    type='starter_pack'
+                    variant={cardVariant}
+                    actionSlot={actionSlot}
+                    actionSlotProps={actionSlotProps}
+                  />
+                </Box>
+              )}
             </Box>
           </Grid>
         ))}

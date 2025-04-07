@@ -86,6 +86,8 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
         width: 'fit-content',
         height: 'fit-content',
         margin: '0 auto',
+        position: 'relative',
+        zIndex: 3,
         overflow: 'initial',
         ...sx
       }}

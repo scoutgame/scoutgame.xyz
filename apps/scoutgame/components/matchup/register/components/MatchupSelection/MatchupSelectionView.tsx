@@ -101,6 +101,7 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
           <MyDeveloperCards
             matchupId={myMatchup.id}
             selectedDevelopers={myMatchup.selections?.map((selection) => selection.developer.id)}
+            selectedNfts={myMatchup.selections?.map((selection) => selection.developer.nftId)}
             userId={myMatchup.scout.id}
           />
         }

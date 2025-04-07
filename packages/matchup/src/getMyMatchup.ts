@@ -12,6 +12,7 @@ export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank'
   };
   selections: {
     developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> & {
+      nftId: string;
       gemsCollected: number;
       level: number;
       estimatedPayout: number;
@@ -49,6 +50,7 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
         select: {
           developerNft: {
             select: {
+              id: true,
               imageUrl: true,
               estimatedPayoutDevToken: true,
               estimatedPayout: true,
@@ -90,12 +92,14 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
   if (!matchup) {
     return null;
   }
+
   const selections = matchup.selections
     .map((selection) => ({
       ...selection,
       developer: {
         id: selection.developerNft!.builder.id,
         displayName: selection.developerNft!.builder.displayName,
+        nftId: selection.developerNft!.id,
         path: selection.developerNft!.builder.path,
         avatar: selection.developerNft!.builder.avatar,
         nftImageUrl: selection.developerNft!.imageUrl,
