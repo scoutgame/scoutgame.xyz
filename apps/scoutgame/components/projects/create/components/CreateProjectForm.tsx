@@ -11,8 +11,8 @@ import { useState } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import type { Deployer } from '../../components/ProjectForm/components/ProjectSmartContractForm';
 import { ProjectForm } from '../../components/ProjectForm/ProjectForm';
-import type { Deployer } from '../components/ProjectForm/components/ProjectSmartContractForm';
 
 export function CreateProjectForm({ user }: { user: SessionUser }) {
   const [errors, setErrors] = useState<string[] | null>(null);
