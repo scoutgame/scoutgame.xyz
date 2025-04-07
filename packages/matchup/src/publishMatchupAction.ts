@@ -27,6 +27,7 @@ export const publishMatchupAction = authActionClient
             id: true,
             builder: {
               select: {
+                id: true,
                 userSeasonStats: {
                   where: {
                     season: getCurrentSeasonStart()
@@ -42,8 +43,10 @@ export const publishMatchupAction = authActionClient
       }
     });
 
-    if (selections.length !== MAX_SELECTIONS) {
-      throw new Error('You have not selected the correct number of developers');
+    const uniqueDeveloperIds = new Set(selections.map((selection) => selection.developerNft.builder.id));
+
+    if (uniqueDeveloperIds.size !== MAX_SELECTIONS) {
+      throw new Error(`You must select ${MAX_SELECTIONS} developers`);
     }
 
     const totalCredits = selections.reduce(

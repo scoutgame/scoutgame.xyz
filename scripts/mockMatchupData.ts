@@ -38,6 +38,15 @@ async function query() {
         scoutId: scout.id,
         season: getCurrentSeasonStart()
       });
+      // add a starter pack for testing
+      if (i === 0) {
+        await mockScoutedNft({
+          builderId: builder.id,
+          scoutId: scout.id,
+          season: getCurrentSeasonStart(),
+          nftType: 'starter_pack'
+        });
+      }
     }
   }
   console.log('Mock data generated');

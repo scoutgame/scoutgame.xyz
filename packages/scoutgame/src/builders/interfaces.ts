@@ -41,6 +41,7 @@ export type BuilderInfo = BasicUserInfo &
     nftImageUrl: string | null;
     congratsImageUrl: string | null;
     listings: NftListing[];
+    showAdditionalStarterCard?: boolean;
   };
 
 export type Last14DaysRank = { date: string; rank: number | null; gems: number }[];

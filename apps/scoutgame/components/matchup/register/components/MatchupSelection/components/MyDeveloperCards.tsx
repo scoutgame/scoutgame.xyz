@@ -1,8 +1,8 @@
 import 'server-only';
 
 import { Stack } from '@mui/material';
+import { getMyDevelopersForMatchup } from '@packages/matchup/getMyDevelopersForMatchup';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorSSRMessage';
 
 import { DevelopersGallery } from 'components/common/Gallery/DevelopersGallery';
@@ -13,15 +13,15 @@ import { DevCardActionArea } from './DevCardActionArea';
 export async function MyDeveloperCards({
   userId,
   matchupId,
-  selectedDevelopers
+  selectedDevelopers,
+  selectedNfts
 }: {
   userId: string;
   matchupId: string;
   selectedDevelopers: string[];
+  selectedNfts: string[];
 }) {
-  const [error, scoutedBuilders] = await safeAwaitSSRData(
-    getScoutedBuilders({ loggedInScoutId: userId, scoutIdInView: userId })
-  );
+  const [error, scoutedDevelopers] = await safeAwaitSSRData(getMyDevelopersForMatchup({ scoutId: userId }));
 
   if (error) {
     return <ErrorSSRMessage />;
@@ -30,14 +30,15 @@ export async function MyDeveloperCards({
   return (
     <Stack gap={1}>
       <DevelopersGallery
-        builders={scoutedBuilders}
+        builders={scoutedDevelopers}
         columns={4}
         scoutInView={userId}
         size='small'
         actionSlot={DevCardActionArea}
         actionSlotProps={{
           matchupId,
-          selectedDevelopers
+          selectedDevelopers,
+          selectedNfts
         }}
         cardVariant='matchup_selection'
         firstItem={<AddDeveloperCard />}

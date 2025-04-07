@@ -14,23 +14,31 @@ import { builderCardBackground } from 'components/common/Card/BuilderCard/Builde
 export function DevCardActionArea({
   builder,
   matchupId,
-  selectedDevelopers
+  selectedDevelopers,
+  selectedNfts
 }: {
   builder: BuilderInfo;
   matchupId: string;
   selectedDevelopers: string[];
+  selectedNfts: string[];
 }) {
-  const isSelected = selectedDevelopers.includes(builder.id);
+  const isSelectedDev = selectedDevelopers.includes(builder.id);
+  const isSelectedNft = selectedNfts.includes(builder.nftId!);
+  // const isSelected = isSelectedDev || isSelectedNft;
+  const isDisabled = isSelectedDev && !isSelectedNft; // if you selected a different NFT for the same dev, so users cant select the same dev twice
   const { execute: executeRemove, isExecuting: isExecutingRemove } = useAction(removeMatchupSelectionAction);
   const { execute: executeAdd, isExecuting: isExecutingAdd } = useAction(addMatchupSelectionAction);
 
   const loading = isExecutingRemove || isExecutingAdd;
 
   // keep an internal state to avoid flickering when the button is clicked
-  const [_isSelected, setIsSelected] = useState(isSelected);
+  const [isSelected, setIsSelected] = useState(isSelectedNft);
 
   async function handleAddMatchupSelection() {
-    if (_isSelected) {
+    if (isDisabled) {
+      return;
+    }
+    if (isSelected) {
       await executeRemove({
         matchupId,
         developerNftId: builder.nftId!
@@ -41,17 +49,18 @@ export function DevCardActionArea({
         developerNftId: builder.nftId!
       });
     }
-    setIsSelected(!_isSelected);
+    setIsSelected(!isSelected);
   }
 
+  // sync the internal state with the external state
   useEffect(() => {
-    setIsSelected(isSelected);
-  }, [isSelected]);
+    setIsSelected(isSelectedNft);
+  }, [isSelectedNft]);
 
   return (
     <Box
       sx={{
-        background: _isSelected
+        background: isSelected
           ? 'var(--mui-palette-secondary-main)'
           : builderCardBackground(builder.nftType === 'starter_pack'),
         borderBottomLeftRadius: '4px',
@@ -67,7 +76,7 @@ export function DevCardActionArea({
               <CircularProgress size={18} />
             </Box>
           ) : (
-            <Checkbox checked={_isSelected} disabled={loading} size='small' />
+            <Checkbox checked={isSelected} disabled={loading || isDisabled} size='small' />
           )}
         </Box>
         <Box textAlign='center'>
