@@ -25,7 +25,7 @@ const slides: SlideContent[] = [
     )
   },
   {
-    subtitle: '2. Builder Your Dream  Team',
+    subtitle: '2. Build Your Dream  Team',
     iconSrc: '/images/matchup/howtoplay_magnifier.svg',
     text: (
       <Typography variant='body2'>
