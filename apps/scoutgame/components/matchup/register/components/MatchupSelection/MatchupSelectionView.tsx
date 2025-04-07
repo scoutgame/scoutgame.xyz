@@ -14,7 +14,7 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
   const creditsRemaining =
     MAX_CREDITS - (myMatchup.selections?.reduce((acc, selection) => acc + selection.credits, 0) || 0);
 
-  const canSubmit = myMatchup.selections?.length === 5 && creditsRemaining > 0;
+  const canSubmit = myMatchup.selections?.length === 5 && creditsRemaining >= 0;
 
   return (
     <Box>
