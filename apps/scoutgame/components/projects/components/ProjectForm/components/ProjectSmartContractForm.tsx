@@ -17,7 +17,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { CONTRACT_DEPLOYER_SIGN_MESSAGE } from '@packages/scoutgame/projects/constants';
+import { CONTRACT_DEPLOYER_SIGN_MESSAGE, CONTRACT_LIMIT } from '@packages/scoutgame/projects/constants';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { getContractDeployerAddressAction } from '@packages/scoutgame/projects/getContractDeployerAddressAction';
 import { Dialog } from '@packages/scoutgame-ui/components/common/Dialog';
@@ -31,10 +31,11 @@ import { useFieldArray, type Control } from 'react-hook-form';
 import { verifyMessage } from 'viem';
 import { useSignMessage } from 'wagmi';
 
-import type { TemporaryAddress } from '../../components/ProjectForm/ProjectForm';
-import { chainRecords } from '../../constants';
+import { chainRecords } from '../../../constants';
+import type { TemporaryAddress } from '../ProjectForm';
 
 export type Deployer = { address: string; verified: boolean; signature: string | null };
+
 export function ProjectSmartContractForm({
   control,
   deployers,
@@ -67,6 +68,8 @@ export function ProjectSmartContractForm({
     control,
     name: 'contracts'
   });
+
+  const limitReached = contracts.length >= CONTRACT_LIMIT;
 
   const verifyDeployerOwnership = useCallback(
     async (deployerAddress: `0x${string}`) => {
@@ -125,6 +128,7 @@ export function ProjectSmartContractForm({
     }
   }, [append, tempContract, getContractDeployerAddress, setTempContract, setDeployers, deployers]);
 
+  // group contracts by deployer address
   const _groupedContracts = useMemo(() => {
     return contracts.reduce(
       (acc, contract) => {
@@ -369,21 +373,29 @@ export function ProjectSmartContractForm({
           </Stack>
         </>
       ) : (
-        <Button
-          variant='outlined'
-          color='secondary'
-          sx={{ width: 'fit-content' }}
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={() => {
-            setTempContract({
-              address: '',
-              chainId: 167000
-            });
-            setIsFormOpen(true);
-          }}
-        >
-          Add dapp
-        </Button>
+        <Stack flexDirection='row' alignItems='center' gap={1}>
+          <Button
+            variant='outlined'
+            color='secondary'
+            disabled={limitReached}
+            sx={{ width: 'fit-content' }}
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={() => {
+              setTempContract({
+                address: '',
+                chainId: 167000
+              });
+              setIsFormOpen(true);
+            }}
+          >
+            Add dapp
+          </Button>
+          {limitReached && (
+            <Typography variant='caption' color='grey'>
+              You have reached the limit
+            </Typography>
+          )}
+        </Stack>
       )}
       <Dialog title='Remove Contract' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
         <Typography>Are you sure you want to remove this contract from the project?</Typography>

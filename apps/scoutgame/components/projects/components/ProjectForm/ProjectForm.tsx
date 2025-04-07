@@ -9,11 +9,11 @@ import { useState } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
-import { ProjectAgentWalletForm } from '../../create/components/ProjectAgentWalletForm';
-import { ProjectAvatarField } from '../../create/components/ProjectAvatarField';
-import type { Deployer } from '../../create/components/ProjectSmartContractForm';
-import { ProjectSmartContractForm } from '../../create/components/ProjectSmartContractForm';
-import { ProjectTeamMemberForm } from '../../create/components/ProjectTeamMemberForm';
+import { ProjectAgentWalletForm } from './components/ProjectAgentWalletForm';
+import { ProjectAvatarField } from './components/ProjectAvatarField';
+import type { Deployer } from './components/ProjectSmartContractForm';
+import { ProjectSmartContractForm } from './components/ProjectSmartContractForm';
+import { ProjectTeamMemberForm } from './components/ProjectTeamMemberForm';
 
 export type TemporaryAddress = {
   address: string;
