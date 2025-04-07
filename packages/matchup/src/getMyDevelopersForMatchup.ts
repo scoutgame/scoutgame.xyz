@@ -21,10 +21,12 @@ export async function getMyDevelopersForMatchup({ scoutId }: { scoutId: string }
         return true;
       })
       .map((developer) => {
-        const showAdditionalStarterCard = nftsByType.starter_pack.some((nft) => nft.id === developer.id);
+        const starterCard = nftsByType.starter_pack.find((nft) => nft.id === developer.id);
         return {
           ...developer,
-          showAdditionalStarterCard
+          showAdditionalStarterCard: !!starterCard,
+          // use developer image if no starter card image, just in case
+          starterCardImage: starterCard ? starterCard?.nftImageUrl || developer.nftImageUrl : undefined
         };
       })
   );

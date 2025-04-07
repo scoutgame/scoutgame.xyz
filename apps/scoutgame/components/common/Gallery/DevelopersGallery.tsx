@@ -63,7 +63,8 @@ export function DevelopersGallery({
                   <BuilderCard
                     builder={{
                       ...builder,
-                      nftType: 'starter_pack'
+                      nftType: 'starter_pack',
+                      nftImageUrl: builder.starterCardImage
                     }}
                     size={size}
                     type='starter_pack'
