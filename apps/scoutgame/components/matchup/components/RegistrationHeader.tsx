@@ -76,7 +76,7 @@ export function RegistrationHeader({
             <Typography component='span' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }} noWrap>
               {matchupPool ? (
                 <>
-                  {matchupPool} <PointsIcon /> +{' '}
+                  {matchupPool}* <PointsIcon /> +{' '}
                 </>
               ) : null}
               {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />
