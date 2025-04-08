@@ -101,12 +101,12 @@ export async function mockBuilder({
     }
   });
 
-  if (createNft) {
-    await mockBuilderNft({ builderId: result.id, season: nftSeason });
-    await mockBuilderNft({ builderId: result.id, season: nftSeason, nftType: 'starter_pack' });
-  }
+  const regularNft = createNft ? await mockBuilderNft({ builderId: result.id, season: nftSeason }) : undefined;
+  const starterNft = createNft
+    ? await mockBuilderNft({ builderId: result.id, season: nftSeason, nftType: 'starter_pack' })
+    : undefined;
   const { githubUsers, ...scout } = result;
-  return { ...scout, githubUser: githubUsers[0]! };
+  return { ...scout, githubUser: githubUsers[0]!, regularNft, starterNft };
 }
 
 export type MockBuilder = Awaited<ReturnType<typeof mockBuilder>>;
@@ -1061,21 +1061,14 @@ export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: st
 export async function mockMatchup({
   createdBy,
   submittedAt,
-  selectedDevelopers = [],
+  selectedNfts = [],
   week = getCurrentWeek()
 }: {
   createdBy: string;
   submittedAt?: Date;
-  selectedDevelopers?: string[];
+  selectedNfts?: string[];
   week?: string;
 }) {
-  const selectedNfts = await prisma.builderNft.findMany({
-    where: {
-      builderId: {
-        in: selectedDevelopers
-      }
-    }
-  });
   const matchup = await prisma.scoutMatchup.create({
     data: {
       createdBy,
@@ -1083,11 +1076,9 @@ export async function mockMatchup({
       submittedAt,
       selections: {
         createMany: {
-          data: selectedNfts
-            .map((nft) => ({
-              developerNftId: nft.id
-            }))
-            .concat()
+          data: selectedNfts.map((developerNftId) => ({
+            developerNftId
+          }))
         }
       }
     }

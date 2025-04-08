@@ -129,7 +129,7 @@ export async function GET() {
       }
     }
   });
-  const rows: ScoutWithGithubUser[] = users.flatMap((user) => {
+  const rows: ScoutWithGithubUser[] = users.map((user): ScoutWithGithubUser => {
     const allUserPurchaseEvents = user.wallets
       .flatMap((wallet) => wallet.purchaseEvents)
       .filter(
@@ -164,7 +164,7 @@ export async function GET() {
       pointsEarnedTotal: user.pointsReceived
         .filter((p) => p.season === getCurrentSeasonStart())
         .reduce((acc, curr) => acc + curr.value, 0)
-    };
+    } as const;
     const activeSeasons = [
       ...user.userSeasonStats,
       ...user.events,
@@ -180,8 +180,85 @@ export async function GET() {
       }, []);
     // If user has no season stats, create one row with default values
     if (activeSeasons.length === 0) {
-      return [
-        // If user has no season stats, return one row with default values
+      return {
+        ...sharedUserData,
+        pointsEarnedAsScout: 0,
+        pointsEarnedAsDeveloper: 0,
+        referrals: 0,
+        dailyClaimsCount: 0,
+        questsCompleted: 0,
+        referralsCompleted: 0,
+        regularNftsPurchased: 0,
+        regularNftsSold: 0,
+        starterNftsPurchased: 0,
+        starterNftsSold: 0,
+        usdcPaidForNfts: 0,
+        season: '',
+        waitlistTier: ''
+      };
+    }
+
+    // Create one row per season
+    return activeSeasons
+      .map((season) => {
+        const seasonStat = user.userSeasonStats.find((s) => s.season === season);
+        const purchaseEvents = allUserPurchaseEvents.filter((e) => e.builderNft?.season === season);
+        const builderEvents = user.events.filter((e) => e.season === season);
+        const socialQuests = user.socialQuests.filter((q) => q.season === season);
+        const regularNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'default');
+        const starterNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'starter_pack');
+        const usdcPaidForNfts = purchaseEvents.reduce((acc, curr) => acc + curr.pointsValue / 10, 0);
+        return {
+          ...sharedUserData,
+          tokenId: regularNft?.tokenId || undefined,
+          pointsEarnedAsScout: seasonStat?.pointsEarnedAsScout || 0,
+          pointsEarnedAsDeveloper: seasonStat?.pointsEarnedAsBuilder || 0,
+          pointsEarnedTotal: user.pointsReceived
+            .filter((p) => p.season === season)
+            .reduce((acc, curr) => acc + curr.value, 0),
+          regularNftsPurchased: purchaseEvents
+            .filter((e) => e.builderNft?.nftType === 'default')
+            .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
+          regularNftsSold: regularNft?.nftSoldEvents.reduce((acc, curr) => acc + curr.tokensPurchased, 0) || 0,
+          starterNftsPurchased: purchaseEvents
+            .filter((e) => e.builderNft?.nftType === 'starter_pack')
+            .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
+          starterNftsSold: starterNft?.nftSoldEvents.reduce((acc, curr) => acc + curr.tokensPurchased, 0) || 0,
+          usdcPaidForNfts,
+          developerLevel: seasonStat?.level,
+          season,
+          referrals: builderEvents.filter((e) => e.type === 'referral').length,
+          referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
+            .length,
+          dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
+          questsCompleted: socialQuests.length,
+          waitlistTier:
+            builderEvents
+              .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
+              ?.description?.match(/achieving (.*?) status/)?.[1] || ''
+        };
+      })
+      .reduce(
+        (acc, curr) => {
+          return {
+            ...acc,
+            pointsEarnedAsScout: acc.pointsEarnedAsScout + curr.pointsEarnedAsScout,
+            pointsEarnedAsDeveloper: acc.pointsEarnedAsDeveloper + curr.pointsEarnedAsDeveloper,
+            pointsEarnedTotal: acc.pointsEarnedTotal + curr.pointsEarnedTotal,
+            regularNftsPurchased: acc.regularNftsPurchased + curr.regularNftsPurchased,
+            regularNftsSold: acc.regularNftsSold + curr.regularNftsSold,
+            starterNftsPurchased: acc.starterNftsPurchased + curr.starterNftsPurchased,
+            starterNftsSold: acc.starterNftsSold + curr.starterNftsSold,
+            usdcPaidForNfts: acc.usdcPaidForNfts + curr.usdcPaidForNfts,
+            referrals: acc.referrals + curr.referrals,
+            referralsCompleted: acc.referralsCompleted + curr.referralsCompleted,
+            dailyClaimsCount: acc.dailyClaimsCount + curr.dailyClaimsCount,
+            questsCompleted: acc.questsCompleted + curr.questsCompleted,
+            developerLevel: undefined, // acc.developerLevel || curr.developerLevel,
+            season: '', // acc.season || curr.season,
+            waitlistTier: acc.waitlistTier || curr.waitlistTier
+          };
+        },
         {
           ...sharedUserData,
           pointsEarnedAsScout: 0,
@@ -195,51 +272,10 @@ export async function GET() {
           starterNftsPurchased: 0,
           starterNftsSold: 0,
           usdcPaidForNfts: 0,
-          season: '',
-          waitlistTier: ''
+          waitlistTier: '',
+          season: ''
         }
-      ];
-    }
-
-    // Create one row per season
-    return activeSeasons.map((season) => {
-      const seasonStat = user.userSeasonStats.find((s) => s.season === season);
-      const purchaseEvents = allUserPurchaseEvents.filter((e) => e.builderNft?.season === season);
-      const builderEvents = user.events.filter((e) => e.season === season);
-      const socialQuests = user.socialQuests.filter((q) => q.season === season);
-      const regularNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'default');
-      const starterNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'starter_pack');
-      const usdcPaidForNfts = purchaseEvents.reduce((acc, curr) => acc + curr.pointsValue / 10, 0);
-      return {
-        ...sharedUserData,
-        tokenId: regularNft?.tokenId || undefined,
-        pointsEarnedAsScout: seasonStat?.pointsEarnedAsScout || 0,
-        pointsEarnedAsDeveloper: seasonStat?.pointsEarnedAsBuilder || 0,
-        pointsEarnedTotal: user.pointsReceived
-          .filter((p) => p.season === season)
-          .reduce((acc, curr) => acc + curr.value, 0),
-        regularNftsPurchased: purchaseEvents
-          .filter((e) => e.builderNft?.nftType === 'default')
-          .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
-        regularNftsSold: regularNft?.nftSoldEvents.reduce((acc, curr) => acc + curr.tokensPurchased, 0) || 0,
-        starterNftsPurchased: purchaseEvents
-          .filter((e) => e.builderNft?.nftType === 'starter_pack')
-          .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
-        starterNftsSold: starterNft?.nftSoldEvents.reduce((acc, curr) => acc + curr.tokensPurchased, 0) || 0,
-        usdcPaidForNfts,
-        developerLevel: seasonStat?.level,
-        season,
-        referrals: builderEvents.filter((e) => e.type === 'referral').length,
-        referralsCompleted: builderEvents.filter((e) => e.type === 'referral' && e.referralCodeEvent?.completedAt)
-          .length,
-        dailyClaimsCount: builderEvents.filter((e) => e.type === 'daily_claim').length,
-        questsCompleted: socialQuests.length,
-        waitlistTier:
-          builderEvents
-            .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
-            ?.description?.match(/achieving (.*?) status/)?.[1] || ''
-      };
-    });
+      );
   });
 
   return respondWithTSV(rows, 'scout_users_export.tsv');

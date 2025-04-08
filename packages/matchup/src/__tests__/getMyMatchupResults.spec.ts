@@ -31,8 +31,12 @@ describe('getMyMatchupResults', () => {
   it('should correctly process events for merged pull requests, daily commits, and onchain achievements', async () => {
     // Create a matchup with a developer who has different types of events
     const scout = await mockScout();
-    const builder = await mockBuilder();
-    const { matchup } = await mockMatchup({ createdBy: scout.id, week: mockWeek, selectedDevelopers: [builder.id] });
+    const builder = await mockBuilder({ createNft: true });
+    const { matchup } = await mockMatchup({
+      createdBy: scout.id,
+      week: mockWeek,
+      selectedNfts: [builder.regularNft!.id]
+    });
     const repo = await mockRepo();
     const event = await mockPullRequestBuilderEvent({
       builderId: builder.id,
@@ -63,7 +67,7 @@ describe('getMyMatchupResults', () => {
       gemsCollected: 15,
       url: '',
       repoFullName: '',
-      contributionType: 'onchain_achievement'
+      contributionType: ' Tier!'
     });
 
     // Check merged pull request
@@ -72,7 +76,7 @@ describe('getMyMatchupResults', () => {
         createdAt: expect.any(String),
         gemsCollected: 10,
         repoFullName: `${repo.owner}/${repo.name}`,
-        contributionType: 'first_pr'
+        contributionType: 'First contribution!'
       })
     );
 
@@ -84,8 +88,12 @@ describe('getMyMatchupResults', () => {
   it('should filter events by the specified week', async () => {
     // Create a matchup with events from different weeks
     const scout = await mockScout();
-    const builder = await mockBuilder();
-    await mockMatchup({ createdBy: scout.id, week: mockWeek, selectedDevelopers: [builder.id] });
+    const builder = await mockBuilder({ createNft: true });
+    const { matchup } = await mockMatchup({
+      createdBy: scout.id,
+      week: mockWeek,
+      selectedNfts: [builder.regularNft!.id]
+    });
     const repo = await mockRepo();
     const event = await mockPullRequestBuilderEvent({
       builderId: builder.id,

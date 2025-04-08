@@ -16,15 +16,15 @@ export async function getMyDevelopersForMatchup({ scoutId }: { scoutId: string }
       // remove starter cards if they own a standard already
       .filter((developer) => {
         if (developer.nftType === 'starter_pack') {
-          return !nftsByType.default.some((nft) => nft.id === developer.id);
+          return !nftsByType.default?.some((nft) => nft.id === developer.id);
         }
         return true;
       })
       .map((developer) => {
-        const starterCard = nftsByType.starter_pack.find((nft) => nft.id === developer.id);
+        const starterCard = nftsByType.starter_pack?.find((nft) => nft.id === developer.id);
         return {
           ...developer,
-          showAdditionalStarterCard: !!starterCard,
+          showAdditionalStarterCard: !!starterCard && developer.nftType !== 'starter_pack',
           // use developer image if no starter card image, just in case
           starterCardImage: starterCard ? starterCard?.nftImageUrl || developer.nftImageUrl : undefined
         };
