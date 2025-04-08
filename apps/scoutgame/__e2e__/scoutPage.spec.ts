@@ -11,7 +11,7 @@ async function mockLeaderboard() {
     userId: builder.id,
     week: getCurrentWeek(),
     gemsCollected: 10,
-    rank: 1,
+    rank: -1, // hack to make sure this dev appears in the top 10
     season: getCurrentSeasonStart()
   });
   return { builder, userWeeklyStats };
