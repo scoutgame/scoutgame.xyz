@@ -16,7 +16,6 @@ export type FullMerkleTree = {
   layers: string[];
   totalAirdropAmount: string;
   totalRecipients: number;
-  proofMaxQuantityForWallet: string;
 };
 
 // This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package
@@ -86,7 +85,6 @@ export const getAirdropTokenStatusAction = actionClient
       isClaimed,
       claimableAmount,
       proofs,
-      proofMaxQuantityForWallet: fullMerkleTree.proofMaxQuantityForWallet,
       contractAddress: airdropClaim.contractAddress
     };
   });

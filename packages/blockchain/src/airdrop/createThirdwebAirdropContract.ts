@@ -46,9 +46,6 @@ export async function createThirdwebAirdropContract({
 
   const totalAirdropAmount = BigInt(recipients.reduce((acc, recipient) => acc + BigInt(recipient.amount), BigInt(0)));
   const totalRecipients = recipients.length;
-  const proofMaxQuantityForWallet = BigInt(
-    recipients.sort((a, b) => Number(BigInt(b.amount) - BigInt(a.amount)))[0].amount
-  );
   const rootHash = `0x${merkleTree.rootHash}`;
 
   const fullMerkleTree = {
@@ -56,8 +53,7 @@ export async function createThirdwebAirdropContract({
     recipients,
     layers: merkleTree.tree.getHexLayers(),
     totalAirdropAmount: totalAirdropAmount.toString(),
-    totalRecipients,
-    proofMaxQuantityForWallet: proofMaxQuantityForWallet.toString()
+    totalRecipients
   };
 
   const response = await Pinata.pinJSONToIPFS(fullMerkleTree);

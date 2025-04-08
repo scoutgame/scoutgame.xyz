@@ -12,11 +12,11 @@ const recipients: Recipient[]= [
   },
   {
     address: '0xb1b9FFF08F3827875F91ddE929036a65f2A5d27d',
-    amount: parseEther('50').toString(),
+    amount: parseEther('125').toString(),
   },
   {
     address: '0x6866C5669592D79c1010Ee9d0936F6A3a800133d',
-    amount: parseEther('25').toString(),
+    amount: parseEther('150').toString(),
   }
 ]
 

@@ -38,7 +38,6 @@ export function ClaimTokenScreen() {
     claimableAmount: number;
     proofs: `0x${string}`[];
     airdropId: string;
-    proofMaxQuantityForWallet: string;
   } | null>(null);
   const [donationPercentage, setDonationPercentage] = useState<DonationPercentage>('donate_half');
   const [isClaimingTokens, setIsClaimingTokens] = useState(false);
@@ -76,8 +75,7 @@ export function ClaimTokenScreen() {
         contractAddress: data.contractAddress,
         claimableAmount: _claimableAmount,
         proofs: data.proofs,
-        airdropId: data.airdropId,
-        proofMaxQuantityForWallet: data.proofMaxQuantityForWallet
+        airdropId: data.airdropId
       });
     } else {
       setStep('not_qualified');
@@ -109,22 +107,22 @@ export function ClaimTokenScreen() {
             ? airdropInfo.claimableAmount
             : 0;
 
-      let donationTx: string | null = null;
+      let donationTxHash: string | null = null;
 
-      const claimTx = await claimThirdwebERC20AirdropToken({
+      const claimTxHash = await claimThirdwebERC20AirdropToken({
         airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
         receiver: address as `0x${string}`,
         quantity: BigInt(airdropInfo.claimableAmount * 10 ** 18),
         proofs: airdropInfo.proofs,
-        proofMaxQuantityForWallet: BigInt(airdropInfo.proofMaxQuantityForWallet),
+        proofMaxQuantityForWallet: BigInt(airdropInfo.claimableAmount * 10 ** 18),
         chainId: 8453,
         walletClient
       });
 
       if (donationAmount) {
-        // Send donation to safe wallet
+        // TODO: Replace with treasury safe wallet
         const safeWallet = '0x78Ef4aFbE2BC6DF76B696c71fC1CeDCA4aD31561';
-        donationTx = await walletClient.writeContract({
+        donationTxHash = await walletClient.writeContract({
           address: TOKEN_ADDRESS,
           abi: erc20Abi,
           functionName: 'transfer',
@@ -132,16 +130,14 @@ export function ClaimTokenScreen() {
         });
       }
 
-      if (claimTx) {
-        await trackAirdropClaimPayout({
-          address: address as `0x${string}`,
-          claimAmount: BigInt(airdropInfo.claimableAmount * 10 ** 18).toString(),
-          airdropClaimId: airdropInfo.airdropId,
-          donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
-          claimTxHash: claimTx,
-          donationTxHash: donationTx
-        });
-      }
+      await trackAirdropClaimPayout({
+        address: address as `0x${string}`,
+        claimAmount: BigInt(airdropInfo.claimableAmount * 10 ** 18).toString(),
+        airdropClaimId: airdropInfo.airdropId,
+        donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
+        claimTxHash,
+        donationTxHash
+      });
 
       setStep('token_claim_success');
     } catch (error) {
