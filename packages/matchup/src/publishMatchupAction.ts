@@ -22,15 +22,20 @@ export const publishMatchupAction = authActionClient
         matchupId: parsedInput.matchupId
       },
       select: {
-        developer: {
+        developerNft: {
           select: {
             id: true,
-            userSeasonStats: {
-              where: {
-                season: getCurrentSeasonStart()
-              },
+            builder: {
               select: {
-                level: true
+                id: true,
+                userSeasonStats: {
+                  where: {
+                    season: getCurrentSeasonStart()
+                  },
+                  select: {
+                    level: true
+                  }
+                }
               }
             }
           }
@@ -38,12 +43,14 @@ export const publishMatchupAction = authActionClient
       }
     });
 
-    if (selections.length !== MAX_SELECTIONS) {
-      throw new Error('You have not selected the correct number of developers');
+    const uniqueDeveloperIds = new Set(selections.map((selection) => selection.developerNft.builder.id));
+
+    if (uniqueDeveloperIds.size !== MAX_SELECTIONS) {
+      throw new Error(`You must select ${MAX_SELECTIONS} developers`);
     }
 
     const totalCredits = selections.reduce(
-      (acc, selection) => acc + (selection.developer.userSeasonStats[0].level || 0),
+      (acc, selection) => acc + (selection.developerNft!.builder.userSeasonStats[0].level || 0),
       0
     );
 
@@ -64,13 +71,13 @@ export const publishMatchupAction = authActionClient
       ...selections.map((selection) => {
         return prisma.scoutMatchupSelection.update({
           where: {
-            matchupId_developerId: {
+            matchupId_developerNftId: {
               matchupId: parsedInput.matchupId,
-              developerId: selection.developer.id
+              developerNftId: selection.developerNft!.id
             }
           },
           data: {
-            creditsValue: selection.developer.userSeasonStats[0].level
+            creditsValue: selection.developerNft!.builder.userSeasonStats[0].level
           }
         });
       })

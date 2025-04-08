@@ -11,7 +11,7 @@ import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import React, { useCallback, useState } from 'react';
 import { useFieldArray, type Control } from 'react-hook-form';
 
-import { ProjectRoleText } from '../../constants';
+import { ProjectRoleText } from '../../../constants';
 
 import { SearchProjectTeamMember } from './SearchProjectTeamMember';
 

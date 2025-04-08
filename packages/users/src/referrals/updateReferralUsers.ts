@@ -24,6 +24,13 @@ export async function updateReferralUsers(refereeId: string, now = new Date()): 
       displayName: true,
       path: true,
       wallets: {
+        select: {
+          purchaseEvents: {
+            include: {
+              builderNft: true
+            }
+          }
+        },
         where: {
           scoutedNfts: {
             some: {
@@ -104,6 +111,26 @@ export async function updateReferralUsers(refereeId: string, now = new Date()): 
   if (!referee.emailVerifications.some((e) => !!e.completedAt)) {
     log.debug('Ignore referral because referee has not verified their email', { userId: refereeId });
     return { result: 'not_verified' };
+  }
+
+  let madeCryptoPurchase = false;
+  for (const wallet of referee.wallets) {
+    for (const purchaseEvent of wallet.purchaseEvents) {
+      if (
+        purchaseEvent.builderNft.nftType === 'default' &&
+        !purchaseEvent.paidInPoints &&
+        // has to be a fresh mint
+        !purchaseEvent.senderWalletAddress
+      ) {
+        madeCryptoPurchase = true;
+        break;
+      }
+    }
+  }
+
+  if (!madeCryptoPurchase) {
+    log.debug('Ignore referral because referee has not made a crypto purchase', { userId: refereeId });
+    return { result: 'no_nft_purchase' };
   }
 
   const referrer = await prisma.$transaction(

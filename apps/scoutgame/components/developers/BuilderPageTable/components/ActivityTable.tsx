@@ -4,6 +4,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { bonusPartnersRecord } from '@packages/scoutgame/bonus';
+import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { GemsIcon, TransactionIcon } from '@packages/scoutgame-ui/components/common/Icons';
@@ -14,10 +15,7 @@ import Link from 'next/link';
 import { BiLike } from 'react-icons/bi';
 import { LuBookMarked } from 'react-icons/lu';
 
-import {
-  BuilderActivityGems,
-  getActivityLabel
-} from '../../../profile/components/BuilderProfile/BuilderActivitiesList';
+import { BuilderActivityGems } from '../../../profile/components/DeveloperProfile/DeveloperActivitiesList';
 
 import { CommonTableRow } from './CommonTableRow';
 import { DeveloperCell } from './DeveloperCell';

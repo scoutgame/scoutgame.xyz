@@ -13,10 +13,10 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { InfoModal } from './components/InfoModal';
-import { ScoutPageBuildersGallery } from './components/ScoutPageBuildersGallery';
 import { ScoutPageCarouselContainer as ScoutPageCarousel } from './components/ScoutPageCarouselContainer';
+import { ScoutPageDevelopersGallery } from './components/ScoutPageDevelopersGallery';
 import { ScoutPageTable } from './components/ScoutPageTable/ScoutPageTable';
-import { SearchBuildersInput } from './components/SearchBuildersInput';
+import { SearchDevelopersInput } from './components/SearchDevelopersInput';
 import { WeeklyMatchupCallout } from './components/WeeklyMatchupCallout';
 
 export const scoutTabOptions: TabItem[] = [{ label: 'Top Scouts', value: 'scouts' }];
@@ -109,7 +109,7 @@ export async function ScoutPage({
                   <AppsIcon color={buildersLayout === 'gallery' ? 'secondary' : 'disabled'} />
                 </Link>
               </Stack>
-              <SearchBuildersInput sx={{ maxWidth: '500px' }} />
+              <SearchDevelopersInput sx={{ maxWidth: '500px' }} />
               <InfoModal builder />
             </Stack>
             <Suspense
@@ -130,7 +130,7 @@ export async function ScoutPage({
                   nftType={nftType}
                 />
               )}
-              {buildersLayout === 'gallery' && <ScoutPageBuildersGallery userId={userId} nftType={nftType} />}
+              {buildersLayout === 'gallery' && <ScoutPageDevelopersGallery userId={userId} nftType={nftType} />}
             </Suspense>
           </Stack>
           <Stack position='sticky' top={0} bgcolor='background.default' sx={{ display: { xs: 'flex', md: 'none' } }}>

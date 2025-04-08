@@ -5,8 +5,12 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 async function query() {
-  const result = await prisma.scoutMatchup.findMany({});
-  prettyPrint(result);
+  const matchups = await prisma.scoutMatchup.findMany({
+    where: {
+      week: '2025-W15'
+    }
+  });
+  prettyPrint(matchups);
 }
 
 query();

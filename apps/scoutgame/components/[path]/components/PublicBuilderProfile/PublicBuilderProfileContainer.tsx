@@ -16,8 +16,8 @@ import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BuilderCard } from 'components/common/Card/BuilderCard/BuilderCard';
 import { ScoutsGallery } from 'components/common/Gallery/ScoutsGallery';
 import { ScoutButton } from 'components/common/ScoutButton/ScoutButton';
-import { BuilderActivitiesList } from 'components/profile/components/BuilderProfile/BuilderActivitiesList';
-import { BuilderWeeklyStats } from 'components/profile/components/BuilderProfile/BuilderWeeklyStats';
+import { DeveloperActivitiesList } from 'components/profile/components/DeveloperProfile/DeveloperActivitiesList';
+import { DeveloperWeeklyStats } from 'components/profile/components/DeveloperProfile/DeveloperWeeklyStats';
 import { ProjectsTab } from 'components/projects/components/ProjectsTab';
 
 import { PublicBuilderStats } from './PublicBuilderStats';
@@ -207,13 +207,13 @@ export function PublicBuilderProfileContainer({
           <PaperContainer>
             <Stack gap={1}>
               <Typography color='secondary'>This Week</Typography>
-              <BuilderWeeklyStats gemsCollected={gemsCollected} rank={rank} />
+              <DeveloperWeeklyStats gemsCollected={gemsCollected} rank={rank} />
             </Stack>
             <Stack gap={1}>
               <Typography color='secondary'>Recent Activity</Typography>
               <Box maxHeight={{ md: '400px' }} overflow='auto'>
                 {builderActivities.length > 0 ? (
-                  <BuilderActivitiesList activities={builderActivities} />
+                  <DeveloperActivitiesList activities={builderActivities} />
                 ) : (
                   <Typography>No recent activity by this developer.</Typography>
                 )}

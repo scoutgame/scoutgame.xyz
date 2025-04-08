@@ -35,8 +35,10 @@ export function BuilderCardNftDisplay({
   size = 'medium',
   hideDetails = false,
   disableProfileUrl = false,
-  isStarterCard
+  isStarterCard,
+  variant
 }: {
+  variant?: 'matchup_selection';
   isStarterCard?: boolean;
   path: string;
   nftImageUrl?: string | null;
@@ -50,7 +52,17 @@ export function BuilderCardNftDisplay({
   const height = nftDisplaySize[size].height;
   const { openModal } = useDeveloperInfoModal();
   return (
-    <Box overflow='hidden' width={width} height={height} sx={{ backgroundColor: 'black.dark', borderRadius: '4px' }}>
+    <Box
+      overflow='hidden'
+      width={width}
+      height={height}
+      sx={{
+        backgroundColor: 'black.dark',
+        borderRadius: '4px',
+        borderBottomLeftRadius: variant === 'matchup_selection' ? 0 : '4px',
+        borderBottomRightRadius: variant === 'matchup_selection' ? 0 : '4px'
+      }}
+    >
       <CardActionArea
         disabled={disableProfileUrl}
         onClick={(e) => {
@@ -84,10 +96,13 @@ export function BuilderCardNftDisplay({
             left: '50%',
             backgroundColor: hideDetails ? 'transparent' : '#000',
             transform: 'translateX(-50%)',
-            bottom: {
-              xs: size === 'x-small' ? 13.5 : 12.5,
-              md: size === 'small' ? 17.5 : 12.5
-            }
+            bottom:
+              variant === 'matchup_selection'
+                ? 0
+                : {
+                    xs: size === 'x-small' ? 13.5 : 12.5,
+                    md: size === 'small' ? 17.5 : 12.5
+                  }
           }}
         >
           {nftImageUrl ? null : (

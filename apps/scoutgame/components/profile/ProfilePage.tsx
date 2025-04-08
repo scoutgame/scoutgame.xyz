@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 
 import { ProjectsTab } from '../projects/components/ProjectsTab';
 
-import { BuilderProfile } from './components/BuilderProfile/BuilderProfile';
+import { DeveloperProfile } from './components/DeveloperProfile/DeveloperProfile';
 import { ProfileStatsContainer as ProfileStats } from './components/ProfileStats/ProfileStatsContainer';
 import { ProfileTabsMenu } from './components/ProfileTabsMenu';
 import { ScoutProfile } from './components/ScoutProfile/ScoutProfile';
@@ -25,11 +25,10 @@ export type UserWithProfiles = SessionUser & {
 type ProfilePageProps = {
   user: UserWithProfiles;
   tab: ProfileTab;
-  hideGithubButton?: boolean;
   scoutProjects?: ScoutProjectMinimal[];
 };
 
-export function ProfilePage({ user, tab, hideGithubButton, scoutProjects }: ProfilePageProps) {
+export function ProfilePage({ user, tab, scoutProjects }: ProfilePageProps) {
   return (
     <Box
       sx={{
@@ -84,7 +83,7 @@ export function ProfilePage({ user, tab, hideGithubButton, scoutProjects }: Prof
         {tab === 'scout' ? (
           <ScoutProfile userId={user.id} />
         ) : tab === 'build' ? (
-          <BuilderProfile builder={user as BuilderUserInfo} />
+          <DeveloperProfile builder={user as BuilderUserInfo} />
         ) : (
           <Stack flexDirection='row' gap={2}>
             <Paper
@@ -109,7 +108,7 @@ export function ProfilePage({ user, tab, hideGithubButton, scoutProjects }: Prof
               <Typography variant='h6' color='text.secondary'>
                 Build
               </Typography>
-              <BuilderProfile builder={user as BuilderUserInfo} />
+              <DeveloperProfile builder={user as BuilderUserInfo} />
             </Paper>
           </Stack>
         )}

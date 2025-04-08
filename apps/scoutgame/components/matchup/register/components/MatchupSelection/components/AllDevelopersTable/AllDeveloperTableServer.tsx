@@ -9,13 +9,7 @@ import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorS
 
 import { AllDevelopersTableContainer } from './AllDevelopersTableContainer';
 
-export async function AllDevelopersTableServer({
-  userId,
-  onSelectDeveloper
-}: {
-  userId?: string;
-  onSelectDeveloper?: (developerId: string) => void;
-}) {
+export async function AllDevelopersTableServer({ userId }: { userId?: string }) {
   const [error, data = { developers: [], nextCursor: null }] = await safeAwaitSSRData(
     getDevelopersForTable({
       sortBy: 'level',

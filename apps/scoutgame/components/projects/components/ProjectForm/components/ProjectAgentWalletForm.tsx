@@ -16,7 +16,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { AGENT_WALLET_SIGN_MESSAGE } from '@packages/scoutgame/projects/constants';
+import { AGENT_WALLET_SIGN_MESSAGE, CONTRACT_LIMIT } from '@packages/scoutgame/projects/constants';
 import type { CreateScoutProjectFormValues } from '@packages/scoutgame/projects/createScoutProjectSchema';
 import { Dialog } from '@packages/scoutgame-ui/components/common/Dialog';
 import { FormErrors } from '@packages/scoutgame-ui/components/common/FormErrors';
@@ -28,8 +28,8 @@ import { useFieldArray, type Control } from 'react-hook-form';
 import { verifyMessage } from 'viem';
 import { useSignMessage } from 'wagmi';
 
-import type { TemporaryAddress } from '../../components/ProjectForm/ProjectForm';
-import { chainRecords } from '../../constants';
+import { chainRecords } from '../../../constants';
+import type { TemporaryAddress } from '../ProjectForm';
 
 export type Deployer = { address: string; verified: boolean; signature: string | null };
 
@@ -52,6 +52,8 @@ export function ProjectAgentWalletForm({ control }: { control: Control<CreateSco
     control,
     name: 'wallets'
   });
+
+  const limitReached = wallets.length >= CONTRACT_LIMIT;
 
   const verifyWalletOwnership = useCallback(
     async (walletAddress: `0x${string}`) => {
@@ -332,21 +334,29 @@ export function ProjectAgentWalletForm({ control }: { control: Control<CreateSco
           </Stack>
         </>
       ) : (
-        <Button
-          variant='outlined'
-          color='secondary'
-          sx={{ width: 'fit-content' }}
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={() => {
-            setAgentWallet({
-              address: '',
-              chainId: 1
-            });
-            setIsFormOpen(true);
-          }}
-        >
-          Add wallet
-        </Button>
+        <Stack flexDirection='row' alignItems='center' gap={1}>
+          <Button
+            variant='outlined'
+            color='secondary'
+            sx={{ width: 'fit-content' }}
+            disabled={limitReached}
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={() => {
+              setAgentWallet({
+                address: '',
+                chainId: 1
+              });
+              setIsFormOpen(true);
+            }}
+          >
+            Add wallet
+          </Button>
+          {limitReached && (
+            <Typography variant='caption' color='grey'>
+              You have reached the limit
+            </Typography>
+          )}
+        </Stack>
       )}
       <Dialog title='Remove Wallet' open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
         <Typography>Are you sure you want to remove this wallet from the project?</Typography>

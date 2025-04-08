@@ -12,7 +12,7 @@ export const addMatchupSelectionAction = authActionClient
   .schema(
     yup.object({
       matchupId: yup.string().required(),
-      developerId: yup.string().required()
+      developerNftId: yup.string().required()
     })
   )
   .action(async ({ ctx, parsedInput }) => {
@@ -34,9 +34,9 @@ export const addMatchupSelectionAction = authActionClient
             id: parsedInput.matchupId
           }
         },
-        developer: {
+        developerNft: {
           connect: {
-            id: parsedInput.developerId
+            id: parsedInput.developerNftId
           }
         }
       }

@@ -9,7 +9,7 @@ import { UserProfile } from '@packages/scoutgame-ui/components/common/Profile/Us
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import type { BasicUserInfo } from '@packages/users/interfaces';
 
-import { BuildersGallery } from 'components/common/Gallery/BuildersGallery';
+import { DevelopersGallery } from 'components/common/Gallery/DevelopersGallery';
 import { ProjectsTab } from 'components/projects/components/ProjectsTab';
 
 import { PublicScoutProfileStats } from './PublicScoutProfileStats';
@@ -71,7 +71,7 @@ export function PublicScoutProfileContainer({
           Scouted Developers
         </Typography>
         {scoutedBuilders.length > 0 ? (
-          <BuildersGallery
+          <DevelopersGallery
             scoutInView={scout.id}
             builders={scoutedBuilders}
             columns={5}

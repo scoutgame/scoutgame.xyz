@@ -84,7 +84,7 @@ const sizeVariantStyleMap: Partial<Record<AvatarSize, Record<NonNullable<AvatarV
   }
 };
 
-function getAvatarCustomStyles(variant: AvatarVariant, size: AvatarSize) {
+export function getAvatarCustomStyles(variant: AvatarVariant, size: AvatarSize) {
   const sizeStyles = sizeStyleMap[size];
   const variantStyles = (variant && sizeVariantStyleMap[size]?.[variant]) || {};
 

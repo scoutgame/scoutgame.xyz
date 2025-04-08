@@ -25,7 +25,7 @@ const slides: SlideContent[] = [
     )
   },
   {
-    subtitle: '2. Builder Your Dream  Team',
+    subtitle: '2. Build Your Dream  Team',
     iconSrc: '/images/matchup/howtoplay_magnifier.svg',
     text: (
       <Typography variant='body2'>
@@ -40,8 +40,7 @@ const slides: SlideContent[] = [
     text: (
       <Typography variant='body2'>
         Now the fun begins! Sit back and watch as your team of Dev superstars earns Gems by doing what they do best:
-        building cool stuff. The game wraps up at 11:59 PM Sunday UTC, and the teams with the most Gems earn the
-        prizes.'
+        building cool stuff. The game wraps up at 11:59 PM Sunday UTC, and the teams with the most Gems earn the prizes.
       </Typography>
     )
   },

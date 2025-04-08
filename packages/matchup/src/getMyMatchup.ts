@@ -1,19 +1,32 @@
 import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { normalizeLast14DaysRank } from '@packages/scoutgame/builders/utils/normalizeLast14DaysRank';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { isOnchainPlatform } from '@packages/utils/platform';
 
 export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank' | 'id'> & {
   scout: {
     id: string;
     displayName: string;
   };
-  selections: { developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'>; credits: number }[];
+  selections: {
+    developer: Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> & {
+      nftId: string;
+      gemsCollected: number;
+      level: number;
+      estimatedPayout: number;
+      last14DaysRank: (number | null)[];
+    };
+    credits: number;
+  }[];
 };
 
 export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: string }): Promise<MyMatchup | null> {
   if (!scoutId) {
     return null;
   }
+  const season = getCurrentSeasonStart(week);
   const matchup = await prisma.scoutMatchup.findUnique({
     where: {
       createdBy_week: {
@@ -35,26 +48,39 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
       week: true,
       selections: {
         select: {
-          developer: {
+          developerNft: {
             select: {
               id: true,
-              displayName: true,
-              path: true,
-              avatar: true,
-              builderNfts: {
-                where: {
-                  season: getCurrentSeasonStart()
-                },
+              imageUrl: true,
+              estimatedPayoutDevToken: true,
+              estimatedPayout: true,
+              builder: {
                 select: {
-                  imageUrl: true
-                }
-              },
-              userSeasonStats: {
-                where: {
-                  season: getCurrentSeasonStart()
-                },
-                select: {
-                  level: true
+                  id: true,
+                  displayName: true,
+                  path: true,
+                  avatar: true,
+                  builderCardActivities: {
+                    select: {
+                      last14Days: true
+                    }
+                  },
+                  userWeeklyStats: {
+                    where: {
+                      week
+                    },
+                    select: {
+                      gemsCollected: true
+                    }
+                  },
+                  userSeasonStats: {
+                    where: {
+                      season
+                    },
+                    select: {
+                      level: true
+                    }
+                  }
                 }
               }
             }
@@ -66,15 +92,29 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
   if (!matchup) {
     return null;
   }
-  return {
-    ...matchup,
-    selections: matchup.selections.map((selection) => ({
+
+  const selections = matchup.selections
+    .map((selection) => ({
       ...selection,
       developer: {
-        ...selection.developer,
-        nftImageUrl: selection.developer.builderNfts[0].imageUrl
+        id: selection.developerNft!.builder.id,
+        displayName: selection.developerNft!.builder.displayName,
+        nftId: selection.developerNft!.id,
+        path: selection.developerNft!.builder.path,
+        avatar: selection.developerNft!.builder.avatar,
+        nftImageUrl: selection.developerNft!.imageUrl,
+        gemsCollected: selection.developerNft!.builder.userWeeklyStats[0]?.gemsCollected || 0,
+        level: selection.developerNft!.builder.userSeasonStats[0]?.level || 0,
+        estimatedPayout: isOnchainPlatform()
+          ? Number(BigInt(selection.developerNft!.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
+          : (selection.developerNft!.estimatedPayout ?? 0),
+        last14DaysRank: normalizeLast14DaysRank(selection.developerNft!.builder.builderCardActivities[0])
       },
-      credits: selection.developer.userSeasonStats[0].level || 0
+      credits: selection.developerNft!.builder.userSeasonStats[0].level || 0
     }))
+    .sort((a, b) => b.developer.level - a.developer.level);
+  return {
+    ...matchup,
+    selections
   };
 }

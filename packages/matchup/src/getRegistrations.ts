@@ -16,7 +16,7 @@ export async function getRegistrations(week: string): Promise<MatchupRegistratio
       week
     },
     orderBy: {
-      createdAt: 'desc'
+      createdAt: 'asc'
     },
     select: {
       scout: {

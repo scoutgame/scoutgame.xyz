@@ -8,7 +8,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { alertLowAirdropWalletBalance } from './alertLowAirdropWalletBalance';
 import { getWalletGasBalanceInUSD } from './getWalletGasBalanceInUSD';
 
-const thresholdUSD = 25;
+const thresholdUSD = 15;
 
 const log = getLogger('cron-alert-low-wallet-gas-balance');
 

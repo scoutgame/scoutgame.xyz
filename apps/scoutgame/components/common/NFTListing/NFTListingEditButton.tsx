@@ -1,5 +1,4 @@
 import { log } from '@charmverse/core/log';
-import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
@@ -13,6 +12,7 @@ import { fancyTrim } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
+import { FcCancel } from 'react-icons/fc';
 import { toast } from 'sonner';
 import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 
@@ -116,7 +116,7 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
               onClick={() => setIsConfirmModalOpen(true)}
               disabled={isCancelling || !address || !walletClient}
             >
-              <SettingsBackupRestoreIcon color='error' sx={{ mr: 0.5, fontSize: '16px' }} />
+              <FcCancel color='error' />
             </Button>
           </div>
         </Tooltip>

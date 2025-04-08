@@ -1,51 +1,20 @@
 import { Paper, Stack, Typography } from '@mui/material';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import { bonusPartnersRecord } from '@packages/scoutgame/bonus';
+import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
 import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import { GemsIcon, TransactionIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { getRelativeTime } from '@packages/utils/dates';
-import { capitalize } from '@packages/utils/strings';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BiLike } from 'react-icons/bi';
 import { LuBookMarked } from 'react-icons/lu';
 
-export function getActivityLabel(activity: BuilderActivity, shorten = false) {
-  if (activity.type === 'onchain_achievement') {
-    return `${capitalize(activity.tier)} Tier!`;
-  }
-  return activity.type === 'github_event'
-    ? activity.contributionType === 'first_pr'
-      ? shorten
-        ? 'First PR!'
-        : 'First contribution!'
-      : activity.contributionType === 'regular_pr'
-        ? shorten
-          ? 'Verified PR!'
-          : 'Verified contribution!'
-        : activity.contributionType === 'regular_pr_unreviewed'
-          ? shorten
-            ? 'Regular PR!'
-            : 'Contribution accepted!'
-          : activity.contributionType === 'third_pr_in_streak'
-            ? shorten
-              ? 'PR Streak!'
-              : 'Contribution streak!'
-            : activity.contributionType === 'daily_commit'
-              ? shorten
-                ? 'Commit!'
-                : 'Daily commit!'
-              : null
-    : activity.type === 'nft_purchase'
-      ? 'Scouted by'
-      : null;
-}
-
-function BuilderActivityLabel({ activity }: { activity: BuilderActivity }) {
+function ActivityLabel({ activity }: { activity: BuilderActivity }) {
   return <Typography component='span'>{getActivityLabel(activity)}</Typography>;
 }
 
-function BuilderActivityDetail({ activity }: { activity: BuilderActivity }) {
+function ActivityDetail({ activity }: { activity: BuilderActivity }) {
   return (
     <Stack component='span' flexDirection='row' gap={0.5} alignItems='center'>
       {activity.type === 'nft_purchase' ? (
@@ -90,13 +59,7 @@ export function BuilderActivityGems({
   );
 }
 
-function BuilderActivityBonusPartner({
-  activity,
-  showEmpty = false
-}: {
-  activity: BuilderActivity;
-  showEmpty?: boolean;
-}) {
+function ActivityBonusPartner({ activity, showEmpty = false }: { activity: BuilderActivity; showEmpty?: boolean }) {
   return activity.type === 'github_event' &&
     activity.bonusPartner &&
     bonusPartnersRecord[activity.bonusPartner as BonusPartner] ? (
@@ -111,7 +74,7 @@ function BuilderActivityBonusPartner({
   ) : null;
 }
 
-export function BuilderActivitiesList({ activities }: { activities: BuilderActivity[] }) {
+export function DeveloperActivitiesList({ activities }: { activities: BuilderActivity[] }) {
   return (
     <Stack gap={0.5}>
       {activities.map((activity) => {
@@ -144,15 +107,15 @@ export function BuilderActivitiesList({ activities }: { activities: BuilderActiv
                   ) : activity.type === 'onchain_achievement' ? (
                     <TransactionIcon size={15} />
                   ) : null}
-                  <BuilderActivityLabel activity={activity} />
+                  <ActivityLabel activity={activity} />
                 </Stack>
                 <BuilderActivityGems activity={activity} />
-                <BuilderActivityBonusPartner activity={activity} />
+                <ActivityBonusPartner activity={activity} />
                 <Typography width={75} textAlign='right' variant='body2'>
                   {getRelativeTime(activity.createdAt)}
                 </Typography>
               </Stack>
-              <BuilderActivityDetail activity={activity} />
+              <ActivityDetail activity={activity} />
             </Stack>
           </Paper>
         );

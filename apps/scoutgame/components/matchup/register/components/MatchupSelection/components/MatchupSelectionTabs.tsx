@@ -7,10 +7,14 @@ import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import type { SyntheticEvent } from 'react';
 import { useState, Suspense } from 'react';
 
+import { MatchupTabContext } from './MatchupSelectionTabsContext';
+
 interface MatchupSelectionGalleryProps {
   myCardsView: React.ReactNode;
   allCardsView: React.ReactNode;
 }
+
+// Create a context for the tab state
 
 export function MatchupSelectionTabs({ myCardsView, allCardsView }: MatchupSelectionGalleryProps) {
   const [activeTab, setActiveTab] = useState<string>('my_cards');
@@ -21,27 +25,29 @@ export function MatchupSelectionTabs({ myCardsView, allCardsView }: MatchupSelec
   };
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <StyledTabs value={activeTab} onChange={handleTabChange}>
-        <StyledTab value='my_cards' label='Your Deck' />
-        <StyledTab value='all_cards' label='+ New Developer' />
-      </StyledTabs>
-
+    <MatchupTabContext.Provider value={setActiveTab}>
       <Box sx={{ mt: 2 }}>
-        <Suspense fallback={<LoadingCards />}>
-          {activeTab === 'my_cards' ? (
-            user ? (
-              myCardsView
+        <StyledTabs value={activeTab} onChange={handleTabChange}>
+          <StyledTab value='my_cards' label='Your Deck' />
+          <StyledTab value='all_cards' label='+ New Developer' />
+        </StyledTabs>
+
+        <Box sx={{ mt: 2 }}>
+          <Suspense fallback={<LoadingCards count={4} />}>
+            {activeTab === 'my_cards' ? (
+              user ? (
+                myCardsView
+              ) : (
+                <Paper sx={{ p: 2 }}>
+                  <Typography>Please sign in to view your deck</Typography>
+                </Paper>
+              )
             ) : (
-              <Paper sx={{ p: 2 }}>
-                <Typography>Please sign in to view your deck</Typography>
-              </Paper>
-            )
-          ) : (
-            allCardsView
-          )}
-        </Suspense>
+              allCardsView
+            )}
+          </Suspense>
+        </Box>
       </Box>
-    </Box>
+    </MatchupTabContext.Provider>
   );
 }

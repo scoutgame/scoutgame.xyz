@@ -12,16 +12,17 @@ import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { JoinGithubButton } from '@packages/scoutgame-ui/components/common/JoinGithubButton';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { isOnchainPlatform } from '@packages/utils/platform';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { ScoutsGallery } from 'components/common/Gallery/ScoutsGallery';
 
-import { BuilderActivitiesList } from './BuilderActivitiesList';
-import { BuilderStats } from './BuilderStats';
-import { BuilderWeeklyStats } from './BuilderWeeklyStats';
+import { DeveloperActivitiesList } from './DeveloperActivitiesList';
+import { DeveloperStats } from './DeveloperStats';
+import { DeveloperWeeklyStats } from './DeveloperWeeklyStats';
 
-export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) {
+export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }) {
   const [builderNft, builderStats, builderActivities = [], { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {}] =
     builder.builderStatus === 'approved'
       ? await Promise.all([
@@ -45,16 +46,23 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
         ])
       : [];
 
-  // if (!builder.githubLogin && !hideGithubButton) {
-  //   return (
-  //     <Stack gap={2} alignItems='center'>
-  //       <Typography>Connect your GitHub account to apply as a Developer.</Typography>
-  //       <Suspense>
-  //         <JoinGithubButton />
-  //       </Suspense>
-  //     </Stack>
-  //   );
-  // }
+  if (!builder.githubLogin) {
+    return (
+      <Stack alignItems='center' gap={4} pt={4} data-test='developer-profile-no-github'>
+        <Image
+          src='/images/github-logo.png'
+          alt=''
+          width={740}
+          height={181}
+          style={{ width: '100%', height: 'auto', maxWidth: '200px' }}
+        />
+        <Typography>Connect your GitHub account to apply as a Developer.</Typography>
+        <Suspense>
+          <JoinGithubButton />
+        </Suspense>
+      </Stack>
+    );
+  }
 
   if (builder.builderStatus === 'applied') {
     return (
@@ -100,7 +108,7 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
           </Typography>
         </Alert>
       ) : null}
-      <BuilderStats
+      <DeveloperStats
         nftImageUrl={builderNft?.imageUrl}
         path={builder.path}
         builderPoints={builderStats?.seasonPoints}
@@ -114,7 +122,7 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
       />
       <Stack gap={0.5}>
         <Typography color='secondary'>This Week</Typography>
-        <BuilderWeeklyStats gemsCollected={builderStats?.gemsCollected} rank={builderStats?.rank} />
+        <DeveloperWeeklyStats gemsCollected={builderStats?.gemsCollected} rank={builderStats?.rank} />
       </Stack>
       <Stack gap={0.5}>
         <Stack direction='row' alignItems='center' justifyContent='space-between'>
@@ -122,7 +130,7 @@ export async function BuilderProfile({ builder }: { builder: BuilderUserInfo }) 
         </Stack>
         <Box maxHeight={{ md: '400px' }} overflow='auto'>
           {builderActivities.length > 0 ? (
-            <BuilderActivitiesList activities={builderActivities} />
+            <DeveloperActivitiesList activities={builderActivities} />
           ) : (
             <Typography>No activity yet. Start contributing or scouting to build your profile!</Typography>
           )}
