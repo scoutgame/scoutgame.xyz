@@ -33,7 +33,9 @@ export function AnnouncementBannerAlert({ id, message }: { id: string; message: 
         position: 'relative',
         zIndex: 1, // ensure this appears background image on landing page
         '& .MuiAlert-message': {
-          fontSize: '1rem'
+          fontSize: '1rem',
+          textAlign: 'center',
+          width: '100%'
         }
       }}
     >
