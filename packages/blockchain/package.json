@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts"
   },
   "exports": {
     "./*": "./src/*.ts"

@@ -5,12 +5,15 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 async function query() {
-  const matchups = await prisma.scoutMatchup.findMany({
+  const matchups = await prisma.scout.findMany({
     where: {
-      week: '2025-W15'
+      builderStatus: 'approved',
+      wallets: {
+        none: {}
+      }
     }
   });
-  prettyPrint(matchups);
+  console.log(matchups.length);
+  console.log(matchups.map((m) => m.email).join('\n'));
 }
-
 query();
