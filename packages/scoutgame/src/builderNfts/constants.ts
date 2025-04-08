@@ -74,7 +74,8 @@ export const optimismUsdcContractAddress = useTestnets
 export const builderSmartContractMinterKey = process.env.BUILDER_SMART_CONTRACT_MINTER_PRIVKEY as string;
 
 // Actual target wallet - Scoutgame.eth
-export const treasuryAddress = '0x93326D53d1E8EBf0af1Ff1B233c46C67c96e4d8D';
+export const scoutgameEthAddress = '0x93326D53d1E8EBf0af1Ff1B233c46C67c96e4d8D';
+export const treasuryAddress = '0x4a01d4c6821ba65B36420735E2397B40Ce64EB2F';
 
 export function getDecentApiKey() {
   const apiKey = env('DECENT_API_KEY') || process.env.REACT_APP_DECENT_API_KEY;

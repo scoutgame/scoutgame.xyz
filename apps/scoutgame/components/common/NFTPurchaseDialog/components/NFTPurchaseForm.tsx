@@ -24,7 +24,7 @@ import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builder
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import {
   getBuilderNftContractAddressForNftType,
-  treasuryAddress,
+  scoutgameEthAddress,
   useTestnets
 } from '@packages/scoutgame/builderNfts/constants';
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
@@ -639,7 +639,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             !enableNftButton ||
             isLoadingDecentSdk ||
             isFetchingPrice ||
-            !treasuryAddress ||
+            !scoutgameEthAddress ||
             isSavingDecentTransaction ||
             isExecutingTransaction ||
             (paymentMethod === 'points' && notEnoughPoints) ||
