@@ -70,7 +70,7 @@ export async function deployThirdwebAirdropContract({
 
   const deployTxHash = await walletClient.writeContract(request);
 
-  let proxyAddress = '';
+  let proxyAddress: Address | null = null;
   let blockNumber = BigInt(0);
 
   for (let i = 0; i < 10; i++) {
@@ -81,7 +81,7 @@ export async function deployThirdwebAirdropContract({
 
       blockNumber = receipt.blockNumber;
 
-      proxyAddress = receipt.logs[1]?.address;
+      proxyAddress = receipt.logs[1]?.address as Address;
 
       if (proxyAddress) {
         break;
