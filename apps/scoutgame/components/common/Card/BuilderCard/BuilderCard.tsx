@@ -56,11 +56,7 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
 
   if (price && builder.listings) {
     builder.listings.forEach((listing) => {
-      if (
-        listing.scoutId !== user?.id &&
-        BigInt(listing.price) < BigInt(price) &&
-        (scoutInView ? listing.scoutId === scoutInView : true)
-      ) {
+      if (BigInt(listing.price) < BigInt(price) && (scoutInView ? listing.scoutId === scoutInView : true)) {
         lowerPricedNonUserListings.push(listing);
       }
     });
