@@ -90,6 +90,13 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
     }
   },
   components: {
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)'
+        }
+      }
+    },
     MuiDialog: {
       styleOverrides: {
         paper: {

@@ -16,6 +16,9 @@ import { ScoutButton } from '../ScoutButton/ScoutButton';
 
 import { DeveloperInfoModalSkeleton } from './DeveloperInfoModalSkeleton';
 
+const dialogBgColor = 'background.paper';
+const dialogPaperBgColor = 'background.dark';
+
 function DeveloperCardSection({
   cardType,
   estimatedPayout,
@@ -49,7 +52,7 @@ function DeveloperCardSection({
 
   return (
     <Stack
-      bgcolor='primary.dark'
+      bgcolor={dialogPaperBgColor}
       p={{
         xs: 0.5,
         md: 1
@@ -167,7 +170,7 @@ export function DeveloperInfoModal({
               xs: '100%',
               md: 600
             },
-            bgcolor: 'black.main',
+            bgcolor: dialogBgColor,
             borderRadius: 2
           }
         }}
@@ -204,7 +207,7 @@ export function DeveloperInfoModal({
             xs: '100%',
             md: 600
           },
-          bgcolor: 'black.main',
+          bgcolor: dialogBgColor,
           borderRadius: 2
         }
       }}
@@ -420,7 +423,7 @@ export function DeveloperInfoModal({
         <Stack gap={0.5}>
           <Stack direction='row' gap={0.5}>
             <Stack
-              bgcolor='primary.dark'
+              bgcolor={dialogPaperBgColor}
               p={{
                 xs: 0.5,
                 md: 1
@@ -475,7 +478,7 @@ export function DeveloperInfoModal({
               </Stack>
             </Stack>
             <Stack
-              bgcolor='primary.dark'
+              bgcolor={dialogPaperBgColor}
               borderRadius={1}
               flex={1}
               height={{
@@ -497,7 +500,7 @@ export function DeveloperInfoModal({
               </Stack>
             </Stack>
             <Stack
-              bgcolor='primary.dark'
+              bgcolor={dialogPaperBgColor}
               p={{
                 xs: 0.5,
                 md: 1
@@ -548,7 +551,7 @@ export function DeveloperInfoModal({
             </Stack>
           </Stack>
           <Stack
-            bgcolor='primary.dark'
+            bgcolor={dialogPaperBgColor}
             borderRadius={1}
             p={{
               xs: 0.5,
