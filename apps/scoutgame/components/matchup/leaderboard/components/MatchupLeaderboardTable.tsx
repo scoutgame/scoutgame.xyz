@@ -62,7 +62,7 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
                           lineHeight: '1.2em'
                         }}
                       >
-                        {entry.developers[i].gemsCollected || 222}
+                        {entry.developers[i].gemsCollected || 0}
                       </Typography>
                     }
                     anchorOrigin={{

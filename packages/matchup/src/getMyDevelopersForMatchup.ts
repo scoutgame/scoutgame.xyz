@@ -21,7 +21,7 @@ export async function getMyDevelopersForMatchup({ scoutId }: { scoutId: string }
         return true;
       })
       .map((developer) => {
-        const starterCard = nftsByType.starter_pack.find((nft) => nft.id === developer.id);
+        const starterCard = nftsByType.starter_pack?.find((nft) => nft.id === developer.id);
         return {
           ...developer,
           showAdditionalStarterCard: !!starterCard,
