@@ -3,17 +3,17 @@ import { mockRepo, mockGithubUser } from '@packages/testing/database';
 
 import { mockCommit, mockPullRequest } from './generators';
 
-jest.unstable_mockModule('./getCommitsByUser', () => ({
+jest.unstable_mockModule('../getCommitsByUser', () => ({
   getCommitsByUser: jest.fn()
 }));
 
-jest.unstable_mockModule('./getPullRequestsByUser', () => ({
+jest.unstable_mockModule('../getPullRequestsByUser', () => ({
   getPullRequestsByUser: jest.fn()
 }));
 
-const { getCommitsByUser } = await import('@packages/github/getCommitsByUser');
-const { getPullRequestsByUser } = await import('@packages/github/getPullRequestsByUser');
-const { getUserContributions } = await import('@packages/github/getUserContributions');
+const { getCommitsByUser } = await import('../getCommitsByUser');
+const { getPullRequestsByUser } = await import('../getPullRequestsByUser');
+const { getUserContributions } = await import('../getUserContributions');
 
 describe('getUserContributions', () => {
   beforeEach(() => {

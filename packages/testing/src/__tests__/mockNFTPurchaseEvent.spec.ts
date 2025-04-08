@@ -12,6 +12,12 @@ describe('mockNFTPurchaseEvent', () => {
     const points = 10;
     const tokensPurchased = 100;
 
+    const scoutWallet = await prisma.scoutWallet.findFirstOrThrow({
+      where: {
+        scoutId: scout.id
+      }
+    });
+
     const builderNft = await mockBuilderNft({
       builderId: builder.id,
       season: getCurrentSeasonStart()
@@ -41,7 +47,7 @@ describe('mockNFTPurchaseEvent', () => {
         nftPurchaseEvent: expect.objectContaining({
           pointsValue: points,
           tokensPurchased,
-          scoutId: scout.id
+          walletAddress: scoutWallet.address
         })
       })
     );
