@@ -12,9 +12,7 @@ export async function ScoutPageCarouselContainer({ nftType }: { nftType: 'defaul
   const scoutId = session.scoutId;
   const [, builders = []] = await safeAwaitSSRData(getTodaysHotBuilders());
 
-  const [, starterCardBuilders = []] = scoutId
-    ? await safeAwaitSSRData(getStarterCardDevelopers({ userId: scoutId }))
-    : [null, []];
+  const [, starterCardBuilders = []] = await safeAwaitSSRData(getStarterCardDevelopers({ userId: scoutId }));
 
   return <ScoutPageCarousel nftType={nftType} builders={builders} starterCardDevs={starterCardBuilders} />;
 }

@@ -80,6 +80,7 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
   const size = sizeOverride || (isLgScreen ? 'large' : isDesktop ? 'small' : 'x-small');
   return (
     <Card
+      data-test={`dev-${type}-card-${builder.id}`}
       sx={{
         border: 'none',
         opacity: builder.builderStatus === 'banned' ? 0.25 : 1,
