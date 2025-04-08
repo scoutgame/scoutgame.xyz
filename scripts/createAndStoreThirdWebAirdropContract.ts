@@ -20,8 +20,8 @@ const recipients: Recipient[]= [
   }
 ]
 
-export async function deployThirdWebAirdropContract() {
-  const {airdropContractAddress, deployTxHash, merkleTree} = await createThirdwebAirdropContract({
+export async function createAndStoreThirdWebAirdropContract() {
+  const {airdropContractAddress, deployTxHash, merkleTree, blockNumber} = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.PRIVATE_KEY as `0x${string}`,
     chainId: base.id,
     // 30 days in seconds from now
@@ -45,9 +45,10 @@ export async function deployThirdWebAirdropContract() {
       contractAddress: airdropContractAddress,
       deployTxHash,
       merkleTreeUrl: fileUrl,
+      blockNumber,
       season: getCurrentSeasonStart(),
     }
   })
 }
 
-deployThirdWebAirdropContract()
+createAndStoreThirdWebAirdropContract()

@@ -64,7 +64,7 @@ export async function createThirdwebAirdropContract({
 
   const cid = response.IpfsHash;
 
-  const { proxyAddress, deployTxHash } = await deployThirdwebAirdropContract({
+  const { proxyAddress, deployTxHash, blockNumber } = await deployThirdwebAirdropContract({
     chainId,
     adminPrivateKey,
     tokenAddress,
@@ -93,5 +93,5 @@ export async function createThirdwebAirdropContract({
     account: walletClient.account
   });
 
-  return { airdropContractAddress: proxyAddress, deployTxHash, cid, merkleTree: fullMerkleTree };
+  return { airdropContractAddress: proxyAddress, deployTxHash, cid, merkleTree: fullMerkleTree, blockNumber };
 }

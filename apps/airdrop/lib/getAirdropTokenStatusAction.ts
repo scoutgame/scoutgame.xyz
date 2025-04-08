@@ -6,7 +6,8 @@ import type { Recipient } from '@packages/blockchain/airdrop/createThirdwebAirdr
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import type { Address } from 'viem';
-import { parseEther } from 'viem';
+import { parseEther, createPublicClient, http } from 'viem';
+import { base } from 'viem/chains';
 import * as yup from 'yup';
 
 export type FullMerkleTree = {
@@ -36,6 +37,7 @@ export const getAirdropTokenStatusAction = actionClient
       select: {
         id: true,
         contractAddress: true,
+        blockNumber: true,
         merkleTreeUrl: true
       }
     });
@@ -46,12 +48,31 @@ export const getAirdropTokenStatusAction = actionClient
       fullMerkleTree.recipients.find((recipient) => recipient.address.toLowerCase() === address.toLowerCase())
         ?.amount ?? parseEther('0').toString();
 
-    const isClaimed = await prisma.airdropClaimPayout.findFirst({
-      where: {
-        airdropClaimId: airdropClaim.id,
-        walletAddress: address.toLowerCase()
-      }
+    // Create a public client to interact with the blockchain
+    const publicClient = createPublicClient({
+      chain: base,
+      transport: http()
     });
+
+    // Get TokensClaimed events for this address
+    const events = await publicClient.getLogs({
+      address: airdropClaim.contractAddress as Address,
+      event: {
+        type: 'event',
+        name: 'TokensClaimed',
+        inputs: [
+          { type: 'address', name: 'claimer', indexed: true },
+          { type: 'address', name: 'receiver', indexed: true },
+          { type: 'uint256', name: 'quantityClaimed', indexed: false }
+        ]
+      },
+      args: {
+        receiver: address as Address
+      },
+      fromBlock: airdropClaim.blockNumber
+    });
+
+    const isClaimed = events.length > 0;
 
     const merkleTree = generateMerkleTree(fullMerkleTree.recipients);
     const proofs = getMerkleProofs(merkleTree.tree, {
@@ -62,7 +83,7 @@ export const getAirdropTokenStatusAction = actionClient
     return {
       airdropId: airdropClaim.id,
       success: true,
-      isClaimed: !!isClaimed,
+      isClaimed,
       claimableAmount,
       proofs,
       proofMaxQuantityForWallet: fullMerkleTree.proofMaxQuantityForWallet,
