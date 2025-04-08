@@ -3,6 +3,7 @@ import { createThirdwebAirdropContract, Recipient } from '@packages/blockchain/a
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { parseEther } from 'viem';
 import { base } from 'viem/chains';
+import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
 const recipients: Recipient[]= [
   {
@@ -19,17 +20,8 @@ const recipients: Recipient[]= [
   }
 ]
 
-export type FullMerkleTree = {
-  rootHash: string;
-  recipients: Recipient[];
-  layers: string[];
-  totalAirdropAmount: string;
-  totalRecipients: number;
-  proofMaxQuantityForWallet: string;
-}
-
-export async function createAndStoreThirdWebAirdropContract() {
-  const {airdropContractAddress, deployTxHash, cid, merkleTree} = await createThirdwebAirdropContract({
+export async function deployThirdWebAirdropContract() {
+  const {airdropContractAddress, deployTxHash, merkleTree} = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.PRIVATE_KEY as `0x${string}`,
     chainId: base.id,
     // 30 days in seconds from now
@@ -40,23 +32,22 @@ export async function createAndStoreThirdWebAirdropContract() {
     recipients,
   });
 
+  const {fileUrl} = await uploadFileToS3({
+    pathInS3: `airdrop-contracts/${airdropContractAddress}.json`,
+    content: Buffer.from(JSON.stringify(merkleTree)),
+    bucket: process.env.S3_UPLOAD_BUCKET,
+    contentType: 'application/json',
+  })
+
   await prisma.airdropClaim.create({
     data: {
       chainId: base.id,
       contractAddress: airdropContractAddress,
       deployTxHash,
-      ipfsCid: cid,
-      merkleTreeJson: {
-        rootHash: merkleTree.rootHash,
-        recipients: merkleTree.recipients,
-        layers: merkleTree.layers,
-        totalAirdropAmount: merkleTree.totalAirdropAmount.toString(),
-        totalRecipients: merkleTree.totalRecipients,
-        proofMaxQuantityForWallet: merkleTree.proofMaxQuantityForWallet.toString(),
-      },
+      merkleTreeUrl: fileUrl,
       season: getCurrentSeasonStart(),
     }
   })
 }
 
-createAndStoreThirdWebAirdropContract()
+deployThirdWebAirdropContract()

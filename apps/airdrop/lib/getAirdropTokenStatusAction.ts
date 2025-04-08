@@ -1,15 +1,22 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
-import type { ProvableClaim } from '@charmverse/core/protocol';
 import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
+import type { Recipient } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import type { Address } from 'viem';
 import { parseEther } from 'viem';
 import * as yup from 'yup';
 
-import type { FullMerkleTree } from '@/scripts/createAndStoreThirdWebAirdropContract';
+export type FullMerkleTree = {
+  rootHash: string;
+  recipients: Recipient[];
+  layers: string[];
+  totalAirdropAmount: string;
+  totalRecipients: number;
+  proofMaxQuantityForWallet: string;
+};
 
 // This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package
 export const getAirdropTokenStatusAction = actionClient
@@ -28,12 +35,12 @@ export const getAirdropTokenStatusAction = actionClient
       },
       select: {
         id: true,
-        merkleTreeJson: true,
-        contractAddress: true
+        contractAddress: true,
+        merkleTreeUrl: true
       }
     });
 
-    const fullMerkleTree = airdropClaim.merkleTreeJson as FullMerkleTree;
+    const fullMerkleTree = (await fetch(airdropClaim.merkleTreeUrl).then((res) => res.json())) as FullMerkleTree;
 
     const claimableAmount =
       fullMerkleTree.recipients.find((recipient) => recipient.address.toLowerCase() === address.toLowerCase())
