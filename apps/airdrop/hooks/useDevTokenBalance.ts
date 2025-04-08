@@ -1,14 +1,13 @@
+import { SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS } from '@packages/blockchain/constants';
 import { useEffect, useState } from 'react';
+import type { Address } from 'viem';
 import { erc20Abi } from 'viem';
 import { readContract } from 'viem/actions';
 import { base } from 'viem/chains';
-import { useAccount, usePublicClient, useSwitchChain } from 'wagmi';
+import { usePublicClient, useSwitchChain } from 'wagmi';
 
-export const TOKEN_ADDRESS = '0xfcdc6813a75df7eff31382cb956c1bee4788dd34';
-
-export function useTokenBalance() {
+export function useDevTokenBalance({ address }: { address?: Address }) {
   const publicClient = usePublicClient();
-  const { address } = useAccount();
   const [balance, setBalance] = useState('0');
   const { switchChain } = useSwitchChain();
 
@@ -22,7 +21,7 @@ export function useTokenBalance() {
     try {
       // Get token balance
       const tokenBalance = await readContract(publicClient, {
-        address: TOKEN_ADDRESS,
+        address: SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS,
         abi: erc20Abi,
         functionName: 'balanceOf',
         args: [address]

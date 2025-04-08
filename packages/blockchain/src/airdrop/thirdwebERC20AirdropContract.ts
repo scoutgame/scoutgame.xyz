@@ -170,7 +170,8 @@ export async function claimThirdwebERC20AirdropToken({
   receiver: string;
   quantity: bigint;
   proofs: Hex[];
-  proofMaxQuantityForWallet: bigint;
+  // Max amount receiver can claim by default its the total amount
+  proofMaxQuantityForWallet?: bigint;
   chainId: number;
   walletClient: WalletClient;
 }): Promise<string> {
@@ -181,7 +182,7 @@ export async function claimThirdwebERC20AirdropToken({
     address: airdropContractAddress,
     abi: THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI,
     functionName: 'claim',
-    args: [receiver, quantity, proofs, proofMaxQuantityForWallet],
+    args: [receiver, quantity, proofs, proofMaxQuantityForWallet || quantity],
     account: walletClient.account
   });
 

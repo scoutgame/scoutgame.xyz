@@ -1,6 +1,8 @@
 'use client';
 
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
+import { AIRDROP_SAFE_WALLET } from '@packages/blockchain/constants';
+import { scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -17,7 +19,6 @@ import { ShowClaimableTokensStep } from './components/ShowClaimableTokensStep';
 import { StartClaimStep } from './components/StartClaimStep';
 import { TokenClaimSuccessStep } from './components/TokenClaimSuccessStep';
 
-import { TOKEN_ADDRESS } from '@/hooks/useTokenBalance';
 import { getAirdropTokenStatusAction } from '@/lib/getAirdropTokenStatusAction';
 import { trackAirdropClaimPayoutAction } from '@/lib/trackAirdropClaimPayoutAction';
 
@@ -35,7 +36,8 @@ export function ClaimTokenScreen() {
   const { data: walletClient } = useWalletClient();
   const [airdropInfo, setAirdropInfo] = useState<{
     contractAddress: string;
-    claimableAmount: number;
+    claimableAmount: bigint;
+    claimableAmountInEther: number;
     proofs: `0x${string}`[];
     airdropId: string;
   } | null>(null);
@@ -68,12 +70,13 @@ export function ClaimTokenScreen() {
       return;
     }
 
-    const _claimableAmount = Number(BigInt(data.claimableAmount) / BigInt(10 ** 18));
+    const _claimableAmount = BigInt(data.claimableAmount);
     if (_claimableAmount > 0) {
       setStep('show_claimable_tokens');
       setAirdropInfo({
         contractAddress: data.contractAddress,
         claimableAmount: _claimableAmount,
+        claimableAmountInEther: Number(_claimableAmount / BigInt(10 ** 18)),
         proofs: data.proofs,
         airdropId: data.airdropId
       });
@@ -102,39 +105,36 @@ export function ClaimTokenScreen() {
     try {
       const donationAmount =
         donationPercentage === 'donate_half'
-          ? airdropInfo.claimableAmount / 2
+          ? airdropInfo.claimableAmount / BigInt(2)
           : donationPercentage === 'donate_full'
             ? airdropInfo.claimableAmount
-            : 0;
+            : BigInt(0);
 
       let donationTxHash: string | null = null;
 
       const claimTxHash = await claimThirdwebERC20AirdropToken({
         airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
         receiver: address as `0x${string}`,
-        quantity: BigInt(airdropInfo.claimableAmount * 10 ** 18),
+        quantity: airdropInfo.claimableAmount,
         proofs: airdropInfo.proofs,
-        proofMaxQuantityForWallet: BigInt(airdropInfo.claimableAmount * 10 ** 18),
         chainId: 8453,
         walletClient
       });
 
       if (donationAmount) {
-        // TODO: Replace with treasury safe wallet
-        const safeWallet = '0x78Ef4aFbE2BC6DF76B696c71fC1CeDCA4aD31561';
         donationTxHash = await walletClient.writeContract({
-          address: TOKEN_ADDRESS,
+          address: scoutTokenErc20ContractAddress(),
           abi: erc20Abi,
           functionName: 'transfer',
-          args: [safeWallet, BigInt(donationAmount * 10 ** 18)]
+          args: [AIRDROP_SAFE_WALLET, donationAmount]
         });
       }
 
       await trackAirdropClaimPayout({
         address: address as `0x${string}`,
-        claimAmount: BigInt(airdropInfo.claimableAmount * 10 ** 18).toString(),
+        claimAmount: airdropInfo.claimableAmount.toString(),
         airdropClaimId: airdropInfo.airdropId,
-        donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
+        donationAmount: donationAmount.toString(),
         claimTxHash,
         donationTxHash
       });
@@ -176,7 +176,7 @@ export function ClaimTokenScreen() {
     return (
       <ShowClaimableTokensStep
         onContinue={() => setStep('donation_selection')}
-        claimableAmount={airdropInfo.claimableAmount}
+        claimableAmount={airdropInfo.claimableAmountInEther}
       />
     );
   }
@@ -184,7 +184,7 @@ export function ClaimTokenScreen() {
   if (step === 'donation_selection' && airdropInfo) {
     return (
       <DonationSelectionStep
-        claimableAmount={airdropInfo.claimableAmount}
+        claimableAmount={airdropInfo.claimableAmountInEther}
         donationPercentage={donationPercentage}
         onDonationChange={setDonationPercentage}
         onSelect={() => setStep('donation_confirmation')}
@@ -196,7 +196,7 @@ export function ClaimTokenScreen() {
     return (
       <DonationConfirmationStep
         donationPercentage={donationPercentage}
-        claimableAmount={airdropInfo.claimableAmount}
+        claimableAmount={airdropInfo.claimableAmountInEther}
         onCancel={() => setStep('donation_selection')}
         isLoading={isClaimingTokens}
         onClaim={claimAirdropTokens}

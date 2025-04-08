@@ -1,10 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { createThirdwebAirdropContract, Recipient } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
 import { parseEther } from 'viem';
 import { base } from 'viem/chains';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
-
+import { THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS, THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS } from '@packages/blockchain/constants';
 const recipients: Recipient[]= [
   {
     address: '0x84a94307CD0eE34C8037DfeC056b53D7004f04a0',
@@ -21,13 +21,19 @@ const recipients: Recipient[]= [
 ]
 
 export async function createAndStoreThirdWebAirdropContract() {
+  const previousSeason = getPreviousSeason(getCurrentSeasonStart());
+
+  if (!previousSeason) {
+    throw new Error('No previous season found');
+  }
+
   const {airdropContractAddress, deployTxHash, merkleTree, blockNumber} = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.PRIVATE_KEY as `0x${string}`,
     chainId: base.id,
     // 30 days in seconds from now
     expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)),
-    implementationAddress: '0x0f2f02D8fE02E9C14A65A5A33073bD1ADD9aa53B',
-    proxyFactoryAddress: '0x25548ba29a0071f30e4bdcd98ea72f79341b07a1',
+    implementationAddress: THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
+    proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
     tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34',
     recipients,
   });
@@ -46,7 +52,7 @@ export async function createAndStoreThirdWebAirdropContract() {
       deployTxHash,
       merkleTreeUrl: fileUrl,
       blockNumber,
-      season: getCurrentSeasonStart(),
+      season: previousSeason,
     }
   })
 }

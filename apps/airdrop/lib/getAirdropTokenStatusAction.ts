@@ -3,7 +3,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
 import type { Recipient } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import type { Address } from 'viem';
 import { parseEther, createPublicClient, http } from 'viem';
@@ -29,9 +29,15 @@ export const getAirdropTokenStatusAction = actionClient
   .action(async ({ parsedInput }) => {
     const address = parsedInput.address;
 
+    const previousSeason = getPreviousSeason(getCurrentSeasonStart());
+
+    if (!previousSeason) {
+      throw new Error('No previous season found');
+    }
+
     const airdropClaim = await prisma.airdropClaim.findFirstOrThrow({
       where: {
-        season: getCurrentSeasonStart()
+        season: previousSeason
       },
       select: {
         id: true,
