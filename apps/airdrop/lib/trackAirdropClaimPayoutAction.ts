@@ -9,22 +9,24 @@ export const trackAirdropClaimPayoutAction = actionClient
   .schema(
     yup.object({
       address: yup.string().required(),
-      amount: yup.string().required(),
+      claimAmount: yup.string().required(),
       airdropClaimId: yup.string().required(),
       donationAmount: yup.string().required(),
-      txHash: yup.string().required()
+      claimTxHash: yup.string().required(),
+      donationTxHash: yup.string().nullable()
     })
   )
   .action(async ({ parsedInput }) => {
-    const { address, amount, airdropClaimId, donationAmount, txHash } = parsedInput;
+    const { address, claimAmount, airdropClaimId, donationAmount, claimTxHash, donationTxHash } = parsedInput;
 
     const payout = await prisma.airdropClaimPayout.create({
       data: {
         walletAddress: address.toLowerCase(),
         airdropClaimId,
-        amount,
+        claimAmount,
         donationAmount,
-        txHash
+        claimTxHash,
+        donationTxHash
       }
     });
 

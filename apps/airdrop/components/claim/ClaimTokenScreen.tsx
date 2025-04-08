@@ -109,32 +109,22 @@ export function ClaimTokenScreen() {
             ? airdropInfo.claimableAmount
             : 0;
 
-      const airdropAmount = airdropInfo.claimableAmount - donationAmount;
+      let donationTx: string | null = null;
 
-      if (airdropAmount) {
-        const preparedTx = await claimThirdwebERC20AirdropToken({
-          airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
-          receiver: address as `0x${string}`,
-          quantity: BigInt(airdropAmount * 10 ** 18),
-          proofs: airdropInfo.proofs,
-          proofMaxQuantityForWallet: BigInt(airdropInfo.proofMaxQuantityForWallet),
-          chainId: 8453,
-          walletClient
-        });
-
-        await trackAirdropClaimPayout({
-          address: address as `0x${string}`,
-          amount: BigInt(airdropAmount * 10 ** 18).toString(),
-          airdropClaimId: airdropInfo.airdropId,
-          donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
-          txHash: preparedTx
-        });
-      }
+      const claimTx = await claimThirdwebERC20AirdropToken({
+        airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
+        receiver: address as `0x${string}`,
+        quantity: BigInt(airdropInfo.claimableAmount * 10 ** 18),
+        proofs: airdropInfo.proofs,
+        proofMaxQuantityForWallet: BigInt(airdropInfo.proofMaxQuantityForWallet),
+        chainId: 8453,
+        walletClient
+      });
 
       if (donationAmount) {
         // Send donation to safe wallet
         const safeWallet = '0x78Ef4aFbE2BC6DF76B696c71fC1CeDCA4aD31561';
-        await walletClient.writeContract({
+        donationTx = await walletClient.writeContract({
           address: TOKEN_ADDRESS,
           abi: erc20Abi,
           functionName: 'transfer',
@@ -142,9 +132,25 @@ export function ClaimTokenScreen() {
         });
       }
 
+      if (claimTx) {
+        await trackAirdropClaimPayout({
+          address: address as `0x${string}`,
+          claimAmount: BigInt(airdropInfo.claimableAmount * 10 ** 18).toString(),
+          airdropClaimId: airdropInfo.airdropId,
+          donationAmount: BigInt(donationAmount * 10 ** 18).toString(),
+          claimTxHash: claimTx,
+          donationTxHash: donationTx
+        });
+      }
+
       setStep('token_claim_success');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error claiming tokens');
+      const message = error instanceof Error ? error.message : 'Error claiming tokens';
+      if (message.includes('denied')) {
+        toast.error('User rejected the transaction');
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsClaimingTokens(false);
     }
