@@ -1,7 +1,14 @@
 'use client';
 
+import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
+import { AIRDROP_SAFE_WALLET } from '@packages/blockchain/constants';
+import { scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
+import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { toast } from 'sonner';
+import { erc20Abi } from 'viem';
+import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
+import { base } from 'wagmi/chains';
 
 import { AlreadyClaimedStep } from './components/AlreadyClaimedStep';
 import { DonationConfirmationStep } from './components/DonationConfirmationStep';
@@ -12,7 +19,8 @@ import { ShowClaimableTokensStep } from './components/ShowClaimableTokensStep';
 import { StartClaimStep } from './components/StartClaimStep';
 import { TokenClaimSuccessStep } from './components/TokenClaimSuccessStep';
 
-const DEV_TOKEN_AMOUNT = 2500;
+import { getAirdropTokenStatusAction } from '@/lib/getAirdropTokenStatusAction';
+import { trackAirdropClaimPayoutAction } from '@/lib/trackAirdropClaimPayoutAction';
 
 export type ClaimTokenStep =
   | 'start_claim'
@@ -25,27 +33,135 @@ export type ClaimTokenStep =
 
 export function ClaimTokenScreen() {
   const [step, setStep] = useState<ClaimTokenStep>('start_claim');
-  const [alreadyClaimed, setAlreadyClaimed] = useState(false);
-  const [notQualified, setNotQualified] = useState(false);
-
+  const { data: walletClient } = useWalletClient();
+  const [airdropInfo, setAirdropInfo] = useState<{
+    contractAddress: string;
+    claimableAmount: bigint;
+    claimableAmountInEther: number;
+    proofs: `0x${string}`[];
+    airdropId: string;
+  } | null>(null);
   const [donationPercentage, setDonationPercentage] = useState<DonationPercentage>('donate_half');
+  const [isClaimingTokens, setIsClaimingTokens] = useState(false);
 
-  const { address = '' } = useAccount();
+  const { executeAsync: trackAirdropClaimPayout } = useAction(trackAirdropClaimPayoutAction, {
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Error tracking airdrop claim payout');
+    }
+  });
+
+  const { executeAsync, isExecuting: isGettingAirdropTokenStatus } = useAction(getAirdropTokenStatusAction);
+
+  const { address, chainId } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
+
+  // Move the check logic to a separate function
+  const checkAirdropStatus = async (walletAddress: string) => {
+    const result = await executeAsync({ address: walletAddress });
+    const data = result?.data;
+
+    if (!data) {
+      setStep('start_claim');
+      return;
+    }
+
+    if (data.isClaimed) {
+      setStep('already_claimed');
+      return;
+    }
+
+    const _claimableAmount = BigInt(data.claimableAmount);
+    if (_claimableAmount > 0) {
+      setStep('show_claimable_tokens');
+      setAirdropInfo({
+        contractAddress: data.contractAddress,
+        claimableAmount: _claimableAmount,
+        claimableAmountInEther: Number(_claimableAmount / BigInt(10 ** 18)),
+        proofs: data.proofs,
+        airdropId: data.airdropId
+      });
+    } else {
+      setStep('not_qualified');
+    }
+  };
+
+  const claimAirdropTokens = async () => {
+    if (!walletClient) {
+      return;
+    }
+
+    if (!airdropInfo) {
+      return;
+    }
+
+    if (chainId !== base.id) {
+      await switchChainAsync({
+        chainId: base.id
+      });
+    }
+
+    setIsClaimingTokens(true);
+
+    try {
+      const donationAmount =
+        donationPercentage === 'donate_half'
+          ? airdropInfo.claimableAmount / BigInt(2)
+          : donationPercentage === 'donate_full'
+            ? airdropInfo.claimableAmount
+            : BigInt(0);
+
+      let donationTxHash: string | null = null;
+
+      const claimTxHash = await claimThirdwebERC20AirdropToken({
+        airdropContractAddress: airdropInfo.contractAddress as `0x${string}`,
+        receiver: address as `0x${string}`,
+        quantity: airdropInfo.claimableAmount,
+        proofs: airdropInfo.proofs,
+        chainId: 8453,
+        walletClient
+      });
+
+      if (donationAmount) {
+        donationTxHash = await walletClient.writeContract({
+          address: scoutTokenErc20ContractAddress(),
+          abi: erc20Abi,
+          functionName: 'transfer',
+          args: [AIRDROP_SAFE_WALLET, donationAmount]
+        });
+      }
+
+      await trackAirdropClaimPayout({
+        address: address as `0x${string}`,
+        claimAmount: airdropInfo.claimableAmount.toString(),
+        airdropClaimId: airdropInfo.airdropId,
+        donationAmount: donationAmount.toString(),
+        claimTxHash,
+        donationTxHash
+      });
+
+      setStep('token_claim_success');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error claiming tokens';
+      if (message.includes('denied')) {
+        toast.error('User rejected the transaction');
+      } else {
+        toast.error(message);
+      }
+    } finally {
+      setIsClaimingTokens(false);
+    }
+  };
 
   useEffect(() => {
-    if (alreadyClaimed) {
-      setStep('already_claimed');
-    } else if (notQualified) {
-      setStep('not_qualified');
-    } else if (address) {
-      setStep('show_claimable_tokens');
+    if (address) {
+      checkAirdropStatus(address);
     } else {
       setStep('start_claim');
     }
-  }, [address, alreadyClaimed, notQualified]);
+  }, [address]); // Now we only depend on address
 
   if (step === 'start_claim') {
-    return <StartClaimStep />;
+    return <StartClaimStep isLoading={isGettingAirdropTokenStatus} />;
   }
 
   if (step === 'not_qualified') {
@@ -56,16 +172,19 @@ export function ClaimTokenScreen() {
     return <AlreadyClaimedStep />;
   }
 
-  if (step === 'show_claimable_tokens') {
+  if (step === 'show_claimable_tokens' && airdropInfo) {
     return (
-      <ShowClaimableTokensStep onContinue={() => setStep('donation_selection')} devTokenAmount={DEV_TOKEN_AMOUNT} />
+      <ShowClaimableTokensStep
+        onContinue={() => setStep('donation_selection')}
+        claimableAmount={airdropInfo.claimableAmountInEther}
+      />
     );
   }
 
-  if (step === 'donation_selection') {
+  if (step === 'donation_selection' && airdropInfo) {
     return (
       <DonationSelectionStep
-        devTokenAmount={DEV_TOKEN_AMOUNT}
+        claimableAmount={airdropInfo.claimableAmountInEther}
         donationPercentage={donationPercentage}
         onDonationChange={setDonationPercentage}
         onSelect={() => setStep('donation_confirmation')}
@@ -73,13 +192,14 @@ export function ClaimTokenScreen() {
     );
   }
 
-  if (step === 'donation_confirmation') {
+  if (step === 'donation_confirmation' && airdropInfo) {
     return (
       <DonationConfirmationStep
         donationPercentage={donationPercentage}
-        devTokenAmount={DEV_TOKEN_AMOUNT}
+        claimableAmount={airdropInfo.claimableAmountInEther}
         onCancel={() => setStep('donation_selection')}
-        onClaim={() => setStep('token_claim_success')}
+        isLoading={isClaimingTokens}
+        onClaim={claimAirdropTokens}
       />
     );
   }

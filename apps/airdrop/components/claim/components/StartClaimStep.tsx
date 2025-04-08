@@ -5,7 +5,7 @@ import { WalletLogin } from 'components/common/WalletLogin';
 
 import { PageLayout } from './PageLayout';
 
-export function StartClaimStep() {
+export function StartClaimStep({ isLoading }: { isLoading: boolean }) {
   const isDesktop = useMdScreen();
 
   return (
@@ -46,7 +46,12 @@ export function StartClaimStep() {
             the start of each season for the next 10 seasons.
           </Typography>
         )}
-        <WalletLogin text='Start' variant='contained' sx={{ width: 250, py: 1, borderRadius: 2 }} />
+        <WalletLogin
+          isLoading={isLoading}
+          text='Start'
+          variant='contained'
+          sx={{ width: 250, py: 1, borderRadius: 2 }}
+        />
       </Stack>
     </PageLayout>
   );

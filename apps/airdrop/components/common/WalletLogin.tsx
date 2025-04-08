@@ -3,7 +3,6 @@
 import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
 import type { ButtonProps, SxProps } from '@mui/material';
-import { Box } from '@mui/material';
 import { RainbowKitProvider, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Suspense, useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
@@ -16,16 +15,18 @@ import '@rainbow-me/rainbowkit/styles.css';
 export function WalletLogin({
   text = 'Sign in',
   variant = 'gradient',
-  sx
+  sx,
+  isLoading
 }: {
   text?: string;
   variant?: ButtonProps['variant'];
   sx?: SxProps;
+  isLoading?: boolean;
 }) {
   return (
     <RainbowKitProvider>
       <Suspense>
-        <WalletLoginButton text={text} variant={variant} sx={sx} />
+        <WalletLoginButton text={text} variant={variant} sx={sx} isLoading={isLoading} />
       </Suspense>
     </RainbowKitProvider>
   );
@@ -34,11 +35,13 @@ export function WalletLogin({
 function WalletLoginButton({
   text = 'Sign in',
   variant = 'gradient',
-  sx
+  sx,
+  isLoading
 }: {
   text?: string;
   variant?: ButtonProps['variant'];
   sx?: SxProps;
+  isLoading?: boolean;
 }) {
   const [isConnecting, setIsConnecting] = useState(false);
   const { openConnectModal, connectModalOpen } = useConnectModal();
@@ -89,10 +92,8 @@ function WalletLoginButton({
     }
   }, [connectModalOpen, address, isConnecting]);
 
-  const isLoading = isConnecting;
-
   return (
-    <LoadingButton loading={isLoading} size='large' variant={variant} onClick={onClick} sx={sx}>
+    <LoadingButton loading={isConnecting || isLoading} size='large' variant={variant} onClick={onClick} sx={sx}>
       {text}
     </LoadingButton>
   );
