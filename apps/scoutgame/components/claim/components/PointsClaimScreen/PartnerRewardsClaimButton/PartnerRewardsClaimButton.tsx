@@ -10,7 +10,7 @@ import { formatEther, type Address } from 'viem';
 
 import { revalidateClaimPointsAction } from 'lib/actions/revalidateClaimPointsAction';
 
-import { useClaimPartnerReward } from './useClaimPartnerReward';
+import { useClaimSablierAirdrop, useClaimThirdwebAirdrop } from './useClaimPartnerReward';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
@@ -35,7 +35,7 @@ export function PartnerRewardsClaimButton({
   );
 }
 
-function PartnerRewardsClaimButtonContent({
+function SablierPartnerRewardsClaimButton({
   partnerReward,
   showPartnerRewardModal,
   setShowPartnerRewardModal,
@@ -47,7 +47,7 @@ function PartnerRewardsClaimButtonContent({
   chain: string;
 }) {
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
-  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee, feeAmount } = useClaimPartnerReward({
+  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee, feeAmount } = useClaimSablierAirdrop({
     payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
     rewardChainId: partnerReward.chainId,
@@ -136,5 +136,129 @@ function PartnerRewardsClaimButtonContent({
         </Stack>
       </Dialog>
     </>
+  );
+}
+
+function ThirdwebPartnerRewardsClaimButton({
+  partnerReward,
+  showPartnerRewardModal,
+  setShowPartnerRewardModal,
+  chain
+}: {
+  partnerReward: UnclaimedPartnerReward;
+  showPartnerRewardModal: boolean;
+  setShowPartnerRewardModal: (show: boolean) => void;
+  chain: string;
+}) {
+  const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
+  const { claimPartnerReward, isClaiming, isConnected } = useClaimThirdwebAirdrop({
+    payoutContractId: partnerReward.payoutContractId,
+    contractAddress: partnerReward.contractAddress as Address,
+    rewardChainId: partnerReward.chainId,
+    recipientAddress: partnerReward.recipientAddress as Address,
+    onSuccess: () => {
+      setShowPartnerRewardModal(false);
+      revalidateClaimPoints();
+    }
+  });
+
+  return (
+    <>
+      <LoadingButton
+        variant='contained'
+        color='primary'
+        sx={{ width: 'fit-content' }}
+        loading={isClaiming}
+        disabled={isClaiming}
+        onClick={() => setShowPartnerRewardModal(true)}
+      >
+        Claim
+      </LoadingButton>
+      <Dialog
+        open={showPartnerRewardModal}
+        onClose={() => setShowPartnerRewardModal(false)}
+        PaperProps={{
+          sx: {
+            width: '100%'
+          }
+        }}
+      >
+        <Stack
+          sx={{
+            p: {
+              xs: 1.5,
+              md: 2.5
+            },
+            gap: {
+              xs: 1,
+              md: 1.5
+            },
+            width: '100%',
+            height: 'fit-content',
+            maxWidth: 600,
+            position: 'relative'
+          }}
+        >
+          <Typography variant='h6'>Claim Your Partner Rewards!</Typography>
+          <Typography
+            variant='body1'
+            sx={{
+              wordBreak: 'break-all',
+              overflowWrap: 'break-word'
+            }}
+          >
+            Send {partnerReward.amount} {partnerReward.tokenSymbol} to {partnerReward.recipientAddress}
+          </Typography>
+
+          <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
+            <span>
+              <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claimPartnerReward}>
+                {isConnected ? 'Claim' : 'Connect Wallet'}
+              </LoadingButton>
+            </span>
+            <Button
+              variant='outlined'
+              disabled={isClaiming}
+              color='error'
+              onClick={() => setShowPartnerRewardModal(false)}
+            >
+              Cancel
+            </Button>
+          </Stack>
+        </Stack>
+      </Dialog>
+    </>
+  );
+}
+
+function PartnerRewardsClaimButtonContent({
+  partnerReward,
+  showPartnerRewardModal,
+  setShowPartnerRewardModal,
+  chain
+}: {
+  partnerReward: UnclaimedPartnerReward;
+  showPartnerRewardModal: boolean;
+  setShowPartnerRewardModal: (show: boolean) => void;
+  chain: string;
+}) {
+  if (partnerReward.provider === 'sablier') {
+    return (
+      <SablierPartnerRewardsClaimButton
+        partnerReward={partnerReward}
+        showPartnerRewardModal={showPartnerRewardModal}
+        setShowPartnerRewardModal={setShowPartnerRewardModal}
+        chain={chain}
+      />
+    );
+  }
+
+  return (
+    <ThirdwebPartnerRewardsClaimButton
+      partnerReward={partnerReward}
+      showPartnerRewardModal={showPartnerRewardModal}
+      setShowPartnerRewardModal={setShowPartnerRewardModal}
+      chain={chain}
+    />
   );
 }

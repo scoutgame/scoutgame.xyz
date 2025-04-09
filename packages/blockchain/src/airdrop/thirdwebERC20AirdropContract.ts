@@ -1,7 +1,9 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address, Hex, WalletClient } from 'viem';
 
-export type FullMerkleTree = {
+import type { Recipient } from './createThirdwebAirdropContract';
+
+export type ThirdwebFullMerkleTree = {
   rootHash: string;
   recipients: Recipient[];
   layers: string[];
@@ -200,7 +202,7 @@ export async function claimThirdwebERC20AirdropToken({
   proofMaxQuantityForWallet?: bigint;
   chainId: number;
   walletClient: WalletClient;
-}): Promise<string> {
+}): Promise<Address> {
   const publicClient = getPublicClient(chainId);
 
   // Simulate the transaction first

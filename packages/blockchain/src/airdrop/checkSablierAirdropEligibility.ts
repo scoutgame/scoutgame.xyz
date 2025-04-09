@@ -7,7 +7,7 @@ import sablierMerkleInstantAbi from './SablierMerkleInstant.json';
 
 const sablierAirdropAbi = sablierMerkleInstantAbi.abi;
 
-export type FullMerkleTree = {
+export type SablierMerkleTree = {
   root: string;
   total_amount: string;
   merkle_tree: {
@@ -35,7 +35,7 @@ export async function checkSablierAirdropEligibility({
   contractAddress: Address;
   chainId: number;
   recipientAddress: Address;
-  merkleTreeJson: FullMerkleTree;
+  merkleTreeJson: SablierMerkleTree;
 }): Promise<{
   amount: string;
   index: number;
