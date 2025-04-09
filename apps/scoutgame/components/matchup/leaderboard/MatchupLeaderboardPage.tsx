@@ -36,6 +36,12 @@ export function MatchupLeaderboardPage({
             sx={{
               '.MuiTableHead-root .MuiTableCell-root': {
                 py: 0.5
+              },
+              '.MuiTableCell-root': {
+                px: {
+                  xs: 0.5,
+                  md: 1
+                }
               }
             }}
           >

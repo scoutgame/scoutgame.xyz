@@ -15,6 +15,8 @@ import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Link from 'next/link';
 
+import { TableCellText } from 'components/common/TableCellText';
+
 export async function MatchupLeaderboardTable({ week }: { week: string }) {
   const leaderboardRows = await getLeaderboard(week);
 
@@ -32,13 +34,15 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
         leaderboardRows.map((entry, index) => (
           <TableRow key={entry.scout.id}>
             <TableCell align='center'>
-              <Typography fontSize={18}>{entry.rank}</Typography>
+              <Typography fontSize={{ xs: 14, md: 18 }}>{entry.rank}</Typography>
             </TableCell>
             <TableCell align='center'>
               <Link href={`/u/${entry.scout.path}`} target='_blank'>
-                <Box display='flex' alignItems='center' gap={1}>
+                <Box display='flex' alignItems='center' gap={1} maxWidth={{ xs: '40px', md: '160px' }}>
                   <Avatar src={entry.scout.avatar} name={entry.scout.displayName} sx={{ display: 'inline-flex' }} />
-                  <Typography variant='body2'>{entry.scout.displayName}</Typography>
+                  <TableCellText overflow='hidden' textOverflow='ellipsis' noWrap>
+                    {entry.scout.displayName}
+                  </TableCellText>
                 </Box>
               </Link>
             </TableCell>
