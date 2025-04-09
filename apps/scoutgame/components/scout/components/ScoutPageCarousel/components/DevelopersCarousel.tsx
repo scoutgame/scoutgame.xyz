@@ -1,3 +1,5 @@
+'use client';
+
 import { Stack, useTheme } from '@mui/material';
 import type { StarterCardDeveloper } from '@packages/scoutgame/builders/getStarterCardDevelopers';
 import { Carousel } from '@packages/scoutgame-ui/components/common/Carousel/Carousel';
@@ -7,15 +9,13 @@ import { BuilderCard } from 'components/common/Card/BuilderCard/BuilderCard';
 
 export function DevelopersCarousel({
   developers,
-  slidesPerView = 3,
   infoCard
 }: {
   developers: StarterCardDeveloper[];
   infoCard?: ReactNode;
-  slidesPerView?: number;
 }) {
-  // const theme = useTheme();
-  // const breakpointsValues = theme.breakpoints.values;
+  const theme = useTheme();
+  const breakpointsValues = theme.breakpoints.values;
 
   // const cardsWithPromos = [
   //   ...developers.slice(0, 2),
@@ -45,7 +45,7 @@ export function DevelopersCarousel({
   return (
     <Stack gap={{ xs: 2 }} flexDirection={{ xs: 'column-reverse' }}>
       <Carousel
-        slidesPerView={slidesPerView}
+        slidesPerView={3}
         // navigation={{
         //   nextEl: '.swiper-starter-pack-button-next',
         //   prevEl: '.swiper-starter-pack-button-prev'
@@ -63,14 +63,14 @@ export function DevelopersCarousel({
           },
           boxProps: { width: { xs: '100%', md: '90%', margin: '0 auto', px: 2 } }
         }}
-        // breakpoints={{
-        //   [breakpointsValues.xs]: {
-        //     slidesPerView: 2.2
-        //   },
-        //   [breakpointsValues.md]: {
-        //     slidesPerView: 3
-        //   }
-        // }}
+        breakpoints={{
+          [breakpointsValues.xs]: {
+            slidesPerView: 2.2
+          },
+          [breakpointsValues.md]: {
+            slidesPerView: 3
+          }
+        }}
       >
         {cards}
       </Carousel>
