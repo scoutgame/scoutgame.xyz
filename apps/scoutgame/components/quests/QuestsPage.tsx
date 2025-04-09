@@ -42,7 +42,6 @@ export function QuestsPage({
       <Grid
         size={{ xs: 0, md: 4 }}
         data-test='quest-sidebar'
-        bgcolor='black.main'
         sx={{
           height: 'calc(100vh - 60px)',
           overflowY: 'auto',
