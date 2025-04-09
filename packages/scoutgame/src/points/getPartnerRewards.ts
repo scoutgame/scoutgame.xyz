@@ -1,6 +1,7 @@
+import type { PartnerRewardPayoutContractProvider } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getCurrentSeasonStart, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getDateFromISOWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 import { formatUnits } from 'viem';
 
 type PartnerRewardBase = {
@@ -19,7 +20,7 @@ export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
 
 export type OptimismReferralChampionPartnerReward = PartnerRewardBase & {
   type: 'optimism_referral_champion';
-  date: Date;
+  date: Date | null;
 };
 
 export type OctantBaseContributionPartnerReward = PartnerRewardBase & {
@@ -44,6 +45,7 @@ export type UnclaimedPartnerReward = {
   recipientAddress: string;
   payoutContractId: string;
   week: number;
+  provider: PartnerRewardPayoutContractProvider;
 };
 
 export async function getUnclaimedPartnerRewards({ userId }: { userId: string }): Promise<UnclaimedPartnerReward[]> {
@@ -74,7 +76,8 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
           ipfsCid: true,
           tokenSymbol: true,
           week: true,
-          season: true
+          season: true,
+          provider: true
         }
       }
     }
@@ -92,7 +95,8 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     recipientAddress: walletAddress,
     payoutContractId: payoutContract.id,
     week: payoutContract.week,
-    season: payoutContract.season
+    season: payoutContract.season,
+    provider: payoutContract.provider
   }));
 
   const unclaimedPartnerRewardsByContractAddress: Record<string, UnclaimedPartnerReward> = {};
@@ -170,10 +174,11 @@ export async function getPartnerRewards({
         position: (payout.meta as { position: number }).position
       });
     } else if (payout.payoutContract.partner === 'optimism_referral_champion') {
+      const week = (payout.meta as unknown as { week: string }).week;
       partnerRewards.push({
         ...partnerReward,
         type: 'optimism_referral_champion' as const,
-        date: (payout.meta as unknown as { date: Date }).date
+        date: week ? getDateFromISOWeek(week).toJSDate() : null
       });
     } else if (payout.payoutContract.partner === 'octant_base_contribution') {
       partnerRewards.push({
