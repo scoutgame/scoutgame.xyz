@@ -7,7 +7,7 @@ import {
 } from '@packages/blockchain/constants';
 import { getCurrentSeason } from '@packages/dates/utils';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
-import { parseEther, parseUnits, type Address } from 'viem';
+import { parseUnits, type Address } from 'viem';
 import { base } from 'viem/chains';
 
 const usdcTokenDecimals = 6;
@@ -42,12 +42,12 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
     expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),
     implementationAddress: THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
     proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
-    tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34', // baseUsdcTokenAddress,
+    tokenAddress: baseUsdcTokenAddress,
     recipients: recipients.map((recipient) => ({
       address: recipient.address,
-      amount: parseEther(OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT).toString()
+      amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT
     })),
-    tokenDecimals: 18,
+    tokenDecimals: usdcTokenDecimals,
     nullAddressAmount: 0.001
   });
 
@@ -64,9 +64,9 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
       contractAddress: airdropContractAddress,
       season: currentSeason.start,
       week,
-      tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34',
-      tokenSymbol: 'DEV',
-      tokenDecimals: 18,
+      tokenAddress: baseUsdcTokenAddress,
+      tokenSymbol: 'USDC',
+      tokenDecimals: usdcTokenDecimals,
       partner: 'octant_base_contribution',
       deployTxHash,
       // TODO: Add ipfs cid
