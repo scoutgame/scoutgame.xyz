@@ -5,6 +5,7 @@ import { parseEther } from 'viem';
 import { base } from 'viem/chains';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 import { THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS, THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS } from '@packages/blockchain/constants';
+
 const recipients: Recipient[]= [
   {
     address: '0x84a94307CD0eE34C8037DfeC056b53D7004f04a0',
@@ -30,11 +31,12 @@ export async function createAndStoreThirdWebAirdropContract() {
   const {airdropContractAddress, deployTxHash, merkleTree, blockNumber} = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.PRIVATE_KEY as `0x${string}`,
     chainId: base.id,
-    // 30 days in seconds from now
-    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)),
+    // 1 year in seconds from now
+    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365)),
     implementationAddress: THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
     proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
     tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34',
+    tokenDecimals: 18,
     recipients,
   });
 

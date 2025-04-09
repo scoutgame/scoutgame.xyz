@@ -1,14 +1,18 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
+import {
+  THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
+  THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS
+} from '@packages/blockchain/constants';
+import { getCurrentSeason } from '@packages/dates/utils';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
-import { parseUnits } from 'viem';
-import { optimism } from 'viem/chains';
-
-import { createSablierAirdropContract } from './createSablierAirdropContract';
+import { parseEther, parseUnits } from 'viem';
+import { base } from 'viem/chains';
 
 const optimismTokenDecimals = 18;
 const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
+
 export async function deployReferralChampionRewardsContract({ week }: { week: string }) {
   const currentSeason = getCurrentSeason(week);
 
@@ -22,36 +26,42 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     return;
   }
 
-  const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
+  const { airdropContractAddress, deployTxHash, blockNumber, merkleTree } = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
-    campaignName: `Scoutgame Referral Champion ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
-    chainId: optimism.id,
-    tokenAddress: optimismTokenAddress,
-    tokenDecimals: optimismTokenDecimals,
-    recipients: recipients.map(({ address, opAmount }) => ({ address: address as `0x${string}`, amount: opAmount })),
+    chainId: base.id,
+    // 30 days in seconds from now
+    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),
+    implementationAddress: THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
+    proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
+    tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34', // baseUsdcTokenAddress,
+    recipients: recipients.map((recipient) => ({
+      address: recipient.address as `0x${string}`,
+      amount: parseEther(recipient.opAmount.toString()).toString()
+    })),
+    tokenDecimals: 18,
     nullAddressAmount: 0.001
   });
 
   log.info('Referral champion rewards contract deployed', {
-    hash,
-    contractAddress,
+    hash: deployTxHash,
+    contractAddress: airdropContractAddress,
     week,
     season: currentSeason.start
   });
 
   await prisma.partnerRewardPayoutContract.create({
     data: {
-      chainId: optimism.id,
-      contractAddress,
+      chainId: base.id,
+      contractAddress: airdropContractAddress,
       season: currentSeason.start,
       week,
-      ipfsCid: cid,
+      ipfsCid: '',
       merkleTreeJson: merkleTree,
       tokenAddress: optimismTokenAddress,
       tokenDecimals: optimismTokenDecimals,
       tokenSymbol: 'OP',
       partner: 'optimism_referral_champion',
-      deployTxHash: hash,
+      deployTxHash,
       rewardPayouts: {
         createMany: {
           data: recipients.map(({ address, opAmount }) => ({
@@ -65,9 +75,4 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
       }
     }
   });
-
-  return {
-    hash,
-    contractAddress
-  };
 }

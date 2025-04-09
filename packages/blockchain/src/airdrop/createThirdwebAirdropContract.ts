@@ -1,6 +1,5 @@
 import { generateMerkleTree } from '@charmverse/core/protocol';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
-import pinataSdk from '@pinata/sdk';
 import { erc20Abi, type Address } from 'viem';
 
 import { getChainById } from '../chains';
@@ -19,22 +18,20 @@ export async function createThirdwebAirdropContract({
   tokenAddress,
   proxyFactoryAddress,
   implementationAddress,
-  expirationTimestamp
+  expirationTimestamp,
+  nullAddressAmount,
+  tokenDecimals
 }: {
   recipients: Recipient[];
   chainId: number;
   adminPrivateKey: `0x${string}`;
   tokenAddress: Address;
   proxyFactoryAddress: Address;
+  tokenDecimals: number;
   implementationAddress: Address;
   expirationTimestamp: bigint;
+  nullAddressAmount?: number;
 }) {
-  // eslint-disable-next-line new-cap
-  const Pinata = new pinataSdk({
-    pinataApiKey: process.env.PINATA_API_KEY,
-    pinataSecretApiKey: process.env.PINATA_API_SECRET
-  });
-
   const walletClient = getWalletClient({
     chainId,
     privateKey: adminPrivateKey
@@ -42,23 +39,47 @@ export async function createThirdwebAirdropContract({
 
   if (!walletClient.account) throw new Error('Wallet not found');
 
-  const merkleTree = generateMerkleTree(recipients);
+  const normalizedRecipientsRecord: Record<`0x${string}`, number> = {};
 
-  const totalAirdropAmount = BigInt(recipients.reduce((acc, recipient) => acc + BigInt(recipient.amount), BigInt(0)));
-  const totalRecipients = recipients.length;
+  for (const recipient of recipients) {
+    if (!normalizedRecipientsRecord[recipient.address]) {
+      normalizedRecipientsRecord[recipient.address] = 0;
+    }
+    const amount = BigInt(recipient.amount) / BigInt(10 ** tokenDecimals);
+    normalizedRecipientsRecord[recipient.address] += Number(amount);
+  }
+
+  const normalizedRecipients: Recipient[] = Object.entries(normalizedRecipientsRecord).map(([address, amount]) => ({
+    address: address as `0x${string}`,
+    amount: BigInt(amount * 10 ** tokenDecimals).toString()
+  }));
+
+  if (normalizedRecipients.length === 1) {
+    if (!nullAddressAmount) {
+      throw new Error('There must be atleast 2 recipients, otherwise the merkle tree will not be valid');
+    }
+    // Add the null address to the recipients to ensure there is atleast 2 recipients, otherwise the merkle tree will not be valid
+    normalizedRecipients.push({
+      address: '0x0000000000000000000000000000000000000000',
+      amount: BigInt(nullAddressAmount * 10 ** tokenDecimals).toString()
+    });
+  }
+
+  const merkleTree = generateMerkleTree(normalizedRecipients);
+
+  const totalAirdropAmount = BigInt(
+    normalizedRecipients.reduce((acc, recipient) => acc + BigInt(recipient.amount), BigInt(0))
+  );
+  const totalRecipients = normalizedRecipients.length;
   const rootHash = `0x${merkleTree.rootHash}`;
 
   const fullMerkleTree = {
     rootHash,
-    recipients,
+    recipients: normalizedRecipients,
     layers: merkleTree.tree.getHexLayers(),
     totalAirdropAmount: totalAirdropAmount.toString(),
     totalRecipients
   };
-
-  const response = await Pinata.pinJSONToIPFS(fullMerkleTree);
-
-  const cid = response.IpfsHash;
 
   const { proxyAddress, deployTxHash, blockNumber } = await deployThirdwebAirdropContract({
     chainId,
@@ -89,5 +110,5 @@ export async function createThirdwebAirdropContract({
     account: walletClient.account
   });
 
-  return { airdropContractAddress: proxyAddress, deployTxHash, cid, merkleTree: fullMerkleTree, blockNumber };
+  return { airdropContractAddress: proxyAddress, deployTxHash, merkleTree: fullMerkleTree, blockNumber };
 }
