@@ -18,7 +18,9 @@ export class Utilities {
     return this.page.request.get(`/api/login-dev?userId=${userId}`);
   }
 
-  async initMockWallet(httpTransport?: Record<number, Transport>) {
+  async initMockWallet(
+    httpTransport?: Record<number, Transport>
+  ): Promise<{ account: ReturnType<typeof privateKeyToAccount> }> {
     const privateKey = `0x${crypto.randomBytes(32).toString('hex')}`;
     const addressKey = isHex(privateKey) ? privateKey : null;
 
