@@ -2,21 +2,13 @@
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { generateMerkleTree, getMerkleProofs } from '@charmverse/core/protocol';
-import type { Recipient } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
+import type { FullMerkleTree } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import type { Address } from 'viem';
 import { parseEther, createPublicClient, http } from 'viem';
 import { base } from 'viem/chains';
 import * as yup from 'yup';
-
-export type FullMerkleTree = {
-  rootHash: string;
-  recipients: Recipient[];
-  layers: string[];
-  totalAirdropAmount: string;
-  totalRecipients: number;
-};
 
 // This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package
 export const getAirdropTokenStatusAction = actionClient

@@ -26,7 +26,7 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     return;
   }
 
-  const { airdropContractAddress, deployTxHash, blockNumber, merkleTree } = await createThirdwebAirdropContract({
+  const { airdropContractAddress, deployTxHash, merkleTree } = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
     chainId: base.id,
     // 30 days in seconds from now
@@ -57,10 +57,10 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
       week,
       ipfsCid: '',
       merkleTreeJson: merkleTree,
-      tokenAddress: optimismTokenAddress,
-      tokenDecimals: optimismTokenDecimals,
-      tokenSymbol: 'OP',
-      partner: 'optimism_referral_champion',
+      tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34',
+      tokenDecimals: 18,
+      tokenSymbol: 'DEV',
+      partner: 'base_referral_champion',
       deployTxHash,
       rewardPayouts: {
         createMany: {

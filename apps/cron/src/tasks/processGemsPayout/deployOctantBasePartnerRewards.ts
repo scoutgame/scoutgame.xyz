@@ -35,7 +35,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
     return;
   }
 
-  const { airdropContractAddress, deployTxHash, blockNumber, merkleTree } = await createThirdwebAirdropContract({
+  const { airdropContractAddress, deployTxHash, merkleTree } = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY as Address,
     chainId: base.id,
     // 30 days in seconds from now
@@ -64,9 +64,9 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
       contractAddress: airdropContractAddress,
       season: currentSeason.start,
       week,
-      tokenAddress: baseUsdcTokenAddress,
-      tokenSymbol: 'USDC',
-      tokenDecimals: usdcTokenDecimals,
+      tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34',
+      tokenSymbol: 'DEV',
+      tokenDecimals: 18,
       partner: 'octant_base_contribution',
       deployTxHash,
       // TODO: Add ipfs cid

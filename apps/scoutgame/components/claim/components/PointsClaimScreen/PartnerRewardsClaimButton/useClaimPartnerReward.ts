@@ -1,28 +1,24 @@
 import { log } from '@charmverse/core/log';
+import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { checkPartnerRewardEligibilityAction } from '@packages/scoutgame/partnerReward/checkPartnerRewardEligibilityAction';
 import { updatePartnerRewardPayoutAction } from '@packages/scoutgame/partnerReward/updatePartnerRewardPayoutAction';
 import { useWalletSanctionCheck } from '@packages/scoutgame-ui/hooks/api/wallets';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';
-import { useMemo, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import useSWR from 'swr';
 import type { Address, Hash, WalletClient } from 'viem';
-import { parseEther } from 'viem';
-import { useAccount, useSwitchChain, useWalletClient, useBalance } from 'wagmi';
+import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 
-import sablierAirdropAbi from './SablierMerkleInstant.json';
-
-export async function claimSablierAirdrop({
+export async function claimThirdwebERC20Airdrop({
   chainId,
   contractAddress,
   recipientAddress,
   walletClient,
   index,
   proof,
-  amount,
-  fee
+  amount
 }: {
   chainId: number;
   contractAddress: Address;
@@ -31,46 +27,22 @@ export async function claimSablierAirdrop({
   proof: `0x${string}`[];
   amount: string;
   walletClient: WalletClient;
-  fee: bigint;
 }): Promise<{ hash: Hash }> {
   const publicClient = getPublicClient(chainId);
 
   try {
-    const { request } = await publicClient.simulateContract({
-      address: contractAddress,
-      abi: sablierAirdropAbi.abi,
-      functionName: 'claim',
-      args: [BigInt(index), recipientAddress, BigInt(amount), proof],
-      account: recipientAddress,
-      value: fee
+    const hash = await claimThirdwebERC20AirdropToken({
+      airdropContractAddress: contractAddress,
+      claimer: recipientAddress,
+      quantity: BigInt(amount),
+      proofs: proof,
+      chainId,
+      walletClient
     });
-
-    const hash = await walletClient.writeContract(request);
-    await publicClient.waitForTransactionReceipt({ hash });
 
     return { hash };
   } catch (error) {
     log.error('Error claiming partner reward', { error, contractAddress, chainId, recipientAddress });
-    if (error instanceof Error) {
-      if (error.message.includes('SablierMerkleBase_StreamClaimed')) {
-        throw new Error('This airdrop has already been claimed');
-      }
-      if (error.message.includes('SablierMerkleBase_CampaignExpired')) {
-        throw new Error('This airdrop campaign has expired');
-      }
-      if (error.message.includes('SablierMerkleBase_InvalidProof')) {
-        throw new Error('Invalid Merkle proof for this claim');
-      }
-      if (error.message.includes('SablierMerkleBase_InsufficientFeePayment')) {
-        throw new Error('Not enough ETH sent to cover the claim fee');
-      }
-      if (error.message.includes('SablierMerkleBase_FeeTransferFail')) {
-        throw new Error('Failed to transfer claim fee');
-      }
-      if (error.message.includes('User rejected')) {
-        throw new Error('Transaction rejected by user');
-      }
-    }
     throw new Error('Failed to claim partner reward');
   }
 }
@@ -96,34 +68,6 @@ export function useClaimPartnerReward({
   const { switchChainAsync } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
   const { mutate: checkWalletSanctionStatus } = useWalletSanctionCheck();
-
-  const { data: balance } = useBalance({
-    address: recipientAddress,
-    chainId: rewardChainId,
-    unit: 'ether',
-    token: undefined
-  });
-
-  const { data: ethPrice, error: ethPriceError } = useSWR('eth-price', async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-    const data = await response.json();
-    return data.ethereum.usd as number;
-  });
-
-  // feeAmount is one USD in wei units
-  const feeAmount = useMemo(() => {
-    if (!ethPrice) {
-      return null;
-    }
-    return parseEther((1 / ethPrice).toFixed(18));
-  }, [ethPrice]);
-
-  useEffect(() => {
-    if (ethPriceError) {
-      log.error('Failed to fetch ETH price', { error: ethPriceError });
-      toast.error('Something went wrong, please try again later');
-    }
-  }, [ethPriceError]);
 
   const claimPartnerReward = async () => {
     if (!isConnected) {
@@ -179,15 +123,14 @@ export function useClaimPartnerReward({
     const { index, proof, amount } = eligibilityResult.data;
 
     try {
-      const { hash } = await claimSablierAirdrop({
+      const { hash } = await claimThirdwebERC20Airdrop({
         chainId: rewardChainId,
         contractAddress,
         recipientAddress,
         walletClient,
         index,
         proof: proof as `0x${string}`[],
-        amount,
-        fee: feeAmount!
+        amount
       });
 
       await updatePartnerRewardPayout({ payoutContractId, txHash: hash });
@@ -198,8 +141,6 @@ export function useClaimPartnerReward({
     } catch (error) {
       log.error('Failed to claim partner reward', {
         error,
-        feeAmount,
-        ethPrice,
         amount,
         rewardChainId,
         contractAddress,
@@ -213,8 +154,6 @@ export function useClaimPartnerReward({
   return {
     isClaiming,
     claimPartnerReward,
-    isConnected,
-    hasEnoughFee: balance?.value && feeAmount ? balance.value >= feeAmount : false,
-    feeAmount
+    isConnected
   };
 }
