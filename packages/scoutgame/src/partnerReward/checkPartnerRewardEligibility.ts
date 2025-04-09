@@ -38,6 +38,7 @@ export async function checkPartnerRewardEligibility({
           ipfsCid: true,
           merkleTreeJson: true,
           chainId: true,
+          blockNumber: true,
           contractAddress: true
         }
       }

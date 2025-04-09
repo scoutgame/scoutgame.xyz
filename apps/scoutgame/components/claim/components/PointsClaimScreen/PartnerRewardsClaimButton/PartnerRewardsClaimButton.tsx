@@ -47,7 +47,7 @@ function SablierPartnerRewardsClaimButton({
   chain: string;
 }) {
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
-  const { claimPartnerReward, isClaiming, isConnected, hasEnoughFee, feeAmount } = useClaimSablierAirdrop({
+  const { claim, isClaiming, isConnected, hasEnoughFee, feeAmount } = useClaimSablierAirdrop({
     payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
     rewardChainId: partnerReward.chainId,
@@ -117,7 +117,7 @@ function SablierPartnerRewardsClaimButton({
                   variant='contained'
                   color='primary'
                   loading={isClaiming}
-                  onClick={claimPartnerReward}
+                  onClick={claim}
                   disabled={!hasEnoughFee}
                 >
                   {isConnected ? 'Claim' : 'Connect Wallet'}
@@ -151,7 +151,7 @@ function ThirdwebPartnerRewardsClaimButton({
   chain: string;
 }) {
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
-  const { claimPartnerReward, isClaiming, isConnected } = useClaimThirdwebAirdrop({
+  const { claim, isClaiming, isConnected } = useClaimThirdwebAirdrop({
     payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
     rewardChainId: partnerReward.chainId,
@@ -212,7 +212,7 @@ function ThirdwebPartnerRewardsClaimButton({
 
           <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
             <span>
-              <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claimPartnerReward}>
+              <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claim}>
                 {isConnected ? 'Claim' : 'Connect Wallet'}
               </LoadingButton>
             </span>

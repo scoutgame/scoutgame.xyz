@@ -103,6 +103,10 @@ function usePartnerReward({
     }) => Promise<{ hash: Address }>,
     onSuccess?: VoidFunction
   ) => {
+    if (!walletClient) {
+      return;
+    }
+
     const partnerRewardEligibility = await checkPartnerReward();
 
     if (!partnerRewardEligibility) {
