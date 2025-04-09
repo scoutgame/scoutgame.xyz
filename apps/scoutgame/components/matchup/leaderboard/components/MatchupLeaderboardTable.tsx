@@ -105,7 +105,7 @@ export async function MatchupLeaderboardTable({ week }: { week: string }) {
             </TableCell>
             <TableCell align='right'>
               <Stack direction='row' spacing={0.5} alignItems='center' justifyContent='flex-end'>
-                <Typography fontSize={18}>{entry.totalGemsCollected}</Typography>
+                <Typography fontSize={{ xs: 14, md: 18 }}>{entry.totalGemsCollected}</Typography>
                 <GemsIcon size={24} />
               </Stack>
             </TableCell>

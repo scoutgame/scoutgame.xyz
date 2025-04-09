@@ -40,7 +40,7 @@ export function MatchupLeaderboardPage({
               '.MuiTableCell-root': {
                 px: {
                   xs: 0.5,
-                  md: 1
+                  md: 2
                 }
               }
             }}
