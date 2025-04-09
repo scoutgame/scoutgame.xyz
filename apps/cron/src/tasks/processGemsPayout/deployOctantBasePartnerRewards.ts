@@ -36,7 +36,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
   }
 
   const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
-    adminPrivateKey: process.env.PRIVATE_KEY as Address,
+    adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY as Address,
     chainId: base.id,
     // 30 days in seconds from now
     expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),

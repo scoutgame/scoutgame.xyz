@@ -46,7 +46,7 @@ export async function PointsClaimContainer() {
         repos={repos}
         onchainClaimData={claimData}
         partnerRewards={unclaimedPartnerRewards}
-        processingPayouts={false}
+        processingPayouts={processingPayouts}
       />
       {points === 0 && unclaimedPartnerRewards.length === 0 ? null : (
         <Suspense fallback={<LoadingTable />}>

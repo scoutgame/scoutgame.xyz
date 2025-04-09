@@ -38,7 +38,7 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
     tokenAddress: optimismTokenAddress,
     recipients,
-    tokenDecimals: 18,
+    tokenDecimals: optimismTokenDecimals,
     nullAddressAmount: 0.001
   });
 
