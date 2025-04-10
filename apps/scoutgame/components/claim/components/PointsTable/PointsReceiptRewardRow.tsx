@@ -11,7 +11,7 @@ import type {
   BuilderPointsReceiptReward,
   LeaderboardRankPointsReceiptReward,
   PointsReceiptReward,
-  SeasonPointsReceiptsReward,
+  PreviousSeasonPointsReceiptsReward,
   SoldNftsPointsReceiptReward
 } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 import { DateTime } from 'luxon';
@@ -80,17 +80,17 @@ function SoldNftsRewardRow({ soldNftsReward }: { soldNftsReward: SoldNftsPointsR
   );
 }
 
-function SeasonRewardRow({ seasonReward }: { seasonReward: SeasonPointsReceiptsReward }) {
+function PreviousSeasonRewardRow({ reward }: { reward: PreviousSeasonPointsReceiptsReward }) {
   return (
     <TableRow>
       <TableCell align='left'>
-        <Typography>{seasonReward.title}</Typography>
+        <Typography>{reward.title}</Typography>
       </TableCell>
       <TableCell align='center'>
         <Typography>-</Typography>
       </TableCell>
       <TableCell align='right'>
-        <PointsCell points={seasonReward.points} />
+        <PointsCell points={reward.points} />
       </TableCell>
     </TableRow>
   );
@@ -134,7 +134,7 @@ function OctantBaseContributionPartnerRewardRow({
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
           <Typography>{partnerReward.points}</Typography>
-          <Image alt='crypto icon' src='/images/crypto/usdc.png' width={20} height={20} />
+          <Image alt='' src='/images/crypto/usdc.png' width={20} height={20} />
         </Stack>
       </TableCell>
     </TableRow>
@@ -165,7 +165,7 @@ function NewScoutPartnerRewardRow({ partnerReward }: { partnerReward: OptimismNe
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
           <Typography>{partnerReward.points}</Typography>
-          <Image alt='crypto icon' src='/images/crypto/op.png' width={20} height={20} />
+          <Image alt='' src='/images/crypto/op.png' width={20} height={20} />
         </Stack>
       </TableCell>
     </TableRow>
@@ -199,7 +199,29 @@ function ReferralChampionPartnerRewardRow({ partnerReward }: { partnerReward: Op
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
           <Typography>{partnerReward.points}</Typography>
-          <Image alt='crypto icon' src='/images/crypto/op.png' width={20} height={20} />
+          <Image alt='' src='/images/crypto/op.png' width={20} height={20} />
+        </Stack>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function MatchupWinnerRewardRow({ reward }: { reward: MatchupWinnerPointsReceiptReward }) {
+  return (
+    <TableRow>
+      <TableCell align='left'>
+        <Stack direction='row' alignItems='center' justifyContent='flex-start' gap={0.5}>
+          <Typography>Matchup Winner</Typography>
+        </Stack>
+      </TableCell>
+      <TableCell align='center'>
+        <Typography>{reward.week}</Typography>
+      </TableCell>
+      <TableCell align='right'>
+        <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
+          <PointsCell points={reward.points} />
+          <Typography sx={{ ml: 1 }}>{reward.opAmount}</Typography>
+          <Image alt='' src='/images/crypto/op.png' width={20} height={20} />
         </Stack>
       </TableCell>
     </TableRow>
@@ -217,14 +239,16 @@ export function PointsReceiptRewardRow({
     return <LeaderboardRankRewardRow leaderboardRankReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'sold_nfts') {
     return <SoldNftsRewardRow soldNftsReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'season') {
-    return <SeasonRewardRow seasonReward={pointsReceiptReward} />;
+  } else if (pointsReceiptReward.type === 'previous_season') {
+    return <PreviousSeasonRewardRow reward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'optimism_new_scout') {
     return <NewScoutPartnerRewardRow partnerReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'optimism_referral_champion') {
     return <ReferralChampionPartnerRewardRow partnerReward={pointsReceiptReward} />;
   } else if (pointsReceiptReward.type === 'octant_base_contribution') {
     return <OctantBaseContributionPartnerRewardRow partnerReward={pointsReceiptReward} />;
+  } else if (pointsReceiptReward.type === 'matchup_winner') {
+    return <MatchupWinnerRewardRow reward={pointsReceiptReward} />;
   }
 
   return null;

@@ -5,45 +5,53 @@ import { seasons } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 import { getPlatform } from '@packages/utils/platform';
 import { isTruthy } from '@packages/utils/types';
+import { formatUnits } from 'viem';
 
 import { devTokenDecimals } from '../protocol/constants';
 
-export type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank';
+type PointsReceiptRewardType = 'builder' | 'sold_nfts' | 'leaderboard_rank' | 'previous_season' | 'matchup_winner';
 
-type PointsReceiptRewardBase = {
-  week: number;
+type PointsReceiptRewardBase<T> = T & {
   points: number;
   type: PointsReceiptRewardType;
   season: Season;
 };
 
-export type BuilderPointsReceiptReward = PointsReceiptRewardBase & {
+export type BuilderPointsReceiptReward = PointsReceiptRewardBase<{
   type: 'builder';
+  week: number;
   bonusPartners: string[];
-};
+}>;
 
-export type SoldNftsPointsReceiptReward = PointsReceiptRewardBase & {
+export type SoldNftsPointsReceiptReward = PointsReceiptRewardBase<{
   type: 'sold_nfts';
+  week: number;
   quantity: number;
-};
+}>;
 
-export type LeaderboardRankPointsReceiptReward = PointsReceiptRewardBase & {
+export type LeaderboardRankPointsReceiptReward = PointsReceiptRewardBase<{
   type: 'leaderboard_rank';
+  week: number;
   rank: number;
-};
+}>;
 
-export type SeasonPointsReceiptsReward = {
-  points: number;
-  season: string;
+export type MatchupWinnerPointsReceiptReward = PointsReceiptRewardBase<{
+  type: 'matchup_winner';
+  opAmount: number;
+  week: number;
+}>;
+
+export type PreviousSeasonPointsReceiptsReward = PointsReceiptRewardBase<{
+  type: 'previous_season';
   title: string;
-  type: 'season';
-};
+}>;
 
 export type PointsReceiptReward =
   | BuilderPointsReceiptReward
   | SoldNftsPointsReceiptReward
   | LeaderboardRankPointsReceiptReward
-  | SeasonPointsReceiptsReward;
+  | PreviousSeasonPointsReceiptsReward
+  | MatchupWinnerPointsReceiptReward;
 
 export async function getPointsReceiptsRewards({
   isClaimed,
@@ -59,7 +67,6 @@ export async function getPointsReceiptsRewards({
   if (claimableSeasons.length === 0) {
     throw new Error(`No seasons found to claim points: ${season}`);
   }
-  const platform = getPlatform();
 
   const pointsReceipts = await prisma.pointsReceipt.findMany({
     where: {
@@ -98,6 +105,27 @@ export async function getPointsReceiptsRewards({
     }
   });
 
+  const matchupRewards = await prisma.partnerRewardPayout.findMany({
+    where: {
+      payoutContract: {
+        partner: 'matchup_rewards',
+        season
+      },
+      wallet: {
+        scoutId: userId
+      }
+    },
+    select: {
+      amount: true,
+      payoutContract: {
+        select: {
+          week: true,
+          tokenDecimals: true
+        }
+      }
+    }
+  });
+
   const tokensReceipts = await prisma.tokensReceipt.findMany({
     where: {
       recipientWallet: {
@@ -133,6 +161,7 @@ export async function getPointsReceiptsRewards({
   const builderRewards: Record<string, BuilderPointsReceiptReward> = {};
   const soldNftRewards: Record<string, SoldNftsPointsReceiptReward> = {};
   const leaderboardRankRewards: Record<string, LeaderboardRankPointsReceiptReward> = {};
+  const matchupWinnerRewards: Record<string, MatchupWinnerPointsReceiptReward> = {};
 
   const leaderboardRankWeeks = Array.from(
     new Set([
@@ -176,13 +205,13 @@ export async function getPointsReceiptsRewards({
       (pointsBySeason[_season] ?? 0) + Number(BigInt(receipt.value) / BigInt(10 ** devTokenDecimals));
   });
 
-  const previousSeasons: SeasonPointsReceiptsReward[] = seasons
+  const previousSeasons: PreviousSeasonPointsReceiptsReward[] = seasons
     .slice()
     .sort()
     .filter((s) => s.start < season)
     .map((s) => ({
       points: pointsBySeason[s.start],
-      type: 'season',
+      type: 'previous_season',
       title: s.title,
       season: s.start
     }));
@@ -268,13 +297,24 @@ export async function getPointsReceiptsRewards({
         }
         leaderboardRankRewards[week].points += points;
       }
+    } else if (receipt.event.type === 'matchup_winner') {
+      // points received as a matchup winner
+      const opPayout = matchupRewards.find((r) => r.payoutContract.week === week);
+      matchupWinnerRewards[week] = {
+        points,
+        opAmount: opPayout ? Number(formatUnits(BigInt(opPayout.amount), opPayout.payoutContract.tokenDecimals)) : 0,
+        week: weekNumber,
+        season: receipt.event.season as Season,
+        type: 'matchup_winner'
+      };
     }
   }
 
   const currentSeasonRewards = [
     ...Object.values(builderRewards),
     ...Object.values(soldNftRewards),
-    ...Object.values(leaderboardRankRewards)
+    ...Object.values(leaderboardRankRewards),
+    ...Object.values(matchupWinnerRewards)
   ].sort((a, b) => {
     if (a.week === b.week) {
       return b.points - a.points;
