@@ -186,6 +186,8 @@ export async function getPartnerRewards({
         type: 'octant_base_contribution' as const,
         prLink: (payout.meta as unknown as { prLink: string }).prLink
       });
+    } else if (payout.payoutContract.partner === 'matchup_winner') {
+      // note, this appear in the list returned by getPointsReceiptsRewards
     }
   });
 

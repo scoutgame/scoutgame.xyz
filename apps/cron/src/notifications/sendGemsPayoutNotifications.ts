@@ -49,7 +49,9 @@ function formatPartnerRewardPayout(
   for (const wallet of wallets) {
     for (const payout of wallet.partnerRewardPayouts) {
       const partner = partnerRewardsRecord[payout.payoutContract.partner as keyof typeof partnerRewardsRecord];
-      html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="${partner.icon}"/> from ${partner.partnerLink ? `<a style="text-decoration: underline; color: ${linkColor};" href="${partner.partnerLink}">${partner.name}</a>` : partner.name}</li>`;
+      if (partner) {
+        html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="${partner.icon}"/> from ${partner.partnerLink ? `<a style="text-decoration: underline; color: ${linkColor};" href="${partner.partnerLink}">${partner.name}</a>` : partner.name}</li>`;
+      }
     }
   }
   return `${html}</ul>`;
