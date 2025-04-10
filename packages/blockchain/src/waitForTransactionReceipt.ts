@@ -1,16 +1,17 @@
 import type { TransactionReceipt, PublicClient } from 'viem';
-import { TransactionReceiptNotFoundError } from 'viem';
+import { TransactionReceiptNotFoundError, WaitForTransactionReceiptTimeoutError } from 'viem';
+
 // Note the difference between this and the waitForTransactionReceipt function in the viem package
 // This function does a retry when waiting for the receipt, not just the transaction!
 // @source: https://github.com/wevm/viem/issues/3515
 // @viem source: https://github.com/wevm/viem/blob/main/src/actions/public/waitForTransactionReceipt.ts#L229
-async function waitForTransactionReceipt(
+export async function waitForTransactionReceipt(
   client: PublicClient,
   txnHash: `0x${string}`,
-  timeoutMs: number,
-  pollingIntervalMs: number = 4_000,
+  timeoutMs: number = 180_000,
+  pollingIntervalMs: number = client.pollingInterval,
   confirmations: number = 1
-): Promise<TransactionReceipt | null> {
+): Promise<TransactionReceipt> {
   const start = Date.now();
 
   while (Date.now() - start < timeoutMs) {
@@ -22,7 +23,7 @@ async function waitForTransactionReceipt(
         }
 
         const latestBlock = await client.getBlockNumber();
-        const confirmationsMet = latestBlock - receipt.blockNumber + 1n >= BigInt(confirmations);
+        const confirmationsMet = latestBlock - receipt.blockNumber + BigInt(1) >= BigInt(confirmations);
         if (confirmationsMet) {
           return receipt;
         }
@@ -38,5 +39,5 @@ async function waitForTransactionReceipt(
     await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
   }
 
-  return null; // timeout reached
+  throw new WaitForTransactionReceiptTimeoutError({ hash: txnHash });
 }
