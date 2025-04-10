@@ -31,7 +31,7 @@ export async function deployMatchupRewards({ week }: { week: string }) {
 
   // Deploy the Sablier airdrop contract
   const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
-    adminPrivateKey: process.env.MATCHUP_REWARDS_ADMIN_PRIVATE_KEY as `0x${string}`,
+    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
     chainId: optimism.id,
     tokenAddress: optimismTokenAddress,
     recipients: recipients.map(({ address, opAmount }) => ({
@@ -79,4 +79,6 @@ export async function deployMatchupRewards({ week }: { week: string }) {
       }
     }
   });
+
+  //
 }
