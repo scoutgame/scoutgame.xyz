@@ -16,6 +16,7 @@ type ScoutWithGithubUser = {
   displayName: string;
   email?: string;
   tokenId?: number;
+  wallet?: string;
   optedInToMarketing?: string;
   builderStatus?: string;
   githubLogin?: string;
@@ -93,6 +94,8 @@ export async function GET() {
       },
       wallets: {
         select: {
+          primary: true,
+          address: true,
           purchaseEvents: {
             select: {
               paidInPoints: true,
@@ -161,6 +164,7 @@ export async function GET() {
       id: user.id,
       onboardedAt: user.onboardedAt?.toDateString(),
       path: `https://scoutgame.xyz/u/${user.path!}`,
+      wallet: user.wallets.find((w) => w.primary)?.address || user.wallets[0]?.address,
       createdAt: user.createdAt.toDateString(),
       displayName: user.displayName,
       email: user.email || undefined,
@@ -294,7 +298,7 @@ export async function GET() {
 
   // const top50Builders = rows.sort((a, b) => b.pointsEarnedAsDeveloper - a.pointsEarnedAsDeveloper).slice(0, 50);
   // const top50BuildersRows = top50Builders.map((builder) => ({
-  //   address: builder.id,
+  //   address: builder.wallet,
   //   username: builder.farcasterName || builder.displayName,
   //   points: builder.pointsEarnedAsDeveloper
   // }));
