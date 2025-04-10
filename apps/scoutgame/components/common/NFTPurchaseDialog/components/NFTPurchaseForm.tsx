@@ -1,6 +1,7 @@
 'use client';
 
 import env from '@beam-australia/react-env';
+import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma';
 import { ChainId } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
@@ -166,8 +167,19 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     executeAsync: purchaseWithPoints
   } = useAction(purchaseWithPointsAction, {
     onError({ error, input }) {
-      scoutgameMintsLogger.error('Error purchasing with points', { input, error, userId: user?.id });
-      setSubmitError(error.serverError?.message || 'Something went wrong');
+      if (error.serverError?.message?.includes('The Transaction may not be processed on a block yet')) {
+        log.warn('The Transaction may not be processed on a block yet', {
+          input,
+          error
+        });
+        toast.warning(
+          'Could not confirm transaction. Please allow a few minutes for Scout Game to process the transaction.'
+        );
+      } else {
+        scoutgameMintsLogger.error('Error purchasing with points', { input, error, userId: user?.id });
+        log.error('Error purchasing with points', { input, error });
+        setSubmitError(error.serverError?.message || 'Something went wrong');
+      }
     },
     onExecute() {
       setSubmitError(null);
