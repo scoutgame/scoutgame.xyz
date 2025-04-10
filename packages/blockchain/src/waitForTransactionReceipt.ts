@@ -23,7 +23,7 @@ export async function waitForTransactionReceipt(
         }
 
         const latestBlock = await client.getBlockNumber();
-        const confirmationsMet = latestBlock - receipt.blockNumber + 1n >= BigInt(confirmations);
+        const confirmationsMet = latestBlock - receipt.blockNumber + BigInt(1) >= BigInt(confirmations);
         if (confirmationsMet) {
           return receipt;
         }
