@@ -13,6 +13,7 @@ type ScoutWithGithubUser = {
   id: string;
   path: string;
   createdAt: string;
+  displayName: string;
   email?: string;
   tokenId?: number;
   optedInToMarketing?: string;
@@ -39,6 +40,8 @@ type ScoutWithGithubUser = {
 };
 
 export async function GET() {
+  const collapseSeasons = true;
+
   const users = await prisma.scout.findMany({
     where: {
       deletedAt: null
@@ -50,6 +53,7 @@ export async function GET() {
       sendMarketing: true,
       createdAt: true,
       avatar: true,
+      displayName: true,
       email: true,
       builderStatus: true,
       farcasterId: true,
@@ -114,7 +118,12 @@ export async function GET() {
         }
       },
       userWeeklyStats: true,
-      pointsReceived: true,
+      pointsReceived: {
+        select: {
+          season: true,
+          value: true
+        }
+      },
       builderNfts: {
         select: {
           season: true,
@@ -129,7 +138,8 @@ export async function GET() {
       }
     }
   });
-  const rows: ScoutWithGithubUser[] = users.map((user): ScoutWithGithubUser => {
+
+  const rows: ScoutWithGithubUser[] = users.flatMap((user): ScoutWithGithubUser | ScoutWithGithubUser[] => {
     const allUserPurchaseEvents = user.wallets
       .flatMap((wallet) => wallet.purchaseEvents)
       .filter(
@@ -147,11 +157,12 @@ export async function GET() {
           })
       );
     // Create a map with shared user data
-    const sharedUserData = {
+    const userProfile = {
       id: user.id,
       onboardedAt: user.onboardedAt?.toDateString(),
       path: `https://scoutgame.xyz/u/${user.path!}`,
       createdAt: user.createdAt.toDateString(),
+      displayName: user.displayName,
       email: user.email || undefined,
       optedInToMarketing: user.sendMarketing ? 'Yes' : '',
       builderStatus: user.builderStatus || undefined,
@@ -160,10 +171,7 @@ export async function GET() {
       githubLogin: user.githubUsers[0]?.login,
       currentBalance: isOnchainPlatform()
         ? Number(BigInt(user.currentBalanceDevToken ?? 0) / BigInt(10 ** 18))
-        : user.currentBalance || 0,
-      pointsEarnedTotal: user.pointsReceived
-        .filter((p) => p.season === getCurrentSeasonStart())
-        .reduce((acc, curr) => acc + curr.value, 0)
+        : user.currentBalance || 0
     } as const;
     const activeSeasons = [
       ...user.userSeasonStats,
@@ -181,9 +189,10 @@ export async function GET() {
     // If user has no season stats, create one row with default values
     if (activeSeasons.length === 0) {
       return {
-        ...sharedUserData,
+        ...userProfile,
         pointsEarnedAsScout: 0,
         pointsEarnedAsDeveloper: 0,
+        pointsEarnedTotal: 0,
         referrals: 0,
         dailyClaimsCount: 0,
         questsCompleted: 0,
@@ -197,9 +206,9 @@ export async function GET() {
         waitlistTier: ''
       };
     }
-
     // Create one row per season
-    return activeSeasons
+    const seasonRows = activeSeasons
+      // calculate stats per active season
       .map((season) => {
         const seasonStat = user.userSeasonStats.find((s) => s.season === season);
         const purchaseEvents = allUserPurchaseEvents.filter((e) => e.builderNft?.season === season);
@@ -209,7 +218,7 @@ export async function GET() {
         const starterNft = user.builderNfts.find((nft) => nft.season === season && nft.nftType === 'starter_pack');
         const usdcPaidForNfts = purchaseEvents.reduce((acc, curr) => acc + curr.pointsValue / 10, 0);
         return {
-          ...sharedUserData,
+          ...userProfile,
           tokenId: regularNft?.tokenId || undefined,
           pointsEarnedAsScout: seasonStat?.pointsEarnedAsScout || 0,
           pointsEarnedAsDeveloper: seasonStat?.pointsEarnedAsBuilder || 0,
@@ -237,46 +246,58 @@ export async function GET() {
               .find((e) => e.type === 'misc_event' && e.description?.includes('waitlist'))
               ?.description?.match(/achieving (.*?) status/)?.[1] || ''
         };
-      })
-      .reduce(
-        (acc, curr) => {
-          return {
-            ...acc,
-            pointsEarnedAsScout: acc.pointsEarnedAsScout + curr.pointsEarnedAsScout,
-            pointsEarnedAsDeveloper: acc.pointsEarnedAsDeveloper + curr.pointsEarnedAsDeveloper,
-            pointsEarnedTotal: acc.pointsEarnedTotal + curr.pointsEarnedTotal,
-            regularNftsPurchased: acc.regularNftsPurchased + curr.regularNftsPurchased,
-            regularNftsSold: acc.regularNftsSold + curr.regularNftsSold,
-            starterNftsPurchased: acc.starterNftsPurchased + curr.starterNftsPurchased,
-            starterNftsSold: acc.starterNftsSold + curr.starterNftsSold,
-            usdcPaidForNfts: acc.usdcPaidForNfts + curr.usdcPaidForNfts,
-            referrals: acc.referrals + curr.referrals,
-            referralsCompleted: acc.referralsCompleted + curr.referralsCompleted,
-            dailyClaimsCount: acc.dailyClaimsCount + curr.dailyClaimsCount,
-            questsCompleted: acc.questsCompleted + curr.questsCompleted,
-            developerLevel: undefined, // acc.developerLevel || curr.developerLevel,
-            season: '', // acc.season || curr.season,
-            waitlistTier: acc.waitlistTier || curr.waitlistTier
-          };
-        },
-        {
-          ...sharedUserData,
-          pointsEarnedAsScout: 0,
-          pointsEarnedAsDeveloper: 0,
-          referrals: 0,
-          dailyClaimsCount: 0,
-          questsCompleted: 0,
-          referralsCompleted: 0,
-          regularNftsPurchased: 0,
-          regularNftsSold: 0,
-          starterNftsPurchased: 0,
-          starterNftsSold: 0,
-          usdcPaidForNfts: 0,
-          waitlistTier: '',
-          season: ''
-        }
-      );
+      });
+    if (!collapseSeasons) {
+      return seasonRows;
+    }
+    // combine into one row
+    return seasonRows.reduce(
+      (acc, curr) => {
+        return {
+          ...acc,
+          pointsEarnedAsScout: acc.pointsEarnedAsScout + curr.pointsEarnedAsScout,
+          pointsEarnedAsDeveloper: acc.pointsEarnedAsDeveloper + curr.pointsEarnedAsDeveloper,
+          pointsEarnedTotal: acc.pointsEarnedTotal + curr.pointsEarnedTotal,
+          regularNftsPurchased: acc.regularNftsPurchased + curr.regularNftsPurchased,
+          regularNftsSold: acc.regularNftsSold + curr.regularNftsSold,
+          starterNftsPurchased: acc.starterNftsPurchased + curr.starterNftsPurchased,
+          starterNftsSold: acc.starterNftsSold + curr.starterNftsSold,
+          usdcPaidForNfts: acc.usdcPaidForNfts + curr.usdcPaidForNfts,
+          referrals: acc.referrals + curr.referrals,
+          referralsCompleted: acc.referralsCompleted + curr.referralsCompleted,
+          dailyClaimsCount: acc.dailyClaimsCount + curr.dailyClaimsCount,
+          questsCompleted: acc.questsCompleted + curr.questsCompleted,
+          developerLevel: undefined, // acc.developerLevel || curr.developerLevel,
+          season: '', // acc.season || curr.season,
+          waitlistTier: acc.waitlistTier || curr.waitlistTier
+        };
+      },
+      {
+        ...userProfile,
+        pointsEarnedAsScout: 0,
+        pointsEarnedAsDeveloper: 0,
+        pointsEarnedTotal: 0,
+        referrals: 0,
+        dailyClaimsCount: 0,
+        questsCompleted: 0,
+        referralsCompleted: 0,
+        regularNftsPurchased: 0,
+        regularNftsSold: 0,
+        starterNftsPurchased: 0,
+        starterNftsSold: 0,
+        usdcPaidForNfts: 0,
+        waitlistTier: '',
+        season: ''
+      }
+    );
   });
+
+  // const top50Builders = rows.sort((a, b) => b.pointsEarnedAsDeveloper - a.pointsEarnedAsDeveloper).slice(0, 50);
+  // const top50BuildersRows = top50Builders.map((builder) => ({
+  //   address: builder.id,
+  //   username: builder.farcasterName || builder.displayName,
+  //   points: builder.pointsEarnedAsDeveloper
+  // }));
 
   return respondWithTSV(rows, 'scout_users_export.tsv');
 }
