@@ -1,3 +1,4 @@
+import { waitForTransactionReceipt } from '@packages/blockchain/waitForTransactionReceipt';
 import type {
   Abi,
   Account,
@@ -13,7 +14,6 @@ import type {
   WalletClient
 } from 'viem';
 import { encodeFunctionData, decodeFunctionResult, getAddress } from 'viem';
-
 // ReadWriteWalletClient reflects a wallet client that has been extended with PublicActions
 //  https://github.com/wevm/viem/discussions/1463#discussioncomment-7504732
 type ReadWriteWalletClient<
@@ -1230,12 +1230,11 @@ export class ScoutGamePreSeason02NFTImplementationClient {
       value: params.value ?? BigInt(0), // Optional value for payable methods
       gasPrice: params.gasPrice // Optional gasPrice
     };
-
     // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async minter(params: { blockNumber?: bigint } = {}): Promise<Address> {
