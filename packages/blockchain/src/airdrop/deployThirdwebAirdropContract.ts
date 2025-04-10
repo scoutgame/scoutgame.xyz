@@ -6,6 +6,8 @@ import { getPublicClient } from '../getPublicClient';
 import { getWalletClient } from '../getWalletClient';
 
 import {
+  THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
+  THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
   THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI,
   THIRDWEB_ERC20_AIRDROP_PROXY_ABI
 } from './thirdwebERC20AirdropContract';
@@ -16,16 +18,16 @@ export async function deployThirdwebAirdropContract({
   totalAirdropAmount,
   expirationTimestamp,
   openClaimLimitPerWallet,
-  trustedForwarders,
-  proxyFactoryAddress,
-  implementationAddress,
+  trustedForwarders = [],
+  proxyFactoryAddress = THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
+  implementationAddress = THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
   chainId,
   adminPrivateKey
 }: {
   chainId: number;
-  proxyFactoryAddress: Address;
-  implementationAddress: Address;
-  trustedForwarders: Address[];
+  proxyFactoryAddress?: Address;
+  implementationAddress?: Address;
+  trustedForwarders?: Address[];
   tokenAddress: Address;
   merkleRoot: Hex;
   totalAirdropAmount: bigint;

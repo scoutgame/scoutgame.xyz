@@ -17,8 +17,8 @@ jest.unstable_mockModule('@charmverse/core/prisma-client', () => ({
   }
 }));
 
-jest.unstable_mockModule('@packages/matchup/getLeaderboard', () => ({
-  getLeaderboard: jest.fn()
+jest.unstable_mockModule('@packages/matchup/getMatchupLeaderboard', () => ({
+  getMatchupLeaderboard: jest.fn()
 }));
 
 jest.unstable_mockModule('../createSablierAirdropContract', () => ({
@@ -31,10 +31,10 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
 }));
 
 // Import mocked modules
-const { getLeaderboard } = await import('@packages/matchup/getLeaderboard');
+const { getMatchupLeaderboard } = await import('@packages/matchup/getMatchupLeaderboard');
 const { createSablierAirdropContract } = await import('../createSablierAirdropContract');
 const { getCurrentSeason, getCurrentSeasonWeekNumber } = await import('@packages/dates/utils');
-const { deployMatchupRewardsContract } = await import('../deployMatchupRewardsContract');
+const { deployMatchupRewardsContract } = await import('../deployMatchupRewards');
 
 describe('deployMatchupRewardsContract', () => {
   const mockWeek = '2023-W01';
@@ -52,8 +52,8 @@ describe('deployMatchupRewardsContract', () => {
     // Mock getCurrentSeasonWeekNumber
     (getCurrentSeasonWeekNumber as jest.Mock).mockReturnValue(1);
 
-    // Mock getLeaderboard
-    (getLeaderboard as jest.Mock).mockResolvedValue([
+    // Mock getMatchupLeaderboard
+    (getMatchupLeaderboard as jest.Mock).mockResolvedValue([
       {
         scout: {
           id: 'scout1',
@@ -183,8 +183,8 @@ describe('deployMatchupRewardsContract', () => {
       contractAddress: '0x5678901234567890123456789012345678901234'
     });
 
-    // Verify getLeaderboard was called with the correct week
-    expect(getLeaderboard).toHaveBeenCalledWith(mockWeek);
+    // Verify getMatchupLeaderboard was called with the correct week
+    expect(getMatchupLeaderboard).toHaveBeenCalledWith(mockWeek);
 
     // Verify prisma.scoutMatchup.count was called with the correct parameters
     expect(prisma.scoutMatchup.count).toHaveBeenCalledWith({
@@ -223,8 +223,8 @@ describe('deployMatchupRewardsContract', () => {
     process.env.MATCHUP_REWARDS_ADMIN_PRIVATE_KEY =
       '0x1234567890123456789012345678901234567890123456789012345678901234';
 
-    // Mock getLeaderboard to return a tie for first place
-    (getLeaderboard as jest.Mock).mockResolvedValue([
+    // Mock getMatchupLeaderboard to return a tie for first place
+    (getMatchupLeaderboard as jest.Mock).mockResolvedValue([
       {
         scout: {
           id: 'scout1',
@@ -325,8 +325,8 @@ describe('deployMatchupRewardsContract', () => {
   });
 
   it('should skip deployment if no entries are found', async () => {
-    // Mock getLeaderboard to return an empty array
-    (getLeaderboard as jest.Mock).mockResolvedValue([]);
+    // Mock getMatchupLeaderboard to return an empty array
+    (getMatchupLeaderboard as jest.Mock).mockResolvedValue([]);
 
     // Call the function
     await deployMatchupRewardsContract({ week: mockWeek });

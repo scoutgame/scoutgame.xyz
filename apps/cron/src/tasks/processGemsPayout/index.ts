@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 
 import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
 
-import { deployMatchupRewardsContract } from './deployMatchupRewardsContract';
+import { deployMatchupRewardsContract } from './deployMatchupRewards';
 import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards';
 import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { processScoutPointsPayout } from './processScoutPointsPayout';

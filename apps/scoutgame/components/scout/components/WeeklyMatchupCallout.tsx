@@ -1,8 +1,8 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Paper, Card, CardActionArea, Typography } from '@mui/material';
 import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
-import { getLeaderboard } from '@packages/matchup/getLeaderboard';
 import { getCurrentMatchupDetails } from '@packages/matchup/getMatchupDetails';
+import { getMatchupLeaderboard } from '@packages/matchup/getMatchupLeaderboard';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { GemsIcon, PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
@@ -17,7 +17,7 @@ export async function WeeklyMatchupCallout() {
     return null;
   }
   const { weekNumber, registrationOpen, week, matchupPool, opPrize, startTime } = await getCurrentMatchupDetails();
-  const leaderboard = registrationOpen ? [] : await getLeaderboard(week, 3);
+  const leaderboard = registrationOpen ? [] : await getMatchupLeaderboard(week, 3);
   return (
     <Card
       sx={{

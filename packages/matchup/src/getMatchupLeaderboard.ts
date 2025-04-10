@@ -18,7 +18,7 @@ export type ScoutMatchupEntry = {
   }[];
 };
 
-export async function getLeaderboard(week: string, limit?: number): Promise<ScoutMatchupEntry[]> {
+export async function getMatchupLeaderboard(week: string, limit?: number): Promise<ScoutMatchupEntry[]> {
   const entries = await prisma.scoutMatchup.findMany({
     where: {
       week,
@@ -65,7 +65,7 @@ export async function getLeaderboard(week: string, limit?: number): Promise<Scou
     }
   });
   const leaderboard = entries
-    .map((entry, index) => {
+    .map((entry) => {
       const developers = entry.selections
         .map((selection) => ({
           id: selection.developerNft!.builder.id,
