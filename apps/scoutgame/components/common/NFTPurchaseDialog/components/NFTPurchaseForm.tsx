@@ -176,7 +176,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           'Could not confirm transaction. Please allow a few minutes for Scout Game to process the transaction.'
         );
       } else {
-        scoutgameMintsLogger.error('Error purchasing with points', { input, error, userId: user?.id });
+        scoutgameMintsLogger.error('Error purchasing with points', { input, userId: user?.id });
         log.error('Error purchasing with points', { input, error });
         setSubmitError(error.serverError?.message || 'Something went wrong');
       }
