@@ -1,6 +1,16 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address, Hex, WalletClient } from 'viem';
 
+import type { Recipient } from './createThirdwebAirdropContract';
+
+export type ThirdwebFullMerkleTree = {
+  rootHash: string;
+  recipients: Recipient[];
+  layers: string[];
+  totalAirdropAmount: string;
+  totalRecipients: number;
+};
+
 export const THIRDWEB_ERC20_AIRDROP_PROXY_ABI = [
   {
     inputs: [
@@ -128,6 +138,24 @@ export const THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI = [
   }
 ];
 
+export async function getThirdwebERC20AirdropExpirationTimestamp({
+  airdropContractAddress,
+  chainId
+}: {
+  airdropContractAddress: Address;
+  chainId: number;
+}): Promise<bigint> {
+  const publicClient = getPublicClient(chainId);
+
+  const expirationTimestamp = await publicClient.readContract({
+    address: airdropContractAddress,
+    abi: THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI,
+    functionName: 'expirationTimestamp'
+  });
+
+  return expirationTimestamp as bigint;
+}
+
 // Function to verify claim eligibility
 export async function verifyThirdwebERC20AirdropClaimEligibility({
   airdropContractAddress,
@@ -174,7 +202,7 @@ export async function claimThirdwebERC20AirdropToken({
   proofMaxQuantityForWallet?: bigint;
   chainId: number;
   walletClient: WalletClient;
-}): Promise<string> {
+}): Promise<Address> {
   const publicClient = getPublicClient(chainId);
 
   // Simulate the transaction first

@@ -31,8 +31,14 @@ export async function WeeklyMatchupCallout() {
     >
       <CardActionArea href='/matchup' sx={{ p: 2 }}>
         <Box display='flex' alignItems='center' justifyContent='space-between'>
-          <Box mr={{ xs: 0, md: 2 }}>
-            <Image src='/images/matchup/vs_icon.svg' alt='' width={80} height={80} />
+          <Box mr={{ xs: 0, md: 2 }} minWidth={60} width={{ xs: 60, md: 80 }}>
+            <Image
+              src='/images/matchup/vs_icon.svg'
+              alt=''
+              width={80}
+              height={80}
+              style={{ width: '100%', height: 'auto' }}
+            />
           </Box>
           <Box display='flex' flexDirection='column' gap={1} flexGrow={1}>
             <Typography variant='h6' color='secondary'>
@@ -74,15 +80,23 @@ export async function WeeklyMatchupCallout() {
                           {entry.totalGemsCollected} <GemsIcon />
                         </Typography>
                       }
+                      sx={{
+                        p: {
+                          xs: 0,
+                          md: 1
+                        }
+                      }}
                     >
-                      {entry.scout.displayName}
+                      <Typography noWrap textOverflow='ellipsis' overflow='hidden' mr='60px'>
+                        {entry.scout.displayName}
+                      </Typography>
                     </ListItem>
                   ))}
                 </List>
               </Box>
             )}
           </Box>
-          <ChevronRightIcon fontSize='large' />
+          <ChevronRightIcon sx={{ fontSize: { xs: 24, md: 36 } }} />
         </Box>
       </CardActionArea>
     </Card>

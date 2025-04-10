@@ -1,11 +1,14 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
+import {
+  THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
+  THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS
+} from '@packages/blockchain/constants';
+import { getCurrentSeason } from '@packages/dates/utils';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
 import { parseUnits, type Address } from 'viem';
 import { base } from 'viem/chains';
-
-import { createSablierAirdropContract } from './createSablierAirdropContract';
 
 const usdcTokenDecimals = 6;
 const baseUsdcTokenAddress = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
@@ -32,22 +35,25 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
     return;
   }
 
-  const { hash, contractAddress, cid, merkleTree } = await createSablierAirdropContract({
+  const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY as Address,
-    campaignName: `Scoutgame Octant & Base contribution ${currentSeason.title} Week ${getCurrentSeasonWeekNumber(week)} Rewards`,
     chainId: base.id,
+    // 30 days in seconds from now
+    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),
+    implementationAddress: THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
+    proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
+    tokenAddress: baseUsdcTokenAddress,
     recipients: recipients.map((recipient) => ({
       address: recipient.address,
-      amount: 75
+      amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT
     })),
-    tokenAddress: baseUsdcTokenAddress,
     tokenDecimals: usdcTokenDecimals,
     nullAddressAmount: 0.001
   });
 
   log.info('Octant & Base contribution rewards contract deployed', {
-    hash,
-    contractAddress,
+    hash: deployTxHash,
+    contractAddress: airdropContractAddress,
     week,
     season: currentSeason.start
   });
@@ -55,16 +61,19 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
   await prisma.partnerRewardPayoutContract.create({
     data: {
       chainId: base.id,
-      contractAddress,
+      contractAddress: airdropContractAddress,
       season: currentSeason.start,
       week,
       tokenAddress: baseUsdcTokenAddress,
       tokenSymbol: 'USDC',
       tokenDecimals: usdcTokenDecimals,
       partner: 'octant_base_contribution',
-      deployTxHash: hash,
-      ipfsCid: cid,
+      deployTxHash,
+      // TODO: Add ipfs cid
+      ipfsCid: '',
       merkleTreeJson: merkleTree,
+      provider: 'thirdweb',
+      blockNumber,
       rewardPayouts: {
         createMany: {
           data: recipients.map((recipient) => ({
@@ -78,6 +87,4 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
       }
     }
   });
-
-  return { hash, contractAddress };
 }

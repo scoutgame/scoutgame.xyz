@@ -179,7 +179,8 @@ function ReferralChampionPartnerRewardRow({ partnerReward }: { partnerReward: Op
       <TableCell align='left'>
         <Stack direction='row' alignItems='center' justifyContent='flex-start' gap={0.5}>
           <Typography>
-            Referral Champion {DateTime.fromJSDate(new Date(partnerReward.date)).toFormat('d/MM/yy')}
+            Referral Champion{' '}
+            {partnerReward.date ? DateTime.fromJSDate(new Date(partnerReward.date)).toFormat('d/MM/yy') : ''}
           </Typography>
           {partnerReward.txHash && blockExplorerUrl ? (
             <Link
