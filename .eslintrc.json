@@ -152,6 +152,7 @@
         "allowForLoopAfterthoughts": true
       }
     ],
+    "no-promise-executor-return": "off",
     "no-restricted-exports": "off",
     "no-restricted-syntax": "off",
     "no-underscore-dangle": "off",
