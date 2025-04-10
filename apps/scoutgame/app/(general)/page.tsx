@@ -17,18 +17,16 @@ const frame = {
   }
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: 'Scout Game',
-    openGraph: {
-      title: 'Scout Game - Onchain developer network',
-      description: 'Fantasy sports with onchain developers'
-    },
-    other: {
-      'fc:frame': JSON.stringify(frame)
-    }
-  };
-}
+export const metadata: Metadata = {
+  title: 'Scout Game',
+  openGraph: {
+    title: 'Scout Game - Onchain developer network',
+    description: 'Fantasy sports with onchain developers'
+  },
+  other: {
+    'fc:frame': JSON.stringify(frame)
+  }
+};
 
 export default async function Home() {
   return <LandingPage />;

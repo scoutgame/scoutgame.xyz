@@ -91,10 +91,16 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
         developers
       };
     })
-    .sort((a, b) => b.totalGemsCollected - a.totalGemsCollected)
-    .map((entry, index) => ({
+    .sort((a, b) => b.totalGemsCollected - a.totalGemsCollected);
+
+  // two players can have the same rank if they have the same points
+  const rankings = Array.from(new Set(leaderboard.map((e) => e.totalGemsCollected))).sort((a, b) => b - a);
+  const rankMap = new Map(rankings.map((rank, index) => [rank, index + 1]));
+  return leaderboard
+    .map((entry) => ({
       ...entry,
-      rank: index + 1
-    }));
-  return leaderboard.slice(0, limit);
+      rank: rankMap.get(entry.totalGemsCollected)!
+    }))
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, limit);
 }
