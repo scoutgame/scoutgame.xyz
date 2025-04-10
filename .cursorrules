@@ -19,6 +19,7 @@ Testing:
 - Use Jest test runner
 - Mock libraries and files as ESM, using "jest.unstable_mockModule"
 - test files end in "spec.ts" not "test.ts"
+- tests belong in a "__tests__" folder in the same folder as the file they are testing
 - when possible, use mock methods from @packages/testing/database instead of mocking the prisma client.
 
 Deployment:
