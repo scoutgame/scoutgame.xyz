@@ -12,6 +12,7 @@ import type {
   LeaderboardRankPointsReceiptReward,
   PointsReceiptReward,
   PreviousSeasonPointsReceiptsReward,
+  MatchupWinnerPointsReceiptReward,
   SoldNftsPointsReceiptReward
 } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 import { DateTime } from 'luxon';

@@ -37,10 +37,10 @@ export function PointsTable({
 
     return (
       processingPayouts
-        ? rewards.filter((r) => (r.type !== 'season' ? r.week !== getCurrentSeasonWeekNumber() - 1 : true))
+        ? rewards.filter((r) => (r.type !== 'previous_season' ? r.week !== getCurrentSeasonWeekNumber() - 1 : true))
         : rewards
     ).sort((a, b) => {
-      if (a.type === 'season' || b.type === 'season') {
+      if (a.type === 'previous_season' || b.type === 'previous_season') {
         return b.points - a.points;
       }
 
@@ -107,7 +107,7 @@ export function PointsTable({
         >
           {processedRewards.map((pointsReceiptReward) => (
             <PointsReceiptRewardRow
-              key={`${pointsReceiptReward.type === 'season' ? pointsReceiptReward.season : pointsReceiptReward.week}-${pointsReceiptReward.type}`}
+              key={`${pointsReceiptReward.type === 'previous_season' ? pointsReceiptReward.season : pointsReceiptReward.week}-${pointsReceiptReward.type}`}
               pointsReceiptReward={pointsReceiptReward}
             />
           ))}
