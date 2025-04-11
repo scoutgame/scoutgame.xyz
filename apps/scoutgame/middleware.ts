@@ -26,6 +26,7 @@ export async function middleware(request: NextRequest) {
     const isWhitelisted = [...draftLinks, ...(isLoggedIn ? ['/quests', '/claim', '/notifications'] : ['/login'])].some(
       (link) => path.startsWith(link)
     );
+
     if (!isWhitelisted) {
       return NextResponse.redirect(new URL(isLoggedIn ? '/draft/register' : '/draft', request.url));
     }

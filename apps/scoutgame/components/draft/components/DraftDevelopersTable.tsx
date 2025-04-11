@@ -1,4 +1,3 @@
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { getDraftDevelopers } from '@packages/scoutgame/draft/getDraftDevelopers';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
@@ -6,8 +5,9 @@ import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 
 import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
-import { CommonTableRow } from 'components/developers/BuilderPageTable/components/CommonTableRow';
 import { tableRowSx } from 'components/scout/components/ScoutPageTable/components/CommonTableRow';
+
+import { CollapsibleTableHeader } from './CollapsibleTableHeader';
 
 function formatSeasonPoints(points: number) {
   if (points > 1000) {
@@ -23,33 +23,7 @@ export async function DraftDevelopersTable() {
   return (
     <Table>
       <TableHead sx={{ backgroundColor: 'background.dark', position: 'sticky', top: -10, zIndex: 1 }}>
-        <CommonTableRow>
-          <TableCell>
-            <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>DEVELOPER</Typography>
-          </TableCell>
-          <TableCell sx={{ textAlign: 'center' }}>
-            <Stack>
-              <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>POINTS</Typography>
-              <Typography sx={{ display: { xs: 'none', md: 'block' } }} variant='caption'>
-                (LAST SEASON)
-              </Typography>
-            </Stack>
-          </TableCell>
-          <TableCell sx={{ textAlign: 'center' }}>
-            <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>LEVEL</Typography>
-          </TableCell>
-          <TableCell sx={{ textAlign: 'center' }}>
-            <Stack>
-              <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>WEEKLY RANK</Typography>
-              <Typography sx={{ display: { xs: 'none', md: 'block' } }} variant='caption'>
-                (LAST SEASON)
-              </Typography>
-            </Stack>
-          </TableCell>
-          <TableCell sx={{ textAlign: 'right' }}>
-            <ExpandMoreIcon />
-          </TableCell>
-        </CommonTableRow>
+        <CollapsibleTableHeader />
       </TableHead>
       <TableBody sx={{ backgroundColor: 'background.paper' }}>
         {draftDevelopers.map((developer) => (
