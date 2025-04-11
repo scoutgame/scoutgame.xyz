@@ -63,7 +63,7 @@ async function exportStats() {
     .map(({ builder, last14Days }) => {
       const last14DaysTyped = last14Days as Last14DaysRank;
       const lastTwoDays = last14DaysTyped.slice(-2);
-      const rankChange = (lastTwoDays[0].rank || 0) - (lastTwoDays[1].rank || 0);
+      const rankChange = lastTwoDays.length >= 2 ? (lastTwoDays[0].rank || 0) - (lastTwoDays[1].rank || 0) : 0;
       return {
         builder,
         rank_change: rankChange
