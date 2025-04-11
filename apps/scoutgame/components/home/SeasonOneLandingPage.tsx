@@ -28,7 +28,13 @@ function HeroSection() {
           justifyContent='space-between'
           alignItems='center'
         >
-          <Stack>
+          <Stack
+            mb={{
+              xs: 4,
+              md: 6
+            }}
+            gap={2}
+          >
             <Typography variant='h5' fontWeight={500} textAlign='center'>
               Season 1 Begins
             </Typography>

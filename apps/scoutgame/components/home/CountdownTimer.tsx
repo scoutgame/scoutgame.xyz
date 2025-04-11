@@ -2,6 +2,7 @@
 
 import { Stack, Typography } from '@mui/material';
 import { getSeasonConfig } from '@packages/dates/utils';
+import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 
@@ -43,12 +44,17 @@ export function CountdownTimer() {
   return (
     <Stack
       direction='row'
-      spacing={2}
+      spacing={{ xs: 1, sm: 2 }}
       justifyContent='center'
       alignItems='center'
       sx={{
         width: '100%',
-        my: 4
+        background: 'linear-gradient(135deg, #192553 0%, #3b0f63 100%)',
+        p: { xs: 2, sm: 4 },
+        borderRadius: {
+          xs: 1,
+          md: 2
+        }
       }}
     >
       <TimeUnit value={timeLeft.days} label='Days' />
@@ -60,23 +66,31 @@ export function CountdownTimer() {
 }
 
 function TimeUnit({ value, label }: { value: number; label: string }) {
+  const isMdScreen = useMdScreen();
+
   return (
     <Stack alignItems='center' gap={1}>
       <Stack
         sx={{
-          bgcolor: 'background.dark',
+          bgcolor: '#111827',
           borderRadius: 1,
-          p: 2,
-          minWidth: 100,
+          px: { xs: 1, sm: 1.5 },
+          py: { xs: 0.5, sm: 1 },
+          minWidth: { xs: 60, sm: 125 },
           justifyContent: 'center',
           alignItems: 'center'
         }}
       >
-        <Typography variant='h2' sx={{ fontWeight: 700 }}>
+        <Typography
+          variant={isMdScreen ? 'h3' : 'h4'}
+          sx={{
+            fontWeight: 700
+          }}
+        >
           {value.toString().padStart(2, '0')}
         </Typography>
       </Stack>
-      <Typography variant='body1' color='text.secondary'>
+      <Typography variant='caption' color='secondary'>
         {label}
       </Typography>
     </Stack>
