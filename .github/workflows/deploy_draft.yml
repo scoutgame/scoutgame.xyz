@@ -196,7 +196,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          app_name: scoutgame-draft
+          app_name: draft
           app_config_override: scoutgame-draft
           stack: stg-scoutgame-draft
 
@@ -213,4 +213,4 @@ jobs:
         env:
           DISCORD_WARNINGS_WEBHOOK: ${{ secrets.DISCORD_WARNINGS_WEBHOOK }}
         with:
-          app_name: scoutgame-draft
+          app_name: draft
