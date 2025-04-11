@@ -11,21 +11,21 @@ type Props = {
 } & BoxProps;
 
 // TODO: just use class names?
-export function getSXProps({ display = 'block', mdDown, mdUp, sx = {} }: Props) {
+export function getSXProps({ display = 'block', mdDown, mdUp }: Props) {
   if (mdDown) {
-    return { display: { xs: 'none', md: display }, ...sx };
+    return { display: { xs: 'none', md: display } };
   }
   if (mdUp) {
-    return { display: { xs: display, md: 'none' }, ...sx };
+    return { display: { xs: display, md: 'none' } };
   }
   log.warn('Hidden component must have either mdDown or mdUp prop');
-  return { ...sx };
+  return {};
 }
 
 // replace a deprecated Hidden component
-export function Hidden({ children, display = 'block', sx = {}, mdDown, mdUp, ...restProps }: PropsWithChildren<Props>) {
+export function Hidden({ children, display = 'block', sx, mdDown, mdUp, ...restProps }: PropsWithChildren<Props>) {
   return (
-    <Box sx={getSXProps({ display, sx, mdDown, mdUp })} {...restProps}>
+    <Box sx={{ ...getSXProps({ display, mdDown, mdUp }), ...sx }} {...restProps}>
       {children}
     </Box>
   );
