@@ -40,7 +40,7 @@ export function getCurrentSeasonStart(
 
 export function isDraftSeason(season: Season = getCurrentSeason().start): boolean {
   const currentSeason = getSeasonConfig(season);
-  return currentSeason.draft ?? false;
+  return (true || currentSeason.draft) ?? false;
 }
 
 export function validateSeasonList(seasonList: Season[]): void {

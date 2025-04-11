@@ -84,7 +84,18 @@ function HeroSection() {
                 Get started by drafting Developers before the season officially begins!
               </Typography>
             </Hidden>
-            <Button LinkComponent={Link} href='/draft/register' variant='blue' sx={{ width: '50%', mx: 'auto' }}>
+            <Button
+              LinkComponent={Link}
+              href='/draft/register'
+              variant='blue'
+              sx={{
+                width: '50%',
+                mx: {
+                  xs: 'auto',
+                  md: 0
+                }
+              }}
+            >
               Draft
             </Button>
           </Stack>
