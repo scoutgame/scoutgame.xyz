@@ -17,7 +17,8 @@ import {
   secondaryText,
   secondaryLightText,
   blackText,
-  secondaryDarkText
+  secondaryDarkText,
+  secondaryTextColorDarkMode
 } from './colors';
 
 const interFont = Inter({

@@ -3,6 +3,7 @@
 import { Stack, Typography } from '@mui/material';
 import { getSeasonConfig } from '@packages/dates/utils';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
+import { disabledTextColorDarkMode, secondaryTextColorDarkMode } from '@packages/scoutgame-ui/theme/colors.ts';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 
@@ -43,24 +44,26 @@ export function CountdownTimer() {
 
   return (
     <Stack
-      direction='row'
-      spacing={{ xs: 1, sm: 2 }}
-      justifyContent='center'
       alignItems='center'
+      gap={2}
       sx={{
-        width: '100%',
         background: 'linear-gradient(135deg, #192553 0%, #3b0f63 100%)',
-        p: { xs: 2, sm: 4 },
+        p: { xs: 1.5, md: 2.5 },
         borderRadius: {
           xs: 1,
           md: 2
         }
       }}
     >
-      <TimeUnit value={timeLeft.days} label='Days' />
-      <TimeUnit value={timeLeft.hours} label='Hours' />
-      <TimeUnit value={timeLeft.minutes} label='Minutes' />
-      <TimeUnit value={timeLeft.seconds} label='Seconds' />
+      <Stack direction='row' spacing={{ xs: 1, md: 2 }} justifyContent='center' alignItems='center'>
+        <TimeUnit value={timeLeft.days} label='Days' />
+        <TimeUnit value={timeLeft.hours} label='Hours' />
+        <TimeUnit value={timeLeft.minutes} label='Minutes' />
+        <TimeUnit value={timeLeft.seconds} label='Seconds' />
+      </Stack>
+      <Typography variant='body2' fontWeight={500}>
+        April 28, 2025
+      </Typography>
     </Stack>
   );
 }
@@ -74,9 +77,9 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
         sx={{
           bgcolor: '#111827',
           borderRadius: 1,
-          px: { xs: 1, sm: 1.5 },
-          py: { xs: 0.5, sm: 1 },
-          minWidth: { xs: 60, sm: 125 },
+          px: { xs: 1, md: 1.5 },
+          py: { xs: 0.5, md: 1 },
+          minWidth: { xs: 60, md: 125 },
           justifyContent: 'center',
           alignItems: 'center'
         }}
@@ -90,7 +93,7 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
           {value.toString().padStart(2, '0')}
         </Typography>
       </Stack>
-      <Typography variant='caption' color='secondary'>
+      <Typography variant='caption' color='#999'>
         {label}
       </Typography>
     </Stack>

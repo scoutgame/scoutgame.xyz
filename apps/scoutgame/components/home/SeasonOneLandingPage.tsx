@@ -8,78 +8,52 @@ import { CountdownTimer } from './CountdownTimer';
 
 function HeroSection() {
   return (
-    <Stack sx={{ position: 'relative' }}>
-      <Container
-        maxWidth='lg'
-        sx={{
-          p: 0,
-          my: 4,
-          mt: {
-            xs: 4,
-            md: 10
-          },
-          zIndex: {
-            xs: 0,
-            md: 1
-          }
+    <Stack>
+      <Stack
+        flexDirection={{
+          xs: 'column',
+          md: 'row'
         }}
+        mb={{
+          xs: 4,
+          md: 6
+        }}
+        justifyContent='space-between'
+        alignItems='flex-end'
       >
-        <Stack
-          flexDirection={{
-            xs: 'column',
-            md: 'row'
+        <Stack gap={2}>
+          <Typography variant='h4' fontWeight={500} textAlign='center'>
+            Season 1 Begins
+          </Typography>
+          <CountdownTimer />
+        </Stack>
+        <Stack p={2.5} borderRadius={1.5} gap={2} justifyContent='center' bgcolor='#1B2653'>
+          <Typography variant='h6'>Happening NOW...</Typography>
+          <Button variant='contained' color='primary' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
+            <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
+          </Button>
+          <Button variant='blue' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
+            <Link href='/draft'>Play Scout Game</Link>
+          </Button>
+        </Stack>
+      </Stack>
+      <Stack>
+        <Typography variant='h4' textAlign='center' color='secondary' fontWeight={500}>
+          Build the Future, One Card at a Time
+        </Typography>
+        <Typography variant='h6' textAlign='center' my={2}>
+          Collect a team of top developers and projects in the crypto ecosystem. <br /> Identify talent, support their
+          open source work and earn Rewards.
+        </Typography>
+        <img
+          src='/images/home/characters.png'
+          alt='Cool dev'
+          style={{
+            marginLeft: 10,
+            marginRight: 10
           }}
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Stack
-            mb={{
-              xs: 4,
-              md: 6
-            }}
-            gap={2}
-          >
-            <Typography variant='h5' fontWeight={500} textAlign='center'>
-              Season 1 Begins
-            </Typography>
-            <CountdownTimer />
-          </Stack>
-          <Stack
-            p={2}
-            borderRadius={1.5}
-            gap={2}
-            mb={4}
-            justifyContent='center'
-            alignItems='center'
-            bgcolor='background.dark'
-          >
-            <Typography variant='h6'>Happening NOW...</Typography>
-            <Button variant='contained' color='primary' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
-              <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
-            </Button>
-            <Button variant='blue' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
-              <Link href='/draft'>Play Scout Game</Link>
-            </Button>
-          </Stack>
-        </Stack>
-        <Stack>
-          <Typography variant='h4' textAlign='center' color='secondary'>
-            Build the Future, One Card at a Time
-          </Typography>
-          <Typography variant='h6' textAlign='center' my={2}>
-            Collect a team of top developers and projects in the crypto ecosystem. <br /> Identify talent, support their
-            open source work and earn Rewards.
-          </Typography>
-          <img
-            src='/images/home/characters.png'
-            alt='Cool dev'
-            style={{
-              marginLeft: 10,
-              marginRight: 10
-            }}
-          />
-        </Stack>
-      </Container>
+        />
+      </Stack>
     </Stack>
   );
 }
@@ -141,10 +115,26 @@ function FooterSection() {
 
 export function SeasonOneLandingPage() {
   return (
-    <Stack height='100%'>
-      <HeroSection />
-      <HowToPlaySection />
-      <FooterSection />
+    <>
+      <Container
+        maxWidth='lg'
+        sx={{
+          p: 0,
+          my: 4,
+          mt: {
+            xs: 4,
+            md: 10
+          },
+          zIndex: {
+            xs: 0,
+            md: 1
+          }
+        }}
+      >
+        <HeroSection />
+        <HowToPlaySection />
+        <FooterSection />
+      </Container>
       <Stack
         zIndex={{
           xs: 0,
@@ -153,6 +143,6 @@ export function SeasonOneLandingPage() {
       >
         <InfoPageFooter />
       </Stack>
-    </Stack>
+    </>
   );
 }
