@@ -1,17 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
-import {
-  THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
-  THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS
-} from '@packages/blockchain/constants';
+import { optimismTokenAddress, optimismTokenDecimals } from '@packages/blockchain/constants';
 import { getCurrentSeason } from '@packages/dates/utils';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
-
-const optimismTokenDecimals = 18;
-const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
 
 export async function deployReferralChampionRewardsContract({ week }: { week: string }) {
   const currentSeason = getCurrentSeason(week);
@@ -34,12 +28,9 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
     chainId: optimism.id,
     // 30 days in seconds from now
     expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),
-    implementationAddress: THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
-    proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
     tokenAddress: optimismTokenAddress,
     recipients,
-    tokenDecimals: optimismTokenDecimals,
-    nullAddressAmount: 0.001
+    nullAddressAmount: parseUnits('0.001', optimismTokenDecimals).toString()
   });
 
   log.info('Referral champion rewards contract deployed', {

@@ -16,21 +16,15 @@ export async function createThirdwebAirdropContract({
   chainId,
   adminPrivateKey,
   tokenAddress,
-  proxyFactoryAddress,
-  implementationAddress,
   expirationTimestamp,
-  nullAddressAmount,
-  tokenDecimals
+  nullAddressAmount
 }: {
   recipients: Recipient[];
   chainId: number;
   adminPrivateKey: `0x${string}`;
   tokenAddress: Address;
-  proxyFactoryAddress: Address;
-  tokenDecimals: number;
-  implementationAddress: Address;
   expirationTimestamp: bigint;
-  nullAddressAmount?: number;
+  nullAddressAmount?: string;
 }) {
   const walletClient = getWalletClient({
     chainId,
@@ -39,19 +33,18 @@ export async function createThirdwebAirdropContract({
 
   if (!walletClient.account) throw new Error('Wallet not found');
 
-  const normalizedRecipientsRecord: Record<`0x${string}`, number> = {};
+  const normalizedRecipientsRecord: Record<`0x${string}`, bigint> = {};
 
   for (const recipient of recipients) {
     if (!normalizedRecipientsRecord[recipient.address]) {
-      normalizedRecipientsRecord[recipient.address] = 0;
+      normalizedRecipientsRecord[recipient.address] = BigInt(0);
     }
-    const amount = BigInt(recipient.amount) / BigInt(10 ** tokenDecimals);
-    normalizedRecipientsRecord[recipient.address] += Number(amount);
+    normalizedRecipientsRecord[recipient.address] += BigInt(recipient.amount);
   }
 
   const normalizedRecipients: Recipient[] = Object.entries(normalizedRecipientsRecord).map(([address, amount]) => ({
     address: address as `0x${string}`,
-    amount: BigInt(amount * 10 ** tokenDecimals).toString()
+    amount: amount.toString()
   }));
 
   if (normalizedRecipients.length === 1) {
@@ -61,7 +54,7 @@ export async function createThirdwebAirdropContract({
     // Add the null address to the recipients to ensure there is atleast 2 recipients, otherwise the merkle tree will not be valid
     normalizedRecipients.push({
       address: '0x0000000000000000000000000000000000000000',
-      amount: BigInt(nullAddressAmount * 10 ** tokenDecimals).toString()
+      amount: nullAddressAmount
     });
   }
 
@@ -90,10 +83,7 @@ export async function createThirdwebAirdropContract({
     // Unix timestamp after which tokens can't be claimed. Should be in seconds.
     expirationTimestamp,
     // Set it to 0 to make it only claimable based off the merkle root
-    openClaimLimitPerWallet: BigInt(0),
-    trustedForwarders: [],
-    proxyFactoryAddress,
-    implementationAddress
+    openClaimLimitPerWallet: BigInt(0)
   });
 
   const chain = getChainById(chainId);

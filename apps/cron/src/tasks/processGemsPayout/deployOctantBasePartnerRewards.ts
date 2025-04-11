@@ -1,10 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
-import {
-  THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
-  THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS
-} from '@packages/blockchain/constants';
 import { getCurrentSeason } from '@packages/dates/utils';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
 import { parseUnits, type Address } from 'viem';
@@ -40,15 +36,12 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
     chainId: base.id,
     // 30 days in seconds from now
     expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),
-    implementationAddress: THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS,
-    proxyFactoryAddress: THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS,
     tokenAddress: baseUsdcTokenAddress,
     recipients: recipients.map((recipient) => ({
       address: recipient.address,
       amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT
     })),
-    tokenDecimals: usdcTokenDecimals,
-    nullAddressAmount: 0.001
+    nullAddressAmount: parseUnits('0.001', usdcTokenDecimals).toString()
   });
 
   log.info('Octant & Base contribution rewards contract deployed', {

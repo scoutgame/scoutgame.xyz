@@ -3,10 +3,10 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { sendDiscordAlert } from '@packages/discord/sendDiscordAlert';
+import { MATCHUP_OP_PRIZE } from '@packages/matchup/config';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
-import { getNewScoutRewards } from '@packages/scoutgame/scouts/getNewScoutRewards';
-import { formatUnits, parseUnits, createWalletClient, http } from 'viem';
+import { formatUnits, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
 const log = getLogger('cron-alert-low-wallet-gas-balance');
@@ -172,7 +172,9 @@ async function calculateUpcomingPayout({
 
     if (partner === 'optimism_referral_champion') {
       const referrals = await getReferralsToReward({ week });
-      return referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
+      const referralPayout = referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
+      const matchupPayout = toWei(MATCHUP_OP_PRIZE);
+      return referralPayout + matchupPayout;
     } else if (partner === 'octant_base_contribution') {
       const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
       const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));

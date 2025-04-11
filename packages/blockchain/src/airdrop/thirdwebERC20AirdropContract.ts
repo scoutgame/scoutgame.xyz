@@ -3,6 +3,9 @@ import type { Address, Hex, WalletClient } from 'viem';
 
 import type { Recipient } from './createThirdwebAirdropContract';
 
+export const THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS = '0x0f2f02D8fE02E9C14A65A5A33073bD1ADD9aa53B';
+export const THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS = '0x25548ba29a0071f30e4bdcd98ea72f79341b07a1';
+
 export type ThirdwebFullMerkleTree = {
   rootHash: string;
   recipients: Recipient[];

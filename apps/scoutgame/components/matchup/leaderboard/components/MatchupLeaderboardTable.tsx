@@ -10,7 +10,7 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { getLeaderboard } from '@packages/matchup/getLeaderboard';
+import { getMatchupLeaderboard } from '@packages/matchup/getMatchupLeaderboard';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Link from 'next/link';
@@ -18,7 +18,7 @@ import Link from 'next/link';
 import { TableCellText } from 'components/common/TableCellText';
 
 export async function MatchupLeaderboardTable({ week }: { week: string }) {
-  const leaderboardRows = await getLeaderboard(week);
+  const leaderboardRows = await getMatchupLeaderboard(week);
 
   return (
     <TableBody>

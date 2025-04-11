@@ -18,7 +18,7 @@ export type ScoutMatchupEntry = {
   }[];
 };
 
-export async function getLeaderboard(week: string, limit?: number): Promise<ScoutMatchupEntry[]> {
+export async function getMatchupLeaderboard(week: string, limit?: number): Promise<ScoutMatchupEntry[]> {
   const entries = await prisma.scoutMatchup.findMany({
     where: {
       week,
@@ -65,7 +65,7 @@ export async function getLeaderboard(week: string, limit?: number): Promise<Scou
     }
   });
   const leaderboard = entries
-    .map((entry, index) => {
+    .map((entry) => {
       const developers = entry.selections
         .map((selection) => ({
           id: selection.developerNft!.builder.id,
@@ -91,10 +91,16 @@ export async function getLeaderboard(week: string, limit?: number): Promise<Scou
         developers
       };
     })
-    .sort((a, b) => b.totalGemsCollected - a.totalGemsCollected)
-    .map((entry, index) => ({
+    .sort((a, b) => b.totalGemsCollected - a.totalGemsCollected);
+
+  // two players can have the same rank if they have the same points
+  const rankings = Array.from(new Set(leaderboard.map((e) => e.totalGemsCollected))).sort((a, b) => b - a);
+  const rankMap = new Map(rankings.map((rank, index) => [rank, index + 1]));
+  return leaderboard
+    .map((entry) => ({
       ...entry,
-      rank: index + 1
-    }));
-  return leaderboard.slice(0, limit);
+      rank: rankMap.get(entry.totalGemsCollected)!
+    }))
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, limit);
 }
