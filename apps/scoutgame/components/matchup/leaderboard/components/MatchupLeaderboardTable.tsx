@@ -2,13 +2,13 @@ import {
   Box,
   Badge,
   Stack,
-  Table,
   TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
   TableRow,
-  Typography
+  Typography,
+  Table,
+  TableContainer,
+  TableHead
 } from '@mui/material';
 import { getMatchupLeaderboard } from '@packages/matchup/getMatchupLeaderboard';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';

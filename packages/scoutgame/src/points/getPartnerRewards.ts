@@ -4,7 +4,7 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getDateFromISOWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 import { formatUnits } from 'viem';
 
-type PartnerRewardBase = {
+type PartnerRewardBase<T> = T & {
   week: number;
   points: number;
   season: Season;
@@ -13,20 +13,20 @@ type PartnerRewardBase = {
   chainId: number;
 };
 
-export type OptimismNewScoutPartnerReward = PartnerRewardBase & {
+export type OptimismNewScoutPartnerReward = PartnerRewardBase<{
   type: 'optimism_new_scout';
   position: number;
-};
+}>;
 
-export type OptimismReferralChampionPartnerReward = PartnerRewardBase & {
+export type OptimismReferralChampionPartnerReward = PartnerRewardBase<{
   type: 'optimism_referral_champion';
   date: Date | null;
-};
+}>;
 
-export type OctantBaseContributionPartnerReward = PartnerRewardBase & {
+export type OctantBaseContributionPartnerReward = PartnerRewardBase<{
   type: 'octant_base_contribution';
   prLink: string;
-};
+}>;
 
 export type PartnerReward =
   | OptimismNewScoutPartnerReward
@@ -155,7 +155,7 @@ export async function getPartnerRewards({
   });
 
   partnerRewardPayouts.forEach((payout) => {
-    const partnerReward: PartnerRewardBase = {
+    const partnerReward: PartnerRewardBase<any> = {
       points: Number(formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)),
       season,
       week: getSeasonWeekFromISOWeek({
@@ -186,6 +186,8 @@ export async function getPartnerRewards({
         type: 'octant_base_contribution' as const,
         prLink: (payout.meta as unknown as { prLink: string }).prLink
       });
+    } else if (payout.payoutContract.partner === 'matchup_winner') {
+      // note, this appear in the list returned by getPointsReceiptsRewards
     }
   });
 
