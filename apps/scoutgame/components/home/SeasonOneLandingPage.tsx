@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { InfoPageFooter } from 'components/info/components/InfoPageFooter';
 import { InfoPageContent } from 'components/info/InfoPage';
 
+import { CountdownTimer } from './CountdownTimer';
+
 function HeroSection() {
   return (
     <Stack sx={{ position: 'relative' }}>
@@ -30,6 +32,7 @@ function HeroSection() {
             <Typography variant='h5' fontWeight={500} textAlign='center'>
               Season 1 Begins
             </Typography>
+            <CountdownTimer />
           </Stack>
           <Stack
             p={2}
@@ -57,7 +60,14 @@ function HeroSection() {
             Collect a team of top developers and projects in the crypto ecosystem. <br /> Identify talent, support their
             open source work and earn Rewards.
           </Typography>
-          <img src='/images/home/characters.png' alt='Cool dev' />
+          <img
+            src='/images/home/characters.png'
+            alt='Cool dev'
+            style={{
+              marginLeft: 10,
+              marginRight: 10
+            }}
+          />
         </Stack>
       </Container>
     </Stack>
@@ -100,7 +110,13 @@ function FooterSection() {
         <Typography variant='h6' textAlign='center'>
           Happening NOW...
         </Typography>
-        <Stack flexDirection='row' gap={2}>
+        <Stack
+          flexDirection={{
+            xs: 'column',
+            md: 'row'
+          }}
+          gap={2}
+        >
           <Button variant='contained' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
             <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
           </Button>
