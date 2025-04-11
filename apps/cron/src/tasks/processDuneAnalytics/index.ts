@@ -11,56 +11,60 @@ import { taiko, taikoTestnetSepolia } from 'viem/chains';
 const log = getLogger('cron-process-dune-analytics');
 
 export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWeek()) {
-  // const wallets = await prisma.scoutProjectWallet.findMany({
-  //   where: {
-  //     OR: [
-  //       {
-  //         chainType: 'solana',
-  //         deletedAt: null
-  //       },
-  //       {
-  //         chainId: {
-  //           not: {
-  //             in: [taiko.id, taikoTestnetSepolia.id]
-  //           }
-  //         },
-  //         deletedAt: null
-  //       }
-  //     ]
-  //   },
-  //   select: {
-  //     id: true,
-  //     address: true,
-  //     chainId: true,
-  //     chainType: true
-  //   }
-  // });
+  const wallets = await prisma.scoutProjectWallet.findMany({
+    where: {
+      OR: [
+        {
+          chainType: 'solana',
+          deletedAt: null
+        },
+        {
+          chainId: {
+            not: {
+              in: [taiko.id, taikoTestnetSepolia.id]
+            }
+          },
+          deletedAt: null
+        }
+      ]
+    },
+    select: {
+      id: true,
+      address: true,
+      projectId: true,
+      chainId: true,
+      chainType: true
+    }
+  });
 
-  // log.debug(`Found ${wallets.length} wallets to process with Dune Analytics`);
+  log.debug(`Found ${wallets.length} wallets to process with Dune Analytics`);
 
-  // for (const wallet of wallets) {
-  //   try {
-  //     const { startDate, endDate, newMetrics, updatedMetrics } = await recordWalletAnalyticsForWeek(wallet, week);
-  //     log.info(`Created daily stats for wallet`, {
-  //       newMetrics: newMetrics.length,
-  //       chainType: wallet.chainType,
-  //       updatedMetrics: updatedMetrics.length,
-  //       walletAddress: wallet.address,
-  //       walletId: wallet.id,
-  //       week,
-  //       startDate,
-  //       endDate
-  //     });
-  //   } catch (error) {
-  //     log.error(`Error creating metrics for wallet`, {
-  //       chainType: wallet.chainType,
-  //       address: wallet.address,
-  //       week,
-  //       walletId: wallet.id,
-  //       error
-  //     });
-  //   }
-  // }
+  for (const wallet of wallets) {
+    try {
+      const { startDate, endDate, newMetrics, updatedMetrics } = await recordWalletAnalyticsForWeek(wallet, week);
+      log.info(`Created daily stats for wallet`, {
+        newMetrics: newMetrics.length,
+        chainType: wallet.chainType,
+        updatedMetrics: updatedMetrics.length,
+        walletAddress: wallet.address,
+        walletId: wallet.id,
+        projectId: wallet.projectId,
+        week,
+        startDate,
+        endDate
+      });
+    } catch (error) {
+      log.error(`Error creating metrics for wallet`, {
+        chainType: wallet.chainType,
+        address: wallet.address,
+        week,
+        walletId: wallet.id,
+        projectId: wallet.projectId,
+        error
+      });
+    }
+  }
+
   const contracts = await prisma.scoutProjectContract.findMany({
     where: {
       OR: [
@@ -73,6 +77,9 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
           }
         }
       ]
+    },
+    orderBy: {
+      id: 'asc' // order by something so we can retry, if necessary, from the middle of the list
     },
     select: {
       id: true,
@@ -93,7 +100,8 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
       log.info(`Created daily stats for contract`, {
         newDailyStats: newDailyStats.length,
         updatedMetrics: updatedDailyStats.length,
-        walletId: contract.id,
+        contractId: contract.id,
+        projectId: contract.projectId,
         week,
         startDate,
         endDate
@@ -103,6 +111,7 @@ export async function processDuneAnalytics(ctx: Koa.Context, week = getCurrentWe
         address: contract.address,
         week,
         contractId: contract.id,
+        projectId: contract.projectId,
         error
       });
     }
