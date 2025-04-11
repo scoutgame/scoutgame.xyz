@@ -26,10 +26,13 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
       <Stack my={4} gap={2}>
         <Stack
           gap={{
-            xs: 0.5,
+            xs: 2,
             md: 1
           }}
-          flexDirection='row'
+          flexDirection={{
+            xs: 'column',
+            sm: 'row'
+          }}
           alignItems='center'
           bgcolor='background.paper'
           p={{
@@ -43,43 +46,73 @@ export function ProjectPage({ project }: { project: ScoutProjectDetailed }) {
           borderRadius={1}
           position='relative'
         >
-          <BackButton />
-          <Avatar
-            src={project.avatar}
-            alt={project.name}
-            sx={{
-              width: 100,
-              height: 100,
-              fontSize: 14,
-              fontWeight: 600
-            }}
-            variant='square'
-          />
-          <Stack gap={1} ml={1} flex={1}>
-            <Stack flexDirection='row' alignItems='center' gap={1}>
-              <Typography data-test='project-name' variant='h5'>
-                {project.name}
+          <Stack flexDirection='row' alignItems='center'>
+            <BackButton />
+            <Avatar
+              src={project.avatar}
+              alt={project.name}
+              sx={{
+                width: {
+                  xs: 54,
+                  md: 100
+                },
+                height: {
+                  xs: 54,
+                  md: 100
+                },
+                fontSize: 14,
+                fontWeight: 600
+              }}
+              variant='square'
+            />
+            <Stack gap={1} ml={1} flex={1}>
+              <Stack flexDirection='row' alignItems='center' gap={1}>
+                <Typography data-test='project-name' variant='h5'>
+                  {project.name}
+                </Typography>
+                {project.github && (
+                  <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
+                    <GitHubIcon />
+                  </Link>
+                )}
+                {project.website && (
+                  <Link href={project.website} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
+                    <LanguageIcon />
+                  </Link>
+                )}
+              </Stack>
+              <Typography
+                sx={{
+                  whiteSpace: 'pre-wrap',
+                  font: { xs: 'var(--mui-font-caption)', md: 'var(--mui-font-body2)' }
+                }}
+              >
+                {project.description}
               </Typography>
-              {project.github && (
-                <Link href={project.github} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
-                  <GitHubIcon />
-                </Link>
-              )}
-              {project.website && (
-                <Link href={project.website} target='_blank' style={{ alignItems: 'center', display: 'flex' }}>
-                  <LanguageIcon />
-                </Link>
-              )}
             </Stack>
-            <Typography sx={{ whiteSpace: 'pre-wrap' }}>{project.description}</Typography>
           </Stack>
           {!project.stats.loading && (
-            <Stack flexDirection='row' gap={2} alignItems='center' mr={2}>
-              <Stack justifyContent='center' alignItems='center' flex={1}>
+            <Stack flexDirection='row' gap={2} alignItems='center' mx={2}>
+              <Stack
+                justifyContent={{
+                  xs: 'space-between',
+                  sm: 'flex-end'
+                }}
+                alignItems='center'
+                flex={1}
+                flexDirection={{
+                  xs: 'row',
+                  sm: 'column'
+                }}
+                gap={{
+                  xs: 1,
+                  sm: 0
+                }}
+              >
                 <Typography color='secondary' width='100px' align='center' variant='body2'>
                   Current Week Transactions
                 </Typography>
-                <Typography fontSize='2em'>
+                <Typography fontSize='2em' noWrap>
                   {project.stats.loading ? 0 : project.stats.totalTxCount?.toLocaleString()} <TransactionIcon />
                 </Typography>
               </Stack>
