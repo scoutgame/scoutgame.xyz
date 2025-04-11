@@ -14,6 +14,10 @@ function HeroSection() {
         sx={{
           p: 0,
           my: 4,
+          mt: {
+            xs: 4,
+            md: 10
+          },
           zIndex: {
             xs: 0,
             md: 1
