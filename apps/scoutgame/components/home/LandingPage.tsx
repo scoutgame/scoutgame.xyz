@@ -1,5 +1,4 @@
 import { Button, Container, Stack, Typography } from '@mui/material';
-import { isDraftSeason } from '@packages/dates/utils';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 import Link from 'next/link';

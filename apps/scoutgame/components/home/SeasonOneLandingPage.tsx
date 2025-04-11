@@ -1,4 +1,6 @@
 import { Button, Container, Stack, Typography } from '@mui/material';
+import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { InfoPageFooter } from 'components/info/components/InfoPageFooter';
@@ -80,7 +82,29 @@ function HowToPlaySection() {
 
 function FooterSection() {
   return (
-    <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }} mb={{ xs: 4, md: 0 }}>
+    <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }}>
+      <Hidden
+        mdDown
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        <Image
+          src='/images/home/landing-bg.png'
+          width='500'
+          height='250'
+          alt='footer bg'
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+        />
+      </Hidden>
       <Stack
         mx='auto'
         zIndex={{
@@ -133,8 +157,8 @@ export function SeasonOneLandingPage() {
       >
         <HeroSection />
         <HowToPlaySection />
-        <FooterSection />
       </Container>
+      <FooterSection />
       <Stack
         zIndex={{
           xs: 0,
