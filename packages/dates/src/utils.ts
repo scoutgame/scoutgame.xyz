@@ -1,3 +1,4 @@
+import env from '@beam-australia/react-env';
 import { DateTime } from 'luxon';
 
 import type { ISOWeek, Season, SeasonConfig } from './config';
@@ -40,7 +41,7 @@ export function getCurrentSeasonStart(
 
 export function isDraftSeason(season: Season = getCurrentSeason().start): boolean {
   const currentSeason = getSeasonConfig(season);
-  return currentSeason.draft ?? false;
+  return currentSeason.draft ?? env('IS_DRAFT_SEASON') === 'true';
 }
 
 export function validateSeasonList(seasonList: Season[]): void {
