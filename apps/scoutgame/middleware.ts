@@ -28,6 +28,10 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  if (path.startsWith('/draft')) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
   if (path === '/taiko') {
     return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
   }
