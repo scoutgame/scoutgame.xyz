@@ -58,7 +58,7 @@ function HeroSection() {
               <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
             </Button>
             <Button variant='blue' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
-              <Link href='/draft'>Draft Developers</Link>
+              <Link href='/draft'>Play Scout Game</Link>
             </Button>
           </Stack>
         </Stack>
@@ -131,7 +131,7 @@ function FooterSection() {
             <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
           </Button>
           <Button variant='blue' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
-            <Link href='/draft'>Draft Developers</Link>
+            <Link href='/draft'>Play Scout Game</Link>
           </Button>
         </Stack>
       </Stack>

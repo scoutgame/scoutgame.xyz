@@ -41,7 +41,13 @@ export function getCurrentSeasonStart(
 
 export function isDraftSeason(season: Season = getCurrentSeason().start): boolean {
   const currentSeason = getSeasonConfig(season);
-  return currentSeason.draft ?? env('IS_DRAFT_SEASON') === 'true';
+  const IS_DRAFT_SEASON = env('IS_DRAFT_SEASON') || process.env.REACT_APP_IS_DRAFT_SEASON;
+
+  if (IS_DRAFT_SEASON) {
+    return IS_DRAFT_SEASON === 'true';
+  }
+
+  return currentSeason.draft ?? false;
 }
 
 export function validateSeasonList(seasonList: Season[]): void {

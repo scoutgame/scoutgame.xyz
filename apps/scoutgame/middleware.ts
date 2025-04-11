@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 
 // These are the links that are only accessible to logged in users
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
-const draftLinks = ['/draft', '/'];
+const draftLinks = ['/draft', '/info'];
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();
@@ -17,12 +17,17 @@ export async function middleware(request: NextRequest) {
   const draftSeason = isDraftSeason();
 
   if (draftSeason) {
-    if (!draftLinks.some((link) => path.startsWith(link))) {
-      return NextResponse.redirect(new URL(isLoggedIn ? '/draft' : '/', request.url));
+    // Don't redirect if path is root
+    if (path === '/') {
+      return response;
     }
 
-    if (isLoggedIn) {
-      return NextResponse.redirect(new URL('/draft', request.url));
+    // Check if path is in whitelist
+    const isWhitelisted = [...draftLinks, ...(isLoggedIn ? ['/quests', '/claim', '/notifications'] : ['/login'])].some(
+      (link) => path.startsWith(link)
+    );
+    if (!isWhitelisted) {
+      return NextResponse.redirect(new URL(isLoggedIn ? '/draft/register' : '/draft', request.url));
     }
 
     return response;
