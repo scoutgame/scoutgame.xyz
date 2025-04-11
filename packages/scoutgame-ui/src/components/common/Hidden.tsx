@@ -23,9 +23,9 @@ export function getSXProps({ display = 'block', mdDown, mdUp }: Props) {
 }
 
 // replace a deprecated Hidden component
-export function Hidden({ children, mdDown, mdUp, ...restProps }: PropsWithChildren<Props>) {
+export function Hidden({ children, display = 'block', sx, mdDown, mdUp, ...restProps }: PropsWithChildren<Props>) {
   return (
-    <Box sx={getSXProps({ mdDown, mdUp })} {...restProps}>
+    <Box sx={{ ...getSXProps({ display, mdDown, mdUp }), ...sx }} {...restProps}>
       {children}
     </Box>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Skeleton, Typography } from '@mui/material';
-import { getCurrentSeasonWeekNumber, getWeekStartEnd } from '@packages/dates/utils';
+import { getCurrentSeason, getCurrentSeasonWeekNumber, getWeekStartEnd, isDraftSeason } from '@packages/dates/utils';
 import { useEffect, useState } from 'react';
 
 import { useIsMounted } from '../../../hooks/useIsMounted';
@@ -9,6 +9,7 @@ import { useIsMounted } from '../../../hooks/useIsMounted';
 export function HeaderMessage() {
   const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr());
   const isMounted = useIsMounted();
+  const draftSeason = isDraftSeason();
 
   useEffect(() => {
     const timeout = setInterval(() => {
@@ -19,10 +20,10 @@ export function HeaderMessage() {
   }, []);
 
   return (
-    <Box width='100%' minHeight='40px' bgcolor='rgba(160, 108, 213, 0.4)' p={1} display='flex' justifyContent='center'>
+    <Box width='100%' minHeight='40px' bgcolor='primary.dark' p={1} display='flex' justifyContent='center'>
       {isMounted ? (
         <Typography variant='body1' fontWeight='500' textAlign='center'>
-          Week {getCurrentSeasonWeekNumber()} ends in {timeLeftStr}
+          {draftSeason ? 'Draft' : `Week ${getCurrentSeasonWeekNumber()}`} ends in {timeLeftStr}
         </Typography>
       ) : (
         <Skeleton width='50%' />

@@ -88,7 +88,7 @@ function Step({
   );
 }
 
-export function InfoPageContent() {
+export function InfoPageContent({ hideDeveloperCard = false }: { hideDeveloperCard?: boolean }) {
   return (
     <Container
       maxWidth='lg'
@@ -108,39 +108,41 @@ export function InfoPageContent() {
         description='Spot talented developers and snag their exclusive NFT Developers Cards. Your picks help highlight the best talent out there!'
         iconSrc='/images/home/card-icon.svg'
         additionalContent={
-          <Stack alignItems='center'>
-            <Typography variant='h6' color='secondary' mt={2} mb={1} textAlign='center'>
-              carl's Developer Card
-            </Typography>
-            <Hidden mdDown>
-              <Image
-                src='/images/home/card-diagram.png'
-                width='350'
-                height='350'
-                alt='Collect cards'
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  objectFit: 'contain'
-                }}
-              />
-            </Hidden>
-            <Hidden mdUp>
-              <Stack alignItems='center'>
+          hideDeveloperCard ? null : (
+            <Stack alignItems='center'>
+              <Typography variant='h6' color='secondary' mt={2} mb={1} textAlign='center'>
+                carl's Developer Card
+              </Typography>
+              <Hidden mdDown>
                 <Image
-                  src='/images/home/card-diagram-mobile.png'
+                  src='/images/home/card-diagram.png'
                   width='350'
                   height='350'
                   alt='Collect cards'
                   style={{
                     height: '100%',
-                    width: '85%',
-                    objectFit: 'cover'
+                    width: '100%',
+                    objectFit: 'contain'
                   }}
                 />
-              </Stack>
-            </Hidden>
-          </Stack>
+              </Hidden>
+              <Hidden mdUp>
+                <Stack alignItems='center'>
+                  <Image
+                    src='/images/home/card-diagram-mobile.png'
+                    width='350'
+                    height='350'
+                    alt='Collect cards'
+                    style={{
+                      height: '100%',
+                      width: '85%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                </Stack>
+              </Hidden>
+            </Stack>
+          )
         }
       />
       <Step

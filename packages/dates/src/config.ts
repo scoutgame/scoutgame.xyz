@@ -11,6 +11,7 @@ export type SeasonConfig = {
   starterNftAddress: Address;
   defaultNftAddress: Address;
   weeksPerSeason: number;
+  draft?: boolean;
 };
 
 // the end of each season is the start of the next season
@@ -48,6 +49,14 @@ export const seasons: SeasonConfig[] = [
     title: 'Season 2',
     weeksPerSeason: 15, // extended season
     preseason: true
+  },
+  {
+    start: '2025-W17',
+    title: 'Draft Season',
+    starterNftAddress: '0x0000000000000000000000000000000000000000',
+    defaultNftAddress: '0x0000000000000000000000000000000000000000',
+    weeksPerSeason: 1,
+    draft: true
   },
   // Season 1
   {

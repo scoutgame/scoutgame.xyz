@@ -196,7 +196,7 @@ export function DevelopersTable({
                 }}
                 height='100%'
               >
-                <BuilderCardRankGraph last14DaysRank={builder.last14DaysRank} />
+                <BuilderCardRankGraph ranks={builder.last14DaysRank} />
                 <TableCellText
                   color='secondary'
                   minWidth={{

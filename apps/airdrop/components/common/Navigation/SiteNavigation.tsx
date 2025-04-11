@@ -2,7 +2,6 @@
 
 import { BottomNavigationAction } from '@mui/material';
 import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
-import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
 import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
 import { Link } from 'next-view-transitions';
 import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
