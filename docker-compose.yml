@@ -299,6 +299,7 @@ services:
       - prd-scoutgameadmin
       - prd-scoutgamecron
       - prd-onchain-scoutgame
+      - prd-scoutgame-draft
       - prd-onchain-scoutgamecron
       - prd-scoutgametelegram
       - ddtst
