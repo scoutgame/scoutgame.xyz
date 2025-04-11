@@ -11,7 +11,7 @@ export const bonusPartnersRecord = {
   // },
   celo: {
     name: 'Celo',
-    icon: 'https://cryptologos.cc/logos/celo-celo-logo.png'
+    icon: 'https://scoutgame.xyz/images/crypto/celo.png'
   },
   game7: {
     name: 'Game7',

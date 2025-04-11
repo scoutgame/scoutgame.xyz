@@ -1,4 +1,15 @@
-import { Box, Badge, Stack, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import {
+  Box,
+  Badge,
+  Stack,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography,
+  Table,
+  TableContainer,
+  TableHead
+} from '@mui/material';
 import { getMatchupLeaderboard } from '@packages/matchup/getMatchupLeaderboard';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
