@@ -1,10 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export async function getDraftDevelopers() {
-  const draftSeason = getCurrentSeasonStart();
-  // For testing purposes
-  const season = draftSeason ? getPreviousSeason(draftSeason) : getCurrentSeasonStart();
+  const season = getCurrentSeasonStart();
 
   if (!season) {
     throw new Error('No draft season found');
