@@ -32,6 +32,7 @@ export type ScoutProjectDetailed = Pick<
   contracts: (Pick<ScoutProjectContract, 'id' | 'address' | 'chainId' | 'deployerId'> & {
     loadingStats: boolean;
     txCount: number;
+    dailyStats: any[];
   })[];
   teamMembers: ProjectTeamMember[];
   deployers: {
