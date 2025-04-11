@@ -3,7 +3,6 @@
 import { Stack, Typography } from '@mui/material';
 import { getSeasonConfig } from '@packages/dates/utils';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-import { disabledTextColorDarkMode, secondaryTextColorDarkMode } from '@packages/scoutgame-ui/theme/colors.ts';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 
@@ -49,6 +48,7 @@ export function CountdownTimer() {
       sx={{
         background: 'linear-gradient(135deg, #192553 0%, #3b0f63 100%)',
         p: { xs: 1.5, md: 2.5 },
+        pt: { xs: 1.5, md: 4 },
         borderRadius: {
           xs: 1,
           md: 2
@@ -61,9 +61,7 @@ export function CountdownTimer() {
         <TimeUnit value={timeLeft.minutes} label='Minutes' />
         <TimeUnit value={timeLeft.seconds} label='Seconds' />
       </Stack>
-      <Typography variant='body2' fontWeight={500}>
-        April 28, 2025
-      </Typography>
+      <Typography fontWeight={600}>April 28, 2025</Typography>
     </Stack>
   );
 }

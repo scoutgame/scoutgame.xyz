@@ -1,3 +1,4 @@
+import type { ButtonProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
@@ -8,9 +9,27 @@ import { InfoPageContent } from 'components/info/InfoPage';
 
 import { CountdownTimer } from './CountdownTimer';
 
+function CustomButton({ children, ...props }: ButtonProps) {
+  return (
+    <Button
+      variant='contained'
+      color='primary'
+      sx={{
+        px: { xs: 1, md: 2 },
+        py: { xs: 0.5, md: 1 },
+        borderRadius: { xs: 1, md: 1.5 },
+        minWidth: { xs: 150, md: 200 }
+      }}
+      {...props}
+    >
+      {children}
+    </Button>
+  );
+}
+
 function HeroSection() {
   return (
-    <Stack>
+    <Stack alignItems='center'>
       <Stack
         flexDirection={{
           xs: 'column',
@@ -20,8 +39,16 @@ function HeroSection() {
           xs: 4,
           md: 6
         }}
-        justifyContent='space-between'
-        alignItems='flex-end'
+        gap={{
+          xs: 2,
+          md: 10
+        }}
+        maxWidth='md'
+        justifyContent='center'
+        alignItems={{
+          xs: 'center',
+          md: 'flex-end'
+        }}
       >
         <Stack gap={2}>
           <Typography variant='h4' fontWeight={500} textAlign='center'>
@@ -29,14 +56,34 @@ function HeroSection() {
           </Typography>
           <CountdownTimer />
         </Stack>
-        <Stack p={2.5} borderRadius={1.5} gap={2} justifyContent='center' bgcolor='#1B2653'>
-          <Typography variant='h6'>Happening NOW...</Typography>
-          <Button variant='contained' color='primary' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
+        <Stack
+          p={{
+            xs: 1.5,
+            md: 2.5
+          }}
+          borderRadius={{
+            xs: 1,
+            md: 2
+          }}
+          gap={{
+            xs: 1,
+            md: 2
+          }}
+          width={{
+            xs: '100%'
+          }}
+          justifyContent='center'
+          bgcolor='#1B2653'
+        >
+          <Typography variant='h6' textAlign='center'>
+            Happening NOW...
+          </Typography>
+          <CustomButton variant='contained' color='primary'>
             <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
-          </Button>
-          <Button variant='blue' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
+          </CustomButton>
+          <CustomButton variant='blue'>
             <Link href='/draft'>Play Scout Game</Link>
-          </Button>
+          </CustomButton>
         </Stack>
       </Stack>
       <Stack>
@@ -47,14 +94,36 @@ function HeroSection() {
           Collect a team of top developers and projects in the crypto ecosystem. <br /> Identify talent, support their
           open source work and earn Rewards.
         </Typography>
-        <img
-          src='/images/home/characters.png'
-          alt='Cool dev'
-          style={{
-            marginLeft: 10,
-            marginRight: 10
-          }}
-        />
+        <Hidden mdDown>
+          <Image
+            src='/images/home/characters.png'
+            alt='Characters'
+            width={500}
+            height={500}
+            style={{
+              marginLeft: 10,
+              marginRight: 10,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain'
+            }}
+          />
+        </Hidden>
+        <Hidden mdUp>
+          <Stack justifyContent='center' alignItems='center' width='100%' height='100%'>
+            <Image
+              src='/images/home/characters.png'
+              alt='Characters'
+              width={300}
+              height={300}
+              style={{
+                width: '85%',
+                height: '85%',
+                objectFit: 'contain'
+              }}
+            />
+          </Stack>
+        </Hidden>
       </Stack>
     </Stack>
   );
@@ -82,7 +151,16 @@ function HowToPlaySection() {
 
 function FooterSection() {
   return (
-    <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }}>
+    <Stack
+      position='relative'
+      alignItems='center'
+      gap={2}
+      py={{ xs: 0, md: 4 }}
+      mb={{
+        xs: 4,
+        md: 0
+      }}
+    >
       <Hidden
         mdDown
         sx={{
@@ -125,12 +203,12 @@ function FooterSection() {
           }}
           gap={2}
         >
-          <Button variant='contained' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
+          <CustomButton>
             <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
-          </Button>
-          <Button variant='blue' sx={{ px: 2, py: 1, borderRadius: 1.5, minWidth: 200 }}>
+          </CustomButton>
+          <CustomButton variant='blue'>
             <Link href='/draft'>Play Scout Game</Link>
-          </Button>
+          </CustomButton>
         </Stack>
       </Stack>
     </Stack>
