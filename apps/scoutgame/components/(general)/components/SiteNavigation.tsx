@@ -18,9 +18,8 @@ import { useState } from 'react';
 import { ImGift as QuestsIcon } from 'react-icons/im';
 import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
 
+import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
 import { useGetQuests } from 'hooks/api/quests';
-
-import { SignInModalMessage } from '../ScoutButton/SignInModalMessage';
 
 export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const platform = getPlatform();

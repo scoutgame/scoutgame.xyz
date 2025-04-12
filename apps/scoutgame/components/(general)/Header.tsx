@@ -30,8 +30,9 @@ import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 
-import { SiteNavigation } from 'components/common/Navigation/SiteNavigation';
 import { useGetUnreadNotificationsCount } from 'hooks/api/notifications';
+
+import { SiteNavigation } from './components/SiteNavigation';
 
 export function Header() {
   const router = useRouter();
