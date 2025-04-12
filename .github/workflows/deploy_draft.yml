@@ -176,6 +176,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
           app_name: scoutgame
+          app_config_override: draft
           stack: prd-scoutgame-draft
 
   deploy-staging:
