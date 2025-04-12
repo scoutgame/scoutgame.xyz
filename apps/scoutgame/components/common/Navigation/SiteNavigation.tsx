@@ -1,6 +1,7 @@
 'use client';
 
-import { BottomNavigationAction, BottomNavigation, styled } from '@mui/material';
+import { BottomNavigationAction } from '@mui/material';
+import { isDraftSeason } from '@packages/dates/utils';
 import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
@@ -42,6 +43,42 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
     open: false,
     path: 'scout'
   });
+
+  const draftSeason = isDraftSeason();
+
+  if (draftSeason) {
+    return (
+      <>
+        <StyledBottomNavigation
+          showLabels
+          value={value}
+          data-test='site-navigation'
+          topNav={topNav}
+          largerNavbar={platform === 'telegram' || isFarcasterFrame}
+        >
+          <BottomNavigationAction
+            label='Airdrop'
+            href='https://airdrop.scoutgame.xyz'
+            value='airdrop'
+            icon={<ClaimIcon />}
+            LinkComponent={Link}
+          />
+          <BottomNavigationAction
+            label='Draft'
+            href='/draft'
+            value='draft'
+            icon={<ScoutIcon size='24px' />}
+            LinkComponent={Link}
+          />
+        </StyledBottomNavigation>
+        <SignInModalMessage
+          open={authPopup.open}
+          onClose={() => setAuthPopup({ open: false, path: authPopup.path })}
+          path={authPopup.path}
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -127,6 +164,8 @@ function getActiveButton(pathname: string) {
     return 'developers';
   } else if (pathname.startsWith('/quests')) {
     return 'quests';
+  } else if (pathname.startsWith('/draft')) {
+    return 'draft';
   }
   return null;
 }

@@ -121,7 +121,7 @@ export function BuilderCardActivity({
             RANK
           </Typography>
           <Stack width='calc(100% + 5px)' height='100%'>
-            <BuilderCardRankGraph last14DaysRank={last14DaysRank} />
+            <BuilderCardRankGraph ranks={last14DaysRank} />
           </Stack>
         </Stack>
       </Stack>

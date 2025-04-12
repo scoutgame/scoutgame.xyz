@@ -148,7 +148,7 @@ function FooterSection() {
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
         <Button variant='contained' sx={{ width: '50%' }}>
-          <Link href='/login'>Get starteds</Link>
+          <Link href='/login'>Get started</Link>
         </Button>
       </Stack>
     </Stack>

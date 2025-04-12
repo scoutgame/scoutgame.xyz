@@ -10,6 +10,7 @@ on:
       - '.github/workflows/deploy_draft.yml'
       - 'package.json'
       - 'package-lock.json'
+      - 'apps/scoutgame/**'
       - 'apps/draft/**'
       - 'packages/**'
   pull_request:
@@ -22,16 +23,12 @@ on:
       - '.github/workflows/deploy_draft.yml'
       - 'package.json'
       - 'package-lock.json'
+      - 'apps/scoutgame/**'
       - 'apps/draft/**'
       - 'packages/**'
-  workflow_dispatch:
-    inputs:
-      core_pkg_version:
-        description: 'Core pkg version to update to'
-        required: true
 
 concurrency:
-  group: ci-draft-${{ github.event_name }}-${{ github.ref }}
+  group: ci-scoutgame-draft-${{ github.event_name }}-${{ github.ref }}
 
 jobs:
   build:
@@ -57,67 +54,24 @@ jobs:
         id: setup_variables
         # source https://github.com/orgs/community/discussions/28474
         run: |
-          echo "commit_message=$(git show -s --format=%s)" >> "$GITHUB_OUTPUT"
+          # Check if commit message contains skip-tests and set variable
+          if [[ "$(git show -s --format=%s)" == *"skip-tests"* ]]; then
+            should_skip_tests=true
+          else
+            should_skip_tests=false
+          fi
+          echo "skip_tests=$should_skip_tests" >> $GITHUB_OUTPUT
           echo "deploy_staging=${{(github.event.action == 'labeled' && github.event.label.name == ':rocket: deploy-draft') || (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, ':rocket: deploy-draft'))}}" >> $GITHUB_OUTPUT
-          echo "skip_tests=${{ contains(env.commit_message, 'skip-tests') }}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: draft
-          core_pkg_version: ${{ inputs.core_pkg_version }}
-          commit_core_pkg_upgrade: true
+          app_name: scoutgame
 
       - name: Build app
         uses: ./.github/actions/build_app
         with:
-          app_name: draft
-
-  test:
-    name: Test apps
-    runs-on: ubuntu-latest
-    needs: build
-    if: ${{ github.event.action != 'labeled' && needs.build.outputs.skip_tests != 'true' }}
-    # Postgres setup copied from https://gist.github.com/2color/537f8ef13ecec80059abb007839a6878
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --hostname postgres
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Restore dependencies from cache
-        uses: ./.github/actions/install
-        with:
-          app_name: draft
-
-      - name: Setup test database
-        run: npx dotenv -e .env.test.local -- npm run prisma:reset
-
-      - name: Restore app from cache
-        uses: ./.github/actions/build_app
-        with:
-          app_name: draft
-
-      - name: Typecheck app
-        run: npm run typecheck -w apps/draft
-
-      # - name: Run app tests
-      #   run: npm run draft:test
+          app_name: scoutgame
 
   upload-docker:
     name: Upload Docker image
@@ -134,16 +88,16 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: draft
+          app_name: scoutgame
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: draft
+          app_name: scoutgame
 
-      - name: Move Dockerfile to top level
+      - name: Update Dockerfile
         run: |
-          mv apps/draft/Dockerfile Dockerfile
+          rm Dockerfile && mv apps/scoutgame/Dockerfile Dockerfile
 
       - name: Build and Push Docker image
         id: docker_build_push
@@ -156,10 +110,12 @@ jobs:
           ecr_registry: scoutgame-draft
 
   upload-static-assets:
-    name: Upload assets in production
+    name: Upload static assets
     runs-on: ubuntu-latest
     # run whether previous jobs were successful or skipped
-    if: github.ref == 'refs/heads/main' && !(failure() || cancelled())
+    if: |
+      (github.ref == 'refs/heads/main' && !(failure() || cancelled())) ||
+      (needs.build.outputs.deploy_staging == 'true')
     needs: build
     steps:
       - uses: actions/checkout@v4
@@ -169,18 +125,18 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install
         with:
-          app_name: draft
+          app_name: scoutgame
 
       - name: Calculate Build ID
         id: get_build_id
         run: |
-          build_id=${{ hashFiles('package-lock.json', 'apps/**/*.[jt]s', 'lib/**/*.[jt]s') }}
+          build_id=${{ hashFiles(format('apps/{0}/*.ts', 'scoutgame'), format('apps/{0}/*.tsx', 'scoutgame')) }}
           echo "build_id=$build_id" >> $GITHUB_OUTPUT
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
         with:
-          app_name: draft
+          app_name: scoutgame
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -189,14 +145,28 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Upload static assets to S3
+        run: |
+          aws s3 sync apps/scoutgame/.next/static/ s3://charm.cdn/webapp-assets/_next/static/
+
+      - name: Upload JS source maps to Datadog
+        env:
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        run: |
+          npm install -g @datadog/datadog-ci
+          datadog-ci sourcemaps upload apps/scoutgame/.next/static       \
+            --service=scoutgame-draft                              \
+            --release-version=${{ steps.get_build_id.outputs.build_id }}  \
+            --project-path=apps/scoutgame/ \
+            --minified-path-prefix=https://cdn.charmverse.io/_next/static
+
   deploy-production:
     name: Deploy to production
     # run whether previous jobs were successful or skipped
     if: github.ref == 'refs/heads/main' && !(failure() || cancelled())
-    needs: [test, upload-docker, upload-static-assets]
+    needs: [upload-docker, upload-static-assets]
+
     runs-on: ubuntu-latest
-    # prevent staging deploys + cleanup running in parallel
-    concurrency: staging-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -205,7 +175,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          app_name: draft
+          app_name: scoutgame
           stack: prd-scoutgame-draft
 
   deploy-staging:
@@ -233,19 +203,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && failure()
     # pass in all steps so we can check if any failed
-    needs: [test, upload-docker, upload-static-assets, upload-docker, deploy-production]
+    needs: [upload-docker, upload-static-assets, upload-docker, deploy-production]
     steps:
-      - name: If any of prev jobs failed notify discord
-        if: contains(needs.*.result, 'failure')
-        uses: sarisia/actions-status-discord@v1
+      - uses: actions/checkout@v4
+      - name: Notify Discord
+        uses: ./.github/actions/notify_error
+        env:
+          DISCORD_WARNINGS_WEBHOOK: ${{ secrets.DISCORD_WARNINGS_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WARNINGS_WEBHOOK }}
-          status: 'failure'
-          content: 'Hey <@&1027309276454207519>'
-          title: 'Scout Game Draft deploy workflow failed'
-          description: |
-            Failed workflow URL: https://github.com/scoutgame/scoutgame.xyz/actions/runs/${{ github.run_id }}
-          color: '16515843'
-          url: 'https://github.com/scoutgame/scoutgame.xyz/actions/runs/${{ github.run_id }}'
-          username: GitHub Actions
-          avatar_url: 'https://github.githubassets.com/images/modules/logos_page/Octocat.png'
+          app_name: draft
