@@ -25,7 +25,7 @@ export function ProjectPageMember({
       href={`/u/${member.path}`}
       onClick={(e) => {
         e.preventDefault();
-        openModal('draftDeveloper', { path: member.path });
+        openModal('developerInfo', { path: member.path });
       }}
       key={member.id}
       flexDirection='row'

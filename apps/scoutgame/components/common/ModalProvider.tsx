@@ -10,9 +10,16 @@ import { NFTPurchaseDialog } from 'components/common/NFTPurchaseDialog/NFTPurcha
 import { InviteModal } from 'components/developers/InviteModal/InviteModal';
 
 import { DeveloperInfoModal } from './DeveloperInfoModal/DeveloperInfoModal';
+import { DraftDeveloperModal } from './DraftDeveloperModal/DraftDeveloperModal';
 
 // Add here all the modal names you need
-type ModalType = 'newBuilder' | 'nftPurchase' | 'nftListing' | 'nftListingPurchase' | 'draftDeveloper';
+type ModalType =
+  | 'newBuilder'
+  | 'nftPurchase'
+  | 'nftListing'
+  | 'nftListingPurchase'
+  | 'developerInfo'
+  | 'draftDeveloper';
 
 type ModalState = {
   [key in ModalType]: { open: boolean; data?: any };
@@ -32,6 +39,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     nftPurchase: { open: false, data: null },
     nftListing: { open: false, data: null },
     nftListingPurchase: { open: false, data: null },
+    developerInfo: { open: false, data: null },
     draftDeveloper: { open: false, data: null }
   });
   const { user } = useUser();
@@ -81,6 +89,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         onClose={() => closeModal('nftListingPurchase')}
       />
       <DeveloperInfoModal
+        open={modalState?.developerInfo?.open}
+        data={modalState?.developerInfo?.data}
+        onClose={() => closeModal('developerInfo')}
+      />
+      <DraftDeveloperModal
         open={modalState?.draftDeveloper?.open}
         data={modalState?.draftDeveloper?.data}
         onClose={() => closeModal('draftDeveloper')}

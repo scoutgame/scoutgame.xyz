@@ -1,4 +1,4 @@
-import { Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { getDraftDevelopers } from '@packages/scoutgame/draft/getDraftDevelopers';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { tableRowSx } from 'components/scout/components/ScoutPageTable/components/CommonTableRow';
 
+import { BidButton } from './BidButton';
 import { CollapsibleTableHeader } from './CollapsibleTableHeader';
 
 function formatSeasonPoints(points: number) {
@@ -133,19 +134,7 @@ export async function DraftDevelopersTable() {
               </Stack>
             </TableCell>
             <TableCell sx={{ textAlign: 'right' }}>
-              <Button
-                sx={{
-                  px: { xs: 0.5, md: 2 },
-                  py: { xs: 0.5, md: 1 },
-                  maxWidth: { xs: '40px', md: '80px' },
-                  minWidth: { xs: '40px', md: '80px' },
-                  borderRadius: 1,
-                  fontSize: { xs: 12, md: 16 }
-                }}
-                color='secondary'
-              >
-                Bid
-              </Button>
+              <BidButton developerPath={developer.path} />
             </TableCell>
           </TableRow>
         ))}

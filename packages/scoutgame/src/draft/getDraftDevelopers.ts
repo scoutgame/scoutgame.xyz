@@ -22,6 +22,7 @@ export async function getDraftDevelopers() {
       id: true,
       displayName: true,
       avatar: true,
+      path: true,
       userWeeklyStats: {
         where: {
           season
@@ -50,6 +51,7 @@ export async function getDraftDevelopers() {
       id: builder.id,
       displayName: builder.displayName,
       avatar: builder.avatar,
+      path: builder.path,
       level: builder.userSeasonStats[0]?.level ?? 0,
       seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
       weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank)

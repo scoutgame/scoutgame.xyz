@@ -67,7 +67,7 @@ export function BuilderCardNftDisplay({
         disabled={disableProfileUrl}
         onClick={(e) => {
           e.preventDefault();
-          openModal('draftDeveloper', { path });
+          openModal('developerInfo', { path });
         }}
         component={Link}
         href={`/u/${path}`}

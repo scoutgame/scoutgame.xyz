@@ -13,7 +13,7 @@ export function DeveloperCell({ displayName, avatar, path }: { displayName: stri
   return (
     <Link href={`/u/${path}`} passHref onClick={(e) => e.preventDefault()}>
       <Stack
-        onClick={() => openModal('draftDeveloper', { path })}
+        onClick={() => openModal('developerInfo', { path })}
         alignItems='center'
         flexDirection='row'
         gap={1}

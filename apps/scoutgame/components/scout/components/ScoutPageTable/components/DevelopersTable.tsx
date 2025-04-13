@@ -137,11 +137,11 @@ export function DevelopersTable({
         </TableRow>
       </TableHead>
       <TableBody>
-        {developers.map((builder, index) => (
+        {developers.map((builder) => (
           <TableRow
             key={builder.path}
             sx={tableRowNoPaddingSx}
-            onClick={() => openModal('draftDeveloper', { path: builder.path })}
+            onClick={() => openModal('developerInfo', { path: builder.path })}
             style={{ cursor: 'pointer' }}
           >
             <TableCell>

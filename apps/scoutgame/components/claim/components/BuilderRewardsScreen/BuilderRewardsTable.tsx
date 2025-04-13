@@ -22,7 +22,7 @@ function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
           gap={1}
           onClick={(e) => {
             e.preventDefault();
-            openModal('draftDeveloper', { path: reward.path });
+            openModal('developerInfo', { path: reward.path });
           }}
           component={Link}
           href={`/u/${reward.path}`}

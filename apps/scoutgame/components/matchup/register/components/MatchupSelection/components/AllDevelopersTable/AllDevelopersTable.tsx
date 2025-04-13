@@ -125,7 +125,7 @@ export function AllDevelopersTable({
             <TableRow
               key={builder.path}
               sx={tableRowNoPaddingSx}
-              onClick={() => openModal('draftDeveloper', { path: builder.path })}
+              onClick={() => openModal('developerInfo', { path: builder.path })}
               style={{ cursor: 'pointer' }}
             >
               <TableCell>
