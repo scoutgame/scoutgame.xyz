@@ -1,7 +1,9 @@
+import { log } from '@charmverse/core/log';
 import { BuilderNftType } from '@charmverse/core/prisma';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Button, IconButton, Stack, Typography } from '@mui/material';
 import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
+import { getDeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Dialog } from '@packages/scoutgame-ui/components/common/Dialog';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
@@ -10,6 +12,9 @@ import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import useSWR from 'swr';
 
 import { BuilderCardRankGraph } from '../Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 import { ScoutButton } from '../ScoutButton/ScoutButton';
@@ -140,19 +145,43 @@ function DeveloperCardSection({
 
 export function DeveloperInfoModal({
   onClose,
-  developer,
-  isLoading
+  data,
+  open
 }: {
   onClose: () => void;
-  developer: DeveloperInfo | null;
-  isLoading: boolean;
+  data: { path: string } | null;
+  open: boolean;
 }) {
   const isDesktop = useMdScreen();
+  const { user } = useUser();
+  const router = useRouter();
+
+  const { data: developer, isLoading } = useSWR(
+    data?.path ? `developer-${data.path}` : null,
+    async () => {
+      if (!data?.path) {
+        return null;
+      }
+
+      const _developer = await getDeveloperInfo({ path: data.path, scoutId: user?.id });
+      if (!_developer) {
+        // If the developer doesn't exist, redirect to the user's profile
+        router.push(`/u/${data.path}`);
+      }
+      return _developer;
+    },
+    {
+      onError: (error) => {
+        log.error('Error fetching developer info', { error, path: data?.path });
+        toast.error('Error fetching developer info');
+      }
+    }
+  );
 
   if (isLoading) {
     return (
       <Dialog
-        open
+        open={open}
         onClose={onClose}
         sx={{
           '& .MuiDialogContent-root': {
@@ -194,7 +223,7 @@ export function DeveloperInfoModal({
 
   return (
     <Dialog
-      open
+      open={open}
       onClose={onClose}
       sx={{
         '& .MuiDialogContent-root': {

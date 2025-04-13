@@ -50,8 +50,8 @@ export async function getDraftDevelopers() {
       id: builder.id,
       displayName: builder.displayName,
       avatar: builder.avatar,
-      level: builder.userSeasonStats[0].level,
-      seasonPoints: builder.userSeasonStats[0].pointsEarnedAsBuilder,
+      level: builder.userSeasonStats[0]?.level ?? 0,
+      seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
       weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank)
     }))
     .sort((a, b) => b.seasonPoints - a.seasonPoints)
