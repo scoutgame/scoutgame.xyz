@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { getNewScoutRewards } from '@packages/scoutgame/scouts/getNewScoutRewards';
@@ -132,6 +133,20 @@ export async function AirdropMetrics({
         week: currentWeek,
         wallets: uniqueWallets.size,
         walletAddresses: Array.from(uniqueWallets),
+        claimed: zero,
+        unclaimed: upcomingPayout,
+        total: upcomingPayout
+      });
+    }
+  } else if (partner === 'matchup_rewards') {
+    const rewards = await getMatchupRewards(currentWeek);
+    if (rewards.length > 0) {
+      const upcomingPayout = rewards.reduce((sum, payout) => sum + payout.opAmount, BigInt(0));
+      airdrops.unshift({
+        isCurrentWeek: true,
+        week: currentWeek,
+        wallets: rewards.length,
+        walletAddresses: rewards.map((r) => r.address),
         claimed: zero,
         unclaimed: upcomingPayout,
         total: upcomingPayout

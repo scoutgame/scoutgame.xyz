@@ -24,7 +24,10 @@ type MatchupRewardRecipient = { address: Address; scoutId: string; pointsAmount:
 export async function getMatchupRewards(week: string) {
   const leaderboard = await prisma.scoutMatchup.findMany({
     where: {
-      week
+      week,
+      totalScore: {
+        gt: 0
+      }
     },
     select: {
       totalScore: true,

@@ -68,7 +68,7 @@ export async function deployMatchupRewards({ week }: { week: string }) {
       rewardPayouts: {
         createMany: {
           data: recipients.map(({ address, opAmount }) => ({
-            amount: parseUnits(opAmount.toString(), optimismTokenDecimals).toString(),
+            amount: opAmount.toString(),
             walletAddress: address,
             meta: {
               week,

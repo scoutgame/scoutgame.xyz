@@ -32,18 +32,15 @@ export function fancyTrimWords(_text: string = '', maxWords: number = 40) {
 }
 
 export function prettyPrint(input: any): string {
-  if (!input) {
-    return '';
-  }
-
   const pretty =
     typeof input === 'object'
-      ? JSON.stringify(input, (key, value) => (typeof value === 'bigint' ? value.toString() : value), 2)
+      ? JSON.stringify(input, (key, value) => (typeof value === 'bigint' ? `${value.toString()}` : value), 2)
       : input.toString
         ? input.toString()
         : input;
 
-  log.info(pretty);
+  // eslint-disable-next-line
+  console.log(pretty);
 
   return pretty;
 }
