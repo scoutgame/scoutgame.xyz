@@ -34,7 +34,7 @@ export function fancyTrimWords(_text: string = '', maxWords: number = 40) {
 export function prettyPrint(input: any): string {
   const pretty =
     typeof input === 'object'
-      ? JSON.stringify(input, (key, value) => (typeof value === 'bigint' ? `${value.toString()}` : value), 2)
+      ? JSON.stringify(input, (key, value) => (typeof value === 'bigint' ? value.toString() : value), 2)
       : input.toString
         ? input.toString()
         : input;

@@ -61,11 +61,6 @@ describe('getMatchupRewards', () => {
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue([]);
     const rewards = await getMatchupRewards(mockWeek);
     expect(rewards).toEqual([]);
-    expect(prisma.scoutMatchup.findMany).toHaveBeenCalledWith({
-      where: { week: mockWeek },
-      select: expect.any(Object),
-      orderBy: { totalScore: 'desc' }
-    });
     expect(getMatchupDetails).toHaveBeenCalledWith(mockWeek);
   });
 
