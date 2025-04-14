@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
-import type { BoxActionRequest } from '@decent.xyz/box-common';
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
+import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
 import useSWR from 'swr';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
@@ -24,8 +24,8 @@ export function useDecentTransaction({
   sourceChainId,
   sourceToken
 }: DecentTransactionProps) {
-  const decentAPIParams: BoxActionRequest = {
-    sender: address as `0x${string}`,
+  const decentAPIParams: UseBoxActionArgs = {
+    sender: address,
     srcToken: sourceToken,
     dstToken: DEV_TOKEN_ADDRESS,
     srcChainId: sourceChainId,
@@ -33,10 +33,10 @@ export function useDecentTransaction({
     slippage: 1,
     actionType: ActionType.SwapAction,
     actionConfig: {
-      swapDirection: SwapDirection.EXACT_AMOUNT_OUT,
       amount: paymentAmountOut,
-      chainId: base.id,
-      receiverAddress: BID_RECIPIENT_ADDRESS
+      swapDirection: SwapDirection.EXACT_AMOUNT_OUT,
+      receiverAddress: BID_RECIPIENT_ADDRESS,
+      chainId: sourceChainId
     }
   };
 

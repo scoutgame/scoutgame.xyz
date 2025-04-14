@@ -26,7 +26,7 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
 
 // LINK token address on Base (placeholder for DEV token)
 // TODO: Replace with DEV token address once its launched
-export const DEV_TOKEN_ADDRESS = '0x88Fb150BDc53A65fe94Dea0c9BA0a6dAf8C6e196';
+export const DEV_TOKEN_ADDRESS = '0x88fb150bdc53a65fe94dea0c9ba0a6daf8c6e196';
 export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
