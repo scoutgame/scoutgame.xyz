@@ -7,6 +7,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Stack, TextField, Typography } from '@mui/material';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { DraftProvider, useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import Image from 'next/image';
@@ -61,6 +62,7 @@ function DraftDeveloperBidFormComponent({
   developerId: string;
 }) {
   const [bidAmount, setBidAmount] = useState(0);
+  const debouncedBidAmount = useDebouncedValue(bidAmount, 500);
   const [customError, setCustomError] = useState<string | null>(null);
   const trackEvent = useTrackEvent();
   const { chainId } = useAccount();
@@ -143,19 +145,19 @@ function DraftDeveloperBidFormComponent({
       return;
     }
 
-    if (bidAmount < minimumBid) {
+    if (debouncedBidAmount < minimumBid) {
       setCustomError(`Minimum bid is ${minimumBid?.toFixed(selectedPaymentOption.currency === 'ETH' ? 8 : 4)}`);
       return;
     }
 
     setCustomError(null);
-  }, [bidAmount, prices?.eth, selectedPaymentOption.currency, minimumBid, selectedTokenBalance]);
+  }, [debouncedBidAmount, prices?.eth, selectedPaymentOption.currency, minimumBid, selectedTokenBalance]);
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,
-    paymentAmountOut: BigInt(bidAmount * 10 ** selectedPaymentOption.decimals)
+    paymentAmountOut: BigInt(debouncedBidAmount * 10 ** selectedPaymentOption.decimals)
   });
 
   const selectedChainCurrency = selectedPaymentOption.address;
@@ -195,7 +197,7 @@ function DraftDeveloperBidFormComponent({
         );
       }
 
-      const value = BigInt(bidAmount * 10 ** selectedPaymentOption.decimals);
+      const value = BigInt(debouncedBidAmount * 10 ** selectedPaymentOption.decimals);
 
       await sendDraftTransaction({
         txData: {
@@ -217,7 +219,7 @@ function DraftDeveloperBidFormComponent({
       }
 
       trackEvent('draft_developer', {
-        amount: bidAmount,
+        amount: debouncedBidAmount,
         developerId,
         chainId: selectedPaymentOption.chainId,
         currency: selectedPaymentOption.currency
@@ -236,7 +238,7 @@ function DraftDeveloperBidFormComponent({
         selectedPaymentOption={selectedPaymentOption}
         address={address}
         onSelectPaymentOption={(option) => {
-          setBidAmount(0);
+          setDebouncedBidAmount(0);
           setSelectedPaymentOption(option);
         }}
         prices={prices}
