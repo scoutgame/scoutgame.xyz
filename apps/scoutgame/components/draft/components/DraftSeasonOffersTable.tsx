@@ -8,6 +8,10 @@ export async function DraftSeasonOffersTable() {
   const session = await getSession();
   const draftSeasonOffers = session?.scoutId ? await getDraftSeasonOffers({ scoutId: session.scoutId }) : [];
 
+  if (draftSeasonOffers.length === 0) {
+    return null;
+  }
+
   return (
     <Stack my={2} gap={1}>
       <Typography textAlign='center' variant='h6' color='text.secondary' fontWeight={600}>

@@ -16,6 +16,8 @@ import type { Address } from 'viem';
 import { base } from 'viem/chains';
 import { useAccount, useSwitchChain } from 'wagmi';
 
+import { ERC20ApproveButton } from '../../NFTPurchaseDialog/components/ERC20Approve';
+import { useGetERC20Allowance } from '../../NFTPurchaseDialog/hooks/useGetERC20Allowance';
 import { useDecentTransaction } from '../hooks/useDecentTransaction';
 import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 import { WalletLogin } from '../WalletLogin';
@@ -31,7 +33,7 @@ import {
 } from './DraftPaymentOptionSelector';
 
 // Placeholder for bid recipient wallet - will be replaced with actual address
-const MIN_BID_DEV = 0.01; // Minimum bid is 100 DEV tokens
+const MIN_BID_DEV = 0.00001; // Minimum bid is 100 DEV tokens
 
 export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () => void; developerId: string }) {
   const { address } = useAccount();
@@ -75,13 +77,11 @@ function DraftDeveloperBidFormComponent({
 
   // Fetch ETH and LINK prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,chainlink&vs_currencies=usd'
-    );
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aave&vs_currencies=usd');
     const data = await response.json();
     return {
       eth: data.ethereum.usd as number,
-      dev: data.chainlink.usd as number
+      dev: data.aave.usd as number
     };
   });
 
@@ -158,6 +158,25 @@ function DraftDeveloperBidFormComponent({
     paymentAmountOut: BigInt(bidAmount * 10 ** selectedPaymentOption.decimals)
   });
 
+  const selectedChainCurrency = selectedPaymentOption.address;
+
+  const { allowance, refreshAllowance } = useGetERC20Allowance({
+    chainId: selectedPaymentOption.chainId,
+    erc20Address:
+      selectedPaymentOption.currency === 'USDC' || selectedPaymentOption.currency === 'DEV'
+        ? selectedChainCurrency
+        : null,
+    owner: address,
+    spender: decentTransactionInfo?.tx.to as Address
+  });
+
+  const amountToPay = BigInt(decentTransactionInfo?.tokenPayment?.amount?.toString().replace('n', '') || 0);
+
+  const approvalRequired =
+    selectedPaymentOption.currency !== 'ETH' &&
+    typeof allowance === 'bigint' &&
+    allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
+
   const handleSubmit = async () => {
     if (!decentTransactionInfo?.tx) {
       return;
@@ -176,19 +195,19 @@ function DraftDeveloperBidFormComponent({
         );
       }
 
-      const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
+      const value = BigInt(bidAmount * 10 ** selectedPaymentOption.decimals);
 
       await sendDraftTransaction({
         txData: {
           to: decentTransactionInfo.tx.to as Address,
           data: decentTransactionInfo.tx.data as any,
-          value: _value
+          value
         },
         txMetadata: {
           fromAddress: address,
           sourceChainId: selectedPaymentOption.chainId,
           developerId,
-          bidAmount,
+          bidAmount: value,
           season: getCurrentSeasonStart()
         }
       });
@@ -216,7 +235,10 @@ function DraftDeveloperBidFormComponent({
       <DraftPaymentOptionSelector
         selectedPaymentOption={selectedPaymentOption}
         address={address}
-        onSelectPaymentOption={setSelectedPaymentOption}
+        onSelectPaymentOption={(option) => {
+          setBidAmount(0);
+          setSelectedPaymentOption(option);
+        }}
         prices={prices}
         minimumBid={minimumBid}
         selectedTokenBalance={selectedTokenBalance}
@@ -262,21 +284,34 @@ function DraftDeveloperBidFormComponent({
           There was an error communicating with Decent API
         </Typography>
       )}
-      <Stack direction='row' justifyContent='flex-end' alignItems='center' gap={1} mt={1}>
-        <Button onClick={onCancel} variant='outlined' color='secondary' size='large' disabled={isLoading}>
-          Cancel
-        </Button>
-        <LoadingButton
-          loading={isLoading}
-          onClick={handleSubmit}
-          variant='contained'
-          color='secondary'
-          size='large'
-          disabled={!!customError || !decentTransactionInfo?.tx || !!draftError}
-        >
-          Confirm
-        </LoadingButton>
-      </Stack>
+      {!approvalRequired || isSavingDraftTransaction ? (
+        <Stack direction='row' justifyContent='flex-end' alignItems='center' gap={1} mt={1}>
+          <Button onClick={onCancel} variant='outlined' color='secondary' size='large' disabled={isLoading}>
+            Cancel
+          </Button>
+          <LoadingButton
+            loading={isLoading}
+            onClick={handleSubmit}
+            variant='contained'
+            color='secondary'
+            size='large'
+            disabled={!!customError || !decentTransactionInfo?.tx || !!draftError}
+          >
+            Confirm
+          </LoadingButton>
+        </Stack>
+      ) : (
+        <ERC20ApproveButton
+          spender={decentTransactionInfo?.tx.to as Address}
+          chainId={selectedPaymentOption.chainId}
+          erc20Address={selectedPaymentOption.address}
+          amount={amountToPay}
+          onSuccess={() => refreshAllowance()}
+          decimals={selectedPaymentOption.decimals}
+          currency={selectedPaymentOption.currency}
+          actionType='bid'
+        />
+      )}
     </Stack>
   );
 }

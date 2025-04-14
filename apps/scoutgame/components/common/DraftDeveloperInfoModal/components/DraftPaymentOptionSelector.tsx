@@ -24,9 +24,9 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency && a.address === b.address;
 }
 
-// LINK token address on Base (placeholder for DEV token)
+// AAVE token address on Base (placeholder for DEV token)
 // TODO: Replace with DEV token address once its launched
-export const DEV_TOKEN_ADDRESS = '0x88fb150bdc53a65fe94dea0c9ba0a6daf8c6e196';
+export const DEV_TOKEN_ADDRESS = '0x63706e401c06ac8513145b7687A14804d17f814b';
 export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
@@ -69,6 +69,13 @@ export const DEV_PAYMENT_OPTION: PaymentOption = {
   decimals: 18
 };
 
+export const BASE_USDC_PAYMENT_OPTION: PaymentOption = {
+  ...baseChainOption,
+  address: BASE_USDC_ADDRESS,
+  currency: 'USDC' as const,
+  decimals: 6
+};
+
 const paymentOptions: PaymentOption[] = [
   DEV_PAYMENT_OPTION,
   {
@@ -77,12 +84,7 @@ const paymentOptions: PaymentOption[] = [
     currency: 'ETH' as const,
     decimals: 18
   },
-  {
-    ...baseChainOption,
-    address: BASE_USDC_ADDRESS,
-    currency: 'USDC' as const,
-    decimals: 6
-  },
+  BASE_USDC_PAYMENT_OPTION,
   {
     ...optimismChainOption,
     address: NULL_EVM_ADDRESS,

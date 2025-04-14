@@ -17,7 +17,7 @@ type ERC20ApproveButtonProps = {
   erc20Address: Address;
   decimals?: number;
   currency?: AvailableCurrency;
-  actionType: 'mint' | 'purchase';
+  actionType: 'mint' | 'purchase' | 'bid';
 };
 
 export function ERC20ApproveButton({

@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { ActionType, SwapDirection } from '@decent.xyz/box-common';
+import { ActionType, ChainId, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
 import useSWR from 'swr';
 import type { Address } from 'viem';

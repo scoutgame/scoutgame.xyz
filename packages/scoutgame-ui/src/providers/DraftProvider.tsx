@@ -22,7 +22,7 @@ type DraftTransactionInput = {
     fromAddress: Address;
     sourceChainId: number;
     developerId: string;
-    bidAmount: number;
+    bidAmount: bigint;
     season: string;
   };
 };
