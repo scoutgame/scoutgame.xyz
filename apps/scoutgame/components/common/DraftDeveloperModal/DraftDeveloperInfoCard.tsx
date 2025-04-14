@@ -6,7 +6,7 @@ import { DeveloperInfoProfile } from '../DeveloperInfo/DeveloperInfoProfile';
 import { DeveloperInfoRanksGraph } from '../DeveloperInfo/DeveloperInfoRanksGraph';
 import { DeveloperInfoSeasonStats } from '../DeveloperInfo/DeveloperInfoSeasonStats';
 
-import { DraftBid } from './DraftBid';
+import { DraftDeveloperBidForm } from './components/DraftDeveloperBidForm';
 
 export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => void; developer: DraftDeveloperInfo }) {
   return (
@@ -42,7 +42,7 @@ export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => 
           Enter your bid amount. Only the top 50 bids will win the Developer Card. Your funds will be returned if you
           don't win.
         </Typography>
-        <DraftBid onCancel={onClose} />
+        <DraftDeveloperBidForm onCancel={onClose} />
       </Stack>
     </Stack>
   );

@@ -3,7 +3,7 @@ import { useUsersBalances } from '@decent.xyz/box-hooks';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import type { Address } from 'viem';
 
-import { BASE_USDC_ADDRESS, DEV_TOKEN_ADDRESS, OPTIMISM_USDC_ADDRESS } from '../components/DraftTokenSelector';
+import { BASE_USDC_ADDRESS, DEV_TOKEN_ADDRESS, OPTIMISM_USDC_ADDRESS } from '../components/DraftPaymentOptionSelector';
 
 export function useGetTokenBalances({ address }: { address: Address }) {
   const result = useUsersBalances({

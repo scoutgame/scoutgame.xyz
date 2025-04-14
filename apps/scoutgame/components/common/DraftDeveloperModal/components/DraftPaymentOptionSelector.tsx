@@ -2,21 +2,16 @@
 
 import { Box, MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
-import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import Image from 'next/image';
 import type { ReactNode, Ref } from 'react';
-import { forwardRef, useCallback, useMemo } from 'react';
-import useSWR from 'swr';
+import { forwardRef } from 'react';
 import type { Address } from 'viem';
 import { base, optimism } from 'viem/chains';
 
 import { ChainComponent } from '../../NFTPurchaseDialog/components/ChainSelector/ChainComponent';
 import type { AvailableCurrency } from '../../NFTPurchaseDialog/components/ChainSelector/chains';
-import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 
 export type SelectedPaymentOption = { chainId: number; currency: AvailableCurrency };
-
-const MIN_BID_DEV = 0.01; // Minimum bid is 100 DEV tokens
 
 function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency;
@@ -44,7 +39,7 @@ const baseChainOption = {
   usdcAddress: BASE_USDC_ADDRESS
 };
 
-const TOKEN_LOGO_RECORD = {
+export const TOKEN_LOGO_RECORD = {
   ETH: '/images/crypto/ethereum-eth-logo.png',
   USDC: '/images/crypto/usdc.png',
   DEV: '/images/crypto/dev-token-logo.png'
@@ -73,85 +68,50 @@ const chainOpts = [
   }
 ];
 
-function SelectField(
+function PaymentOptionSelector(
   {
-    onSelectChain,
-    selectedToken,
+    onSelectPaymentOption,
+    selectedPaymentOption,
+    selectedTokenBalance,
     address,
+    disabled,
+    prices,
+    minimumBid,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
     helperMessage?: ReactNode;
-    onSelectChain: (opt: SelectedPaymentOption) => void;
-    selectedToken: SelectedPaymentOption;
+    onSelectPaymentOption: (opt: SelectedPaymentOption) => void;
+    selectedPaymentOption: SelectedPaymentOption;
+    selectedTokenBalance?: number;
     address: Address;
+    prices?: {
+      eth: number;
+      dev: number;
+    };
+    minimumBid?: number;
+    disabled?: boolean;
   },
   ref: Ref<unknown>
 ) {
   const { helperMessage, ...restProps } = props;
 
-  // Fetch ETH and LINK prices from CoinGecko
-  const { data: prices } = useSWR('token-prices', async () => {
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,chainlink&vs_currencies=usd'
-    );
-    const data = await response.json();
-    return {
-      eth: data.ethereum.usd as number,
-      dev: data.chainlink.usd as number
-    };
-  });
-
-  const { tokens } = useGetTokenBalances({
-    address
-  });
-
-  const { tokensWithBalances, selectedTokenBalance } = useMemo(() => {
-    const _tokensWithBalances = tokens?.map((token) => ({
-      ...token,
-      balance: Number(token.balance) / 10 ** token.decimals
-    }));
-
-    const _selectedTokenBalance = _tokensWithBalances?.find(
-      (token) =>
-        token.chainId === selectedToken.chainId &&
-        (selectedToken.currency === 'ETH'
-          ? token.address === NULL_EVM_ADDRESS
-          : selectedToken.currency === 'DEV'
-            ? token.address?.toLowerCase() === DEV_TOKEN_ADDRESS.toLowerCase()
-            : token.address?.toLowerCase() ===
-              (selectedToken.chainId === base.id ? BASE_USDC_ADDRESS : OPTIMISM_USDC_ADDRESS).toLowerCase())
-    );
-
-    return {
-      tokensWithBalances: _tokensWithBalances,
-      selectedTokenBalance: _selectedTokenBalance
-    };
-  }, [tokens, selectedToken]);
-
-  // Calculate minimum bid based on currency
-  const getMinBid = useCallback(
-    (currency: AvailableCurrency) => {
-      switch (currency) {
-        case 'USDC':
-          return prices?.dev ? MIN_BID_DEV * prices.dev : undefined;
-        case 'ETH':
-          return prices?.eth && prices?.dev ? (MIN_BID_DEV * prices.dev) / prices.eth : undefined;
-        case 'DEV':
-          return MIN_BID_DEV; // Fixed 100 DEV tokens
-        default:
-          return undefined;
-      }
-    },
-    [prices]
-  );
-
-  const minimumBid = getMinBid(selectedToken.currency);
-
   return (
     <Stack gap={1} my={1}>
-      <Typography color='secondary' fontWeight={500}>
-        Select Tokens
-      </Typography>
+      <Stack direction='row' gap={1} alignItems='center' justifyContent='space-between'>
+        <Typography color='secondary' fontWeight={500}>
+          Select Tokens
+        </Typography>
+        {selectedPaymentOption.currency === 'ETH' && prices?.eth && (
+          <Typography align='right' fontWeight={500}>
+            1 ETH = ${prices.eth.toFixed(2)}
+          </Typography>
+        )}
+        {selectedPaymentOption.currency === 'DEV' && prices?.dev && (
+          <Typography align='right' fontWeight={500}>
+            1 DEV = ${prices.dev.toFixed(2)}
+          </Typography>
+        )}
+      </Stack>
       <Box>
         <Select<SelectedPaymentOption>
           fullWidth
@@ -166,6 +126,7 @@ function SelectField(
               horizontal: 'center'
             }
           }}
+          disabled={disabled}
           renderValue={(selected) => {
             const chain = chainOpts.find(
               ({ id, currency }) => selected.chainId === id && selected.currency === currency
@@ -182,12 +143,14 @@ function SelectField(
                   </Stack>
                   <Stack direction='row' gap={1.5} alignItems='center'>
                     <Stack direction='row' alignItems='center' gap={0.5}>
-                      <Typography variant='caption'>Balance: {selectedTokenBalance?.balance || '0'}</Typography>
+                      <Typography variant='caption'>
+                        Balance: {selectedTokenBalance?.toFixed(chain.currency === 'ETH' ? 8 : 4) || '0'}
+                      </Typography>
                       <Image src={TOKEN_LOGO_RECORD[chain.currency]} alt={chain.currency} width={14} height={14} />
                     </Stack>
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography variant='caption'>
-                        Min Bid: {minimumBid?.toFixed(chain.currency === 'ETH' ? 6 : 2)}
+                        Min Bid: {minimumBid?.toFixed(chain.currency === 'ETH' ? 8 : 4)}
                       </Typography>
                       <Image src={TOKEN_LOGO_RECORD[chain.currency]} alt={chain.currency} width={14} height={14} />
                     </Stack>
@@ -197,7 +160,7 @@ function SelectField(
             );
           }}
           ref={ref}
-          value={selectedToken}
+          value={selectedPaymentOption}
           {...restProps}
         >
           {chainOpts.map((chain) => (
@@ -206,31 +169,21 @@ function SelectField(
               onClick={(ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
-                onSelectChain({ chainId: chain.id, currency: chain.currency });
+                onSelectPaymentOption({ chainId: chain.id, currency: chain.currency });
               }}
               sx={{ py: 1.5 }}
             >
               <ChainComponent
                 chain={chain}
-                balance={selectedTokenBalance?.balance}
-                selected={isSameOption({ chainId: chain.id, currency: chain.currency }, selectedToken)}
+                balance={selectedTokenBalance}
+                selected={isSameOption({ chainId: chain.id, currency: chain.currency }, selectedPaymentOption)}
               />
             </MenuItem>
           ))}
         </Select>
       </Box>
-      {selectedToken.currency === 'ETH' && prices?.eth && (
-        <Typography variant='caption' color='text.secondary' align='right'>
-          1 ETH = ${prices.eth.toFixed(2)}
-        </Typography>
-      )}
-      {selectedToken.currency === 'DEV' && prices?.dev && (
-        <Typography variant='caption' color='text.secondary' align='right'>
-          1 DEV = ${prices.dev.toFixed(2)}
-        </Typography>
-      )}
     </Stack>
   );
 }
 
-export const DraftTokenSelector = forwardRef(SelectField);
+export const DraftPaymentOptionSelector = forwardRef(PaymentOptionSelector);
