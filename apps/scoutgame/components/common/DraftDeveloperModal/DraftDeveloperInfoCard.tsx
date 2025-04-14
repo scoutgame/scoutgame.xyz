@@ -1,10 +1,12 @@
-import { Stack } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import type { DraftDeveloperInfo } from '@packages/scoutgame/builders/getDraftDeveloperInfo';
 
 import { DeveloperInfoGithubActivities } from '../DeveloperInfo/DeveloperInfoGithubActivities';
 import { DeveloperInfoProfile } from '../DeveloperInfo/DeveloperInfoProfile';
 import { DeveloperInfoRanksGraph } from '../DeveloperInfo/DeveloperInfoRanksGraph';
 import { DeveloperInfoSeasonStats } from '../DeveloperInfo/DeveloperInfoSeasonStats';
+
+import { DraftBid } from './DraftBid';
 
 export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => void; developer: DraftDeveloperInfo }) {
   return (
@@ -31,6 +33,16 @@ export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => 
           />
         </Stack>
         <DeveloperInfoGithubActivities githubActivities={developer.githubActivities} />
+      </Stack>
+      <Stack gap={0.5}>
+        <Typography variant='h6' color='text.secondary'>
+          Draft {developer.displayName}
+        </Typography>
+        <Typography>
+          Enter your bid amount. Only the top 50 bids will win the Developer Card. Your funds will be returned if you
+          don't win.
+        </Typography>
+        <DraftBid onCancel={onClose} />
       </Stack>
     </Stack>
   );
