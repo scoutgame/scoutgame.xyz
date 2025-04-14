@@ -1,19 +1,13 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
-  nftChain,
-  getBuilderNftContractAddress,
   getDecentApiKey,
   isStarterNftContract,
+  nftChain,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
-import {
-  scoutProtocolBuilderNftContractAddress,
-  scoutProtocolChainId,
-  scoutTokenErc20ContractAddress
-} from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChainId, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';

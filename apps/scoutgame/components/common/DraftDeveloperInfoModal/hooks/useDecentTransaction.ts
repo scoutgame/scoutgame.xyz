@@ -27,7 +27,7 @@ export function useDecentTransaction({
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
-    dstToken: LINK_TOKEN_ADDRESS,
+    dstToken: DEV_TOKEN_ADDRESS,
     srcChainId: sourceChainId,
     dstChainId: base.id,
     slippage: 1,

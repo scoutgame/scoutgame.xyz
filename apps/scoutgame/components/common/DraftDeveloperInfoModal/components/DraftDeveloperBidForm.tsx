@@ -155,7 +155,7 @@ function DraftDeveloperBidFormComponent({
     address,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,
-    paymentAmountOut: BigInt(bidAmount * 10 ** selectedPaymentOption.decimals) // Convert to wei
+    paymentAmountOut: BigInt(bidAmount * 10 ** selectedPaymentOption.decimals)
   });
 
   const handleSubmit = async () => {

@@ -1,5 +1,6 @@
 import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography } from '@mui/material';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
+import { LoadingCard } from '@packages/scoutgame-ui/components/common/Loading/LoadingCard';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import Image from 'next/image';
 import { Suspense } from 'react';
@@ -7,6 +8,7 @@ import { Suspense } from 'react';
 import { SearchDevelopersInput } from '../scout/components/SearchDevelopersInput';
 
 import { DraftDevelopersTable } from './components/DraftDevelopersTable';
+import { DraftSeasonOffersTable } from './components/DraftSeasonOffersTable';
 
 export function DraftRegisterPage() {
   return (
@@ -94,6 +96,9 @@ export function DraftRegisterPage() {
               </Stack>
             </Stack>
           </Paper>
+          <Suspense fallback={<LoadingCard />}>
+            <DraftSeasonOffersTable />
+          </Suspense>
         </Grid>
       </Grid>
     </>
