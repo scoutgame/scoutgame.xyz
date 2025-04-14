@@ -1,7 +1,8 @@
 import { getCurrentWeek, getPreviousWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 
-import { ControlledTabs } from './components/ControlledTabs';
-import { MatchupResultsTable } from './components/MatchupResultsTable';
+import { ControlledTabs } from 'components/common/ControlledTabs';
+
+import { MatchupWinnersTable } from './components/MatchupWinnersTable';
 import { RegistrationsTable } from './components/RegistrationsTable';
 
 export function RegistrationSidebar({ week, weekNumber }: { week: string; weekNumber: number }) {
@@ -18,7 +19,7 @@ export function RegistrationSidebar({ week, weekNumber }: { week: string; weekNu
         {
           hidden: weekNumber < 1,
           view: 'last_week_results',
-          component: <MatchupResultsTable week={lastWeek} weekNumber={lastWeekNumber} />,
+          component: <MatchupWinnersTable week={lastWeek} weekNumber={lastWeekNumber} />,
           label: `Results`
         }
       ]}
