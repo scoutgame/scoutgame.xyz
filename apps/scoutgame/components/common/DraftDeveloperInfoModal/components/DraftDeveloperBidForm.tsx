@@ -157,7 +157,7 @@ function DraftDeveloperBidFormComponent({
     address,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,
-    paymentAmountOut: BigInt(debouncedBidAmount * 10 ** selectedPaymentOption.decimals)
+    paymentAmountOut: BigInt(Math.floor(debouncedBidAmount * 10 ** selectedPaymentOption.decimals))
   });
 
   const selectedChainCurrency = selectedPaymentOption.address;
@@ -197,7 +197,7 @@ function DraftDeveloperBidFormComponent({
         );
       }
 
-      const value = BigInt(debouncedBidAmount * 10 ** selectedPaymentOption.decimals);
+      const value = BigInt(Math.floor(debouncedBidAmount * 10 ** selectedPaymentOption.decimals));
 
       await sendDraftTransaction({
         txData: {
@@ -238,7 +238,7 @@ function DraftDeveloperBidFormComponent({
         selectedPaymentOption={selectedPaymentOption}
         address={address}
         onSelectPaymentOption={(option) => {
-          setDebouncedBidAmount(0);
+          setBidAmount(0);
           setSelectedPaymentOption(option);
         }}
         prices={prices}
