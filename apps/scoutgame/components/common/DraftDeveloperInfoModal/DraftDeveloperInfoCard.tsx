@@ -42,7 +42,7 @@ export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => 
           Enter your bid amount. Only the top 50 bids will win the Developer Card. Your funds will be returned if you
           don't win.
         </Typography>
-        <DraftDeveloperBidForm onCancel={onClose} />
+        <DraftDeveloperBidForm onCancel={onClose} developerId={developer.id} />
       </Stack>
     </Stack>
   );

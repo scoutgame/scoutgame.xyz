@@ -78,11 +78,9 @@ export default async function RootLayout({
         <AppProviders user={user}>
           <ModalProvider>
             <PurchaseProvider>
-              <DraftProvider>
-                <ClientGlobals userId={user?.id} />
-                {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
-                {children}
-              </DraftProvider>
+              <ClientGlobals userId={user?.id} />
+              {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
+              {children}
             </PurchaseProvider>
           </ModalProvider>
         </AppProviders>

@@ -106,12 +106,18 @@ function PaymentOptionSelector(
     disabled,
     prices,
     minimumBid,
+    tokensWithBalances,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
     helperMessage?: ReactNode;
     onSelectPaymentOption: (opt: SelectedPaymentOption) => void;
     selectedPaymentOption: SelectedPaymentOption;
     selectedTokenBalance?: number;
+    tokensWithBalances?: {
+      chainId: number;
+      address: Address;
+      balance: number;
+    }[];
     address: Address;
     prices?: {
       eth: number;
@@ -167,12 +173,12 @@ function PaymentOptionSelector(
                 <Image
                   src={TOKEN_LOGO_RECORD[paymentOption.currency]}
                   alt={paymentOption.currency}
-                  width={40}
-                  height={40}
+                  width={30}
+                  height={30}
                 />
                 <Stack>
                   <Stack flexDirection='row' gap={0.5} alignItems='center'>
-                    <Typography variant='h6'>{paymentOption.currency}</Typography>
+                    <Typography>{paymentOption.currency}</Typography>
                     <Typography variant='caption'>on {paymentOption.chain.name}</Typography>
                   </Stack>
                   <Stack direction='row' gap={1.5} alignItems='center'>
@@ -229,7 +235,11 @@ function PaymentOptionSelector(
                   icon: TOKEN_LOGO_RECORD[paymentOption.currency],
                   currency: paymentOption.currency
                 }}
-                balance={selectedTokenBalance}
+                balance={
+                  tokensWithBalances?.find(
+                    (token) => token.chainId === paymentOption.chain.id && token.address === paymentOption.address
+                  )?.balance
+                }
                 selected={isSameOption(
                   {
                     chainId: paymentOption.chain.id,

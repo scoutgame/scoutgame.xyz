@@ -8,7 +8,7 @@ import { Button, Stack, TextField, Typography } from '@mui/material';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
-import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
+import { DraftProvider, useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -31,7 +31,7 @@ import {
 } from './DraftPaymentOptionSelector';
 
 // Placeholder for bid recipient wallet - will be replaced with actual address
-const MIN_BID_DEV = 100; // Minimum bid is 100 DEV tokens
+const MIN_BID_DEV = 0.01; // Minimum bid is 100 DEV tokens
 
 export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () => void; developerId: string }) {
   const { address } = useAccount();
@@ -42,7 +42,9 @@ export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () 
 
   return (
     <BoxHooksContextProvider apiKey={env('DECENT_API_KEY')}>
-      <DraftDeveloperBidFormComponent address={address} onCancel={onCancel} developerId={developerId} />
+      <DraftProvider>
+        <DraftDeveloperBidFormComponent address={address} onCancel={onCancel} developerId={developerId} />
+      </DraftProvider>
     </BoxHooksContextProvider>
   );
 }
@@ -87,7 +89,7 @@ function DraftDeveloperBidFormComponent({
     address
   });
 
-  const { selectedTokenBalance } = useMemo(() => {
+  const { selectedTokenBalance, tokensWithBalances } = useMemo(() => {
     const _tokensWithBalances = tokens?.map((token) => ({
       ...token,
       balance: Number(token.balance) / 10 ** token.decimals
@@ -219,6 +221,7 @@ function DraftDeveloperBidFormComponent({
         minimumBid={minimumBid}
         selectedTokenBalance={selectedTokenBalance}
         disabled={isLoading}
+        tokensWithBalances={tokensWithBalances}
       />
       <Stack gap={1}>
         <Typography color='text.secondary' fontWeight={500}>
@@ -236,7 +239,9 @@ function DraftDeveloperBidFormComponent({
             }
 
             const parsedBidAmount = Math.max(0, parseFloat(e.target.value));
-            setBidAmount(parsedBidAmount);
+            setBidAmount(
+              selectedTokenBalance !== undefined ? Math.min(parsedBidAmount, selectedTokenBalance) : parsedBidAmount
+            );
           }}
           error={!!customError || !!draftError}
           helperText={customError || draftError}

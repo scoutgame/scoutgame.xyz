@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest } from '@decent.xyz/box-common';
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
-import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
@@ -9,7 +8,8 @@ import { base } from 'viem/chains';
 import { prepareDecentTransaction } from '../../NFTPurchaseDialog/hooks/useDecentTransaction';
 import { DEV_TOKEN_ADDRESS } from '../components/DraftPaymentOptionSelector';
 
-export const BID_RECIPIENT_ADDRESS = '0x0000000000000000000000000000000000000000';
+// This should be replaced with the actual treasury/escrow contract address that will hold the bids
+export const BID_RECIPIENT_ADDRESS = '0xb1b9FFF08F3827875F91ddE929036a65f2A5d27d';
 
 export type DecentTransactionProps = {
   address: Address;
@@ -27,16 +27,16 @@ export function useDecentTransaction({
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
-    dstToken: DEV_TOKEN_ADDRESS,
+    dstToken: LINK_TOKEN_ADDRESS,
     srcChainId: sourceChainId,
     dstChainId: base.id,
     slippage: 1,
     actionType: ActionType.SwapAction,
     actionConfig: {
-      chainId: base.id,
-      contractAddress: BID_RECIPIENT_ADDRESS,
       swapDirection: SwapDirection.EXACT_AMOUNT_OUT,
-      amount: paymentAmountOut
+      amount: paymentAmountOut,
+      chainId: base.id,
+      receiverAddress: BID_RECIPIENT_ADDRESS
     }
   };
 
