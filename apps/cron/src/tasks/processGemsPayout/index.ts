@@ -94,7 +94,7 @@ export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: 
     update: {}
   });
 
-  const notificationsSent = await sendGemsPayoutNotifications({ week });
+  // const notificationsSent = await sendGemsPayoutNotifications({ week });
 
-  log.info(`Processed ${topWeeklyBuilders.length} builders points payout`, { notificationsSent });
+  log.info(`Processed ${topWeeklyBuilders.length} builders points payout`); // , { notificationsSent });
 }
