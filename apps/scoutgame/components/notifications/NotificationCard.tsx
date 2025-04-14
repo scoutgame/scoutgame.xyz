@@ -6,11 +6,17 @@ import { AppNotificationTypesRecord } from '@packages/scoutgame/notifications/ap
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 import { useAction } from 'next-safe-action/hooks';
+import { mutate } from 'swr';
 
+import { GET_UNREAD_NOTIFICATIONS_COUNT_KEY } from 'hooks/api/notifications';
 import { toggleAppNotification } from 'lib/actions/toggleAppNotification';
 
 export function NotificationCard({ notification }: { notification: ScoutAppNotification }) {
-  const { execute, isExecuting } = useAction(toggleAppNotification);
+  const { execute, isExecuting } = useAction(toggleAppNotification, {
+    onSuccess: () => {
+      mutate(GET_UNREAD_NOTIFICATIONS_COUNT_KEY);
+    }
+  });
   const notificationType = notification.notificationType as keyof typeof AppNotificationTypesRecord;
   const title = AppNotificationTypesRecord[notificationType].title;
 

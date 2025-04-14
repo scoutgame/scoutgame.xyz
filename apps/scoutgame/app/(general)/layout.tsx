@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
 
+import { Header } from 'components/(general)/Header';
+import { StickyFooter } from 'components/(general)/StickyFooter';
 import { AnnouncementBanner } from 'components/common/AnnouncementBanner/AnnouncementBanner';
-import { Header } from 'components/common/Navigation/Header';
-import { StickyFooter } from 'components/common/Navigation/StickyFooter';
 
 export default async function Layout({
   children
