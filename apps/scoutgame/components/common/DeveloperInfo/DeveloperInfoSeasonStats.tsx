@@ -7,11 +7,13 @@ const dialogPaperBgColor = 'background.dark';
 export function DeveloperInfoSeasonStats({
   seasonPoints,
   scoutedBy,
-  cardsSold
+  cardsSold,
+  isLastSeason
 }: {
   seasonPoints: number;
   scoutedBy: number;
   cardsSold: number;
+  isLastSeason?: boolean;
 }) {
   const isDesktop = useMdScreen();
 
@@ -39,7 +41,7 @@ export function DeveloperInfoSeasonStats({
           }}
           color='secondary.main'
         >
-          This
+          {isLastSeason ? 'This' : 'Last'}
         </Typography>{' '}
         Season
       </Typography>

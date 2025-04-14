@@ -2,7 +2,7 @@ import { Stack, Typography } from '@mui/material';
 
 import { BuilderCardRankGraph } from '../Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
 
-export function DeveloperInfoRanksGraph({ ranks }: { ranks: (number | null)[] }) {
+export function DeveloperInfoRanksGraph({ ranks, label }: { ranks: (number | null)[]; label: string }) {
   return (
     <Stack
       bgcolor='background.dark'
@@ -20,7 +20,7 @@ export function DeveloperInfoRanksGraph({ ranks }: { ranks: (number | null)[] })
           md: 1
         }}
       >
-        14D Rank
+        {label}
       </Typography>
       <Stack height='calc(100% - 16px)'>
         <BuilderCardRankGraph ranks={ranks} />

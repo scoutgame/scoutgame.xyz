@@ -10,7 +10,7 @@ import { NFTPurchaseDialog } from 'components/common/NFTPurchaseDialog/NFTPurcha
 import { InviteModal } from 'components/developers/InviteModal/InviteModal';
 
 import { DeveloperInfoModal } from './DeveloperInfoModal/DeveloperInfoModal';
-import { DraftDeveloperModal } from './DraftDeveloperModal/DraftDeveloperModal';
+import { DraftDeveloperInfoModal } from './DraftDeveloperModal/DraftDeveloperInfoModal';
 
 // Add here all the modal names you need
 type ModalType =
@@ -93,7 +93,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         data={modalState?.developerInfo?.data}
         onClose={() => closeModal('developerInfo')}
       />
-      <DraftDeveloperModal
+      <DraftDeveloperInfoModal
         open={modalState?.draftDeveloper?.open}
         data={modalState?.draftDeveloper?.data}
         onClose={() => closeModal('draftDeveloper')}

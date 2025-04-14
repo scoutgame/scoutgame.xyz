@@ -22,11 +22,12 @@ export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => 
       />
       <Stack gap={0.5}>
         <Stack direction='row' gap={0.5}>
-          <DeveloperInfoRanksGraph ranks={developer.weeklyRanks} />
+          <DeveloperInfoRanksGraph ranks={developer.weeklyRanks} label='Last Season Weekly Rank' />
           <DeveloperInfoSeasonStats
             seasonPoints={developer.seasonPoints}
             scoutedBy={developer.scoutedBy}
             cardsSold={developer.cardsSold}
+            isLastSeason
           />
         </Stack>
         <DeveloperInfoGithubActivities githubActivities={developer.githubActivities} />
