@@ -1,23 +1,28 @@
 'use client';
 
 import env from '@beam-australia/react-env';
+import { log } from '@charmverse/core/log';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Button, Stack, TextField, Typography } from '@mui/material';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
-import { useAccount } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 
-import type { AvailableCurrency } from '../../NFTPurchaseDialog/components/ChainSelector/chains';
-import type { SelectedPaymentOption } from '../../NFTPurchaseDialog/components/ChainSelector/ChainSelector';
-import { useGetTokenBalances } from '../../NFTPurchaseDialog/hooks/useGetTokenBalances';
+import { useDecentTransaction } from '../hooks/useDecentTransaction';
+import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 import { WalletLogin } from '../WalletLogin';
 
+import type { AvailableCurrency, SelectedPaymentOption } from './DraftPaymentOptionSelector';
 import {
   BASE_USDC_ADDRESS,
+  DEV_PAYMENT_OPTION,
   DEV_TOKEN_ADDRESS,
   DraftPaymentOptionSelector,
   OPTIMISM_USDC_ADDRESS,
@@ -25,9 +30,7 @@ import {
 } from './DraftPaymentOptionSelector';
 
 // Placeholder for bid recipient wallet - will be replaced with actual address
-const BID_RECIPIENT_ADDRESS = '0x0000000000000000000000000000000000000000';
-// TODO: Change to 100 DEV on prod
-const MIN_BID_DEV = 0.01;
+const MIN_BID_DEV = 100; // Minimum bid is 100 DEV tokens
 
 export function DraftDeveloperBidForm({ onCancel }: { onCancel: () => void }) {
   const { address } = useAccount();
@@ -45,13 +48,19 @@ export function DraftDeveloperBidForm({ onCancel }: { onCancel: () => void }) {
 
 function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Address; onCancel: () => void }) {
   const [bidAmount, setBidAmount] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [customError, setCustomError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const trackEvent = useTrackEvent();
 
   // Default to Base ETH
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({
-    chainId: base.id,
-    currency: 'USDC'
-  });
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(() => ({
+    chainId: DEV_PAYMENT_OPTION.chain.id,
+    address: DEV_PAYMENT_OPTION.address,
+    currency: DEV_PAYMENT_OPTION.currency,
+    decimals: DEV_PAYMENT_OPTION.decimals
+  }));
+
+  const { switchChainAsync } = useSwitchChain();
 
   // Fetch ETH and LINK prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
@@ -114,22 +123,53 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
   // Validate bid amount whenever it changes
   useEffect(() => {
     if (minimumBid === undefined || selectedTokenBalance === undefined) {
-      setError(null);
+      setCustomError(null);
       return;
     }
 
     if (selectedTokenBalance < minimumBid) {
-      setError('Insufficient balance');
+      setCustomError('Insufficient balance');
       return;
     }
 
     if (bidAmount < minimumBid) {
-      setError(`Minimum bid is ${minimumBid?.toFixed(selectedPaymentOption.currency === 'ETH' ? 8 : 4)}`);
+      setCustomError(`Minimum bid is ${minimumBid?.toFixed(selectedPaymentOption.currency === 'ETH' ? 8 : 4)}`);
       return;
     }
 
-    setError(null);
+    setCustomError(null);
   }, [bidAmount, prices?.eth, selectedPaymentOption.currency, minimumBid, selectedTokenBalance]);
+
+  const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
+    address,
+    sourceChainId: selectedPaymentOption.chainId,
+    sourceToken: selectedPaymentOption.address,
+    paymentAmountOut: BigInt(bidAmount * 10 ** selectedPaymentOption.decimals) // Convert to wei
+  });
+
+  const handleSubmit = async () => {
+    if (!decentTransactionInfo?.tx) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // Switch chain if needed
+      if (selectedPaymentOption.chainId !== base.id) {
+        await switchChainAsync({ chainId: base.id });
+      }
+
+      onCancel();
+    } catch (error) {
+      log.error('Error submitting bid:', error);
+      setCustomError('Failed to submit bid. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isLoading = isLoadingPrices || isLoadingTokenBalances || isLoadingDecentSdk || isSubmitting;
 
   return (
     <Stack gap={1}>
@@ -140,7 +180,7 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
         prices={prices}
         minimumBid={minimumBid}
         selectedTokenBalance={selectedTokenBalance}
-        disabled={isLoadingPrices || isLoadingTokenBalances}
+        disabled={isLoading}
       />
       <Stack gap={1}>
         <Typography color='text.secondary' fontWeight={500}>
@@ -150,7 +190,7 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
           fullWidth
           value={bidAmount}
           type='number'
-          disabled={isLoadingPrices || isLoadingTokenBalances}
+          disabled={isLoading}
           onChange={(e) => {
             if (e.target.value === '') {
               setBidAmount(0);
@@ -160,8 +200,8 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
             const parsedBidAmount = Math.max(0, parseFloat(e.target.value));
             setBidAmount(parsedBidAmount);
           }}
-          error={!!error}
-          helperText={error}
+          error={!!customError}
+          helperText={customError}
           InputProps={{
             endAdornment: (
               <Image
@@ -174,13 +214,25 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
           }}
         />
       </Stack>
+      {decentSdkError && (
+        <Typography variant='caption' color='error' align='center'>
+          There was an error communicating with Decent API
+        </Typography>
+      )}
       <Stack direction='row' justifyContent='flex-end' alignItems='center' gap={1} mt={1}>
-        <Button onClick={onCancel} variant='outlined' color='secondary' size='large'>
+        <Button onClick={onCancel} variant='outlined' color='secondary' size='large' disabled={isLoading}>
           Cancel
         </Button>
-        <Button variant='contained' color='secondary' size='large' disabled={!!error}>
+        <LoadingButton
+          loading={isLoading}
+          onClick={handleSubmit}
+          variant='contained'
+          color='secondary'
+          size='large'
+          disabled={!!customError || !decentTransactionInfo?.tx}
+        >
           Confirm
-        </Button>
+        </LoadingButton>
       </Stack>
     </Stack>
   );

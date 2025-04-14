@@ -2,6 +2,7 @@
 
 import { Box, MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import Image from 'next/image';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
@@ -9,12 +10,18 @@ import type { Address } from 'viem';
 import { base, optimism } from 'viem/chains';
 
 import { ChainComponent } from '../../NFTPurchaseDialog/components/ChainSelector/ChainComponent';
-import type { AvailableCurrency } from '../../NFTPurchaseDialog/components/ChainSelector/chains';
 
-export type SelectedPaymentOption = { chainId: number; currency: AvailableCurrency };
+export type AvailableCurrency = 'ETH' | 'USDC' | 'DEV';
+
+export type SelectedPaymentOption = {
+  decimals: number;
+  chainId: number;
+  currency: AvailableCurrency;
+  address: Address;
+};
 
 function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
-  return a.chainId === b.chainId && a.currency === b.currency;
+  return a.chainId === b.chainId && a.currency === b.currency && a.address === b.address;
 }
 
 // LINK token address on Base (placeholder for DEV token)
@@ -45,26 +52,48 @@ export const TOKEN_LOGO_RECORD = {
   DEV: '/images/crypto/dev-token-logo.png'
 };
 
-const chainOpts = [
+export type PaymentOption = {
+  chain: {
+    id: number;
+    name: string;
+  };
+  address: Address;
+  currency: AvailableCurrency;
+  decimals: number;
+};
+
+export const DEV_PAYMENT_OPTION: PaymentOption = {
+  ...baseChainOption,
+  address: DEV_TOKEN_ADDRESS,
+  currency: 'DEV' as const,
+  decimals: 18
+};
+
+const paymentOptions: PaymentOption[] = [
+  DEV_PAYMENT_OPTION,
   {
     ...baseChainOption,
-    currency: 'DEV' as const
+    address: NULL_EVM_ADDRESS,
+    currency: 'ETH' as const,
+    decimals: 18
   },
   {
     ...baseChainOption,
-    currency: 'ETH' as const
-  },
-  {
-    ...baseChainOption,
-    currency: 'USDC' as const
+    address: BASE_USDC_ADDRESS,
+    currency: 'USDC' as const,
+    decimals: 6
   },
   {
     ...optimismChainOption,
-    currency: 'ETH' as const
+    address: NULL_EVM_ADDRESS,
+    currency: 'ETH' as const,
+    decimals: 18
   },
   {
     ...optimismChainOption,
-    currency: 'USDC' as const
+    address: OPTIMISM_USDC_ADDRESS,
+    currency: 'USDC' as const,
+    decimals: 6
   }
 ];
 
@@ -128,31 +157,46 @@ function PaymentOptionSelector(
           }}
           disabled={disabled}
           renderValue={(selected) => {
-            const chain = chainOpts.find(
-              ({ id, currency }) => selected.chainId === id && selected.currency === currency
+            const paymentOption = paymentOptions.find(
+              ({ chain, currency }) => selected.chainId === chain.id && selected.currency === currency
             );
-            if (!chain) return null;
+            if (!paymentOption) return null;
 
             return (
               <Stack direction='row' alignItems='center' gap={1}>
-                <Image src={TOKEN_LOGO_RECORD[chain.currency]} alt={chain.currency} width={40} height={40} />
+                <Image
+                  src={TOKEN_LOGO_RECORD[paymentOption.currency]}
+                  alt={paymentOption.currency}
+                  width={40}
+                  height={40}
+                />
                 <Stack>
                   <Stack flexDirection='row' gap={0.5} alignItems='center'>
-                    <Typography variant='h6'>{chain.currency}</Typography>
-                    <Typography variant='caption'>on {chain.name}</Typography>
+                    <Typography variant='h6'>{paymentOption.currency}</Typography>
+                    <Typography variant='caption'>on {paymentOption.chain.name}</Typography>
                   </Stack>
                   <Stack direction='row' gap={1.5} alignItems='center'>
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography variant='caption'>
-                        Balance: {selectedTokenBalance?.toFixed(chain.currency === 'ETH' ? 8 : 4) || '0'}
+                        Balance: {selectedTokenBalance?.toFixed(paymentOption.decimals / 2) || '0'}
                       </Typography>
-                      <Image src={TOKEN_LOGO_RECORD[chain.currency]} alt={chain.currency} width={14} height={14} />
+                      <Image
+                        src={TOKEN_LOGO_RECORD[paymentOption.currency]}
+                        alt={paymentOption.currency}
+                        width={14}
+                        height={14}
+                      />
                     </Stack>
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography variant='caption'>
-                        Min Bid: {minimumBid?.toFixed(chain.currency === 'ETH' ? 8 : 4)}
+                        Min Bid: {minimumBid?.toFixed(paymentOption.decimals / 2)}
                       </Typography>
-                      <Image src={TOKEN_LOGO_RECORD[chain.currency]} alt={chain.currency} width={14} height={14} />
+                      <Image
+                        src={TOKEN_LOGO_RECORD[paymentOption.currency]}
+                        alt={paymentOption.currency}
+                        width={14}
+                        height={14}
+                      />
                     </Stack>
                   </Stack>
                 </Stack>
@@ -163,20 +207,36 @@ function PaymentOptionSelector(
           value={selectedPaymentOption}
           {...restProps}
         >
-          {chainOpts.map((chain) => (
+          {paymentOptions.map((paymentOption) => (
             <MenuItem
-              key={`${chain.id}-${chain.currency}`}
+              key={`${paymentOption.chain.id}-${paymentOption.currency}-${paymentOption.address}`}
               onClick={(ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
-                onSelectPaymentOption({ chainId: chain.id, currency: chain.currency });
+                onSelectPaymentOption({
+                  chainId: paymentOption.chain.id,
+                  currency: paymentOption.currency,
+                  address: paymentOption.address,
+                  decimals: paymentOption.decimals
+                });
               }}
               sx={{ py: 1.5 }}
             >
               <ChainComponent
-                chain={chain}
+                chain={{
+                  id: paymentOption.chain.id,
+                  name: paymentOption.chain.name,
+                  icon: TOKEN_LOGO_RECORD[paymentOption.currency],
+                  currency: paymentOption.currency
+                }}
                 balance={selectedTokenBalance}
-                selected={isSameOption({ chainId: chain.id, currency: chain.currency }, selectedPaymentOption)}
+                selected={isSameOption(
+                  {
+                    chainId: paymentOption.chain.id,
+                    ...paymentOption
+                  },
+                  selectedPaymentOption
+                )}
               />
             </MenuItem>
           ))}

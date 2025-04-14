@@ -51,7 +51,11 @@ export function _appendDecentQueryParams(path: string, data: any) {
   return `${path}${queryString ? `?${queryString}` : ''}`;
 }
 
-async function prepareDecentTransaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
+export async function prepareDecentTransaction({
+  txConfig
+}: {
+  txConfig: BoxActionRequest;
+}): Promise<BoxActionResponse> {
   const DECENT_API_KEY = getDecentApiKey();
 
   const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';

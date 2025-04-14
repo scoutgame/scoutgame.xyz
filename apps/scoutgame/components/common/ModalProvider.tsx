@@ -10,7 +10,7 @@ import { NFTPurchaseDialog } from 'components/common/NFTPurchaseDialog/NFTPurcha
 import { InviteModal } from 'components/developers/InviteModal/InviteModal';
 
 import { DeveloperInfoModal } from './DeveloperInfoModal/DeveloperInfoModal';
-import { DraftDeveloperInfoModal } from './DraftDeveloperModal/DraftDeveloperInfoModal';
+import { DraftDeveloperInfoModal } from './DraftDeveloperInfoModal/DraftDeveloperInfoModal';
 
 // Add here all the modal names you need
 type ModalType =
