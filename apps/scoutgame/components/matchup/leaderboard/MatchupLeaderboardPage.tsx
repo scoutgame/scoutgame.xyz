@@ -9,6 +9,7 @@ import { HowToPlayCard } from '../components/HowToPlayCard';
 import { RegistrationHeader } from '../components/RegistrationHeader';
 
 import { MatchupLeaderboardTable } from './components/MatchupLeaderboardTable';
+import { MatchupLeaderboardTableRows } from './components/MatchupLeaderboardTableRows';
 import { MyMatchupResultsTable } from './components/MyMatchupResultsTable';
 
 export function MatchupLeaderboardPage({
@@ -45,19 +46,11 @@ export function MatchupLeaderboardPage({
               }
             }}
           >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell align='center'>RANK</TableCell>
-                  <TableCell>SCOUT</TableCell>
-                  <TableCell>TEAM</TableCell>
-                  <TableCell align='right'>GEMS</TableCell>
-                </TableRow>
-              </TableHead>
+            <MatchupLeaderboardTable>
               <Suspense fallback={<LoadingTableBody columns={4} />}>
-                <MatchupLeaderboardTable week={matchup.week} />
+                <MatchupLeaderboardTableRows week={matchup.week} />
               </Suspense>
-            </Table>
+            </MatchupLeaderboardTable>
           </TableContainer>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>

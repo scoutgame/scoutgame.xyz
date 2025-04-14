@@ -1,4 +1,4 @@
-import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import { MAX_CREDITS } from '@packages/matchup/config';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
@@ -89,13 +89,6 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
           </Box>
         </Stack>
       </Card>
-      {/* <TabsMenu
-        value='my_cards'
-        tabs={[
-          { value: 'my_cards', label: 'My Cards' },
-          { value: 'cards_to_purchase', label: 'All Cards' }
-        ]}
-      /> */}
       <MatchupSelectionTabs
         myCardsView={
           <MyDeveloperCards

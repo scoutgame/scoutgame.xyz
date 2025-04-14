@@ -17,7 +17,7 @@ import {
 } from '@packages/scoutgame/protocol/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { getPlatform, isOnchainPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -49,6 +49,11 @@ const PartnerRewardRecord: Record<string, { label: string; icon: string; chain: 
     label: 'Octant Base Contribution',
     icon: '/images/crypto/usdc.png',
     chain: 'Base'
+  },
+  matchup_rewards: {
+    label: 'Matchup Rewards',
+    icon: '/images/crypto/op.png',
+    chain: 'Optimism'
   }
 };
 
