@@ -1,5 +1,7 @@
 'use client';
 
+import env from '@beam-australia/react-env';
+import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -102,39 +104,41 @@ function DraftBidComponent({ address, onCancel }: { address: Address; onCancel: 
   }, [bidAmount, ethPrice, selectedPaymentOption.currency, displayedBalance]);
 
   return (
-    <Stack gap={2}>
-      <DraftTokenSelector
-        selectedToken={selectedPaymentOption}
-        address={address}
-        onSelectChain={setSelectedPaymentOption}
-      />
-      <Stack gap={1}>
-        <Typography color='text.secondary' fontWeight={500}>
-          Your Bid
-        </Typography>
-        <TextField
-          fullWidth
-          value={bidAmount}
-          onChange={(e) => setBidAmount(e.target.value)}
-          error={!!error}
-          helperText={error}
-          InputProps={{
-            endAdornment: (
-              <Box component='span' sx={{ color: 'text.secondary', ml: 1 }}>
-                {selectedPaymentOption.currency}
-              </Box>
-            )
-          }}
+    <BoxHooksContextProvider apiKey={env('DECENT_API_KEY')}>
+      <Stack gap={2}>
+        <DraftTokenSelector
+          selectedToken={selectedPaymentOption}
+          address={address}
+          onSelectChain={setSelectedPaymentOption}
         />
+        <Stack gap={1}>
+          <Typography color='text.secondary' fontWeight={500}>
+            Your Bid
+          </Typography>
+          <TextField
+            fullWidth
+            value={bidAmount}
+            onChange={(e) => setBidAmount(e.target.value)}
+            error={!!error}
+            helperText={error}
+            InputProps={{
+              endAdornment: (
+                <Box component='span' sx={{ color: 'text.secondary', ml: 1 }}>
+                  {selectedPaymentOption.currency}
+                </Box>
+              )
+            }}
+          />
+        </Stack>
+        <Stack direction='row' justifyContent='space-between' alignItems='center'>
+          <Button onClick={onCancel} variant='outlined' color='primary'>
+            Cancel
+          </Button>
+          <Button variant='contained' color='primary'>
+            Confirm
+          </Button>
+        </Stack>
       </Stack>
-      <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <Button onClick={onCancel} variant='outlined' color='primary'>
-          Cancel
-        </Button>
-        <Button variant='contained' color='primary'>
-          Confirm
-        </Button>
-      </Stack>
-    </Stack>
+    </BoxHooksContextProvider>
   );
 }

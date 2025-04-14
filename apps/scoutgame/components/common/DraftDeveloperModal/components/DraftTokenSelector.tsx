@@ -12,7 +12,7 @@ import { base, optimism } from 'viem/chains';
 
 import { ChainComponent } from '../../NFTPurchaseDialog/components/ChainSelector/ChainComponent';
 import type { AvailableCurrency } from '../../NFTPurchaseDialog/components/ChainSelector/chains';
-import { useGetTokenBalances } from '../../NFTPurchaseDialog/hooks/useGetTokenBalances';
+import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 
 export type SelectedPaymentOption = { chainId: number; currency: AvailableCurrency };
 
@@ -24,9 +24,9 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
 
 // LINK token address on Base (placeholder for DEV token)
 // TODO: Replace with DEV token address once its launched
-const DEV_TOKEN_ADDRESS = '0x88Fb150BDc53A65fe94Dea0c9BA0a6dAf8C6e196';
-const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
-const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+export const DEV_TOKEN_ADDRESS = '0x88Fb150BDc53A65fe94Dea0c9BA0a6dAf8C6e196';
+export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
+export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
 const optimismChainOption = {
   name: 'Optimism',
@@ -105,7 +105,7 @@ function SelectField(
     address
   });
 
-  const { tokensWithBalances, selectedTokenBalance, displayedBalance } = useMemo(() => {
+  const { tokensWithBalances, selectedTokenBalance } = useMemo(() => {
     const _tokensWithBalances = tokens?.map((token) => ({
       ...token,
       balance: Number(token.balance) / 10 ** token.decimals
@@ -123,7 +123,6 @@ function SelectField(
     );
 
     return {
-      displayedBalance: _selectedTokenBalance?.balance,
       tokensWithBalances: _tokensWithBalances,
       selectedTokenBalance: _selectedTokenBalance
     };
@@ -183,7 +182,7 @@ function SelectField(
                   </Stack>
                   <Stack direction='row' gap={1.5} alignItems='center'>
                     <Stack direction='row' alignItems='center' gap={0.5}>
-                      <Typography variant='caption'>Balance: {displayedBalance || '0'}</Typography>
+                      <Typography variant='caption'>Balance: {selectedTokenBalance?.balance || '0'}</Typography>
                       <Image src={TOKEN_LOGO_RECORD[chain.currency]} alt={chain.currency} width={14} height={14} />
                     </Stack>
                     <Stack direction='row' alignItems='center' gap={0.5}>
@@ -213,7 +212,7 @@ function SelectField(
             >
               <ChainComponent
                 chain={chain}
-                balance={displayedBalance}
+                balance={selectedTokenBalance?.balance}
                 selected={isSameOption({ chainId: chain.id, currency: chain.currency }, selectedToken)}
               />
             </MenuItem>
