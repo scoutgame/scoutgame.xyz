@@ -8,6 +8,7 @@ import { Button, Stack, TextField, Typography } from '@mui/material';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
+import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -32,7 +33,7 @@ import {
 // Placeholder for bid recipient wallet - will be replaced with actual address
 const MIN_BID_DEV = 100; // Minimum bid is 100 DEV tokens
 
-export function DraftDeveloperBidForm({ onCancel }: { onCancel: () => void }) {
+export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () => void; developerId: string }) {
   const { address } = useAccount();
 
   if (!address) {
@@ -41,16 +42,26 @@ export function DraftDeveloperBidForm({ onCancel }: { onCancel: () => void }) {
 
   return (
     <BoxHooksContextProvider apiKey={env('DECENT_API_KEY')}>
-      <DraftDeveloperBidFormComponent address={address} onCancel={onCancel} />
+      <DraftDeveloperBidFormComponent address={address} onCancel={onCancel} developerId={developerId} />
     </BoxHooksContextProvider>
   );
 }
 
-function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Address; onCancel: () => void }) {
+function DraftDeveloperBidFormComponent({
+  address,
+  onCancel,
+  developerId
+}: {
+  address: Address;
+  onCancel: () => void;
+  developerId: string;
+}) {
   const [bidAmount, setBidAmount] = useState(0);
   const [customError, setCustomError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const trackEvent = useTrackEvent();
+  const { chainId } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
+  const { sendDraftTransaction, isSavingDraftTransaction, draftSuccess, draftError } = useDraft();
 
   // Default to Base ETH
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(() => ({
@@ -59,8 +70,6 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
     currency: DEV_PAYMENT_OPTION.currency,
     decimals: DEV_PAYMENT_OPTION.decimals
   }));
-
-  const { switchChainAsync } = useSwitchChain();
 
   // Fetch ETH and LINK prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
@@ -153,23 +162,52 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
     }
 
     try {
-      setIsSubmitting(true);
-
       // Switch chain if needed
-      if (selectedPaymentOption.chainId !== base.id) {
-        await switchChainAsync({ chainId: base.id });
+      if (chainId !== selectedPaymentOption.chainId) {
+        await switchChainAsync(
+          { chainId: selectedPaymentOption.chainId },
+          {
+            onError() {
+              setCustomError('Failed to switch chain');
+            }
+          }
+        );
       }
 
-      onCancel();
+      const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
+
+      await sendDraftTransaction({
+        txData: {
+          to: decentTransactionInfo.tx.to as Address,
+          data: decentTransactionInfo.tx.data as any,
+          value: _value
+        },
+        txMetadata: {
+          fromAddress: address,
+          sourceChainId: selectedPaymentOption.chainId,
+          developerId,
+          bidAmount,
+          season: getCurrentSeasonStart()
+        }
+      });
+
+      if (draftSuccess) {
+        onCancel();
+      }
+
+      trackEvent('draft_developer', {
+        amount: bidAmount,
+        developerId,
+        chainId: selectedPaymentOption.chainId,
+        currency: selectedPaymentOption.currency
+      });
     } catch (error) {
       log.error('Error submitting bid:', error);
       setCustomError('Failed to submit bid. Please try again.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  const isLoading = isLoadingPrices || isLoadingTokenBalances || isLoadingDecentSdk || isSubmitting;
+  const isLoading = isLoadingPrices || isLoadingTokenBalances || isLoadingDecentSdk || isSavingDraftTransaction;
 
   return (
     <Stack gap={1}>
@@ -200,8 +238,8 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
             const parsedBidAmount = Math.max(0, parseFloat(e.target.value));
             setBidAmount(parsedBidAmount);
           }}
-          error={!!customError}
-          helperText={customError}
+          error={!!customError || !!draftError}
+          helperText={customError || draftError}
           InputProps={{
             endAdornment: (
               <Image
@@ -229,7 +267,7 @@ function DraftDeveloperBidFormComponent({ address, onCancel }: { address: Addres
           variant='contained'
           color='secondary'
           size='large'
-          disabled={!!customError || !decentTransactionInfo?.tx}
+          disabled={!!customError || !decentTransactionInfo?.tx || !!draftError}
         >
           Confirm
         </LoadingButton>

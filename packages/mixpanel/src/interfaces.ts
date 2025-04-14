@@ -116,6 +116,12 @@ export type MixpanelEventMap = {
   purchase_nft_listing: BaseEvent & {
     developerNftId: string;
   };
+  draft_developer: BaseEvent & {
+    amount: number;
+    currency: string;
+    chainId: number;
+    developerId: string;
+  };
 } & Record<EventType, FrontendEvent>;
 
 export type MixpanelEvent = MixpanelEventMap[keyof MixpanelEventMap];
