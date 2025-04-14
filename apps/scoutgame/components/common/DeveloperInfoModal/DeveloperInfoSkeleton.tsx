@@ -1,6 +1,6 @@
 import { Skeleton, Stack } from '@mui/material';
 
-export function DeveloperInfoModalSkeleton() {
+export function DeveloperInfoSkeleton() {
   return (
     <Stack
       gap={{

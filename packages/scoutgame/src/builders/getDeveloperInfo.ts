@@ -19,6 +19,15 @@ type DeveloperCardInfo = {
   congratsImageUrl: string | null;
 };
 
+export type DeveloperGithubActivity = {
+  repo: string;
+  owner: string;
+  url: string;
+  gems: number;
+  createdAt: Date;
+  avatar?: string | null;
+};
+
 export type DeveloperInfo = {
   id: string;
   path: string;
@@ -36,14 +45,7 @@ export type DeveloperInfo = {
   farcasterUsername: string | null;
   seasonPoints: number;
   scoutedBy: number;
-  githubActivities: {
-    repo: string;
-    owner: string;
-    url: string;
-    gems: number;
-    createdAt: Date;
-    avatar?: string | null;
-  }[];
+  githubActivities: DeveloperGithubActivity[];
   last14DaysRank: (number | null)[];
 };
 

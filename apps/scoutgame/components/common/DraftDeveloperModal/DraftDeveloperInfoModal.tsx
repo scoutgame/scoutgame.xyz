@@ -1,15 +1,16 @@
 import { log } from '@charmverse/core/log';
-import { getDeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
+import { getDraftDeveloperInfo } from '@packages/scoutgame/builders/getDraftDeveloperInfo';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 
-import { DeveloperInfoCard } from '../DeveloperInfoModal/DeveloperInfoCard';
 import { DeveloperModal } from '../DeveloperInfoModal/DeveloperInfoModal';
-import { DeveloperInfoModalSkeleton } from '../DeveloperInfoModal/DeveloperInfoModalSkeleton';
 
-export function DraftDeveloperModal({
+import { DraftDeveloperInfoCard } from './DraftDeveloperInfoCard';
+import { DraftDeveloperInfoSkeleton } from './DraftDeveloperInfoSkeleton';
+
+export function DraftDeveloperInfoModal({
   onClose,
   data,
   open
@@ -28,7 +29,7 @@ export function DraftDeveloperModal({
         return null;
       }
 
-      const _developer = await getDeveloperInfo({ path: data.path, scoutId: user?.id });
+      const _developer = await getDraftDeveloperInfo({ path: data.path, scoutId: user?.id });
       if (!_developer) {
         // If the developer doesn't exist, redirect to the user's profile
         router.push(`/u/${data.path}`);
@@ -46,7 +47,7 @@ export function DraftDeveloperModal({
   if (isLoading) {
     return (
       <DeveloperModal open={open} onClose={onClose}>
-        <DeveloperInfoModalSkeleton />
+        <DraftDeveloperInfoSkeleton />
       </DeveloperModal>
     );
   }
@@ -57,7 +58,7 @@ export function DraftDeveloperModal({
 
   return (
     <DeveloperModal open={open} onClose={onClose}>
-      <DeveloperInfoCard onClose={onClose} developer={developer} />
+      <DraftDeveloperInfoCard onClose={onClose} developer={developer} />
     </DeveloperModal>
   );
 }

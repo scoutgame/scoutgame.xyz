@@ -1,14 +1,12 @@
 import { Stack } from '@mui/material';
-import { type DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
+import type { DraftDeveloperInfo } from '@packages/scoutgame/builders/getDraftDeveloperInfo';
 
-import { DeveloperInfoCardPrice } from '../DeveloperInfo/DeveloperInfoCardPrice';
 import { DeveloperInfoGithubActivities } from '../DeveloperInfo/DeveloperInfoGithubActivities';
 import { DeveloperInfoProfile } from '../DeveloperInfo/DeveloperInfoProfile';
 import { DeveloperInfoRanksGraph } from '../DeveloperInfo/DeveloperInfoRanksGraph';
 import { DeveloperInfoSeasonStats } from '../DeveloperInfo/DeveloperInfoSeasonStats';
-import { DeveloperInfoWeekStats } from '../DeveloperInfo/DeveloperInfoWeeklyStats';
 
-export function DeveloperInfoCard({ onClose, developer }: { onClose: () => void; developer: DeveloperInfo }) {
+export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => void; developer: DraftDeveloperInfo }) {
   return (
     <Stack gap={2}>
       <DeveloperInfoProfile
@@ -24,8 +22,7 @@ export function DeveloperInfoCard({ onClose, developer }: { onClose: () => void;
       />
       <Stack gap={0.5}>
         <Stack direction='row' gap={0.5}>
-          <DeveloperInfoWeekStats rank={developer.rank} gemsCollected={developer.gemsCollected} />
-          <DeveloperInfoRanksGraph ranks={developer.last14DaysRank} />
+          <DeveloperInfoRanksGraph ranks={developer.weeklyRanks} />
           <DeveloperInfoSeasonStats
             seasonPoints={developer.seasonPoints}
             scoutedBy={developer.scoutedBy}
@@ -33,7 +30,6 @@ export function DeveloperInfoCard({ onClose, developer }: { onClose: () => void;
           />
         </Stack>
         <DeveloperInfoGithubActivities githubActivities={developer.githubActivities} />
-        <DeveloperInfoCardPrice developer={developer} onClose={onClose} />
       </Stack>
     </Stack>
   );
