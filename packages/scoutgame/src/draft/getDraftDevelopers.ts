@@ -54,7 +54,7 @@ export async function getDraftDevelopers() {
       path: builder.path,
       level: builder.userSeasonStats[0]?.level ?? 0,
       seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
-      weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank)
+      weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank) ?? []
     }))
     .sort((a, b) => b.seasonPoints - a.seasonPoints)
     .map((developer, index) => ({

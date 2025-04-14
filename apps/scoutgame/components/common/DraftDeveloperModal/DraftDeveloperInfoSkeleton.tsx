@@ -34,7 +34,8 @@ export function DraftDeveloperInfoSkeleton() {
             md: 2
           }}
         >
-          <Skeleton variant='text' height={15} />
+          <Skeleton variant='text' width={150} height={25} />
+          <Skeleton variant='text' width={50} height={15} />
           <Stack
             direction='row'
             gap={{
@@ -59,19 +60,8 @@ export function DraftDeveloperInfoSkeleton() {
             variant='text'
             sx={{
               width: {
-                xs: '33.33%',
-                md: 150
-              }
-            }}
-            height={125}
-          />
-
-          <Skeleton
-            variant='text'
-            sx={{
-              width: {
-                xs: '33.33%',
-                md: 'calc(100% - 300px)'
+                xs: '66.66%',
+                md: 'calc(100% - 150px)'
               }
             }}
             height={125}
@@ -88,34 +78,6 @@ export function DraftDeveloperInfoSkeleton() {
           />
         </Stack>
         <Skeleton variant='text' width='100%' height={125} />
-        <Stack
-          direction={{
-            xs: 'column',
-            md: 'row'
-          }}
-          gap={0.5}
-        >
-          <Skeleton
-            variant='text'
-            sx={{
-              width: {
-                xs: '100%',
-                md: '50%'
-              }
-            }}
-            height={75}
-          />
-          <Skeleton
-            variant='text'
-            sx={{
-              width: {
-                xs: '100%',
-                md: '50%'
-              }
-            }}
-            height={75}
-          />
-        </Stack>
       </Stack>
     </Stack>
   );
