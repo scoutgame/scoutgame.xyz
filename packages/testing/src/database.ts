@@ -357,6 +357,7 @@ export async function mockBuilderEvent({
   builderId,
   eventType,
   week = getCurrentWeek(),
+  season = mockSeason,
   createdAt = new Date(),
   gemsValue,
   gemsReceiptType = 'first_pr'
@@ -364,6 +365,7 @@ export async function mockBuilderEvent({
   builderId: string;
   eventType: BuilderEventType;
   week?: string;
+  season?: string;
   createdAt?: Date;
   gemsValue?: number;
   gemsReceiptType?: GemsReceiptType;
@@ -372,7 +374,7 @@ export async function mockBuilderEvent({
     data: {
       createdAt,
       builderId,
-      season: mockSeason,
+      season,
       type: eventType,
       week,
       gemsReceipt: gemsValue
