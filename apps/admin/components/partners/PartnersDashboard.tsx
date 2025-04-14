@@ -24,6 +24,12 @@ export function PartnersDashboard() {
           airdropWalletAddress={process.env.REFERRAL_CHAMPION_REWARD_ADMIN_ADDRESS}
         />
         <PartnerCardContainer partner='talent' partnerName='Talent Protocol' />
+        <PartnerCardContainer
+          partner='matchup'
+          partnerName='Matchup Rewards'
+          airdropPartner='matchup_rewards'
+          airdropWalletAddress={process.env.REFERRAL_CHAMPION_REWARD_ADMIN_ADDRESS}
+        />
 
         <Typography variant='h4' align='center'>
           Completed
