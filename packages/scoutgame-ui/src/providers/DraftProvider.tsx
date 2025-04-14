@@ -1,5 +1,6 @@
 'use client';
 
+import { checkDraftTransactionAction } from '@packages/scoutgame/drafts/checkDraftTransactionAction';
 import { saveDraftTransactionAction } from '@packages/scoutgame/drafts/saveDraftTransactionAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { useAction } from 'next-safe-action/hooks';
@@ -35,6 +36,7 @@ type DraftContext = {
   sendDraftTransaction: (input: DraftTransactionInput) => Promise<unknown>;
   clearDraftSuccess: () => void;
   draftSuccess: boolean;
+  checkDraftTransaction: (input: { pendingTransactionId: string; txHash: string }) => Promise<any>;
 };
 
 export const DraftContext = createContext<Readonly<DraftContext | null>>(null);
@@ -46,6 +48,17 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   const [draftSuccess, setDraftSuccess] = useState(false);
 
   const {
+    isExecuting: isExecutingTransaction,
+    hasSucceeded: transactionHasSucceeded,
+    result: transactionResult,
+    executeAsync: checkDraftTransaction
+  } = useAction(checkDraftTransactionAction, {
+    onError({ error, input }) {
+      scoutgameMintsLogger.error(`Error checking draft transaction`, { error, input });
+    }
+  });
+
+  const {
     executeAsync: saveDraftTransaction,
     isExecuting: isSavingDraftTransaction,
     hasSucceeded: savedDraftTransaction,
@@ -53,8 +66,35 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   } = useAction(saveDraftTransactionAction, {
     async onSuccess(res) {
       if (res.data?.id) {
-        toast.success('Draft offer submitted successfully');
+        const checkResultPromise = checkDraftTransaction({
+          pendingTransactionId: res.data.id,
+          txHash: res.data.txHash
+        });
+
+        toast.promise(checkResultPromise, {
+          loading: 'Draft transaction is being settled...',
+          success: () => `Draft transaction ${res?.data?.txHash || ''} was successful`,
+          error: (data) => `Draft transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
+        });
+
+        const checkResult = await checkResultPromise;
+
         await refreshUser();
+
+        if (checkResult?.serverError) {
+          scoutgameMintsLogger.error(`Error checking draft transaction`, {
+            chainId: res.input.transactionInfo.sourceChainId,
+            developerId: res.input.draftInfo.developerId,
+            value: res.input.draftInfo.value
+          });
+        } else if (checkResult?.data?.success) {
+          scoutgameMintsLogger.info(`Draft transaction completed`, {
+            chainId: res.input.transactionInfo.sourceChainId,
+            developerId: res.input.draftInfo.developerId,
+            value: res.input.draftInfo.value
+          });
+          toast.success('Draft offer submitted successfully');
+        }
       } else {
         scoutgameMintsLogger.warn(`Draft transaction saved but no transaction id returned`, {
           chainId: res.input.transactionInfo.sourceChainId,
@@ -129,20 +169,34 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     setDraftSuccess(false);
   }, [setDraftSuccess]);
 
-  const draftError = !isSavingDraftTransaction ? saveTransactionResult.serverError?.message : undefined;
+  const draftError =
+    !isExecutingTransaction && !isSavingDraftTransaction
+      ? (transactionResult.serverError?.message ?? saveTransactionResult.serverError?.message)
+      : undefined;
 
   const value = useMemo(
     () => ({
-      isExecutingTransaction: false,
+      isExecutingTransaction,
       isSavingDraftTransaction,
       savedDraftTransaction,
-      transactionHasSucceeded: savedDraftTransaction,
+      transactionHasSucceeded,
       draftError,
       sendDraftTransaction,
       clearDraftSuccess,
-      draftSuccess
+      draftSuccess,
+      checkDraftTransaction
     }),
-    [isSavingDraftTransaction, savedDraftTransaction, sendDraftTransaction, draftError, clearDraftSuccess, draftSuccess]
+    [
+      isExecutingTransaction,
+      isSavingDraftTransaction,
+      savedDraftTransaction,
+      transactionHasSucceeded,
+      sendDraftTransaction,
+      draftError,
+      clearDraftSuccess,
+      draftSuccess,
+      checkDraftTransaction
+    ]
   );
 
   return <DraftContext.Provider value={value}>{children}</DraftContext.Provider>;

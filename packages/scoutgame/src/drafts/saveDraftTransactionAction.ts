@@ -37,6 +37,8 @@ export const saveDraftTransactionAction = authActionClient
       throw new Error('User not found');
     }
 
+    const txHash = parsedInput.transactionInfo.sourceChainTxHash.toLowerCase();
+
     // Save the draft transaction
     const data = await prisma.draftSeasonOffer.create({
       data: {
@@ -48,7 +50,7 @@ export const saveDraftTransactionAction = authActionClient
         status: 'pending',
         chainId: parsedInput.transactionInfo.sourceChainId,
         decentPayload: parsedInput.transactionInfo.decentPayload,
-        txHash: parsedInput.transactionInfo.sourceChainTxHash.toLowerCase()
+        txHash
       }
     });
 
@@ -59,5 +61,5 @@ export const saveDraftTransactionAction = authActionClient
       userId
     });
 
-    return { id: data.id, txHash: data.txHash };
+    return { id: data.id, txHash };
   });
