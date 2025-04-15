@@ -11,7 +11,7 @@ export function SearchDraftDevelopers() {
 
   return (
     <TextField
-      placeholder='Search for a developer'
+      placeholder='Search developers'
       variant='outlined'
       fullWidth
       value={searchTerm}

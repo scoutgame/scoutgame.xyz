@@ -12,7 +12,15 @@ export type DraftDeveloper = {
   rank: number;
 };
 
-export async function getDraftDevelopers({ search }: { search?: string }): Promise<DraftDeveloper[]> {
+export type DraftDeveloperSort = 'all' | 'trending';
+
+export async function getDraftDevelopers({
+  search,
+  sort
+}: {
+  search?: string;
+  sort?: DraftDeveloperSort;
+}): Promise<DraftDeveloper[]> {
   const season = getCurrentSeasonStart();
 
   if (!season) {
@@ -74,6 +82,11 @@ export async function getDraftDevelopers({ search }: { search?: string }): Promi
           level: true,
           pointsEarnedAsBuilder: true
         }
+      },
+      draftSeasonOffersReceived: {
+        select: {
+          id: true
+        }
       }
     }
   });
@@ -86,10 +99,16 @@ export async function getDraftDevelopers({ search }: { search?: string }): Promi
       path: builder.path,
       level: builder.userSeasonStats[0]?.level ?? 0,
       seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
-      weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank) ?? []
+      weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank) ?? [],
+      draftSeasonOffersReceived: builder.draftSeasonOffersReceived.length
     }))
-    .sort((a, b) => b.seasonPoints - a.seasonPoints)
-    .map((developer, index) => ({
+    .sort((a, b) => {
+      if (sort === 'trending') {
+        return b.draftSeasonOffersReceived - a.draftSeasonOffersReceived;
+      }
+      return b.seasonPoints - a.seasonPoints;
+    })
+    .map(({ draftSeasonOffersReceived, ...developer }, index) => ({
       ...developer,
       rank: index + 1
     }));

@@ -1,9 +1,11 @@
-import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography } from '@mui/material';
+import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography, Chip } from '@mui/material';
+import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { LoadingCard } from '@packages/scoutgame-ui/components/common/Loading/LoadingCard';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { DraftDevelopersTable } from './components/DraftDevelopersTable';
@@ -12,7 +14,7 @@ import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
 const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 
-export function DraftRegisterPage({ search }: { search?: string }) {
+export function DraftRegisterPage({ search, sort }: { search?: string; sort?: DraftDeveloperSort }) {
   const draftEnded = DateTime.utc() > DRAFT_END_DATE;
 
   return (
@@ -42,8 +44,26 @@ export function DraftRegisterPage({ search }: { search?: string }) {
             {draftEnded ? 'Draft has ended' : 'Build your deck before the season begins!'}
           </Typography>
           <SearchDraftDevelopers />
+          <Stack flexDirection='row' gap={2} alignItems='center'>
+            <Link href='/draft/register?sort=all'>
+              <Chip
+                sx={{ borderRadius: 1, my: 0, fontSize: '1rem' }}
+                label='All Developers'
+                variant={sort === 'all' ? 'filled' : 'outlined'}
+                color='primary'
+              />
+            </Link>
+            <Link href='/draft/register?sort=trending'>
+              <Chip
+                sx={{ borderRadius: 1, my: 0, fontSize: '1rem' }}
+                label='Trending'
+                variant={sort === 'trending' ? 'filled' : 'outlined'}
+                color='primary'
+              />
+            </Link>
+          </Stack>
           <Suspense fallback={<LoadingTable />}>
-            <DraftDevelopersTable search={search} />
+            <DraftDevelopersTable search={search} sort={sort} />
           </Suspense>
         </Grid>
         <Grid
