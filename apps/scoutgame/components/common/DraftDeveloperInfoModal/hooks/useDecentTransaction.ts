@@ -15,15 +15,10 @@ export type DecentTransactionProps = {
   address: Address;
   sourceChainId: number;
   sourceToken: Address;
-  paymentAmountOut: bigint;
+  paymentAmountIn: bigint;
 };
 
-export function useDecentTransaction({
-  address,
-  paymentAmountOut,
-  sourceChainId,
-  sourceToken
-}: DecentTransactionProps) {
+export function useDecentTransaction({ address, paymentAmountIn, sourceChainId, sourceToken }: DecentTransactionProps) {
   const decentAPIParams: UseBoxActionArgs = {
     sender: address,
     srcToken: sourceToken,
@@ -33,8 +28,8 @@ export function useDecentTransaction({
     slippage: 1,
     actionType: ActionType.SwapAction,
     actionConfig: {
-      amount: paymentAmountOut,
-      swapDirection: SwapDirection.EXACT_AMOUNT_OUT,
+      amount: paymentAmountIn,
+      swapDirection: SwapDirection.EXACT_AMOUNT_IN,
       receiverAddress: BID_RECIPIENT_ADDRESS,
       chainId: sourceChainId
     }
@@ -45,8 +40,8 @@ export function useDecentTransaction({
     isLoading: isLoadingDecentSdk,
     data: decentTransactionInfo
   } = useSWR(
-    address && paymentAmountOut
-      ? `swap-token-${BID_RECIPIENT_ADDRESS}-${sourceChainId}-${sourceToken}-${paymentAmountOut}`
+    address && paymentAmountIn
+      ? `swap-token-${BID_RECIPIENT_ADDRESS}-${sourceChainId}-${sourceToken}-${paymentAmountIn}`
       : null,
     () =>
       prepareDecentTransaction({

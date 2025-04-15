@@ -2,6 +2,7 @@
 
 import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
+import type { EvmTransaction } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
 import { LoadingButton } from '@mui/lab';
 import { Button, Stack, TextField, Typography } from '@mui/material';
@@ -14,6 +15,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import type { Address } from 'viem';
+import { parseUnits } from 'viem';
 import { base } from 'viem/chains';
 import { useAccount, useSwitchChain } from 'wagmi';
 
@@ -157,7 +159,7 @@ function DraftDeveloperBidFormComponent({
     address,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,
-    paymentAmountOut: BigInt(Math.floor(debouncedBidAmount * 10 ** selectedPaymentOption.decimals))
+    paymentAmountIn: parseUnits(debouncedBidAmount.toString(), selectedPaymentOption.decimals)
   });
 
   const selectedChainCurrency = selectedPaymentOption.address;
@@ -172,7 +174,7 @@ function DraftDeveloperBidFormComponent({
     spender: decentTransactionInfo?.tx.to as Address
   });
 
-  const amountToPay = BigInt(decentTransactionInfo?.tokenPayment?.amount?.toString().replace('n', '') || 0);
+  const amountToPay = BigInt(parseUnits(debouncedBidAmount.toString(), selectedPaymentOption.decimals));
 
   const approvalRequired =
     selectedPaymentOption.currency !== 'ETH' &&
@@ -197,19 +199,17 @@ function DraftDeveloperBidFormComponent({
         );
       }
 
-      const value = BigInt(Math.floor(debouncedBidAmount * 10 ** selectedPaymentOption.decimals));
-
       await sendDraftTransaction({
         txData: {
           to: decentTransactionInfo.tx.to as Address,
           data: decentTransactionInfo.tx.data as any,
-          value
+          value: BigInt((decentTransactionInfo.tx as EvmTransaction).value?.toString().replace('n', '') || '0')
         },
         txMetadata: {
           fromAddress: address,
           sourceChainId: selectedPaymentOption.chainId,
           developerId,
-          bidAmount: value,
+          bidAmount: parseUnits(debouncedBidAmount.toString(), selectedPaymentOption.decimals),
           season: getCurrentSeasonStart()
         }
       });

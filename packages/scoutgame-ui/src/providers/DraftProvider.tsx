@@ -116,14 +116,14 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   const sendDraftTransaction = useCallback(
     async (input: DraftTransactionInput) => {
       const {
-        txData: { to, data, value: _txValue },
+        txData: { to, data, value },
         txMetadata: { sourceChainId, developerId, bidAmount, fromAddress, season }
       } = input;
       return sendTransactionAsync(
         {
           to,
           data,
-          value: _txValue
+          value
         },
         {
           onSuccess: async (_data) => {
