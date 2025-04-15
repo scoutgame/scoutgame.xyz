@@ -35,15 +35,15 @@ export function StartClaimStep({ isLoading }: { isLoading: boolean }) {
         </Typography>
         {isDesktop ? (
           <Typography variant='h6'>
-            If you earned points in the Preaseason, you've <br />
+            Top Players from the Scout Game Preaseason, you've <br />
             secured your place in the airdrop! Claim your DEV <br />
             tokens at the start of each season for the next 10 <br />
             seasons.
           </Typography>
         ) : (
           <Typography>
-            If you earned points in the Preaseasons, you've secured your place in the airdrop! Claim your DEV tokens at
-            the start of each season for the next 10 seasons.
+            Top Players from the Scout Game Preaseason, you've secured your place in the airdrop! Claim your DEV tokens
+            at the start of each season for the next 10 seasons.
           </Typography>
         )}
         <WalletLogin

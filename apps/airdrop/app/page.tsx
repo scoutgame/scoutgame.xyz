@@ -66,7 +66,7 @@ export default function AirdropPage() {
             </Typography>
           </Stack>
           <Typography>
-            Don’t sell your airdrop! Earn Diamond Hands Rewards by using your DEV tokens in any combination of 3 ways:
+            Hold on to your airdrop! Earn Diamond Hands Rewards by using your DEV tokens in any combination of 3 ways:
           </Typography>
           <Stack gap={1}>
             <Stack flexDirection='row' gap={1} alignItems='center'>
