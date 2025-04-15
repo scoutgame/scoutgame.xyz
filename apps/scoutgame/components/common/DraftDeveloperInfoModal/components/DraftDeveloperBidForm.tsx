@@ -63,7 +63,7 @@ function DraftDeveloperBidFormComponent({
   onCancel: () => void;
   developerId: string;
 }) {
-  const [bidAmount, setBidAmount] = useState(0);
+  const [bidAmount, setBidAmount] = useState('0');
   const debouncedBidAmount = useDebouncedValue(bidAmount, 500);
   const [customError, setCustomError] = useState<string | null>(null);
   const trackEvent = useTrackEvent();
@@ -142,12 +142,14 @@ function DraftDeveloperBidFormComponent({
       return;
     }
 
+    const numericBidAmount = Number(debouncedBidAmount);
+
     if (selectedTokenBalance < minimumBid) {
       setCustomError('Insufficient balance');
       return;
     }
 
-    if (debouncedBidAmount < minimumBid) {
+    if (numericBidAmount < minimumBid) {
       setCustomError(`Minimum bid is ${minimumBid?.toFixed(selectedPaymentOption.currency === 'ETH' ? 8 : 4)}`);
       return;
     }
@@ -159,7 +161,7 @@ function DraftDeveloperBidFormComponent({
     address,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,
-    paymentAmountIn: parseUnits(debouncedBidAmount.toString(), selectedPaymentOption.decimals)
+    paymentAmountIn: parseUnits(debouncedBidAmount, selectedPaymentOption.decimals)
   });
 
   const selectedChainCurrency = selectedPaymentOption.address;
@@ -174,7 +176,7 @@ function DraftDeveloperBidFormComponent({
     spender: decentTransactionInfo?.tx.to as Address
   });
 
-  const amountToPay = BigInt(parseUnits(debouncedBidAmount.toString(), selectedPaymentOption.decimals));
+  const amountToPay = BigInt(parseUnits(debouncedBidAmount, selectedPaymentOption.decimals));
 
   const approvalRequired =
     selectedPaymentOption.currency !== 'ETH' &&
@@ -209,7 +211,7 @@ function DraftDeveloperBidFormComponent({
           fromAddress: address,
           sourceChainId: selectedPaymentOption.chainId,
           developerId,
-          bidAmount: parseUnits(debouncedBidAmount.toString(), selectedPaymentOption.decimals),
+          bidAmount: parseUnits(debouncedBidAmount, selectedPaymentOption.decimals),
           season: getCurrentSeasonStart()
         }
       });
@@ -219,7 +221,7 @@ function DraftDeveloperBidFormComponent({
       }
 
       trackEvent('draft_developer', {
-        amount: debouncedBidAmount,
+        amount: Number(debouncedBidAmount),
         developerId,
         chainId: selectedPaymentOption.chainId,
         currency: selectedPaymentOption.currency
@@ -238,7 +240,7 @@ function DraftDeveloperBidFormComponent({
         selectedPaymentOption={selectedPaymentOption}
         address={address}
         onSelectPaymentOption={(option) => {
-          setBidAmount(0);
+          setBidAmount('0');
           setSelectedPaymentOption(option);
         }}
         prices={prices}
@@ -258,14 +260,24 @@ function DraftDeveloperBidFormComponent({
           disabled={isLoading}
           onChange={(e) => {
             if (e.target.value === '') {
-              setBidAmount(0);
+              setBidAmount('0');
               return;
             }
 
-            const parsedBidAmount = Math.max(0, parseFloat(e.target.value));
-            setBidAmount(
-              selectedTokenBalance !== undefined ? Math.min(parsedBidAmount, selectedTokenBalance) : parsedBidAmount
-            );
+            // Keep the raw string value to maintain decimal places
+            const rawValue = e.target.value;
+            const numericValue = Number(rawValue);
+
+            if (Number.isNaN(numericValue) || numericValue < 0) {
+              setBidAmount('0');
+              return;
+            }
+
+            if (selectedTokenBalance !== undefined) {
+              setBidAmount(numericValue > selectedTokenBalance ? selectedTokenBalance.toString() : rawValue);
+            } else {
+              setBidAmount(rawValue);
+            }
           }}
           error={!!customError || !!draftError}
           helperText={customError || draftError}
