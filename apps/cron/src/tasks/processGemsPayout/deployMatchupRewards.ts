@@ -58,6 +58,7 @@ export async function deployMatchupRewards({ week }: { week: string }) {
       season: currentSeason.start,
       week,
       ipfsCid: '',
+      provider: 'thirdweb',
       merkleTreeJson: merkleTree,
       tokenAddress: optimismTokenAddress,
       tokenDecimals: optimismTokenDecimals,
