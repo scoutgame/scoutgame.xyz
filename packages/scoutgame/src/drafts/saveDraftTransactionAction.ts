@@ -2,10 +2,13 @@
 
 import { prisma } from '@charmverse/core/prisma-client';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { DateTime } from 'luxon';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+
+const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 
 export const saveDraftTransactionAction = authActionClient
   .metadata({ actionName: 'save-draft-transaction' })
@@ -31,6 +34,11 @@ export const saveDraftTransactionAction = authActionClient
     })
   )
   .action(async ({ parsedInput, ctx }) => {
+    const nowUtc = DateTime.utc();
+    if (nowUtc > DRAFT_END_DATE) {
+      throw new Error('Draft has ended');
+    }
+
     const userId = ctx.session.scoutId;
 
     if (!userId) {

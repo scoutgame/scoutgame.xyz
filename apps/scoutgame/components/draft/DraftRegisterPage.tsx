@@ -2,6 +2,7 @@ import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography }
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { LoadingCard } from '@packages/scoutgame-ui/components/common/Loading/LoadingCard';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
+import { DateTime } from 'luxon';
 import Image from 'next/image';
 import { Suspense } from 'react';
 
@@ -10,7 +11,11 @@ import { SearchDevelopersInput } from '../scout/components/SearchDevelopersInput
 import { DraftDevelopersTable } from './components/DraftDevelopersTable';
 import { DraftSeasonOffersTable } from './components/DraftSeasonOffersTable';
 
+const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
+
 export function DraftRegisterPage() {
+  const draftEnded = DateTime.utc() > DRAFT_END_DATE;
+
   return (
     <>
       <HeaderMessage />
@@ -35,7 +40,7 @@ export function DraftRegisterPage() {
           }}
         >
           <Typography variant='h4' color='secondary' textAlign='center'>
-            Build your deck before the season begins!
+            {draftEnded ? 'Draft has ended' : 'Build your deck before the season begins!'}
           </Typography>
           <SearchDevelopersInput />
           <Suspense fallback={<LoadingTable />}>

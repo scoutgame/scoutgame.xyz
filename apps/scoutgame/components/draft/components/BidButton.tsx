@@ -1,13 +1,23 @@
 'use client';
 
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
+import { DateTime } from 'luxon';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
 
+// Draft ends at midnight (end of day) UTC on April 25th, 2024
+const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
+
+export function isDraftEnded(): boolean {
+  const nowUtc = DateTime.utc();
+  return nowUtc > DRAFT_END_DATE;
+}
+
 export function BidButton({ developerPath }: { developerPath: string }) {
   const { openModal } = useGlobalModal();
+  const draftEnded = isDraftEnded();
 
-  return (
+  const button = (
     <Button
       sx={{
         px: { xs: 0.5, md: 2 },
@@ -19,8 +29,19 @@ export function BidButton({ developerPath }: { developerPath: string }) {
       }}
       onClick={() => openModal('draftDeveloper', { path: developerPath })}
       color='secondary'
+      disabled={draftEnded}
     >
       Bid
     </Button>
   );
+
+  if (draftEnded) {
+    return (
+      <Tooltip title='Draft has ended' placement='top'>
+        <div>{button}</div>
+      </Tooltip>
+    );
+  }
+
+  return button;
 }
