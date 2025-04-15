@@ -27,7 +27,12 @@ export async function getDraftDevelopers(): Promise<DraftDeveloper[]> {
           season
         }
       },
-      deletedAt: null
+      deletedAt: null,
+      wallets: {
+        some: {
+          primary: true
+        }
+      }
     },
     select: {
       id: true,
