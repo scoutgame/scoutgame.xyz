@@ -24,9 +24,9 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency && a.address === b.address;
 }
 
-// AAVE token address on Base (placeholder for DEV token)
+// IoTeX token address on Base (placeholder for DEV token)
 // TODO: Replace with DEV token address once its launched
-export const DEV_TOKEN_ADDRESS = '0x63706e401c06ac8513145b7687A14804d17f814b';
+export const DEV_TOKEN_ADDRESS = '0xBCBAf311ceC8a4EAC0430193A528d9FF27ae38C1';
 export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
@@ -98,6 +98,15 @@ const paymentOptions: PaymentOption[] = [
     decimals: 6
   }
 ];
+
+// Remove trailing zeros after decimal point
+// Examples: 1.000000 -> 1, 1.100000 -> 1.1, 1.000100 -> 1.0001
+function formatNumber(num: number, maxDecimals: number): string {
+  // Convert to string with fixed decimal places
+  const fixed = num.toFixed(maxDecimals);
+  // Remove trailing zeros after decimal point and remove decimal point if no decimals
+  return fixed.replace(/\.?0+$/, '');
+}
 
 function PaymentOptionSelector(
   {
@@ -186,7 +195,8 @@ function PaymentOptionSelector(
                   <Stack direction='row' gap={1.5} alignItems='center'>
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography variant='caption'>
-                        Balance: {selectedTokenBalance?.toFixed(paymentOption.decimals / 2) || '0'}
+                        Balance:{' '}
+                        {selectedTokenBalance ? formatNumber(selectedTokenBalance, paymentOption.decimals) : '0'}
                       </Typography>
                       <Image
                         src={TOKEN_LOGO_RECORD[paymentOption.currency]}
@@ -197,7 +207,7 @@ function PaymentOptionSelector(
                     </Stack>
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography variant='caption'>
-                        Min Bid: {minimumBid?.toFixed(paymentOption.decimals / 2)}
+                        Min Bid: {minimumBid ? formatNumber(minimumBid, paymentOption.decimals) : '0'}
                       </Typography>
                       <Image
                         src={TOKEN_LOGO_RECORD[paymentOption.currency]}

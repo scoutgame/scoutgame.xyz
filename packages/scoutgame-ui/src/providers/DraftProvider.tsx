@@ -23,6 +23,7 @@ type DraftTransactionInput = {
     sourceChainId: number;
     developerId: string;
     bidAmount: bigint;
+    bidAmountInDev: bigint;
     season: string;
   };
 };
@@ -117,7 +118,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     async (input: DraftTransactionInput) => {
       const {
         txData: { to, data, value },
-        txMetadata: { sourceChainId, developerId, bidAmount, fromAddress, season }
+        txMetadata: { sourceChainId, developerId, bidAmountInDev, fromAddress, season }
       } = input;
       return sendTransactionAsync(
         {
@@ -141,7 +142,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
               },
               draftInfo: {
                 developerId,
-                value: bidAmount.toString(),
+                value: bidAmountInDev.toString(),
                 season
               }
             });

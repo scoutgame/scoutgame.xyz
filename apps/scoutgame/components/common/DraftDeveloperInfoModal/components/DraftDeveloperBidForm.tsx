@@ -36,7 +36,7 @@ import {
 } from './DraftPaymentOptionSelector';
 
 // Placeholder for bid recipient wallet - will be replaced with actual address
-const MIN_BID_DEV = 0.00001; // Minimum bid is 100 DEV tokens
+const MIN_BID_DEV = 1; // Minimum bid is 100 DEV tokens
 
 export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () => void; developerId: string }) {
   const { address } = useAccount();
@@ -81,11 +81,11 @@ function DraftDeveloperBidFormComponent({
 
   // Fetch ETH and LINK prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,aave&vs_currencies=usd');
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,iotex&vs_currencies=usd');
     const data = await response.json();
     return {
       eth: data.ethereum.usd as number,
-      dev: data.aave.usd as number
+      dev: data.iotex.usd as number
     };
   });
 
@@ -150,12 +150,19 @@ function DraftDeveloperBidFormComponent({
     }
 
     if (numericBidAmount < minimumBid) {
-      setCustomError(`Minimum bid is ${minimumBid?.toFixed(selectedPaymentOption.currency === 'ETH' ? 8 : 4)}`);
+      setCustomError(`Minimum bid is ${minimumBid?.toFixed(selectedPaymentOption.decimals)}`);
       return;
     }
 
     setCustomError(null);
-  }, [debouncedBidAmount, prices?.eth, selectedPaymentOption.currency, minimumBid, selectedTokenBalance]);
+  }, [
+    debouncedBidAmount,
+    prices?.eth,
+    selectedPaymentOption.currency,
+    minimumBid,
+    selectedTokenBalance,
+    selectedPaymentOption.decimals
+  ]);
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address,
@@ -201,6 +208,16 @@ function DraftDeveloperBidFormComponent({
         );
       }
 
+      // Calculate bid amount in DEV tokens
+      const numericBidAmount = Number(bidAmount);
+      let bidAmountInDev = numericBidAmount;
+
+      if (selectedPaymentOption.currency === 'ETH' && prices?.eth && prices?.dev) {
+        bidAmountInDev = (numericBidAmount * prices.eth) / prices.dev;
+      } else if (selectedPaymentOption.currency === 'USDC' && prices?.dev) {
+        bidAmountInDev = numericBidAmount / prices.dev;
+      }
+
       await sendDraftTransaction({
         txData: {
           to: decentTransactionInfo.tx.to as Address,
@@ -212,6 +229,7 @@ function DraftDeveloperBidFormComponent({
           sourceChainId: selectedPaymentOption.chainId,
           developerId,
           bidAmount: parseUnits(debouncedBidAmount, selectedPaymentOption.decimals),
+          bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18), // Store DEV amount with 18 decimals
           season: getCurrentSeasonStart()
         }
       });
@@ -222,6 +240,7 @@ function DraftDeveloperBidFormComponent({
 
       trackEvent('draft_developer', {
         amount: Number(debouncedBidAmount),
+        amountInDev: bidAmountInDev,
         developerId,
         chainId: selectedPaymentOption.chainId,
         currency: selectedPaymentOption.currency
