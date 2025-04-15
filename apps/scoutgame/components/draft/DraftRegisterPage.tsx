@@ -6,14 +6,13 @@ import { DateTime } from 'luxon';
 import Image from 'next/image';
 import { Suspense } from 'react';
 
-import { SearchDevelopersInput } from '../scout/components/SearchDevelopersInput';
-
 import { DraftDevelopersTable } from './components/DraftDevelopersTable';
 import { DraftSeasonOffersTable } from './components/DraftSeasonOffersTable';
+import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
 const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 
-export function DraftRegisterPage() {
+export function DraftRegisterPage({ search }: { search?: string }) {
   const draftEnded = DateTime.utc() > DRAFT_END_DATE;
 
   return (
@@ -42,9 +41,9 @@ export function DraftRegisterPage() {
           <Typography variant='h4' color='secondary' textAlign='center'>
             {draftEnded ? 'Draft has ended' : 'Build your deck before the season begins!'}
           </Typography>
-          <SearchDevelopersInput />
+          <SearchDraftDevelopers />
           <Suspense fallback={<LoadingTable />}>
-            <DraftDevelopersTable />
+            <DraftDevelopersTable search={search} />
           </Suspense>
         </Grid>
         <Grid

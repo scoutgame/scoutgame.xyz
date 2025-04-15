@@ -2,8 +2,8 @@ import { getDraftDevelopers } from '@packages/scoutgame/drafts/getDraftDeveloper
 
 import { DevelopersTable } from './DevelopersTable';
 
-export async function DraftDevelopersTable() {
-  const draftDevelopers = await getDraftDevelopers();
+export async function DraftDevelopersTable({ search }: { search?: string }) {
+  const draftDevelopers = await getDraftDevelopers({ search });
 
   return <DevelopersTable draftDevelopers={draftDevelopers} />;
 }

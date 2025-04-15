@@ -12,7 +12,7 @@ export type DraftDeveloper = {
   rank: number;
 };
 
-export async function getDraftDevelopers(): Promise<DraftDeveloper[]> {
+export async function getDraftDevelopers({ search }: { search?: string }): Promise<DraftDeveloper[]> {
   const season = getCurrentSeasonStart();
 
   if (!season) {
@@ -21,6 +21,22 @@ export async function getDraftDevelopers(): Promise<DraftDeveloper[]> {
 
   const builders = await prisma.scout.findMany({
     where: {
+      AND: search
+        ? [
+            {
+              path: {
+                contains: search,
+                mode: 'insensitive'
+              }
+            },
+            {
+              displayName: {
+                contains: search,
+                mode: 'insensitive'
+              }
+            }
+          ]
+        : undefined,
       builderNfts: {
         some: {
           nftType: 'default',
