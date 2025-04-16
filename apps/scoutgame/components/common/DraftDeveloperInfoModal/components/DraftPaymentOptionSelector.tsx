@@ -192,7 +192,20 @@ function PaymentOptionSelector(
                     <Typography>{paymentOption.currency}</Typography>
                     <Typography variant='caption'>on {paymentOption.chain.name}</Typography>
                   </Stack>
-                  <Stack direction='row' gap={1.5} alignItems='center'>
+                  <Stack
+                    direction={{
+                      xs: 'column',
+                      md: 'row'
+                    }}
+                    gap={{
+                      xs: 0,
+                      md: 1.5
+                    }}
+                    alignItems={{
+                      xs: 'flex-start',
+                      md: 'center'
+                    }}
+                  >
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography variant='caption'>
                         Balance:{' '}

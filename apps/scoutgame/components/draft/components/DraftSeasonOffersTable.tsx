@@ -14,7 +14,18 @@ export async function DraftSeasonOffersTable() {
 
   return (
     <Stack my={2} gap={1}>
-      <Typography textAlign='center' variant='h6' color='text.secondary' fontWeight={600}>
+      <Typography
+        textAlign='center'
+        variant='h6'
+        color='text.secondary'
+        fontWeight={600}
+        sx={{
+          display: {
+            xs: 'none',
+            md: 'block'
+          }
+        }}
+      >
         Your Bids
       </Typography>
       <DevelopersTable draftDevelopers={draftSeasonOffers} hideHeader />

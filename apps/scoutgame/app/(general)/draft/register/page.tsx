@@ -2,8 +2,9 @@ import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDeve
 
 import { DraftRegisterPage } from 'components/draft/DraftRegisterPage';
 
-export default function Page(params: { searchParams: { search: string; sort: DraftDeveloperSort } }) {
+export default function Page(params: { searchParams: { search: string; sort: DraftDeveloperSort; tab: string } }) {
   const search = params.searchParams.search;
   const sort = params.searchParams.sort ?? 'all';
-  return <DraftRegisterPage search={search} sort={sort} />;
+  const tab = params.searchParams.tab;
+  return <DraftRegisterPage search={search} sort={sort} tab={tab} />;
 }

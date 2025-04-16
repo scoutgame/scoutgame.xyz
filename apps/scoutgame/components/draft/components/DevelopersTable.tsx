@@ -35,14 +35,27 @@ export function DevelopersTable({
           <CollapsibleTableHeader />
         </TableHead>
       )}
-      <TableBody sx={{ backgroundColor: 'background.paper' }}>
+      <TableBody
+        sx={{
+          backgroundColor: 'background.paper',
+          '& .MuiTableCell-root, & .MuiTableCell-body': { p: { xs: 0, md: 1 } }
+        }}
+      >
         {draftDevelopers.map((developer) => {
           const bidAmount = developer.bidAmount ? formatUnits(BigInt(developer.bidAmount), 18) : undefined;
 
           return (
             <TableRow key={developer.id} sx={tableRowSx}>
               <TableCell>
-                <Stack alignItems='center' flexDirection='row' gap={1} maxWidth={{ xs: '75px', md: '150px' }}>
+                <Stack
+                  alignItems='center'
+                  flexDirection='row'
+                  gap={{
+                    xs: 0.5,
+                    md: 1
+                  }}
+                  maxWidth={{ xs: '75px', md: '150px' }}
+                >
                   <Hidden mdDown>
                     <Avatar src={developer.avatar} name={developer.displayName} size='medium' />
                   </Hidden>
@@ -62,7 +75,7 @@ export function DevelopersTable({
                     alignItems='center'
                     justifyContent='space-between'
                     width={{
-                      xs: '75px',
+                      xs: '60px',
                       md: '100px'
                     }}
                   >
@@ -141,7 +154,7 @@ export function DevelopersTable({
                   }
                 }}
               >
-                <Stack alignItems='center' justifyContent='center' height='50px'>
+                <Stack alignItems='center' justifyContent='center' height='50px' sx={{ py: { xs: 0.5, md: 0 } }}>
                   <BuilderCardRankGraph color='green' ranks={developer.weeklyRanks} totalRanks={15} />
                 </Stack>
               </TableCell>
@@ -149,8 +162,13 @@ export function DevelopersTable({
                 {bidAmount ? (
                   <Tooltip title={`${bidAmount} DEV`}>
                     <Stack flexDirection='row' gap={1} alignItems='center'>
-                      <Typography>{Number(bidAmount).toFixed(4)}</Typography>
-                      <Image src='/images/crypto/dev-token-logo.png' alt='dev token' width={24} height={24} />
+                      <Hidden mdDown>
+                        <Typography>{Number(bidAmount).toFixed(4)}</Typography>
+                      </Hidden>
+                      <Hidden mdUp>
+                        <Typography>{Number(bidAmount).toFixed(2)}</Typography>
+                      </Hidden>
+                      <Image src='/images/crypto/dev-token-logo.png' alt='dev token' width={20} height={20} />
                     </Stack>
                   </Tooltip>
                 ) : (

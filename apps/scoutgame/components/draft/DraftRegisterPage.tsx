@@ -1,6 +1,7 @@
 import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography, Chip } from '@mui/material';
 import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
+import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { LoadingCard } from '@packages/scoutgame-ui/components/common/Loading/LoadingCard';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { DateTime } from 'luxon';
@@ -14,7 +15,7 @@ import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
 const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 
-export function DraftRegisterPage({ search, sort }: { search?: string; sort?: DraftDeveloperSort }) {
+export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort?: DraftDeveloperSort; tab?: string }) {
   const draftEnded = DateTime.utc() > DRAFT_END_DATE;
 
   return (
@@ -35,7 +36,10 @@ export function DraftRegisterPage({ search, sort }: { search?: string; sort?: Dr
             overflowX: 'hidden',
             p: 1,
             mt: 2,
-            gap: 4,
+            gap: {
+              xs: 1,
+              md: 4
+            },
             display: 'flex',
             flexDirection: 'column'
           }}
@@ -44,26 +48,61 @@ export function DraftRegisterPage({ search, sort }: { search?: string; sort?: Dr
             {draftEnded ? 'Draft has ended' : 'Build your deck before the season begins!'}
           </Typography>
           <SearchDraftDevelopers />
-          <Stack flexDirection='row' gap={2} alignItems='center'>
+          <Stack
+            flexDirection='row'
+            gap={{
+              xs: 1,
+              md: 2
+            }}
+            alignItems='center'
+          >
             <Link href='/draft/register?sort=all'>
               <Chip
-                sx={{ borderRadius: 1, my: 0, fontSize: '1rem' }}
+                sx={{
+                  borderRadius: 1,
+                  fontSize: {
+                    xs: '0.8rem',
+                    md: '1rem'
+                  }
+                }}
                 label='All Developers'
-                variant={sort === 'all' ? 'filled' : 'outlined'}
+                variant={sort === 'all' && tab === undefined ? 'filled' : 'outlined'}
                 color='primary'
               />
             </Link>
             <Link href='/draft/register?sort=trending'>
               <Chip
-                sx={{ borderRadius: 1, my: 0, fontSize: '1rem' }}
+                sx={{
+                  borderRadius: 1,
+                  fontSize: {
+                    xs: '0.8rem',
+                    md: '1rem'
+                  }
+                }}
                 label='Trending'
-                variant={sort === 'trending' ? 'filled' : 'outlined'}
+                variant={sort === 'trending' && tab === undefined ? 'filled' : 'outlined'}
                 color='primary'
               />
             </Link>
+            <Hidden mdUp>
+              <Link href='/draft/register?tab=your-bids'>
+                <Chip
+                  sx={{
+                    borderRadius: 1,
+                    fontSize: {
+                      xs: '0.8rem',
+                      md: '1rem'
+                    }
+                  }}
+                  label='Your Bids'
+                  variant={tab === 'your-bids' ? 'filled' : 'outlined'}
+                  color='primary'
+                />
+              </Link>
+            </Hidden>
           </Stack>
           <Suspense fallback={<LoadingTable />}>
-            <DraftDevelopersTable search={search} sort={sort} />
+            {tab === 'your-bids' ? <DraftSeasonOffersTable /> : <DraftDevelopersTable search={search} sort={sort} />}
           </Suspense>
         </Grid>
         <Grid
