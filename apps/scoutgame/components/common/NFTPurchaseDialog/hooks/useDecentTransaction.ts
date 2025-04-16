@@ -52,7 +52,7 @@ export async function prepareDecentTransaction({
 }): Promise<BoxActionResponse> {
   const DECENT_API_KEY = getDecentApiKey();
 
-  const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';
+  const basePath = 'https://box-v4.api.decent.xyz/api/getBoxAction';
 
   const response = await GET<BoxActionResponse>(
     _appendDecentQueryParams(basePath, { arguments: txConfig }),
