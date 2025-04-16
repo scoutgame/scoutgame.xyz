@@ -1,5 +1,6 @@
 import env from '@beam-australia/react-env';
 import type { ReferralPlatform } from '@charmverse/core/prisma';
+import { getCurrentSeason } from '@packages/dates/utils';
 
 const availablePlatforms: ReferralPlatform[] = [
   'telegram',
@@ -25,5 +26,6 @@ export function getPlatform(): ReferralPlatform {
 }
 
 export function isOnchainPlatform() {
-  return platform === 'onchain_webapp' || platform === 'onchain_cron';
+  const season = getCurrentSeason();
+  return platform === 'onchain_webapp' || platform === 'onchain_cron' || !season.preseason;
 }

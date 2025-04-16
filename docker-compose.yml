@@ -167,6 +167,9 @@ services:
       ]
     profiles:
       - prd-scoutgame-draft
+    environment:
+      - CURRENT_SEASON=2025-W02
+      - REACT_APP_IS_DRAFT_SEASON=true
 
   stg-scoutgame-draft:
     extends:
@@ -181,6 +184,8 @@ services:
       ]
     environment:
       - REACT_APP_APP_ENV=staging
+      - CURRENT_SEASON=2025-W02
+      - REACT_APP_IS_DRAFT_SEASON=true
     profiles:
       - stg-scoutgame-draft
 

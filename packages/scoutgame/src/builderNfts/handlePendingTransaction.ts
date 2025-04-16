@@ -16,7 +16,6 @@ import {
   scoutTokenDecimalsMultiplier
 } from '../protocol/constants';
 
-import { isPreseason01Contract, isStarterNftContract } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { recordOnchainNftMint } from './recordOnchainNftMint';
 import { convertCostToPoints } from './utils';

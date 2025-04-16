@@ -7,7 +7,7 @@ import { ScoutGameSeason01NFTImplementationClient } from './wrappers/ScoutGameSe
 
 export function getSeasonOneBuilderNftContractReadonlyClient() {
   const chain = base;
-  const contractAddress = getBuilderNftContractAddress('2025-W17');
+  const contractAddress = getBuilderNftContractAddress('2025-W18');
   return new ScoutGameSeason01NFTImplementationClient({
     chain,
     contractAddress,

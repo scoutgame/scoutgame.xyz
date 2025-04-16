@@ -1,19 +1,13 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
-  nftChain,
-  getBuilderNftContractAddress,
   getDecentApiKey,
   isStarterNftContract,
+  nftChain,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
-import {
-  scoutProtocolBuilderNftContractAddress,
-  scoutProtocolChainId,
-  scoutTokenErc20ContractAddress
-} from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChainId, scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
@@ -51,7 +45,11 @@ export function _appendDecentQueryParams(path: string, data: any) {
   return `${path}${queryString ? `?${queryString}` : ''}`;
 }
 
-async function prepareDecentTransaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
+export async function prepareDecentTransaction({
+  txConfig
+}: {
+  txConfig: BoxActionRequest;
+}): Promise<BoxActionResponse> {
   const DECENT_API_KEY = getDecentApiKey();
 
   const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';

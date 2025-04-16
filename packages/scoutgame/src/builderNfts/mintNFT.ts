@@ -55,7 +55,7 @@ export async function mintNFT(params: MintNFTParams) {
         amount: BigInt(amount)
       }
     });
-  } else if (season === '2025-W17') {
+  } else if (season === '2025-W18') {
     const apiClient = getSeasonOneBuilderNftContractMinterClient();
 
     txResult = await apiClient.mintTo({

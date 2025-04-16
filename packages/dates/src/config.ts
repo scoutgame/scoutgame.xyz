@@ -22,7 +22,8 @@ export const seasons: SeasonConfig[] = [
     title: 'Dev Season',
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 13
+    weeksPerSeason: 13,
+    preseason: true
   },
   // pre-release season
   {
@@ -30,7 +31,8 @@ export const seasons: SeasonConfig[] = [
     title: 'Pre Season',
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 13
+    weeksPerSeason: 13,
+    preseason: true
   },
   // Preseason 1
   {

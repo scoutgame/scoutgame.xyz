@@ -1,14 +1,23 @@
-import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography } from '@mui/material';
+import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography, Chip } from '@mui/material';
+import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
+import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { LoadingCard } from '@packages/scoutgame-ui/components/common/Loading/LoadingCard';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
+import { DateTime } from 'luxon';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Suspense } from 'react';
 
-import { SearchDevelopersInput } from '../scout/components/SearchDevelopersInput';
-
 import { DraftDevelopersTable } from './components/DraftDevelopersTable';
+import { DraftSeasonOffersTable } from './components/DraftSeasonOffersTable';
+import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
-export function DraftRegisterPage() {
+const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
+
+export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort?: DraftDeveloperSort; tab?: string }) {
+  const draftEnded = DateTime.utc() > DRAFT_END_DATE;
+
   return (
     <>
       <HeaderMessage />
@@ -27,17 +36,73 @@ export function DraftRegisterPage() {
             overflowX: 'hidden',
             p: 1,
             mt: 2,
-            gap: 4,
+            gap: {
+              xs: 1,
+              md: 4
+            },
             display: 'flex',
             flexDirection: 'column'
           }}
         >
           <Typography variant='h4' color='secondary' textAlign='center'>
-            Build your deck before the season begins!
+            {draftEnded ? 'Draft has ended' : 'Build your deck before the season begins!'}
           </Typography>
-          <SearchDevelopersInput />
+          <SearchDraftDevelopers />
+          <Stack
+            flexDirection='row'
+            gap={{
+              xs: 1,
+              md: 2
+            }}
+            alignItems='center'
+          >
+            <Link href='/draft/register?sort=all'>
+              <Chip
+                sx={{
+                  borderRadius: 1,
+                  fontSize: {
+                    xs: '0.8rem',
+                    md: '1rem'
+                  }
+                }}
+                label='All Developers'
+                variant={sort === 'all' && tab === undefined ? 'filled' : 'outlined'}
+                color='primary'
+              />
+            </Link>
+            <Link href='/draft/register?sort=trending'>
+              <Chip
+                sx={{
+                  borderRadius: 1,
+                  fontSize: {
+                    xs: '0.8rem',
+                    md: '1rem'
+                  }
+                }}
+                label='Trending'
+                variant={sort === 'trending' && tab === undefined ? 'filled' : 'outlined'}
+                color='primary'
+              />
+            </Link>
+            <Hidden mdUp>
+              <Link href='/draft/register?tab=your-bids'>
+                <Chip
+                  sx={{
+                    borderRadius: 1,
+                    fontSize: {
+                      xs: '0.8rem',
+                      md: '1rem'
+                    }
+                  }}
+                  label='Your Bids'
+                  variant={tab === 'your-bids' ? 'filled' : 'outlined'}
+                  color='primary'
+                />
+              </Link>
+            </Hidden>
+          </Stack>
           <Suspense fallback={<LoadingTable />}>
-            <DraftDevelopersTable />
+            {tab === 'your-bids' ? <DraftSeasonOffersTable /> : <DraftDevelopersTable search={search} sort={sort} />}
           </Suspense>
         </Grid>
         <Grid
@@ -94,6 +159,9 @@ export function DraftRegisterPage() {
               </Stack>
             </Stack>
           </Paper>
+          <Suspense fallback={<LoadingCard />}>
+            <DraftSeasonOffersTable />
+          </Suspense>
         </Grid>
       </Grid>
     </>

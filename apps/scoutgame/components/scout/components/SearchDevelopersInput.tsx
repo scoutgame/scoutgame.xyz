@@ -22,6 +22,7 @@ const StyledAutocomplete = styled(Autocomplete<BuilderSearchResult>)({
     borderRadius: '10px'
   }
 });
+
 export function SearchDevelopersInput({ sx }: { sx?: SxProps }) {
   const [open, setOpen] = useState(false);
 

@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
-import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
+import { useGlobalModal } from 'components/common/ModalProvider';
 import { TableCellText } from 'components/common/TableCellText';
 
 import { tableRowNoPaddingSx } from './CommonTableRow';
@@ -41,7 +41,7 @@ export function DevelopersTable({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isMdScreen = useMdScreen();
-  const { openModal } = useDeveloperInfoModal();
+  const { openModal } = useGlobalModal();
 
   const handleSort = (sortBy: string) => {
     const params = new URLSearchParams(searchParams);
@@ -137,11 +137,11 @@ export function DevelopersTable({
         </TableRow>
       </TableHead>
       <TableBody>
-        {developers.map((builder, index) => (
+        {developers.map((builder) => (
           <TableRow
             key={builder.path}
             sx={tableRowNoPaddingSx}
-            onClick={() => openModal(builder.path)}
+            onClick={() => openModal('developerInfo', { path: builder.path })}
             style={{ cursor: 'pointer' }}
           >
             <TableCell>

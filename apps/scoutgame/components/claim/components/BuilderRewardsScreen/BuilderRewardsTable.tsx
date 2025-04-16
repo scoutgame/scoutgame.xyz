@@ -5,13 +5,13 @@ import type { BuilderReward } from '@packages/scoutgame/builders/getBuilderRewar
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import Link from 'next/link';
 
-import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
+import { useGlobalModal } from 'components/common/ModalProvider';
 
 import { PointsCell } from '../common/PointsCell';
 import { StyledTableBody, StyledTableHead } from '../common/StyledTable';
 
 function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
-  const { openModal } = useDeveloperInfoModal();
+  const { openModal } = useGlobalModal();
 
   return (
     <TableRow>
@@ -22,7 +22,7 @@ function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
           gap={1}
           onClick={(e) => {
             e.preventDefault();
-            openModal(reward.path);
+            openModal('developerInfo', { path: reward.path });
           }}
           component={Link}
           href={`/u/${reward.path}`}

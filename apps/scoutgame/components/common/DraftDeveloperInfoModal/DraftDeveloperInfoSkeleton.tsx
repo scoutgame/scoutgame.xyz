@@ -1,6 +1,6 @@
 import { Skeleton, Stack } from '@mui/material';
 
-export function DeveloperInfoModalSkeleton() {
+export function DraftDeveloperInfoSkeleton() {
   return (
     <Stack
       gap={{
@@ -60,19 +60,8 @@ export function DeveloperInfoModalSkeleton() {
             variant='text'
             sx={{
               width: {
-                xs: '33.33%',
-                md: 150
-              }
-            }}
-            height={125}
-          />
-
-          <Skeleton
-            variant='text'
-            sx={{
-              width: {
-                xs: '33.33%',
-                md: 'calc(100% - 300px)'
+                xs: '66.66%',
+                md: 'calc(100% - 150px)'
               }
             }}
             height={125}
@@ -89,34 +78,9 @@ export function DeveloperInfoModalSkeleton() {
           />
         </Stack>
         <Skeleton variant='text' width='100%' height={125} />
-        <Stack
-          direction={{
-            xs: 'column',
-            md: 'row'
-          }}
-          gap={0.5}
-        >
-          <Skeleton
-            variant='text'
-            sx={{
-              width: {
-                xs: '100%',
-                md: '50%'
-              }
-            }}
-            height={75}
-          />
-          <Skeleton
-            variant='text'
-            sx={{
-              width: {
-                xs: '100%',
-                md: '50%'
-              }
-            }}
-            height={75}
-          />
-        </Stack>
+        <Skeleton variant='text' width='100%' height={125} />
+        <Skeleton variant='text' width='100%' height={100} />
+        <Skeleton variant='text' width='100%' height={75} />
       </Stack>
     </Stack>
   );

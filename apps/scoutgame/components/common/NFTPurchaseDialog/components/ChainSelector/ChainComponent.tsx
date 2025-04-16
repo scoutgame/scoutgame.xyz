@@ -9,7 +9,7 @@ export function ChainComponent({
   balance,
   selected
 }: {
-  chain: ChainWithCurrency;
+  chain: Pick<ChainWithCurrency, 'name' | 'icon' | 'currency' | 'id'>;
   balance?: string | number | bigint;
   selected?: boolean;
 }) {

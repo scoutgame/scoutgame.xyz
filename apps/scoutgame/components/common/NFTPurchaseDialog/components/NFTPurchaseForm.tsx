@@ -46,7 +46,7 @@ import { usePurchase } from '@packages/scoutgame-ui/providers/PurchaseProvider';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import type { MinimalUserInfo } from '@packages/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
-import { getPlatform, isOnchainPlatform } from '@packages/utils/platform';
+import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAction } from 'next-safe-action/hooks';

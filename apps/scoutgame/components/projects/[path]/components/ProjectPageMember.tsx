@@ -6,7 +6,7 @@ import type { ProjectTeamMember } from '@packages/scoutgame/projects/getProjectB
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Link from 'next/link';
 
-import { useDeveloperInfoModal } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
+import { useGlobalModal } from 'components/common/ModalProvider';
 
 import { ProjectRoleText } from '../../constants';
 
@@ -17,7 +17,7 @@ export function ProjectPageMember({
   member: ProjectTeamMember;
   projectTier?: OnchainAchievementTier;
 }) {
-  const { openModal } = useDeveloperInfoModal();
+  const { openModal } = useGlobalModal();
 
   return (
     <Stack
@@ -25,7 +25,7 @@ export function ProjectPageMember({
       href={`/u/${member.path}`}
       onClick={(e) => {
         e.preventDefault();
-        openModal(member.path);
+        openModal('developerInfo', { path: member.path });
       }}
       key={member.id}
       flexDirection='row'

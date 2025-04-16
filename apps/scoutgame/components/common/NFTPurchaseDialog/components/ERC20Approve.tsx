@@ -1,4 +1,5 @@
 import { LoadingButton } from '@mui/lab';
+import type { ButtonProps } from '@mui/material';
 import { Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import type { Address } from 'viem';
@@ -17,7 +18,8 @@ type ERC20ApproveButtonProps = {
   erc20Address: Address;
   decimals?: number;
   currency?: AvailableCurrency;
-  actionType: 'mint' | 'purchase';
+  actionType: 'mint' | 'purchase' | 'bid';
+  color?: ButtonProps['color'];
 };
 
 export function ERC20ApproveButton({
@@ -29,7 +31,8 @@ export function ERC20ApproveButton({
   // Default to decimals for USDC
   decimals = 6,
   currency = 'USDC',
-  actionType
+  actionType,
+  color = 'primary'
 }: ERC20ApproveButtonProps) {
   const amountToApprove = amount ? amount + amount / BigInt(50) : undefined;
 
@@ -58,7 +61,7 @@ export function ERC20ApproveButton({
         <LoadingButton
           loading={isApprovingSpender}
           variant='contained'
-          color='primary'
+          color={color}
           onClick={approveSpender}
           disabled={isApprovingSpender}
           data-test='approve-spending-nft-purchase-button'

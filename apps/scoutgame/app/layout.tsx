@@ -1,10 +1,10 @@
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { AppProviders } from '@packages/scoutgame-ui/providers/AppProviders';
+import { DraftProvider } from '@packages/scoutgame-ui/providers/DraftProvider';
 import type { Metadata, Viewport } from 'next';
 import dynamic from 'next/dynamic';
 import type { ReactNode } from 'react';
 
-import { DeveloperInfoModalProvider } from 'components/common/DeveloperInfoModal/DeveloperInfoModalProvider';
 import { ModalProvider } from 'components/common/ModalProvider';
 
 import '@packages/scoutgame-ui/theme/styles.scss';
@@ -75,13 +75,13 @@ export default async function RootLayout({
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src='/__ENV.js' />
         <AppProviders user={user}>
-          <ModalProvider>
-            <DeveloperInfoModalProvider>
+          <DraftProvider>
+            <ModalProvider>
               <ClientGlobals userId={user?.id} />
               {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
               {children}
-            </DeveloperInfoModalProvider>
-          </ModalProvider>
+            </ModalProvider>
+          </DraftProvider>
         </AppProviders>
       </body>
     </html>
