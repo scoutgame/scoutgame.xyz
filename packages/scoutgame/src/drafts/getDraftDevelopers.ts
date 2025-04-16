@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
 
 export type DraftDeveloper = {
   id: string;
@@ -21,7 +21,7 @@ export async function getDraftDevelopers({
   search?: string;
   sort?: DraftDeveloperSort;
 }): Promise<DraftDeveloper[]> {
-  const season = getCurrentSeasonStart();
+  const season = process.env.CURRENT_SEASON || getPreviousSeason(getCurrentSeasonStart());
 
   if (!season) {
     throw new Error('No draft season found');
