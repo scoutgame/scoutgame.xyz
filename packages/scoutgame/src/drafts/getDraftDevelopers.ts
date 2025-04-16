@@ -21,7 +21,7 @@ export async function getDraftDevelopers({
   search?: string;
   sort?: DraftDeveloperSort;
 }): Promise<DraftDeveloper[]> {
-  const season = process.env.CURRENT_SEASON || getPreviousSeason(getCurrentSeasonStart());
+  const season = getPreviousSeason(getCurrentSeasonStart());
 
   if (!season) {
     throw new Error('No draft season found');
