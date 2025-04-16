@@ -2,8 +2,7 @@ import { GET } from '@charmverse/core/http';
 import { log } from '@charmverse/core/log';
 
 type DecentTransactionStatus = {
-  tx: {
-    statusMessage: string;
+  transaction: {
     srcTx: {
       blockHash: string;
       blockNumber: number;
@@ -101,7 +100,6 @@ type DecentTransactionStatus = {
       success: boolean;
     };
     dstTx: {
-      txHash: string;
       fast: {
         transactionHash: string;
         blockHash: string;
@@ -188,9 +186,8 @@ export async function waitForDecentTransactionSettlement({
       if (response?.status?.toLowerCase().match('fail')) {
         throw new DecentTxFailedPermanently();
       }
-
-      if (response.tx?.statusMessage === 'success') {
-        return response.tx.dstTx.txHash;
+      if (response.transaction?.dstTx?.success === true) {
+        return response.transaction.dstTx.fast.transactionHash;
       }
 
       // Add a small delay before retrying

@@ -1,12 +1,15 @@
 import { log } from '@charmverse/core/log';
+import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
 import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
+import { getDecentApiKey } from '@packages/scoutgame/builderNfts/constants';
+import { GET } from '@packages/utils/http';
 import useSWR from 'swr';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
 
-import { prepareDecentTransaction } from '../../NFTPurchaseDialog/hooks/useDecentTransaction';
+import { _appendDecentQueryParams } from '../../NFTPurchaseDialog/hooks/useDecentTransaction';
 
 // This should be replaced with the actual treasury/escrow contract address that will hold the bids
 export const BID_RECIPIENT_ADDRESS = '0xb1b9FFF08F3827875F91ddE929036a65f2A5d27d';
@@ -18,7 +21,31 @@ export type DecentTransactionProps = {
   paymentAmountIn: bigint;
 };
 
-export function useDecentTransaction({ address, paymentAmountIn, sourceChainId, sourceToken }: DecentTransactionProps) {
+async function prepareDecentV4Transaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
+  const DECENT_API_KEY = getDecentApiKey();
+
+  const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';
+
+  const response = await GET<BoxActionResponse>(
+    _appendDecentQueryParams(basePath, { arguments: txConfig }),
+    undefined,
+    {
+      headers: {
+        'x-api-key': DECENT_API_KEY
+      },
+      credentials: 'omit'
+    }
+  );
+
+  return response;
+}
+
+export function useDecentV4Transaction({
+  address,
+  paymentAmountIn,
+  sourceChainId,
+  sourceToken
+}: DecentTransactionProps) {
   const decentAPIParams: UseBoxActionArgs = {
     sender: address,
     srcToken: sourceToken,
@@ -44,7 +71,7 @@ export function useDecentTransaction({ address, paymentAmountIn, sourceChainId, 
       ? `swap-token-${BID_RECIPIENT_ADDRESS}-${sourceChainId}-${sourceToken}-${paymentAmountIn}`
       : null,
     () =>
-      prepareDecentTransaction({
+      prepareDecentV4Transaction({
         txConfig: decentAPIParams
       }).catch((error) => {
         log.error(`There was an error communicating with Decent API`, { error, decentAPIParams });

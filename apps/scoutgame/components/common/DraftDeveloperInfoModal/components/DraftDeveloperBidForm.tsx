@@ -26,7 +26,7 @@ import { useAccount, useSwitchChain } from 'wagmi';
 
 import { ERC20ApproveButton } from '../../NFTPurchaseDialog/components/ERC20Approve';
 import { useGetERC20Allowance } from '../../NFTPurchaseDialog/hooks/useGetERC20Allowance';
-import { useDecentTransaction } from '../hooks/useDecentTransaction';
+import { useDecentV4Transaction } from '../hooks/useDecentV4Transaction';
 import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 
 import type { AvailableCurrency, SelectedPaymentOption } from './DraftPaymentOptionSelector';
@@ -155,7 +155,7 @@ function DraftDeveloperBidFormComponent({
     selectedPaymentOption.decimals
   ]);
 
-  const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
+  const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentV4Transaction({
     address,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,

@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { waitForDecentTransactionSettlement } from '@packages/blockchain/waitForDecentTransactionSettlement';
+import { waitForDecentV4TransactionSettlement } from '@packages/blockchain/waitForDecentV4TransactionSettlement';
 import { base } from 'viem/chains';
 
 import { scoutgameDraftsLogger } from '../loggers/mintsLogger';
@@ -41,7 +41,7 @@ export async function handlePendingDraftTransaction({
   }
 
   try {
-    const txHash = await waitForDecentTransactionSettlement({
+    const txHash = await waitForDecentV4TransactionSettlement({
       sourceTxHash: draftOffer.decentTxHash.toLowerCase(),
       sourceTxHashChainId: draftOffer.sourceChainId
     });
