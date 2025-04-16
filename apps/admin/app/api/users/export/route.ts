@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentWeek } from '@packages/dates/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
+import { getEstimatedPointsForWeek } from '@packages/scoutgame/points/getEstimatedPointsForWeek';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
@@ -31,6 +32,7 @@ type ScoutWithGithubUser = {
   pointsEarnedAsScout: number;
   pointsEarnedAsDeveloper: number;
   pointsEarnedTotal: number;
+  currentWeekPoints: number;
   dailyClaimsCount: number;
   questsCompleted: number;
   referrals: number;
@@ -142,6 +144,8 @@ export async function GET() {
     }
   });
 
+  const { pointsPerScout: estimatedPointsPerScout } = await getEstimatedPointsForWeek({ week: getCurrentWeek() });
+
   const rows: ScoutWithGithubUser[] = users.flatMap((user): ScoutWithGithubUser | ScoutWithGithubUser[] => {
     const allUserPurchaseEvents = user.wallets
       .flatMap((wallet) => wallet.purchaseEvents)
@@ -175,7 +179,9 @@ export async function GET() {
       githubLogin: user.githubUsers[0]?.login,
       currentBalance: isOnchainPlatform()
         ? Number(BigInt(user.currentBalanceDevToken ?? 0) / BigInt(10 ** 18))
-        : user.currentBalance || 0
+        : user.currentBalance || 0,
+      currentWeekPoints: estimatedPointsPerScout[user.id] || 0,
+      pointsEarnedTotal: estimatedPointsPerScout[user.id] || 0
     } as const;
     const activeSeasons = [
       ...user.userSeasonStats,
@@ -228,7 +234,7 @@ export async function GET() {
           pointsEarnedAsDeveloper: seasonStat?.pointsEarnedAsBuilder || 0,
           pointsEarnedTotal: user.pointsReceived
             .filter((p) => p.season === season)
-            .reduce((acc, curr) => acc + curr.value, 0),
+            .reduce((acc, curr) => acc + curr.value, userProfile.currentWeekPoints),
           regularNftsPurchased: purchaseEvents
             .filter((e) => e.builderNft?.nftType === 'default')
             .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
