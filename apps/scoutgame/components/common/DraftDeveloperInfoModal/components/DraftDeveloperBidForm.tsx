@@ -32,8 +32,6 @@ import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 import type { AvailableCurrency, SelectedPaymentOption } from './DraftPaymentOptionSelector';
 import { DEV_PAYMENT_OPTION, DraftPaymentOptionSelector, TOKEN_LOGO_RECORD } from './DraftPaymentOptionSelector';
 
-// Placeholder for bid recipient wallet - will be replaced with actual address
-
 export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () => void; developerId: string }) {
   const { address } = useAccount();
 
@@ -74,11 +72,11 @@ function DraftDeveloperBidFormComponent({
 
   // Fetch ETH and LINK prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,iotex&vs_currencies=usd');
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,talent&vs_currencies=usd');
     const data = await response.json();
     return {
       eth: data.ethereum.usd as number,
-      dev: data.iotex.usd as number
+      dev: data.talent.usd as number
     };
   });
 

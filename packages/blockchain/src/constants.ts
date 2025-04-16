@@ -10,9 +10,9 @@ export const SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS =
 export const optimismTokenDecimals = 18;
 export const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
 
-// IoTeX token address on Base (placeholder for DEV token)
+// TALENT token address on Base (placeholder for DEV token)
 // TODO: Replace with DEV token address once its launched
-export const DEV_TOKEN_ADDRESS = '0xBCBAf311ceC8a4EAC0430193A528d9FF27ae38C1';
+export const DEV_TOKEN_ADDRESS = '0x9a33406165f562E16C3abD82fd1185482E01b49a';
 export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 // TODO: Replace with 100 tokens post launch
