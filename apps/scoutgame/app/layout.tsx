@@ -1,7 +1,6 @@
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { AppProviders } from '@packages/scoutgame-ui/providers/AppProviders';
 import { DraftProvider } from '@packages/scoutgame-ui/providers/DraftProvider';
-import { PurchaseProvider } from '@packages/scoutgame-ui/providers/PurchaseProvider';
 import type { Metadata, Viewport } from 'next';
 import dynamic from 'next/dynamic';
 import type { ReactNode } from 'react';
@@ -77,11 +76,11 @@ export default async function RootLayout({
         <script src='/__ENV.js' />
         <AppProviders user={user}>
           <ModalProvider>
-            <PurchaseProvider>
+            <DraftProvider>
               <ClientGlobals userId={user?.id} />
               {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
               {children}
-            </PurchaseProvider>
+            </DraftProvider>
           </ModalProvider>
         </AppProviders>
       </body>
