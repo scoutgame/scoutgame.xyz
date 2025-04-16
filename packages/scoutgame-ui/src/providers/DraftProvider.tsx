@@ -10,8 +10,6 @@ import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { useSendTransaction } from 'wagmi';
 
-import { useUser } from './UserProvider';
-
 type DraftTransactionInput = {
   txData: {
     to: Address;
@@ -31,7 +29,7 @@ type DraftTransactionInput = {
 type DraftContext = {
   isExecutingTransaction: boolean;
   isSavingDraftTransaction: boolean;
-  savedDraftTransaction: boolean;
+  draftTransactionSaved: boolean;
   transactionHasSucceeded: boolean;
   draftError?: string;
   sendDraftTransaction: (input: DraftTransactionInput) => Promise<unknown>;
@@ -43,7 +41,6 @@ type DraftContext = {
 export const DraftContext = createContext<Readonly<DraftContext | null>>(null);
 
 export function DraftProvider({ children }: { children: ReactNode }) {
-  const { refreshUser } = useUser();
   const { sendTransactionAsync } = useSendTransaction();
 
   const [draftSuccess, setDraftSuccess] = useState(false);
@@ -62,7 +59,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   const {
     executeAsync: saveDraftTransaction,
     isExecuting: isSavingDraftTransaction,
-    hasSucceeded: savedDraftTransaction,
+    hasSucceeded: draftTransactionSaved,
     result: saveTransactionResult
   } = useAction(saveDraftTransactionAction, {
     async onSuccess(res) {
@@ -79,8 +76,6 @@ export function DraftProvider({ children }: { children: ReactNode }) {
         });
 
         const checkResult = await checkResultPromise;
-
-        await refreshUser();
 
         if (checkResult?.serverError) {
           scoutgameMintsLogger.error(`Error checking draft transaction`, {
@@ -179,7 +174,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     () => ({
       isExecutingTransaction,
       isSavingDraftTransaction,
-      savedDraftTransaction,
+      draftTransactionSaved,
       transactionHasSucceeded,
       draftError,
       sendDraftTransaction,
@@ -190,7 +185,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     [
       isExecutingTransaction,
       isSavingDraftTransaction,
-      savedDraftTransaction,
+      draftTransactionSaved,
       transactionHasSucceeded,
       sendDraftTransaction,
       draftError,

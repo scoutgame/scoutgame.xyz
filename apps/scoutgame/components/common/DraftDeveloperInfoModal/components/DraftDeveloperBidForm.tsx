@@ -8,6 +8,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Stack, TextField, Typography } from '@mui/material';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { DraftProvider, useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
@@ -23,7 +24,6 @@ import { ERC20ApproveButton } from '../../NFTPurchaseDialog/components/ERC20Appr
 import { useGetERC20Allowance } from '../../NFTPurchaseDialog/hooks/useGetERC20Allowance';
 import { useDecentTransaction } from '../hooks/useDecentTransaction';
 import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
-import { WalletLogin } from '../WalletLogin';
 
 import type { AvailableCurrency, SelectedPaymentOption } from './DraftPaymentOptionSelector';
 import {
@@ -42,7 +42,7 @@ export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () 
   const { address } = useAccount();
 
   if (!address) {
-    return <WalletLogin />;
+    return <WalletLogin color='secondary' />;
   }
 
   return (
@@ -343,6 +343,7 @@ function DraftDeveloperBidFormComponent({
           decimals={selectedPaymentOption.decimals}
           currency={selectedPaymentOption.currency}
           actionType='bid'
+          color='secondary'
         />
       )}
     </Stack>

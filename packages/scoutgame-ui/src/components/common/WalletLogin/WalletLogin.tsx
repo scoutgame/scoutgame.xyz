@@ -3,6 +3,7 @@
 import { log } from '@charmverse/core/log';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import { LoadingButton } from '@mui/lab';
+import type { ButtonProps } from '@mui/material';
 import { Box, Stack, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
@@ -20,17 +21,17 @@ import { useLoginSuccessHandler } from '../../../hooks/useLoginSuccessHandler';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function WalletLogin() {
+export function WalletLogin({ color = 'primary' }: { color?: ButtonProps['color'] }) {
   return (
     <RainbowKitProvider>
       <Suspense>
-        <WalletLoginButton />
+        <WalletLoginButton color={color} />
       </Suspense>
     </RainbowKitProvider>
   );
 }
 
-function WalletLoginButton() {
+function WalletLoginButton({ color = 'primary' }: { color?: ButtonProps['color'] }) {
   const [isConnecting, setIsConnecting] = useState(false);
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId, isConnected } = useAccount();
@@ -83,6 +84,7 @@ function WalletLoginButton() {
     try {
       const signature = await signMessageAsync({ message });
       await loginUser({ message, signature, inviteCode, referralCode, utmCampaign: utmCampaign as string });
+      debugger;
     } catch (error) {
       // examples: user cancels signature, user rejects signature
       log.warn('Error signing message', { error });
@@ -125,6 +127,7 @@ function WalletLoginButton() {
       <LoadingButton
         loading={isLoading}
         size='large'
+        color={color}
         variant='contained'
         onClick={onClick}
         sx={{
@@ -133,14 +136,13 @@ function WalletLoginButton() {
           },
           minWidth: '250px',
           px: 2.5,
-          py: 1.5
+          py: 1.5,
+          fontWeight: 600
         }}
       >
         <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
           <AccountBalanceWalletOutlinedIcon />
-          <Typography fontWeight={600} color='white'>
-            {isLoading ? '' : 'Sign in with wallet'}
-          </Typography>
+          {isLoading ? '' : 'Sign in with wallet'}
         </Stack>
       </LoadingButton>
     </Box>
