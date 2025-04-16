@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { waitForDecentTransactionSettlement } from '@packages/blockchain/waitForDecentTransactionSettlement';
+import { base } from 'viem/chains';
 
 import { scoutgameDraftsLogger } from '../loggers/mintsLogger';
 
@@ -29,15 +30,20 @@ export async function handlePendingDraftTransaction({
     return;
   }
 
-  if (!draftOffer.txHash) {
+  if (!draftOffer.sourceChainId) {
+    scoutgameDraftsLogger.warn('Draft offer has no source chain id. Skipping processing', { draftOfferId });
+    return;
+  }
+
+  if (!draftOffer.decentTxHash) {
     scoutgameDraftsLogger.warn('Draft offer has no tx hash. Skipping processing', { draftOfferId });
     return;
   }
 
   try {
     const txHash = await waitForDecentTransactionSettlement({
-      sourceTxHash: draftOffer.txHash.toLowerCase(),
-      sourceTxHashChainId: draftOffer.chainId
+      sourceTxHash: draftOffer.decentTxHash.toLowerCase(),
+      sourceTxHashChainId: draftOffer.sourceChainId
     });
 
     scoutgameDraftsLogger.info('Draft offer transaction settled', { draftOfferId, txHash });
@@ -46,7 +52,8 @@ export async function handlePendingDraftTransaction({
       where: { id: draftOfferId },
       data: {
         status: 'success',
-        txHash
+        txHash,
+        chainId: base.id
       }
     });
   } catch (error) {

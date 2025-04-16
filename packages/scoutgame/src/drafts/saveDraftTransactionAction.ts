@@ -57,9 +57,9 @@ export const saveDraftTransactionAction = authActionClient
         createdBy: userId,
         makerWalletAddress: parsedInput.user.walletAddress.toLowerCase(),
         status: 'pending',
-        chainId: parsedInput.transactionInfo.sourceChainId,
+        sourceChainId: parsedInput.transactionInfo.sourceChainId,
         decentPayload: parsedInput.transactionInfo.decentPayload,
-        txHash
+        decentTxHash: txHash
       }
     });
 
