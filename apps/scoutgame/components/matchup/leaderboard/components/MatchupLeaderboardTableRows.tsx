@@ -46,7 +46,13 @@ export async function MatchupLeaderboardTableRows({
             </TableCell>
             <TableCell align='center'>
               <Link href={`/u/${entry.scout.path}`} target='_blank'>
-                <Box display='flex' alignItems='center' justifyContent='center' gap={1} maxWidth={{ md: '160px' }}>
+                <Box
+                  display='flex'
+                  alignItems='center'
+                  justifyContent={{ xs: 'center', md: 'flex-start' }}
+                  gap={1}
+                  maxWidth={{ md: '160px' }}
+                >
                   <Avatar
                     src={entry.scout.avatar}
                     name={entry.scout.displayName}
