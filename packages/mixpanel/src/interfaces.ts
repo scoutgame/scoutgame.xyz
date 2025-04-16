@@ -118,7 +118,6 @@ export type MixpanelEventMap = {
   };
   draft_developer: BaseEvent & {
     amount: number;
-    currency: string;
     chainId: number;
     developerId: string;
   };

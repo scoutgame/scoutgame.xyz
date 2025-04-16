@@ -235,14 +235,6 @@ function DraftDeveloperBidFormComponent({
       if (draftSuccess) {
         onCancel();
       }
-
-      trackEvent('draft_developer', {
-        amount: Number(debouncedBidAmount),
-        amountInDev: bidAmountInDev,
-        developerId,
-        chainId: selectedPaymentOption.chainId,
-        currency: selectedPaymentOption.currency
-      });
     } catch (error) {
       log.error('Error submitting bid:', error);
       setCustomError('Failed to submit bid. Please try again.');
