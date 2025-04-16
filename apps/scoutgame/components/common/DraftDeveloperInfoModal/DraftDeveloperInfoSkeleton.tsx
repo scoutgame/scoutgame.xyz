@@ -78,6 +78,9 @@ export function DraftDeveloperInfoSkeleton() {
           />
         </Stack>
         <Skeleton variant='text' width='100%' height={125} />
+        <Skeleton variant='text' width='100%' height={125} />
+        <Skeleton variant='text' width='100%' height={100} />
+        <Skeleton variant='text' width='100%' height={75} />
       </Stack>
     </Stack>
   );

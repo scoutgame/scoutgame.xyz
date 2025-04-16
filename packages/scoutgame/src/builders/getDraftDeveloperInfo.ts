@@ -25,15 +25,9 @@ export type DraftDeveloperInfo = {
   weeklyRanks: (number | null)[];
 };
 
-export async function getDraftDeveloperInfo({
-  path,
-  scoutId
-}: {
-  path: string;
-  scoutId?: string;
-}): Promise<DraftDeveloperInfo | null> {
+export async function getDraftDeveloperInfo({ path }: { path: string }): Promise<DraftDeveloperInfo | null> {
   if (typeof path !== 'string') {
-    log.error('Path is not a string when looking for developer info', { path, scoutId });
+    log.error('Path is not a string when looking for developer info', { path });
     return null;
   }
   const season = getCurrentSeasonStart();

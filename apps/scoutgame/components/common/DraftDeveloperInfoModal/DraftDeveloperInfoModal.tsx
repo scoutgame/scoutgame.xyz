@@ -1,7 +1,5 @@
 import { log } from '@charmverse/core/log';
 import { getDraftDeveloperInfo } from '@packages/scoutgame/builders/getDraftDeveloperInfo';
-import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 
@@ -19,26 +17,19 @@ export function DraftDeveloperInfoModal({
   data: { path: string } | null;
   open: boolean;
 }) {
-  const { user } = useUser();
-  const router = useRouter();
-
   const { data: developer, isLoading } = useSWR(
-    data?.path ? `developer-${data.path}` : null,
+    data?.path ? `draft-developer-${data.path}` : null,
     async () => {
       if (!data?.path) {
         return null;
       }
 
-      const _developer = await getDraftDeveloperInfo({ path: data.path, scoutId: user?.id });
-      if (!_developer) {
-        // If the developer doesn't exist, redirect to the user's profile
-        router.push(`/u/${data.path}`);
-      }
+      const _developer = await getDraftDeveloperInfo({ path: data.path });
       return _developer;
     },
     {
       onError: (error) => {
-        log.error('Error fetching developer info', { error, path: data?.path });
+        log.error('Error fetching draft developer info', { error, path: data?.path });
         toast.error('Error fetching developer info');
       }
     }

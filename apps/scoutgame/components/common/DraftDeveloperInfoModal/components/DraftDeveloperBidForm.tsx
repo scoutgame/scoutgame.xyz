@@ -15,7 +15,7 @@ import {
 } from '@packages/blockchain/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
-import { DraftProvider, useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
+import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -43,9 +43,7 @@ export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () 
 
   return (
     <BoxHooksContextProvider apiKey={env('DECENT_API_KEY')}>
-      <DraftProvider>
-        <DraftDeveloperBidFormComponent address={address} onCancel={onCancel} developerId={developerId} />
-      </DraftProvider>
+      <DraftDeveloperBidFormComponent address={address} onCancel={onCancel} developerId={developerId} />
     </BoxHooksContextProvider>
   );
 }

@@ -75,13 +75,13 @@ export default async function RootLayout({
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src='/__ENV.js' />
         <AppProviders user={user}>
-          <ModalProvider>
-            <DraftProvider>
+          <DraftProvider>
+            <ModalProvider>
               <ClientGlobals userId={user?.id} />
               {/* {user?.id && <NotificationRequest vapidPublicKey={vapidPublicKey} />} */}
               {children}
-            </DraftProvider>
-          </ModalProvider>
+            </ModalProvider>
+          </DraftProvider>
         </AppProviders>
       </body>
     </html>
