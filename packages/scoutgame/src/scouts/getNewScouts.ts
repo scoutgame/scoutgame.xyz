@@ -2,9 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
-import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
-import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
-import { getNftPurchaseEvents, computeTokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
+import { getEstimatedPointsForWeek } from '../points/getEstimatedPointsForWeek';
 
 export type NewScout = {
   id: string;
@@ -26,40 +24,7 @@ export async function getRankedNewScoutsForCurrentWeek({
   week?: string;
 } = {}): Promise<NewScout[]> {
   const [{ pointsPerScout: _pointsPerScout, nftPurchaseEvents: _nftPurchaseEvents }, newScouts] = await Promise.all([
-    (async function calculatePointsPerScout() {
-      const [{ normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints }, nftPurchaseEvents] = await Promise.all([
-        getPointsCountForWeekWithNormalisation({
-          week
-        }),
-        getNftPurchaseEvents({ week })
-      ]);
-
-      // aggregate values for each scout per topWeeklyBuilder
-      const pointsPerScout = topWeeklyBuilders.reduce<Record<string, number>>((__pointsPerScout, builder) => {
-        const tokenOwnership = computeTokenOwnershipForBuilder({
-          purchaseEvents: nftPurchaseEvents.filter((event) => event.builderNft.builderId === builder.builder.id)
-        });
-
-        const { tokensPerScoutByScoutId: builderPointsPerScout } = divideTokensBetweenBuilderAndHolders({
-          builderId: builder.builder.id,
-          rank: builder.rank,
-          weeklyAllocatedTokens: weeklyAllocatedPoints,
-          normalisationFactor,
-          owners: tokenOwnership
-        });
-        builderPointsPerScout.forEach(({ scoutId, erc20Tokens }) => {
-          __pointsPerScout[scoutId] = (__pointsPerScout[scoutId] || 0) + erc20Tokens;
-        });
-        return __pointsPerScout;
-      }, {});
-
-      const nftMintEvents = nftPurchaseEvents.filter((event) => event.to && event.from === null);
-
-      return {
-        nftPurchaseEvents: nftMintEvents,
-        pointsPerScout
-      };
-    })(),
+    getEstimatedPointsForWeek({ week }),
     getNewScouts({ week })
   ]);
 
