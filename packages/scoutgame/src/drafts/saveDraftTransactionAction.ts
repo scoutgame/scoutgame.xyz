@@ -1,6 +1,8 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { DateTime } from 'luxon';
 import { isAddress } from 'viem';
@@ -28,8 +30,7 @@ export const saveDraftTransactionAction = authActionClient
       }),
       draftInfo: yup.object().shape({
         developerId: yup.string().required(),
-        value: yup.string().required(),
-        season: yup.string().required()
+        value: yup.string().required()
       })
     })
   )
@@ -50,7 +51,7 @@ export const saveDraftTransactionAction = authActionClient
     // Save the draft transaction
     const data = await prisma.draftSeasonOffer.create({
       data: {
-        season: parsedInput.draftInfo.season,
+        season: getCurrentSeasonStart(),
         value: parsedInput.draftInfo.value,
         developerId: parsedInput.draftInfo.developerId,
         createdBy: userId,
@@ -66,6 +67,13 @@ export const saveDraftTransactionAction = authActionClient
       transactionInfo: parsedInput.transactionInfo,
       draftInfo: parsedInput.draftInfo,
       offerId: data.id,
+      userId
+    });
+
+    trackUserAction('draft_developer', {
+      amount: Number(parsedInput.draftInfo.value),
+      developerId: parsedInput.draftInfo.developerId,
+      chainId: parsedInput.transactionInfo.sourceChainId,
       userId
     });
 

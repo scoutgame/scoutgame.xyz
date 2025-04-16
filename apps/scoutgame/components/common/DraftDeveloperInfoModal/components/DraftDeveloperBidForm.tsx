@@ -13,10 +13,8 @@ import {
   NULL_EVM_ADDRESS,
   OPTIMISM_USDC_ADDRESS
 } from '@packages/blockchain/constants';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
-import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { DraftProvider, useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -64,7 +62,6 @@ function DraftDeveloperBidFormComponent({
   const [bidAmount, setBidAmount] = useState('0');
   const debouncedBidAmount = useDebouncedValue(bidAmount, 500);
   const [customError, setCustomError] = useState<string | null>(null);
-  const trackEvent = useTrackEvent();
   const { chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { sendDraftTransaction, isSavingDraftTransaction, draftSuccess, draftError } = useDraft();
@@ -227,8 +224,7 @@ function DraftDeveloperBidFormComponent({
           sourceChainId: selectedPaymentOption.chainId,
           developerId,
           bidAmount: parseUnits(debouncedBidAmount, selectedPaymentOption.decimals),
-          bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18), // Store DEV amount with 18 decimals
-          season: getCurrentSeasonStart()
+          bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18) // Store DEV amount with 18 decimals
         }
       });
 
