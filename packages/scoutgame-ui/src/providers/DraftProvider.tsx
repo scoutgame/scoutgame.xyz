@@ -35,7 +35,7 @@ type DraftContext = {
   sendDraftTransaction: (input: DraftTransactionInput) => Promise<unknown>;
   clearDraftSuccess: () => void;
   draftSuccess: boolean;
-  checkDraftTransaction: (input: { pendingTransactionId: string; txHash: string }) => Promise<any>;
+  checkDraftTransaction: (input: { draftOfferId: string }) => Promise<any>;
 };
 
 export const DraftContext = createContext<Readonly<DraftContext | null>>(null);
@@ -65,8 +65,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     async onSuccess(res) {
       if (res.data?.id) {
         const checkResultPromise = checkDraftTransaction({
-          pendingTransactionId: res.data.id,
-          txHash: res.data.txHash
+          draftOfferId: res.data.id
         });
 
         toast.promise(checkResultPromise, {

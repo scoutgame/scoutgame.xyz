@@ -84,7 +84,6 @@ function WalletLoginButton({ color = 'primary' }: { color?: ButtonProps['color']
     try {
       const signature = await signMessageAsync({ message });
       await loginUser({ message, signature, inviteCode, referralCode, utmCampaign: utmCampaign as string });
-      debugger;
     } catch (error) {
       // examples: user cancels signature, user rejects signature
       log.warn('Error signing message', { error });
