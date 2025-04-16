@@ -12,10 +12,9 @@ import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 
-import { SiteNavigation } from 'components/common/Navigation/SiteNavigation';
-import { WalletLogin } from 'components/common/WalletLogin';
-
-import { useDevTokenBalance } from '@/hooks/useDevTokenBalance';
+import { useDevTokenBalance } from '../../../hooks/useDevTokenBalance';
+import { SiteNavigation } from '../Navigation/SiteNavigation';
+import { WalletLogin } from '../WalletLogin';
 
 // Token address for the DEV token
 
