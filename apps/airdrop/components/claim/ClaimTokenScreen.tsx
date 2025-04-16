@@ -164,14 +164,6 @@ export function ClaimTokenScreen() {
     }
   }, [address]); // Now we only depend on address
 
-  return (
-    <DonationSelectionStep
-      claimableAmount={60}
-      donationPercentage={donationPercentage}
-      onDonationChange={setDonationPercentage}
-      onSelect={() => setStep('donation_confirmation')}
-    />
-  );
   if (step === 'start_claim') {
     return <StartClaimStep isLoading={isGettingAirdropTokenStatus} />;
   }
