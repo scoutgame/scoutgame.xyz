@@ -12,7 +12,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
       <BottomNavigationAction label='Airdrop' href='/' value='airdrop' icon={<ClaimIcon />} LinkComponent={Link} />
       <BottomNavigationAction
         label='Draft'
-        href='https://draft.scoutgame.xyz'
+        href='https://scoutgame.xyz'
         value='draft'
         icon={<ScoutIcon size='24px' />}
         LinkComponent={Link}

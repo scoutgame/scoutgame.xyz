@@ -119,7 +119,7 @@ export function Header() {
                     }}
                   >
                     <Typography fontSize='16px' color='text.primary'>
-                      {Number(balance)}
+                      {balance === '' ? <>&nbsp;</> : Number(balance)}
                     </Typography>
                     <Image
                       src='/images/dev-token-logo.png'

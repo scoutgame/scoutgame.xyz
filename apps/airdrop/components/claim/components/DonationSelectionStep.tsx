@@ -1,12 +1,13 @@
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
+import type { ReactNode } from 'react';
 
 type DonationOptionProps = {
   selected: boolean;
   onClick: () => void;
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: string | ReactNode;
   leftIcon?: string;
   rightIcon?: string;
 };
@@ -14,7 +15,7 @@ type DonationOptionProps = {
 const StyledCard = styled(Card, {
   shouldForwardProp: (prop) => prop !== 'selected'
 })<{ selected?: boolean }>(({ theme, selected }) => ({
-  width: 'fit-content',
+  width: theme.breakpoints.down('md') ? '100%' : 'fit-content',
   padding: theme.breakpoints.down('md') ? theme.spacing(1.5) : theme.spacing(2),
   borderRadius: theme.breakpoints.down('md') ? theme.spacing(1) : theme.spacing(2),
   borderWidth: theme.breakpoints.down('md') ? theme.spacing(0.125) : theme.spacing(0.25),
@@ -45,17 +46,20 @@ const StyledCard = styled(Card, {
 
 function DonationOption({ selected, onClick, title, description, leftIcon, rightIcon }: DonationOptionProps) {
   const isDesktop = useMdScreen();
+  const iconSize = isDesktop ? 60 : 35;
 
   return (
     <StyledCard selected={selected} onClick={onClick}>
-      <Stack flexDirection='row' gap={1} alignItems='center'>
-        {leftIcon && <img src={leftIcon} alt='Left Icon' width={isDesktop ? 45 : 35} height={isDesktop ? 45 : 35} />}
-        <Typography variant={isDesktop ? 'h5' : 'h6'} fontWeight={600}>
+      <Stack flexDirection='row' gap={2} alignItems='center' mb={1}>
+        {leftIcon && <img src={leftIcon} alt='Left Icon' width={iconSize} height={iconSize} />}
+        <Typography variant={isDesktop ? 'h5' : 'h6'} fontWeight={600} lineHeight={1.2}>
           {title}
         </Typography>
-        {rightIcon && <img src={rightIcon} alt='Right Icon' width={isDesktop ? 45 : 35} height={isDesktop ? 45 : 35} />}
+        {rightIcon && <img src={rightIcon} alt='Right Icon' width={iconSize} height={iconSize} />}
       </Stack>
-      <Typography>{description}</Typography>
+      <Typography fontSize={18} lineHeight={1.2}>
+        {description}
+      </Typography>
     </StyledCard>
   );
 }
@@ -97,14 +101,25 @@ export function DonationSelectionStep({
         <DonationOption
           selected={donationPercentage === 'donate_full'}
           onClick={() => onDonationChange('donate_full')}
-          title='Donate 100% to Open Source'
-          description='This will donate all of your DEV tokens to the Scout Game Open Source Grants program. This makes you an Open Source Legend.'
+          title={
+            <>
+              Donate 100%
+              <br />
+              to Open Source
+            </>
+          }
+          description='Donate all of your DEV tokens to the Scout Game Grants program. This makes you an Open Source Legend.'
           leftIcon='/images/quest-icon.svg'
         />
         <DonationOption
           selected={donationPercentage === 'donate_half'}
           onClick={() => onDonationChange('donate_half')}
-          title='Donate 50% & Keep 50%'
+          title={
+            <>
+              Donate 50%
+              <br />& Keep 50%
+            </>
+          }
           description='Donate half of your DEV tokens to the Grants program and keep half of it to play the game.'
           leftIcon='/images/quest-icon.svg'
           rightIcon='/images/scout-icon.svg'
@@ -112,8 +127,19 @@ export function DonationSelectionStep({
         <DonationOption
           selected={donationPercentage === 'donate_none'}
           onClick={() => onDonationChange('donate_none')}
-          title='Keep 100% to play'
-          description='Use your DEV tokens to Draft hardworking developers and rake in the rewards!'
+          title={
+            <>
+              Keep 100%
+              <br />
+              to play
+            </>
+          }
+          description={
+            <>
+              Use your DEV tokens to Draft
+              <br /> hardworking developers and rake in the rewards!
+            </>
+          }
           leftIcon='/images/scout-icon.svg'
         />
       </Stack>

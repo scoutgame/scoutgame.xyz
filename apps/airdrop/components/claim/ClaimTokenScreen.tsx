@@ -19,6 +19,7 @@ import { ShowClaimableTokensStep } from './components/ShowClaimableTokensStep';
 import { StartClaimStep } from './components/StartClaimStep';
 import { TokenClaimSuccessStep } from './components/TokenClaimSuccessStep';
 
+import { useDevTokenBalance } from '@/hooks/useDevTokenBalance';
 import { getAirdropTokenStatusAction } from '@/lib/getAirdropTokenStatusAction';
 import { trackAirdropClaimPayoutAction } from '@/lib/trackAirdropClaimPayoutAction';
 
@@ -54,6 +55,7 @@ export function ClaimTokenScreen() {
 
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
+  const { refreshBalance } = useDevTokenBalance({ address });
 
   // Move the check logic to a separate function
   const checkAirdropStatus = async (walletAddress: string) => {
@@ -138,6 +140,8 @@ export function ClaimTokenScreen() {
         claimTxHash,
         donationTxHash
       });
+
+      refreshBalance();
 
       setStep('token_claim_success');
     } catch (error) {
