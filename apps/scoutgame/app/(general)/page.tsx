@@ -1,4 +1,4 @@
-import { getCurrentSeason, isDraftSeason } from '@packages/dates/utils';
+import { isDraftSeason } from '@packages/dates/utils';
 import type { Metadata } from 'next';
 
 import { LandingPage } from '../../components/home/LandingPage';
@@ -31,7 +31,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const currentSeason = getCurrentSeason();
-  const showNewLandingPage = isDraftSeason() || !currentSeason.preseason;
+  const showNewLandingPage = isDraftSeason();
   return showNewLandingPage ? <SeasonOneLandingPage /> : <LandingPage />;
 }
