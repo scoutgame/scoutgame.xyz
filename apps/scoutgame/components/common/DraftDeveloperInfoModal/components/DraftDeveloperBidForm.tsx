@@ -6,7 +6,13 @@ import type { EvmTransaction } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
 import { LoadingButton } from '@mui/lab';
 import { Button, Stack, TextField, Typography } from '@mui/material';
-import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import {
+  BASE_USDC_ADDRESS,
+  DEV_TOKEN_ADDRESS,
+  MIN_DEV_BID,
+  NULL_EVM_ADDRESS,
+  OPTIMISM_USDC_ADDRESS
+} from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
@@ -26,17 +32,9 @@ import { useDecentTransaction } from '../hooks/useDecentTransaction';
 import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 
 import type { AvailableCurrency, SelectedPaymentOption } from './DraftPaymentOptionSelector';
-import {
-  BASE_USDC_ADDRESS,
-  DEV_PAYMENT_OPTION,
-  DEV_TOKEN_ADDRESS,
-  DraftPaymentOptionSelector,
-  OPTIMISM_USDC_ADDRESS,
-  TOKEN_LOGO_RECORD
-} from './DraftPaymentOptionSelector';
+import { DEV_PAYMENT_OPTION, DraftPaymentOptionSelector, TOKEN_LOGO_RECORD } from './DraftPaymentOptionSelector';
 
 // Placeholder for bid recipient wallet - will be replaced with actual address
-const MIN_BID_DEV = 1; // Minimum bid is 100 DEV tokens
 
 export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () => void; developerId: string }) {
   const { address } = useAccount();
@@ -121,11 +119,11 @@ function DraftDeveloperBidFormComponent({
     (currency: AvailableCurrency) => {
       switch (currency) {
         case 'USDC':
-          return prices?.dev ? MIN_BID_DEV * prices.dev : undefined;
+          return prices?.dev ? MIN_DEV_BID * prices.dev : undefined;
         case 'ETH':
-          return prices?.eth && prices?.dev ? (MIN_BID_DEV * prices.dev) / prices.eth : undefined;
+          return prices?.eth && prices?.dev ? (MIN_DEV_BID * prices.dev) / prices.eth : undefined;
         case 'DEV':
-          return MIN_BID_DEV; // Fixed 100 DEV tokens
+          return MIN_DEV_BID; // Fixed 100 DEV tokens
         default:
           return undefined;
       }

@@ -1,12 +1,12 @@
 import { log } from '@charmverse/core/log';
-import { ActionType, ChainId, SwapDirection } from '@decent.xyz/box-common';
+import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
+import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import useSWR from 'swr';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
 
 import { prepareDecentTransaction } from '../../NFTPurchaseDialog/hooks/useDecentTransaction';
-import { DEV_TOKEN_ADDRESS } from '../components/DraftPaymentOptionSelector';
 
 // This should be replaced with the actual treasury/escrow contract address that will hold the bids
 export const BID_RECIPIENT_ADDRESS = '0xb1b9FFF08F3827875F91ddE929036a65f2A5d27d';

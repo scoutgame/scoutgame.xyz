@@ -2,7 +2,12 @@
 
 import { Box, MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
-import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import {
+  NULL_EVM_ADDRESS,
+  DEV_TOKEN_ADDRESS,
+  OPTIMISM_USDC_ADDRESS,
+  BASE_USDC_ADDRESS
+} from '@packages/blockchain/constants';
 import Image from 'next/image';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
@@ -23,12 +28,6 @@ export type SelectedPaymentOption = {
 function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency && a.address === b.address;
 }
-
-// IoTeX token address on Base (placeholder for DEV token)
-// TODO: Replace with DEV token address once its launched
-export const DEV_TOKEN_ADDRESS = '0xBCBAf311ceC8a4EAC0430193A528d9FF27ae38C1';
-export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
-export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
 const optimismChainOption = {
   name: 'Optimism',
