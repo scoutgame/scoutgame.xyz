@@ -43,9 +43,10 @@ export function ClaimTokenScreen() {
     proofs: `0x${string}`[];
     airdropId: string;
   } | null>(null);
+  const { address, chainId } = useAccount();
   const [donationPercentage, setDonationPercentage] = useState<DonationPercentage>('donate_half');
   const [isClaimingTokens, setIsClaimingTokens] = useState(false);
-  const [isGettingAirdropTokenStatus, setIsGettingAirdropTokenStatus] = useState(true);
+  const [isGettingAirdropTokenStatus, setIsGettingAirdropTokenStatus] = useState(!!address);
   const { executeAsync: trackAirdropClaimPayout } = useAction(trackAirdropClaimPayoutAction, {
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : 'Error tracking airdrop claim payout');
@@ -54,7 +55,6 @@ export function ClaimTokenScreen() {
 
   const { executeAsync } = useAction(getAirdropTokenStatusAction);
 
-  const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { refreshBalance } = useDevTokenBalance({ address });
 
