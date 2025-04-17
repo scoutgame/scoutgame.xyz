@@ -122,3 +122,12 @@ export function shortenHex(hex: string = '', length = 4): string {
   }
   return `${hex.substring(0, length + 2)}…${hex.substring(hex.length - length)}`;
 }
+
+// Remove trailing zeros after decimal point
+// Examples: 1.000000 -> 1, 1.100000 -> 1.1, 1.000100 -> 1.0001
+export function formatNumber(num: number, maxDecimals: number): string {
+  // Convert to string with fixed decimal places
+  const fixed = num.toFixed(maxDecimals);
+  // Remove trailing zeros after decimal point and remove decimal point if no decimals
+  return fixed.replace(/\.?0+$/, '');
+}

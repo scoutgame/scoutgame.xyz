@@ -12,7 +12,7 @@ export const optimismTokenAddress = '0x4200000000000000000000000000000000000042'
 
 // TALENT token address on Base (placeholder for DEV token)
 // TODO: Replace with DEV token address once its launched
-export const DEV_TOKEN_ADDRESS = '0x9a33406165f562E16C3abD82fd1185482E01b49a';
+export const DEV_TOKEN_ADDRESS = '0xfcdc6813a75df7eff31382cb956c1bee4788dd34';
 export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 // TODO: Replace with 100 tokens post launch
