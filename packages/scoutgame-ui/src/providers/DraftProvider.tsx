@@ -1,5 +1,6 @@
 'use client';
 
+import { DEV_TOKEN_ADDRESS, DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
 import { checkDraftTransactionAction } from '@packages/scoutgame/drafts/checkDraftTransactionAction';
 import { saveDraftTransactionAction } from '@packages/scoutgame/drafts/saveDraftTransactionAction';
 import { scoutgameDraftsLogger } from '@packages/scoutgame/loggers/mintsLogger';
@@ -8,7 +9,9 @@ import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
-import { useSendTransaction } from 'wagmi';
+import { erc20Abi } from 'viem';
+import { base } from 'viem/chains';
+import { useSendTransaction, useWalletClient } from 'wagmi';
 
 type DraftTransactionInput = {
   txData: {
@@ -25,6 +28,12 @@ type DraftTransactionInput = {
   };
 };
 
+type SendDevTransactionInput = {
+  developerId: string;
+  bidAmountInDev: bigint;
+  fromAddress: Address;
+};
+
 type DraftContext = {
   isExecutingTransaction: boolean;
   isSavingDraftTransaction: boolean;
@@ -35,12 +44,14 @@ type DraftContext = {
   clearDraftSuccess: () => void;
   draftSuccess: boolean;
   checkDraftTransaction: (input: { draftOfferId: string }) => Promise<any>;
+  sendDevTransaction: (input: SendDevTransactionInput) => Promise<unknown>;
 };
 
 export const DraftContext = createContext<Readonly<DraftContext | null>>(null);
 
 export function DraftProvider({ children }: { children: ReactNode }) {
   const { sendTransactionAsync } = useSendTransaction();
+  const { data: walletClient } = useWalletClient();
 
   const [draftSuccess, setDraftSuccess] = useState(false);
 
@@ -106,6 +117,51 @@ export function DraftProvider({ children }: { children: ReactNode }) {
       });
     }
   });
+
+  const sendDevTransaction = useCallback(
+    async (input: SendDevTransactionInput) => {
+      try {
+        const { developerId, bidAmountInDev, fromAddress } = input;
+
+        if (!walletClient) {
+          throw new Error('Wallet client not found');
+        }
+
+        const txHash = await walletClient.writeContract({
+          address: DEV_TOKEN_ADDRESS,
+          abi: erc20Abi,
+          functionName: 'transfer',
+          args: [DRAFT_BID_RECIPIENT_ADDRESS, bidAmountInDev]
+        });
+        toast.info('Draft offer is sent and will be confirmed shortly');
+        const output = await saveDraftTransaction({
+          user: {
+            id: developerId,
+            walletAddress: fromAddress
+          },
+          transactionInfo: {
+            sourceChainId: base.id,
+            sourceChainTxHash: txHash,
+            decentPayload: {}
+          },
+          draftInfo: {
+            developerId,
+            value: bidAmountInDev.toString()
+          }
+        });
+
+        if (output?.serverError) {
+          scoutgameDraftsLogger.error(`Saving draft transaction failed`, {});
+        } else {
+          scoutgameDraftsLogger.info(`Successfully sent draft transaction`, { data: { txHash } });
+        }
+      } catch (error) {
+        scoutgameDraftsLogger.error(`Error sending DEV transaction`, { error, input });
+        toast.error('Error sending DEV transaction');
+      }
+    },
+    [walletClient, saveDraftTransaction]
+  );
 
   const sendDraftTransaction = useCallback(
     async (input: DraftTransactionInput) => {
@@ -177,7 +233,8 @@ export function DraftProvider({ children }: { children: ReactNode }) {
       sendDraftTransaction,
       clearDraftSuccess,
       draftSuccess,
-      checkDraftTransaction
+      checkDraftTransaction,
+      sendDevTransaction
     }),
     [
       isExecutingTransaction,
@@ -188,7 +245,8 @@ export function DraftProvider({ children }: { children: ReactNode }) {
       draftError,
       clearDraftSuccess,
       draftSuccess,
-      checkDraftTransaction
+      checkDraftTransaction,
+      sendDevTransaction
     ]
   );
 
