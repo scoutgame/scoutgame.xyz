@@ -44,14 +44,14 @@ export async function MatchupLeaderboardTableRows({
         leaderboardRows.map((entry, index) => (
           <TableRow key={entry.scout.id}>
             <TableCell align='center'>
-              <Typography fontSize={{ xs: 14, md: 18 }}>{entry.rank}</Typography>
+              <Typography fontSize={{ xs: 14, md: size === 'small' ? 14 : 18 }}>{entry.rank}</Typography>
             </TableCell>
             <TableCell align='center'>
               <Link href={`/u/${entry.scout.path}`} target='_blank'>
                 <Box
                   display='flex'
                   alignItems='center'
-                  justifyContent={{ xs: 'center', md: 'flex-start' }}
+                  justifyContent={{ xs: 'center', md: size === 'small' ? 'center' : 'flex-start' }}
                   gap={1}
                   maxWidth={{ md: '160px' }}
                 >
@@ -83,8 +83,10 @@ export async function MatchupLeaderboardTableRows({
             </TableCell>
             <TableCell align='right'>
               <Stack direction='row' spacing={0.5} alignItems='center' justifyContent='flex-end'>
-                <Typography fontSize={{ xs: 14, md: 18 }}>{entry.totalGemsCollected}</Typography>
-                <GemsIcon size={24} />
+                <Typography fontSize={{ xs: 14, md: size === 'small' ? 14 : 18 }}>
+                  {entry.totalGemsCollected}
+                </Typography>
+                <GemsIcon size={size === 'small' ? 20 : 24} />
               </Stack>
             </TableCell>
           </TableRow>
