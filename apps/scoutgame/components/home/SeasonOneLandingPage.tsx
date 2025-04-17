@@ -1,6 +1,7 @@
 import type { ButtonProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -27,6 +28,18 @@ function CustomButton({ children, ...props }: ButtonProps) {
   );
 }
 
+// 3 PM UTC, 21st April 2025
+const threePMUTC = DateTime.fromObject({
+  year: 2025,
+  month: 4,
+  day: 21,
+  hour: 15,
+  minute: 0,
+  second: 0
+}).toUTC();
+const currentTime = DateTime.now().toUTC();
+const isAirdropLive = currentTime.diff(threePMUTC).toMillis() > 0;
+
 function HeroSection() {
   return (
     <Stack alignItems='center'>
@@ -50,41 +63,54 @@ function HeroSection() {
           md: 'flex-end'
         }}
       >
-        <Stack gap={2}>
-          <Typography variant='h4' fontWeight={500} textAlign='center'>
-            Season 1 Begins
-          </Typography>
-          <CountdownTimer />
-        </Stack>
-        <Stack
-          p={{
-            xs: 1.5,
-            md: 2.5
-          }}
-          borderRadius={{
-            xs: 1,
-            md: 2
-          }}
-          gap={{
-            xs: 1,
-            md: 2
-          }}
-          width={{
-            xs: '100%'
-          }}
-          justifyContent='center'
-          bgcolor='#1B2653'
-        >
-          <Typography variant='h6' textAlign='center'>
-            Happening NOW...
-          </Typography>
-          <CustomButton variant='contained' color='primary'>
-            <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
-          </CustomButton>
-          <CustomButton variant='blue'>
-            <Link href='/draft'>Play Scout Game</Link>
-          </CustomButton>
-        </Stack>
+        {isAirdropLive ? (
+          <>
+            <Stack gap={2}>
+              <Typography variant='h4' fontWeight={500} textAlign='center'>
+                Season 1 Begins
+              </Typography>
+              <CountdownTimer />
+            </Stack>
+            <Stack
+              p={{
+                xs: 1.5,
+                md: 2.5
+              }}
+              borderRadius={{
+                xs: 1,
+                md: 2
+              }}
+              gap={{
+                xs: 1,
+                md: 2
+              }}
+              width={{
+                xs: '100%'
+              }}
+              justifyContent='center'
+              bgcolor='#1B2653'
+            >
+              <Typography variant='h6' textAlign='center'>
+                Happening NOW...
+              </Typography>
+              <CustomButton variant='contained' color='primary'>
+                <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
+              </CustomButton>
+              <CustomButton variant='blue'>
+                <Link href='/draft'>Play Scout Game</Link>
+              </CustomButton>
+            </Stack>
+          </>
+        ) : (
+          <Stack>
+            <Typography variant='h3' textAlign='center' color='secondary' fontWeight={500}>
+              Prepare for Season 1
+            </Typography>
+            <Typography variant='h5' textAlign='center' my={2}>
+              The Scout Game Offseason Begins on Monday, April 21 @ 11 AM EST
+            </Typography>
+          </Stack>
+        )}
       </Stack>
       <Stack>
         <Typography variant='h4' textAlign='center' color='secondary' fontWeight={500}>
@@ -236,7 +262,7 @@ export function SeasonOneLandingPage() {
         <HeroSection />
         <HowToPlaySection />
       </Container>
-      <FooterSection />
+      {isAirdropLive ? <FooterSection /> : null}
       <Stack
         zIndex={{
           xs: 0,
