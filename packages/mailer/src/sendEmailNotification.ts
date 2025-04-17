@@ -85,6 +85,9 @@ type Variables = {
     project_name: string;
     project_link: string;
   };
+  airdrop_live: {
+    name: string;
+  };
 };
 
 export const NotificationTypesRecord = {
@@ -140,6 +143,10 @@ export const NotificationTypesRecord = {
   added_to_project: {
     template: 'Added to project',
     subject: 'You have been added to a project! 🎉'
+  },
+  airdrop_live: {
+    template: 'Airdrop live',
+    subject: 'Airdrop live'
   }
 };
 
