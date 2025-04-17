@@ -29,7 +29,7 @@ function CustomButton({ children, ...props }: ButtonProps) {
 }
 
 // 3 PM UTC, 21st April 2025
-const threePMUTC = DateTime.fromObject({
+export const threePMUTC = DateTime.fromObject({
   year: 2025,
   month: 4,
   day: 21,
@@ -38,7 +38,7 @@ const threePMUTC = DateTime.fromObject({
   second: 0
 }).toUTC();
 const currentTime = DateTime.now().toUTC();
-const isAirdropLive = currentTime.diff(threePMUTC).toMillis() > 0;
+export const isAirdropLive = currentTime.diff(threePMUTC).toMillis() > 0;
 
 function HeroSection() {
   return (
