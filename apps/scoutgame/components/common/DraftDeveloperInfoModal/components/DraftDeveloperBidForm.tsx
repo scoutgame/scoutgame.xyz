@@ -292,6 +292,16 @@ function DraftDeveloperBidFormComponent({
           error={!!customError || !!draftError}
           helperText={customError || draftError}
           InputProps={{
+            inputProps: {
+              min: 0,
+              max: selectedTokenBalance,
+              step:
+                selectedPaymentOption.currency === 'ETH'
+                  ? 0.00001
+                  : selectedPaymentOption.currency === 'USDC'
+                    ? 0.01
+                    : 10
+            },
             endAdornment: (
               <Image
                 src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
