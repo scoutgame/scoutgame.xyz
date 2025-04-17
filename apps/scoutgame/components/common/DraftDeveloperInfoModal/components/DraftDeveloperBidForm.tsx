@@ -72,11 +72,13 @@ function DraftDeveloperBidFormComponent({
 
   // Fetch ETH and LINK prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,talent&vs_currencies=usd');
+    const response = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,talent-protocol&vs_currencies=usd'
+    );
     const data = await response.json();
     return {
       eth: data.ethereum.usd as number,
-      dev: data.talent.usd as number
+      dev: data['talent-protocol'].usd as number
     };
   });
 

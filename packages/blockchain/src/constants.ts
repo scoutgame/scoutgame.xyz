@@ -16,4 +16,4 @@ export const DEV_TOKEN_ADDRESS = '0x9a33406165f562E16C3abD82fd1185482E01b49a';
 export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 // TODO: Replace with 100 tokens post launch
-export const MIN_DEV_BID = 1; // Minimum bid is 100 DEV tokens
+export const MIN_DEV_BID = 10;
