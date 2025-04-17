@@ -1,5 +1,6 @@
 'use client';
 
+import { isDraftSeason } from '@packages/dates/utils';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo } from 'react';
@@ -30,7 +31,7 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
   const getNextRoute = useCallback(
     (overwriteStep?: OnboardingStep): string => {
       const baseRoute = '/welcome';
-
+      const draftSeason = isDraftSeason();
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       const step = overwriteStep || (urlParams.get('step') as OnboardingStep) || '1';
@@ -38,9 +39,11 @@ export function OnboardingRoutesProvider({ children }: OnboardingRoutesProviderP
       const redirectUrlEncoded = urlParams.get('redirectUrl') as string | undefined;
       const redirectUrl = redirectUrlEncoded
         ? decodeURIComponent(redirectUrlEncoded)
-        : type === 'builder'
-          ? '/developers'
-          : '/scout';
+        : draftSeason
+          ? '/draft'
+          : type === 'builder'
+            ? '/developers'
+            : '/scout';
       const profileRedirect = urlParams.get('profile-redirect') as 'true' | 'false' | undefined;
 
       if (pathname.includes('developer-registration-callback')) {

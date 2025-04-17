@@ -1,7 +1,9 @@
 'use client';
 
 import { Button, Tooltip } from '@mui/material';
+import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { DateTime } from 'luxon';
+import { useRouter } from 'next/navigation';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
 
@@ -16,6 +18,8 @@ export function isDraftEnded(): boolean {
 export function BidButton({ developerPath }: { developerPath: string }) {
   const { openModal } = useGlobalModal();
   const draftEnded = isDraftEnded();
+  const { user } = useUser();
+  const router = useRouter();
 
   const button = (
     <Button
@@ -27,7 +31,13 @@ export function BidButton({ developerPath }: { developerPath: string }) {
         borderRadius: 1,
         fontSize: { xs: 12, md: 16 }
       }}
-      onClick={() => openModal('draftDeveloper', { path: developerPath })}
+      onClick={() => {
+        if (!user) {
+          router.push('/login');
+        } else {
+          openModal('draftDeveloper', { path: developerPath });
+        }
+      }}
       color='secondary'
       disabled={draftEnded}
     >
