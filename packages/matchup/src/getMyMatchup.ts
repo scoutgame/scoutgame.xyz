@@ -110,7 +110,7 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
           : (selection.developerNft!.estimatedPayout ?? 0),
         last14DaysRank: normalizeLast14DaysRank(selection.developerNft!.builder.builderCardActivities[0])
       },
-      credits: selection.developerNft!.builder.userSeasonStats[0].level || 0
+      credits: selection.developerNft!.builder.userSeasonStats[0]?.level || 0
     }))
     .sort((a, b) => b.developer.level - a.developer.level);
   return {
