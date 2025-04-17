@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
-import { AirdropAppProviders } from '@packages/scoutgame-ui/providers/AirdropAppProviders';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
+import { AppProviders } from '../components/common/AppProviders';
 import { Header } from '../components/common/Navigation/Header';
 import { StickyFooter } from '../components/common/Navigation/StickyFooter';
 
@@ -48,7 +48,7 @@ export default async function RootLayout({
         {/* load env vars for the frontend - note that the parent body tag is required for React to not complain */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src='/__ENV.js' />
-        <AirdropAppProviders>
+        <AppProviders>
           <Box
             display='grid'
             gridTemplateRows='auto 1fr auto'
@@ -62,7 +62,7 @@ export default async function RootLayout({
             </Box>
             <StickyFooter />
           </Box>
-        </AirdropAppProviders>
+        </AppProviders>
       </body>
     </html>
   );

@@ -3,22 +3,17 @@ import 'server-only';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
-import type { SessionUser } from '@packages/nextjs/session/interfaces';
-import { PurchaseProvider } from '@packages/scoutgame-ui/providers/PurchaseProvider';
 import { SnackbarProvider } from '@packages/scoutgame-ui/providers/SnackbarContext';
-import { UserProvider } from '@packages/scoutgame-ui/providers/UserProvider';
+import { SWRProvider } from '@packages/scoutgame-ui/providers/SwrProvider';
+import { WagmiProvider } from '@packages/scoutgame-ui/providers/WagmiProvider';
+import theme from '@packages/scoutgame-ui/theme/theme.ts';
 import { headers } from 'next/headers';
 import { ViewTransitions } from 'next-view-transitions';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
-import theme from '../theme/theme';
-
-import { SWRProvider } from './SwrProvider';
-import { WagmiProvider } from './WagmiProvider';
-
 // This is required to provider the MUI theme otherwise the defaultProps are not applied
-export function AirdropAppProviders({ children }: { children: ReactNode }) {
+export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ViewTransitions>
       <WagmiProvider
