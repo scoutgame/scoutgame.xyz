@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Badge, Stack, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { Badge, Typography } from '@mui/material';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
