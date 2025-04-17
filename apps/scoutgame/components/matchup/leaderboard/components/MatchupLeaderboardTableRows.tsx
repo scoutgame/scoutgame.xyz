@@ -17,6 +17,8 @@ import Link from 'next/link';
 
 import { TableCellText } from 'components/common/TableCellText';
 
+import { DeveloperAvatar } from './DeveloperAvatar';
+
 export async function MatchupLeaderboardTableRows({
   week,
   limit,
@@ -75,57 +77,7 @@ export async function MatchupLeaderboardTableRows({
             <TableCell>
               <Stack direction='row' spacing={0.5}>
                 {entry.developers.map((_, i) => (
-                  <Badge
-                    key={entry.scout.id + i.toString()}
-                    overlap='rectangular'
-                    badgeContent={
-                      <Typography
-                        variant='caption'
-                        sx={{
-                          textShadow: '0px 1px 2px rgba(0, 0, 0, 1)',
-                          textAlign: 'right',
-                          letterSpacing: 0,
-                          fontWeight: 800,
-                          backgroundColor: '#5C4475',
-                          borderRadius: '2px',
-                          padding: '0 2px',
-                          lineHeight: '1.2em'
-                        }}
-                      >
-                        {entry.developers[i].gemsCollected || 0}
-                      </Typography>
-                    }
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right'
-                    }}
-                    slotProps={{
-                      badge: {
-                        style: {
-                          height: 18,
-                          paddingRight: 2,
-                          transform: 'none'
-                        }
-                      }
-                    }}
-                  >
-                    <Avatar
-                      key={entry.scout.id + i.toString()}
-                      src={entry.developers[i].avatar}
-                      name={entry.developers[i].displayName}
-                      variant='rounded'
-                      size='small'
-                      sx={{
-                        width: size === 'small' ? 30 : 36,
-                        height: size === 'small' ? 30 : 36,
-                        // borderRadius: '1px',
-                        // border: '1px solid var(--mui-palette-action-disabled)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    />
-                  </Badge>
+                  <DeveloperAvatar developer={entry.developers[i]} key={entry.scout.id + i.toString()} size={size} />
                 ))}
               </Stack>
             </TableCell>
