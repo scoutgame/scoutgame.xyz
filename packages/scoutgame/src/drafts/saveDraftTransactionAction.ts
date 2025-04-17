@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
-import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { scoutgameDraftsLogger } from '../loggers/mintsLogger';
 
 const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 
@@ -46,6 +46,16 @@ export const saveDraftTransactionAction = authActionClient
       throw new Error('User not found');
     }
 
+    const walletAddress = parsedInput.user.walletAddress.toLowerCase();
+
+    // Throw an error if the wallet address doesn't belong to the current user
+    await prisma.scoutWallet.findUniqueOrThrow({
+      where: {
+        address: walletAddress,
+        scoutId: userId
+      }
+    });
+
     const txHash = parsedInput.transactionInfo.sourceChainTxHash.toLowerCase();
 
     // Save the draft transaction
@@ -55,7 +65,7 @@ export const saveDraftTransactionAction = authActionClient
         value: parsedInput.draftInfo.value,
         developerId: parsedInput.draftInfo.developerId,
         createdBy: userId,
-        makerWalletAddress: parsedInput.user.walletAddress.toLowerCase(),
+        makerWalletAddress: walletAddress,
         status: 'pending',
         sourceChainId: parsedInput.transactionInfo.sourceChainId,
         decentPayload: parsedInput.transactionInfo.decentPayload,
@@ -63,7 +73,7 @@ export const saveDraftTransactionAction = authActionClient
       }
     });
 
-    scoutgameMintsLogger.info('Saved draft transaction', {
+    scoutgameDraftsLogger.info('Saved draft transaction', {
       transactionInfo: parsedInput.transactionInfo,
       draftInfo: parsedInput.draftInfo,
       offerId: data.id,

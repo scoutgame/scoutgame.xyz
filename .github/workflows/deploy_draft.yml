@@ -97,7 +97,7 @@ jobs:
 
       - name: Update Dockerfile
         run: |
-          rm Dockerfile && mv apps/scoutgame/Dockerfile Dockerfile
+          rm Dockerfile && mv apps/draft/Dockerfile Dockerfile
 
       - name: Build and Push Docker image
         id: docker_build_push

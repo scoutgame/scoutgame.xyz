@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 
 // These are the links that are only accessible to logged in users
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
+const disabledDraftLinks = ['/scout', '/developers', '/accounts'];
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();
@@ -16,7 +17,7 @@ export async function middleware(request: NextRequest) {
   const draftSeason = isDraftSeason();
 
   if (draftSeason) {
-    if (path.startsWith('/scout') || path.startsWith('/developers')) {
+    if (disabledDraftLinks.some((link) => path.startsWith(link))) {
       return NextResponse.redirect(new URL(isLoggedIn ? '/draft/register' : '/draft', request.url));
     }
 
