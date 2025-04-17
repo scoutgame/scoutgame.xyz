@@ -1031,6 +1031,7 @@ export async function mockPartnerRewardPayoutContract({ scoutId }: { scoutId: st
       chainId: 1,
       contractAddress: randomWalletAddress(),
       ipfsCid: randomString(),
+      provider: 'thirdweb',
       merkleTreeJson: {
         root: '0x1',
         recipients: [
