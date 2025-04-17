@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
-import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { scoutgameDraftsLogger } from '../loggers/mintsLogger';
 
 const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 
@@ -63,7 +63,7 @@ export const saveDraftTransactionAction = authActionClient
       }
     });
 
-    scoutgameMintsLogger.info('Saved draft transaction', {
+    scoutgameDraftsLogger.info('Saved draft transaction', {
       transactionInfo: parsedInput.transactionInfo,
       draftInfo: parsedInput.draftInfo,
       offerId: data.id,

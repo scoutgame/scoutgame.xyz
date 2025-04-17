@@ -2,7 +2,7 @@
 
 import { checkDraftTransactionAction } from '@packages/scoutgame/drafts/checkDraftTransactionAction';
 import { saveDraftTransactionAction } from '@packages/scoutgame/drafts/saveDraftTransactionAction';
-import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
+import { scoutgameDraftsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { useAction } from 'next-safe-action/hooks';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
@@ -51,7 +51,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     executeAsync: checkDraftTransaction
   } = useAction(checkDraftTransactionAction, {
     onError({ error, input }) {
-      scoutgameMintsLogger.error(`Error checking draft transaction`, { error, input });
+      scoutgameDraftsLogger.error(`Error checking draft transaction`, { error, input });
     }
   });
 
@@ -76,13 +76,13 @@ export function DraftProvider({ children }: { children: ReactNode }) {
         const checkResult = await checkResultPromise;
 
         if (checkResult?.serverError) {
-          scoutgameMintsLogger.error(`Error checking draft transaction`, {
+          scoutgameDraftsLogger.error(`Error checking draft transaction`, {
             chainId: res.input.transactionInfo.sourceChainId,
             developerId: res.input.draftInfo.developerId,
             value: res.input.draftInfo.value
           });
         } else if (checkResult?.data?.success) {
-          scoutgameMintsLogger.info(`Draft transaction completed`, {
+          scoutgameDraftsLogger.info(`Draft transaction completed`, {
             chainId: res.input.transactionInfo.sourceChainId,
             developerId: res.input.draftInfo.developerId,
             value: res.input.draftInfo.value
@@ -90,7 +90,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
           toast.success('Draft offer submitted successfully');
         }
       } else {
-        scoutgameMintsLogger.warn(`Draft transaction saved but no transaction id returned`, {
+        scoutgameDraftsLogger.warn(`Draft transaction saved but no transaction id returned`, {
           chainId: res.input.transactionInfo.sourceChainId,
           developerId: res.input.draftInfo.developerId,
           value: res.input.draftInfo.value,
@@ -99,7 +99,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
       }
     },
     onError({ error, input }) {
-      scoutgameMintsLogger.error(`Error saving draft transaction`, {
+      scoutgameDraftsLogger.error(`Error saving draft transaction`, {
         chainId: input.transactionInfo.sourceChainId,
         input,
         error
@@ -140,13 +140,13 @@ export function DraftProvider({ children }: { children: ReactNode }) {
             });
 
             if (output?.serverError) {
-              scoutgameMintsLogger.error(`Saving draft transaction failed`, {});
+              scoutgameDraftsLogger.error(`Saving draft transaction failed`, {});
             } else {
-              scoutgameMintsLogger.info(`Successfully sent draft transaction`, { data: _data });
+              scoutgameDraftsLogger.info(`Successfully sent draft transaction`, { data: _data });
             }
           },
           onError: (err: any) => {
-            scoutgameMintsLogger.error(`Creating a draft transaction failed`, {
+            scoutgameDraftsLogger.error(`Creating a draft transaction failed`, {
               txData: input.txData,
               txMetadata: input.txMetadata,
               error: err
