@@ -1,5 +1,6 @@
 'use client';
 
+import { log } from '@charmverse/core/log';
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 import { AIRDROP_SAFE_WALLET } from '@packages/blockchain/constants';
 import { scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
@@ -42,18 +43,23 @@ export function ClaimTokenScreen() {
     proofs: `0x${string}`[];
     airdropId: string;
   } | null>(null);
+  const { address, chainId } = useAccount();
   const [donationPercentage, setDonationPercentage] = useState<DonationPercentage>('donate_half');
   const [isClaimingTokens, setIsClaimingTokens] = useState(false);
 
   const { executeAsync: trackAirdropClaimPayout } = useAction(trackAirdropClaimPayoutAction, {
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Error tracking airdrop claim payout');
+      toast.error(error.error.serverError?.message || 'Error tracking airdrop claim payout');
     }
   });
 
-  const { executeAsync, isExecuting: isGettingAirdropTokenStatus } = useAction(getAirdropTokenStatusAction);
+  const { executeAsync, isExecuting: isGettingAirdropTokenStatus } = useAction(getAirdropTokenStatusAction, {
+    onError: (response) => {
+      log.error('Error checking airdrop status', { address, chainId, error: response.error });
+      toast.error(response.error?.serverError?.message || 'Error retrieving airdrop claim status');
+    }
+  });
 
-  const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { refreshBalance } = useDevTokenBalance({ address });
 
@@ -145,6 +151,7 @@ export function ClaimTokenScreen() {
 
       setStep('token_claim_success');
     } catch (error) {
+      log.error('Error claiming tokens', { address, chainId, error });
       const message = error instanceof Error ? error.message : 'Error claiming tokens';
       if (message.includes('denied')) {
         toast.error('User rejected the transaction');
