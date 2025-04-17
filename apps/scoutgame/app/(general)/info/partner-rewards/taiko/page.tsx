@@ -1,9 +1,23 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { StackProps } from '@mui/material';
-import { Button, Container, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  Stack,
+  Typography,
+  TableContainer,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell
+} from '@mui/material';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -179,10 +193,109 @@ function HeroSection({ registerUrl }: { registerUrl: string }) {
   );
 }
 
+const features = [
+  {
+    feature: 'Sequencing',
+    traditional: 'Centralized (single sequencer)',
+    taiko: 'Decentralized (L1 validators sequence)'
+  },
+  {
+    feature: 'Proof System',
+    traditional: 'Single proof type (ZK or Optimistic)',
+    taiko: 'Multiple proof (ZK, TEE, Guardian)'
+  },
+  {
+    feature: 'Censorship Resistance',
+    traditional: 'Operator can censor transactions',
+    taiko: 'Permissionless transaction inclusion'
+  },
+  {
+    feature: 'Smart Contract Equivalence',
+    traditional: 'Modified Ethereum (Geth changes)',
+    taiko: '100% Ethereum-equivalent'
+  },
+  {
+    feature: 'Decentralization',
+    traditional: 'Relies on multisig governance',
+    taiko: 'DAO-controlled with open participation'
+  }
+];
+
 export function HowToPlaySection() {
   return (
     <Stack alignItems='center' my={3}>
-      <Typography variant='h4' color='secondary' fontWeight={500}>
+      <Box sx={{ maxWidth: 800, mx: 'auto', mb: 6, px: 2 }}>
+        <Typography variant='h4' color='secondary' fontWeight={500} gutterBottom textAlign='center'>
+          What is Taiko?
+        </Typography>
+        <Typography sx={{ mb: 2 }}>
+          Ethereum is expensive and congested. However, Ethereum's core principles—censorship resistance, permissionless
+          access, and robust security—are non-negotiable. A true scaling solution must extend these properties without
+          introducing trust assumptions, centralization, or trade-offs.
+        </Typography>
+        <Typography>
+          Taiko is an Ethereum-equivalent, permissionless, based rollup designed to scale Ethereum without compromising
+          its fundamental properties. Unlike traditional rollups that rely on centralized sequencers, Taiko leverages
+          Ethereum itself for sequencing, ensuring that block ordering is decentralized and censorship-resistant.
+        </Typography>
+
+        <Typography variant='h4' color='secondary' fontWeight={500} gutterBottom textAlign='center' mt={4}>
+          Why Taiko?
+        </Typography>
+        <List sx={{ mb: 4 }}>
+          <ListItem>
+            <strong>Fully Ethereum-equivalent:</strong> Runs an unmodified Ethereum execution layer, making it easy for
+            developers to migrate smart contracts and tooling.
+          </ListItem>
+          <ListItem>
+            <strong>No centralized sequencer:</strong> Ethereum L1 validators naturally order transactions in a
+            decentralized way.
+          </ListItem>
+          <ListItem>
+            <strong>Multi-proof architecture:</strong> Supports ZK proofs, Trusted Execution Environments (TEE), and
+            Guardian proofs, making it more flexible than single-proof rollups.
+          </ListItem>
+          <ListItem>
+            <strong>Configurable proof system:</strong> Can operate as a ZK-rollup, optimistic rollup, or hybrid,
+            depending on security and performance trade-offs.
+          </ListItem>
+          <ListItem>
+            <strong>Decentralized proving & proposing:</strong> Permissionless block proposing and proving, eliminating
+            reliance on whitelisted actors.
+          </ListItem>
+        </List>
+
+        <Card sx={{ p: 4 }}>
+          <Typography variant='h5' color='secondary' gutterBottom>
+            Why Taiko Alethia is Superior to Traditional Rollups
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableCell>Feature</TableCell>
+                <TableCell>Traditional Rollups</TableCell>
+                <TableCell>Taiko Alethia</TableCell>
+              </TableHead>
+              <TableBody>
+                {features.map((feature) => (
+                  <TableRow key={feature.feature}>
+                    <TableCell>
+                      <strong>{feature.feature}</strong>
+                    </TableCell>
+                    <TableCell>{feature.traditional}</TableCell>
+                    <TableCell>{feature.taiko}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Typography variant='body2' sx={{ p: 2, pb: 0 }}>
+            Taiko Alethia follows Ethereum's decentralization ethos by ensuring L1 validators remain in control,
+            minimizing trust assumptions, and maximizing rollup neutrality.
+          </Typography>
+        </Card>
+      </Box>
+      <Typography variant='h4' color='secondary' fontWeight={500} sx={{ mb: 2 }}>
         How to Play
       </Typography>
       <Stack gap={2.5}>
