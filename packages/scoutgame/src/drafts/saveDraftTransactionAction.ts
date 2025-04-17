@@ -46,6 +46,16 @@ export const saveDraftTransactionAction = authActionClient
       throw new Error('User not found');
     }
 
+    const walletAddress = parsedInput.user.walletAddress.toLowerCase();
+
+    // Throw an error if the wallet address doesn't belong to the current user
+    await prisma.scoutWallet.findUniqueOrThrow({
+      where: {
+        address: walletAddress,
+        scoutId: userId
+      }
+    });
+
     const txHash = parsedInput.transactionInfo.sourceChainTxHash.toLowerCase();
 
     // Save the draft transaction
@@ -55,7 +65,7 @@ export const saveDraftTransactionAction = authActionClient
         value: parsedInput.draftInfo.value,
         developerId: parsedInput.draftInfo.developerId,
         createdBy: userId,
-        makerWalletAddress: parsedInput.user.walletAddress.toLowerCase(),
+        makerWalletAddress: walletAddress,
         status: 'pending',
         sourceChainId: parsedInput.transactionInfo.sourceChainId,
         decentPayload: parsedInput.transactionInfo.decentPayload,

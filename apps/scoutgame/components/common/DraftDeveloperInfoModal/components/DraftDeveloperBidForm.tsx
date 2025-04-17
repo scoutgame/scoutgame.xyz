@@ -14,6 +14,7 @@ import {
   OPTIMISM_USDC_ADDRESS
 } from '@packages/blockchain/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
+import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import { formatNumber } from '@packages/utils/strings';
@@ -62,6 +63,7 @@ function DraftDeveloperBidFormComponent({
   const { chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { sendDraftTransaction, isSavingDraftTransaction, draftSuccess, draftError, sendDevTransaction } = useDraft();
+  const { error: addressError } = useUserWalletAddress(address);
 
   // Default to Base ETH
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(() => ({
@@ -306,6 +308,13 @@ function DraftDeveloperBidFormComponent({
           There was an error communicating with Decent API
         </Typography>
       )}
+      {addressError && (
+        <Typography variant='caption' color='error' align='center' data-test='address-error'>
+          {'message' in addressError
+            ? addressError.message
+            : `Address ${address} is already in use. Please connect a different wallet`}
+        </Typography>
+      )}
       {!approvalRequired || isSavingDraftTransaction ? (
         <Stack direction='row' justifyContent='flex-end' alignItems='center' gap={1} mt={1}>
           <Button onClick={onCancel} variant='outlined' color='secondary' size='large' disabled={isLoading}>
@@ -318,7 +327,10 @@ function DraftDeveloperBidFormComponent({
             color='secondary'
             size='large'
             disabled={
-              !!customError || (selectedPaymentOption.currency !== 'DEV' && !decentTransactionInfo?.tx) || !!draftError
+              !!customError ||
+              (selectedPaymentOption.currency !== 'DEV' && !decentTransactionInfo?.tx) ||
+              !!draftError ||
+              !!addressError
             }
           >
             Confirm
