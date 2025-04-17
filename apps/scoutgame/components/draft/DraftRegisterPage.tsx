@@ -1,10 +1,10 @@
 import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography, Chip } from '@mui/material';
+import { isDraftLive, isDraftEnded } from '@packages/scoutgame/drafts/checkDraftDates';
 import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { LoadingCard } from '@packages/scoutgame-ui/components/common/Loading/LoadingCard';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
-import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -13,10 +13,9 @@ import { DraftDevelopersTable } from './components/DraftDevelopersTable';
 import { DraftSeasonOffersTable } from './components/DraftSeasonOffersTable';
 import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
-const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
-
 export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort?: DraftDeveloperSort; tab?: string }) {
-  const draftEnded = DateTime.utc() > DRAFT_END_DATE;
+  const draftLive = isDraftLive();
+  const draftEnded = isDraftEnded();
 
   return (
     <>
@@ -45,7 +44,11 @@ export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort
           }}
         >
           <Typography variant='h4' color='secondary' textAlign='center'>
-            {draftEnded ? 'Draft has ended' : 'Build your deck before the season begins!'}
+            {!draftLive
+              ? 'Draft has not started yet'
+              : draftEnded
+                ? 'Draft has ended'
+                : 'Build your deck before the season begins!'}
           </Typography>
           <SearchDraftDevelopers />
           <Stack

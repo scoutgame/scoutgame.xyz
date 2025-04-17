@@ -4,13 +4,12 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { DateTime } from 'luxon';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
-const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
+import { isDraftEnabled } from './checkDraftDates';
 
 export const saveDraftTransactionAction = authActionClient
   .metadata({ actionName: 'save-draft-transaction' })
@@ -35,9 +34,10 @@ export const saveDraftTransactionAction = authActionClient
     })
   )
   .action(async ({ parsedInput, ctx }) => {
-    const nowUtc = DateTime.utc();
-    if (nowUtc > DRAFT_END_DATE) {
-      throw new Error('Draft has ended');
+    const draftEnabled = isDraftEnabled();
+
+    if (!draftEnabled) {
+      throw new Error('Draft is not enabled');
     }
 
     const userId = ctx.session.scoutId;
