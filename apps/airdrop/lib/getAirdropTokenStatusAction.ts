@@ -19,15 +19,15 @@ export const getAirdropTokenStatusAction = actionClient
   .action(async ({ parsedInput }) => {
     const address = parsedInput.address;
 
-    const previousSeason = getPreviousSeason(getCurrentSeasonStart());
+    // const previousSeason = getPreviousSeason(getCurrentSeasonStart());
 
-    if (!previousSeason) {
-      throw new Error('No previous season found');
-    }
+    // if (!previousSeason) {
+    //   throw new Error('No previous season found');
+    // }
 
     const airdropClaim = await prisma.airdropClaim.findFirstOrThrow({
       where: {
-        season: previousSeason
+        season: '2025-W05'
       },
       select: {
         id: true,
