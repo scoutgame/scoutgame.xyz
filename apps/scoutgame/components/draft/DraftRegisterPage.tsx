@@ -140,7 +140,7 @@ export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort
                 <Typography variant='h6' fontWeight={600} color='secondary'>
                   Timeline
                 </Typography>
-                <Typography>Draft opens April 21st and runs through April 27th, UTC.</Typography>
+                <Typography>Draft opens April 21st and runs through April 25th, UTC.</Typography>
               </Stack>
 
               <Stack>

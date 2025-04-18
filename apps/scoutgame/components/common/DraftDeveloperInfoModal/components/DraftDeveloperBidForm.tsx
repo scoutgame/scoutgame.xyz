@@ -255,7 +255,11 @@ function DraftDeveloperBidFormComponent({
     }
   };
 
-  const isLoading = isLoadingPrices || isLoadingTokenBalances || isLoadingDecentSdk || isSavingDraftTransaction;
+  const isLoading =
+    isLoadingPrices ||
+    isLoadingTokenBalances ||
+    (selectedPaymentOption.currency !== 'DEV' && isLoadingDecentSdk) ||
+    isSavingDraftTransaction;
 
   return (
     <Stack gap={1}>

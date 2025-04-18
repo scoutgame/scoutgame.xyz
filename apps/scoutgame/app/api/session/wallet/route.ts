@@ -21,6 +21,11 @@ export async function GET(request: Request) {
     return new Response('Invalid address', { status: 400 });
   }
 
+  const isSanctioned = await checkWalletSanctionStatus(address);
+  if (isSanctioned) {
+    return new Response('Wallet address is sanctioned. Try a different wallet', { status: 400 });
+  }
+
   const existingUser = await prisma.scoutWallet.findUnique({
     where: {
       address: address.toLowerCase()
@@ -38,22 +43,16 @@ export async function GET(request: Request) {
       });
     }
   } else {
-    const wallets = await prisma.scoutWallet.findMany({ where: { scoutId } });
-    const primary = wallets.length === 0; // The first scout wallet should be set to primary
+    const walletCount = await prisma.scoutWallet.count({ where: { scoutId } });
 
     await prisma.scoutWallet.create({
       data: {
         address: address.toLowerCase(),
         scoutId,
-        primary
+        primary: walletCount === 0
       }
     });
-    log.info('Added wallet address to user', { address, userId: scoutId, primary });
-  }
-
-  const isSanctioned = await checkWalletSanctionStatus(address);
-  if (isSanctioned) {
-    return new Response('Wallet address is sanctioned. Try a different wallet', { status: 400 });
+    log.info('Added wallet address to user', { address, userId: scoutId, primary: walletCount === 0 });
   }
 
   return NextResponse.json({ success: true });
