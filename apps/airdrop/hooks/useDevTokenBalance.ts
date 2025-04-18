@@ -1,8 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS } from '@packages/blockchain/constants';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import useSWR, { mutate } from 'swr';
-import type { Address, PublicClient } from 'viem';
+import type { Address } from 'viem';
 import { erc20Abi } from 'viem';
 import { readContract } from 'viem/actions';
 import { base } from 'viem/chains';
@@ -47,7 +47,7 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
 
   const cacheKey = address ? getCacheKey(address, publicClient?.chain?.id) : null;
 
-  const { data: balance = '', error } = useSWR(cacheKey, fetcher, {
+  const { data: balance = '' } = useSWR(cacheKey, fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: true
   });

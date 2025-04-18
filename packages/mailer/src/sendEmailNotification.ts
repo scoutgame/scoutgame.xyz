@@ -85,6 +85,15 @@ type Variables = {
     project_name: string;
     project_link: string;
   };
+  airdrop_live: {
+    name: string;
+  };
+  draft_transaction_failed: {
+    name: string;
+    tx_hash: string;
+    error_message: string;
+    wallet_address: string;
+  };
 };
 
 export const NotificationTypesRecord = {
@@ -113,6 +122,10 @@ export const NotificationTypesRecord = {
     template: 'NFT transaction failed',
     subject: 'Your NFT purchase failed'
   },
+  draft_transaction_failed: {
+    template: 'Draft bid failed',
+    subject: 'Your draft bid for a developer failed'
+  },
   builder_card_scouted: {
     template: 'Builder card scouted',
     subject: 'Your Developer Card Was Just Scouted! 🎉'
@@ -140,6 +153,10 @@ export const NotificationTypesRecord = {
   added_to_project: {
     template: 'Added to project',
     subject: 'You have been added to a project! 🎉'
+  },
+  airdrop_live: {
+    template: 'Airdrop live',
+    subject: 'Airdrop live'
   }
 };
 

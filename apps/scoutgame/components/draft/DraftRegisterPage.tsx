@@ -1,5 +1,5 @@
 import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography, Chip } from '@mui/material';
-import { isDraftLive, isDraftEnded } from '@packages/scoutgame/drafts/checkDraftDates';
+import { isDraftEnabled, isDraftEnded } from '@packages/scoutgame/drafts/checkDraftDates';
 import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
@@ -14,7 +14,7 @@ import { DraftSeasonOffersTable } from './components/DraftSeasonOffersTable';
 import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
 export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort?: DraftDeveloperSort; tab?: string }) {
-  const draftLive = isDraftLive();
+  const draftEnabled = isDraftEnabled();
   const draftEnded = isDraftEnded();
 
   return (
@@ -44,11 +44,11 @@ export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort
           }}
         >
           <Typography variant='h4' color='secondary' textAlign='center'>
-            {!draftLive
-              ? 'Draft has not started yet'
-              : draftEnded
-                ? 'Draft has ended'
-                : 'Build your deck before the season begins!'}
+            {draftEnded
+              ? 'Draft has ended'
+              : draftEnabled
+                ? 'Build your deck before the season begins!'
+                : 'Draft has not started yet'}
           </Typography>
           <SearchDraftDevelopers />
           <Stack

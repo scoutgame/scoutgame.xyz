@@ -8,6 +8,7 @@ import {
   OPTIMISM_USDC_ADDRESS,
   BASE_USDC_ADDRESS
 } from '@packages/blockchain/constants';
+import { formatNumber } from '@packages/utils/strings';
 import Image from 'next/image';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
@@ -98,15 +99,6 @@ const paymentOptions: PaymentOption[] = [
   }
 ];
 
-// Remove trailing zeros after decimal point
-// Examples: 1.000000 -> 1, 1.100000 -> 1.1, 1.000100 -> 1.0001
-function formatNumber(num: number, maxDecimals: number): string {
-  // Convert to string with fixed decimal places
-  const fixed = num.toFixed(maxDecimals);
-  // Remove trailing zeros after decimal point and remove decimal point if no decimals
-  return fixed.replace(/\.?0+$/, '');
-}
-
 function PaymentOptionSelector(
   {
     onSelectPaymentOption,
@@ -148,12 +140,12 @@ function PaymentOptionSelector(
         </Typography>
         {selectedPaymentOption.currency === 'ETH' && prices?.eth && (
           <Typography align='right' fontWeight={500}>
-            1 ETH = ${prices.eth.toFixed(2)}
+            1 ETH = ${prices.eth.toFixed(4)}
           </Typography>
         )}
         {selectedPaymentOption.currency === 'DEV' && prices?.dev && (
           <Typography align='right' fontWeight={500}>
-            1 DEV = ${prices.dev.toFixed(2)}
+            1 DEV = ${prices.dev.toFixed(6)}
           </Typography>
         )}
       </Stack>

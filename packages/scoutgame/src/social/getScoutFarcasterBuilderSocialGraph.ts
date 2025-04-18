@@ -80,7 +80,7 @@ async function getBuildersFollowingUser({ fid }: { fid: number }): Promise<numbe
 
     const typedData = data as SocialFollowersResponse;
 
-    if (typedData.SocialFollowers?.Follower) {
+    if (typedData?.SocialFollowers?.Follower) {
       records.push(...typedData.SocialFollowers.Follower);
 
       if (hasNextPage && typedData.SocialFollowers.pageInfo.nextCursor) {
@@ -135,7 +135,7 @@ async function getBuildersFollowedByUser({ fid }: { fid: number }): Promise<numb
 
     const typedData = data as SocialFollowingResponse;
 
-    if (typedData.SocialFollowings?.Following) {
+    if (typedData?.SocialFollowings?.Following) {
       records.push(...typedData.SocialFollowings.Following);
 
       if (hasNextPage && typedData.SocialFollowings.pageInfo.nextCursor) {

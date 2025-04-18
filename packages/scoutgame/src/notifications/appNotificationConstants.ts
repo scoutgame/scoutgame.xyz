@@ -6,6 +6,7 @@ type Variables = {
   };
   zero_weekly_claim: undefined;
   builder_suspended: undefined;
+  draft_transaction_failed: undefined;
   nft_transaction_failed: {
     builderName: string;
     builderPath: string;
@@ -58,6 +59,11 @@ export const AppNotificationTypesRecord = {
     description: ({ builderName }: Variables['nft_transaction_failed']) =>
       `Your transaction failed when purchasing ${builderName}. Try again`,
     targetUrl: ({ builderPath }: Variables['nft_transaction_failed']) => `/u/${builderPath}`
+  },
+  draft_transaction_failed: {
+    title: 'Draft transaction failed',
+    description: () => `The transaction for your bid at the Developer Draft has failed. Please try again.`,
+    targetUrl: () => `/draft/register`
   },
   builder_card_scouted: {
     title: 'Developer card scouted',

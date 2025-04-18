@@ -2,7 +2,7 @@ import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
-import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
+import { DEV_TOKEN_ADDRESS, DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
 import { getDecentApiKey } from '@packages/scoutgame/builderNfts/constants';
 import { GET } from '@packages/utils/http';
 import useSWR from 'swr';
@@ -12,21 +12,34 @@ import { base } from 'viem/chains';
 import { _appendDecentQueryParams } from '../../NFTPurchaseDialog/hooks/useDecentTransaction';
 
 // This should be replaced with the actual treasury/escrow contract address that will hold the bids
-export const BID_RECIPIENT_ADDRESS = '0xb1b9FFF08F3827875F91ddE929036a65f2A5d27d';
-
 export type DecentTransactionProps = {
   address: Address;
   sourceChainId: number;
   sourceToken: Address;
   paymentAmountIn: bigint;
+  enabled: boolean;
 };
 
-async function prepareDecentV4Transaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
+type ErrorResponse = {
+  error: {
+    code: number;
+    name: string;
+    message: string;
+    title: string;
+  };
+  success: boolean;
+};
+
+async function prepareDecentV4Transaction({
+  txConfig
+}: {
+  txConfig: BoxActionRequest;
+}): Promise<BoxActionResponse | ErrorResponse> {
   const DECENT_API_KEY = getDecentApiKey();
 
-  const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';
+  const basePath = 'https://box-v4.api.decent.xyz/api/getBoxAction';
 
-  const response = await GET<BoxActionResponse>(
+  const response = await GET<BoxActionResponse | ErrorResponse>(
     _appendDecentQueryParams(basePath, { arguments: txConfig }),
     undefined,
     {
@@ -44,7 +57,8 @@ export function useDecentV4Transaction({
   address,
   paymentAmountIn,
   sourceChainId,
-  sourceToken
+  sourceToken,
+  enabled = true
 }: DecentTransactionProps) {
   const decentAPIParams: UseBoxActionArgs = {
     sender: address,
@@ -57,7 +71,7 @@ export function useDecentV4Transaction({
     actionConfig: {
       amount: paymentAmountIn,
       swapDirection: SwapDirection.EXACT_AMOUNT_IN,
-      receiverAddress: BID_RECIPIENT_ADDRESS,
+      receiverAddress: DRAFT_BID_RECIPIENT_ADDRESS,
       chainId: sourceChainId
     }
   };
@@ -67,8 +81,9 @@ export function useDecentV4Transaction({
     isLoading: isLoadingDecentSdk,
     data: decentTransactionInfo
   } = useSWR(
-    address && paymentAmountIn
-      ? `swap-token-${BID_RECIPIENT_ADDRESS}-${sourceChainId}-${sourceToken}-${paymentAmountIn}`
+    // Skip Decent SDK call if using DEV tokens or no address
+    enabled && address
+      ? `swap-token-${DRAFT_BID_RECIPIENT_ADDRESS}-${sourceChainId}-${sourceToken}-${paymentAmountIn}`
       : null,
     () =>
       prepareDecentV4Transaction({

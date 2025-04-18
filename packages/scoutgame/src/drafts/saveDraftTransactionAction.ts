@@ -7,7 +7,7 @@ import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { isAddress } from 'viem';
 import * as yup from 'yup';
 
-import { scoutgameMintsLogger } from '../loggers/mintsLogger';
+import { scoutgameDraftsLogger } from '../loggers/mintsLogger';
 
 import { isDraftEnabled } from './checkDraftDates';
 
@@ -15,13 +15,10 @@ export const saveDraftTransactionAction = authActionClient
   .metadata({ actionName: 'save-draft-transaction' })
   .schema(
     yup.object().shape({
-      user: yup.object().shape({
-        id: yup.string().required(),
-        walletAddress: yup
-          .string()
-          .required()
-          .test('Valid address', (v) => isAddress(v))
-      }),
+      walletAddress: yup
+        .string()
+        .required()
+        .test('Valid address', (v) => isAddress(v)),
       transactionInfo: yup.object().shape({
         sourceChainId: yup.number().required(),
         sourceChainTxHash: yup.string().required(),
@@ -46,6 +43,29 @@ export const saveDraftTransactionAction = authActionClient
       throw new Error('User not found');
     }
 
+    const walletAddress = parsedInput.walletAddress.toLowerCase();
+
+    // Throw an error if the wallet address doesn't belong to the current user
+    const scoutWallet = await prisma.scoutWallet.findUnique({
+      where: {
+        address: walletAddress
+      },
+      select: {
+        scoutId: true
+      }
+    });
+
+    if (!scoutWallet) {
+      await prisma.scoutWallet.create({
+        data: {
+          address: walletAddress,
+          scoutId: userId
+        }
+      });
+    } else if (scoutWallet.scoutId !== userId) {
+      throw new Error('Wallet address does not belong to the current user');
+    }
+
     const txHash = parsedInput.transactionInfo.sourceChainTxHash.toLowerCase();
 
     // Save the draft transaction
@@ -55,7 +75,7 @@ export const saveDraftTransactionAction = authActionClient
         value: parsedInput.draftInfo.value,
         developerId: parsedInput.draftInfo.developerId,
         createdBy: userId,
-        makerWalletAddress: parsedInput.user.walletAddress.toLowerCase(),
+        makerWalletAddress: walletAddress,
         status: 'pending',
         sourceChainId: parsedInput.transactionInfo.sourceChainId,
         decentPayload: parsedInput.transactionInfo.decentPayload,
@@ -63,7 +83,7 @@ export const saveDraftTransactionAction = authActionClient
       }
     });
 
-    scoutgameMintsLogger.info('Saved draft transaction', {
+    scoutgameDraftsLogger.info('Saved draft transaction', {
       transactionInfo: parsedInput.transactionInfo,
       draftInfo: parsedInput.draftInfo,
       offerId: data.id,

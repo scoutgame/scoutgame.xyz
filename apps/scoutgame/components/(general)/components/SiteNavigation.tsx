@@ -57,7 +57,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         >
           <BottomNavigationAction
             label='Airdrop'
-            href='https://airdrop.scoutgame.xyz'
+            href='https://prd-scoutgame-airdrop.eba-a24ugj5p.us-east-1.elasticbeanstalk.com'
             value='airdrop'
             icon={<ClaimIcon />}
             LinkComponent={Link}

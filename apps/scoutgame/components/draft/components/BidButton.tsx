@@ -2,12 +2,16 @@
 
 import { Button, Tooltip } from '@mui/material';
 import { isDraftEnabled } from '@packages/scoutgame/drafts/checkDraftDates';
+import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import { useRouter } from 'next/navigation';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
 
 export function BidButton({ developerPath }: { developerPath: string }) {
   const { openModal } = useGlobalModal();
   const draftEnabled = isDraftEnabled();
+  const { user } = useUser();
+  const router = useRouter();
 
   const button = (
     <Button
@@ -19,7 +23,13 @@ export function BidButton({ developerPath }: { developerPath: string }) {
         borderRadius: 1,
         fontSize: { xs: 12, md: 16 }
       }}
-      onClick={() => openModal('draftDeveloper', { path: developerPath })}
+      onClick={() => {
+        if (!user) {
+          router.push('/login');
+        } else {
+          openModal('draftDeveloper', { path: developerPath });
+        }
+      }}
       color='secondary'
       disabled={!draftEnabled}
     >
