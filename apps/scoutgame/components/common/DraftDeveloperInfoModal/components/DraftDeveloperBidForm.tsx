@@ -17,7 +17,6 @@ import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogi
 import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
-import { formatNumber } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -67,7 +66,7 @@ function DraftDeveloperBidFormComponent({
   const [customError, setCustomError] = useState<string | null>(null);
   const { chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
-  const { sendDraftTransaction, isSavingDraftTransaction, draftSuccess, draftError, sendDevTransaction } = useDraft();
+  const { sendDraftTransaction, isSavingDraftTransaction, draftError, sendDevTransaction } = useDraft();
   const { error: addressError } = useUserWalletAddress(address);
 
   // Default to Base ETH
@@ -151,14 +150,12 @@ function DraftDeveloperBidFormComponent({
     }
 
     if (selectedTokenBalance < numericBidAmount) {
-      setCustomError(
-        `Insufficient balance. You have ${formatNumber(selectedTokenBalance, selectedPaymentOption.decimals)} ${selectedPaymentOption.currency} available.`
-      );
+      setCustomError(`Insufficient balance in your wallet for this bid.`);
       return;
     }
 
     if (numericBidAmount < minimumBid) {
-      setCustomError(`Minimum bid is ${formatNumber(minimumBid, selectedPaymentOption.decimals)}`);
+      setCustomError(`Minimum bid is ${minimumBid}`);
       return;
     }
 
@@ -223,7 +220,7 @@ function DraftDeveloperBidFormComponent({
       let bidAmountInDev = numericBidAmount;
 
       if (selectedPaymentOption.currency === 'DEV') {
-        return sendDevTransaction({
+        await sendDevTransaction({
           developerId,
           bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18),
           fromAddress: address
@@ -251,16 +248,18 @@ function DraftDeveloperBidFormComponent({
         });
       }
 
-      if (draftSuccess) {
-        onCancel();
-      }
+      onCancel();
     } catch (error) {
-      log.error('Error submitting bid:', error);
+      log.error('Error submitting bid:', { error, address, developerId });
       setCustomError('Failed to submit bid. Please try again.');
     }
   };
 
-  const isLoading = isLoadingPrices || isLoadingTokenBalances || isLoadingDecentSdk || isSavingDraftTransaction;
+  const isLoading =
+    isLoadingPrices ||
+    isLoadingTokenBalances ||
+    (selectedPaymentOption.currency !== 'DEV' && isLoadingDecentSdk) ||
+    isSavingDraftTransaction;
 
   return (
     <Stack gap={1}>
@@ -281,6 +280,26 @@ function DraftDeveloperBidFormComponent({
         <Typography color='text.secondary' fontWeight={500}>
           Your Bid
         </Typography>
+        <Stack direction='row' alignItems='center' gap={1}>
+          <Stack direction='row' alignItems='center' gap={0.5}>
+            <Typography variant='body2'>Min Bid: {MIN_DEV_BID}</Typography>
+            <Image src={TOKEN_LOGO_RECORD.DEV} alt='DEV' width={16} height={16} />
+          </Stack>
+          {selectedPaymentOption.currency !== 'DEV' ? (
+            <>
+              <Typography variant='body2'>or</Typography>
+              <Stack direction='row' alignItems='center' gap={0.5}>
+                <Typography variant='body2'>{minimumBid ?? '0'}</Typography>
+                <Image
+                  src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
+                  alt={selectedPaymentOption.currency}
+                  width={16}
+                  height={16}
+                />
+              </Stack>
+            </>
+          ) : null}
+        </Stack>
         <TextField
           fullWidth
           value={bidAmount}

@@ -183,43 +183,23 @@ function PaymentOptionSelector(
                     <Typography>{paymentOption.currency}</Typography>
                     <Typography variant='caption'>on {paymentOption.chain.name}</Typography>
                   </Stack>
-                  <Stack
-                    direction={{
-                      xs: 'column',
-                      md: 'row'
-                    }}
-                    gap={{
-                      xs: 0,
-                      md: 1.5
-                    }}
-                    alignItems={{
-                      xs: 'flex-start',
-                      md: 'center'
-                    }}
-                  >
-                    <Stack direction='row' alignItems='center' gap={0.5}>
-                      <Typography variant='caption'>
-                        Balance:{' '}
-                        {selectedTokenBalance ? formatNumber(selectedTokenBalance, paymentOption.decimals) : '0'}
-                      </Typography>
-                      <Image
-                        src={TOKEN_LOGO_RECORD[paymentOption.currency]}
-                        alt={paymentOption.currency}
-                        width={14}
-                        height={14}
-                      />
-                    </Stack>
-                    <Stack direction='row' alignItems='center' gap={0.5}>
-                      <Typography variant='caption'>
-                        Min Bid: {minimumBid ? formatNumber(minimumBid, paymentOption.decimals) : '0'}
-                      </Typography>
-                      <Image
-                        src={TOKEN_LOGO_RECORD[paymentOption.currency]}
-                        alt={paymentOption.currency}
-                        width={14}
-                        height={14}
-                      />
-                    </Stack>
+                  <Stack direction='row' gap={0.5} alignItems='center'>
+                    <Typography variant='caption'>
+                      Balance:{' '}
+                      {selectedTokenBalance
+                        ? paymentOption.currency === 'DEV'
+                          ? selectedTokenBalance.toFixed(4)
+                          : paymentOption.currency === 'ETH'
+                            ? selectedTokenBalance.toFixed(6)
+                            : selectedTokenBalance.toFixed(2)
+                        : '0'}
+                    </Typography>
+                    <Image
+                      src={TOKEN_LOGO_RECORD[paymentOption.currency]}
+                      alt={paymentOption.currency}
+                      width={14}
+                      height={14}
+                    />
                   </Stack>
                 </Stack>
               </Stack>

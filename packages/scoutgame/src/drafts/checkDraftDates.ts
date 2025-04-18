@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 // 11:00 EST, 15:00 UTC
 const DRAFT_START_DATE = DateTime.fromISO(
-  env('DRAFT_START_DATE') || process.env.REACT_APP_DRAFT_START_DATE || '2025-04-21T15:00:00.000Z',
+  env('DRAFT_START_DATE') || process.env.REACT_APP_DRAFT_START_DATE || '2025-04-16T15:00:00.000Z',
   { zone: 'utc' }
 );
 

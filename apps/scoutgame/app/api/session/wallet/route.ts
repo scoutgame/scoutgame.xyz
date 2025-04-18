@@ -38,17 +38,16 @@ export async function GET(request: Request) {
       });
     }
   } else {
-    const wallets = await prisma.scoutWallet.findMany({ where: { scoutId } });
-    const primary = wallets.length === 0; // The first scout wallet should be set to primary
+    const walletCount = await prisma.scoutWallet.count({ where: { scoutId } });
 
     await prisma.scoutWallet.create({
       data: {
         address: address.toLowerCase(),
         scoutId,
-        primary
+        primary: walletCount === 0
       }
     });
-    log.info('Added wallet address to user', { address, userId: scoutId, primary });
+    log.info('Added wallet address to user', { address, userId: scoutId, primary: walletCount === 0 });
   }
 
   const isSanctioned = await checkWalletSanctionStatus(address);
