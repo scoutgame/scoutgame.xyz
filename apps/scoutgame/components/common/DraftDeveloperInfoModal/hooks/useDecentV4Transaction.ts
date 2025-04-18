@@ -19,12 +19,26 @@ export type DecentTransactionProps = {
   paymentAmountIn: bigint;
 };
 
-async function prepareDecentV4Transaction({ txConfig }: { txConfig: BoxActionRequest }): Promise<BoxActionResponse> {
+type ErrorResponse = {
+  error: {
+    code: number;
+    name: string;
+    message: string;
+    title: string;
+  };
+  success: boolean;
+};
+
+async function prepareDecentV4Transaction({
+  txConfig
+}: {
+  txConfig: BoxActionRequest;
+}): Promise<BoxActionResponse | ErrorResponse> {
   const DECENT_API_KEY = getDecentApiKey();
 
   const basePath = 'https://box-v4.api.decent.xyz/api/getBoxAction';
 
-  const response = await GET<BoxActionResponse>(
+  const response = await GET<BoxActionResponse | ErrorResponse>(
     _appendDecentQueryParams(basePath, { arguments: txConfig }),
     undefined,
     {

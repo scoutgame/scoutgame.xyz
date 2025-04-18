@@ -185,7 +185,7 @@ function DraftDeveloperBidFormComponent({
         ? selectedChainCurrency
         : null,
     owner: address,
-    spender: decentTransactionInfo?.tx.to as Address
+    spender: decentTransactionInfo && 'tx' in decentTransactionInfo ? decentTransactionInfo.tx.to : null
   });
 
   const amountToPay = BigInt(parseUnits(debouncedBidAmount, selectedPaymentOption.decimals));
@@ -219,7 +219,7 @@ function DraftDeveloperBidFormComponent({
           bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18),
           fromAddress: address
         });
-      } else if (decentTransactionInfo?.tx) {
+      } else if (decentTransactionInfo && 'tx' in decentTransactionInfo) {
         if (selectedPaymentOption.currency === 'ETH' && prices?.eth && prices?.dev) {
           bidAmountInDev = (numericBidAmount * prices.eth) / prices.dev;
         } else if (selectedPaymentOption.currency === 'USDC' && prices?.dev) {
@@ -337,6 +337,11 @@ function DraftDeveloperBidFormComponent({
             : `Address ${address} is already in use. Please connect a different wallet`}
         </Typography>
       )}
+      {decentTransactionInfo && 'error' in decentTransactionInfo && bidAmount !== '0' && (
+        <Typography variant='caption' color='error' align='center'>
+          {decentTransactionInfo.error.message}
+        </Typography>
+      )}
       {!approvalRequired || isSavingDraftTransaction ? (
         <Stack direction='row' justifyContent='flex-end' alignItems='center' gap={1} mt={1}>
           <Button onClick={onCancel} variant='outlined' color='secondary' size='large' disabled={isLoading}>
@@ -350,7 +355,8 @@ function DraftDeveloperBidFormComponent({
             size='large'
             disabled={
               !!customError ||
-              (selectedPaymentOption.currency !== 'DEV' && !decentTransactionInfo?.tx) ||
+              (selectedPaymentOption.currency !== 'DEV' &&
+                (!decentTransactionInfo || !('tx' in decentTransactionInfo) || 'error' in decentTransactionInfo)) ||
               !!draftError ||
               !!addressError
             }
@@ -358,7 +364,7 @@ function DraftDeveloperBidFormComponent({
             Confirm
           </LoadingButton>
         </Stack>
-      ) : (
+      ) : decentTransactionInfo && 'tx' in decentTransactionInfo ? (
         <ERC20ApproveButton
           spender={decentTransactionInfo?.tx.to as Address}
           chainId={selectedPaymentOption.chainId}
@@ -370,7 +376,7 @@ function DraftDeveloperBidFormComponent({
           actionType='bid'
           color='secondary'
         />
-      )}
+      ) : null}
     </Stack>
   );
 }
