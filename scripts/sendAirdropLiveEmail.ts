@@ -5,6 +5,7 @@ export async function sendAirdropLiveEmail() {
   const users = await prisma.scout.findMany({
     where: {
       email: { not: null },
+      deletedAt: null
     },
     select: {
       id: true,
