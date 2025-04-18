@@ -4,7 +4,6 @@ import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
 
-import { handleEmailFailedTransaction } from '../builderNfts/handleEmailFailedTransaction';
 import { handlePendingDraftTransaction } from '../builderNfts/handlePendingDraftTransaction';
 import { sendDraftTransactionFailedEmail } from '../builderNfts/sendDraftTransactionFailedEmail';
 
@@ -31,7 +30,7 @@ export const checkDraftTransactionAction = authActionClient
       throw error;
     });
 
-    revalidatePath('/draft/register', 'layout');
+    revalidatePath('/draft/register');
 
     return { success: true };
   });
