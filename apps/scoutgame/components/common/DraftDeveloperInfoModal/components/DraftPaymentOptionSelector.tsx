@@ -140,12 +140,12 @@ function PaymentOptionSelector(
         </Typography>
         {selectedPaymentOption.currency === 'ETH' && prices?.eth && (
           <Typography align='right' fontWeight={500}>
-            1 ETH = ${prices.eth.toFixed(2)}
+            1 ETH = ${prices.eth.toFixed(4)}
           </Typography>
         )}
         {selectedPaymentOption.currency === 'DEV' && prices?.dev && (
           <Typography align='right' fontWeight={500}>
-            1 DEV = ${prices.dev.toFixed(2)}
+            1 DEV = ${prices.dev.toFixed(6)}
           </Typography>
         )}
       </Stack>
