@@ -1,3 +1,4 @@
+import { isDraftSeason } from '@packages/dates/utils';
 import { useSearchParams } from 'next/navigation';
 
 /**
@@ -31,6 +32,12 @@ export function useLoginSuccessHandler() {
     if (inviteCode && user?.onboarded) {
       searchparams.set('step', '2');
       return `/welcome?${searchparams.toString()}`;
+    }
+
+    const draftSeason = isDraftSeason();
+
+    if (draftSeason) {
+      return '/draft';
     }
 
     return redirectUrl || '/scout';

@@ -88,6 +88,12 @@ type Variables = {
   airdrop_live: {
     name: string;
   };
+  draft_transaction_failed: {
+    name: string;
+    tx_hash: string;
+    error_message: string;
+    wallet_address: string;
+  };
 };
 
 export const NotificationTypesRecord = {
@@ -115,6 +121,10 @@ export const NotificationTypesRecord = {
   nft_transaction_failed: {
     template: 'NFT transaction failed',
     subject: 'Your NFT purchase failed'
+  },
+  draft_transaction_failed: {
+    template: 'Draft bid failed',
+    subject: 'Your draft bid for a developer failed'
   },
   builder_card_scouted: {
     template: 'Builder card scouted',

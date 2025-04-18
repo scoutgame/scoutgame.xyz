@@ -2,6 +2,7 @@ import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typog
 import type { DraftDeveloper } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { formatNumber } from '@packages/utils/strings';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
 
@@ -163,10 +164,10 @@ export function DevelopersTable({
                   <Tooltip title={`${bidAmount} DEV`}>
                     <Stack flexDirection='row' gap={1} alignItems='center'>
                       <Hidden mdDown>
-                        <Typography>{Number(bidAmount).toFixed(4)}</Typography>
+                        <Typography>{formatNumber(Number(bidAmount), 4)}</Typography>
                       </Hidden>
                       <Hidden mdUp>
-                        <Typography>{Number(bidAmount).toFixed(2)}</Typography>
+                        <Typography>{formatNumber(Number(bidAmount), 2)}</Typography>
                       </Hidden>
                       <Image src='/images/crypto/dev-token-logo.png' alt='dev token' width={20} height={20} />
                     </Stack>

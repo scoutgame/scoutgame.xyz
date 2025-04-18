@@ -41,6 +41,17 @@ export async function checkThirdwebAirdropEligibility({
     (r) => r.address.toLowerCase() === recipientAddress.toLowerCase()
   );
 
+  if (recipientIndex === -1) {
+    return {
+      amount: '0',
+      index: -1,
+      proof: [],
+      hasExpired: false,
+      isValid: false,
+      isClaimed: false
+    };
+  }
+
   const tree = generateMerkleTree(merkleTreeJson.recipients);
   const proof = getMerkleProofs(tree.tree, {
     address: recipientAddress,

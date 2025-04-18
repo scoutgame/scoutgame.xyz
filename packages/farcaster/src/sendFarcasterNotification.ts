@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { baseUrl } from '@packages/utils/constants';
 import { RateLimit } from 'async-sema';
 import { v4 } from 'uuid';
 
@@ -11,6 +10,7 @@ type Variables = {
   weekly_claim: {
     points: number;
   };
+  draft_transaction_failed: undefined;
   zero_weekly_claim: undefined;
   builder_suspended: undefined;
   nft_transaction_failed: {
@@ -58,6 +58,11 @@ const FarcasterNotificationTypesRecord = {
     description: ({ builderName }: Variables['nft_transaction_failed']) =>
       `our transaction failed when purchasing ${builderName}. Try again`,
     targetUrl: ({ builderPath }: Variables['nft_transaction_failed']) => `https://scoutgame.xyz/u/${builderPath}`
+  },
+  draft_transaction_failed: {
+    title: 'Draft transaction failed',
+    description: () => `The transaction for your bid at the Developer Draft has failed. Please try again.`,
+    targetUrl: () => `https://scoutgame.xyz/draft/register`
   },
   builder_card_scouted: {
     title: 'Developer card scouted',

@@ -17,7 +17,8 @@ export type NotificationTypes =
   | 'referral_link_signup'
   | 'merged_pr_gems'
   | 'developer_rank_change'
-  | 'added_to_project';
+  | 'added_to_project'
+  | 'draft_transaction_failed';
 
 export async function sendNotifications<T extends NotificationTypes>({
   userId,

@@ -14,8 +14,10 @@ import {
   OPTIMISM_USDC_ADDRESS
 } from '@packages/blockchain/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
+import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
+import { formatNumber } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -60,7 +62,8 @@ function DraftDeveloperBidFormComponent({
   const [customError, setCustomError] = useState<string | null>(null);
   const { chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
-  const { sendDraftTransaction, isSavingDraftTransaction, draftSuccess, draftError } = useDraft();
+  const { sendDraftTransaction, isSavingDraftTransaction, draftSuccess, draftError, sendDevTransaction } = useDraft();
+  const { error: addressError } = useUserWalletAddress(address);
 
   // Default to Base ETH
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>(() => ({
@@ -72,11 +75,13 @@ function DraftDeveloperBidFormComponent({
 
   // Fetch ETH and LINK prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,talent&vs_currencies=usd');
+    const response = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,talent-protocol&vs_currencies=usd'
+    );
     const data = await response.json();
     return {
       eth: data.ethereum.usd as number,
-      dev: data.talent.usd as number
+      dev: data['talent-protocol'].usd as number
     };
   });
 
@@ -136,12 +141,21 @@ function DraftDeveloperBidFormComponent({
     const numericBidAmount = Number(debouncedBidAmount);
 
     if (selectedTokenBalance < minimumBid) {
-      setCustomError('Insufficient balance');
+      setCustomError(
+        `Insufficient balance for minimum bid. Minimum bid is ${formatNumber(minimumBid, selectedPaymentOption.decimals)}`
+      );
+      return;
+    }
+
+    if (selectedTokenBalance < numericBidAmount) {
+      setCustomError(
+        `Insufficient balance. You have ${formatNumber(selectedTokenBalance, selectedPaymentOption.decimals)} ${selectedPaymentOption.currency} available.`
+      );
       return;
     }
 
     if (numericBidAmount < minimumBid) {
-      setCustomError(`Minimum bid is ${minimumBid?.toFixed(selectedPaymentOption.decimals)}`);
+      setCustomError(`Minimum bid is ${formatNumber(minimumBid, selectedPaymentOption.decimals)}`);
       return;
     }
 
@@ -171,7 +185,7 @@ function DraftDeveloperBidFormComponent({
         ? selectedChainCurrency
         : null,
     owner: address,
-    spender: decentTransactionInfo?.tx.to as Address
+    spender: decentTransactionInfo && 'tx' in decentTransactionInfo ? decentTransactionInfo.tx.to : null
   });
 
   const amountToPay = BigInt(parseUnits(debouncedBidAmount, selectedPaymentOption.decimals));
@@ -182,10 +196,6 @@ function DraftDeveloperBidFormComponent({
     allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
 
   const handleSubmit = async () => {
-    if (!decentTransactionInfo?.tx) {
-      return;
-    }
-
     try {
       // Switch chain if needed
       if (chainId !== selectedPaymentOption.chainId) {
@@ -203,26 +213,34 @@ function DraftDeveloperBidFormComponent({
       const numericBidAmount = Number(bidAmount);
       let bidAmountInDev = numericBidAmount;
 
-      if (selectedPaymentOption.currency === 'ETH' && prices?.eth && prices?.dev) {
-        bidAmountInDev = (numericBidAmount * prices.eth) / prices.dev;
-      } else if (selectedPaymentOption.currency === 'USDC' && prices?.dev) {
-        bidAmountInDev = numericBidAmount / prices.dev;
-      }
-
-      await sendDraftTransaction({
-        txData: {
-          to: decentTransactionInfo.tx.to as Address,
-          data: decentTransactionInfo.tx.data as any,
-          value: BigInt((decentTransactionInfo.tx as EvmTransaction).value?.toString().replace('n', '') || '0')
-        },
-        txMetadata: {
-          fromAddress: address,
-          sourceChainId: selectedPaymentOption.chainId,
+      if (selectedPaymentOption.currency === 'DEV') {
+        return sendDevTransaction({
           developerId,
-          bidAmount: parseUnits(debouncedBidAmount, selectedPaymentOption.decimals),
-          bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18) // Store DEV amount with 18 decimals
+          bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18),
+          fromAddress: address
+        });
+      } else if (decentTransactionInfo && 'tx' in decentTransactionInfo) {
+        if (selectedPaymentOption.currency === 'ETH' && prices?.eth && prices?.dev) {
+          bidAmountInDev = (numericBidAmount * prices.eth) / prices.dev;
+        } else if (selectedPaymentOption.currency === 'USDC' && prices?.dev) {
+          bidAmountInDev = numericBidAmount / prices.dev;
         }
-      });
+
+        await sendDraftTransaction({
+          txData: {
+            to: decentTransactionInfo.tx.to as Address,
+            data: decentTransactionInfo.tx.data as any,
+            value: BigInt((decentTransactionInfo.tx as EvmTransaction).value?.toString().replace('n', '') || '0')
+          },
+          txMetadata: {
+            fromAddress: address,
+            sourceChainId: selectedPaymentOption.chainId,
+            developerId,
+            bidAmount: parseUnits(debouncedBidAmount, selectedPaymentOption.decimals),
+            bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18) // Store DEV amount with 18 decimals
+          }
+        });
+      }
 
       if (draftSuccess) {
         onCancel();
@@ -259,6 +277,12 @@ function DraftDeveloperBidFormComponent({
           value={bidAmount}
           type='number'
           disabled={isLoading}
+          sx={{
+            '& input[type="number"]::-webkit-outer-spin-button, & input[type="number"]::-webkit-inner-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0
+            }
+          }}
           onChange={(e) => {
             if (e.target.value === '') {
               setBidAmount('0');
@@ -274,20 +298,27 @@ function DraftDeveloperBidFormComponent({
               return;
             }
 
-            if (selectedTokenBalance !== undefined) {
-              setBidAmount(numericValue > selectedTokenBalance ? selectedTokenBalance.toString() : rawValue);
-            } else {
-              setBidAmount(rawValue);
-            }
+            setBidAmount(Number(rawValue).toString());
           }}
           error={!!customError || !!draftError}
           helperText={customError || draftError}
           InputProps={{
-            endAdornment: (
+            inputProps: {
+              min: 0,
+              max: selectedTokenBalance,
+              step:
+                selectedPaymentOption.currency === 'ETH'
+                  ? 0.00001
+                  : selectedPaymentOption.currency === 'USDC'
+                    ? 0.01
+                    : 10
+            },
+            startAdornment: (
               <Image
                 src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
                 alt={selectedPaymentOption.currency}
                 width={20}
+                style={{ marginRight: 4 }}
                 height={20}
               />
             )
@@ -297,6 +328,18 @@ function DraftDeveloperBidFormComponent({
       {decentSdkError && (
         <Typography variant='caption' color='error' align='center'>
           There was an error communicating with Decent API
+        </Typography>
+      )}
+      {addressError && (
+        <Typography variant='caption' color='error' align='center' data-test='address-error'>
+          {'message' in addressError
+            ? addressError.message
+            : `Address ${address} is already in use. Please connect a different wallet`}
+        </Typography>
+      )}
+      {decentTransactionInfo && 'error' in decentTransactionInfo && bidAmount !== '0' && (
+        <Typography variant='caption' color='error' align='center'>
+          {decentTransactionInfo.error.message}
         </Typography>
       )}
       {!approvalRequired || isSavingDraftTransaction ? (
@@ -310,12 +353,18 @@ function DraftDeveloperBidFormComponent({
             variant='contained'
             color='secondary'
             size='large'
-            disabled={!!customError || !decentTransactionInfo?.tx || !!draftError}
+            disabled={
+              !!customError ||
+              (selectedPaymentOption.currency !== 'DEV' &&
+                (!decentTransactionInfo || !('tx' in decentTransactionInfo) || 'error' in decentTransactionInfo)) ||
+              !!draftError ||
+              !!addressError
+            }
           >
             Confirm
           </LoadingButton>
         </Stack>
-      ) : (
+      ) : decentTransactionInfo && 'tx' in decentTransactionInfo ? (
         <ERC20ApproveButton
           spender={decentTransactionInfo?.tx.to as Address}
           chainId={selectedPaymentOption.chainId}
@@ -327,7 +376,7 @@ function DraftDeveloperBidFormComponent({
           actionType='bid'
           color='secondary'
         />
-      )}
+      ) : null}
     </Stack>
   );
 }
