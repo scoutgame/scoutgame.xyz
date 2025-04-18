@@ -281,6 +281,28 @@ function DraftDeveloperBidFormComponent({
         <Typography color='text.secondary' fontWeight={500}>
           Your Bid
         </Typography>
+        <Stack direction='row' alignItems='center' gap={1}>
+          <Stack direction='row' alignItems='center' gap={0.5}>
+            <Typography variant='body2'>Min Bid: {MIN_DEV_BID}</Typography>
+            <Image src={TOKEN_LOGO_RECORD.DEV} alt='DEV' width={16} height={16} />
+          </Stack>
+          {selectedPaymentOption.currency !== 'DEV' ? (
+            <>
+              <Typography variant='body2'>or</Typography>
+              <Stack direction='row' alignItems='center' gap={0.5}>
+                <Typography variant='body2'>
+                  Min Bid: {minimumBid ? formatNumber(minimumBid, selectedPaymentOption.decimals) : '0'}
+                </Typography>
+                <Image
+                  src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
+                  alt={selectedPaymentOption.currency}
+                  width={16}
+                  height={16}
+                />
+              </Stack>
+            </>
+          ) : null}
+        </Stack>
         <TextField
           fullWidth
           value={bidAmount}
