@@ -22,7 +22,7 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
         Select 5 Developers from your Deck:
       </Typography>
       <Card sx={{ mt: 2, p: 2, borderColor: 'secondary.main' }}>
-        <Stack direction='row' justifyContent='space-between'>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between'>
           <Box flexGrow={1}>
             <Typography color='secondary' variant='h6' gutterBottom textTransform='uppercase'>
               {myMatchup.scout.displayName}'s team
@@ -48,7 +48,7 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
                       <Box sx={{ mr: 2 }}>
                         <Avatar size='small' name={developer.displayName} src={developer.avatar} alt='' />
                       </Box>
-                      <Box sx={{ minWidth: 150 }}>
+                      <Box sx={{ minWidth: 150 }} flexGrow={{ xs: 1, md: 0 }}>
                         <Typography variant='body1'>{developer.displayName}</Typography>
                       </Box>
                       <Typography variant='body2' color='text.secondary'>
@@ -71,7 +71,13 @@ export function MatchUpSelectionView({ myMatchup }: { myMatchup: MyMatchup }) {
               );
             })}
           </Box>
-          <Box display='flex' flexDirection='column' alignItems='space-between' minHeight='100%' width={200}>
+          <Box
+            display='flex'
+            flexDirection='column'
+            alignItems='space-between'
+            minHeight='100%'
+            width={{ xs: '100%', md: 200 }}
+          >
             <Box flexGrow={1}>
               <Typography color='secondary' variant='h6' gutterBottom textTransform='uppercase' align='center'>
                 BALANCE
