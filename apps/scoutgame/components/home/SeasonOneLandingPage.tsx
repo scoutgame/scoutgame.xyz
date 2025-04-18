@@ -28,17 +28,10 @@ function CustomButton({ children, ...props }: ButtonProps) {
   );
 }
 
-// 3 PM UTC, 21st April 2025
-export const threePMUTC = DateTime.fromObject({
-  year: 2025,
-  month: 4,
-  day: 21,
-  hour: 15,
-  minute: 0,
-  second: 0
-}).toUTC();
+const AIRDROP_START_DATE = DateTime.fromISO('2025-04-16T15:00:00.000Z', { zone: 'utc' });
+
 const currentTime = DateTime.now().toUTC();
-export const isAirdropLive = currentTime.diff(threePMUTC).toMillis() > 0;
+export const isAirdropLive = currentTime.diff(AIRDROP_START_DATE).toMillis() > 0;
 
 function HeroSection() {
   return (
