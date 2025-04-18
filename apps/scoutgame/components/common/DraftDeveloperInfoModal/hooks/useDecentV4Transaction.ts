@@ -17,6 +17,7 @@ export type DecentTransactionProps = {
   sourceChainId: number;
   sourceToken: Address;
   paymentAmountIn: bigint;
+  enabled: boolean;
 };
 
 type ErrorResponse = {
@@ -56,7 +57,8 @@ export function useDecentV4Transaction({
   address,
   paymentAmountIn,
   sourceChainId,
-  sourceToken
+  sourceToken,
+  enabled = true
 }: DecentTransactionProps) {
   const decentAPIParams: UseBoxActionArgs = {
     sender: address,
@@ -80,7 +82,7 @@ export function useDecentV4Transaction({
     data: decentTransactionInfo
   } = useSWR(
     // Skip Decent SDK call if using DEV tokens or no address
-    address && sourceToken !== DEV_TOKEN_ADDRESS
+    enabled && address
       ? `swap-token-${DRAFT_BID_RECIPIENT_ADDRESS}-${sourceChainId}-${sourceToken}-${paymentAmountIn}`
       : null,
     () =>

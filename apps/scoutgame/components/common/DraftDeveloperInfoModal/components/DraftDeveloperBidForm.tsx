@@ -48,6 +48,11 @@ export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () 
   );
 }
 
+const ceilToPrecision = (value: number, precision: number) => {
+  const multiplier = 10 ** precision;
+  return Math.ceil(value * multiplier) / multiplier;
+};
+
 function DraftDeveloperBidFormComponent({
   address,
   onCancel,
@@ -73,7 +78,7 @@ function DraftDeveloperBidFormComponent({
     decimals: DEV_PAYMENT_OPTION.decimals
   }));
 
-  // Fetch ETH and LINK prices from CoinGecko
+  // Fetch ETH and TALENT prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
     const response = await fetch(
       'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,talent-protocol&vs_currencies=usd'
@@ -117,9 +122,9 @@ function DraftDeveloperBidFormComponent({
     (currency: AvailableCurrency) => {
       switch (currency) {
         case 'USDC':
-          return prices?.dev ? MIN_DEV_BID * prices.dev : undefined;
+          return prices?.dev ? ceilToPrecision(MIN_DEV_BID * prices.dev, 2) : undefined;
         case 'ETH':
-          return prices?.eth && prices?.dev ? (MIN_DEV_BID * prices.dev) / prices.eth : undefined;
+          return prices?.eth && prices?.dev ? ceilToPrecision((MIN_DEV_BID * prices.dev) / prices.eth, 5) : undefined;
         case 'DEV':
           return MIN_DEV_BID; // Fixed 100 DEV tokens
         default:
@@ -141,9 +146,7 @@ function DraftDeveloperBidFormComponent({
     const numericBidAmount = Number(debouncedBidAmount);
 
     if (selectedTokenBalance < minimumBid) {
-      setCustomError(
-        `Insufficient balance for minimum bid. Minimum bid is ${formatNumber(minimumBid, selectedPaymentOption.decimals)}`
-      );
+      setCustomError(`Insufficient balance for minimum bid.`);
       return;
     }
 
@@ -173,6 +176,12 @@ function DraftDeveloperBidFormComponent({
     address,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,
+    enabled: !!(
+      selectedPaymentOption.currency !== 'DEV' &&
+      minimumBid &&
+      selectedTokenBalance &&
+      parseFloat(debouncedBidAmount) >= minimumBid
+    ),
     paymentAmountIn: parseUnits(debouncedBidAmount, selectedPaymentOption.decimals)
   });
 
@@ -278,6 +287,7 @@ function DraftDeveloperBidFormComponent({
           type='number'
           disabled={isLoading}
           sx={{
+            // Remove the up and down arrows from the number input
             '& input[type="number"]::-webkit-outer-spin-button, & input[type="number"]::-webkit-inner-spin-button': {
               WebkitAppearance: 'none',
               margin: 0
@@ -298,7 +308,7 @@ function DraftDeveloperBidFormComponent({
               return;
             }
 
-            setBidAmount(Number(rawValue).toString());
+            setBidAmount(rawValue);
           }}
           error={!!customError || !!draftError}
           helperText={customError || draftError}
@@ -307,11 +317,7 @@ function DraftDeveloperBidFormComponent({
               min: 0,
               max: selectedTokenBalance,
               step:
-                selectedPaymentOption.currency === 'ETH'
-                  ? 0.00001
-                  : selectedPaymentOption.currency === 'USDC'
-                    ? 0.01
-                    : 10
+                selectedPaymentOption.currency === 'ETH' ? 0.0001 : selectedPaymentOption.currency === 'USDC' ? 0.1 : 10
             },
             startAdornment: (
               <Image
