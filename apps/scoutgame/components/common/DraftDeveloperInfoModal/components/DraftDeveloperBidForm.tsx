@@ -17,7 +17,6 @@ import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogi
 import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
-import { formatNumber } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -151,14 +150,12 @@ function DraftDeveloperBidFormComponent({
     }
 
     if (selectedTokenBalance < numericBidAmount) {
-      setCustomError(
-        `Insufficient balance. You have ${formatNumber(selectedTokenBalance, selectedPaymentOption.decimals)} ${selectedPaymentOption.currency} available.`
-      );
+      setCustomError(`Insufficient balance in your wallet for this bid.`);
       return;
     }
 
     if (numericBidAmount < minimumBid) {
-      setCustomError(`Minimum bid is ${formatNumber(minimumBid, selectedPaymentOption.decimals)}`);
+      setCustomError(`Minimum bid is ${minimumBid}`);
       return;
     }
 
@@ -223,7 +220,7 @@ function DraftDeveloperBidFormComponent({
       let bidAmountInDev = numericBidAmount;
 
       if (selectedPaymentOption.currency === 'DEV') {
-        return sendDevTransaction({
+        await sendDevTransaction({
           developerId,
           bidAmountInDev: parseUnits(bidAmountInDev.toFixed(18), 18),
           fromAddress: address
@@ -290,9 +287,7 @@ function DraftDeveloperBidFormComponent({
             <>
               <Typography variant='body2'>or</Typography>
               <Stack direction='row' alignItems='center' gap={0.5}>
-                <Typography variant='body2'>
-                  Min Bid: {minimumBid ? formatNumber(minimumBid, selectedPaymentOption.decimals) : '0'}
-                </Typography>
+                <Typography variant='body2'>{minimumBid ?? '0'}</Typography>
                 <Image
                   src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
                   alt={selectedPaymentOption.currency}

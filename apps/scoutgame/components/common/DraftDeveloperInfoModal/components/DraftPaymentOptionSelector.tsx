@@ -183,7 +183,7 @@ function PaymentOptionSelector(
                     <Typography>{paymentOption.currency}</Typography>
                     <Typography variant='caption'>on {paymentOption.chain.name}</Typography>
                   </Stack>
-                  <Stack direction='row' gap={1} alignItems='center'>
+                  <Stack direction='row' gap={0.5} alignItems='center'>
                     <Typography variant='caption'>
                       Balance:{' '}
                       {selectedTokenBalance
