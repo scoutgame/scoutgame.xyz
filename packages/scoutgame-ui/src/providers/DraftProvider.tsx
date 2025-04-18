@@ -135,10 +135,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
         });
         toast.info('Draft offer is sent and will be confirmed shortly');
         const output = await saveDraftTransaction({
-          user: {
-            id: developerId,
-            walletAddress: fromAddress
-          },
+          walletAddress: fromAddress,
           transactionInfo: {
             sourceChainId: base.id,
             sourceChainTxHash: txHash,
@@ -180,10 +177,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
             setDraftSuccess(true);
             toast.info('Draft offer is sent and will be confirmed shortly');
             const output = await saveDraftTransaction({
-              user: {
-                id: developerId,
-                walletAddress: fromAddress
-              },
+              walletAddress: fromAddress,
               transactionInfo: {
                 sourceChainId,
                 sourceChainTxHash: _data,

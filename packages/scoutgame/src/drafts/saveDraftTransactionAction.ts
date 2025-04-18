@@ -16,13 +16,10 @@ export const saveDraftTransactionAction = authActionClient
   .metadata({ actionName: 'save-draft-transaction' })
   .schema(
     yup.object().shape({
-      user: yup.object().shape({
-        id: yup.string().required(),
-        walletAddress: yup
-          .string()
-          .required()
-          .test('Valid address', (v) => isAddress(v))
-      }),
+      walletAddress: yup
+        .string()
+        .required()
+        .test('Valid address', (v) => isAddress(v)),
       transactionInfo: yup.object().shape({
         sourceChainId: yup.number().required(),
         sourceChainTxHash: yup.string().required(),
@@ -46,15 +43,28 @@ export const saveDraftTransactionAction = authActionClient
       throw new Error('User not found');
     }
 
-    const walletAddress = parsedInput.user.walletAddress.toLowerCase();
+    const walletAddress = parsedInput.walletAddress.toLowerCase();
 
     // Throw an error if the wallet address doesn't belong to the current user
-    await prisma.scoutWallet.findUniqueOrThrow({
+    const scoutWallet = await prisma.scoutWallet.findUnique({
       where: {
-        address: walletAddress,
-        scoutId: userId
+        address: walletAddress
+      },
+      select: {
+        scoutId: true
       }
     });
+
+    if (!scoutWallet) {
+      await prisma.scoutWallet.create({
+        data: {
+          address: walletAddress,
+          scoutId: userId
+        }
+      });
+    } else if (scoutWallet.scoutId !== userId) {
+      throw new Error('Wallet address does not belong to the current user');
+    }
 
     const txHash = parsedInput.transactionInfo.sourceChainTxHash.toLowerCase();
 
