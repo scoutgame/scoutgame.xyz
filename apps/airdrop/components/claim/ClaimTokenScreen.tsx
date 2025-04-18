@@ -49,11 +49,16 @@ export function ClaimTokenScreen() {
   const [isGettingAirdropTokenStatus, setIsGettingAirdropTokenStatus] = useState(!!address);
   const { executeAsync: trackAirdropClaimPayout } = useAction(trackAirdropClaimPayoutAction, {
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Error tracking airdrop claim payout');
+      toast.error(error.error.serverError?.message || 'Error tracking airdrop claim payout');
     }
   });
 
-  const { executeAsync } = useAction(getAirdropTokenStatusAction);
+  const { executeAsync } = useAction(getAirdropTokenStatusAction, {
+    onError: (response) => {
+      log.error('Error checking airdrop status', { address, chainId, error: response.error });
+      toast.error(response.error?.serverError?.message || 'Error retrieving airdrop claim status');
+    }
+  });
 
   const { switchChainAsync } = useSwitchChain();
   const { refreshBalance } = useDevTokenBalance({ address });
@@ -159,6 +164,7 @@ export function ClaimTokenScreen() {
 
       setStep('token_claim_success');
     } catch (error) {
+      log.error('Error claiming tokens', { address, chainId, error });
       const message = error instanceof Error ? error.message : 'Error claiming tokens';
       if (message.includes('denied')) {
         toast.error('User rejected the transaction');
