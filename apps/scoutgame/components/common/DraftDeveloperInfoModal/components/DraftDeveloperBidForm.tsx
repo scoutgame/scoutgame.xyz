@@ -141,7 +141,16 @@ function DraftDeveloperBidFormComponent({
     const numericBidAmount = Number(debouncedBidAmount);
 
     if (selectedTokenBalance < minimumBid) {
-      setCustomError('Insufficient balance');
+      setCustomError(
+        `Insufficient balance for minimum bid. Minimum bid is ${formatNumber(minimumBid, selectedPaymentOption.decimals)}`
+      );
+      return;
+    }
+
+    if (selectedTokenBalance < numericBidAmount) {
+      setCustomError(
+        `Insufficient balance. You have ${formatNumber(selectedTokenBalance, selectedPaymentOption.decimals)} ${selectedPaymentOption.currency} available.`
+      );
       return;
     }
 
@@ -289,11 +298,7 @@ function DraftDeveloperBidFormComponent({
               return;
             }
 
-            if (selectedTokenBalance !== undefined) {
-              setBidAmount(numericValue > selectedTokenBalance ? selectedTokenBalance.toString() : rawValue);
-            } else {
-              setBidAmount(rawValue);
-            }
+            setBidAmount(Number(rawValue).toString());
           }}
           error={!!customError || !!draftError}
           helperText={customError || draftError}
