@@ -66,7 +66,7 @@ function DraftDeveloperBidFormComponent({
   const [customError, setCustomError] = useState<string | null>(null);
   const { chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
-  const { sendDraftTransaction, isSavingDraftTransaction, draftSuccess, draftError, sendDevTransaction } = useDraft();
+  const { sendDraftTransaction, isSavingDraftTransaction, draftError, sendDevTransaction } = useDraft();
   const { error: addressError } = useUserWalletAddress(address);
 
   // Default to Base ETH
@@ -248,11 +248,9 @@ function DraftDeveloperBidFormComponent({
         });
       }
 
-      if (draftSuccess) {
-        onCancel();
-      }
+      onCancel();
     } catch (error) {
-      log.error('Error submitting bid:', error);
+      log.error('Error submitting bid:', { error, address, developerId });
       setCustomError('Failed to submit bid. Please try again.');
     }
   };
