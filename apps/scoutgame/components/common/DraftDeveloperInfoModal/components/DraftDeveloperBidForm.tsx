@@ -268,6 +268,12 @@ function DraftDeveloperBidFormComponent({
           value={bidAmount}
           type='number'
           disabled={isLoading}
+          sx={{
+            '& input[type="number"]::-webkit-outer-spin-button, & input[type="number"]::-webkit-inner-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0
+            }
+          }}
           onChange={(e) => {
             if (e.target.value === '') {
               setBidAmount('0');
@@ -302,11 +308,12 @@ function DraftDeveloperBidFormComponent({
                     ? 0.01
                     : 10
             },
-            endAdornment: (
+            startAdornment: (
               <Image
                 src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
                 alt={selectedPaymentOption.currency}
                 width={20}
+                style={{ marginRight: 4 }}
                 height={20}
               />
             )
