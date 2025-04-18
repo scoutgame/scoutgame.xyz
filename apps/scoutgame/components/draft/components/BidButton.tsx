@@ -1,23 +1,15 @@
 'use client';
 
 import { Button, Tooltip } from '@mui/material';
+import { isDraftEnabled } from '@packages/scoutgame/drafts/checkDraftDates';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { DateTime } from 'luxon';
 import { useRouter } from 'next/navigation';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
 
-// Draft ends at midnight (end of day) UTC on April 25th, 2024
-const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
-
-export function isDraftEnded(): boolean {
-  const nowUtc = DateTime.utc();
-  return nowUtc > DRAFT_END_DATE;
-}
-
 export function BidButton({ developerPath }: { developerPath: string }) {
   const { openModal } = useGlobalModal();
-  const draftEnded = isDraftEnded();
+  const draftEnabled = isDraftEnabled();
   const { user } = useUser();
   const router = useRouter();
 
@@ -39,15 +31,15 @@ export function BidButton({ developerPath }: { developerPath: string }) {
         }
       }}
       color='secondary'
-      disabled={draftEnded}
+      disabled={!draftEnabled}
     >
       Bid
     </Button>
   );
 
-  if (draftEnded) {
+  if (!draftEnabled) {
     return (
-      <Tooltip title='Draft has ended' placement='top'>
+      <Tooltip title='Draft has closed or not started yet' placement='top'>
         <div>{button}</div>
       </Tooltip>
     );

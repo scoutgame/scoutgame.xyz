@@ -4,6 +4,7 @@ import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
 import type { ButtonProps, SxProps } from '@mui/material';
 import { RainbowKitProvider, useConnectModal } from '@rainbow-me/rainbowkit';
+import { DateTime } from 'luxon';
 import { Suspense, useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
 import { toast } from 'sonner';
@@ -23,6 +24,21 @@ export function WalletLogin({
   sx?: SxProps;
   isLoading?: boolean;
 }) {
+  const threePMUTC = DateTime.fromObject({
+    year: 2025,
+    month: 4,
+    day: 21,
+    hour: 15,
+    minute: 0,
+    second: 0
+  }).toUTC();
+  const currentTime = DateTime.now().toUTC();
+  const isAirdropLive = currentTime.diff(threePMUTC).toMillis() > 0;
+
+  if (!isAirdropLive) {
+    return null;
+  }
+
   return (
     <RainbowKitProvider>
       <Suspense>
