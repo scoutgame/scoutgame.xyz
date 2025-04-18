@@ -199,7 +199,7 @@ export function Header() {
                       <InfoIcon color='secondary' />
                     </IconButton>
                   </Link>
-                  {(platform === 'webapp' || platform === 'onchain_webapp') && (
+                  {(platform === 'webapp' || platform === 'onchain_webapp') && !isFarcasterFrame && (
                     <Button variant='gradient' href='/login' data-test='sign-in-button'>
                       Sign in
                     </Button>
