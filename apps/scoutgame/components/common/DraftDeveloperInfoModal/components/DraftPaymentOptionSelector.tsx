@@ -185,7 +185,14 @@ function PaymentOptionSelector(
                   </Stack>
                   <Stack direction='row' gap={1} alignItems='center'>
                     <Typography variant='caption'>
-                      Balance: {selectedTokenBalance ? formatNumber(selectedTokenBalance, paymentOption.decimals) : '0'}
+                      Balance:{' '}
+                      {selectedTokenBalance
+                        ? paymentOption.currency === 'DEV'
+                          ? selectedTokenBalance.toFixed(4)
+                          : paymentOption.currency === 'ETH'
+                            ? selectedTokenBalance.toFixed(6)
+                            : selectedTokenBalance.toFixed(2)
+                        : '0'}
                     </Typography>
                     <Image
                       src={TOKEN_LOGO_RECORD[paymentOption.currency]}
