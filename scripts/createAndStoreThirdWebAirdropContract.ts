@@ -15,7 +15,7 @@ const recipients: Recipient[] = [
     amount: parseEther('20').toString()
   },
   {
-    address: '0x6866C5669592D79c1010Ee9d0936F6A3a800133d',
+    address: '0x5781cb3b80822eeac045b153ba96d6e5cf38dafb',
     amount: parseEther('10').toString()
   }
 ];
