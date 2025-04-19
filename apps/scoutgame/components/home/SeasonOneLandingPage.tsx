@@ -230,7 +230,7 @@ function FooterSection() {
           gap={2}
         >
           <CustomButton>
-            <Link href='https://86ijq2-ip-45-125-222-48.tunnelmole.net'>Claim Airdrop</Link>
+            <Link href='https://prd-scoutgame-airdrop.eba-a24ugj5p.us-east-1.elasticbeanstalk.com'>Claim Airdrop</Link>
           </CustomButton>
           <CustomButton variant='blue'>
             <Link href='/draft'>Play Scout Game</Link>
