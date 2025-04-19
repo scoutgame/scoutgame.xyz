@@ -8,7 +8,6 @@ import {
   OPTIMISM_USDC_ADDRESS,
   BASE_USDC_ADDRESS
 } from '@packages/blockchain/constants';
-import { formatNumber } from '@packages/utils/strings';
 import Image from 'next/image';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
@@ -107,7 +106,6 @@ function PaymentOptionSelector(
     address,
     disabled,
     prices,
-    minimumBid,
     tokensWithBalances,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
@@ -125,7 +123,6 @@ function PaymentOptionSelector(
       eth: number;
       dev: number;
     };
-    minimumBid?: number;
     disabled?: boolean;
   },
   ref: Ref<unknown>
