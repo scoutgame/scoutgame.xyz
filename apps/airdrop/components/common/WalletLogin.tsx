@@ -13,6 +13,8 @@ import { useAccount, useSignMessage } from 'wagmi';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
+const airdropLiveDate = DateTime.fromISO('2025-04-16T15:00:00.000Z', { zone: 'utc' });
+
 export function WalletLogin({
   text = 'Sign in',
   variant = 'gradient',
@@ -24,16 +26,8 @@ export function WalletLogin({
   sx?: SxProps;
   isLoading?: boolean;
 }) {
-  const threePMUTC = DateTime.fromObject({
-    year: 2025,
-    month: 4,
-    day: 21,
-    hour: 15,
-    minute: 0,
-    second: 0
-  }).toUTC();
   const currentTime = DateTime.now().toUTC();
-  const isAirdropLive = currentTime.diff(threePMUTC).toMillis() > 0;
+  const isAirdropLive = currentTime.diff(airdropLiveDate).toMillis() > 0;
 
   if (!isAirdropLive) {
     return null;
