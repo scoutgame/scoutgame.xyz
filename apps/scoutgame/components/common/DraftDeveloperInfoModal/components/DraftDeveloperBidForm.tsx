@@ -141,7 +141,7 @@ function DraftDeveloperBidFormComponent({
         return;
       }
     } else if (paymentOptionBidAmount && selectedTokenBalance < paymentOptionBidAmount) {
-      setCustomError(`Insufficient balance in your wallet for this bid.`);
+      setCustomError(`Insufficient balance of ${selectedPaymentOption.currency} in your wallet for this bid.`);
       return;
     }
 
