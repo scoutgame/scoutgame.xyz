@@ -1,18 +1,18 @@
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjMxODA2MSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDAzN0U5YzkyNWRhOTUzRkIzYmY0QWVGOURDZkUwNTZkM2ZEODQ1OTIifQ",
-    "payload": "eyJkb21haW4iOiJwcmQtc2NvdXRnYW1lLWRyYWZ0LmViYS1kZm11cnBteC51cy1lYXN0LTEuZWxhc3RpY2JlYW5zdGFsay5jb20ifQ",
-    "signature": "MHhlMThkYmQwODI2ZDMwYjdhNDhiNTMzMWJmNGU0MTY3ZTA2ZjlhZTBiODVmMTcxZjFjMjlmYTY1ZDk0NjA0NmU1MTM0MzEwZTZmODQ0NThjM2ZjYWRhOTcwMTRmMmM3NjAzMDE2YTg4YzA1NTk3MzczNDU3MjBhZGY1NGE3ZDJmMTFi"
+    "payload": "eyJkb21haW4iOiJkcmFmdC5zY291dGdhbWUueHl6In0",
+    "signature": "MHgyYjA1NTJlYjdkZjU3MmMzOTA4NDM3NjMxMmZhOWMzMzk3YTMyZjNjYzZlODJjN2NmZDZjODE2ZDk4ZjIwMWM3MWUzYjY5ZjNjY2RiMDhiODA1OTdlODkzN2RiNWJjYWNkYjhlNjExMmUyN2UwMmNlYjk5NDczMjE1YWFjMzI1ZjFi"
   },
   "frame": {
     "version": "1",
     "name": "Example Frame",
-    "iconUrl": "https://prd-scoutgame-draft.eba-dfmurpmx.us-east-1.elasticbeanstalk.com/icon.png",
-    "homeUrl": "https://prd-scoutgame-draft.eba-dfmurpmx.us-east-1.elasticbeanstalk.com/",
-    "imageUrl": "https://prd-scoutgame-draft.eba-dfmurpmx.us-east-1.elasticbeanstalk.com/image.png",
+    "iconUrl": "https://draft.scoutgame.xyz/icon.png",
+    "homeUrl": "https://draft.scoutgame.xyz",
+    "imageUrl": "https://draft.scoutgame.xyz/image.png",
     "buttonTitle": "Check this out",
-    "splashImageUrl": "https://prd-scoutgame-draft.eba-dfmurpmx.us-east-1.elasticbeanstalk.com/splash.png",
+    "splashImageUrl": "https://draft.scoutgame.xyz/splash.png",
     "splashBackgroundColor": "#eeccff",
-    "webhookUrl": "https://prd-scoutgame-draft.eba-dfmurpmx.us-east-1.elasticbeanstalk.com/api/webhook"
+    "webhookUrl": "https://draft.scoutgame.xyz/api/webhook"
   }
 }
