@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getSeasonConfig } from '@packages/dates/utils';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
 import { registerBuilderStarterPackNFT } from '../builderNfts/builderRegistration/registerBuilderStarterPackNFT';
@@ -27,17 +27,22 @@ export async function approveBuilder({
     }
   });
 
-  // Register an NFT for the builder
-  const builderNft = await registerBuilderNFT({
-    builderId,
-    season
-  });
+  const seasonConfig = getSeasonConfig(season);
+  if (seasonConfig.draft) {
+    log.info('Do not create NFT for developer during draft season', { userId: builderId, season });
+  } else {
+    // Register an NFT for the builder
+    const builderNft = await registerBuilderNFT({
+      builderId,
+      season
+    });
 
-  // register starter pack NFT as well
-  await registerBuilderStarterPackNFT({
-    builderId,
-    season
-  });
+    // register starter pack NFT as well
+    await registerBuilderStarterPackNFT({
+      builderId,
+      season
+    });
+  }
 
   // Update builder status so they appear in the system
   await prisma.scout.update({
