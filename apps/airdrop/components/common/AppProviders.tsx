@@ -12,6 +12,8 @@ import { ViewTransitions } from 'next-view-transitions';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
+import { ClientGlobals } from './ClientGlobals';
+
 // This is required to provider the MUI theme otherwise the defaultProps are not applied
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
@@ -25,6 +27,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
             <CssBaseline enableColorScheme />
             <SWRProvider>
               <Toaster theme='dark' richColors />
+              <ClientGlobals />
               <SnackbarProvider>{children}</SnackbarProvider>
             </SWRProvider>
           </ThemeProvider>
