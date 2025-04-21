@@ -85,7 +85,7 @@ export async function checkSablierAirdropEligibility({
   const isValid = tree.verify(recipientIndex, proof);
 
   if (!isValid) {
-    throw new Error('Failed to verify Merkle proof');
+    throw new Error('Failed to verify Sablier Merkle proof');
   }
 
   return {
