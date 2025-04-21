@@ -20,6 +20,7 @@ import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
 
 import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
 import { useGetQuests } from 'hooks/api/quests';
+import { isAirdropLive } from 'lib/airdrop/checkAirdropDates';
 
 export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const platform = getPlatform();
@@ -44,6 +45,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   });
 
   const draftSeason = isDraftSeason();
+  const airdropLive = isAirdropLive();
 
   if (draftSeason) {
     return (
@@ -55,13 +57,15 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           topNav={topNav}
           largerNavbar={platform === 'telegram' || isFarcasterFrame}
         >
-          <BottomNavigationAction
-            label='Airdrop'
-            href='https://airdroptest.scoutgame.xyz'
-            value='airdrop'
-            icon={<ClaimIcon />}
-            LinkComponent={Link}
-          />
+          {airdropLive ? (
+            <BottomNavigationAction
+              label='Airdrop'
+              href='https://airdroptest.scoutgame.xyz'
+              value='airdrop'
+              icon={<ClaimIcon />}
+              LinkComponent={Link}
+            />
+          ) : null}
           <BottomNavigationAction
             label='Draft'
             href='/draft'

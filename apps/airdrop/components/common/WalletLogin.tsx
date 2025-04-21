@@ -13,7 +13,7 @@ import { useAccount, useSignMessage } from 'wagmi';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-const airdropLiveDate = DateTime.fromISO('2025-04-16T15:00:00.000Z', { zone: 'utc' });
+const airdropLiveDate = DateTime.fromISO('2025-04-21T15:00:00.000Z', { zone: 'utc' });
 
 export function WalletLogin({
   text = 'Sign in',

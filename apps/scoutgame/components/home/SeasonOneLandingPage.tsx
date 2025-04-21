@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 import { InfoPageFooter } from 'components/info/components/InfoPageFooter';
 import { InfoPageContent } from 'components/info/InfoPage';
+import { isAirdropLive } from 'lib/airdrop/checkAirdropDates';
 
 import { CountdownTimer } from './CountdownTimer';
 
@@ -28,12 +29,8 @@ function CustomButton({ children, ...props }: ButtonProps) {
   );
 }
 
-const AIRDROP_START_DATE = DateTime.fromISO('2025-04-16T15:00:00.000Z', { zone: 'utc' });
-
-const currentTime = DateTime.now().toUTC();
-export const isAirdropLive = currentTime.diff(AIRDROP_START_DATE).toMillis() > 0;
-
 function HeroSection() {
+  const airdropLive = isAirdropLive();
   return (
     <Stack alignItems='center'>
       <Stack
@@ -56,7 +53,7 @@ function HeroSection() {
           md: 'flex-end'
         }}
       >
-        {isAirdropLive ? (
+        {airdropLive ? (
           <>
             <Stack gap={2}>
               <Typography variant='h4' fontWeight={500} textAlign='center'>
@@ -235,6 +232,7 @@ function FooterSection() {
 }
 
 export function SeasonOneLandingPage() {
+  const airdropLive = isAirdropLive();
   return (
     <>
       <Container
@@ -255,7 +253,7 @@ export function SeasonOneLandingPage() {
         <HeroSection />
         <HowToPlaySection />
       </Container>
-      {isAirdropLive ? <FooterSection /> : null}
+      {airdropLive ? <FooterSection /> : null}
       <Stack
         zIndex={{
           xs: 0,
