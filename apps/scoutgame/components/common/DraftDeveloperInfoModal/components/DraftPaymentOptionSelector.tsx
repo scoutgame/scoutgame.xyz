@@ -142,7 +142,7 @@ function PaymentOptionSelector(
         )}
         {selectedPaymentOption.currency === 'DEV' && prices?.dev && (
           <Typography align='right' fontWeight={500}>
-            1 DEV = ${prices.dev.toFixed(6)}
+            1 DEV = ${prices.dev.toFixed(4)}
           </Typography>
         )}
       </Stack>

@@ -43,13 +43,13 @@ export function DraftDeveloperInfoModal({
     );
   }
 
-  if (!developer) {
+  if (data?.path && !developer) {
     return null;
   }
 
-  return (
+  return developer ? (
     <DeveloperModal open={open} onClose={onClose}>
       <DraftDeveloperInfoCard onClose={onClose} developer={developer} />
     </DeveloperModal>
-  );
+  ) : null;
 }

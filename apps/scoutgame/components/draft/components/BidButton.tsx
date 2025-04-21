@@ -9,8 +9,8 @@ import { useGlobalModal } from 'components/common/ModalProvider';
 
 export function BidButton({ developerPath }: { developerPath: string }) {
   const { openModal } = useGlobalModal();
-  const draftEnabled = isDraftEnabled();
   const { user } = useUser();
+  const draftEnabled = isDraftEnabled(user?.id);
   const router = useRouter();
 
   const button = (

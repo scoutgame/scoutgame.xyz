@@ -147,7 +147,7 @@ export function Header() {
                       data-test='user-menu-pill'
                     >
                       <Typography fontSize='16px' sx={{ pl: 2 }} color='text.primary' data-test='user-points-balance'>
-                        {balance === '' ? 0 : Number(balance)}
+                        {balance}
                       </Typography>
                       <Image
                         src='/images/dev-token-logo.png'

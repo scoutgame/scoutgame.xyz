@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import type { Address } from 'viem';
 import { erc20Abi } from 'viem';
@@ -15,12 +15,14 @@ export function getCacheKey(address: Address, connectedChainId?: number) {
 export function useDevTokenBalance({ address }: { address?: Address }) {
   const publicClient = usePublicClient();
   const { switchChain } = useSwitchChain();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetcher = useCallback(
     async (args: [string, Address, undefined | number]) => {
+      setIsLoading(true);
       const [_, _address, connectedChainId] = args;
       if (!_address || !publicClient) {
-        return '';
+        return 0;
       }
 
       if (connectedChainId !== base.id) {
@@ -37,9 +39,11 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
         });
 
         // Convert to ETH format (assuming 18 decimals)
-        return (Number(tokenBalance) / 1e18).toFixed(2);
+        return Number(tokenBalance) / 10 ** 18;
       } catch (error) {
         log.error('Error fetching token balance', { _address, connectedChainId, error });
+      } finally {
+        setIsLoading(false);
       }
     },
     [publicClient, switchChain]
@@ -47,7 +51,7 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
 
   const cacheKey = address ? getCacheKey(address, publicClient?.chain?.id) : null;
 
-  const { data: balance = '' } = useSWR(cacheKey, fetcher, {
+  const { data: balance = 0 } = useSWR(cacheKey, fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: true
   });
@@ -58,5 +62,5 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
     }
   }
 
-  return { balance, refreshBalance };
+  return { balance, refreshBalance, isLoading };
 }
