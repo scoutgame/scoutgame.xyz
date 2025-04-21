@@ -1,7 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getSeasonConfig } from '@packages/dates/utils';
+import { isTestEnv } from '@packages/utils/env';
 
 import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
 import { registerBuilderStarterPackNFT } from '../builderNfts/builderRegistration/registerBuilderStarterPackNFT';
@@ -27,17 +28,26 @@ export async function approveBuilder({
     }
   });
 
-  // Register an NFT for the builder
-  const builderNft = await registerBuilderNFT({
-    builderId,
-    season
-  });
+  const seasonConfig = getSeasonConfig(season);
 
-  // register starter pack NFT as well
-  await registerBuilderStarterPackNFT({
-    builderId,
-    season
-  });
+  let builderNftImage: string | undefined;
+  if (seasonConfig.draft && !isTestEnv) {
+    log.info('Do not create NFT for developer during draft season', { userId: builderId, season });
+  } else {
+    // Register an NFT for the builder
+    const builderNft = await registerBuilderNFT({
+      builderId,
+      season
+    });
+
+    builderNftImage = builderNft?.imageUrl;
+
+    // register starter pack NFT as well
+    await registerBuilderStarterPackNFT({
+      builderId,
+      season
+    });
+  }
 
   // Update builder status so they appear in the system
   await prisma.scout.update({
@@ -52,23 +62,25 @@ export async function approveBuilder({
   log.info('Builder approved', { userId: builderId, season });
 
   try {
-    await sendNotifications({
-      userId: scout.id,
-      notificationType: 'builder_approved',
-      email: {
-        templateVariables: {
-          builder_name: scout.displayName,
-          builder_card_image: builderNft.imageUrl,
-          builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
+    if (builderNftImage) {
+      await sendNotifications({
+        userId: scout.id,
+        notificationType: 'builder_approved',
+        email: {
+          templateVariables: {
+            builder_name: scout.displayName,
+            builder_card_image: builderNftImage,
+            builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
+          }
+        },
+        farcaster: {
+          templateVariables: undefined
+        },
+        app: {
+          templateVariables: undefined
         }
-      },
-      farcaster: {
-        templateVariables: undefined
-      },
-      app: {
-        templateVariables: undefined
-      }
-    });
+      });
+    }
   } catch (error) {
     log.error('Error sending builder approval email', { error, userId: scout.id });
   }
