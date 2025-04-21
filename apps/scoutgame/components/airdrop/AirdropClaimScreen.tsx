@@ -2,7 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
-import { AIRDROP_SAFE_WALLET } from '@packages/blockchain/constants';
+import { AIRDROP_SAFE_WALLET, DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
@@ -11,8 +11,7 @@ import { erc20Abi } from 'viem';
 import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 import { base } from 'wagmi/chains';
 
-import { useDevTokenBalance } from '../../hooks/useDevTokenBalance';
-import { trackAirdropClaimPayoutAction } from '../../lib/trackAirdropClaimPayoutAction';
+import { useDevTokenBalance } from 'hooks/useDevTokenBalance';
 
 import { AlreadyClaimedStep } from './components/AlreadyClaimedStep';
 import { DonationConfirmationStep } from './components/DonationConfirmationStep';
@@ -23,7 +22,7 @@ import { ShowClaimableTokensStep } from './components/ShowClaimableTokensStep';
 import { StartClaimStep } from './components/StartClaimStep';
 import { TokenClaimSuccessStep } from './components/TokenClaimSuccessStep';
 
-export type ClaimTokenStep =
+export type AirdropClaimStep =
   | 'start_claim'
   | 'show_claimable_tokens'
   | 'donation_selection'
@@ -32,8 +31,8 @@ export type ClaimTokenStep =
   | 'not_qualified'
   | 'already_claimed';
 
-export function ClaimTokenScreen() {
-  const [step, setStep] = useState<ClaimTokenStep>('start_claim');
+export function AirdropClaimScreen() {
+  const [step, setStep] = useState<AirdropClaimStep>('start_claim');
   const { data: walletClient } = useWalletClient();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [airdropInfo, setAirdropInfo] = useState<{
@@ -144,7 +143,7 @@ export function ClaimTokenScreen() {
 
       if (donationAmount) {
         donationTxHash = await walletClient.writeContract({
-          address: scoutTokenErc20ContractAddress(),
+          address: DEV_TOKEN_ADDRESS,
           abi: erc20Abi,
           functionName: 'transfer',
           args: [AIRDROP_SAFE_WALLET, donationAmount]

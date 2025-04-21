@@ -2,7 +2,7 @@ import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined
 import { Box, Container, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
-import { ClaimTokenScreen } from '@/components/claim/ClaimTokenScreen';
+import { ClaimTokenScreen } from '@/components/airdrop/ClaimTokenScreen';
 
 export default function AirdropPage() {
   return (

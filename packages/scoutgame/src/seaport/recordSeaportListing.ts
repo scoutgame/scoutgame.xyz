@@ -1,15 +1,15 @@
 import { ItemType } from '@opensea/seaport-js/lib/constants';
+import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { treasuryAddress } from '../builderNfts/constants';
-import { scoutTokenErc20ContractAddress } from '../protocol/constants';
 
 import { getSeaport } from './seaport';
 
 const isOnchain = isOnchainPlatform();
 
 export const nftListingErc20Address = isOnchain
-  ? scoutTokenErc20ContractAddress()
+  ? DEV_TOKEN_ADDRESS
   : // USDC on optimism
     '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 

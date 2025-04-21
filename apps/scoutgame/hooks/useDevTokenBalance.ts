@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS } from '@packages/blockchain/constants';
+import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { useCallback } from 'react';
 import useSWR, { mutate } from 'swr';
 import type { Address } from 'viem';
@@ -30,7 +30,7 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
       try {
         // Get token balance
         const tokenBalance = await readContract(publicClient, {
-          address: SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS,
+          address: DEV_TOKEN_ADDRESS,
           abi: erc20Abi,
           functionName: 'balanceOf',
           args: [_address]

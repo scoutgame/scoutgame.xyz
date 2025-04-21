@@ -60,7 +60,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           {airdropLive ? (
             <BottomNavigationAction
               label='Airdrop'
-              href='https://airdrop.scoutgame.xyz'
+              href='/airdrop'
               value='airdrop'
               icon={<ClaimIcon />}
               LinkComponent={Link}
