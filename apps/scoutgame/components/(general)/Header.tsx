@@ -84,7 +84,7 @@ export function Header() {
           variant='dense'
         >
           <>
-            <Link href={draftSeason ? '/draft' : user ? '/scout' : '/'}>
+            <Link href={draftSeason ? '/' : user ? '/scout' : '/'}>
               <Image
                 src='/images/scout-game-logo.png'
                 width={100}
