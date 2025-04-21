@@ -47,11 +47,18 @@ export const purchaseWithPointsAction = authActionClient
       throw new Error('Scout not found');
     }
 
+    const starterPackContract = getBuilderNftStarterPackReadonlyClient();
+    const regularContract = getBuilderNftContractReadonlyClient();
+
+    if (!starterPackContract || !regularContract) {
+      throw new Error('Missing nft contract client');
+    }
+
     const currentPrice = await (parsedInput.nftType === 'starter_pack'
-      ? getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
+      ? starterPackContract.getTokenPurchasePrice({
           args: { amount: BigInt(parsedInput.amount) }
         })
-      : getBuilderNftContractReadonlyClient().getTokenPurchasePrice({
+      : regularContract.getTokenPurchasePrice({
           args: { tokenId: BigInt(builderNft.tokenId), amount: BigInt(parsedInput.amount) }
         }));
 

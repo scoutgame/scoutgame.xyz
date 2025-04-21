@@ -26,14 +26,21 @@ export async function refreshScoutNftBalance({
     }
   });
 
+  const starterPackContract = getBuilderNftStarterPackReadonlyClient();
+  const regularContract = getBuilderNftContractReadonlyClient();
+
+  if (!starterPackContract || !regularContract) {
+    throw new Error('Missing contract client');
+  }
+
   const balance = await (nftType === 'starter_pack'
-    ? getBuilderNftStarterPackReadonlyClient().balanceOf({
+    ? starterPackContract.balanceOf({
         args: {
           account: wallet,
           id: BigInt(tokenId)
         }
       })
-    : getBuilderNftContractReadonlyClient().balanceOf({
+    : regularContract.balanceOf({
         args: {
           account: wallet,
           tokenId: BigInt(tokenId)

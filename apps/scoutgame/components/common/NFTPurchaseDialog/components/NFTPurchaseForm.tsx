@@ -193,17 +193,17 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
       const _price =
         builder.nftType === 'starter_pack'
-          ? await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
+          ? await getBuilderNftStarterPackReadonlyClient()?.getTokenPurchasePrice({
               args: { amount: BigInt(amount) }
             })
           : isOnchain
-            ? await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
+            ? await getScoutProtocolBuilderNFTReadonlyContract()?.getTokenPurchasePrice({
                 args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
               })
-            : await builderContractReadonlyApiClient.getTokenPurchasePrice({
+            : await builderContractReadonlyApiClient?.getTokenPurchasePrice({
                 args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
               });
-      setPurchaseCost(_price);
+      setPurchaseCost(_price || BigInt(0));
     },
     [setPurchaseCost]
   );
@@ -214,16 +214,17 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     try {
       setIsFetchingPrice(true);
       _builderTokenId = await (isOnchain
-        ? getScoutProtocolBuilderNFTReadonlyContract().getTokenIdForBuilder({ args: { builderId } })
+        ? getScoutProtocolBuilderNFTReadonlyContract()?.getTokenIdForBuilder({ args: { builderId } })
         : builder.nftType === 'starter_pack'
-          ? getBuilderNftStarterPackReadonlyClient().getTokenIdForBuilder({ args: { builderId } })
-          : builderContractReadonlyApiClient.getTokenIdForBuilder({ args: { builderId } }));
+          ? getBuilderNftStarterPackReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } })
+          : builderContractReadonlyApiClient?.getTokenIdForBuilder({ args: { builderId } }));
 
-      setBuilderTokenId(_builderTokenId);
-
-      await refreshAsk({ _builderTokenId, amount: tokensToBuy });
-
-      setIsFetchingPrice(false);
+      // builderTokenId is undefined if there is no nft contract for the season
+      if (_builderTokenId) {
+        setBuilderTokenId(_builderTokenId);
+        await refreshAsk({ _builderTokenId, amount: tokensToBuy });
+        setIsFetchingPrice(false);
+      }
     } catch (error) {
       scoutgameMintsLogger.warn('Error fetching token data', {
         error,
@@ -332,7 +333,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           value: _value
         },
         txMetadata: {
-          contractAddress: getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }),
+          contractAddress: getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }) || '',
           fromAddress: address as Address,
           sourceChainId: selectedPaymentOption.chainId,
           builderTokenId: Number(builderTokenId),

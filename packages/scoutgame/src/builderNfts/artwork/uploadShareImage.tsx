@@ -40,6 +40,10 @@ export async function uploadShareImage({
       : convertCostToPoints(builderNft?.currentPrice || BigInt(0)).toFixed(2)
   });
 
+  if (!builderNftArtworkContractName) {
+    throw new Error('No builder nft artwork contract name found');
+  }
+
   const imagePath = getShareImagePath({
     season,
     tokenId: Number(tokenId),

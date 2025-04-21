@@ -157,14 +157,25 @@ export async function findAndIndexMissingPurchases({
           continue;
         }
 
+        const regularNftContract = getBuilderNftContractReadonlyClient();
+        const starterPackContract = getBuilderNftStarterPackReadonlyClient();
+
+        if (!regularNftContract || !starterPackContract) {
+          scoutgameMintsLogger.warn('Missing contract client', {
+            nftType,
+            season
+          });
+          // eslint-disable-next-line no-continue
+          continue;
+        }
         const price = await (nftType === BuilderNftType.starter_pack
-          ? getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
+          ? starterPackContract.getTokenPurchasePrice({
               args: {
                 amount: BigInt(missingTx.args.value)
               },
               blockNumber: missingTx.blockNumber
             })
-          : getBuilderNftContractReadonlyClient().getTokenPurchasePrice({
+          : regularNftContract.getTokenPurchasePrice({
               args: { tokenId: BigInt(key), amount: BigInt(missingTx.args.value) },
               blockNumber: missingTx.blockNumber
             }));

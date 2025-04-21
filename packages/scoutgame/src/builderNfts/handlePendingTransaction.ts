@@ -116,8 +116,8 @@ export async function handlePendingTransaction({
         : convertCostToPoints(pendingTx.targetAmountReceived);
 
       if (
-        pendingTxContractAddress === scoutProtocolBuilderNftContractAddress.toLowerCase() ||
-        pendingTxContractAddress === scoutProtocolBuilderStarterNftContractAddress.toLowerCase()
+        pendingTxContractAddress === scoutProtocolBuilderNftContractAddress?.toLowerCase() ||
+        pendingTxContractAddress === scoutProtocolBuilderStarterNftContractAddress?.toLowerCase()
       ) {
         await recordOnchainNftMint({
           builderNftId: builderNft.id,

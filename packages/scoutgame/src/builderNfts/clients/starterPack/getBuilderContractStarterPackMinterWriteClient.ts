@@ -10,6 +10,9 @@ import { ScoutGameStarterPackNFTImplementationClient } from './wrappers/ScoutGam
 export function getBuilderNftContractStarterPackMinterClient() {
   const season = getCurrentSeason();
   const contractAddress = getBuilderNftStarterPackContractAddress(season.start);
+  if (!contractAddress) {
+    throw new Error(`starter pack contract address missing for season ${season.start}`);
+  }
 
   return new ScoutGameStarterPackNFTImplementationClient({
     chain: scoutProtocolChain,

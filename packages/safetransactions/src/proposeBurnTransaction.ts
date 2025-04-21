@@ -111,8 +111,8 @@ export async function proposePreSeason02OrStarterPackBurnTransactions({
   burnTransactions: ProposedBurnParams[];
   safeAddress: Address;
 }) {
-  const starterPackNftContractAddress = getBuilderNftStarterPackContractAddress('2025-W02');
-  const preseason02NftContractAddress = getBuilderNftContractAddress('2025-W02');
+  const starterPackNftContractAddress = getBuilderNftStarterPackContractAddress('2025-W02')!;
+  const preseason02NftContractAddress = getBuilderNftContractAddress('2025-W02')!;
 
   const protocolKitProposer = await Safe.init({
     provider: getAlchemyBaseUrl(chainId),
@@ -262,7 +262,7 @@ export async function proposePreSeason02OrStarterPackBurnTransactions({
     });
 
     const txData = {
-      to: getAddress(contractAddress),
+      to: getAddress(contractAddress!),
       data: encodedBurnData,
       operation: OperationType.Call,
       value: '0'

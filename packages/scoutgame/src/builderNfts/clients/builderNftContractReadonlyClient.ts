@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { getPreSeasonTwoBuilderNftContractMinterClient } from './preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
@@ -14,7 +15,8 @@ export function getBuilderNftContractReadonlyClient() {
     case '2025-W02':
       return getPreSeasonTwoBuilderNftContractReadonlyClient();
     default:
-      throw new Error(`Unsupported season: ${season}`);
+      log.debug(`Unsupported season: ${season}`);
+      return null;
   }
 }
 
@@ -27,6 +29,7 @@ export function getBuilderNftContractMinterClient() {
     case '2025-W02':
       return getPreSeasonTwoBuilderNftContractMinterClient();
     default:
-      throw new Error(`Unsupported season: ${season}`);
+      log.debug(`Unsupported season: ${season}`);
+      return null;
   }
 }

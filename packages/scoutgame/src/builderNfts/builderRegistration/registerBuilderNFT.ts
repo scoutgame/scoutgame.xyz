@@ -28,6 +28,9 @@ export async function registerBuilderNFT({
 
   if (!contractAddress) {
     contractAddress = getBuilderNftContractAddress(season);
+    if (!contractAddress) {
+      throw new Error('Cannot register builder nft. Missing contract address');
+    }
   }
 
   if (!stringUtils.isUUID(builderId)) {
@@ -48,7 +51,9 @@ export async function registerBuilderNFT({
   if (existingBuilderNft) {
     log.info(`Builder already existing with token id ${existingBuilderNft.tokenId}`);
     const updatedBuilderNft = await refreshBuilderNftPrice({ builderId, season });
-    return updatedBuilderNft;
+    if (!updatedBuilderNft) {
+      return existingBuilderNft;
+    }
   }
 
   const builder = await prisma.scout.findFirstOrThrow({
