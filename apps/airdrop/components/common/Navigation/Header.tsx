@@ -14,7 +14,7 @@ import { useAccount, useDisconnect } from 'wagmi';
 
 import { useDevTokenBalance } from '../../../hooks/useDevTokenBalance';
 import { SiteNavigation } from '../Navigation/SiteNavigation';
-import { WalletLogin } from '../WalletLogin';
+import { WalletLogin } from '../SimpleWalletLogin';
 
 // Token address for the DEV token
 
