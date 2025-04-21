@@ -6,15 +6,16 @@ import type { Address } from 'viem';
 import { erc20Abi } from 'viem';
 import { readContract } from 'viem/actions';
 import { base } from 'viem/chains';
-import { usePublicClient, useSwitchChain } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 
 export function getCacheKey(address: Address, connectedChainId?: number) {
   return ['tokenBalance', address, connectedChainId];
 }
 
 export function useDevTokenBalance({ address }: { address?: Address }) {
-  const publicClient = usePublicClient();
-  const { switchChain } = useSwitchChain();
+  const publicClient = usePublicClient({
+    chainId: base.id
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const fetcher = useCallback(
@@ -24,11 +25,6 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
       if (!_address || !publicClient) {
         return 0;
       }
-
-      if (connectedChainId !== base.id) {
-        switchChain({ chainId: base.id });
-      }
-
       try {
         // Get token balance
         const tokenBalance = await readContract(publicClient, {
@@ -46,7 +42,7 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
         setIsLoading(false);
       }
     },
-    [publicClient, switchChain]
+    [publicClient]
   );
 
   const cacheKey = address ? getCacheKey(address, publicClient?.chain?.id) : null;

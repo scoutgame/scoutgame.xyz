@@ -296,9 +296,11 @@ function DraftDeveloperBidFormComponent({
           }}
         />
       </Stack>
-      {decentSdkError && (
+      {decentSdkError?.error && (
         <Typography variant='caption' color='error' align='center'>
-          There was an error communicating with Decent API
+          {decentSdkError.error.message?.includes('route')
+            ? `Could not find a route between DEV and ${selectedPaymentOption.currency}. Please try a different payment option.`
+            : 'There was an error communicating with Decent API'}
         </Typography>
       )}
       {addressError && (
