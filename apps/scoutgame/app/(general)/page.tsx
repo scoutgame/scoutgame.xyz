@@ -1,5 +1,7 @@
+import { isDraftSeason } from '@packages/dates/utils';
 import type { Metadata } from 'next';
 
+import { DraftLandingPage } from '../../components/home/DraftLandingPage';
 import { LandingPage } from '../../components/home/LandingPage';
 
 const frame = {
@@ -31,5 +33,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  return <LandingPage />;
+  const draftSeason = isDraftSeason();
+  return draftSeason ? <DraftLandingPage /> : <LandingPage />;
 }

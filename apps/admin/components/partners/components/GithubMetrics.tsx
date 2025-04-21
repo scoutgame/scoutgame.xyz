@@ -4,24 +4,16 @@ import { prisma } from '@charmverse/core/prisma-client';
 import {
   Box,
   Card,
-  Chip,
   Stack,
-  Typography,
   Table,
+  TableBody,
+  TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
-  TableContainer
+  Typography
 } from '@mui/material';
-import {
-  getWeekFromDate,
-  getDateFromISOWeek,
-  getAllISOWeeksFromSeasonStart,
-  getCurrentWeek,
-  getCurrentSeasonStart
-} from '@packages/dates/utils';
+import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 
 import { WeekValue } from './AirdropMetrics';

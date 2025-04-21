@@ -230,7 +230,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
           props: { variant: 'blue' },
           style: ({ theme }) => ({
             background: 'transparent',
-            borderRadius: theme.spacing(2),
+            borderRadius: theme.spacing(1),
             paddingTop: theme.spacing(1),
             paddingBottom: theme.spacing(1),
             paddingRight: theme.spacing(1),

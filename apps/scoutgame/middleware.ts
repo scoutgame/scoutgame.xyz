@@ -1,3 +1,4 @@
+import { isDraftSeason } from '@packages/dates/utils';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { getPlatform } from '@packages/utils/platform';
 import type { NextRequest } from 'next/server';
@@ -5,6 +6,7 @@ import { NextResponse } from 'next/server';
 
 // These are the links that are only accessible to logged in users
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
+const draftLinks = ['/draft', '/'];
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();
@@ -12,6 +14,19 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const response = NextResponse.next(); // Create a response object to set cookies
   const platform = getPlatform();
+  const draftSeason = isDraftSeason();
+
+  if (draftSeason) {
+    if (!draftLinks.some((link) => path.startsWith(link))) {
+      return NextResponse.redirect(new URL(isLoggedIn ? '/draft' : '/', request.url));
+    }
+
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL('/draft', request.url));
+    }
+
+    return response;
+  }
 
   if (path === '/taiko') {
     return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));

@@ -1,4 +1,5 @@
 import { Button, Container, Stack, Typography } from '@mui/material';
+import { isDraftSeason } from '@packages/dates/utils';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -148,7 +149,7 @@ function FooterSection() {
           Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
         </Typography>
         <Button variant='contained' sx={{ width: '50%' }}>
-          <Link href='/login'>Get starteds</Link>
+          <Link href='/login'>Get started</Link>
         </Button>
       </Stack>
     </Stack>

@@ -38,6 +38,11 @@ export function getCurrentSeasonStart(
   return getCurrentSeason(_currentWeek, seasonList).start;
 }
 
+export function isDraftSeason(season: Season = getCurrentSeason().start): boolean {
+  const currentSeason = getSeasonConfig(season);
+  return currentSeason.draft ?? false;
+}
+
 export function validateSeasonList(seasonList: Season[]): void {
   if (!seasonList.every((s) => s)) {
     throw new Error('Invalid season list');
