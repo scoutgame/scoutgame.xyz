@@ -2,11 +2,11 @@
 
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
-import { Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import type { DeveloperMetadata, DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
-import { getSXProps, Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
+import { getSXProps } from '@packages/scoutgame-ui/components/common/Hidden';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -180,7 +180,7 @@ export function AllDevelopersTable({
                   height='100%'
                   minWidth={80}
                 >
-                  <BuilderCardRankGraph last14DaysRank={builder.last14DaysRank} />
+                  <BuilderCardRankGraph ranks={builder.last14DaysRank} />
                   <TableCellText
                     color='secondary'
                     minWidth={{

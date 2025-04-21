@@ -496,7 +496,7 @@ export function DeveloperInfoModal({
                 14D Rank
               </Typography>
               <Stack height='calc(100% - 16px)'>
-                <BuilderCardRankGraph last14DaysRank={developer.last14DaysRank} />
+                <BuilderCardRankGraph ranks={developer.last14DaysRank} />
               </Stack>
             </Stack>
             <Stack
