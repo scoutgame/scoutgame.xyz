@@ -1,6 +1,5 @@
-import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import { NULL_EVM_ADDRESS, DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { useTestnets } from '@packages/scoutgame/builderNfts/constants';
-import { scoutTokenErc20ContractAddress } from '@packages/scoutgame/protocol/constants';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import {
@@ -94,7 +93,7 @@ export function getCurrencyContract({ currency, chainId }: SelectedPaymentOption
   }
 
   if (currency === 'DEV') {
-    return scoutTokenErc20ContractAddress();
+    return DEV_TOKEN_ADDRESS;
   }
 
   return (getChainOptions({ useTestnets }).find((chain) => chain.id === chainId)?.usdcAddress || '') as Address;

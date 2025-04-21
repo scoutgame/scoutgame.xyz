@@ -1,5 +1,5 @@
 import { isDraftSeason } from '@packages/dates/utils';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 /**
  * Get next link after login api returns a success
@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
  */
 export function useLoginSuccessHandler() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const redirectUrlEncoded = searchParams.get('redirectUrl');
   const type = searchParams.get('type');
   const referralCode = searchParams.get('ref');
@@ -36,11 +37,12 @@ export function useLoginSuccessHandler() {
 
     const draftSeason = isDraftSeason();
 
-    if (draftSeason) {
-      return '/draft';
+    // If we are in draft season and the user is on the airdrop page, we want to keep them on the airdrop page
+    if (draftSeason && pathname === '/airdrop') {
+      return '/airdrop';
     }
 
-    return redirectUrl || '/scout';
+    return redirectUrl || draftSeason ? '/draft' : '/scout';
   }
 
   return {

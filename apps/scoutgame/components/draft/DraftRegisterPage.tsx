@@ -1,5 +1,5 @@
 import { List, ListItem, ListItemText, Grid2 as Grid, Paper, Stack, Typography, Chip } from '@mui/material';
-import { isDraftEnabled, isDraftEnded } from '@packages/scoutgame/drafts/checkDraftDates';
+import { isDraftEnabled, hasDraftEnded } from '@packages/scoutgame/drafts/checkDraftDates';
 import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
@@ -15,7 +15,7 @@ import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
 export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort?: DraftDeveloperSort; tab?: string }) {
   const draftEnabled = isDraftEnabled();
-  const draftEnded = isDraftEnded();
+  const draftEnded = hasDraftEnded();
 
   return (
     <>

@@ -15,6 +15,7 @@ import {
   IconButton,
   Badge
 } from '@mui/material';
+import { isDraftSeason } from '@packages/dates/utils';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
@@ -29,8 +30,11 @@ import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
+import { useAccount } from 'wagmi';
 
 import { useGetUnreadNotificationsCount } from 'hooks/api/notifications';
+
+import { useDevTokenBalance } from '../../hooks/useDevTokenBalance';
 
 import { SiteNavigation } from './components/SiteNavigation';
 
@@ -40,7 +44,10 @@ export function Header() {
   const { user, refreshUser } = useUser();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const isFarcasterFrame = useIsFarcasterFrame();
+  const { address } = useAccount();
   const { data: unreadNotificationsCount } = useGetUnreadNotificationsCount();
+  const { balance } = useDevTokenBalance({ address });
+  const draftSeason = isDraftSeason();
 
   const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction, {
     onSuccess: async () => {
@@ -77,7 +84,7 @@ export function Header() {
           variant='dense'
         >
           <>
-            <Link href={user ? '/scout' : '/'}>
+            <Link href={draftSeason ? '/draft' : user ? '/scout' : '/'}>
               <Image
                 src='/images/scout-game-logo.png'
                 width={100}
@@ -140,13 +147,13 @@ export function Header() {
                       data-test='user-menu-pill'
                     >
                       <Typography fontSize='16px' sx={{ pl: 2 }} color='text.primary' data-test='user-points-balance'>
-                        {user.currentBalance}
+                        {balance === '' ? 0 : Number(balance)}
                       </Typography>
                       <Image
-                        src='/images/icons/binoculars.svg'
-                        width={20}
-                        height={20}
-                        alt='Scout Game points icon'
+                        src='/images/dev-token-logo.png'
+                        width={18}
+                        height={18}
+                        alt='DEV token icon'
                         priority={true}
                       />
                       <Avatar src={user?.avatar || undefined} size='medium' name={user.displayName} />

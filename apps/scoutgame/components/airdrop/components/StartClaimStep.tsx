@@ -1,7 +1,7 @@
+import { LoadingButton } from '@mui/lab';
 import { Stack, Typography } from '@mui/material';
+import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-
-import { WalletLogin } from '../../common/WalletLogin';
 
 import { PageLayout } from './PageLayout';
 
@@ -46,12 +46,13 @@ export function StartClaimStep({ isLoading }: { isLoading: boolean }) {
             at the start of each season for the next 10 seasons.
           </Typography>
         )}
-        <WalletLogin
-          isLoading={isLoading}
-          text='Start'
-          variant='contained'
-          sx={{ width: 250, py: 1, borderRadius: 2 }}
-        />
+        {isLoading ? (
+          <LoadingButton variant='contained' loading sx={{ width: 250, py: 1, borderRadius: 2 }}>
+            Start
+          </LoadingButton>
+        ) : (
+          <WalletLogin text='Start' />
+        )}
       </Stack>
     </PageLayout>
   );

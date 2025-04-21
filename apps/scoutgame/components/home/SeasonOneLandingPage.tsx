@@ -1,5 +1,6 @@
 import type { ButtonProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
+import { getSession } from '@packages/nextjs/session/getSession';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,8 +29,11 @@ function CustomButton({ children, ...props }: ButtonProps) {
   );
 }
 
-function HeroSection() {
-  const airdropLive = isAirdropLive();
+async function HeroSection() {
+  const session = await getSession();
+
+  const airdropLive = isAirdropLive(session.scoutId);
+
   return (
     <Stack alignItems='center'>
       <Stack
@@ -83,7 +87,7 @@ function HeroSection() {
                 Happening NOW...
               </Typography>
               <CustomButton variant='contained' color='primary'>
-                <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
+                <Link href='/airdrop'>Claim Airdrop</Link>
               </CustomButton>
               <CustomButton variant='blue'>
                 <Link href='/draft'>Play Scout Game</Link>
@@ -219,7 +223,7 @@ function FooterSection() {
           gap={2}
         >
           <CustomButton>
-            <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
+            <Link href='/airdrop'>Claim Airdrop</Link>
           </CustomButton>
           <CustomButton variant='blue'>
             <Link href='/draft'>Play Scout Game</Link>
@@ -230,8 +234,9 @@ function FooterSection() {
   );
 }
 
-export function SeasonOneLandingPage() {
-  const airdropLive = isAirdropLive();
+export async function SeasonOneLandingPage() {
+  const session = await getSession();
+  const airdropLive = isAirdropLive(session.scoutId);
   return (
     <>
       <Container

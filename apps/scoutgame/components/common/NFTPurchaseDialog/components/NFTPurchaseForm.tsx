@@ -20,6 +20,7 @@ import {
   ToggleButtonGroup,
   Typography
 } from '@mui/material';
+import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
@@ -35,8 +36,7 @@ import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokens
 import {
   getScoutProtocolBuilderNFTReadonlyContract,
   scoutProtocolChainId,
-  devTokenDecimals,
-  scoutTokenErc20ContractAddress
+  devTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
 import { IconButton } from '@packages/scoutgame-ui/components/common/Button/IconButton';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
@@ -283,7 +283,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       selectedPaymentOption.currency === 'USDC'
         ? selectedChainCurrency
         : selectedPaymentOption.currency === 'DEV'
-          ? scoutTokenErc20ContractAddress()
+          ? DEV_TOKEN_ADDRESS
           : null,
     owner: address as Address,
     spender: decentTransactionInfo?.tx.to as Address

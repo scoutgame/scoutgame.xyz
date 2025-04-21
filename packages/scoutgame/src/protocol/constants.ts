@@ -1,4 +1,5 @@
 import env from '@beam-australia/react-env';
+import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { getCurrentSeason, getCurrentSeasonStart } from '@packages/dates/utils';
@@ -76,23 +77,10 @@ export function getScoutProtocolBuilderNFTReadonlyContract() {
   return builderNFTContract;
 }
 
-export function scoutTokenErc20ContractAddress() {
-  return (
-    (env('SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS') as Address) ||
-    (process.env.REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS as Address)
-  );
-}
-
 export function getScoutTokenERC20Contract() {
-  const contractAddress = scoutTokenErc20ContractAddress();
-
-  if (!contractAddress) {
-    throw new Error('REACT_APP_SCOUT_TOKEN_ERC20_CONTRACT_ADDRESS is not set');
-  }
-
   const tokenContract = new ScoutTokenERC20ImplementationClient({
     chain: scoutProtocolChain,
-    contractAddress,
+    contractAddress: DEV_TOKEN_ADDRESS,
     publicClient: getPublicClient(scoutProtocolChainId)
   });
 

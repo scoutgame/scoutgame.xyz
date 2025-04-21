@@ -2,7 +2,7 @@ import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined
 import { Box, Container, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
-import { ClaimTokenScreen } from '@/components/claim/ClaimTokenScreen';
+import { AirdropClaimScreen } from '../../../components/airdrop/AirdropClaimScreen';
 
 export default function AirdropPage() {
   return (
@@ -26,7 +26,7 @@ export default function AirdropPage() {
           }
         }}
       >
-        <ClaimTokenScreen />
+        <AirdropClaimScreen />
       </Stack>
       <Stack
         sx={{

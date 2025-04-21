@@ -21,17 +21,17 @@ import { useLoginSuccessHandler } from '../../../hooks/useLoginSuccessHandler';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function WalletLogin({ color = 'primary' }: { color?: ButtonProps['color'] }) {
+export function WalletLogin({ text, color = 'primary' }: { text?: string; color?: ButtonProps['color'] }) {
   return (
     <RainbowKitProvider>
       <Suspense>
-        <WalletLoginButton color={color} />
+        <WalletLoginButton text={text} color={color} />
       </Suspense>
     </RainbowKitProvider>
   );
 }
 
-function WalletLoginButton({ color = 'primary' }: { color?: ButtonProps['color'] }) {
+function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?: ButtonProps['color'] }) {
   const [isConnecting, setIsConnecting] = useState(false);
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId, isConnected } = useAccount();
@@ -139,10 +139,12 @@ function WalletLoginButton({ color = 'primary' }: { color?: ButtonProps['color']
           fontWeight: 600
         }}
       >
-        <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
-          <AccountBalanceWalletOutlinedIcon />
-          {isLoading ? '' : 'Sign in with wallet'}
-        </Stack>
+        {text || (
+          <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
+            <AccountBalanceWalletOutlinedIcon />
+            {isLoading ? '' : 'Sign in with wallet'}
+          </Stack>
+        )}
       </LoadingButton>
     </Box>
   );
