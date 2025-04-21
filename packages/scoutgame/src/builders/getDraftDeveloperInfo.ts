@@ -2,7 +2,6 @@
 
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
 import type { DeveloperGithubActivity } from './getDeveloperInfo';
@@ -30,7 +29,7 @@ export async function getDraftDeveloperInfo({ path }: { path: string }): Promise
     log.error('Path is not a string when looking for developer info', { path });
     return null;
   }
-  const season = getCurrentSeasonStart();
+  const season = '2025-W02';
   const oneMonthAgo = DateTime.now().minus({ months: 1 }).toJSDate();
 
   const developer = await prisma.scout.findUnique({
@@ -68,6 +67,9 @@ export async function getDraftDeveloperInfo({ path }: { path: string }): Promise
         }
       },
       userWeeklyStats: {
+        where: {
+          season
+        },
         select: {
           rank: true,
           gemsCollected: true

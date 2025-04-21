@@ -73,13 +73,11 @@ function DraftDeveloperBidFormComponent({
 
   // Fetch ETH and TALENT prices from CoinGecko
   const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=ethereum,talent-protocol&vs_currencies=usd'
-    );
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
     const data = await response.json();
     return {
       eth: data.ethereum.usd as number,
-      dev: data['talent-protocol'].usd as number
+      dev: 0.02
     };
   });
 
@@ -87,18 +85,14 @@ function DraftDeveloperBidFormComponent({
     address
   });
 
-  const { selectedTokenBalance, tokensWithBalances } = useMemo(() => {
-    const _tokensWithBalances = tokens?.map((token) => ({
-      ...token,
-      balance: Number(token.balance) / 10 ** token.decimals
-    }));
-
-    const _selectedPaymentOption = _tokensWithBalances?.find(
-      (token) => token.address === selectedPaymentOption.address && token.chainId === selectedPaymentOption.chainId
+  const { selectedTokenBalance } = useMemo(() => {
+    const _selectedPaymentOption = tokens?.find(
+      (token) =>
+        token.address.toLowerCase() === selectedPaymentOption.address.toLowerCase() &&
+        token.chainId === selectedPaymentOption.chainId
     );
 
     return {
-      tokensWithBalances: _tokensWithBalances,
       selectedTokenBalance: _selectedPaymentOption?.balance
     };
   }, [tokens, selectedPaymentOption]);
@@ -250,7 +244,7 @@ function DraftDeveloperBidFormComponent({
         prices={prices}
         selectedTokenBalance={selectedTokenBalance}
         disabled={isLoading}
-        tokensWithBalances={tokensWithBalances}
+        tokensWithBalances={tokens}
       />
       <Stack gap={1}>
         <Typography color='text.secondary' fontWeight={500}>
