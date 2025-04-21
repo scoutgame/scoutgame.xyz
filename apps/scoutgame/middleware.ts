@@ -19,6 +19,14 @@ export async function middleware(request: NextRequest) {
   const draftSeason = isDraftSeason();
   const airdropLive = isAirdropLive(session.scoutId);
 
+  if (path === '/taiko') {
+    return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
+  }
+
+  if (path === '/good-dollar') {
+    return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
+  }
+
   if (draftSeason) {
     if (path === '/airdrop' && !airdropLive) {
       return NextResponse.redirect(new URL('/', request.url));
@@ -33,14 +41,6 @@ export async function middleware(request: NextRequest) {
 
   if (path.startsWith('/draft')) {
     return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  if (path === '/taiko') {
-    return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
-  }
-
-  if (path === '/good-dollar') {
-    return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
   }
 
   if (!isLoggedIn && path !== '/home' && platform === 'telegram') {
