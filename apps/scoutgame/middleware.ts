@@ -4,6 +4,8 @@ import { getPlatform } from '@packages/utils/platform';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { isAirdropLive } from './lib/airdrop/checkAirdropDates';
+
 // These are the links that are only accessible to logged in users
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
 const disabledDraftLinks = ['/scout', '/developers', '/accounts', '/projects'];
@@ -15,8 +17,13 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next(); // Create a response object to set cookies
   const platform = getPlatform();
   const draftSeason = isDraftSeason();
+  const airdropLive = isAirdropLive(session.scoutId);
 
   if (draftSeason) {
+    if (path === '/airdrop' && !airdropLive) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
     if (disabledDraftLinks.some((link) => path.startsWith(link))) {
       return NextResponse.redirect(new URL(isLoggedIn ? '/draft/register' : '/draft', request.url));
     }

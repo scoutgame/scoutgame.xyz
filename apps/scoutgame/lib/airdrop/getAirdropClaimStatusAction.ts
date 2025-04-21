@@ -3,7 +3,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { checkThirdwebAirdropEligibility } from '@packages/blockchain/airdrop/checkThirdwebAirdropEligibility';
 import type { ThirdwebFullMerkleTree } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
-import { authActionClient } from '@packages/nextjs/actions/actionClient';
+import { actionClient } from '@packages/nextjs/actions/actionClient';
 import type { Address } from 'viem';
 import * as yup from 'yup';
 
@@ -15,7 +15,7 @@ export type AirdropClaimStatus = {
   contractAddress: `0x${string}`;
 };
 
-export const getAirdropClaimStatusAction = authActionClient
+export const getAirdropClaimStatusAction = actionClient
   .metadata({ actionName: 'get_airdrop_claim_status' })
   .schema(
     yup.object({

@@ -3,6 +3,7 @@
 import { log } from '@charmverse/core/log';
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 import { AIRDROP_SAFE_WALLET, DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
+import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -34,6 +35,7 @@ export type AirdropClaimStep =
 
 export function AirdropClaimScreen() {
   const [step, setStep] = useState<AirdropClaimStep>('start_claim');
+  const { user } = useUser();
   const { data: walletClient } = useWalletClient();
   const [airdropInfo, setAirdropInfo] = useState<{
     contractAddress: `0x${string}`;
@@ -69,6 +71,7 @@ export function AirdropClaimScreen() {
       const data = result?.data;
 
       if (!data) {
+        setStep('not_qualified');
         return;
       }
 
@@ -173,12 +176,13 @@ export function AirdropClaimScreen() {
   };
 
   useEffect(() => {
-    if (address) {
+    if (address && user?.id) {
       checkAirdropStatus(address);
     } else {
       setStep('start_claim');
+      setIsGettingAirdropTokenStatus(false);
     }
-  }, [address]); // Now we only depend on address
+  }, [address, user?.id]); // Now we only depend on address
 
   if (step === 'start_claim') {
     return <StartClaimStep isLoading={isGettingAirdropTokenStatus} />;

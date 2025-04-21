@@ -2,6 +2,8 @@ import env from '@beam-australia/react-env';
 import { isDraftSeason } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
+export const whitelistedScoutIds = ['f534b485-b7d5-47c3-92d8-02d107158558', 'b6cb2938-91dd-4274-8d85-aa2e00eb97e2'];
+
 const DRAFT_END_DATE = DateTime.fromISO('2025-04-25T23:59:59.999Z', { zone: 'utc' });
 
 export function hasDraftEnded(): boolean {
@@ -9,7 +11,7 @@ export function hasDraftEnded(): boolean {
   return nowUtc > DRAFT_END_DATE;
 }
 
-export function isDraftEnabled(): boolean {
+export function isDraftEnabled(userId?: string): boolean {
   const draftSeason = isDraftSeason();
   if (!draftSeason) {
     return false;
@@ -20,5 +22,5 @@ export function isDraftEnabled(): boolean {
   }
 
   const isDraftLive = env('IS_DRAFT_LIVE') || process.env.REACT_APP_IS_DRAFT_LIVE;
-  return isDraftLive === 'true';
+  return (userId && whitelistedScoutIds.includes(userId)) || isDraftLive === 'true';
 }

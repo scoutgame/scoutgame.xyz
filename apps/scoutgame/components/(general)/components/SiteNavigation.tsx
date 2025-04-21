@@ -45,7 +45,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   });
 
   const draftSeason = isDraftSeason();
-  const airdropLive = isAirdropLive();
+  const airdropLive = isAirdropLive(user?.id);
 
   if (draftSeason) {
     return (
@@ -169,6 +169,8 @@ function getActiveButton(pathname: string) {
     return 'quests';
   } else if (pathname.startsWith('/draft')) {
     return 'draft';
+  } else if (pathname.startsWith('/airdrop')) {
+    return 'airdrop';
   }
   return null;
 }

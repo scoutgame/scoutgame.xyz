@@ -139,10 +139,12 @@ function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?:
           fontWeight: 600
         }}
       >
-        <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
-          <AccountBalanceWalletOutlinedIcon />
-          {isLoading ? '' : text || 'Sign in with wallet'}
-        </Stack>
+        {text || (
+          <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
+            <AccountBalanceWalletOutlinedIcon />
+            {isLoading ? '' : 'Sign in with wallet'}
+          </Stack>
+        )}
       </LoadingButton>
     </Box>
   );

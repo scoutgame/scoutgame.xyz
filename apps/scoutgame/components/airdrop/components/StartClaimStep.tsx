@@ -47,7 +47,9 @@ export function StartClaimStep({ isLoading }: { isLoading: boolean }) {
           </Typography>
         )}
         {isLoading ? (
-          <LoadingButton variant='contained' loading sx={{ width: 250, py: 1, borderRadius: 2 }} />
+          <LoadingButton variant='contained' loading sx={{ width: 250, py: 1, borderRadius: 2 }}>
+            Start
+          </LoadingButton>
         ) : (
           <WalletLogin text='Start' />
         )}
