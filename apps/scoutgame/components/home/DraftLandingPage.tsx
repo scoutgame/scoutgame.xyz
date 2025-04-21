@@ -87,7 +87,7 @@ function HeroSection() {
                 season officially begins!
               </Typography>
             </Hidden>
-            <LoginButton />
+            <LoginButton label='Draft' variant='blue' />
           </Stack>
           <Hidden mdDown>
             <Image src='/images/home/draft-open.png' width={350} height={350} alt='Draft Open' />
@@ -112,8 +112,23 @@ function HowToPlaySection() {
       >
         <Stack flexDirection={{ xs: 'column', md: 'row' }} gap={3} width='100%'>
           <Paper sx={{ flex: 1, borderRadius: 2, p: { xs: 2, md: 4 }, pb: 2 }}>
-            <Stack flexDirection='row' gap={4} mb={3}>
-              <Image height={100} width={100} src='/images/home/one.svg' alt='One' />
+            <Stack
+              flexDirection='row'
+              gap={{
+                xs: 2,
+                md: 4
+              }}
+              mb={{
+                xs: 1.5,
+                md: 3
+              }}
+            >
+              <Hidden mdDown>
+                <Image height={100} width={100} src='/images/home/one.svg' alt='One' />
+              </Hidden>
+              <Hidden mdUp>
+                <Image height={75} width={75} src='/images/home/one.svg' alt='One' />
+              </Hidden>
               <Stack>
                 <Typography variant='h4' color='secondary'>
                   week
@@ -144,8 +159,23 @@ function HowToPlaySection() {
             </Stack>
           </Paper>
           <Paper sx={{ flex: 1, borderRadius: 2, p: { xs: 2, md: 4 }, pb: 2 }}>
-            <Stack flexDirection='row' gap={4} mb={3}>
-              <Image height={100} width={100} src='/images/home/thirteen.svg' alt='Thirteen' />
+            <Stack
+              flexDirection='row'
+              gap={{
+                xs: 3,
+                md: 4
+              }}
+              mb={{
+                xs: 1.5,
+                md: 3
+              }}
+            >
+              <Hidden mdDown>
+                <Image height={100} width={100} src='/images/home/thirteen.svg' alt='Thirteen' />
+              </Hidden>
+              <Hidden mdUp>
+                <Image height={75} width={75} src='/images/home/thirteen.svg' alt='Thirteen' />
+              </Hidden>
               <Stack>
                 <Typography variant='h4' color='secondary'>
                   week
@@ -178,8 +208,19 @@ function HowToPlaySection() {
         </Stack>
         <Stack flexDirection={{ xs: 'column', md: 'row' }} gap={3} width='100%'>
           <Paper sx={{ flex: 1, borderRadius: 2, p: { xs: 2, md: 4 } }}>
-            <Stack flexDirection='row' gap={4}>
-              <Image height={100} width={100} src='/images/home/scout-sticker.png' alt='Scout Sticker' />
+            <Stack
+              flexDirection='row'
+              gap={{
+                xs: 3,
+                md: 4
+              }}
+            >
+              <Hidden mdDown>
+                <Image height={100} width={100} src='/images/home/scout-sticker.png' alt='Scout Sticker' />
+              </Hidden>
+              <Hidden mdUp>
+                <Image height={75} width={75} src='/images/home/scout-sticker.png' alt='Scout Sticker' />
+              </Hidden>
               <Stack>
                 <Typography variant='h4' color='secondary'>
                   draft
@@ -226,8 +267,19 @@ function HowToPlaySection() {
             </Stack>
           </Paper>
           <Paper sx={{ flex: 1, borderRadius: 2, p: { xs: 2, md: 4 } }}>
-            <Stack flexDirection='row' gap={4}>
-              <Image height={100} width={100} src='/images/home/cards.png' alt='Cards' />
+            <Stack
+              flexDirection='row'
+              gap={{
+                xs: 3,
+                md: 4
+              }}
+            >
+              <Hidden mdDown>
+                <Image height={100} width={100} src='/images/home/cards.png' alt='Cards' />
+              </Hidden>
+              <Hidden mdUp>
+                <Image height={75} width={75} src='/images/home/cards.png' alt='Cards' />
+              </Hidden>
               <Stack>
                 <Typography variant='h4' color='secondary'>
                   developer
