@@ -1,9 +1,12 @@
+import env from '@beam-australia/react-env';
 import { DateTime } from 'luxon';
 
-export const AIRDROP_START_DATE = DateTime.fromISO('2025-04-21T15:00:00.000Z', { zone: 'utc' });
-
-const currentTime = DateTime.now().toUTC();
+export const AIRDROP_START_DATE = env('AIRDROP_START_DATE') || process.env.REACT_APP_AIRDROP_START_DATE;
 
 export function isAirdropLive() {
-  return AIRDROP_START_DATE.diff(currentTime).toMillis() > 0;
+  if (!AIRDROP_START_DATE) {
+    return false;
+  }
+  const now = DateTime.now().toUTC();
+  return now > DateTime.fromISO(AIRDROP_START_DATE);
 }

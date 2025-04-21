@@ -1,7 +1,6 @@
 import type { ButtonProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
-import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -220,7 +219,7 @@ function FooterSection() {
           gap={2}
         >
           <CustomButton>
-            <Link href='https://airdroptest.scoutgame.xyz'>Claim Airdrop</Link>
+            <Link href='https://airdrop.scoutgame.xyz'>Claim Airdrop</Link>
           </CustomButton>
           <CustomButton variant='blue'>
             <Link href='/draft'>Play Scout Game</Link>
