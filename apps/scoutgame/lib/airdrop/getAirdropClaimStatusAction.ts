@@ -26,15 +26,14 @@ export const getAirdropClaimStatusAction = actionClient
     const address = parsedInput.address;
 
     const airdropClaim = await prisma.airdropClaim.findFirst({
+      where: {
+        season: '2025-W02'
+      },
       select: {
         id: true,
         contractAddress: true,
         blockNumber: true,
         merkleTreeUrl: true
-      },
-      take: 1,
-      orderBy: {
-        season: `desc`
       }
     });
 
