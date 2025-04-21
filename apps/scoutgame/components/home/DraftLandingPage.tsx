@@ -9,8 +9,6 @@ import Link from 'next/link';
 
 import { InfoPageFooter } from 'components/info/components/InfoPageFooter';
 
-import { LoginButton } from './LoginButton';
-
 function HeroSection() {
   return (
     <Stack sx={{ position: 'relative' }}>
@@ -83,11 +81,12 @@ function HeroSection() {
             </Hidden>
             <Hidden mdUp>
               <Typography variant='h6' px={2}>
-                Get started by drafting Developers before the <br />
-                season officially begins!
+                Get started by drafting Developers before the season officially begins!
               </Typography>
             </Hidden>
-            <LoginButton label='Draft' variant='blue' />
+            <Button LinkComponent={Link} href='/draft/register' variant='blue' sx={{ width: '50%', mx: 'auto' }}>
+              Draft
+            </Button>
           </Stack>
           <Hidden mdDown>
             <Image src='/images/home/draft-open.png' width={350} height={350} alt='Draft Open' />

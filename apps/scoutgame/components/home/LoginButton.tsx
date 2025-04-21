@@ -1,17 +1,10 @@
 'use client';
 
-import type { ButtonProps } from '@mui/material';
 import { Typography, CircularProgress, Stack, Button } from '@mui/material';
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
 import Link from 'next/link';
 
-export function LoginButton({
-  variant = 'contained',
-  label = 'Get started'
-}: {
-  variant?: ButtonProps['variant'];
-  label?: string;
-}) {
+export function LoginButton() {
   const isFarcasterFrame = useIsFarcasterFrame();
 
   return isFarcasterFrame ? (
@@ -21,7 +14,7 @@ export function LoginButton({
     </Stack>
   ) : (
     <Button
-      variant={variant}
+      variant='contained'
       sx={{
         my: 2,
         width: '50%',
@@ -32,7 +25,7 @@ export function LoginButton({
       }}
       data-test='get-started-button'
     >
-      <Link href='/login'>{label}</Link>
+      <Link href='/login'>Get started</Link>
     </Button>
   );
 }
