@@ -21,6 +21,7 @@ export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => 
         farcasterUsername={developer.farcasterUsername}
         onClose={onClose}
         level={developer.level}
+        hidePathLink
       />
       <Stack gap={0.5}>
         <Stack direction='row' gap={0.5}>

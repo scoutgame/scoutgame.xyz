@@ -68,13 +68,13 @@ export function DeveloperInfoModal({
     );
   }
 
-  if (!developer) {
+  if (data?.path && !developer) {
     return null;
   }
 
-  return (
+  return developer ? (
     <DeveloperModal open={open} onClose={onClose}>
       <DeveloperInfoCard onClose={onClose} developer={developer} />
     </DeveloperModal>
-  );
+  ) : null;
 }

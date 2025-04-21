@@ -23,7 +23,7 @@ export function DeveloperInfoRanksGraph({ ranks, label }: { ranks: (number | nul
         {label}
       </Typography>
       <Stack height='calc(100% - 16px)'>
-        <BuilderCardRankGraph ranks={ranks} />
+        <BuilderCardRankGraph ranks={ranks} totalRanks={15} />
       </Stack>
     </Stack>
   );

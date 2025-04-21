@@ -1,21 +1,126 @@
+import env from '@beam-australia/react-env';
+import { log } from '@charmverse/core/log';
 import { ChainId } from '@decent.xyz/box-common';
-import { useUsersBalances } from '@decent.xyz/box-hooks';
 import {
   BASE_USDC_ADDRESS,
   DEV_TOKEN_ADDRESS,
   NULL_EVM_ADDRESS,
   OPTIMISM_USDC_ADDRESS
 } from '@packages/blockchain/constants';
+import { useEffect, useState } from 'react';
 import type { Address } from 'viem';
 
-export function useGetTokenBalances({ address }: { address: Address }) {
-  const result = useUsersBalances({
-    chainId: ChainId.BASE,
-    selectChains: [ChainId.BASE, ChainId.OPTIMISM],
-    address,
-    enable: !!address,
-    selectTokens: [NULL_EVM_ADDRESS, BASE_USDC_ADDRESS, OPTIMISM_USDC_ADDRESS, DEV_TOKEN_ADDRESS]
+type TokenBalance = {
+  address: Address;
+  chainId: number;
+  balance: number;
+  symbol: string;
+  name: string;
+  decimals: number;
+};
+
+type DecentTokenResponse = {
+  address: string;
+  chainId: number;
+  name: string;
+  symbol: string;
+  decimals: number;
+  isNative: boolean;
+  logo?: string;
+  balanceFloat: number;
+  balance: string;
+};
+
+const DECENT_API_BASE_URL = 'https://box-v4.api.decent.xyz/api';
+
+async function fetchTokenBalances(params: {
+  address: Address;
+  chainId: number;
+  additionalTokens: Address[];
+}): Promise<DecentTokenResponse[]> {
+  const apiKey = env('DECENT_API_KEY') || process.env.REACT_APP_DECENT_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Decent API key not found');
+  }
+
+  const queryParams = new URLSearchParams({
+    address: params.address,
+    additionalTokens: params.additionalTokens.join(','),
+    chainId: params.chainId.toString()
   });
 
-  return result;
+  const response = await fetch(`${DECENT_API_BASE_URL}/getTokens?${queryParams}`, {
+    headers: {
+      'x-api-key': apiKey
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch token balances: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+function filterAndMapTokens(tokens: DecentTokenResponse[]): TokenBalance[] {
+  const TRACKED_TOKENS = [
+    NULL_EVM_ADDRESS.toLowerCase(),
+    BASE_USDC_ADDRESS.toLowerCase(),
+    OPTIMISM_USDC_ADDRESS.toLowerCase(),
+    DEV_TOKEN_ADDRESS.toLowerCase()
+  ];
+
+  return tokens
+    .filter((token) => TRACKED_TOKENS.includes(token.address.toLowerCase()))
+    .map((token) => ({
+      address: token.address as Address,
+      chainId: token.chainId,
+      balance: token.balanceFloat,
+      symbol: token.symbol,
+      name: token.name,
+      decimals: token.decimals
+    }));
+}
+
+export function useGetTokenBalances({ address }: { address: Address }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [tokens, setTokens] = useState<TokenBalance[]>([]);
+
+  useEffect(() => {
+    async function fetchBalances() {
+      if (!address) return;
+
+      setIsLoading(true);
+      try {
+        const [baseTokens, optimismTokens] = await Promise.all([
+          fetchTokenBalances({
+            address,
+            chainId: ChainId.BASE,
+            additionalTokens: [NULL_EVM_ADDRESS, BASE_USDC_ADDRESS, DEV_TOKEN_ADDRESS]
+          }),
+          fetchTokenBalances({
+            address,
+            chainId: ChainId.OPTIMISM,
+            additionalTokens: [NULL_EVM_ADDRESS, OPTIMISM_USDC_ADDRESS]
+          })
+        ]);
+
+        const allTokens = filterAndMapTokens([...baseTokens, ...optimismTokens]);
+        setTokens(allTokens);
+      } catch (error) {
+        log.error('Error fetching token balances:', { error });
+        setTokens([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchBalances();
+  }, [address]);
+
+  return {
+    tokens,
+    isLoading
+  };
 }

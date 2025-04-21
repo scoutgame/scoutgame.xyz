@@ -15,7 +15,8 @@ export function DeveloperInfoProfile({
   githubLogin,
   farcasterUsername,
   onClose,
-  level
+  level,
+  hidePathLink = false
 }: {
   firstContributionDate: Date;
   githubConnectedAt: Date;
@@ -26,6 +27,7 @@ export function DeveloperInfoProfile({
   githubLogin: string | null;
   farcasterUsername: string | null;
   onClose: () => void;
+  hidePathLink?: boolean;
 }) {
   const isDesktop = useMdScreen();
   const firstContributionDate = DateTime.fromISO(_firstContributionDate.toISOString());
@@ -116,30 +118,32 @@ export function DeveloperInfoProfile({
           >
             {displayName}
           </Typography>
-          <Link href={`/u/${path}`} onClick={onClose}>
-            <Button
-              sx={{
-                p: 0,
-                '& .MuiButton-startIcon': {
-                  mr: 0.5
-                },
-                '& .MuiSvgIcon-root': {
-                  fontSize: {
-                    xs: 12,
-                    md: 14
+          {!hidePathLink ? (
+            <Link href={`/u/${path}`} onClick={onClose}>
+              <Button
+                sx={{
+                  p: 0,
+                  '& .MuiButton-startIcon': {
+                    mr: 0.5
+                  },
+                  '& .MuiSvgIcon-root': {
+                    fontSize: {
+                      xs: 12,
+                      md: 14
+                    }
                   }
-                }
-              }}
-              variant='text'
-              startIcon={<OpenInNewIcon sx={{ fontSize: { xs: '12px !important', md: '14px !important' } }} />}
-              color='secondary'
-              size='small'
-            >
-              <Typography color='secondary' fontSize='12px'>
-                View {isDesktop ? 'Profile' : ''}
-              </Typography>
-            </Button>
-          </Link>
+                }}
+                variant='text'
+                startIcon={<OpenInNewIcon sx={{ fontSize: { xs: '12px !important', md: '14px !important' } }} />}
+                color='secondary'
+                size='small'
+              >
+                <Typography color='secondary' fontSize='12px'>
+                  View {isDesktop ? 'Profile' : ''}
+                </Typography>
+              </Button>
+            </Link>
+          ) : null}
         </Stack>
         <Typography color='secondary'>Joined</Typography>
         <Stack
