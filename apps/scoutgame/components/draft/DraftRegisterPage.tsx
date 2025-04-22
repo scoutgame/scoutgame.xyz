@@ -55,7 +55,9 @@ function DraftInfo({ isAccordion = false }: { isAccordion?: boolean }) {
             <ListItemText>Winning bids receive Developer Cards.</ListItemText>
           </ListItem>
           <ListItem sx={{ display: 'list-item', pl: 1, py: 0 }}>
-            <ListItemText>Losing bids are refunded.</ListItemText>
+            <ListItemText>
+              <Typography color='green.main'>Losing bids are refunded.</Typography>
+            </ListItemText>
           </ListItem>
           <ListItem sx={{ display: 'list-item', pl: 1, py: 0 }}>
             <ListItemText>Unsold cards go to marketplace.</ListItemText>
