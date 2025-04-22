@@ -9,6 +9,10 @@ import { gemsValues } from '../config';
 
 import { mockCommit, mockPullRequest } from '@/testing/generators';
 
+jest.unstable_mockModule('@packages/scoutgameattestations/attestGemReceipts', () => ({
+  attestGemReceipts: jest.fn()
+}));
+
 jest.unstable_mockModule('@packages/github/getCommitsByUser', () => ({
   getCommitsByUser: jest.fn()
 }));
@@ -35,6 +39,7 @@ const { getPullRequestsByUser } = await import('@packages/github/getPullRequests
 const { processDeveloperActivity } = await import('../processDeveloperActivity');
 const { recordMergedPullRequest } = await import('../recordMergedPullRequest');
 const { recordCommit } = await import('../recordCommit');
+
 describe('processDeveloperActivity', () => {
   beforeEach(() => {
     jest.resetAllMocks();
