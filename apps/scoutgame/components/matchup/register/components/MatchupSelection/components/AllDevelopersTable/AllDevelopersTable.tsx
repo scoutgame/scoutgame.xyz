@@ -215,7 +215,7 @@ export function AllDevelopersTable({
                   builder={{
                     ...builder,
                     builderStatus: 'approved',
-                    price: BigInt(2 * 10 ** devTokenDecimals)
+                    price: BigInt(100 * 10 ** devTokenDecimals)
                   }}
                   type='starter_pack'
                 />
