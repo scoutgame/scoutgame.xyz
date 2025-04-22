@@ -84,6 +84,7 @@
           "./apps/admin/",
           "./apps/cron/",
           "./apps/draft/",
+          "./packages/aws/",
           "./packages/blockchain/",
           "./packages/dune/",
           "./packages/discord/",

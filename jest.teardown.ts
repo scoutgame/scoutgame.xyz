@@ -1,7 +1,7 @@
-import { log } from '@charmverse/core/log';
+/* eslint-disable no-console */
 import { prisma } from '@charmverse/core/prisma-client';
 
-async function wipeTestData() {
+export default async function wipeTestData() {
   if (process.env.NODE_ENV === 'test') {
     // Reset the database before each test
     await prisma.scoutGameActivity.deleteMany({});
@@ -20,8 +20,8 @@ async function wipeTestData() {
     await prisma.scoutProjectContract.deleteMany({});
     await prisma.scoutProject.deleteMany({});
     await prisma.partnerRewardPayoutContract.deleteMany({});
-    // eslint-disable-next-line no-console
-    log.debug('✅ Database wiped');
+    await prisma.weeklyClaims.deleteMany({});
+    console.log('✅ Database wiped');
   }
 
   return true;
@@ -29,6 +29,6 @@ async function wipeTestData() {
 wipeTestData()
   .then(() => process.exit(0))
   .catch((error) => {
-    log.error(error);
+    console.error(error);
     process.exit(1);
   });
