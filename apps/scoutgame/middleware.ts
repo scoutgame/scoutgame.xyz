@@ -8,7 +8,7 @@ import { isAirdropLive } from './lib/airdrop/checkAirdropDates';
 
 // These are the links that are only accessible to logged in users
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
-const disabledDraftLinks = ['/scout', '/developers', '/accounts', '/projects'];
+const disabledDraftLinks = ['/scout', '/developers', '/projects'];
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();

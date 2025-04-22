@@ -230,7 +230,9 @@ function PaymentOptionSelector(
                 }}
                 balance={
                   tokensWithBalances?.find(
-                    (token) => token.chainId === paymentOption.chain.id && token.address === paymentOption.address
+                    (token) =>
+                      token.chainId === paymentOption.chain.id &&
+                      token.address.toLowerCase() === paymentOption.address.toLowerCase()
                   )?.balance
                 }
                 selected={isSameOption(

@@ -3,6 +3,7 @@
 import { log } from '@charmverse/core/log';
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 import { AIRDROP_SAFE_WALLET, DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
@@ -140,6 +141,17 @@ export function AirdropClaimScreen() {
       });
 
       if (donationAmount) {
+        const publicClient = getPublicClient(base.id);
+
+        const receipt = await publicClient.waitForTransactionReceipt({
+          hash: claimTxHash as `0x${string}`,
+          retryCount: 10
+        });
+
+        if (receipt.status === 'reverted') {
+          throw new Error('Transaction reverted');
+        }
+
         donationTxHash = await walletClient.writeContract({
           address: DEV_TOKEN_ADDRESS,
           abi: erc20Abi,
