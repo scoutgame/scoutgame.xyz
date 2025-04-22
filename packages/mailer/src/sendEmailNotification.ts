@@ -156,7 +156,7 @@ export const NotificationTypesRecord = {
   },
   airdrop_live: {
     template: 'Airdrop live',
-    subject: 'Airdrop live'
+    subject: `Scout Game's Airdrop is Live!`
   }
 };
 
@@ -198,15 +198,22 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
 
   const user = await prisma.scout.findUniqueOrThrow({
     where: {
-      id: userId
+      id: userId,
+      deletedAt: null
     },
     select: {
       sendMarketing: true,
       sendTransactionEmails: true,
       email: true,
-      displayName: true
+      displayName: true,
+      emailVerifications: true
     }
   });
+
+  if (!user.emailVerifications.some((v) => v.completedAt)) {
+    log.debug('User does not have a verified email, not sending email', { userId, template });
+    return false;
+  }
 
   if (!user.email) {
     log.debug('User does not have an email, not sending email', { userId, template });

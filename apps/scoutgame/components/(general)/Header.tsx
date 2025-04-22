@@ -22,6 +22,7 @@ import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import { ceilToPrecision } from '@packages/utils/numbers';
 import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -147,7 +148,7 @@ export function Header() {
                       data-test='user-menu-pill'
                     >
                       <Typography fontSize='16px' sx={{ pl: 2 }} color='text.primary' data-test='user-points-balance'>
-                        {balance}
+                        {ceilToPrecision(balance, 4)}
                       </Typography>
                       <Image
                         src='/images/dev-token-logo.png'
@@ -184,8 +185,9 @@ export function Header() {
                       <MenuItem component={Link} href='/accounts'>
                         Accounts
                       </MenuItem>
-                      {user.builderStatus === 'approved' ||
-                      (user.builderStatus === 'applied' && user.utmCampaign === 'taiko') ? (
+                      {(user.builderStatus === 'approved' ||
+                        (user.builderStatus === 'applied' && user.utmCampaign === 'taiko')) &&
+                      !isDraftSeason ? (
                         <MenuItem component={Link} href='/profile/projects'>
                           Projects
                         </MenuItem>

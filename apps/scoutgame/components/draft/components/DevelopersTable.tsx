@@ -173,7 +173,7 @@ export function DevelopersTable({
                     </Stack>
                   </Tooltip>
                 ) : (
-                  <BidButton developerPath={developer.path} />
+                  <BidButton developerPath={developer.path} bidsReceived={developer.bidsReceived} />
                 )}
               </TableCell>
             </TableRow>
