@@ -7,7 +7,7 @@ import { BuilderNFTSeasonOneUpgradeableClient } from './wrappers/BuilderNFTSeaso
 
 export function getPreSeasonOneBuilderNftProxyContractReadonlyClient() {
   const chain = optimism;
-  const contractAddress = getBuilderNftContractAddress('2024-W41');
+  const contractAddress = getBuilderNftContractAddress('2024-W41')!;
   return new BuilderNFTSeasonOneUpgradeableClient({
     chain,
     contractAddress,

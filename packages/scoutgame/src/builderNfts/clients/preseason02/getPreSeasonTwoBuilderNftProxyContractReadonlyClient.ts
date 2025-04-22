@@ -7,7 +7,7 @@ import { ScoutGamePreSeason02NFTUpgradeableClient } from './wrappers/ScoutGamePr
 
 export function getPreSeasonTwoBuilderNftProxyContractReadonlyClient() {
   const chain = optimism;
-  const contractAddress = getBuilderNftContractAddress('2025-W02');
+  const contractAddress = getBuilderNftContractAddress('2025-W02')!;
   return new ScoutGamePreSeason02NFTUpgradeableClient({
     chain,
     contractAddress,

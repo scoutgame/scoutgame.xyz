@@ -61,7 +61,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       currentImplementation: currentImplementation as Address,
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
-      contractAddress: getBuilderNftContractAddress(season),
+      contractAddress: getBuilderNftContractAddress(season) as Address,
       receiverUsdcBalance: Number(preseason01Sales / BigInt(1e6)),
       nftSalesData,
       chainName: 'optimism'
@@ -89,7 +89,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
       chainName: 'optimism',
-      contractAddress: getBuilderNftContractAddress(season),
+      contractAddress: getBuilderNftContractAddress(season) as Address,
       receiverUsdcBalance: Number((currentUsdcBalance - preseason01Sales) / BigInt(1e6)),
       nftSalesData
     };

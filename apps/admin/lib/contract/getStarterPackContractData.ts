@@ -21,11 +21,11 @@ export type StarterPackNFTContractData = {
 };
 
 export async function getStarterPackContractData({ season }: { season: ISOWeek }): Promise<StarterPackNFTContractData> {
-  const starterPackClient = getBuilderNftStarterPackReadonlyClient();
+  const starterPackClient = getBuilderNftStarterPackReadonlyClient(season)!;
 
   const starterPackProxyClient = getBuilderNftStarterPackProxyReadonlyClient({
     chain: optimism,
-    contractAddress: getBuilderNftStarterPackContractAddress(season)
+    contractAddress: getBuilderNftStarterPackContractAddress(season) as Address
   });
 
   const [currentMinter, totalSupply, nftSalesData, currentImplementation, admin, proceedsReceiver] = await Promise.all([
@@ -44,7 +44,7 @@ export async function getStarterPackContractData({ season }: { season: ISOWeek }
   return {
     totalSupply,
     currentMinter: currentMinter as Address,
-    contractAddress: getBuilderNftStarterPackContractAddress(season),
+    contractAddress: getBuilderNftStarterPackContractAddress(season)!,
     nftSalesData,
     currentImplementation,
     admin,
