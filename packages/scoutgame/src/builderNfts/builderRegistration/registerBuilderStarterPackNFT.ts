@@ -61,8 +61,13 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Scout profile does not have a github user');
   }
 
+  const client = getBuilderNftContractReadonlyClient(season);
+  if (!client) {
+    throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
+  }
+
   // Read the tokenId from the existing builder NFT Contract so that they match
-  const tokenId = await getBuilderNftContractReadonlyClient().getTokenIdForBuilder({
+  const tokenId = await client.getTokenIdForBuilder({
     args: { builderId }
   });
 
@@ -70,7 +75,12 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Builder NFT not found');
   }
 
-  const existingStarterPackTokenId = await getBuilderNftStarterPackReadonlyClient()
+  const starterPackClient = getBuilderNftStarterPackReadonlyClient(season);
+  if (!starterPackClient) {
+    throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
+  }
+
+  const existingStarterPackTokenId = await starterPackClient
     .getTokenIdForBuilder({
       args: { builderId }
     })
@@ -80,7 +90,7 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Builder NFT already registered on starter pack contract but with a different tokenId');
   } else if (!existingStarterPackTokenId) {
     // Register the builder token on the starter pack contract so that it can be minted
-    await getBuilderNftContractStarterPackMinterClient().registerBuilderToken({
+    await getBuilderNftContractStarterPackMinterClient(season).registerBuilderToken({
       args: { builderId, builderTokenId: tokenId }
     });
   }

@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
@@ -49,17 +50,24 @@ export async function getOnchainPurchaseEvents({
   fromBlock?: number;
   toBlock?: number;
 }) {
+  const contractAddress = getBuilderNftContractAddress(season);
+  const starterPackContractAddress = getBuilderNftStarterPackContractAddress(season);
+  if (!contractAddress || !starterPackContractAddress) {
+    log.error(`Contract address not found for season ${season}`);
+    return [];
+  }
+
   const [groupedNftEvents, groupedStarterPackEvents] = await Promise.all([
     getOnchainEvents({
       fromBlock,
       toBlock,
-      contractAddress: getBuilderNftContractAddress(season),
+      contractAddress,
       chainId: nftChain.id
     }),
     getOnchainEvents({
       fromBlock,
       toBlock,
-      contractAddress: getBuilderNftStarterPackContractAddress(season),
+      contractAddress: starterPackContractAddress,
       chainId: nftChain.id
     })
   ]);

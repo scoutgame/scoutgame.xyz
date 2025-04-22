@@ -27,11 +27,14 @@ export async function createBuilderNft({
   contractAddress?: string;
 }) {
   contractAddress = contractAddress ?? getBuilderNftContractAddress(season);
+  const client = getBuilderNftContractReadonlyClient(season);
+  if (!client || !contractAddress) {
+    throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
+  }
 
-  const currentPrice = await getBuilderNftContractReadonlyClient().getTokenPurchasePrice({
+  const currentPrice = await client.getTokenPurchasePrice({
     args: { tokenId, amount: BigInt(1) }
   });
-
   const fileUrl = await uploadArtwork({
     displayName,
     season,

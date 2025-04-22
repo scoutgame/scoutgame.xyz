@@ -171,13 +171,15 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
       const _price =
         builder.nftType === 'starter_pack'
-          ? await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
+          ? await getBuilderNftStarterPackReadonlyClient()?.getTokenPurchasePrice({
               args: { amount: BigInt(amount) }
             })
           : await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
               args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
             });
-      setPurchaseCost(_price);
+      if (_price) {
+        setPurchaseCost(_price);
+      }
     },
     [setPurchaseCost]
   );
@@ -188,14 +190,15 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     try {
       setIsFetchingPrice(true);
       _builderTokenId = await (builder.nftType === 'starter_pack'
-        ? getBuilderNftStarterPackReadonlyClient().getTokenIdForBuilder({ args: { builderId } })
+        ? getBuilderNftStarterPackReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } })
         : getScoutProtocolBuilderNFTReadonlyContract().getTokenIdForBuilder({ args: { builderId } }));
 
-      setBuilderTokenId(_builderTokenId);
-
-      await refreshAsk({ _builderTokenId, amount: tokensToBuy });
-
-      setIsFetchingPrice(false);
+      // builderTokenId is undefined if there is no nft contract for the season
+      if (_builderTokenId) {
+        setBuilderTokenId(_builderTokenId);
+        await refreshAsk({ _builderTokenId, amount: tokensToBuy });
+        setIsFetchingPrice(false);
+      }
     } catch (error) {
       scoutgameMintsLogger.warn('Error fetching token data', {
         error,
@@ -295,7 +298,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         value: _value
       },
       txMetadata: {
-        contractAddress: getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }),
+        contractAddress,
         fromAddress: address as Address,
         sourceChainId: selectedPaymentOption.chainId,
         builderTokenId: Number(builderTokenId),

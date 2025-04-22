@@ -28,8 +28,12 @@ export async function createBuilderNftStarterPack({
   contractAddress?: Address;
 }) {
   contractAddress = contractAddress ?? getBuilderNftStarterPackContractAddress(season);
+  const client = getBuilderNftStarterPackReadonlyClient(season);
+  if (!client || !contractAddress) {
+    throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
+  }
 
-  const currentPrice = await getBuilderNftStarterPackReadonlyClient().getTokenPurchasePrice({
+  const currentPrice = await client.getTokenPurchasePrice({
     args: { amount: BigInt(1) }
   });
 

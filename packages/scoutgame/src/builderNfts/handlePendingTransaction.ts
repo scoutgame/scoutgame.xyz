@@ -112,8 +112,8 @@ export async function handlePendingTransaction({
       const pointsValue = Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier);
 
       if (
-        pendingTxContractAddress === scoutProtocolBuilderNftContractAddress.toLowerCase() ||
-        pendingTxContractAddress === scoutProtocolBuilderStarterNftContractAddress.toLowerCase()
+        pendingTxContractAddress === scoutProtocolBuilderNftContractAddress?.toLowerCase() ||
+        pendingTxContractAddress === scoutProtocolBuilderStarterNftContractAddress?.toLowerCase()
       ) {
         await recordOnchainNftMint({
           builderNftId: builderNft.id,

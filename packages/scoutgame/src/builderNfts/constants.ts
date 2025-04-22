@@ -17,7 +17,7 @@ export const builderTokenDecimals = 6;
 
 export const nftChain: Chain = base; // useTestnets ? optimismSepolia : optimism;
 
-export function getBuilderNftContractAddress(season: ISOWeek): Address {
+export function getBuilderNftContractAddress(season: ISOWeek): Address | undefined {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
@@ -27,16 +27,16 @@ export function getBuilderNftContractAddress(season: ISOWeek): Address {
   if (!address) {
     log.warn(`Builder NFT contract address for ${season} not found`);
   }
-  return address?.toLowerCase() as Address;
+  return address?.toLowerCase() as Address | undefined;
 }
 
-export function getBuilderNftStarterPackContractAddress(season: ISOWeek): Address {
+export function getBuilderNftStarterPackContractAddress(season: ISOWeek): Address | undefined {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
   const envVarName = `BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS_${seasonName}`;
 
-  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address;
+  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address | undefined;
 }
 
 export function getBuilderNftContractAddressForNftType({
@@ -45,7 +45,7 @@ export function getBuilderNftContractAddressForNftType({
 }: {
   nftType: BuilderNftType;
   season: ISOWeek;
-}): Address {
+}): Address | undefined {
   return nftType === 'starter_pack'
     ? getBuilderNftStarterPackContractAddress(season)
     : getBuilderNftContractAddress(season);

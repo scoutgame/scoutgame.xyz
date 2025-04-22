@@ -20,6 +20,9 @@ export async function refreshBuilderNftPrice({
     }
 
     const contractClient = getBuilderNftContractReadonlyClient();
+    if (!contractClient) {
+      throw new Error('Cannot refresh builder nft price. Missing contract client');
+    }
 
     const tokenId = await contractClient.getTokenIdForBuilder({ args: { builderId } });
 

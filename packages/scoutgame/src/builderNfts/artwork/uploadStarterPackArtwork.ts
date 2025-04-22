@@ -22,6 +22,7 @@ export async function uploadStarterPackArtwork({
   avatar: string;
   tokenId: bigint | number;
 }) {
+  const contractName = getBuilderNftStarterPackContractAddress(season) || 'default';
   const imageBuffer = await generateNftStarterPackImage({
     avatar,
     displayName
@@ -31,7 +32,7 @@ export async function uploadStarterPackArtwork({
     season,
     tokenId: Number(tokenId),
     filename: 'starter-pack-artwork.png',
-    contractName: getBuilderNftStarterPackContractAddress(season)
+    contractName
   });
 
   await uploadFileToS3({
@@ -55,6 +56,7 @@ export async function uploadStarterPackArtworkCongrats({
   userImage: string;
   builderId: string;
 }) {
+  const contractName = getBuilderNftStarterPackContractAddress(season) || 'default';
   const activities = await getBuilderActivities({ builderId, limit: 3 });
   const stats = await getBuilderStats(builderId);
   const builderScouts = await getBuilderScouts(builderId);
@@ -72,7 +74,7 @@ export async function uploadStarterPackArtworkCongrats({
     season,
     tokenId: Number(tokenId),
     starterPack: true,
-    contractName: getBuilderNftStarterPackContractAddress(season)
+    contractName
   });
 
   await uploadFileToS3({

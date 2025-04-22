@@ -9,6 +9,9 @@ import { ScoutGamePreSeason02NFTImplementationClient } from './wrappers/ScoutGam
 export function getPreSeasonTwoBuilderNftContractMinterClient() {
   const chain = optimism;
   const contractAddress = getBuilderNftContractAddress('2025-W02');
+  if (!contractAddress) {
+    throw new Error('contract address missing for 2025-W02');
+  }
   return new ScoutGamePreSeason02NFTImplementationClient({
     chain,
     contractAddress,

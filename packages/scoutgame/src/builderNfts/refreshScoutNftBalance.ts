@@ -9,12 +9,14 @@ export async function refreshScoutNftBalance({
   wallet,
   tokenId,
   contractAddress,
-  nftType
+  nftType,
+  season
 }: {
   wallet: Address;
   tokenId: number;
   contractAddress: Address;
   nftType: BuilderNftType;
+  season?: string;
 }) {
   const existingBuilderNft = await prisma.builderNft.findFirstOrThrow({
     where: {
@@ -26,14 +28,21 @@ export async function refreshScoutNftBalance({
     }
   });
 
+  const starterPackContract = getBuilderNftStarterPackReadonlyClient(season);
+  const regularContract = getBuilderNftContractReadonlyClient(season);
+
+  if (!starterPackContract || !regularContract) {
+    throw new Error('Missing contract client');
+  }
+
   const balance = await (nftType === 'starter_pack'
-    ? getBuilderNftStarterPackReadonlyClient().balanceOf({
+    ? starterPackContract.balanceOf({
         args: {
           account: wallet,
           id: BigInt(tokenId)
         }
       })
-    : getBuilderNftContractReadonlyClient().balanceOf({
+    : regularContract.balanceOf({
         args: {
           account: wallet,
           tokenId: BigInt(tokenId)

@@ -2,7 +2,10 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
-import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import {
+  getBuilderNftContractAddress,
+  getBuilderNftStarterPackContractAddress
+} from '@packages/scoutgame/builderNfts/constants';
 import type { ProposedBurnParams } from '@packages/safetransactions/proposeBurnTransaction';
 import { proposePreSeason02OrStarterPackBurnTransactions } from '@packages/safetransactions/proposeBurnTransaction';
 import { prefix0x } from '@packages/utils/prefix0x';
@@ -42,7 +45,9 @@ export async function revertFraudulentMintTransactions({
     }
   });
 
-  const missingTxHashes = transactionHashes.filter((txHash) => !nftPurchaseEvents.some((event) => event.txHash === txHash));
+  const missingTxHashes = transactionHashes.filter(
+    (txHash) => !nftPurchaseEvents.some((event) => event.txHash === txHash)
+  );
 
   if (missingTxHashes.length > 0) {
     log.warn(`Missing ${missingTxHashes.length} transactions in the database`, { missingTxHashes });
@@ -63,35 +68,38 @@ export async function revertFraudulentMintTransactions({
     return;
   }
 
-  const firstMatchingBlockTimestamp = nftPurchaseEvents.reduce((acc: {txHash: string, lowestCreatedAt: number}, event) => {
-    const blockTimestamp = event.createdAt.getTime();
+  const firstMatchingBlockTimestamp = nftPurchaseEvents.reduce(
+    (acc: { txHash: string; lowestCreatedAt: number }, event) => {
+      const blockTimestamp = event.createdAt.getTime();
 
-    if (!acc.txHash || !acc.lowestCreatedAt) {
-      return {txHash: event.txHash, lowestCreatedAt: event.createdAt.getTime()};
-    } else if (blockTimestamp < acc.lowestCreatedAt) {
-      return {txHash: event.txHash, lowestCreatedAt: blockTimestamp};
-    } else {
-      return acc;
-    }
-  }, {txHash: '', lowestCreatedAt: 0});
+      if (!acc.txHash || !acc.lowestCreatedAt) {
+        return { txHash: event.txHash, lowestCreatedAt: event.createdAt.getTime() };
+      } else if (blockTimestamp < acc.lowestCreatedAt) {
+        return { txHash: event.txHash, lowestCreatedAt: blockTimestamp };
+      } else {
+        return acc;
+      }
+    },
+    { txHash: '', lowestCreatedAt: 0 }
+  );
 
-  const blockReceipt = await getPublicClient(chainId).getTransactionReceipt({hash: prefix0x(firstMatchingBlockTimestamp.txHash)});
+  const blockReceipt = await getPublicClient(chainId).getTransactionReceipt({
+    hash: prefix0x(firstMatchingBlockTimestamp.txHash)
+  });
 
   const blockNumber = blockReceipt!.blockNumber;
-
 
   const defaultNftTransferSingleEvents = await getTransferSingleWithBatchMerged({
     chainId,
     fromBlock: blockNumber,
-    contractAddress: getBuilderNftContractAddress('2025-W02')
+    contractAddress: getBuilderNftContractAddress('2025-W02')!
   });
 
   const starterPackTransferSingleEvents = await getTransferSingleWithBatchMerged({
     chainId,
     fromBlock: blockNumber,
-    contractAddress: getBuilderNftStarterPackContractAddress('2025-W02')
+    contractAddress: getBuilderNftStarterPackContractAddress('2025-W02')!
   });
-
 
   const burnTransactions: ProposedBurnParams[] = [];
 
@@ -102,14 +110,14 @@ export async function revertFraudulentMintTransactions({
 
     const { txHash, builderNft } = nftPurchaseEvent;
 
-    const transferSingleEvents = builderNft.nftType === 'default' ? defaultNftTransferSingleEvents : starterPackTransferSingleEvents;
+    const transferSingleEvents =
+      builderNft.nftType === 'default' ? defaultNftTransferSingleEvents : starterPackTransferSingleEvents;
 
     const transferSingleEvent = transferSingleEvents.find((event) => event.transactionHash === txHash);
 
     if (!transferSingleEvent) {
       throw new Error(`No TransferSingle event found for transaction ${txHash}`);
     }
-
 
     log.info(`Found TransferSingle event in transaction ${txHash}`, {
       tokenId: transferSingleEvent.args.id,
@@ -142,5 +150,3 @@ export async function revertFraudulentMintTransactions({
 
   log.warn('Please delete the transactions from the database once they have been reverted.');
 }
-
-

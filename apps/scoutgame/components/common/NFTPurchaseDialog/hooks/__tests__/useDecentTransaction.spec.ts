@@ -115,7 +115,7 @@ describe('useDecentTransaction', () => {
 
     const { useDecentTransaction, _appendDecentQueryParams } = await import('../useDecentTransaction');
 
-    const contractAddress = getBuilderNftStarterPackContractAddress('2025-W02');
+    const contractAddress = getBuilderNftStarterPackContractAddress('2025-W02')!;
 
     const testInput: DecentTransactionProps = {
       address,

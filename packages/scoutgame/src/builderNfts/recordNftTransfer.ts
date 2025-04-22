@@ -120,7 +120,8 @@ export async function recordNftTransfer({
       wallet: fromWallet as Address,
       tokenId: Number(transferSingleEvent.args.id),
       contractAddress,
-      nftType: 'default'
+      nftType: 'default',
+      season: matchingNft.season
     });
 
     try {
@@ -152,6 +153,7 @@ export async function recordNftTransfer({
       wallet: toWallet as Address,
       tokenId: Number(transferSingleEvent.args.id),
       contractAddress,
+      season: matchingNft.season,
       nftType: 'default'
     });
 

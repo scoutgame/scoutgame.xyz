@@ -25,7 +25,7 @@ export async function uploadArtwork({
     season,
     tokenId: Number(tokenId),
     filename: 'artwork.png',
-    contractName: builderNftArtworkContractName
+    contractName: builderNftArtworkContractName || 'default'
   });
 
   await uploadFileToS3({
