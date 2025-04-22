@@ -1,5 +1,4 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
@@ -7,7 +6,6 @@ import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
 import { devTokenDecimals } from '../../protocol/constants';
 import { getBuilderNftStarterPackContractAddress } from '../constants';
-import { convertCostToPoints } from '../utils';
 
 import { generateShareImage } from './generateShareImage';
 import { generateNftStarterPackImage } from './generateStarterPackNftImage';
@@ -67,9 +65,7 @@ export async function uploadStarterPackArtworkCongrats({
     activities,
     stats,
     builderScouts,
-    builderPrice: isOnchainPlatform()
-      ? (Number(builderNft?.currentPrice || 0) / 10 ** devTokenDecimals).toFixed(2)
-      : convertCostToPoints(builderNft?.currentPrice || BigInt(0)).toFixed(2)
+    builderPrice: (Number(builderNft?.currentPrice || 0) / 10 ** devTokenDecimals).toFixed(2)
   });
 
   const imagePath = getNftCongratsPath({

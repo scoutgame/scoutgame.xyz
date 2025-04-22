@@ -3,12 +3,10 @@
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import type { DeveloperMetadata, DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -234,9 +232,7 @@ export function DevelopersTable({
             <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>
-                  {isOnchainPlatform()
-                    ? Number(builder.price || 0) / 10 ** devTokenDecimals
-                    : convertCostToPoints(builder.price || BigInt(0))}
+                  {Number(builder.price || 0) / 10 ** devTokenDecimals}
                 </TableCellText>
                 {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon ' />}
               </Stack>

@@ -3,7 +3,6 @@ import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { getCurrentSeason, getCurrentSeasonStart } from '@packages/dates/utils';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 import { base, optimism } from 'viem/chains';
 
@@ -16,10 +15,8 @@ export const sablierLockupContractAddress = process.env.SABLIER_LOCKUP_CONTRACT_
 
 export const sablierStreamId = process.env.SABLIER_STREAM_ID as Address;
 
-const season = getCurrentSeason();
-
 // If we are onchain or not in preseason, use base, otherwise use optimism
-export const scoutProtocolChain = isOnchainPlatform() || !season.preseason ? base : optimism;
+export const scoutProtocolChain = base; //  : optimism;
 
 export const scoutProtocolChainId = scoutProtocolChain.id;
 

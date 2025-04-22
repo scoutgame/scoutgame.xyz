@@ -3,7 +3,6 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { getCurrentSeason, getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 import { devTokenDecimals } from '../protocol/constants';
@@ -149,23 +148,19 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
     ...previousWeekBuilders.map((builder) => builder.user)
   ];
 
-  const isOnchain = isOnchainPlatform();
-
   return builders.map((builder) => {
     return {
       id: builder.id,
       path: builder.path,
       displayName: builder.displayName,
-      price: isOnchainPlatform()
-        ? BigInt(builder.builderNfts[0]?.currentPriceDevToken ?? 0)
-        : (builder.builderNfts[0]?.currentPrice ?? BigInt(0)),
+      price: BigInt(builder.builderNfts[0]?.currentPriceDevToken ?? 0),
       nftImageUrl: builder.builderNfts[0]?.imageUrl,
       congratsImageUrl: builder.builderNfts[0]?.congratsImageUrl,
       builderStatus: builder.builderStatus!,
       level: builder.userSeasonStats[0]?.level || 0,
-      estimatedPayout: isOnchain
-        ? Number(BigInt(builder.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
-        : builder.builderNfts[0]?.estimatedPayout || 0,
+      estimatedPayout: Number(
+        BigInt(builder.builderNfts[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)
+      ),
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       nftType: BuilderNftType.default,
       gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
@@ -174,7 +169,7 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
       listings: builder.builderNfts[0]?.listings.map(({ seller, ...listing }) => ({
         ...listing,
         scoutId: seller.scoutId,
-        price: isOnchain ? BigInt(listing.priceDevToken ?? 0) : (listing.price ?? BigInt(0)),
+        price: BigInt(listing.priceDevToken ?? 0),
         contractAddress: builder.builderNfts[0]?.contractAddress as `0x${string}`,
         order: listing.order as OrderWithCounter
       }))

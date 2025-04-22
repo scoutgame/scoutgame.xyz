@@ -1,6 +1,5 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getCurrentSeason } from '@packages/dates/utils';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { devTokenDecimals } from '../protocol/constants';
 
@@ -88,11 +87,9 @@ export async function getStarterCardDevelopers({
       avatar: builder.avatar as string,
       displayName: builder.displayName,
       rank: builder.userWeeklyStats[0]?.rank || -1,
-      price: isOnchainPlatform() ? BigInt(nft.currentPriceDevToken ?? 0) : (nft.currentPrice ?? BigInt(0)),
+      price: BigInt(nft.currentPriceDevToken ?? 0),
       level: builder.userSeasonStats[0]?.level || 0,
-      estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(nft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
-        : nft.estimatedPayout || 0,
+      estimatedPayout: Number(BigInt(nft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)),
       last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]),
       builderStatus: 'approved',
       nftImageUrl: nft.imageUrl || '',

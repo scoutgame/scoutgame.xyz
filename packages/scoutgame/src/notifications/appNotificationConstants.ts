@@ -1,5 +1,3 @@
-import { isOnchainPlatform } from '@packages/utils/platform';
-
 type Variables = {
   weekly_claim: {
     points: number;

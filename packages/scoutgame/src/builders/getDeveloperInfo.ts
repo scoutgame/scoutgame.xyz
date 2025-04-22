@@ -3,7 +3,6 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
 import { devTokenDecimals } from '../protocol/constants';
@@ -254,24 +253,16 @@ export async function getDeveloperInfo({
       })),
     last14DaysRank: normalizeLast14DaysRank(developer.builderCardActivities[0]),
     starterCard: {
-      estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(starterCard.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals))
-        : starterCard.estimatedPayout || 0,
-      price: isOnchainPlatform()
-        ? BigInt(starterCard.currentPriceDevToken || 0)
-        : BigInt(starterCard.currentPrice || 0),
+      estimatedPayout: Number(BigInt(starterCard.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals)),
+      price: BigInt(starterCard.currentPriceDevToken || 0),
       cardsSold: starterCardsSold,
       cardsSoldToScout: starterCardsSoldToScout,
       nftImageUrl: starterCard.imageUrl,
       congratsImageUrl: starterCard.congratsImageUrl || null
     },
     regularCard: {
-      estimatedPayout: isOnchainPlatform()
-        ? Number(BigInt(regularCard.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals))
-        : regularCard.estimatedPayout || 0,
-      price: isOnchainPlatform()
-        ? BigInt(regularCard.currentPriceDevToken || 0)
-        : BigInt(regularCard.currentPrice || 0),
+      estimatedPayout: Number(BigInt(regularCard.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals)),
+      price: BigInt(regularCard.currentPriceDevToken || 0),
       cardsSold: regularCardsSold,
       cardsSoldToScout: regularCardsSoldToScout,
       nftImageUrl: regularCard.imageUrl,

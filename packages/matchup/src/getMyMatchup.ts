@@ -3,7 +3,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { normalizeLast14DaysRank } from '@packages/scoutgame/builders/utils/normalizeLast14DaysRank';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 export type MyMatchup = Pick<ScoutMatchup, 'submittedAt' | 'totalScore' | 'rank' | 'id'> & {
   scout: {
@@ -105,9 +104,9 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
         nftImageUrl: selection.developerNft!.imageUrl,
         gemsCollected: selection.developerNft!.builder.userWeeklyStats[0]?.gemsCollected || 0,
         level: selection.developerNft!.builder.userSeasonStats[0]?.level || 0,
-        estimatedPayout: isOnchainPlatform()
-          ? Number(BigInt(selection.developerNft!.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
-          : (selection.developerNft!.estimatedPayout ?? 0),
+        estimatedPayout: Number(
+          BigInt(selection.developerNft!.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)
+        ),
         last14DaysRank: normalizeLast14DaysRank(selection.developerNft!.builder.builderCardActivities[0])
       },
       credits: selection.developerNft!.builder.userSeasonStats[0]?.level || 0

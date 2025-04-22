@@ -3,7 +3,6 @@ import type { Season } from '@packages/dates/config';
 import { getWeekFromDate } from '@packages/dates/utils';
 import { getUserContributions } from '@packages/github/getUserContributions';
 import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { DateTime } from 'luxon';
 
 import { log } from './logger';
@@ -149,7 +148,5 @@ export async function processDeveloperActivity({
     gemsCollected
   });
 
-  if (isOnchainPlatform()) {
-    await attestGemReceipts();
-  }
+  await attestGemReceipts();
 }

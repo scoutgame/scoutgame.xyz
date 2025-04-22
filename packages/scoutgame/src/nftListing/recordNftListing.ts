@@ -1,10 +1,8 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { isAddress } from 'viem';
 
-import { builderTokenDecimals } from '../builderNfts/constants';
 import { devTokenDecimals } from '../protocol/constants';
 
 export async function recordNftListing({
@@ -23,7 +21,6 @@ export async function recordNftListing({
   order: OrderWithCounter;
 }) {
   const sellerWallet = _sellerWallet.toLowerCase();
-  const isOnchain = isOnchainPlatform();
 
   if (!isAddress(sellerWallet)) {
     throw new Error('Invalid wallet address');
@@ -53,8 +50,7 @@ export async function recordNftListing({
     data: {
       builderNftId,
       sellerWallet,
-      price: isOnchain ? undefined : BigInt(price * 10 ** builderTokenDecimals),
-      priceDevToken: isOnchain ? BigInt(price * 10 ** devTokenDecimals).toString() : undefined,
+      priceDevToken: BigInt(price * 10 ** devTokenDecimals).toString(),
       amount,
       signature: order.signature,
       order: order as unknown as Prisma.InputJsonValue
