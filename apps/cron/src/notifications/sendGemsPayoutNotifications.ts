@@ -3,6 +3,7 @@ import type { PartnerRewardPayout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
+import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
 import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
@@ -10,24 +11,6 @@ import { formatUnits } from 'viem';
 const fontFamily = 'Arial, sans-serif';
 const fontColor = '#000';
 const linkColor = '#3a3a3a';
-
-const partnerRewardsRecord: Record<string, { name: string; partnerLink?: string; icon: string }> = {
-  octant_base_contribution: {
-    name: 'Octant & Base Contribution',
-    partnerLink: 'https://scoutgame.xyz/info/partner-rewards/octant',
-    icon: 'https://scoutgame.xyz/images/crypto/usdc.png'
-  },
-  optimism_new_scout: {
-    name: 'Optimism New Scout',
-    partnerLink: 'https://scoutgame.xyz/info/partner-rewards/optimism',
-    icon: 'https://scoutgame.xyz/images/crypto/op.png'
-  },
-  optimism_referral_champion: {
-    name: 'Optimism Referral Champion',
-    partnerLink: 'https://scoutgame.xyz/info/partner-rewards/optimism',
-    icon: 'https://scoutgame.xyz/images/crypto/op.png'
-  }
-};
 
 function formatPartnerRewardPayout(
   openingStatement: string,
@@ -48,9 +31,9 @@ function formatPartnerRewardPayout(
   let html = `<p style="padding-top: 5px; font-family: ${fontFamily}; color: ${fontColor};">${openingStatement}:</p><ul>`;
   for (const wallet of wallets) {
     for (const payout of wallet.partnerRewardPayouts) {
-      const partner = partnerRewardsRecord[payout.payoutContract.partner as keyof typeof partnerRewardsRecord];
+      const partner = partnerRewardRecord[payout.payoutContract.partner as keyof typeof partnerRewardRecord];
       if (partner) {
-        html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="${partner.icon}"/> from ${partner.partnerLink ? `<a style="text-decoration: underline; color: ${linkColor};" href="${partner.partnerLink}">${partner.name}</a>` : partner.name}</li>`;
+        html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz${partner.icon}"/> from ${partner.partnerLink ? `<a style="text-decoration: underline; color: ${linkColor};" href="${partner.partnerLink}">${partner.label}</a>` : partner.label}</li>`;
       }
     }
   }

@@ -19,7 +19,7 @@ import {
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
-import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
+import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { getNewScoutRewards } from '@packages/scoutgame/scouts/getNewScoutRewards';
 import { DateTime } from 'luxon';

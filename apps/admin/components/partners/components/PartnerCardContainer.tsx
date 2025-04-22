@@ -1,4 +1,4 @@
-import type { BonusPartner } from '@packages/scoutgame/bonus';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import React, { Suspense } from 'react';
 

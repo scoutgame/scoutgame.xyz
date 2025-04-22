@@ -3,7 +3,7 @@ import { Stack } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { getPartnerRewards } from '@packages/scoutgame/points/getPartnerRewards';
+import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import { getPointsReceiptsRewards } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 
 import { PointsTable } from './PointsTable';
