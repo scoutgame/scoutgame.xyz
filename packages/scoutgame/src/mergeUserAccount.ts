@@ -179,7 +179,8 @@ export const mergeUserAccount = async ({
           scoutId: mergedUserId
         },
         data: {
-          scoutId: retainedUserId
+          scoutId: retainedUserId,
+          primary: false
         }
       });
 
