@@ -102,7 +102,7 @@ describe('checkSablierAirdropEligibility', () => {
       verify: jest.fn().mockReturnValue(false)
     });
 
-    await expect(checkSablierAirdropEligibility(mockParams)).rejects.toThrow('Failed to verify Merkle proof');
+    await expect(checkSablierAirdropEligibility(mockParams)).rejects.toThrow('Failed to verify Sablier Merkle proof');
   });
 
   it('should successfully check eligibility for valid recipient', async () => {

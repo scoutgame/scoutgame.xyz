@@ -28,10 +28,8 @@ export function TaikoCreateProjectScreen() {
                 Skip
               </Button>
             </Link>
-            <Link href='/profile/projects/create'>
-              <Button data-test='taiko-developers-create-project-button' color='primary'>
-                Create
-              </Button>
+            <Link href='/profile/projects/create' data-test='taiko-developers-create-project-button'>
+              <Button color='primary'>Create</Button>
             </Link>
           </Stack>
         </Box>
