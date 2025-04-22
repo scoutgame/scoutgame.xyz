@@ -8,10 +8,11 @@ export function getCurrentSeason(
   _currentWeek: ISOWeek = getCurrentWeek(),
   seasonList: SeasonConfig[] = seasons
 ): SeasonConfig {
-  if (process.env.SEASON) {
-    const envSeason = seasonList.find((s) => s.start === process.env.SEASON);
-    if (envSeason) {
-      return envSeason;
+  const envSeason = env('SEASON') || process.env.REACT_APP_SEASON;
+  if (envSeason) {
+    const envSeasonConfig = seasonList.find((s) => s.start === envSeason);
+    if (envSeasonConfig) {
+      return envSeasonConfig;
     }
     throw new Error(`Invalid season: ${process.env.SEASON}`);
   }

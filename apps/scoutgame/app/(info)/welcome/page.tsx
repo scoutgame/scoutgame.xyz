@@ -39,7 +39,7 @@ export default async function Welcome({
   switch (scoutSort) {
     case '1': {
       if (user.onboardedAt && user.agreedToTermsAt) {
-        log.debug('Redirect user to home page from Welcome page', { userId: user.id });
+        log.debug('Redirect user to home page from Welcome page', { startingPagePath, userId: user.id });
         redirect(startingPagePath);
       }
       return <WelcomePage user={user} />;
