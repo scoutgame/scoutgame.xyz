@@ -116,6 +116,12 @@ export function validateISOWeek(week: ISOWeek): boolean {
   return date.isValid && date.year >= 2024 && date <= now;
 }
 
+export function getDraftSeasonEndDate(date: Date) {
+  const utcDate = DateTime.fromJSDate(date, { zone: 'utc' });
+  const friday = utcDate.set({ weekday: 5 }); // 5 is Friday
+  return friday.endOf('day');
+}
+
 export function getWeekStartEnd(date: Date) {
   const utcDate = DateTime.fromJSDate(date, { zone: 'utc' });
   const startOfWeek = utcDate.startOf('week');

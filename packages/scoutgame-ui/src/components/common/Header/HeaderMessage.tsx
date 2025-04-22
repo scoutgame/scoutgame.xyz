@@ -1,7 +1,13 @@
 'use client';
 
 import { Box, Skeleton, Typography } from '@mui/material';
-import { getCurrentSeason, getCurrentSeasonWeekNumber, getWeekStartEnd, isDraftSeason } from '@packages/dates/utils';
+import {
+  getCurrentSeasonWeekNumber,
+  getDraftSeasonEndDate,
+  getWeekStartEnd,
+  isDraftSeason
+} from '@packages/dates/utils';
+import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 
 import { useIsMounted } from '../../../hooks/useIsMounted';
@@ -10,14 +16,25 @@ export function HeaderMessage() {
   const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr());
   const isMounted = useIsMounted();
   const draftSeason = isDraftSeason();
+  const now = DateTime.now();
+  const isSaturday = now.weekday >= 6;
 
   useEffect(() => {
+    if (draftSeason && isSaturday) {
+      return;
+    }
+
     const timeout = setInterval(() => {
       setTimeStr(getTimeLeftStr());
     }, 1000);
 
     return () => clearInterval(timeout);
-  }, []);
+  }, [draftSeason, isSaturday]);
+
+  // Hide message on Saturdays during draft season
+  if (draftSeason && isSaturday) {
+    return null;
+  }
 
   return (
     <Box width='100%' minHeight='40px' bgcolor='primary.dark' p={1} display='flex' justifyContent='center'>
@@ -33,8 +50,14 @@ export function HeaderMessage() {
 }
 
 function getTimeLeftStr() {
+  const draftSeason = isDraftSeason();
+  let timeLeft = 0;
   const now = new Date();
-  const timeLeft = getWeekStartEnd(new Date()).end.toJSDate().getTime() - now.getTime();
+  if (draftSeason) {
+    timeLeft = getDraftSeasonEndDate(new Date()).toJSDate().getTime() - now.getTime();
+  } else {
+    timeLeft = getWeekStartEnd(new Date()).end.toJSDate().getTime() - now.getTime();
+  }
 
   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
   const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
