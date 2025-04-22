@@ -156,7 +156,7 @@ export const NotificationTypesRecord = {
   },
   airdrop_live: {
     template: 'Airdrop live',
-    subject: 'Airdrop live'
+    subject: `Scout Game's Airdrop is Live!`
   }
 };
 

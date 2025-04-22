@@ -1,11 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import mailgunClient, { DOMAIN } from '@packages/mailer/mailgunClient';
 import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 
 export async function sendAirdropLiveEmail() {
   const users = await prisma.scout.findMany({
     where: {
-      path: 'mattcasey',
       deletedAt: null,
     },
     select: {
@@ -27,6 +25,7 @@ export async function sendAirdropLiveEmail() {
         templateVariables: {
           name: user.displayName,
         },
+        overrideUserSendingPreference: true,
         notificationType: 'airdrop_live',
         senderAddress: 'The Scout Game <noreply@mail.scoutgame.xyz>',
         userId: user.id,
@@ -38,9 +37,11 @@ export async function sendAirdropLiveEmail() {
         console.log(`Sent ${totalSent}/${totalUsers} emails`);
       }
     } catch (error) {
-      console.error(`Error sending email to ${user.email}:`, error);
+      console.error(`Error sending email to user ID ${user.id} (${user.email}):`, error);
     }
   }
+
+  console.log(`Completed sending ${totalSent}/${totalUsers} emails`);
 }
 
 sendAirdropLiveEmail();
