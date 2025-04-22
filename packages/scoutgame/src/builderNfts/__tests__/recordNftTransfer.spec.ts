@@ -8,6 +8,10 @@ import type { Address } from 'viem';
 
 const amount = 10;
 
+jest.unstable_mockModule('@packages/users/findOrCreateWalletUser', () => ({
+  findOrCreateWalletUser: jest.fn()
+}));
+
 jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
   getBuilderNftContractMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
@@ -22,8 +26,8 @@ jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
   })
 }));
 
-jest.unstable_mockModule('../clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient', () => ({
-  getPreSeasonTwoBuilderNftContractReadonlyClient: () => ({
+jest.unstable_mockModule('../clients/starterPack/getBuilderContractStarterPackReadonlyClient', () => ({
+  getBuilderNftStarterPackReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt()),
@@ -62,7 +66,8 @@ describe('recordNftTransfer', () => {
     const mockRecipientWallet = randomWalletAddress().toLowerCase() as Address;
     const mockSenderWallet = randomWalletAddress().toLowerCase() as Address;
 
-    const scout = await mockScout({ wallets: [mockSenderWallet] });
+    await mockScout({ wallets: [mockSenderWallet] });
+    await mockScout({ wallets: [mockRecipientWallet] });
 
     const builderNft = await mockBuilderNft({ builderId: builder.id, season });
 
