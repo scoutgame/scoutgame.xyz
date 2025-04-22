@@ -12,8 +12,9 @@ import {
   AccordionSummary,
   AccordionDetails
 } from '@mui/material';
+import { getSession } from '@packages/nextjs/session/getSession';
 import { isDraftEnabled, hasDraftEnded } from '@packages/scoutgame/drafts/checkDraftDates';
-import type { DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
+import { getDraftDevelopers, type DraftDeveloperSort } from '@packages/scoutgame/drafts/getDraftDevelopers';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { LoadingCard } from '@packages/scoutgame-ui/components/common/Loading/LoadingCard';
@@ -22,7 +23,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-import { DraftDevelopersTable } from './components/DraftDevelopersTable';
+import { DevelopersTable } from './components/DevelopersTable';
 import { DraftSeasonOffersTable } from './components/DraftSeasonOffersTable';
 import { SearchDraftDevelopers } from './components/SearchDraftDevelopers';
 
@@ -105,9 +106,20 @@ function DraftInfo({ isAccordion = false }: { isAccordion?: boolean }) {
   );
 }
 
-export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort?: DraftDeveloperSort; tab?: string }) {
+export async function DraftRegisterPage({
+  search,
+  sort,
+  tab
+}: {
+  search?: string;
+  sort?: DraftDeveloperSort;
+  tab?: string;
+}) {
+  const session = await getSession();
   const draftEnabled = isDraftEnabled();
   const draftEnded = hasDraftEnded();
+
+  const draftDevelopers = await getDraftDevelopers({ search, sort, scoutId: session?.scoutId });
 
   return (
     <>
@@ -200,7 +212,11 @@ export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort
             </Hidden>
           </Stack>
           <Suspense fallback={<LoadingTable />}>
-            {tab === 'your-bids' ? <DraftSeasonOffersTable /> : <DraftDevelopersTable search={search} sort={sort} />}
+            {tab === 'your-bids' ? (
+              <DraftSeasonOffersTable draftDevelopers={draftDevelopers} />
+            ) : (
+              <DevelopersTable draftDevelopers={draftDevelopers} />
+            )}
           </Suspense>
         </Grid>
         <Grid
@@ -216,7 +232,7 @@ export function DraftRegisterPage({ search, sort, tab }: { search?: string; sort
         >
           <DraftInfo />
           <Suspense fallback={<LoadingCard />}>
-            <DraftSeasonOffersTable />
+            <DraftSeasonOffersTable draftDevelopers={draftDevelopers} />
           </Suspense>
         </Grid>
       </Grid>

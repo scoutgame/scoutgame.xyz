@@ -1,16 +1,18 @@
 import { Stack, Typography } from '@mui/material';
-import { getSession } from '@packages/nextjs/session/getSession';
-import { getDraftSeasonOffers } from '@packages/scoutgame/drafts/getDraftSeasonOffers';
+import type { DraftDeveloper } from '@packages/scoutgame/drafts/getDraftDevelopers';
 
 import { DevelopersTable } from './DevelopersTable';
 
-export async function DraftSeasonOffersTable() {
-  const session = await getSession();
-  const draftSeasonOffers = session?.scoutId ? await getDraftSeasonOffers({ scoutId: session.scoutId }) : [];
-
-  if (draftSeasonOffers.length === 0) {
-    return null;
-  }
+export async function DraftSeasonOffersTable({ draftDevelopers }: { draftDevelopers: DraftDeveloper[] }) {
+  const developerScoutBids = draftDevelopers
+    .flatMap((developer) =>
+      developer.scoutBids.map((bid) => ({
+        bidAmount: bid.value,
+        createdAt: bid.createdAt,
+        ...developer
+      }))
+    )
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
     <Stack my={2} gap={1}>
@@ -28,7 +30,7 @@ export async function DraftSeasonOffersTable() {
       >
         Your Bids
       </Typography>
-      <DevelopersTable draftDevelopers={draftSeasonOffers} hideHeader />
+      <DevelopersTable draftDevelopers={developerScoutBids} hideHeader />
     </Stack>
   );
 }

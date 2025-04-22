@@ -11,6 +11,7 @@ import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogi
 import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
+import { ceilToPrecision } from '@packages/utils/numbers';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
@@ -39,11 +40,6 @@ export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () 
     </BoxHooksContextProvider>
   );
 }
-
-const ceilToPrecision = (value: number, precision: number) => {
-  const multiplier = 10 ** precision;
-  return Math.ceil(value * multiplier) / multiplier;
-};
 
 function DraftDeveloperBidFormComponent({
   address,

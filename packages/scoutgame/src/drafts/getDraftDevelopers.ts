@@ -1,5 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
+
+export type DeveloperScoutBid = {
+  id: string;
+  value: string;
+  createdAt: Date;
+};
 
 export type DraftDeveloper = {
   id: string;
@@ -11,22 +16,21 @@ export type DraftDeveloper = {
   weeklyRanks: (number | null)[];
   rank: number;
   bidsReceived: number;
+  scoutBids: DeveloperScoutBid[];
 };
 
 export type DraftDeveloperSort = 'all' | 'trending';
 
 export async function getDraftDevelopers({
   search,
-  sort
+  sort,
+  scoutId
 }: {
   search?: string;
   sort?: DraftDeveloperSort;
+  scoutId?: string;
 }): Promise<DraftDeveloper[]> {
-  const season = getPreviousSeason(getCurrentSeasonStart());
-
-  if (!season) {
-    throw new Error('No draft season found');
-  }
+  const season = '2025-W02';
 
   const developers = await prisma.scout.findMany({
     where: {
@@ -94,7 +98,14 @@ export async function getDraftDevelopers({
       },
       draftSeasonOffersReceived: {
         select: {
-          id: true
+          id: true,
+          value: true,
+          createdAt: true,
+          makerWallet: {
+            select: {
+              scoutId: true
+            }
+          }
         }
       }
     }
@@ -109,13 +120,20 @@ export async function getDraftDevelopers({
       level: developer.userSeasonStats[0]?.level ?? 0,
       seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
       weeklyRanks: developer.userWeeklyStats.map((rank) => rank.rank) ?? [],
-      bidsReceived: developer.draftSeasonOffersReceived.length
+      bidsReceived: developer.draftSeasonOffersReceived.length,
+      scoutBids: scoutId ? developer.draftSeasonOffersReceived.filter((bid) => bid.makerWallet.scoutId === scoutId) : []
     }))
     .sort((a, b) => {
       return b.seasonPoints - a.seasonPoints;
     })
-    .map((developer, index) => ({
+    .map(({ scoutBids, ...developer }, index) => ({
       ...developer,
+      // Remove the makerWallet from the scoutBids
+      scoutBids: scoutBids.map((bid) => ({
+        createdAt: bid.createdAt,
+        id: bid.id,
+        value: bid.value
+      })),
       rank: index + 1
     }));
 
