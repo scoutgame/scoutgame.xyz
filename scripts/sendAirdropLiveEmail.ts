@@ -1,11 +1,12 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import mailgunClient, { DOMAIN } from '@packages/mailer/mailgunClient';
+import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 
 export async function sendAirdropLiveEmail() {
   const users = await prisma.scout.findMany({
     where: {
-      email: { not: null },
-      deletedAt: null
+      path: 'mattcasey',
+      deletedAt: null,
     },
     select: {
       id: true,
@@ -20,17 +21,15 @@ export async function sendAirdropLiveEmail() {
   const totalUsers = users.length;
   let totalSent = 0;
 
-
   for (const user of users) {
     try {
-      await mailgunClient?.messages.create(DOMAIN, {
-        from: 'The Scout Game <noreply@mail.scoutgame.xyz>',
-        to: user.email!,
-        subject: 'Get Ready for Scout Game Season 1!',
-        template: 'airdrop_live',
-        't:variables': {
+      await sendEmailNotification({
+        templateVariables: {
           name: user.displayName,
         },
+        notificationType: 'airdrop_live',
+        senderAddress: 'The Scout Game <noreply@mail.scoutgame.xyz>',
+        userId: user.id,
       });
 
       totalSent++;
@@ -43,3 +42,5 @@ export async function sendAirdropLiveEmail() {
     }
   }
 }
+
+sendAirdropLiveEmail();
