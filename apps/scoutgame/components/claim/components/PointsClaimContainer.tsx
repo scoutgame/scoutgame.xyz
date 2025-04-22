@@ -1,11 +1,9 @@
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
 import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getUnclaimedPartnerRewards } from '@packages/scoutgame/points/getPartnerRewards';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { Suspense } from 'react';
 
 import { PointsClaimScreen } from './PointsClaimScreen/PointsClaimScreen';
@@ -19,13 +17,8 @@ export async function PointsClaimContainer() {
     return null;
   }
 
-  const isOnchainApp = isOnchainPlatform();
-
   const [err, data] = await safeAwaitSSRData(
-    Promise.all([
-      (isOnchainApp ? getClaimableTokensWithSources : getClaimablePointsWithSources)(scoutId),
-      getUnclaimedPartnerRewards({ userId: scoutId })
-    ])
+    Promise.all([getClaimableTokensWithSources(scoutId), getUnclaimedPartnerRewards({ userId: scoutId })])
   );
 
   if (err) {
@@ -35,7 +28,7 @@ export async function PointsClaimContainer() {
   const [claimablePoints, unclaimedPartnerRewards] = data;
   const { bonusPartners, points, builders, repos, processingPayouts } = claimablePoints;
 
-  const claimData = isOnchainApp ? (claimablePoints as UnclaimedTokensSource).claimData : undefined;
+  const claimData = (claimablePoints as UnclaimedTokensSource).claimData;
 
   return (
     <>

@@ -3,12 +3,10 @@
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { LoadingButton } from '@mui/lab';
 import { Button, Stack, Typography } from '@mui/material';
-import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
@@ -37,9 +35,7 @@ export function ScoutButton({
   const { openModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
 
-  const purchaseCostInPoints = isOnchainPlatform()
-    ? Number(builder?.price || 0) / 10 ** devTokenDecimals
-    : convertCostToPoints(builder?.price || BigInt(0));
+  const purchaseCostInPoints = Number(builder?.price || 0) / 10 ** devTokenDecimals;
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

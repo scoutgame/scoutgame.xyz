@@ -3,7 +3,6 @@ import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 import { devTokenDecimals } from '../protocol/constants';
@@ -164,9 +163,7 @@ export async function getDevelopersForGallery({
         path: stat.user.path,
         displayName: stat.user.displayName,
         builderPoints: stat.user.userAllTimeStats[0]?.pointsEarnedAsBuilder ?? 0,
-        price: isOnchainPlatform()
-          ? BigInt(stat.user.builderNfts?.[0]?.currentPriceDevToken ?? 0)
-          : (stat.user.builderNfts?.[0]?.currentPrice ?? BigInt(0)),
+        price: BigInt(stat.user.builderNfts?.[0]?.currentPriceDevToken ?? 0),
         scoutedBy: uniqueValues(
           stat.user.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
         ).length,
@@ -174,16 +171,16 @@ export async function getDevelopersForGallery({
         builderStatus: stat.user.builderStatus!,
         level: stat.user.userSeasonStats[0]?.level ?? 0,
         last14DaysRank: normalizeLast14DaysRank(stat.user.builderCardActivities[0]),
-        estimatedPayout: isOnchainPlatform()
-          ? Number(BigInt(stat.user.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
-          : (stat.user.builderNfts?.[0]?.estimatedPayout ?? 0),
+        estimatedPayout: Number(
+          BigInt(stat.user.builderNfts?.[0]?.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)
+        ),
         gemsCollected: stat.user.userWeeklyStats[0]?.gemsCollected ?? 0,
         listings:
           stat.user.builderNfts?.[0]?.listings.map(({ seller, ...listing }) => ({
             ...listing,
             scoutId: seller.scoutId,
             order: listing.order as OrderWithCounter,
-            price: isOnchainPlatform() ? BigInt(listing.priceDevToken ?? 0) : (listing.price ?? BigInt(0)),
+            price: BigInt(listing.priceDevToken ?? 0),
             contractAddress: stat.user.builderNfts?.[0]?.contractAddress as `0x${string}`
           })) ?? [],
         nftsSoldToScout:

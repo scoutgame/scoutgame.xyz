@@ -2,12 +2,10 @@ import { log } from '@charmverse/core/log';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { cancelNftListingAction } from '@packages/scoutgame/nftListing/cancelNftListingAction';
 import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { cancelSeaportListing } from '@packages/scoutgame/seaport/cancelSeaportListing';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { fancyTrim } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -19,7 +17,6 @@ import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 import { Dialog } from '../Dialog';
 
 export function NFTListingEditButton({ listing }: { listing: NonNullable<BuilderInfo['listings']>[number] }) {
-  const isOnchain = isOnchainPlatform();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
@@ -37,9 +34,7 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
     }
   });
 
-  const listingPrice = isOnchain
-    ? Number(BigInt(listing.price) / BigInt(10 ** devTokenDecimals))
-    : Number(listing.price) / 10 ** builderTokenDecimals;
+  const listingPrice = Number(BigInt(listing.price) / BigInt(10 ** devTokenDecimals));
 
   const ownerAddress = listing.order.parameters.consideration[0].recipient;
 
@@ -101,7 +96,7 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
       >
         <Button variant='text' fullWidth>
           <Typography color='secondary'>{listingPrice} &nbsp;</Typography>
-          {isOnchain ? 'DEV' : <Image src='/images/crypto/usdc.png' alt='usdc' width={18} height={18} />}
+          DEV
         </Button>
         <Tooltip title='Delist your nft listing'>
           <div>

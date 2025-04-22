@@ -3,13 +3,11 @@ import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { purchaseNftListingAction } from '@packages/scoutgame/nftListing/purchaseNftListingAction';
 import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { purchaseSeaportListing } from '@packages/scoutgame/seaport/purchaseSeaportListing';
 import { nftListingErc20Address } from '@packages/scoutgame/seaport/recordSeaportListing';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -40,7 +38,6 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
 
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId } = useAccount();
-  const isOnchain = isOnchainPlatform();
   const { switchChainAsync } = useSwitchChain();
 
   const { allowance, refreshAllowance } = useGetERC20Allowance({
@@ -62,9 +59,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
     }
   });
 
-  const listingPrice = isOnchain
-    ? Number(BigInt(listing.price) / BigInt(10 ** devTokenDecimals))
-    : Number(listing.price) / 10 ** builderTokenDecimals;
+  const listingPrice = Number(BigInt(listing.price) / BigInt(10 ** devTokenDecimals));
 
   async function handlePurchase() {
     if (!address) {
@@ -144,8 +139,8 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
           erc20Address={nftListingErc20Address}
           amount={BigInt(listing.price)}
           onSuccess={() => refreshAllowance()}
-          decimals={isOnchain ? devTokenDecimals : builderTokenDecimals}
-          currency={isOnchain ? 'DEV' : 'USDC'}
+          decimals={devTokenDecimals}
+          currency='DEV'
           actionType='purchase'
         />
       ) : (
@@ -163,8 +158,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
           disabled={!address}
           loading={isLoading || isExecuting}
         >
-          {listingPrice} &nbsp;
-          {isOnchain ? 'DEV' : <Image src='/images/crypto/usdc.png' alt='usdc' width={18} height={18} />}
+          {listingPrice} &nbsp; DEV
         </LoadingButton>
       )}
     </Stack>

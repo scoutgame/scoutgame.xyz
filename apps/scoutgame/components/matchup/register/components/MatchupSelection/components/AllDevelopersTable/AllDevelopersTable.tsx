@@ -3,8 +3,8 @@
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
 import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import type { DeveloperMetadata, DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { getSXProps } from '@packages/scoutgame-ui/components/common/Hidden';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
@@ -215,7 +215,7 @@ export function AllDevelopersTable({
                   builder={{
                     ...builder,
                     builderStatus: 'approved',
-                    price: BigInt(2 * 10 ** builderTokenDecimals)
+                    price: BigInt(2 * 10 ** devTokenDecimals)
                   }}
                   type='starter_pack'
                 />
