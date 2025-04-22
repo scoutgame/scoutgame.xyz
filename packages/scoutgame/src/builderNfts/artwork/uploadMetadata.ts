@@ -108,12 +108,15 @@ export async function uploadMetadata({
   attributes?: { trait_type: string; value: string | number }[];
   starterPack?: boolean;
 }): Promise<string> {
+  let contractName = starterPack ? getBuilderNftStarterPackContractAddress(season) : builderNftArtworkContractName;
+  contractName = contractName || 'default';
+
   // Define the S3 path for metadata
   const metadataPath = getNftTokenUrlPath({
     season,
     tokenId: Number(tokenId),
     filename: starterPack ? 'starter-pack-metadata.json' : 'metadata.json',
-    contractName: starterPack ? getBuilderNftStarterPackContractAddress(season) : builderNftArtworkContractName
+    contractName
   });
 
   // Generate the metadata object
@@ -125,7 +128,7 @@ export async function uploadMetadata({
       season,
       tokenId: Number(tokenId),
       filename: starterPack ? 'starter-pack-artwork.png' : 'artwork.png',
-      contractName: starterPack ? getBuilderNftStarterPackContractAddress(season) : builderNftArtworkContractName
+      contractName
     })}`,
     attributes: attributes || []
   };

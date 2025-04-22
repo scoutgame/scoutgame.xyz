@@ -21,9 +21,16 @@ export async function processOnchainGemsPayout(
     return;
   }
 
+  const contractAddress = scoutProtocolBuilderNftContractAddress;
+
+  if (!contractAddress) {
+    log.warn('Gems Payout: No contract address found for season', { season });
+    return;
+  }
+
   const tokenBalances = await resolveTokenOwnership({
     chainId: scoutProtocolChainId,
-    contractAddress: scoutProtocolBuilderNftContractAddress,
+    contractAddress,
     week
   });
 

@@ -37,7 +37,10 @@ export async function registerBuilderNFT({
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
 
-  const minterClient = getBuilderNftContractMinterClient();
+  const minterClient = getBuilderNftContractMinterClient(season);
+  if (!minterClient) {
+    throw new Error(`Minter client not found for season ${season}`);
+  }
 
   const existingBuilderNft = await prisma.builderNft.findFirst({
     where: {

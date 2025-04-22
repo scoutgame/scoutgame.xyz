@@ -1,17 +1,16 @@
 import { log } from '@charmverse/core/log';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { getCurrentSeason } from '@packages/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { scoutProtocolChain } from '../../../protocol/constants';
 import { getBuilderNftStarterPackContractAddress } from '../../constants';
 
 import { ScoutGameStarterPackNFTImplementationClient } from './wrappers/ScoutGameStarterPackNFTImplementation';
 
-export function getBuilderNftStarterPackReadonlyClient() {
-  const season = getCurrentSeason();
-  const contractAddress = getBuilderNftStarterPackContractAddress(season.start);
+export function getBuilderNftStarterPackReadonlyClient(season = getCurrentSeasonStart()) {
+  const contractAddress = getBuilderNftStarterPackContractAddress(season);
   if (!contractAddress) {
-    log.warn(`starter pack contract address missing for season ${season.start}`);
+    log.warn(`starter pack contract address missing for season ${season}`);
     return null;
   }
   return new ScoutGameStarterPackNFTImplementationClient({

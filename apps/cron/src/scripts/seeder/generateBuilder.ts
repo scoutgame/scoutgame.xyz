@@ -37,45 +37,49 @@ export async function generateBuilder({ tokenId }: { tokenId: number }) {
 
   let builderNft: undefined | Prisma.BuilderNftCreateWithoutBuilderInput;
   if (builderStatus === 'approved') {
-    const nftImageBuffer = await generateArtwork({
-      avatar,
-      displayName,
-      tokenId
-    });
+    const contractAddress = getBuilderNftContractAddress(getCurrentSeasonStart());
+    // draft seasons do not have a contract address
+    if (contractAddress) {
+      const nftImageBuffer = await generateArtwork({
+        avatar,
+        displayName,
+        tokenId
+      });
 
-    // images will be hosted by the
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = dirname(__filename);
-    const scoutgamePublicFolder = join(
-      __dirname,
-      '..',
-      '..',
-      '..',
-      '..',
-      '..',
-      'apps',
-      'scoutgame',
-      'public',
-      'builder-nfts'
-    );
-    try {
-      await fs.mkdir(scoutgamePublicFolder);
-    } catch (e) {
-      if ((e as any).code !== 'EEXIST') {
-        console.error(e);
+      // images will be hosted by the
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = dirname(__filename);
+      const scoutgamePublicFolder = join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        'apps',
+        'scoutgame',
+        'public',
+        'builder-nfts'
+      );
+      try {
+        await fs.mkdir(scoutgamePublicFolder);
+      } catch (e) {
+        if ((e as any).code !== 'EEXIST') {
+          console.error(e);
+        }
       }
-    }
-    await fs.writeFile(`${scoutgamePublicFolder}/${tokenId}.png`, new Uint8Array(nftImageBuffer));
+      await fs.writeFile(`${scoutgamePublicFolder}/${tokenId}.png`, new Uint8Array(nftImageBuffer));
 
-    builderNft = {
-      id: faker.string.uuid(),
-      chainId: nftChain.id,
-      contractAddress: getBuilderNftContractAddress(getCurrentSeasonStart()),
-      currentPrice: faker.number.int({ min: 1000000, max: 10000000 }),
-      season: getCurrentSeasonStart(),
-      tokenId,
-      imageUrl: `http://localhost:3000/builder-nfts/${tokenId}.png`
-    };
+      builderNft = {
+        id: faker.string.uuid(),
+        chainId: nftChain.id,
+        contractAddress,
+        currentPrice: faker.number.int({ min: 1000000, max: 10000000 }),
+        season: getCurrentSeasonStart(),
+        tokenId,
+        imageUrl: `http://localhost:3000/builder-nfts/${tokenId}.png`
+      };
+    }
   }
   if (builderNft) {
     await prisma.builderNft

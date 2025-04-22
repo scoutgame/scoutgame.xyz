@@ -6,9 +6,7 @@ import { getPreSeasonTwoBuilderNftContractReadonlyClient } from './preseason02/g
 import { getSeasonOneBuilderNftContractMinterClient } from './season01/getSeasonOneBuilderNftContractMinterClient';
 import { getSeasonOneBuilderNftContractReadonlyClient } from './season01/getSeasonOneBuilderNftContractReadonlyClient';
 
-export function getBuilderNftContractReadonlyClient() {
-  const season = getCurrentSeasonStart();
-
+export function getBuilderNftContractReadonlyClient(season = getCurrentSeasonStart()) {
   switch (season) {
     case '2025-W18':
       return getSeasonOneBuilderNftContractReadonlyClient();
@@ -20,9 +18,7 @@ export function getBuilderNftContractReadonlyClient() {
   }
 }
 
-export function getBuilderNftContractMinterClient() {
-  const season = getCurrentSeasonStart();
-
+export function getBuilderNftContractMinterClient(season = getCurrentSeasonStart()) {
   switch (season) {
     case '2025-W18':
       return getSeasonOneBuilderNftContractMinterClient();

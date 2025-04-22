@@ -33,6 +33,11 @@ export async function findAndIndexMissingPurchases({
 
   const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
 
+  if (!contractAddress) {
+    scoutgameMintsLogger.warn('No contract address found for nft type', { nftType, season });
+    return;
+  }
+
   const transferSingleEvents = await getTransferSingleWithBatchMerged({
     fromBlock: startBlockNumber,
     contractAddress,
