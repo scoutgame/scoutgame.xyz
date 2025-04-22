@@ -16,7 +16,7 @@ export type DecentTransactionProps = {
   address: Address;
   sourceChainId: number;
   sourceToken: Address;
-  paymentAmountIn: bigint;
+  amount: bigint;
   enabled: boolean;
 };
 
@@ -55,7 +55,7 @@ async function prepareDecentV4Transaction({
 
 export function useDecentV4Transaction({
   address,
-  paymentAmountIn,
+  amount,
   sourceChainId,
   sourceToken,
   enabled = true
@@ -69,8 +69,8 @@ export function useDecentV4Transaction({
     slippage: 1,
     actionType: ActionType.SwapAction,
     actionConfig: {
-      amount: paymentAmountIn,
-      swapDirection: SwapDirection.EXACT_AMOUNT_IN,
+      amount,
+      swapDirection: SwapDirection.EXACT_AMOUNT_OUT,
       receiverAddress: DRAFT_BID_RECIPIENT_ADDRESS,
       chainId: sourceChainId
     }
@@ -95,7 +95,7 @@ export function useDecentV4Transaction({
         log.info(`Retrying decent tx`, { decentAPIParams, error });
         return true;
       },
-      errorRetryInterval: 1000
+      errorRetryInterval: 2500
     }
   );
 
