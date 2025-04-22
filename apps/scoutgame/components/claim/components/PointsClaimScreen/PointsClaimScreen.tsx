@@ -4,10 +4,11 @@ import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
 import { ScoutProtocolImplementationClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
-import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerReward/getPartnerRewardsForScout';
+import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
+import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import {
   getScoutProtocolAddress,
@@ -33,29 +34,6 @@ import { BonusPartnersDisplay } from './BonusPartnersDisplay';
 import { PartnerRewardsClaimButton } from './PartnerRewardsClaimButton/PartnerRewardsClaimButton';
 import { PointsClaimButton } from './PointsClaimButton';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
-
-const PartnerRewardRecord: Record<string, { label: string; icon: string; chain: string }> = {
-  optimism_new_scout: {
-    label: 'New Scout',
-    icon: '/images/crypto/op.png',
-    chain: 'Optimism'
-  },
-  optimism_referral_champion: {
-    label: 'Referral Champion',
-    icon: '/images/crypto/op.png',
-    chain: 'Optimism'
-  },
-  octant_base_contribution: {
-    label: 'Octant Base Contribution',
-    icon: '/images/crypto/usdc.png',
-    chain: 'Base'
-  },
-  matchup_rewards: {
-    label: 'Matchup Rewards',
-    icon: '/images/crypto/op.png',
-    chain: 'Optimism'
-  }
-};
 
 type PointsClaimScreenProps = {
   totalUnclaimedPoints: number;
@@ -188,7 +166,7 @@ function PointsClaimScreenComponent({
           <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
             Congratulations!
           </Typography>
-          {totalUnclaimedPoints ? (
+          {totalUnclaimedPoints || partnerRewards.length > 0 ? (
             <>
               <Typography variant='h5' textAlign='center'>
                 You have earned {isOnchainPlatform() ? 'DEV Tokens' : 'Scout Points'}!
@@ -255,15 +233,15 @@ function PointsClaimScreenComponent({
                         md: 200
                       }}
                     >
-                      {PartnerRewardRecord[reward.partner].label} (Week {reward.week})
+                      {partnerRewardRecord[reward.partner].label} (Week {reward.week})
                     </Typography>
                     <Stack flexDirection='row' alignItems='center' gap={1}>
                       <Typography>{reward.amount.toLocaleString()}</Typography>
-                      <Image width={25} height={25} src={PartnerRewardRecord[reward.partner].icon} alt='Scouts' />
+                      <Image width={25} height={25} src={partnerRewardRecord[reward.partner].icon} alt='Scouts' />
                     </Stack>
                     <PartnerRewardsClaimButton
                       partnerReward={reward}
-                      chain={PartnerRewardRecord[reward.partner].chain}
+                      chain={partnerRewardRecord[reward.partner].chain}
                     />
                   </Stack>
                 ))}

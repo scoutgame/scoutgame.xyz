@@ -5,11 +5,11 @@ import { capitalize } from '@packages/utils/strings';
 import React from 'react';
 import type { CSSProperties } from 'react';
 
-import type { BonusPartner } from '../../../bonus';
-import { bonusPartnersRecord } from '../../../bonus';
 import type { BuilderActivity } from '../../../builders/getBuilderActivities';
 import type { BuilderScouts } from '../../../builders/getBuilderScouts';
 import type { BuilderStats } from '../../../builders/getBuilderStats';
+import { bonusPartnersRecord } from '../../../partnerRewards/constants';
+import type { BonusPartner } from '../../../partnerRewards/constants';
 
 export function BuilderShareImage({
   nftImageUrl,

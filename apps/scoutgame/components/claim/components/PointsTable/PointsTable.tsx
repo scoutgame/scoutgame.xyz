@@ -2,7 +2,7 @@
 
 import { Paper, Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
 import { getCurrentSeasonWeekNumber } from '@packages/dates/utils';
-import type { PartnerReward } from '@packages/scoutgame/partnerReward/getPartnerRewardsForScout';
+import type { PartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type { PointsReceiptReward } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 import { useMemo, type ReactNode } from 'react';
 

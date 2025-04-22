@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getWeekStartEnd, getDateFromISOWeek } from '@packages/dates/utils';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 
 export async function getBuilderEventsForPartnerRewards({
   week,

@@ -4,7 +4,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { sendDiscordAlert } from '@packages/discord/sendDiscordAlert';
 import { MATCHUP_OP_PRIZE } from '@packages/matchup/config';
-import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
+import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { formatUnits, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';

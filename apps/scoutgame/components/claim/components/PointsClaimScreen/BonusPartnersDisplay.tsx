@@ -1,8 +1,8 @@
 'use client';
 
 import { Stack, Tooltip } from '@mui/material';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
-import { bonusPartnersRecord } from '@packages/scoutgame/bonus';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
+import { bonusPartnersRecord } from '@packages/scoutgame/partnerRewards/constants';
 import Image from 'next/image';
 
 export function BonusPartnersDisplay({

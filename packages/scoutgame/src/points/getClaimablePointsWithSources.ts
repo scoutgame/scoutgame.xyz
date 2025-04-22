@@ -4,7 +4,7 @@ import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/da
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 
-import type { BonusPartner } from '../bonus';
+import type { BonusPartner } from '../partnerReward/constants';
 
 import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
 import { getClaimablePoints } from './getClaimablePoints';
