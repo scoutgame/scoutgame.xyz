@@ -105,7 +105,6 @@ function PaymentOptionSelector(
     selectedTokenBalance,
     address,
     disabled,
-    prices,
     tokensWithBalances,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
@@ -119,10 +118,6 @@ function PaymentOptionSelector(
       balance: number;
     }[];
     address: Address;
-    prices?: {
-      eth: number;
-      dev: number;
-    };
     disabled?: boolean;
   },
   ref: Ref<unknown>
@@ -135,16 +130,6 @@ function PaymentOptionSelector(
         <Typography color='secondary' fontWeight={500}>
           Select Tokens
         </Typography>
-        {selectedPaymentOption.currency === 'ETH' && prices?.eth && (
-          <Typography align='right' fontWeight={500}>
-            1 ETH = ${prices.eth.toFixed(4)}
-          </Typography>
-        )}
-        {selectedPaymentOption.currency === 'DEV' && prices?.dev && (
-          <Typography align='right' fontWeight={500}>
-            1 DEV = ${prices.dev.toFixed(4)}
-          </Typography>
-        )}
       </Stack>
       <Box>
         <Select<SelectedPaymentOption>

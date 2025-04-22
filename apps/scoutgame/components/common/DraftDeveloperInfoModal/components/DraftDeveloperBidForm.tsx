@@ -14,9 +14,9 @@ import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
-import useSWR from 'swr';
+import { toast } from 'sonner';
 import type { Address } from 'viem';
-import { parseUnits } from 'viem';
+import { formatUnits, parseUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { ERC20ApproveButton } from '../../NFTPurchaseDialog/components/ERC20Approve';
@@ -67,16 +67,6 @@ function DraftDeveloperBidFormComponent({
     decimals: DEV_PAYMENT_OPTION.decimals
   });
 
-  // Fetch ETH and TALENT prices from CoinGecko
-  const { data: prices, isLoading: isLoadingPrices } = useSWR('token-prices', async () => {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-    const data = await response.json();
-    return {
-      eth: data.ethereum.usd as number,
-      dev: 0.02
-    };
-  });
-
   const { tokens, isLoading: isLoadingTokenBalances } = useGetTokenBalances({
     address
   });
@@ -93,23 +83,35 @@ function DraftDeveloperBidFormComponent({
     };
   }, [tokens, selectedPaymentOption]);
 
+  const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentV4Transaction({
+    address,
+    sourceChainId: selectedPaymentOption.chainId,
+    sourceToken: selectedPaymentOption.address,
+    enabled: !!(selectedPaymentOption.currency !== 'DEV' && selectedTokenBalance),
+    amount: parseUnits(bidAmount, 18)
+  });
+
+  const tokenPaymentValue =
+    decentTransactionInfo && 'tokenPayment' in decentTransactionInfo
+      ? BigInt((decentTransactionInfo.tokenPayment?.amount?.toString() ?? '0').replace('n', ''))
+      : BigInt(0);
+
+  const exchangeRate = Number(formatUnits(tokenPaymentValue, selectedPaymentOption.decimals)) / Number(bidAmount);
+
   const paymentOptionBidAmount = useMemo(() => {
     if (selectedPaymentOption.currency === 'DEV') {
       return Number(debouncedBidAmount);
     }
 
-    if (prices && !isLoadingPrices) {
-      if (selectedPaymentOption.currency === 'ETH') {
-        return ceilToPrecision((Number(debouncedBidAmount) * prices.dev) / prices.eth, 6);
-      }
-
-      if (selectedPaymentOption.currency === 'USDC') {
-        return ceilToPrecision(Number(debouncedBidAmount) * prices.dev, 2);
-      }
+    if (exchangeRate) {
+      return ceilToPrecision(
+        Number(debouncedBidAmount) * exchangeRate,
+        selectedPaymentOption.currency === 'ETH' ? 6 : 4
+      );
     }
 
     return null;
-  }, [debouncedBidAmount, selectedPaymentOption, prices, isLoadingPrices]);
+  }, [debouncedBidAmount, selectedPaymentOption, exchangeRate]);
 
   // Validate bid amount whenever it changes
   useEffect(() => {
@@ -137,16 +139,6 @@ function DraftDeveloperBidFormComponent({
 
     setCustomError(null);
   }, [debouncedBidAmount, selectedTokenBalance, selectedPaymentOption, paymentOptionBidAmount]);
-
-  const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentV4Transaction({
-    address,
-    sourceChainId: selectedPaymentOption.chainId,
-    sourceToken: selectedPaymentOption.address,
-    enabled: !!(selectedPaymentOption.currency !== 'DEV' && selectedTokenBalance),
-    paymentAmountIn: paymentOptionBidAmount
-      ? parseUnits(paymentOptionBidAmount.toFixed(selectedPaymentOption.decimals), selectedPaymentOption.decimals)
-      : BigInt(0)
-  });
 
   const selectedChainCurrency = selectedPaymentOption.address;
 
@@ -201,7 +193,11 @@ function DraftDeveloperBidFormComponent({
       onCancel();
     } catch (error) {
       log.error('Error submitting bid:', { error, address, developerId });
-      setCustomError('Failed to submit bid. Please try again.');
+      if ((error as Error).message.includes('rejected')) {
+        toast.error('Transaction rejected');
+      } else {
+        setCustomError('Failed to submit bid. Please try again.');
+      }
     } finally {
       setIsConfirmingBid(false);
     }
@@ -222,7 +218,6 @@ function DraftDeveloperBidFormComponent({
   }, [chainId, selectedPaymentOption.chainId, switchChainAsync]);
 
   const isLoading =
-    isLoadingPrices ||
     isLoadingTokenBalances ||
     (selectedPaymentOption.currency !== 'DEV' && isLoadingDecentSdk) ||
     isSavingDraftTransaction ||
@@ -237,7 +232,6 @@ function DraftDeveloperBidFormComponent({
           setBidAmount(MIN_DEV_BID.toString());
           setSelectedPaymentOption(option);
         }}
-        prices={prices}
         selectedTokenBalance={selectedTokenBalance}
         disabled={isLoading}
         tokensWithBalances={tokens}
