@@ -46,7 +46,8 @@ export async function GET() {
 
   const users = await prisma.scout.findMany({
     where: {
-      deletedAt: null
+      deletedAt: null,
+      id: 'f4e7cc3d-be93-420a-b49b-401dddd380e9'
     },
     select: {
       id: true,
@@ -143,7 +144,12 @@ export async function GET() {
     }
   });
 
-  const { pointsPerScout: estimatedPointsPerScout } = await getEstimatedPointsForWeek({ week: getCurrentWeek() });
+  let estimatedPointsPerScout: Record<string, number> = {};
+  try {
+    ({ pointsPerScout: estimatedPointsPerScout } = await getEstimatedPointsForWeek({ week: getCurrentWeek() }));
+  } catch (error) {
+    // console.error(error);
+  }
 
   const rows: ScoutWithGithubUser[] = users.flatMap((user): ScoutWithGithubUser | ScoutWithGithubUser[] => {
     const allUserPurchaseEvents = user.wallets
