@@ -2,6 +2,7 @@ import type { PartnerRewardPayoutContractProvider } from '@charmverse/core/prism
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getDateFromISOWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
 type PartnerRewardBase<T> = T & {
@@ -52,7 +53,10 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
   const partnerRewards = await prisma.partnerRewardPayout.findMany({
     where: {
       payoutContract: {
-        season: getCurrentSeasonStart()
+        createdAt: {
+          // payouts expire after 30 days
+          gte: DateTime.now().minus({ days: 30 }).toJSDate()
+        }
       },
       wallet: {
         scout: {

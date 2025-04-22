@@ -2,7 +2,7 @@
 
 import { LoadingButton } from '@mui/lab';
 import { Button, Dialog, Stack, Tooltip, Typography } from '@mui/material';
-import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
+import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerReward/getPartnerRewardsForScout';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';

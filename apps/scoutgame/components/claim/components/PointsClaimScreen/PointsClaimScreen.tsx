@@ -7,8 +7,8 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { BonusPartner } from '@packages/scoutgame/bonus';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
 import { ScoutProtocolImplementationClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
+import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerReward/getPartnerRewardsForScout';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
-import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
 import {
   getScoutProtocolAddress,
   scoutProtocolChain,
