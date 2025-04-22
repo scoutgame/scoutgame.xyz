@@ -1,5 +1,4 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
@@ -35,9 +34,7 @@ export async function uploadShareImage({
     activities,
     stats,
     builderScouts,
-    builderPrice: isOnchainPlatform()
-      ? (Number(builderNft?.currentPrice || 0) / 10 ** devTokenDecimals).toFixed(2)
-      : convertCostToPoints(builderNft?.currentPrice || BigInt(0)).toFixed(2)
+    builderPrice: (Number(builderNft?.currentPrice || 0) / 10 ** devTokenDecimals).toFixed(2)
   });
 
   if (!builderNftArtworkContractName) {

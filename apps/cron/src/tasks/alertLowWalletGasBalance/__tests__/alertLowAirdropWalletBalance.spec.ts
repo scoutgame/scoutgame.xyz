@@ -12,7 +12,7 @@ jest.unstable_mockModule('@packages/blockchain/getPublicClient', () => ({
   getPublicClient: jest.fn()
 }));
 
-jest.unstable_mockModule('@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward', () => ({
+jest.unstable_mockModule('@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward', () => ({
   getBuilderEventsForPartnerRewards: jest.fn()
 }));
 
@@ -37,7 +37,7 @@ const { prisma } = await import('@charmverse/core/prisma-client');
 const { getPublicClient } = await import('@packages/blockchain/getPublicClient');
 const { getCurrentWeek } = await import('@packages/dates/utils');
 const { getBuilderEventsForPartnerRewards } = await import(
-  '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward'
+  '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward'
 );
 const { getReferralsToReward } = await import('@packages/scoutgame/quests/getReferralsToReward');
 const { getNewScoutRewards } = await import('@packages/scoutgame/scouts/getNewScoutRewards');

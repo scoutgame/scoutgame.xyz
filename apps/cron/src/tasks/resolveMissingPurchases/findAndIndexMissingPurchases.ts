@@ -10,13 +10,10 @@ import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builder
 import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { nftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
-import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { recordOnchainNftMint } from '@packages/scoutgame/builderNfts/recordOnchainNftMint';
-import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { prefix0x } from '@packages/utils/prefix0x';
 import type { Address } from 'viem';
 
@@ -185,9 +182,7 @@ export async function findAndIndexMissingPurchases({
               blockNumber: missingTx.blockNumber
             }));
 
-        const asPoints = isOnchainPlatform()
-          ? Number(price / BigInt(10 ** devTokenDecimals))
-          : convertCostToPoints(price);
+        const asPoints = Number(price / BigInt(10 ** devTokenDecimals));
 
         const singleEvent = transferSingleEventsMapped[uniqueNftPurchaseEventKey(missingTx)];
 
@@ -197,43 +192,31 @@ export async function findAndIndexMissingPurchases({
           scoutgameMintsLogger.error(`Tx ${missingTx.transactionHash} has no recipient address`);
         }
 
-        if (isOnchainPlatform()) {
-          const _sentAt = await getPublicClient(nftChain.id)
-            .getBlock({
-              blockNumber: singleEvent.blockNumber
-            })
-            .then((block) => Number(block.timestamp) * 1000);
+        const _sentAt = await getPublicClient(nftChain.id)
+          .getBlock({
+            blockNumber: singleEvent.blockNumber
+          })
+          .then((block) => Number(block.timestamp) * 1000);
 
-          const scout = await prisma.scoutWallet.findUniqueOrThrow({
-            where: {
-              address: singleEvent.args.to.toLowerCase() as `0x${string}`
-            },
-            select: {
-              scoutId: true
-            }
-          });
+        const scout = await prisma.scoutWallet.findUniqueOrThrow({
+          where: {
+            address: singleEvent.args.to.toLowerCase() as `0x${string}`
+          },
+          select: {
+            scoutId: true
+          }
+        });
 
-          await recordOnchainNftMint({
-            amount: Number(singleEvent.args.value),
-            pointsValue: asPoints,
-            builderNftId: matchingNft.id,
-            recipientAddress: address.toLowerCase() as Address,
-            txHash: missingTx.transactionHash,
-            txLogIndex: missingTx.logIndex,
-            scoutId: scout.scoutId,
-            sentAt: new Date(_sentAt)
-          });
-        } else {
-          await recordNftMint({
-            amount: Number(missingTx.args.value),
-            mintTxHash: missingTx.transactionHash,
-            paidWithPoints: false,
-            pointsValue: asPoints,
-            builderNftId: matchingNft.id,
-            recipientAddress: address,
-            mintTxLogIndex: missingTx.logIndex
-          });
-        }
+        await recordOnchainNftMint({
+          amount: Number(singleEvent.args.value),
+          pointsValue: asPoints,
+          builderNftId: matchingNft.id,
+          recipientAddress: address.toLowerCase() as Address,
+          txHash: missingTx.transactionHash,
+          txLogIndex: missingTx.logIndex,
+          scoutId: scout.scoutId,
+          sentAt: new Date(_sentAt)
+        });
 
         scoutgameMintsLogger.info('Resolved missing purchase', {
           missingTxHash: missingTx.transactionHash,

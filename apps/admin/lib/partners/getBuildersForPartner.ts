@@ -1,5 +1,5 @@
-import type { BonusPartner } from '@packages/scoutgame/bonus';
-import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerReward/getBuilderEventsForPartnerReward';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
+import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
 
 export async function getBuildersForPartner({ week, bonusPartner }: { week: string; bonusPartner: BonusPartner }) {
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner });

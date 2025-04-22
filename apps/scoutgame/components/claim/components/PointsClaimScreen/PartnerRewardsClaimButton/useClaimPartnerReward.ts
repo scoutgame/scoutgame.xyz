@@ -1,8 +1,8 @@
 import { log } from '@charmverse/core/log';
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { checkPartnerRewardEligibilityAction } from '@packages/scoutgame/partnerReward/checkPartnerRewardEligibilityAction';
-import { updatePartnerRewardPayoutAction } from '@packages/scoutgame/partnerReward/updatePartnerRewardPayoutAction';
+import { checkPartnerRewardEligibilityAction } from '@packages/scoutgame/partnerRewards/checkPartnerRewardEligibilityAction';
+import { updatePartnerRewardPayoutAction } from '@packages/scoutgame/partnerRewards/updatePartnerRewardPayoutAction';
 import { useWalletSanctionCheck } from '@packages/scoutgame-ui/hooks/api/wallets';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAction } from 'next-safe-action/hooks';

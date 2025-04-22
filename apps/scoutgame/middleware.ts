@@ -8,7 +8,7 @@ import { isAirdropLive } from './lib/airdrop/checkAirdropDates';
 
 // These are the links that are only accessible to logged in users
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
-const disabledDraftLinks = ['/scout', '/developers', '/projects'];
+const disabledDraftLinks = ['/scout', '/developers', '/profile/projects'];
 
 export async function middleware(request: NextRequest) {
   const session = await getSession();
@@ -28,8 +28,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (draftSeason) {
-    if (path === '/airdrop' && !airdropLive) {
-      return NextResponse.redirect(new URL('/', request.url));
+    if ((path === '/airdrop' && !airdropLive) || path.startsWith('/u/')) {
+      return NextResponse.redirect(new URL(isLoggedIn ? '/draft/register' : '/draft', request.url));
     }
 
     if (disabledDraftLinks.some((link) => path.startsWith(link))) {

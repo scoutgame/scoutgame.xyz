@@ -1,7 +1,6 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { uniqueValues } from '@packages/utils/array';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { devTokenDecimals } from '../protocol/constants';
 
@@ -102,8 +101,6 @@ export async function searchBuilders({
     scoutedBy: uniqueValues(
       builder.builderNfts?.[0]?.nftSoldEvents?.flatMap((event) => event.scoutWallet?.scoutId) ?? []
     ).length,
-    price: isOnchainPlatform()
-      ? Number(BigInt(builder.builderNfts?.[0]?.currentPriceDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
-      : Number(builder.builderNfts?.[0]?.currentPrice ?? 0)
+    price: Number(BigInt(builder.builderNfts?.[0]?.currentPriceDevToken ?? 0) / BigInt(10 ** devTokenDecimals))
   }));
 }

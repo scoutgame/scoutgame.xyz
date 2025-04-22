@@ -1,7 +1,6 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
 import type { NftListing } from '../builders/interfaces';
@@ -69,12 +68,10 @@ export async function getDeveloperNftListings(developerId: string): Promise<NftL
     }
   });
 
-  const isOnchain = isOnchainPlatform();
-
   return developerNftListings.map(({ builderNft, seller, ...rest }) => ({
     ...rest,
     scoutId: seller.scoutId,
-    price: isOnchain ? BigInt(rest.priceDevToken ?? 0) : BigInt(rest.price ?? 0),
+    price: BigInt(rest.priceDevToken ?? 0),
     contractAddress: builderNft.contractAddress as Address,
     order: rest.order as OrderWithCounter
   }));

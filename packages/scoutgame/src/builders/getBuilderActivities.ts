@@ -3,8 +3,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
-import type { BonusPartner } from '../bonus';
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
+import type { BonusPartner } from '../partnerRewards/constants';
 
 export type BuilderActivityType = 'nft_purchase' | 'merged_pull_request';
 

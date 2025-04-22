@@ -14,7 +14,7 @@ import {
   Typography
 } from '@mui/material';
 import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getWeekFromDate } from '@packages/dates/utils';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 
 import { WeekValue } from './AirdropMetrics';
 

@@ -7,7 +7,6 @@ import {
   DecentTxFailedPermanently,
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import {
@@ -18,7 +17,6 @@ import {
 
 import { recordNftMint } from './recordNftMint';
 import { recordOnchainNftMint } from './recordOnchainNftMint';
-import { convertCostToPoints } from './utils';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
 export async function handlePendingTransaction({
@@ -111,9 +109,7 @@ export async function handlePendingTransaction({
 
       const pendingTxContractAddress = pendingTx.contractAddress.toLowerCase();
 
-      const pointsValue = isOnchainPlatform()
-        ? Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier)
-        : convertCostToPoints(pendingTx.targetAmountReceived);
+      const pointsValue = Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier);
 
       if (
         pendingTxContractAddress === scoutProtocolBuilderNftContractAddress?.toLowerCase() ||

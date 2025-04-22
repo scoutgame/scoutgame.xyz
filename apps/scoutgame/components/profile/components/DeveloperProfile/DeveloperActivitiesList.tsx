@@ -1,8 +1,8 @@
 import { Paper, Stack, Typography } from '@mui/material';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
-import { bonusPartnersRecord } from '@packages/scoutgame/bonus';
 import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
 import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getBuilderActivities';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
+import { bonusPartnersRecord } from '@packages/scoutgame/partnerRewards/constants';
 import { GemsIcon, TransactionIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { getRelativeTime } from '@packages/utils/dates';
 import Image from 'next/image';

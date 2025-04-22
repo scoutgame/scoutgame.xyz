@@ -1,8 +1,8 @@
 import env from '@beam-australia/react-env';
-import { isOnchainPlatform, getPlatform } from '@packages/utils/platform';
-import { base, baseSepolia, optimism } from 'viem/chains';
+import { isProdEnv } from '@packages/utils/env';
+import { optimism, optimismSepolia } from 'viem/chains';
 
-export const scoutGameAttestationChain = getPlatform() === 'onchain_webapp' ? optimism : baseSepolia;
+export const scoutGameAttestationChain = isProdEnv ? optimism : optimismSepolia;
 
 export const scoutGameAttestationChainId = scoutGameAttestationChain.id;
 

@@ -6,7 +6,7 @@ import type {
   OptimismReferralChampionPartnerReward,
   OctantBaseContributionPartnerReward,
   PartnerReward
-} from '@packages/scoutgame/points/getPartnerRewards';
+} from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type {
   BuilderPointsReceiptReward,
   LeaderboardRankPointsReceiptReward,

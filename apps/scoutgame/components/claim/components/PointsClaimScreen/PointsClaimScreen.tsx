@@ -4,11 +4,12 @@ import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { BonusPartner } from '@packages/scoutgame/bonus';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
 import { ScoutProtocolImplementationClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
+import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
+import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
+import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
-import type { UnclaimedPartnerReward } from '@packages/scoutgame/points/getPartnerRewards';
 import {
   getScoutProtocolAddress,
   scoutProtocolChain,
@@ -17,7 +18,6 @@ import {
 } from '@packages/scoutgame/protocol/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -34,32 +34,8 @@ import { PartnerRewardsClaimButton } from './PartnerRewardsClaimButton/PartnerRe
 import { PointsClaimButton } from './PointsClaimButton';
 import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
 
-const PartnerRewardRecord: Record<string, { label: string; icon: string; chain: string }> = {
-  optimism_new_scout: {
-    label: 'New Scout',
-    icon: '/images/crypto/op.png',
-    chain: 'Optimism'
-  },
-  optimism_referral_champion: {
-    label: 'Referral Champion',
-    icon: '/images/crypto/op.png',
-    chain: 'Optimism'
-  },
-  octant_base_contribution: {
-    label: 'Octant Base Contribution',
-    icon: '/images/crypto/usdc.png',
-    chain: 'Base'
-  },
-  matchup_rewards: {
-    label: 'Matchup Rewards',
-    icon: '/images/crypto/op.png',
-    chain: 'Optimism'
-  }
-};
-
 type PointsClaimScreenProps = {
   totalUnclaimedPoints: number;
-  bonusPartners: BonusPartner[];
   partnerRewards: UnclaimedPartnerReward[];
   builders: {
     farcasterHandle?: string;
@@ -80,7 +56,6 @@ export function PointsClaimScreen(props: PointsClaimScreenProps) {
 
 function PointsClaimScreenComponent({
   totalUnclaimedPoints,
-  bonusPartners,
   partnerRewards,
   builders,
   repos,
@@ -103,6 +78,8 @@ function PointsClaimScreenComponent({
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
 
   const { data: walletClient } = useWalletClient();
+
+  const bonusPartners = partnerRewards.map((reward) => reward.partner);
 
   const handleClaim = async () => {
     await claimPoints();
@@ -191,7 +168,7 @@ function PointsClaimScreenComponent({
           {totalUnclaimedPoints ? (
             <>
               <Typography variant='h5' textAlign='center'>
-                You have earned {isOnchainPlatform() ? 'DEV Tokens' : 'Scout Points'}!
+                You have earned DEV Tokens!
               </Typography>
 
               <Stack
@@ -212,10 +189,7 @@ function PointsClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {(!isOnchainPlatform()
-                        ? totalUnclaimedPoints
-                        : totalUnclaimedPoints / 10 ** devTokenDecimals
-                      ).toLocaleString()}
+                      {(totalUnclaimedPoints / 10 ** devTokenDecimals).toLocaleString()}
                     </Typography>
                     <Image
                       width={35}
@@ -228,7 +202,7 @@ function PointsClaimScreenComponent({
                     <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
                   </Stack>
                 </Stack>
-                <Box width={{ xs: 'fit-content', md: '100%' }}>
+                <Box width={{ xs: 'fit-content', md: '100%' }} display='flex' justifyContent='center'>
                   {onchainClaimData ? (
                     connectedAddress !== onchainClaimData.address.toLowerCase() ? (
                       <WalletLogin />
@@ -255,15 +229,15 @@ function PointsClaimScreenComponent({
                         md: 200
                       }}
                     >
-                      {PartnerRewardRecord[reward.partner].label} (Week {reward.week})
+                      {partnerRewardRecord[reward.partner].label} (Week {reward.week})
                     </Typography>
                     <Stack flexDirection='row' alignItems='center' gap={1}>
                       <Typography>{reward.amount.toLocaleString()}</Typography>
-                      <Image width={25} height={25} src={PartnerRewardRecord[reward.partner].icon} alt='Scouts' />
+                      <Image width={25} height={25} src={partnerRewardRecord[reward.partner].icon} alt='Scouts' />
                     </Stack>
                     <PartnerRewardsClaimButton
                       partnerReward={reward}
-                      chain={PartnerRewardRecord[reward.partner].chain}
+                      chain={partnerRewardRecord[reward.partner].chain}
                     />
                   </Stack>
                 ))}
@@ -326,9 +300,7 @@ function PointsClaimScreenComponent({
             <Stack width='100%'>
               <PointsClaimSocialShare
                 isBuilder={repos.length > 0}
-                totalUnclaimedPoints={
-                  !isOnchainPlatform() ? result.data.claimedPoints : result.data.claimedPoints / 10 ** devTokenDecimals
-                }
+                totalUnclaimedPoints={result.data.claimedPoints / 10 ** devTokenDecimals}
                 builders={builders}
                 userPath={user.path}
                 week={result.data.week}

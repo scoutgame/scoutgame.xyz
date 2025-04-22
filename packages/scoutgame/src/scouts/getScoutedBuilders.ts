@@ -2,7 +2,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
 
@@ -144,9 +143,7 @@ export async function getScoutedBuilders({
           return null;
         }
 
-        const isOnchain = isOnchainPlatform();
-
-        const price = isOnchain ? BigInt(nft.currentPriceDevToken ?? 0) : BigInt(nft.currentPrice ?? 0);
+        const price = BigInt(nft.currentPriceDevToken ?? 0);
 
         const nftData: BuilderInfo = {
           id: builder.id,
@@ -162,14 +159,12 @@ export async function getScoutedBuilders({
           nftType: nft.nftType,
           gemsCollected: builder.userWeeklyStats[0]?.gemsCollected ?? 0,
           congratsImageUrl: nft.congratsImageUrl,
-          estimatedPayout: isOnchain
-            ? (Number(BigInt(nft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0)
-            : (nft.estimatedPayout ?? 0),
+          estimatedPayout: Number(BigInt(nft.estimatedPayoutDevToken ?? 0) / BigInt(10 ** devTokenDecimals)) ?? 0,
           level: builder.userSeasonStats[0]?.level ?? 0,
           listings: nft.listings.map(({ seller, ...listing }) => ({
             ...listing,
             scoutId: seller.scoutId,
-            price: isOnchain ? BigInt(listing.priceDevToken || 0) : listing.price || BigInt(0),
+            price: BigInt(listing.priceDevToken || 0),
             order: listing.order as OrderWithCounter,
             contractAddress: nft.contractAddress as Address
           }))

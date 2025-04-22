@@ -2,7 +2,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
 import { getEstimatedPointsForWeek } from '@packages/scoutgame/points/getEstimatedPointsForWeek';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -47,7 +46,8 @@ export async function GET() {
 
   const users = await prisma.scout.findMany({
     where: {
-      deletedAt: null
+      deletedAt: null,
+      id: 'f4e7cc3d-be93-420a-b49b-401dddd380e9'
     },
     select: {
       id: true,
@@ -144,7 +144,12 @@ export async function GET() {
     }
   });
 
-  const { pointsPerScout: estimatedPointsPerScout } = await getEstimatedPointsForWeek({ week: getCurrentWeek() });
+  let estimatedPointsPerScout: Record<string, number> = {};
+  try {
+    ({ pointsPerScout: estimatedPointsPerScout } = await getEstimatedPointsForWeek({ week: getCurrentWeek() }));
+  } catch (error) {
+    // console.error(error);
+  }
 
   const rows: ScoutWithGithubUser[] = users.flatMap((user): ScoutWithGithubUser | ScoutWithGithubUser[] => {
     const allUserPurchaseEvents = user.wallets
@@ -177,9 +182,7 @@ export async function GET() {
       fid: user.farcasterId || undefined,
       farcasterName: user.farcasterName || undefined,
       githubLogin: user.githubUsers[0]?.login,
-      currentBalance: isOnchainPlatform()
-        ? Number(BigInt(user.currentBalanceDevToken ?? 0) / BigInt(10 ** 18))
-        : user.currentBalance || 0,
+      currentBalance: Number(BigInt(user.currentBalanceDevToken ?? 0) / BigInt(10 ** 18)),
       currentWeekPoints: estimatedPointsPerScout[user.id] || 0,
       pointsEarnedTotal: estimatedPointsPerScout[user.id] || 0
     } as const;

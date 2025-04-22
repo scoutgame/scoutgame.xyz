@@ -1,5 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
+
+export type DeveloperScoutBid = {
+  id: string;
+  value: string;
+  createdAt: Date;
+};
 
 export type DraftDeveloper = {
   id: string;
@@ -10,24 +15,24 @@ export type DraftDeveloper = {
   seasonPoints: number;
   weeklyRanks: (number | null)[];
   rank: number;
+  bidsReceived: number;
+  scoutBids: DeveloperScoutBid[];
 };
 
 export type DraftDeveloperSort = 'all' | 'trending';
 
 export async function getDraftDevelopers({
   search,
-  sort
+  sort,
+  scoutId
 }: {
   search?: string;
   sort?: DraftDeveloperSort;
+  scoutId?: string;
 }): Promise<DraftDeveloper[]> {
-  const season = getPreviousSeason(getCurrentSeasonStart());
+  const season = '2025-W02';
 
-  if (!season) {
-    throw new Error('No draft season found');
-  }
-
-  const builders = await prisma.scout.findMany({
+  const developers = await prisma.scout.findMany({
     where: {
       AND: search
         ? [
@@ -55,6 +60,14 @@ export async function getDraftDevelopers({
       wallets: {
         some: {
           primary: true
+        }
+      },
+      userSeasonStats: {
+        some: {
+          season,
+          level: {
+            gt: 0
+          }
         }
       }
     },
@@ -85,31 +98,48 @@ export async function getDraftDevelopers({
       },
       draftSeasonOffersReceived: {
         select: {
-          id: true
+          id: true,
+          value: true,
+          createdAt: true,
+          makerWallet: {
+            select: {
+              scoutId: true
+            }
+          }
         }
       }
     }
   });
 
-  return builders
-    .map((builder) => ({
-      id: builder.id,
-      displayName: builder.displayName,
-      avatar: builder.avatar ?? '',
-      path: builder.path,
-      level: builder.userSeasonStats[0]?.level ?? 0,
-      seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
-      weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank) ?? [],
-      draftSeasonOffersReceived: builder.draftSeasonOffersReceived.length
+  const formattedDevelopers = developers
+    .map((developer) => ({
+      id: developer.id,
+      displayName: developer.displayName,
+      avatar: developer.avatar ?? '',
+      path: developer.path,
+      level: developer.userSeasonStats[0]?.level ?? 0,
+      seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
+      weeklyRanks: developer.userWeeklyStats.map((rank) => rank.rank) ?? [],
+      bidsReceived: developer.draftSeasonOffersReceived.length,
+      scoutBids: scoutId ? developer.draftSeasonOffersReceived.filter((bid) => bid.makerWallet.scoutId === scoutId) : []
     }))
     .sort((a, b) => {
-      if (sort === 'trending') {
-        return b.draftSeasonOffersReceived - a.draftSeasonOffersReceived;
-      }
       return b.seasonPoints - a.seasonPoints;
     })
-    .map(({ draftSeasonOffersReceived, ...developer }, index) => ({
+    .map(({ scoutBids, ...developer }, index) => ({
       ...developer,
+      // Remove the makerWallet from the scoutBids
+      scoutBids: scoutBids.map((bid) => ({
+        createdAt: bid.createdAt,
+        id: bid.id,
+        value: bid.value
+      })),
       rank: index + 1
     }));
+
+  if (sort === 'all') {
+    return formattedDevelopers;
+  }
+
+  return formattedDevelopers.sort((a, b) => b.bidsReceived - a.bidsReceived);
 }

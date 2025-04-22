@@ -2,7 +2,6 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getCurrentSeason, validateISOWeek } from '@packages/dates/utils';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 export type LeaderBoardRow = {
   id: string;
@@ -79,7 +78,7 @@ export async function getLeaderboard({
       const maxGemsCollected = weeklyTopBuilders[0].gemsCollected;
       const progress = (weeklyTopBuilder.gemsCollected / maxGemsCollected) * 100;
       const nft = weeklyTopBuilder.user.builderNfts.find((n) => n.season === season);
-      const price = isOnchainPlatform() ? BigInt(nft?.currentPriceDevToken ?? 0) : (nft?.currentPrice ?? BigInt(0));
+      const price = BigInt(nft?.currentPriceDevToken ?? 0);
       return {
         id: weeklyTopBuilder.user.id,
         avatar: weeklyTopBuilder.user.avatar,
