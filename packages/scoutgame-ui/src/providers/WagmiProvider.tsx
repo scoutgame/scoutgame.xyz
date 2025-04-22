@@ -25,7 +25,7 @@ function useMetamaskInterceptor() {
     }
 
     // Only listen for clicks in webapp, not in telegram or other miniapps
-    if (isTouchDevice() && (getPlatform() === 'webapp' || getPlatform() === 'onchain_webapp')) {
+    if (isTouchDevice() && getPlatform() === 'webapp') {
       // passing true in the 3rd argument means listen in the capture phase
       document.addEventListener('click', handleLinkClick, true);
     }

@@ -190,7 +190,7 @@ export function Header() {
                           Projects
                         </MenuItem>
                       ) : null}
-                      {(platform === 'webapp' || platform === 'onchain_webapp') && !isFarcasterFrame && (
+                      {platform === 'webapp' && !isFarcasterFrame && (
                         <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out
                         </MenuItem>
@@ -206,7 +206,7 @@ export function Header() {
                       <InfoIcon color='secondary' />
                     </IconButton>
                   </Link>
-                  {(platform === 'webapp' || platform === 'onchain_webapp') && !isFarcasterFrame && (
+                  {platform === 'webapp' && !isFarcasterFrame && (
                     <Button variant='gradient' href='/login' data-test='sign-in-button'>
                       Sign in
                     </Button>
