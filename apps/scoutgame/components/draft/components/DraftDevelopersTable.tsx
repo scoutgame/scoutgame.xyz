@@ -2,6 +2,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { getDraftDevelopers } from '@packages/scoutgame/draft/getDraftDevelopers';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
+import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 
 import { BuilderCardRankGraph } from 'components/common/Card/BuilderCard/BuilderCardActivity/BuilderCardRankGraph';
@@ -23,18 +24,26 @@ export async function DraftDevelopersTable() {
     <Table>
       <TableHead sx={{ backgroundColor: 'background.dark', position: 'sticky', top: -10, zIndex: 1 }}>
         <CommonTableRow>
-          <TableCell>DEVELOPER</TableCell>
+          <TableCell>
+            <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>DEVELOPER</Typography>
+          </TableCell>
           <TableCell sx={{ textAlign: 'center' }}>
             <Stack>
-              <Typography>POINTS</Typography>
-              <Typography variant='caption'>(LAST SEASON)</Typography>
+              <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>POINTS</Typography>
+              <Typography sx={{ display: { xs: 'none', md: 'block' } }} variant='caption'>
+                (LAST SEASON)
+              </Typography>
             </Stack>
           </TableCell>
-          <TableCell sx={{ textAlign: 'center' }}>LEVEL</TableCell>
+          <TableCell sx={{ textAlign: 'center' }}>
+            <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>LEVEL</Typography>
+          </TableCell>
           <TableCell sx={{ textAlign: 'center' }}>
             <Stack>
-              <Typography>WEEKLY RANK</Typography>
-              <Typography variant='caption'>(LAST SEASON)</Typography>
+              <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>WEEKLY RANK</Typography>
+              <Typography sx={{ display: { xs: 'none', md: 'block' } }} variant='caption'>
+                (LAST SEASON)
+              </Typography>
             </Stack>
           </TableCell>
           <TableCell sx={{ textAlign: 'right' }}>
@@ -42,38 +51,76 @@ export async function DraftDevelopersTable() {
           </TableCell>
         </CommonTableRow>
       </TableHead>
-      <TableBody>
+      <TableBody sx={{ backgroundColor: 'background.paper' }}>
         {draftDevelopers.map((developer) => (
           <TableRow key={developer.id} sx={tableRowSx}>
             <TableCell>
-              <Stack alignItems='center' flexDirection='row' gap={1} maxWidth={{ xs: '100px', md: '150px' }}>
-                <Avatar src={developer.avatar} name={developer.displayName} size='medium' />
-                <Typography noWrap variant='h6' fontWeight={400}>
+              <Stack alignItems='center' flexDirection='row' gap={1} maxWidth={{ xs: '75px', md: '150px' }}>
+                <Hidden mdDown>
+                  <Avatar src={developer.avatar} name={developer.displayName} size='medium' />
+                </Hidden>
+                <Hidden mdUp>
+                  <Avatar src={developer.avatar} name={developer.displayName} size='xSmall' />
+                </Hidden>
+                <Typography noWrap fontWeight={400} sx={{ fontSize: { xs: 12, md: 20 } }}>
                   {developer.displayName}
                 </Typography>
               </Stack>
             </TableCell>
             <TableCell>
-              <Stack flexDirection='row' gap={1} alignItems='center' justifyContent='center'>
-                <Typography color='textDisabled' fontWeight={400}>
-                  #{developer.rank}
-                </Typography>
-                <Typography variant='h6' fontWeight={400}>
-                  {formatSeasonPoints(developer.seasonPoints)}
-                </Typography>
-                <Image src='/images/icons/binoculars.svg' alt='binoculars' width={24} height={24} />
+              <Stack alignItems='center' justifyContent='center'>
+                <Stack
+                  flexDirection='row'
+                  gap={1}
+                  alignItems='center'
+                  justifyContent='space-between'
+                  width={{
+                    xs: '75px',
+                    md: '125px'
+                  }}
+                >
+                  <Typography color='textDisabled' sx={{ fontSize: { xs: 12, md: 16 } }} fontWeight={400}>
+                    #{developer.rank}
+                  </Typography>
+                  <Stack
+                    flexDirection='row'
+                    gap={{
+                      xs: 0.5,
+                      md: 1
+                    }}
+                    alignItems='center'
+                  >
+                    <Typography sx={{ fontSize: { xs: 12, md: 20 } }} fontWeight={400}>
+                      {formatSeasonPoints(developer.seasonPoints)}
+                    </Typography>
+                    <Hidden mdDown display='flex' sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                      <Image src='/images/icons/binoculars.svg' alt='binoculars' width={24} height={24} />
+                    </Hidden>
+                    <Hidden mdUp display='flex' sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                      <Image src='/images/icons/binoculars.svg' alt='binoculars' width={14} height={14} />
+                    </Hidden>
+                  </Stack>
+                </Stack>
               </Stack>
             </TableCell>
-            <TableCell sx={{ textAlign: 'center' }}>
+            <TableCell
+              sx={{
+                textAlign: 'center',
+                width: {
+                  xs: '75px',
+                  md: '200px'
+                }
+              }}
+            >
               <Stack alignItems='center' justifyContent='center'>
                 <Stack
                   sx={{
                     width: {
-                      xs: 32,
+                      xs: 28,
                       md: 40
                     },
                     height: {
-                      xs: 32,
+                      xs: 28,
                       md: 40
                     },
                     backgroundColor: 'orange.main',
@@ -87,7 +134,7 @@ export async function DraftDevelopersTable() {
                   <Typography
                     fontFamily='Jura'
                     fontSize={{
-                      xs: 12,
+                      xs: 10,
                       md: 18
                     }}
                     fontWeight='bold'
@@ -99,7 +146,14 @@ export async function DraftDevelopersTable() {
                 </Stack>
               </Stack>
             </TableCell>
-            <TableCell sx={{ width: '150px' }}>
+            <TableCell
+              sx={{
+                width: {
+                  xs: '100px',
+                  md: '200px'
+                }
+              }}
+            >
               <Stack alignItems='center' justifyContent='center' height='50px'>
                 <BuilderCardRankGraph color='green' ranks={developer.weeklyRanks} totalRanks={15} />
               </Stack>
@@ -107,10 +161,12 @@ export async function DraftDevelopersTable() {
             <TableCell sx={{ textAlign: 'right' }}>
               <Button
                 sx={{
-                  px: 2,
-                  py: 1,
-                  width: '80px',
-                  borderRadius: 1
+                  px: { xs: 0.5, md: 2 },
+                  py: { xs: 0.5, md: 1 },
+                  maxWidth: { xs: '40px', md: '80px' },
+                  minWidth: { xs: '40px', md: '80px' },
+                  borderRadius: 1,
+                  fontSize: { xs: 12, md: 16 }
                 }}
                 color='secondary'
               >
