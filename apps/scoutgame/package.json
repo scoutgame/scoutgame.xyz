@@ -10,7 +10,7 @@
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts --maxWorkers=2 --passWithNoTests",
     "start:test:ci": "SEASON=2025-W02 DISABLE_PUBLISHED_CREDENTIALS=\"true\" PORT=3337 npx react-env --path ../../.env.test.local --dest ./public -- npx next start",
     "lint": "npx next lint",
-    "test:e2e": "npx playwright test --config ./playwright.config.ts",
+    "test:e2e": "SEASON=2025-W02 npx playwright test --config ./playwright.config.ts",
     "typecheck": "../../node_modules/typescript/bin/tsc --project ./tsconfig.json  --noEmit"
   },
   "dependencies": {
