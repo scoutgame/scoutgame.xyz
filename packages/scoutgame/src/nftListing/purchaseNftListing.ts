@@ -1,7 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address, Hash } from 'viem';
 import { isAddress } from 'viem';
 
@@ -111,10 +110,8 @@ export async function purchaseNftListing({
     transferSingleEvent: transferEvent
   });
 
-  const price = isOnchainPlatform() ? BigInt(listing.priceDevToken as string) : (listing.price as bigint);
-  const priceInDecimal = isOnchainPlatform()
-    ? Number(price) / 10 ** devTokenDecimals
-    : Number(price) / 10 ** builderTokenDecimals;
+  const price = BigInt(listing.priceDevToken as string);
+  const priceInDecimal = Number(price) / 10 ** devTokenDecimals;
   const developerEarnings = priceInDecimal * 0.01; // 1%
   const sellerEarnings = priceInDecimal * 0.95; // 95%
 
@@ -124,7 +121,8 @@ export async function purchaseNftListing({
       notificationType: 'sold_nft_listing_seller',
       notificationVariables: {
         developerName: listing.builderNft.builder.displayName,
-        earnedAmount: sellerEarnings
+        earnedAmount: sellerEarnings,
+        tokenName: 'DEV'
       }
     });
 
@@ -132,7 +130,8 @@ export async function purchaseNftListing({
       userId: listing.builderNft.builder.id,
       notificationType: 'sold_nft_listing_developer',
       notificationVariables: {
-        earnedAmount: developerEarnings
+        earnedAmount: developerEarnings,
+        tokenName: 'DEV'
       }
     });
   } catch (error) {
