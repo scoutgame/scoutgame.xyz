@@ -1,5 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { isOnchainPlatform } from '@packages/utils/platform';
 
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
@@ -53,8 +52,6 @@ export async function createBuilderNft({
     path
   });
 
-  const isOnchain = isOnchainPlatform();
-
   const builderNft = await prisma.builderNft.create({
     data: {
       builderId,
@@ -62,8 +59,7 @@ export async function createBuilderNft({
       contractAddress,
       tokenId: Number(tokenId),
       season,
-      currentPrice: isOnchain ? undefined : currentPrice,
-      currentPriceDevToken: isOnchain ? currentPrice.toString() : undefined,
+      currentPriceDevToken: currentPrice.toString(),
       imageUrl: fileUrl,
       congratsImageUrl
     }

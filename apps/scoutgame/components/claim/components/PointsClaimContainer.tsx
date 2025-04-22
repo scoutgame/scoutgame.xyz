@@ -5,7 +5,6 @@ import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getCla
 import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { Suspense } from 'react';
 
 import { PointsClaimScreen } from './PointsClaimScreen/PointsClaimScreen';
@@ -18,14 +17,8 @@ export async function PointsClaimContainer() {
   if (!scoutId) {
     return null;
   }
-
-  const isOnchainApp = isOnchainPlatform();
-
   const [err, data] = await safeAwaitSSRData(
-    Promise.all([
-      (isOnchainApp ? getClaimableTokensWithSources : getClaimablePointsWithSources)(scoutId),
-      getUnclaimedPartnerRewards({ userId: scoutId })
-    ])
+    Promise.all([getClaimableTokensWithSources(scoutId), getUnclaimedPartnerRewards({ userId: scoutId })])
   );
 
   if (err) {
@@ -34,15 +27,13 @@ export async function PointsClaimContainer() {
 
   const [claimablePoints, unclaimedPartnerRewards] = data;
   const { points, builders, repos, processingPayouts } = claimablePoints;
-  const bonusPartners = unclaimedPartnerRewards.map((reward) => reward.partner);
 
-  const claimData = isOnchainApp ? (claimablePoints as UnclaimedTokensSource).claimData : undefined;
+  const claimData = (claimablePoints as UnclaimedTokensSource).claimData;
 
   return (
     <>
       <PointsClaimScreen
         totalUnclaimedPoints={points}
-        bonusPartners={bonusPartners}
         builders={builders}
         repos={repos}
         onchainClaimData={claimData}

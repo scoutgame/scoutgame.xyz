@@ -1,7 +1,7 @@
 import { SchemaRegistry, SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import type { Address } from 'viem';
-import { baseSepolia, optimism } from 'viem/chains';
+import { baseSepolia, optimism, optimismSepolia } from 'viem/chains';
 import type { Chain } from 'viem/chains';
 
 export const NULL_EAS_REF_UID = '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`;
@@ -31,9 +31,15 @@ export function encodeNameSchemaAttestation({ name, schemaId }: NameSchemaAttest
 }
 
 export const easConfig = {
-  [baseSepolia.id]: {
+  // [baseSepolia.id]: {
+  //   // Optimism Sepolia Testnet
+  //   chain: baseSepolia,
+  //   easContractAddress: '0x4200000000000000000000000000000000000021',
+  //   easSchemaRegistryAddress: '0x4200000000000000000000000000000000000020'
+  // },
+  [optimismSepolia.id]: {
     // Optimism Sepolia Testnet
-    chain: baseSepolia,
+    chain: optimismSepolia,
     easContractAddress: '0x4200000000000000000000000000000000000021',
     easSchemaRegistryAddress: '0x4200000000000000000000000000000000000020'
   },

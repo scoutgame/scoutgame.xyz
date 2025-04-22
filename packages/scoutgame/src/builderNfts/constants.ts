@@ -2,11 +2,9 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType, Prisma } from '@charmverse/core/prisma';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeason } from '@packages/dates/utils';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
-import { base, optimism, optimismSepolia } from 'viem/chains';
+import { base } from 'viem/chains';
 
 export const decentApiKey = env('DECENT_API_KEY') || (process.env.REACT_APP_DECENT_API_KEY as string);
 
@@ -17,17 +15,7 @@ export const useTestnets = false;
  */
 export const builderTokenDecimals = 6;
 
-const currentSeason = getCurrentSeason();
-
-export const nftChain: Chain =
-  !currentSeason.preseason || isOnchainPlatform() ? base : useTestnets ? optimismSepolia : optimism;
-
-// Dev contracts we also deployed for easier use
-// const devOptimismSepoliaBuildersContract = '0x2f6093b70562729952bf379633dee3e89922d717';
-// const devOptimismMainnetBuildersContract = '0x1d305a06cb9dbdc32e08c3d230889acb9fe8a4dd';
-
-// const realOptimismSepoliaBuildersContract = '0x0b7342761a10e1b14df427681b967e67f5e6cef9';
-export const realOptimismMainnetBuildersContract = '0x743ec903fe6d05e73b19a6db807271bb66100e83';
+export const nftChain: Chain = base; // useTestnets ? optimismSepolia : optimism;
 
 export function getBuilderNftContractAddress(season: ISOWeek): Address {
   // Convert from ISOWeek "-" to "_" which is used in the env variables

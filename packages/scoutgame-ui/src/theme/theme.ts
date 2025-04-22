@@ -74,7 +74,8 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
           dark: '#000'
         },
         orange: {
-          main: '#FFAC81'
+          main: '#FFAC81',
+          dark: '#FF5154'
         },
         green: {
           main: '#85FF9E'

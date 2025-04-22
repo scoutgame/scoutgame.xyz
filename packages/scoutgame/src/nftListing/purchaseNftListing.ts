@@ -5,7 +5,6 @@ import type { Address, Hash } from 'viem';
 import { isAddress } from 'viem';
 
 import { getTransferSingleWithBatchMerged } from '../builderNfts/accounting/getTransferSingleWithBatchMerged';
-import { builderTokenDecimals } from '../builderNfts/constants';
 import { recordNftTransfer } from '../builderNfts/recordNftTransfer';
 import { sendAppNotification } from '../notifications/sendAppNotification';
 import { devTokenDecimals, scoutProtocolChain } from '../protocol/constants';

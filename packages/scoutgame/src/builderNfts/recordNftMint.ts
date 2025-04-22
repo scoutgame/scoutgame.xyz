@@ -6,7 +6,6 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
 import { refreshBuilderNftPrice } from '../builderNfts/refreshBuilderNftPrice';
@@ -268,9 +267,7 @@ export async function recordNftMint(
           }
         })
       ]);
-      const currentCardPrice = isOnchainPlatform()
-        ? Number(nft.currentPriceDevToken) / 10 ** devTokenDecimals
-        : convertCostToPoints(nft.currentPrice || BigInt(0));
+      const currentCardPrice = Number(nft.currentPriceDevToken) / 10 ** devTokenDecimals;
 
       await sendNotifications({
         notificationType: 'builder_card_scouted',

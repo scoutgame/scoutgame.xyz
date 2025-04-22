@@ -2,7 +2,7 @@
 
 import { Stack, Tooltip } from '@mui/material';
 import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
-import { bonusPartnersRecord } from '@packages/scoutgame/partnerRewards/constants';
+import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
 import Image from 'next/image';
 
 export function BonusPartnersDisplay({
@@ -19,8 +19,8 @@ export function BonusPartnersDisplay({
   return (
     <Stack flexDirection='row' gap={1} alignItems='center' justifyContent='flex-end'>
       {bonusPartners.map((partner) => (
-        <Tooltip open key={partner} title={bonusPartnersRecord[partner]?.name}>
-          <Image width={size} height={size} src={bonusPartnersRecord[partner]?.icon} alt='' />
+        <Tooltip open key={partner} title={partnerRewardRecord[partner]?.name}>
+          <Image width={size} height={size} src={partnerRewardRecord[partner]?.icon} alt='' />
         </Tooltip>
       ))}
     </Stack>

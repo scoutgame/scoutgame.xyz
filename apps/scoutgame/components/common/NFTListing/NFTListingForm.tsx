@@ -7,7 +7,6 @@ import { Alert, Box, FormLabel, Stack } from '@mui/material';
 import { recordNftListingAction } from '@packages/scoutgame/nftListing/recordNftListingAction';
 import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import { recordSeaportListing } from '@packages/scoutgame/seaport/recordSeaportListing';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { fancyTrim } from '@packages/utils/strings';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -31,7 +30,6 @@ export type NFTListingFormProps = {
 };
 
 export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
-  const isOnchain = isOnchainPlatform();
   const [priceInUsdc, setPriceInUsdc] = useState(0);
   const { address: sellerWallet, chainId } = useAccount();
   const { executeAsync: recordNftListing, isExecuting } = useAction(recordNftListingAction);

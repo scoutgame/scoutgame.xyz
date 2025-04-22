@@ -18,7 +18,6 @@ import {
 } from '@packages/scoutgame/protocol/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { isOnchainPlatform } from '@packages/utils/platform';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
@@ -37,7 +36,6 @@ import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShar
 
 type PointsClaimScreenProps = {
   totalUnclaimedPoints: number;
-  bonusPartners: BonusPartner[];
   partnerRewards: UnclaimedPartnerReward[];
   builders: {
     farcasterHandle?: string;
@@ -58,7 +56,6 @@ export function PointsClaimScreen(props: PointsClaimScreenProps) {
 
 function PointsClaimScreenComponent({
   totalUnclaimedPoints,
-  bonusPartners,
   partnerRewards,
   builders,
   repos,
@@ -81,6 +78,8 @@ function PointsClaimScreenComponent({
   const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
 
   const { data: walletClient } = useWalletClient();
+
+  const bonusPartners = partnerRewards.map((reward) => reward.partner);
 
   const handleClaim = async () => {
     await claimPoints();
@@ -166,10 +165,10 @@ function PointsClaimScreenComponent({
           <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
             Congratulations!
           </Typography>
-          {totalUnclaimedPoints || partnerRewards.length > 0 ? (
+          {totalUnclaimedPoints ? (
             <>
               <Typography variant='h5' textAlign='center'>
-                You have earned {isOnchainPlatform() ? 'DEV Tokens' : 'Scout Points'}!
+                You have earned DEV Tokens!
               </Typography>
 
               <Stack
@@ -190,10 +189,7 @@ function PointsClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {(!isOnchainPlatform()
-                        ? totalUnclaimedPoints
-                        : totalUnclaimedPoints / 10 ** devTokenDecimals
-                      ).toLocaleString()}
+                      {(totalUnclaimedPoints / 10 ** devTokenDecimals).toLocaleString()}
                     </Typography>
                     <Image
                       width={35}
@@ -206,7 +202,7 @@ function PointsClaimScreenComponent({
                     <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
                   </Stack>
                 </Stack>
-                <Box width={{ xs: 'fit-content', md: '100%' }}>
+                <Box width={{ xs: 'fit-content', md: '100%' }} display='flex' justifyContent='center'>
                   {onchainClaimData ? (
                     connectedAddress !== onchainClaimData.address.toLowerCase() ? (
                       <WalletLogin />
@@ -304,9 +300,7 @@ function PointsClaimScreenComponent({
             <Stack width='100%'>
               <PointsClaimSocialShare
                 isBuilder={repos.length > 0}
-                totalUnclaimedPoints={
-                  !isOnchainPlatform() ? result.data.claimedPoints : result.data.claimedPoints / 10 ** devTokenDecimals
-                }
+                totalUnclaimedPoints={result.data.claimedPoints / 10 ** devTokenDecimals}
                 builders={builders}
                 userPath={user.path}
                 week={result.data.week}
