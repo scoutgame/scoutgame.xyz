@@ -27,7 +27,7 @@ export async function getDraftDevelopers({
     throw new Error('No draft season found');
   }
 
-  const builders = await prisma.scout.findMany({
+  const developers = await prisma.scout.findMany({
     where: {
       AND: search
         ? [
@@ -91,25 +91,28 @@ export async function getDraftDevelopers({
     }
   });
 
-  return builders
-    .map((builder) => ({
-      id: builder.id,
-      displayName: builder.displayName,
-      avatar: builder.avatar ?? '',
-      path: builder.path,
-      level: builder.userSeasonStats[0]?.level ?? 0,
-      seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
-      weeklyRanks: builder.userWeeklyStats.map((rank) => rank.rank) ?? [],
-      draftSeasonOffersReceived: builder.draftSeasonOffersReceived.length
+  const formattedDevelopers = developers
+    .map((developer) => ({
+      id: developer.id,
+      displayName: developer.displayName,
+      avatar: developer.avatar ?? '',
+      path: developer.path,
+      level: developer.userSeasonStats[0]?.level ?? 0,
+      seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
+      weeklyRanks: developer.userWeeklyStats.map((rank) => rank.rank) ?? [],
+      draftSeasonOffersReceived: developer.draftSeasonOffersReceived.length
     }))
     .sort((a, b) => {
-      if (sort === 'trending') {
-        return b.draftSeasonOffersReceived - a.draftSeasonOffersReceived;
-      }
       return b.seasonPoints - a.seasonPoints;
     })
-    .map(({ draftSeasonOffersReceived, ...developer }, index) => ({
+    .map((developer, index) => ({
       ...developer,
       rank: index + 1
     }));
+
+  if (sort === 'all') {
+    return formattedDevelopers;
+  }
+
+  return formattedDevelopers.sort((a, b) => b.draftSeasonOffersReceived - a.draftSeasonOffersReceived);
 }
