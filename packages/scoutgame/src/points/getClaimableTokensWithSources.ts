@@ -164,7 +164,6 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
   return {
     builders: buildersWithFarcaster,
     points: claimProofs.reduce((acc, proof) => acc + Number(proof.amount), 0),
-    bonusPartners: [],
     repos: uniqueRepos.slice(0, 3),
     claimData: {
       address: scoutWallets[0].address as Address,

@@ -69,3 +69,4 @@ export const partnerRewardRecord: Record<
 };
 
 export type BonusPartner = keyof typeof bonusPartnersRecord;
+export type PartnerReward = keyof typeof partnerRewardRecord;

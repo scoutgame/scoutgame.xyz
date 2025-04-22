@@ -4,8 +4,6 @@ import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/da
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 
-import type { BonusPartner } from '../partnerReward/constants';
-
 import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
 import { getClaimablePoints } from './getClaimablePoints';
 
@@ -17,13 +15,12 @@ export type UnclaimedPointsSource = {
     displayName: string;
   }[];
   points: number;
-  bonusPartners: BonusPartner[];
   repos: string[];
   processingPayouts: boolean;
 };
 
 export async function getClaimablePointsWithSources(userId: string): Promise<UnclaimedPointsSource> {
-  const { points, bonusPartners, pointsReceiptIds } = await getClaimablePoints({
+  const { points, pointsReceiptIds } = await getClaimablePoints({
     season: getCurrentSeasonStart(),
     userId
   });
@@ -125,7 +122,6 @@ export async function getClaimablePointsWithSources(userId: string): Promise<Unc
   return {
     builders: buildersWithFarcaster,
     points,
-    bonusPartners,
     repos: uniqueRepos.slice(0, 3),
     processingPayouts: isProcessing
   };
