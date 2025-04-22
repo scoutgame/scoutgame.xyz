@@ -9,7 +9,6 @@ import type { EASSchemaChain } from '../easSchemas/constants';
 
 export const optimismEasGraphqlUri = 'https://optimism.easscan.org/graphql';
 export const optimismSepoliaEasGraphqlUri = 'https://optimism-sepolia.easscan.org/graphql';
-export const baseEasGraphqlUri = 'https://base.easscan.org/graphql';
 
 export function getEasGraphQlClient({ chainId }: { chainId: EASSchemaChain }): ApolloClient<any> {
   const uriMap: Record<EASSchemaChain, string> = {
