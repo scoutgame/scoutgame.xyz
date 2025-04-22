@@ -1,20 +1,18 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomLargeInt } from '@packages/testing/generators';
 
 // Mock the constants module first
 jest.unstable_mockModule('../constants', () => ({
-  builderNftChain: { id: 10 },
+  nftChain: { id: 10 },
   getBuilderNftContractAddress: () => '0x1234567890123456789012345678901234567890',
   getBuilderNftStarterPackContractAddress: () => '0x1234567890123456789012345678901234567890',
-  scoutProtocolBuilderNftContractAddress: '0x1234567890123456789012345678901234567890',
-  nftChain: { id: 10 }
+  scoutProtocolBuilderNftContractAddress: '0x1234567890123456789012345678901234567890'
 }));
 
 // Import constants after mocking
-const { builderNftChain, getBuilderNftContractAddress } = await import('../constants');
+const { nftChain, getBuilderNftContractAddress } = await import('../constants');
 
 jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
   getBuilderNftContractMinterClient: () => ({
@@ -40,7 +38,7 @@ const { registerBuilderNFT } = await import('../builderRegistration/registerBuil
 const { createBuilderNft } = await import('../builderRegistration/createBuilderNft');
 
 describe('registerBuilderNFT', () => {
-  const mockSeason = getCurrentSeasonStart();
+  const mockSeason = '2025-W02';
   const mockContractAddress = getBuilderNftContractAddress(mockSeason);
 
   beforeEach(() => {
@@ -53,7 +51,7 @@ describe('registerBuilderNFT', () => {
       return mockBuilderNft({
         builderId: builder.id,
         season: mockSeason,
-        chainId: builderNftChain.id,
+        chainId: nftChain.id,
         contractAddress: mockContractAddress
       });
     });
@@ -69,7 +67,7 @@ describe('registerBuilderNFT', () => {
     const createdNft = await prisma.builderNft.findFirst({
       where: {
         builderId: builder.id,
-        chainId: builderNftChain.id,
+        chainId: nftChain.id,
         contractAddress: mockContractAddress,
         season: mockSeason
       }
@@ -78,7 +76,7 @@ describe('registerBuilderNFT', () => {
     expect(createdNft).not.toBeNull();
     expect(createdNft?.builderId).toBe(builder.id);
     expect(createdNft?.season).toBe(mockSeason);
-    expect(createdNft?.chainId).toBe(builderNftChain.id);
+    expect(createdNft?.chainId).toBe(nftChain.id);
     expect(createdNft?.contractAddress).toBe(mockContractAddress);
   });
 
@@ -87,7 +85,7 @@ describe('registerBuilderNFT', () => {
     const existingNft = await mockBuilderNft({
       builderId: builder.id,
       season: mockSeason,
-      chainId: builderNftChain.id,
+      chainId: nftChain.id,
       contractAddress: getBuilderNftContractAddress(mockSeason)
     });
 
@@ -98,6 +96,6 @@ describe('registerBuilderNFT', () => {
     });
 
     expect(result?.id).toEqual(existingNft.id);
-    expect(getBuilderNftContractMinterClient().registerBuilderToken).not.toHaveBeenCalled();
+    expect(getBuilderNftContractMinterClient()!.registerBuilderToken).not.toHaveBeenCalled();
   });
 });

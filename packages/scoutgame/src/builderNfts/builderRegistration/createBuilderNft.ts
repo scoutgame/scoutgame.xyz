@@ -35,7 +35,6 @@ export async function createBuilderNft({
   const currentPrice = await client.getTokenPurchasePrice({
     args: { tokenId, amount: BigInt(1) }
   });
-
   const fileUrl = await uploadArtwork({
     displayName,
     season,
