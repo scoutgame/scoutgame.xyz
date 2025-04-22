@@ -10,6 +10,7 @@ export type DraftDeveloper = {
   seasonPoints: number;
   weeklyRanks: (number | null)[];
   rank: number;
+  bidsReceived: number;
 };
 
 export type DraftDeveloperSort = 'all' | 'trending';
@@ -100,7 +101,7 @@ export async function getDraftDevelopers({
       level: developer.userSeasonStats[0]?.level ?? 0,
       seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder ?? 0,
       weeklyRanks: developer.userWeeklyStats.map((rank) => rank.rank) ?? [],
-      draftSeasonOffersReceived: developer.draftSeasonOffersReceived.length
+      bidsReceived: developer.draftSeasonOffersReceived.length
     }))
     .sort((a, b) => {
       return b.seasonPoints - a.seasonPoints;
@@ -114,5 +115,5 @@ export async function getDraftDevelopers({
     return formattedDevelopers;
   }
 
-  return formattedDevelopers.sort((a, b) => b.draftSeasonOffersReceived - a.draftSeasonOffersReceived);
+  return formattedDevelopers.sort((a, b) => b.bidsReceived - a.bidsReceived);
 }
