@@ -32,9 +32,11 @@ type Variables = {
   sold_nft_listing_seller: {
     developerName: string;
     earnedAmount: number;
+    tokenName?: 'DEV' | 'USDC'; // USDC was only used in preseason
   };
   sold_nft_listing_developer: {
     earnedAmount: number;
+    tokenName?: 'DEV' | 'USDC'; // USDC was only used in preseason
   };
 };
 
@@ -101,14 +103,14 @@ export const AppNotificationTypesRecord = {
   },
   sold_nft_listing_seller: {
     title: 'NFT listing sold',
-    description: ({ developerName, earnedAmount }: Variables['sold_nft_listing_seller']) =>
-      `Your nft listing for ${developerName} has been sold and your earned ${earnedAmount} ${isOnchainPlatform() ? 'DEV' : 'USDC'}`,
+    description: ({ developerName, earnedAmount, tokenName = 'USDC' }: Variables['sold_nft_listing_seller']) =>
+      `Your nft listing for ${developerName} has been sold and you earned ${earnedAmount} ${tokenName}`,
     targetUrl: () => `/profile`
   },
   sold_nft_listing_developer: {
     title: 'NFT listing sold',
-    description: ({ earnedAmount }: Variables['sold_nft_listing_developer']) =>
-      `Your nft was sold in the secondary market and you earned ${earnedAmount} ${isOnchainPlatform() ? 'DEV' : 'USDC'}`,
+    description: ({ earnedAmount, tokenName = 'USDC' }: Variables['sold_nft_listing_developer']) =>
+      `Your nft was sold in the secondary market and you earned ${earnedAmount} ${tokenName}`,
     targetUrl: () => `/profile`
   }
 };

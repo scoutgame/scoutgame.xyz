@@ -120,7 +120,8 @@ export async function purchaseNftListing({
       notificationType: 'sold_nft_listing_seller',
       notificationVariables: {
         developerName: listing.builderNft.builder.displayName,
-        earnedAmount: sellerEarnings
+        earnedAmount: sellerEarnings,
+        tokenName: 'DEV'
       }
     });
 
@@ -128,7 +129,8 @@ export async function purchaseNftListing({
       userId: listing.builderNft.builder.id,
       notificationType: 'sold_nft_listing_developer',
       notificationVariables: {
-        earnedAmount: developerEarnings
+        earnedAmount: developerEarnings,
+        tokenName: 'DEV'
       }
     });
   } catch (error) {
