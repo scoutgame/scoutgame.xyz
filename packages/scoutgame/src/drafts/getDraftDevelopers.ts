@@ -57,6 +57,14 @@ export async function getDraftDevelopers({
         some: {
           primary: true
         }
+      },
+      userSeasonStats: {
+        some: {
+          season,
+          level: {
+            gt: 0
+          }
+        }
       }
     },
     select: {
