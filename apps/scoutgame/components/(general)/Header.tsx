@@ -50,16 +50,7 @@ export function Header() {
   const { balance } = useDevTokenBalance({ address });
   const draftSeason = isDraftSeason();
 
-  const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction, {
-    onSuccess: async () => {
-      await refreshUser();
-      revalidatePathAction();
-      router.push('/');
-    },
-    onError(err) {
-      log.error('Error on logout', { error: err.error.serverError });
-    }
-  });
+  const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction);
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
