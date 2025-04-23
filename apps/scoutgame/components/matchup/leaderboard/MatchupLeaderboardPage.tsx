@@ -1,4 +1,4 @@
-import { Typography, Grid, TableContainer, Table, TableHead, TableRow, TableCell } from '@mui/material';
+import { Typography, Grid2 as Grid, TableContainer, Table, TableHead, TableRow, TableCell } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { LoadingTableBody } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';

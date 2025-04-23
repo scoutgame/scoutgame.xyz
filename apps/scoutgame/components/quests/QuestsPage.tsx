@@ -1,4 +1,4 @@
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import type { QuestInfo } from '@packages/scoutgame/quests/questRecords';
 import type { Friend } from '@packages/users/getFriends';

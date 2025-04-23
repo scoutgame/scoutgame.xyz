@@ -34,16 +34,15 @@ export function SearchParamsTracking<T extends string | number>({
   );
 }
 
-export async function SearchParamsTrackingLogic<T extends string | number>({
+export function SearchParamsTrackingLogic<T extends string | number>({
   pageMap,
   paramName,
   defaultValue
 }: SearchParamsTrackingProps<T>) {
   const trackEvent = useTrackEvent();
   const searchParams = useSearchParams();
-  const searchParamsResolved = await searchParams;
-  const paramValue = searchParamsResolved.get(paramName) as T | null;
-  const searchParamsString = searchParamsResolved.toString();
+  const paramValue = searchParams.get(paramName) as T | null;
+  const searchParamsString = searchParams.toString();
 
   useEffect(() => {
     const valueToUse = paramValue ?? defaultValue;

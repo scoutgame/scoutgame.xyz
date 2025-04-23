@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import type { ButtonProps } from '@mui/material';
 import type { ReactNode } from 'react';
 
@@ -20,7 +20,7 @@ export function FileDownloadButton({
 } & ButtonProps) {
   const { isDownloading, downloadFile } = useFileDownload(src, filename);
   return (
-    <Button
+    <LoadingButton
       loading={isDownloading}
       onClick={async () => {
         await downloadFile();
@@ -29,6 +29,6 @@ export function FileDownloadButton({
       {...props}
     >
       {children}
-    </Button>
+    </LoadingButton>
   );
 }

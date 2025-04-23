@@ -1,5 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Button, Alert, Stack, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Alert, Stack, Typography } from '@mui/material';
 import type { ProfileToKeep } from '@packages/scoutgame/mergeUserAccount';
 import type { UserProfile } from '@packages/users/getUserProfile';
 
@@ -75,7 +76,7 @@ export function AccountConnect({
           )}
 
           <Stack alignItems='flex-end'>
-            <Button
+            <LoadingButton
               variant='contained'
               loading={isMergingUserAccount}
               disabled={isMergingUserAccount || isMergeDisabled}
@@ -86,7 +87,7 @@ export function AccountConnect({
                 : connectedUser.builderStatus !== null || selectedProfile === 'new'
                   ? 'Merge and Logout'
                   : 'Merge'}
-            </Button>
+            </LoadingButton>
           </Stack>
           {accountMergeError && (
             <Typography variant='body2' textAlign='center' sx={{ mt: 2 }} color='error'>

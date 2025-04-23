@@ -9,9 +9,8 @@ export type RequestParams = {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const searchParamsResolved = await searchParams;
-  const chainId = searchParamsResolved.get('chainId');
-  const txHash = searchParamsResolved.get('txHash');
+  const chainId = searchParams.get('chainId');
+  const txHash = searchParams.get('txHash');
   if (!chainId || !txHash) {
     return NextResponse.json({ message: 'Missing chainId or txHash' }, { status: 400 });
   }

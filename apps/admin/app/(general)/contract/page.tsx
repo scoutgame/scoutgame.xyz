@@ -7,7 +7,6 @@ export default async function Dashboard({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const searchParamsResolved = await searchParams;
-  const tab = searchParamsResolved.tab as string;
+  const tab = searchParams.tab as string;
   return <ContractDashboard currentTab={tab} />;
 }
