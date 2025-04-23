@@ -30,9 +30,6 @@
     "siwe": "^3.0.0",
     "telegram": "^2.26.16"
   },
-  "optionalDependencies": {
-    "sharp": "^0.33.5"
-  },
   "devDependencies": {
     "@packages/testing": "^1.0.0"
   }

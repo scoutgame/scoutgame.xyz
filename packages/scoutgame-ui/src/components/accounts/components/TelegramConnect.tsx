@@ -1,8 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
+import { Button, Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import { connectTelegramAccountAction } from '@packages/scoutgame/telegram/connectTelegramAccountAction';
 import { generateTelegramQrCodeAction } from '@packages/scoutgame/telegram/generateTelegramQrCodeAction';
 import { mergeUserTelegramAccountAction } from '@packages/scoutgame/telegram/mergeUserTelegramAccountAction';
@@ -108,7 +107,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
             <Typography variant='body1'>Connected as {user.telegramName || user.telegramId}</Typography>
           ) : (
             <>
-              <LoadingButton
+              <Button
                 loading={isConnecting || isGeneratingQrCode}
                 sx={{ width: 'fit-content' }}
                 onClick={() => generateTelegramQrCode()}
@@ -117,7 +116,7 @@ export function TelegramConnect({ user }: { user: UserWithAccountsDetails }) {
               >
                 {isGeneratingQrCode || isConnecting ? 'Connecting...' : 'Connect'}
                 <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
-              </LoadingButton>
+              </Button>
               {!isDesktop && (
                 <Alert severity='warning'>Please login from desktop to connect your Telegram account.</Alert>
               )}

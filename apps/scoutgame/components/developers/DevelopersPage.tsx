@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { Grid2 as Grid, Stack, Typography } from '@mui/material';
+import { Grid, Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';

@@ -1,6 +1,5 @@
-import { LoadingButton } from '@mui/lab';
 import type { ButtonProps } from '@mui/material';
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import type { Address } from 'viem';
 import { useSwitchChain, useWalletClient } from 'wagmi';
@@ -58,7 +57,7 @@ export function ERC20ApproveButton({
   return (
     <div>
       <Stack>
-        <LoadingButton
+        <Button
           loading={isApprovingSpender}
           variant='contained'
           color={color}
@@ -67,7 +66,7 @@ export function ERC20ApproveButton({
           data-test='approve-spending-nft-purchase-button'
         >
           {isApprovingSpender ? 'Approving...' : `Approve ${displayAmount} ${currency}`}
-        </LoadingButton>
+        </Button>
         <Typography sx={{ mb: 1 }} variant='caption'>
           You must approve the {currency} spend before you can {actionType} an NFT
         </Typography>

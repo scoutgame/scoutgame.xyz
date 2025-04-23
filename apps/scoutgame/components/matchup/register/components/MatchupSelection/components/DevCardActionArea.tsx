@@ -1,7 +1,6 @@
 'use client';
 
-import { LoadingButton } from '@mui/lab';
-import { Box, Checkbox, CircularProgress, Typography } from '@mui/material';
+import { Button, Box, Checkbox, CircularProgress, Typography } from '@mui/material';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { addMatchupSelectionAction } from '@packages/matchup/addMatchupSelectionAction';
 import { removeMatchupSelectionAction } from '@packages/matchup/removeMatchupSelectionAction';

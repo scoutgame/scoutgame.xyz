@@ -1,7 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { LoadingButton } from '@mui/lab';
+import { Button } from '@mui/material';
 import { publishMatchupAction } from '@packages/matchup/publishMatchupAction';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { useAction } from 'next-safe-action/hooks';
@@ -25,14 +25,8 @@ export function SubmitMatchupButton({ disabled, matchupId }: { disabled: boolean
   };
 
   return (
-    <LoadingButton
-      size='large'
-      loading={isExecuting}
-      variant='contained'
-      disabled={disabled}
-      onClick={handleSubmitTeam}
-    >
+    <Button size='large' loading={isExecuting} variant='contained' disabled={disabled} onClick={handleSubmitTeam}>
       Submit
-    </LoadingButton>
+    </Button>
   );
 }

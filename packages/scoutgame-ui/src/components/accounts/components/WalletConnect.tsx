@@ -3,8 +3,7 @@
 import { log } from '@charmverse/core/log';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { LoadingButton } from '@mui/lab';
-import { Chip, IconButton, Menu, MenuItem, Paper, Stack, Typography } from '@mui/material';
+import { Button, Chip, IconButton, Menu, MenuItem, Paper, Stack, Typography } from '@mui/material';
 import { connectWalletAccountAction } from '@packages/scoutgame/wallets/connectWalletAccountAction';
 import type { WalletAuthData } from '@packages/scoutgame/wallets/connectWalletAccountSchema';
 import { deleteWalletAction } from '@packages/scoutgame/wallets/deleteWalletAction';
@@ -211,7 +210,7 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
         <Typography variant='body2'>
           <sup>*</sup>The primary wallet will receive rewards at the end of each week.
         </Typography>
-        <LoadingButton
+        <Button
           disabled={isLoading}
           loading={isLoading}
           sx={{ width: 'fit-content' }}
@@ -220,7 +219,7 @@ function WalletConnectButton({ user }: { user: UserWithAccountsDetails }) {
         >
           {isConnecting ? 'Connecting...' : 'Connect'}
           <div style={{ visibility: 'hidden' }} id='telegram-login-container' />
-        </LoadingButton>
+        </Button>
 
         {connectionError && (
           <Typography variant='body2' color='error'>

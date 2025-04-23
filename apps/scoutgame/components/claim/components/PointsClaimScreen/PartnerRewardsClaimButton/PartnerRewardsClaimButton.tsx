@@ -1,6 +1,5 @@
 'use client';
 
-import { LoadingButton } from '@mui/lab';
 import { Button, Dialog, Stack, Tooltip, Typography } from '@mui/material';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -60,7 +59,7 @@ function SablierPartnerRewardsClaimButton({
 
   return (
     <>
-      <LoadingButton
+      <Button
         variant='contained'
         color='primary'
         sx={{ width: 'fit-content' }}
@@ -69,7 +68,7 @@ function SablierPartnerRewardsClaimButton({
         onClick={() => setShowPartnerRewardModal(true)}
       >
         Claim
-      </LoadingButton>
+      </Button>
       <Dialog
         open={showPartnerRewardModal}
         onClose={() => setShowPartnerRewardModal(false)}
@@ -113,7 +112,7 @@ function SablierPartnerRewardsClaimButton({
           <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
             <Tooltip title={hasEnoughFee ? '' : 'You do not have enough ETH to claim the airdrop'}>
               <span>
-                <LoadingButton
+                <Button
                   variant='contained'
                   color='primary'
                   loading={isClaiming}
@@ -121,7 +120,7 @@ function SablierPartnerRewardsClaimButton({
                   disabled={!hasEnoughFee}
                 >
                   {isConnected ? 'Claim' : 'Connect Wallet'}
-                </LoadingButton>
+                </Button>
               </span>
             </Tooltip>
             <Button
@@ -164,7 +163,7 @@ function ThirdwebPartnerRewardsClaimButton({
 
   return (
     <>
-      <LoadingButton
+      <Button
         variant='contained'
         color='primary'
         sx={{ width: 'fit-content' }}
@@ -173,7 +172,7 @@ function ThirdwebPartnerRewardsClaimButton({
         onClick={() => setShowPartnerRewardModal(true)}
       >
         Claim
-      </LoadingButton>
+      </Button>
       <Dialog
         open={showPartnerRewardModal}
         onClose={() => setShowPartnerRewardModal(false)}
@@ -212,9 +211,9 @@ function ThirdwebPartnerRewardsClaimButton({
 
           <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' gap={1}>
             <span>
-              <LoadingButton variant='contained' color='primary' loading={isClaiming} onClick={claim}>
+              <Button variant='contained' color='primary' loading={isClaiming} onClick={claim}>
                 {isConnected ? 'Claim' : 'Connect Wallet'}
-              </LoadingButton>
+              </Button>
             </span>
             <Button
               variant='outlined'

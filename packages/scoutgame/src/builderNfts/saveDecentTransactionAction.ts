@@ -13,10 +13,8 @@ export const saveDecentTransactionAction = authActionClient
     yup.object().shape({
       user: yup.object().shape({
         id: yup.string().required(),
-        walletAddress: yup
-          .string()
-          .required()
-          .test('Valid address', (v) => isAddress(v))
+        walletAddress: yup.string().required()
+        // .test('Valid address', (v) => isAddress(v))
       }),
       transactionInfo: yup.object().shape({
         sourceChainId: yup.number().required(),

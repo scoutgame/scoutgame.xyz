@@ -96,6 +96,7 @@
           "./packages/nextjs/",
           "./packages/matchup/",
           "./packages/scoutgame/",
+          "./packages/scoutgame-router/",
           "./packages/scoutgame-ui/",
           "./packages/testing/",
           "./packages/users/",
