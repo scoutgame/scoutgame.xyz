@@ -4,7 +4,7 @@ import { log } from '@charmverse/core/log';
 
 import { actionClient } from '../actions/actionClient';
 
-export const logoutAction = actionClient.action(async ({ ctx }) => {
+export const logoutAction = actionClient.metadata({ actionName: 'logout' }).action(async ({ ctx }) => {
   const userId = ctx.session.adminId || ctx.session.scoutId;
   ctx.session.destroy();
   await ctx.session.save();
