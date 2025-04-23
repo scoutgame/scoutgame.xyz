@@ -7,7 +7,7 @@ import { createReferralEvent } from '@packages/users/referrals/createReferralEve
 import { v4 } from 'uuid';
 
 jest.unstable_mockModule('../clients/starterPack/getBuilderContractStarterPackReadonlyClient', () => ({
-  getBuilderNftStarterPackReadonlyClient: () => ({
+  getStarterNFTReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())

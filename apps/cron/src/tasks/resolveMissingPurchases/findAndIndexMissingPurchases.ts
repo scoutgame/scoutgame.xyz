@@ -7,12 +7,12 @@ import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
-import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { nftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { recordOnchainNftMint } from '@packages/scoutgame/builderNfts/recordOnchainNftMint';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
+import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTReadonlyClient';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { prefix0x } from '@packages/utils/prefix0x';
 import type { Address } from 'viem';
@@ -160,7 +160,7 @@ export async function findAndIndexMissingPurchases({
         }
 
         const regularNftContract = getBuilderNftContractReadonlyClient();
-        const starterPackContract = getBuilderNftStarterPackReadonlyClient();
+        const starterPackContract = getStarterNFTReadonlyClient();
 
         if (!regularNftContract || !starterPackContract) {
           scoutgameMintsLogger.warn('Missing contract client', {

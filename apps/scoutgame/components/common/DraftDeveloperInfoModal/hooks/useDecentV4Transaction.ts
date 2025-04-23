@@ -2,8 +2,9 @@ import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
-import { DEV_TOKEN_ADDRESS, DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
+import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
 import { getDecentApiKey } from '@packages/scoutgame/builderNfts/constants';
+import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import useSWR from 'swr';
 import type { Address } from 'viem';
@@ -63,7 +64,7 @@ export function useDecentV4Transaction({
   const decentAPIParams: UseBoxActionArgs = {
     sender: address,
     srcToken: sourceToken,
-    dstToken: DEV_TOKEN_ADDRESS,
+    dstToken: scoutTokenContractAddress,
     srcChainId: sourceChainId,
     dstChainId: base.id,
     slippage: 1,

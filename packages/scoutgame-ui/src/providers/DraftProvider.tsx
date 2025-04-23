@@ -1,9 +1,10 @@
 'use client';
 
-import { DEV_TOKEN_ADDRESS, DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
+import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
 import { checkDraftTransactionAction } from '@packages/scoutgame/drafts/checkDraftTransactionAction';
 import { saveDraftTransactionAction } from '@packages/scoutgame/drafts/saveDraftTransactionAction';
 import { scoutgameDraftsLogger } from '@packages/scoutgame/loggers/mintsLogger';
+import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { useAction } from 'next-safe-action/hooks';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
@@ -122,7 +123,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
       }
 
       const txHash = await walletClient.writeContract({
-        address: DEV_TOKEN_ADDRESS,
+        address: scoutTokenContractAddress,
         abi: erc20Abi,
         functionName: 'transfer',
         args: [DRAFT_BID_RECIPIENT_ADDRESS, bidAmountInDev]

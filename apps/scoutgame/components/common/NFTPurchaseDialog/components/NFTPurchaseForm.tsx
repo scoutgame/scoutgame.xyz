@@ -20,10 +20,8 @@ import {
   ToggleButtonGroup,
   Typography
 } from '@mui/material';
-import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
-import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import {
   getBuilderNftContractAddressForNftType,
   scoutgameEthAddress,
@@ -32,7 +30,9 @@ import {
 import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
+import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTReadonlyClient';
 import {
+  scoutTokenContractAddress,
   getScoutProtocolBuilderNFTReadonlyContract,
   scoutProtocolChainId,
   devTokenDecimals
@@ -171,7 +171,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
       const _price =
         builder.nftType === 'starter_pack'
-          ? await getBuilderNftStarterPackReadonlyClient()?.getTokenPurchasePrice({
+          ? await getStarterNFTReadonlyClient()?.getTokenPurchasePrice({
               args: { amount: BigInt(amount) }
             })
           : await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
@@ -190,7 +190,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     try {
       setIsFetchingPrice(true);
       _builderTokenId = await (builder.nftType === 'starter_pack'
-        ? getBuilderNftStarterPackReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } })
+        ? getStarterNFTReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } })
         : getScoutProtocolBuilderNFTReadonlyContract().getTokenIdForBuilder({ args: { builderId } }));
 
       // builderTokenId is undefined if there is no nft contract for the season
@@ -258,7 +258,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       selectedPaymentOption.currency === 'USDC'
         ? selectedChainCurrency
         : selectedPaymentOption.currency === 'DEV'
-          ? DEV_TOKEN_ADDRESS
+          ? scoutTokenContractAddress
           : null,
     owner: address as Address,
     spender: decentTransactionInfo?.tx.to as Address

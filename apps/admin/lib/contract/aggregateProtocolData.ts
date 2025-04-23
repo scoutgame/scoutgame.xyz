@@ -1,11 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart } from '@packages/dates/utils';
-import {
-  getProtocolReadonlyClient,
-  getProtocolProxyReadonlyClient
-} from '@packages/scoutgame/builderNfts/clients/protocol/getProtocolReadonlyClient';
-import { getScoutProtocolAddress } from '@packages/scoutgame/protocol/constants';
+import { getProtocolReadonlyClient } from '@packages/scoutgame/protocol/clients/getProtocolReadonlyClient';
+import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
+import { scoutProtocolAddress } from '@packages/scoutgame/protocol/constants';
 import type { WeeklyClaimsTyped } from '@packages/scoutgame/protocol/generateWeeklyClaims';
 import {
   scoutGameContributionReceiptSchemaUid,
@@ -36,11 +34,11 @@ export type ProtocolData = {
 };
 
 export async function aggregateProtocolData({ userId }: { userId?: string }): Promise<ProtocolData> {
-  if (!getScoutProtocolAddress()) {
+  if (!scoutProtocolAddress) {
     throw new Error('REACT_APP_SCOUTPROTOCOL_CONTRACT_ADDRESS is not set');
   }
 
-  const protocolProxyReadonlyApiClient = getProtocolProxyReadonlyClient();
+  const protocolProxyReadonlyApiClient = getProxyClient(scoutProtocolAddress);
   const protocolImplementationReadonlyApiClient = getProtocolReadonlyClient();
 
   const [implementation, admin, claimsManager] = await Promise.all([
@@ -101,7 +99,7 @@ export async function aggregateProtocolData({ userId }: { userId?: string }): Pr
   return {
     merkleRoots,
     admin: admin as Address,
-    proxy: getScoutProtocolAddress(),
+    proxy: scoutProtocolAddress,
     implementation: implementation as Address,
     claimsManager: claimsManager as Address,
     easSchemas: {

@@ -6,7 +6,7 @@ import type { Address } from 'viem';
 
 import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
 import { getBuilderNftContractStarterPackMinterClient } from '../clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
-import { getBuilderNftStarterPackReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
+import { getStarterNFTReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { nftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
@@ -75,7 +75,7 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Builder NFT not found');
   }
 
-  const starterPackClient = getBuilderNftStarterPackReadonlyClient(season);
+  const starterPackClient = getStarterNFTReadonlyClient(season);
   if (!starterPackClient) {
     throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
   }

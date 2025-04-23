@@ -3,8 +3,8 @@ import type { UserTokenInfo } from '@decent.xyz/box-common';
 import { ChainId } from '@decent.xyz/box-common';
 import type { UserBalanceArgs } from '@decent.xyz/box-hooks';
 import { useUsersBalances } from '@decent.xyz/box-hooks';
-import { DEV_TOKEN_ADDRESS, NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import { scoutTokenContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { useEffect, useRef, useState } from 'react';
 import type { Address } from 'viem';
 import { createPublicClient, http, parseAbi } from 'viem';
@@ -48,7 +48,6 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
   useEffect(() => {
     async function fetchScoutTokenInfo() {
       try {
-        const scoutToken = DEV_TOKEN_ADDRESS;
         // Create a public client for Base chain
         const client = createPublicClient({
           chain: base,
@@ -58,23 +57,23 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
         // Fetch token information from the contract
         const [balance, decimals, symbol, name] = await Promise.all([
           client.readContract({
-            address: scoutToken as Address,
+            address: scoutTokenContractAddress,
             abi: erc20Abi,
             functionName: 'balanceOf',
             args: [address]
           }),
           client.readContract({
-            address: scoutToken as Address,
+            address: scoutTokenContractAddress,
             abi: erc20Abi,
             functionName: 'decimals'
           }),
           client.readContract({
-            address: scoutToken as Address,
+            address: scoutTokenContractAddress,
             abi: erc20Abi,
             functionName: 'symbol'
           }),
           client.readContract({
-            address: scoutToken as Address,
+            address: scoutTokenContractAddress,
             abi: erc20Abi,
             functionName: 'name'
           })

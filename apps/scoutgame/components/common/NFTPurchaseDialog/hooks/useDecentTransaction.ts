@@ -1,14 +1,13 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
-import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import {
   getDecentApiKey,
   isStarterNftContract,
   nftChain,
   optimismUsdcContractAddress
 } from '@packages/scoutgame/builderNfts/constants';
-import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChainId, scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
@@ -84,7 +83,7 @@ export function useDecentTransaction({
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
-    dstToken: useScoutToken ? DEV_TOKEN_ADDRESS : optimismUsdcContractAddress,
+    dstToken: useScoutToken ? scoutTokenContractAddress : optimismUsdcContractAddress,
     srcChainId: sourceChainId,
     dstChainId: useScoutToken ? scoutProtocolChainId : nftChain.id,
     slippage: 1,
@@ -95,7 +94,7 @@ export function useDecentTransaction({
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
-        tokenAddress: useScoutToken ? DEV_TOKEN_ADDRESS : optimismUsdcContractAddress
+        tokenAddress: useScoutToken ? scoutTokenContractAddress : optimismUsdcContractAddress
       },
       signature: isStarterContract ? transferableStarterNftMintSignature : transferableNftMintSignature,
       args: isStarterContract

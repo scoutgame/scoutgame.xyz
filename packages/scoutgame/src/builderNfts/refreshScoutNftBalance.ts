@@ -3,7 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Address } from 'viem';
 
 import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
-import { getBuilderNftStarterPackReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
+import { getStarterNFTReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 
 export async function refreshScoutNftBalance({
   wallet,
@@ -28,7 +28,7 @@ export async function refreshScoutNftBalance({
     }
   });
 
-  const starterPackContract = getBuilderNftStarterPackReadonlyClient(season);
+  const starterPackContract = getStarterNFTReadonlyClient(season);
   const regularContract = getBuilderNftContractReadonlyClient(season);
 
   if (!starterPackContract || !regularContract) {

@@ -29,7 +29,7 @@ type ReadWriteWalletClient<
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
 
-export class ScoutProtocolProxyClient {
+export class ProxyContract {
   private contractAddress: Address;
 
   private publicClient: PublicClient;
@@ -412,31 +412,6 @@ export class ScoutProtocolProxyClient {
       abi: this.abi,
       functionName: 'transferAdmin',
       args: [params.args._newAdmin]
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return waitForTransactionReceipt(this.publicClient, tx);
-  }
-
-  async unPause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'unPause',
-      args: []
     });
 
     const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {

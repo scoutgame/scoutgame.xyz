@@ -2,8 +2,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getSeasonConfig } from '@packages/dates/utils';
 import { getBuilderNftStarterPackProxyReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackProxyReadonlyClient';
-import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
+import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTReadonlyClient';
 import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
 
@@ -21,12 +22,9 @@ export type StarterPackNFTContractData = {
 };
 
 export async function getStarterPackContractData({ season }: { season: ISOWeek }): Promise<StarterPackNFTContractData> {
-  const starterPackClient = getBuilderNftStarterPackReadonlyClient(season)!;
+  const starterPackClient = getStarterNFTReadonlyClient(season)!;
 
-  const starterPackProxyClient = getBuilderNftStarterPackProxyReadonlyClient({
-    chain: optimism,
-    contractAddress: getBuilderNftStarterPackContractAddress(season) as Address
-  });
+  const starterPackProxyClient = getProxyClient(getBuilderNftStarterPackContractAddress(season) as Address);
 
   const [currentMinter, totalSupply, nftSalesData, currentImplementation, admin, proceedsReceiver] = await Promise.all([
     starterPackClient.getMinter(),

@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
 import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
-import { getBuilderNftStarterPackReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
+import { getStarterNFTReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { mintNFT } from './mintNFT';
 import { schema } from './purchaseWithPointsSchema';
 import { convertCostToPoints } from './utils';
@@ -47,7 +47,7 @@ export const purchaseWithPointsAction = authActionClient
       throw new Error('Scout not found');
     }
 
-    const starterPackContract = getBuilderNftStarterPackReadonlyClient();
+    const starterPackContract = getStarterNFTReadonlyClient();
     const regularContract = getBuilderNftContractReadonlyClient();
 
     if (!starterPackContract || !regularContract) {

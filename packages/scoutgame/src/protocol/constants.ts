@@ -1,5 +1,4 @@
 import env from '@beam-australia/react-env';
-import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
@@ -9,7 +8,7 @@ import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress }
 // If we are onchain or not in preseason, use base, otherwise use optimism
 export const scoutProtocolChain = base; //  : optimism;
 
-export const scoutTokenContractAddress = DEV_TOKEN_ADDRESS;
+export const scoutTokenContractAddress = '0x047157cffb8841a64db93fd4e29fa3796b78466c' as Address;
 
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
