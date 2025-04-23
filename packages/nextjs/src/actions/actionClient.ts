@@ -17,13 +17,13 @@ export function defineMetadataSchema() {
 }
 
 export const actionClientBase = createSafeActionClient({
-  validationAdapter: yupAdapter(),
-  defineMetadataSchema,
-  handleServerError: async (err, utils) => {
-    console.log('handleServerError', err);
-    await handleServerErrorLog(err, utils);
-    return handleReturnedServerError(err, utils);
-  }
+  // validationAdapter: yupAdapter(),
+  // defineMetadataSchema,
+  // handleServerError: async (err, utils) => {
+  //   console.log('handleServerError', err);
+  //   await handleServerErrorLog(err, utils);
+  //   return handleReturnedServerError(err, utils);
+  // }
   // defaultValidationErrorsShape: 'flattened'
 });
 

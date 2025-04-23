@@ -16,7 +16,6 @@ import {
   Badge
 } from '@mui/material';
 import { isDraftSeason } from '@packages/dates/utils';
-import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
@@ -183,7 +182,7 @@ export function Header() {
                         </MenuItem>
                       ) : null}
                       {platform === 'webapp' && !isFarcasterFrame && (
-                        <MenuItem onClick={() => logoutAction()} data-test='sign-out-button'>
+                        <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out
                         </MenuItem>
                       )}
