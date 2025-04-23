@@ -11,14 +11,9 @@ import type { defineMetadataSchema } from './actionClient';
 
 type ErrorResponse = Omit<SystemError, 'error' | 'errorConstructor' | 'name'>;
 
-type MaybePromise<T> = Promise<T> | T;
-
 type MetadataSchema = ReturnType<typeof defineMetadataSchema>;
 
-export function handleReturnedServerError(
-  err: any,
-  _utils: ServerErrorFunctionUtils<MetadataSchema>
-): MaybePromise<ErrorResponse> {
+export function handleReturnedServerError(err: any, _utils: ServerErrorFunctionUtils<MetadataSchema>): ErrorResponse {
   // https://www.prisma.io/docs/reference/api-reference/error-reference#p2025
   // P2025 is thrown when a record is not found
   if (err.code === 'P2025') {
@@ -45,7 +40,7 @@ export function handleReturnedServerError(
   return withoutStack;
 }
 
-export function handleServerErrorLog(err: any, utils: ServerErrorFunctionUtils<MetadataSchema>): MaybePromise<void> {
+export async function handleServerErrorLog(err: any, utils: ServerErrorFunctionUtils<MetadataSchema>) {
   const clientInput = utils?.clientInput;
   const metadata = utils?.metadata;
   const ctx = utils?.ctx;
@@ -58,11 +53,10 @@ export function handleServerErrorLog(err: any, utils: ServerErrorFunctionUtils<M
 
   const context = ctx as {
     session: IronSession<SessionData>;
-    headers: ReturnType<typeof headers>;
   };
   const userId = context?.session?.user?.id;
 
-  const headersList = headers();
+  const headersList = await headers();
   const fullUrl = headersList.get('referer') || '';
 
   const isValidSystemError = isSystemError(err);

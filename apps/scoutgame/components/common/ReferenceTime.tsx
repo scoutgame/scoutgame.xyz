@@ -4,7 +4,8 @@ import dynamic from 'next/dynamic';
 export const ReferenceTime = dynamic(
   () => import('./ReferenceTimeComponent').then((mod) => mod.ReferenceTimeComponent),
   {
-    ssr: false,
+    // for explanation for "!!", see https://github.com/PostHog/posthog/issues/26016
+    ssr: !!false,
     loading: () => <span>&nbsp;</span>
   }
 );

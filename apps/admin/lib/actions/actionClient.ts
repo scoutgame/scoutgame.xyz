@@ -7,7 +7,7 @@ import { getSession } from '../session/getSession';
 
 export const actionClient = actionClientBase.use(async ({ next }) => {
   const session = await getSession();
-  const headerList = headers();
+  const headerList = await headers();
 
   return next({
     ctx: { session, headers: headerList }
@@ -16,7 +16,7 @@ export const actionClient = actionClientBase.use(async ({ next }) => {
 
 export const authActionClient = actionClient.use(async ({ next }) => {
   const session = await getSession();
-  const headerList = headers();
+  const headerList = await headers();
 
   const adminId = session.adminId;
 

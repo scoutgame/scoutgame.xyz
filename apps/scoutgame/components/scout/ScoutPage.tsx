@@ -2,7 +2,7 @@ import 'server-only';
 
 import AppsIcon from '@mui/icons-material/Apps';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import { Box, Grid2 as Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { LoadingCards } from '@packages/scoutgame-ui/components/common/Loading/LoadingCards';

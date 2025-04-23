@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab';
 import { Button, Stack, Typography } from '@mui/material';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 
@@ -129,14 +128,14 @@ export function DonationConfirmationStep({
                 />
               </Stack>
               {donationPercentage !== 'donate_none' ? (
-                <LoadingButton
+                <Button
                   variant='contained'
                   sx={{ width: isDesktop ? 150 : 100, mt: { xs: 1, md: 2 }, py: 1, borderRadius: 2 }}
                   onClick={onClaim}
                   loading={isLoading}
                 >
                   Claim
-                </LoadingButton>
+                </Button>
               ) : null}
             </Stack>
           ) : null}
@@ -147,14 +146,14 @@ export function DonationConfirmationStep({
             <Button variant='outlined' sx={{ width: isDesktop ? 150 : 100, py: 1, borderRadius: 2 }} onClick={onCancel}>
               Cancel
             </Button>
-            <LoadingButton
+            <Button
               variant='contained'
               sx={{ width: isDesktop ? 150 : 100, py: 1, borderRadius: 2 }}
               onClick={onClaim}
               loading={isLoading}
             >
               Claim
-            </LoadingButton>
+            </Button>
           </Stack>
         ) : null}
       </Stack>

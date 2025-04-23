@@ -10,7 +10,9 @@ import { ModalProvider } from 'components/common/ModalProvider';
 import '@packages/scoutgame-ui/theme/styles.scss';
 
 const ClientGlobals = dynamic(() => import('../components/common/ClientGlobals').then((comp) => comp.ClientGlobals), {
-  ssr: false
+  // for explanation for "!!", see https://github.com/PostHog/posthog/issues/26016
+  ssr: !!false,
+  loading: () => <span>&nbsp;</span>
 });
 
 const appName = 'Scout Game';

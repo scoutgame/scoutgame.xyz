@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
 import { DeleteOutlined as Delete } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
 import {
   Button,
   MenuItem,
@@ -76,7 +75,7 @@ export function DeleteRepoMenuItem({ repoId, deletedAt, onDelete }: DeleteRepoBu
           <Button variant='outlined' color='secondary' onClick={handleClose}>
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             variant='contained'
             loading={isDeleting}
             onClick={handleDelete}
@@ -84,7 +83,7 @@ export function DeleteRepoMenuItem({ repoId, deletedAt, onDelete }: DeleteRepoBu
             autoFocus
           >
             {deletedAt ? 'Restore' : 'Delete'}
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
     </>
