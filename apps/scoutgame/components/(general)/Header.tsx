@@ -193,7 +193,7 @@ export function Header() {
                         </MenuItem>
                       ) : null}
                       {platform === 'webapp' && !isFarcasterFrame && (
-                        <MenuItem onClick={() => logoutAction()} data-test='sign-out-button'>
+                        <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
                           Sign Out
                         </MenuItem>
                       )}
