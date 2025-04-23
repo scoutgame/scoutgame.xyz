@@ -11,8 +11,7 @@ interface ContractDashboardProps {
   currentTab?: string;
 }
 
-export async function ContractDashboard({ currentTab = 'preseason02' }: ContractDashboardProps) {
-  const headersList = await headers();
+export function ContractDashboard({ currentTab = 'preseason02' }: ContractDashboardProps) {
   return (
     <Container maxWidth='xl'>
       {/* Outer-level tabs */}
@@ -43,7 +42,7 @@ export async function ContractDashboard({ currentTab = 'preseason02' }: Contract
         {currentTab === 'protocol' && (
           <WagmiProvider
             walletConnectProjectId={env('WALLET_CONNECT_PROJECTID')}
-            cookie={headersList.get('cookie') ?? ''}
+            cookie={headers().get('cookie') ?? ''}
           >
             <ProtocolContract />
           </WagmiProvider>

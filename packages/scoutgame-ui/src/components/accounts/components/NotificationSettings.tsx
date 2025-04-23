@@ -2,7 +2,8 @@
 
 import { log } from '@charmverse/core/log';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Checkbox, FormControlLabel, Paper, Stack, Tooltip } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Checkbox, FormControlLabel, Paper, Stack, Tooltip } from '@mui/material';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { updateUserNotificationSettingsAction } from '@packages/users/updateUserNotificationSettingsAction';
 import {
@@ -108,7 +109,7 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
               )}
             />
           </Stack>
-          <Button
+          <LoadingButton
             variant='contained'
             color='primary'
             type='submit'
@@ -117,7 +118,7 @@ export function NotificationSettings({ user }: { user: UserWithAccountsDetails }
             sx={{ width: 'fit-content' }}
           >
             Save
-          </Button>
+          </LoadingButton>
           <FormErrors errors={errors} />
         </Stack>
       </form>

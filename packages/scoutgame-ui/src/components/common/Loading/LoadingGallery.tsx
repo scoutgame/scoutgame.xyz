@@ -1,4 +1,4 @@
-import { Box, Grid, Skeleton, Stack } from '@mui/material';
+import { Box, Grid2 as Grid, Skeleton, Stack } from '@mui/material';
 
 export function LoadingGallery({ quantity = 10 }: { quantity?: number }) {
   return (

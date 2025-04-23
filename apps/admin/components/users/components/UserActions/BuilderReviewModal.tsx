@@ -1,11 +1,12 @@
 import { log } from '@charmverse/core/log';
 import { DeleteOutlined as TrashIcon } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   Stack,
+  Button,
   TextField,
   Tooltip,
   Chip,
@@ -257,7 +258,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                   Cancel
                 </Button>
                 {user.builderStatus === 'applied' && (
-                  <Button
+                  <LoadingButton
                     disabled={!githubLoginDisplayed}
                     loading={isExecutingUpdate}
                     color='error'
@@ -265,17 +266,17 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                     onClick={rejectBuilder}
                   >
                     Reject
-                  </Button>
+                  </LoadingButton>
                 )}
                 {user.builderStatus === 'rejected' && (
-                  <Button
+                  <LoadingButton
                     disabled={!githubLoginDisplayed}
                     loading={isExecutingUpdate}
                     variant='outlined'
                     onClick={reapplyBuilder}
                   >
                     Reapply
-                  </Button>
+                  </LoadingButton>
                 )}
                 <Tooltip
                   title={
@@ -285,7 +286,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                   }
                 >
                   <span>
-                    <Button
+                    <LoadingButton
                       disabled={!githubLoginDisplayed || cannotUnsuspend}
                       loading={isCreating}
                       type='submit'
@@ -293,7 +294,7 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
                       variant='contained'
                     >
                       {user.builderStatus === 'banned' ? 'Unsuspend' : 'Approve'}
-                    </Button>
+                    </LoadingButton>
                   </span>
                 </Tooltip>
               </Stack>

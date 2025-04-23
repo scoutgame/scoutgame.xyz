@@ -1,9 +1,10 @@
+import { LoadingButton } from '@mui/lab';
 import {
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   Stack,
+  Button,
   TextField,
   CircularProgress,
   InputAdornment,
@@ -128,9 +129,9 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
                   Cancel
                 </Button>
                 {user.scout.builderStatus === 'applied' && (
-                  <Button disabled loading={isCreating} type='submit' color='primary' variant='contained'>
+                  <LoadingButton disabled loading={isCreating} type='submit' color='primary' variant='contained'>
                     Approve builder
-                  </Button>
+                  </LoadingButton>
                 )}
               </Stack>
             </>
@@ -167,9 +168,9 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
                 <Button variant='outlined' color='secondary' onClick={onClose}>
                   Cancel
                 </Button>
-                <Button loading={isCreating} type='submit' color='primary' variant='contained'>
+                <LoadingButton loading={isCreating} type='submit' color='primary' variant='contained'>
                   Add {user.waitlistUser.githubLogin ? 'builder' : 'scout'}
-                </Button>
+                </LoadingButton>
               </Stack>
             </>
           )}
@@ -191,9 +192,9 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
                 <Button variant='outlined' color='secondary' onClick={onClose}>
                   Cancel
                 </Button>
-                <Button loading={isCreating} type='submit' color='primary' variant='contained'>
+                <LoadingButton loading={isCreating} type='submit' color='primary' variant='contained'>
                   Add scout
-                </Button>
+                </LoadingButton>
               </Stack>
             </>
           )}

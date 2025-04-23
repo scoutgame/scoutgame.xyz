@@ -2,6 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { LoadingButton } from '@mui/lab';
 import {
   Button,
   Dialog,
@@ -98,7 +99,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
           <Button variant='outlined' onClick={onClose} disabled={isExecuting}>
             Cancel
           </Button>
-          <Button
+          <LoadingButton
             onClick={handleConfirmRegistration}
             variant='contained'
             color='secondary'
@@ -108,7 +109,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
             sx={{ whiteSpace: 'nowrap' }}
           >
             Register {MATCHUP_REGISTRATION_FEE}
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </Dialog>
       <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} />

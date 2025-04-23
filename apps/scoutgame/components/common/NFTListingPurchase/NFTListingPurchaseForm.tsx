@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
-import { Button, Box, Stack } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Box, Stack } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { purchaseNftListingAction } from '@packages/scoutgame/nftListing/purchaseNftListingAction';
@@ -143,7 +144,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
           actionType='purchase'
         />
       ) : (
-        <Button
+        <LoadingButton
           color='primary'
           variant='contained'
           fullWidth
@@ -158,7 +159,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
           loading={isLoading || isExecuting}
         >
           {listingPrice} &nbsp; DEV
-        </Button>
+        </LoadingButton>
       )}
     </Stack>
   );

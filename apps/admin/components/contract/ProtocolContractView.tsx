@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, IconButton, Typography } from '@mui/material';
+import { Box, Divider, Grid2, IconButton, Typography } from '@mui/material';
 import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import {
   contributionSchemaDefinition,
@@ -60,9 +60,9 @@ function SectionTitle({ title }: { title: string }) {
 
 function GridDivider() {
   return (
-    <Grid size={12}>
+    <Grid2 size={12}>
       <Divider />
-    </Grid>
+    </Grid2>
   );
 }
 
@@ -97,31 +97,31 @@ export function ProtocolContractView(data: ProtocolData) {
   // }
 
   return (
-    <Grid container spacing={2}>
-      <Grid size={12}>
+    <Grid2 container spacing={2}>
+      <Grid2 size={12}>
         <SectionTitle title='Protocol Contract Addresses' />
-      </Grid>
-      <Grid size={itemSizeTwoColumnMd}>
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
           address={data.proxy}
           title='Proxy address'
           linkType='token'
           subtitle='Long term contract for interacting with the protocol'
         />
-      </Grid>
-      <Grid size={itemSizeTwoColumnMd}>
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
           address={data.implementation}
           title='Current Implementation'
           subtitle='This contract is called by the proxy and contains the main protocol logic'
         />
-      </Grid>
+      </Grid2>
       <GridDivider />
-      <Grid size={12}>
+      <Grid2 size={12}>
         <SectionTitle title='Data' />
-      </Grid>
+      </Grid2>
       {data.merkleRoots.map((root) => (
-        <Grid size={itemSizeThreeColumnMd} key={root.week}>
+        <Grid2 size={itemSizeThreeColumnMd} key={root.week}>
           <Typography variant='h6'>Merkle Root for week {root.week}</Typography>
           {!root.root && <Typography>Week not processed</Typography>}
           {root.root &&
@@ -137,52 +137,52 @@ export function ProtocolContractView(data: ProtocolData) {
               {root.testClaim.claim.address.slice(root.testClaim.claim.address.length - 3)}
             </Button>
           )} */}
-        </Grid>
+        </Grid2>
       ))}
       <GridDivider />
-      {/* <Grid size={12}>
+      {/* <Grid2 size={12}>
         <SectionTitle title='Governance' />
-      </Grid>
-      <Grid size={itemSizeTwoColumnMd}>
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
         <Typography variant='h6'>Upgrade contract</Typography>
         <Button>Upgrade contract</Button>
-      </Grid>
+      </Grid2>
       <GridDivider /> */}
-      <Grid size={12}>
+      <Grid2 size={12}>
         <SectionTitle title='Attestations' />
-      </Grid>
-      <Grid size={itemSizeTwoColumnMd}>
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
         <EASSchemaLink
           schemaId={data.easSchemas.profile}
           title={scoutGameUserProfileSchemaDefinition.name}
           subtitle='Onchain profiles for ScoutGame participants'
         />
-      </Grid>
-      <Grid size={itemSizeTwoColumnMd}>
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
         <EASSchemaLink
           schemaId={data.easSchemas.contributions}
           title={contributionSchemaDefinition.name}
           subtitle='Onchain receipts for Github Activity'
         />
-      </Grid>
+      </Grid2>
       <GridDivider />
-      <Grid size={12}>
+      <Grid2 size={12}>
         <SectionTitle title='Roles & Permissions' />
-      </Grid>
-      <Grid size={itemSizeTwoColumnMd}>
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
           address={data.admin}
           title='Admin'
           subtitle='Admin wallet can upgrade the contract, update the wallet that receives proceeds from NFT sales, modify pricing, register builders and mint tokens.'
         />
-      </Grid>
-      <Grid size={itemSizeTwoColumnMd}>
+      </Grid2>
+      <Grid2 size={itemSizeTwoColumnMd}>
         <ContractLink
           address={data.claimsManager}
           title='Claims Manager'
           subtitle='The wallet that can register weekly merkle roots'
         />
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }

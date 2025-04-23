@@ -24,8 +24,7 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
 };
 
 const TelegramConnect = dynamic(() => import('./components/TelegramConnect').then((mod) => mod.TelegramConnect), {
-  // for explanation for "!!", see https://github.com/PostHog/posthog/issues/26016
-  ssr: !!false,
+  ssr: false,
   loading: () => <Skeleton variant='rectangular' height={100} />
 });
 

@@ -1,4 +1,5 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Stack, Typography } from '@mui/material';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 
@@ -46,9 +47,9 @@ export function StartClaimStep({ isLoading }: { isLoading: boolean }) {
           </Typography>
         )}
         {isLoading ? (
-          <Button variant='contained' loading sx={{ width: 250, py: 1, borderRadius: 2 }}>
+          <LoadingButton variant='contained' loading sx={{ width: 250, py: 1, borderRadius: 2 }}>
             Start
-          </Button>
+          </LoadingButton>
         ) : (
           <WalletLogin text='Start' />
         )}

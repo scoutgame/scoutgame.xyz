@@ -8,6 +8,7 @@ import { PurchaseProvider } from '@packages/scoutgame-ui/providers/PurchaseProvi
 import { SnackbarProvider } from '@packages/scoutgame-ui/providers/SnackbarContext';
 import { UserProvider } from '@packages/scoutgame-ui/providers/UserProvider';
 import { headers } from 'next/headers';
+import { ViewTransitions } from 'next-view-transitions';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
@@ -18,27 +19,28 @@ import { SWRProvider } from './SwrProvider';
 import { WagmiProvider } from './WagmiProvider';
 
 // This is required to provider the MUI theme otherwise the defaultProps are not applied
-export async function AppProviders({ children, user }: { children: ReactNode; user: SessionUser | null }) {
-  const headersList = await headers();
+export function AppProviders({ children, user }: { children: ReactNode; user: SessionUser | null }) {
   return (
-    <WagmiProvider
-      cookie={headersList.get('cookie') ?? ''}
-      walletConnectProjectId={process.env.REACT_APP_WALLETCONNECT_PROJECTID}
-    >
-      <AppRouterCacheProvider options={{ key: 'css' }}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline enableColorScheme />
-          <SWRProvider>
-            <LinkInterceptor />
-            <Toaster theme='dark' richColors />
-            <UserProvider userSession={user}>
-              <SnackbarProvider>
-                <PurchaseProvider>{children}</PurchaseProvider>
-              </SnackbarProvider>
-            </UserProvider>
-          </SWRProvider>
-        </ThemeProvider>
-      </AppRouterCacheProvider>
-    </WagmiProvider>
+    <ViewTransitions>
+      <WagmiProvider
+        cookie={headers().get('cookie') ?? ''}
+        walletConnectProjectId={process.env.REACT_APP_WALLETCONNECT_PROJECTID}
+      >
+        <AppRouterCacheProvider options={{ key: 'css' }}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline enableColorScheme />
+            <SWRProvider>
+              <LinkInterceptor />
+              <Toaster theme='dark' richColors />
+              <UserProvider userSession={user}>
+                <SnackbarProvider>
+                  <PurchaseProvider>{children}</PurchaseProvider>
+                </SnackbarProvider>
+              </UserProvider>
+            </SWRProvider>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
+      </WagmiProvider>
+    </ViewTransitions>
   );
 }

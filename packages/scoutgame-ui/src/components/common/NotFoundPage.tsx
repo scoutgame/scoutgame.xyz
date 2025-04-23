@@ -6,7 +6,7 @@ import Image from 'next/image';
 const imageSrc = '/images/space_binoculars.webp';
 export function NotFoundPage({ content = 'The page you are looking for does not exist!' }: { content?: string }) {
   return (
-    <div>
+    <>
       <CssBaseline />
       <Box
         height='100%'
@@ -24,6 +24,6 @@ export function NotFoundPage({ content = 'The page you are looking for does not 
         <Image src={imageSrc} width={300} height={300} alt='' />
         <Typography variant='subtitle1'>{content}</Typography>
       </Box>
-    </div>
+    </>
   );
 }

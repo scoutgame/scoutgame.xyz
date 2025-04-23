@@ -11,12 +11,12 @@ import { userAgent } from 'next/server';
  *
  * @returns void
  */
-export async function trackUserEnhancedAction<T extends MixpanelEventName>(
+export function trackUserEnhancedAction<T extends MixpanelEventName>(
   eventName: T,
   params: MixpanelEventMap[T],
   utmParams?: UTMParams
 ) {
-  const headersList = await headers();
+  const headersList = headers();
   const referrer = headersList.get('Referer') || undefined;
   const isReferrerValid = isValidURL(referrer);
   const referrerDomain = isReferrerValid ? new URL(referrer).hostname : undefined;

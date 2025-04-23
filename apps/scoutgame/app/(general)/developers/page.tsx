@@ -14,8 +14,7 @@ export default async function Developers({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const searchParamsResolved = await searchParams;
-  const tab = (searchParamsResolved.tab as string) || 'leaderboard';
+  const tab = (searchParams.tab as string) || 'leaderboard';
   const week = searchParams.week as string | undefined;
   const builderSort = (searchParams.builderSort as string | undefined) || 'rank';
   const builderOrder = (searchParams.builderOrder as string | undefined) || 'asc';
