@@ -23,8 +23,8 @@ export const actionClientBase = createSafeActionClient({
     console.log('handleServerError', err);
     await handleServerErrorLog(err, utils);
     return handleReturnedServerError(err, utils);
-  },
-  defaultValidationErrorsShape: 'flattened'
+  }
+  // defaultValidationErrorsShape: 'flattened'
 });
 
 export const actionClient = actionClientBase
