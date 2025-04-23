@@ -149,6 +149,7 @@
     "playwright": "^1.47.1",
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.2"
   }
 }
