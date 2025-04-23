@@ -6,10 +6,9 @@ import { getMerkleProofs } from '@charmverse/core/protocol';
 import { getSeasonConfig, getNextSeason, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
 import { type Address } from 'viem';
 
-import { getProtocolWriteClient } from '../builderNfts/clients/protocol/getProtocolWriteClient';
-
 import type { WeeklyClaimsCalculated } from './calculateWeeklyClaims';
-import { getSablierLockupContract, sablierStreamId } from './constants';
+import { getProtocolClaimsManagerWallet } from './clients/getProtocolClaimsManagerWallet';
+import { getProtocolWriteClient } from './clients/getProtocolWriteClient';
 
 type ClaimsBody = {
   leaves: ProvableClaim[];
@@ -67,7 +66,7 @@ export async function generateWeeklyClaims({
   const weeksPerSeason = getSeasonConfig(nextSeason).weeksPerSeason;
   const validUntil = getDateFromISOWeek(nextSeason).plus({ weeks: weeksPerSeason }).toISO();
 
-  await getProtocolWriteClient().setWeeklyMerkleRoot({
+  await getProtocolWriteClient({ walletClient: getProtocolClaimsManagerWallet() }).setWeeklyMerkleRoot({
     args: {
       weeklyRoot: {
         isoWeek: week,
@@ -79,17 +78,6 @@ export async function generateWeeklyClaims({
       }
     }
   });
-
-  // Fund the protocol contract
-  await getSablierLockupContract()
-    .claim({
-      args: {
-        streamId: BigInt(sablierStreamId)
-      }
-    })
-    .catch((error: any) => {
-      log.error(`Error claiming stream ${sablierStreamId}`, error);
-    });
 
   const weeklyClaim = await prisma.$transaction(async (tx) => {
     const _weeklyClaim = await tx.weeklyClaims.create({

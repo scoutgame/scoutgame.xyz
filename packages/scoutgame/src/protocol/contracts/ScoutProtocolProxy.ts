@@ -1,3 +1,4 @@
+import { waitForTransactionReceipt } from '@packages/blockchain/waitForTransactionReceipt';
 import type {
   Abi,
   Account,
@@ -28,14 +29,12 @@ type ReadWriteWalletClient<
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
 
-export class ScoutProtocolBuilderNFTProxyClient {
+export class ScoutProtocolProxyClient {
   private contractAddress: Address;
 
   private publicClient: PublicClient;
 
   private walletClient?: ReadWriteWalletClient;
-
-  private chain: Chain;
 
   public abi: Abi = [
     {
@@ -199,28 +198,19 @@ export class ScoutProtocolBuilderNFTProxyClient {
   constructor({
     contractAddress,
     publicClient,
-    walletClient,
-    chain
+    walletClient
   }: {
     contractAddress: Address;
-    chain: Chain;
     publicClient?: PublicClient;
     walletClient?: ReadWriteWalletClient;
   }) {
     if (!publicClient && !walletClient) {
       throw new Error('At least one client is required.');
-    } else if (publicClient && walletClient) {
-      throw new Error('Provide only a public client or wallet clients');
     }
 
-    this.chain = chain;
     this.contractAddress = contractAddress;
 
     const client = publicClient || walletClient;
-
-    if (client!.chain!.id !== chain.id) {
-      throw new Error('Client must be on the same chain as the contract. Make sure to add a chain to your client');
-    }
 
     if (publicClient) {
       this.publicClient = publicClient;
@@ -230,7 +220,7 @@ export class ScoutProtocolBuilderNFTProxyClient {
     }
   }
 
-  async admin(): Promise<Address> {
+  async admin(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'admin',
@@ -239,7 +229,8 @@ export class ScoutProtocolBuilderNFTProxyClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -253,7 +244,7 @@ export class ScoutProtocolBuilderNFTProxyClient {
     return result as Address;
   }
 
-  async implementation(): Promise<Address> {
+  async implementation(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'implementation',
@@ -262,7 +253,8 @@ export class ScoutProtocolBuilderNFTProxyClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -276,7 +268,7 @@ export class ScoutProtocolBuilderNFTProxyClient {
     return result as Address;
   }
 
-  async isPaused(): Promise<boolean> {
+  async isPaused(params: { blockNumber?: bigint } = {}): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isPaused',
@@ -285,7 +277,8 @@ export class ScoutProtocolBuilderNFTProxyClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -321,10 +314,10 @@ export class ScoutProtocolBuilderNFTProxyClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async pauser(): Promise<Address> {
+  async pauser(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'pauser',
@@ -333,7 +326,8 @@ export class ScoutProtocolBuilderNFTProxyClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -373,7 +367,7 @@ export class ScoutProtocolBuilderNFTProxyClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setPauser(params: {
@@ -402,7 +396,7 @@ export class ScoutProtocolBuilderNFTProxyClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async transferAdmin(params: {
@@ -431,7 +425,7 @@ export class ScoutProtocolBuilderNFTProxyClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async unPause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
@@ -456,6 +450,6 @@ export class ScoutProtocolBuilderNFTProxyClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 }

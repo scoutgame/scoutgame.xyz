@@ -1,3 +1,4 @@
+import { waitForTransactionReceipt } from '@packages/blockchain/waitForTransactionReceipt';
 import type {
   Abi,
   Account,
@@ -34,8 +35,6 @@ export class ScoutTokenERC20ImplementationClient {
   private publicClient: PublicClient;
 
   private walletClient?: ReadWriteWalletClient;
-
-  private chain: Chain;
 
   public abi: Abi = [
     {
@@ -659,28 +658,19 @@ export class ScoutTokenERC20ImplementationClient {
   constructor({
     contractAddress,
     publicClient,
-    walletClient,
-    chain
+    walletClient
   }: {
     contractAddress: Address;
-    chain: Chain;
     publicClient?: PublicClient;
     walletClient?: ReadWriteWalletClient;
   }) {
     if (!publicClient && !walletClient) {
       throw new Error('At least one client is required.');
-    } else if (publicClient && walletClient) {
-      throw new Error('Provide only a public client or wallet clients');
     }
 
-    this.chain = chain;
     this.contractAddress = contractAddress;
 
     const client = publicClient || walletClient;
-
-    if (client!.chain!.id !== chain.id) {
-      throw new Error('Client must be on the same chain as the contract. Make sure to add a chain to your client');
-    }
 
     if (publicClient) {
       this.publicClient = publicClient;
@@ -690,7 +680,7 @@ export class ScoutTokenERC20ImplementationClient {
     }
   }
 
-  async SUPPLY(): Promise<bigint> {
+  async SUPPLY(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'SUPPLY',
@@ -699,7 +689,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -713,7 +704,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as bigint;
   }
 
-  async acceptUpgrade(): Promise<Address> {
+  async acceptUpgrade(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'acceptUpgrade',
@@ -722,7 +713,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -736,7 +728,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as Address;
   }
 
-  async admin(): Promise<Address> {
+  async admin(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'admin',
@@ -745,7 +737,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -759,7 +752,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as Address;
   }
 
-  async allowance(params: { args: { owner: Address; spender: Address } }): Promise<bigint> {
+  async allowance(params: { args: { owner: Address; spender: Address }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'allowance',
@@ -768,7 +761,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -808,10 +802,10 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async balanceOf(params: { args: { account: Address } }): Promise<bigint> {
+  async balanceOf(params: { args: { account: Address }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOf',
@@ -820,7 +814,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -856,7 +851,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async crosschainBurn(params: {
@@ -885,7 +880,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async crosschainMint(params: {
@@ -914,10 +909,10 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async decimals(): Promise<bigint> {
+  async decimals(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'decimals',
@@ -926,7 +921,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -966,7 +962,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async increaseAllowance(params: {
@@ -995,7 +991,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async initialize(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
@@ -1020,10 +1016,10 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async isInitialized(): Promise<boolean> {
+  async isInitialized(params: { blockNumber?: bigint } = {}): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isInitialized',
@@ -1032,7 +1028,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1046,7 +1043,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as boolean;
   }
 
-  async isPaused(): Promise<boolean> {
+  async isPaused(params: { blockNumber?: bigint } = {}): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isPaused',
@@ -1055,7 +1052,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1069,7 +1067,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as boolean;
   }
 
-  async l2Messenger(): Promise<Address> {
+  async l2Messenger(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'l2Messenger',
@@ -1078,7 +1076,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1092,7 +1091,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as Address;
   }
 
-  async name(): Promise<string> {
+  async name(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'name',
@@ -1101,7 +1100,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1137,10 +1137,10 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async pauser(): Promise<Address> {
+  async pauser(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'pauser',
@@ -1149,7 +1149,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1189,7 +1190,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setPauser(params: {
@@ -1218,7 +1219,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setSuperchainBridge(params: {
@@ -1247,10 +1248,10 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async superchainBridge(): Promise<Address> {
+  async superchainBridge(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'superchainBridge',
@@ -1259,7 +1260,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1273,7 +1275,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as Address;
   }
 
-  async supportsInterface(params: { args: { _interfaceId: string } }): Promise<boolean> {
+  async supportsInterface(params: { args: { _interfaceId: string }; blockNumber?: bigint }): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'supportsInterface',
@@ -1282,7 +1284,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1296,7 +1299,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as boolean;
   }
 
-  async symbol(): Promise<string> {
+  async symbol(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'symbol',
@@ -1305,7 +1308,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1319,7 +1323,7 @@ export class ScoutTokenERC20ImplementationClient {
     return result as string;
   }
 
-  async totalSupply(): Promise<bigint> {
+  async totalSupply(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalSupply',
@@ -1328,7 +1332,8 @@ export class ScoutTokenERC20ImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1368,7 +1373,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async transferAdmin(params: {
@@ -1397,7 +1402,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async transferFrom(params: {
@@ -1426,7 +1431,7 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async unPause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
@@ -1451,6 +1456,6 @@ export class ScoutTokenERC20ImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 }

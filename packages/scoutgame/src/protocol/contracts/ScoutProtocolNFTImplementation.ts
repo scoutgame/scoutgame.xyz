@@ -1,3 +1,4 @@
+import { waitForTransactionReceipt } from '@packages/blockchain/waitForTransactionReceipt';
 import type {
   Abi,
   Account,
@@ -28,14 +29,12 @@ type ReadWriteWalletClient<
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
 
-export class ScoutProtocolBuilderNFTImplementationClient {
+export class ScoutProtocolNFTImplementationClient {
   private contractAddress: Address;
 
   private publicClient: PublicClient;
 
   private walletClient?: ReadWriteWalletClient;
-
-  private chain: Chain;
 
   public abi: Abi = [
     {
@@ -280,6 +279,19 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       type: 'function'
     },
     {
+      inputs: [],
+      name: 'maxSupplyPerToken',
+      outputs: [
+        {
+          internalType: 'uint256',
+          name: '',
+          type: 'uint256'
+        }
+      ],
+      stateMutability: 'view',
+      type: 'function'
+    },
+    {
       inputs: [
         {
           internalType: 'address',
@@ -298,6 +310,29 @@ export class ScoutProtocolBuilderNFTImplementationClient {
         }
       ],
       name: 'mint',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: 'account',
+          type: 'address'
+        },
+        {
+          internalType: 'uint256',
+          name: 'tokenId',
+          type: 'uint256'
+        },
+        {
+          internalType: 'uint256',
+          name: 'amount',
+          type: 'uint256'
+        }
+      ],
+      name: 'mintTo',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function'
@@ -383,19 +418,6 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       inputs: [
         {
           internalType: 'address',
-          name: '_minterWallet',
-          type: 'address'
-        }
-      ],
-      name: 'rolloverMinterWallet',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function'
-    },
-    {
-      inputs: [
-        {
-          internalType: 'address',
           name: 'from',
           type: 'address'
         },
@@ -459,19 +481,6 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       type: 'function'
     },
     {
-      inputs: [],
-      name: 'secondaryMinter',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address'
-        }
-      ],
-      stateMutability: 'view',
-      type: 'function'
-    },
-    {
       inputs: [
         {
           internalType: 'address',
@@ -503,6 +512,19 @@ export class ScoutProtocolBuilderNFTImplementationClient {
         }
       ],
       name: 'setBaseUri',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function'
+    },
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: 'newMaxSupply',
+          type: 'uint256'
+        }
+      ],
+      name: 'setMaxSupplyPerToken',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function'
@@ -728,19 +750,63 @@ export class ScoutProtocolBuilderNFTImplementationClient {
       anonymous: false,
       inputs: [
         {
-          indexed: false,
+          indexed: true,
           internalType: 'uint256',
           name: 'tokenId',
           type: 'uint256'
         },
         {
-          indexed: false,
-          internalType: 'string',
-          name: 'builderId',
-          type: 'string'
+          indexed: true,
+          internalType: 'address',
+          name: 'previousAddress',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'newAddress',
+          type: 'address'
         }
       ],
-      name: 'BuilderTokenRegistered',
+      name: 'BuilderAddressUpdated',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'uint256',
+          name: 'previousMaxSupply',
+          type: 'uint256'
+        },
+        {
+          indexed: false,
+          internalType: 'uint256',
+          name: 'newMaxSupply',
+          type: 'uint256'
+        }
+      ],
+      name: 'MaxSupplyPerTokenSet',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'previousMinter',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'newMinter',
+          type: 'address'
+        }
+      ],
+      name: 'MinterSet',
       type: 'event'
     },
     {
@@ -754,6 +820,44 @@ export class ScoutProtocolBuilderNFTImplementationClient {
         }
       ],
       name: 'Paused',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'uint256',
+          name: 'previousIncrement',
+          type: 'uint256'
+        },
+        {
+          indexed: false,
+          internalType: 'uint256',
+          name: 'newIncrement',
+          type: 'uint256'
+        }
+      ],
+      name: 'PriceIncrementUpdated',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'previousReceiver',
+          type: 'address'
+        },
+        {
+          indexed: true,
+          internalType: 'address',
+          name: 'newReceiver',
+          type: 'address'
+        }
+      ],
+      name: 'ProceedsReceiverSet',
       type: 'event'
     },
     {
@@ -779,6 +883,25 @@ export class ScoutProtocolBuilderNFTImplementationClient {
         }
       ],
       name: 'RoleTransferred',
+      type: 'event'
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: 'uint256',
+          name: 'tokenId',
+          type: 'uint256'
+        },
+        {
+          indexed: false,
+          internalType: 'string',
+          name: 'builderId',
+          type: 'string'
+        }
+      ],
+      name: 'TokenRegistered',
       type: 'event'
     },
     {
@@ -892,28 +1015,19 @@ export class ScoutProtocolBuilderNFTImplementationClient {
   constructor({
     contractAddress,
     publicClient,
-    walletClient,
-    chain
+    walletClient
   }: {
     contractAddress: Address;
-    chain: Chain;
     publicClient?: PublicClient;
     walletClient?: ReadWriteWalletClient;
   }) {
     if (!publicClient && !walletClient) {
       throw new Error('At least one client is required.');
-    } else if (publicClient && walletClient) {
-      throw new Error('Provide only a public client or wallet clients');
     }
 
-    this.chain = chain;
     this.contractAddress = contractAddress;
 
     const client = publicClient || walletClient;
-
-    if (client!.chain!.id !== chain.id) {
-      throw new Error('Client must be on the same chain as the contract. Make sure to add a chain to your client');
-    }
 
     if (publicClient) {
       this.publicClient = publicClient;
@@ -923,7 +1037,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     }
   }
 
-  async ERC20Token(): Promise<Address> {
+  async ERC20Token(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'ERC20Token',
@@ -932,7 +1046,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -946,7 +1061,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as Address;
   }
 
-  async acceptUpgrade(): Promise<Address> {
+  async acceptUpgrade(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'acceptUpgrade',
@@ -955,7 +1070,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -969,7 +1085,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as Address;
   }
 
-  async admin(): Promise<Address> {
+  async admin(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'admin',
@@ -978,7 +1094,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -992,7 +1109,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as Address;
   }
 
-  async balanceOf(params: { args: { account: Address; tokenId: bigint } }): Promise<bigint> {
+  async balanceOf(params: { args: { account: Address; tokenId: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOf',
@@ -1001,7 +1118,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1015,7 +1133,10 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as bigint;
   }
 
-  async balanceOfBatch(params: { args: { accounts: Address[]; tokenIds: bigint[] } }): Promise<bigint[]> {
+  async balanceOfBatch(params: {
+    args: { accounts: Address[]; tokenIds: bigint[] };
+    blockNumber?: bigint;
+  }): Promise<bigint[]> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'balanceOfBatch',
@@ -1024,7 +1145,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1064,10 +1186,10 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async getBuilderAddressForToken(params: { args: { tokenId: bigint } }): Promise<Address> {
+  async getBuilderAddressForToken(params: { args: { tokenId: bigint }; blockNumber?: bigint }): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getBuilderAddressForToken',
@@ -1076,7 +1198,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1090,7 +1213,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as Address;
   }
 
-  async getBuilderIdForToken(params: { args: { tokenId: bigint } }): Promise<string> {
+  async getBuilderIdForToken(params: { args: { tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getBuilderIdForToken',
@@ -1099,7 +1222,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1113,7 +1237,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as string;
   }
 
-  async getPriceIncrement(): Promise<bigint> {
+  async getPriceIncrement(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getPriceIncrement',
@@ -1122,7 +1246,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1136,7 +1261,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as bigint;
   }
 
-  async getTokenIdForBuilder(params: { args: { builderId: string } }): Promise<bigint> {
+  async getTokenIdForBuilder(params: { args: { builderId: string }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getTokenIdForBuilder',
@@ -1145,7 +1270,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1159,7 +1285,10 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as bigint;
   }
 
-  async getTokenPurchasePrice(params: { args: { tokenId: bigint; amount: bigint } }): Promise<bigint> {
+  async getTokenPurchasePrice(params: {
+    args: { tokenId: bigint; amount: bigint };
+    blockNumber?: bigint;
+  }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'getTokenPurchasePrice',
@@ -1168,7 +1297,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1182,7 +1312,10 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as bigint;
   }
 
-  async isApprovedForAll(params: { args: { account: Address; operator: Address } }): Promise<boolean> {
+  async isApprovedForAll(params: {
+    args: { account: Address; operator: Address };
+    blockNumber?: bigint;
+  }): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isApprovedForAll',
@@ -1191,7 +1324,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1205,7 +1339,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as boolean;
   }
 
-  async isPaused(): Promise<boolean> {
+  async isPaused(params: { blockNumber?: bigint } = {}): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'isPaused',
@@ -1214,7 +1348,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1226,6 +1361,30 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     // Parse the result based on the return type
     return result as boolean;
+  }
+
+  async maxSupplyPerToken(params: { blockNumber?: bigint } = {}): Promise<bigint> {
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'maxSupplyPerToken',
+      args: []
+    });
+
+    const { data } = await this.publicClient.call({
+      to: this.contractAddress,
+      data: txData,
+      blockNumber: params.blockNumber
+    });
+
+    // Decode the result based on the expected return type
+    const result = decodeFunctionResult({
+      abi: this.abi,
+      functionName: 'maxSupplyPerToken',
+      data: data as `0x${string}`
+    });
+
+    // Parse the result based on the return type
+    return result as bigint;
   }
 
   async mint(params: {
@@ -1254,10 +1413,39 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async minter(): Promise<Address> {
+  async mintTo(params: {
+    args: { account: Address; tokenId: bigint; amount: bigint };
+    value?: bigint;
+    gasPrice?: bigint;
+  }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'mintTo',
+      args: [params.args.account, params.args.tokenId, params.args.amount]
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return waitForTransactionReceipt(this.publicClient, tx);
+  }
+
+  async minter(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'minter',
@@ -1266,7 +1454,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1280,7 +1469,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as Address;
   }
 
-  async name(): Promise<string> {
+  async name(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'name',
@@ -1289,7 +1478,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1325,10 +1515,10 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async pauser(): Promise<Address> {
+  async pauser(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'pauser',
@@ -1337,7 +1527,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1351,7 +1542,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as Address;
   }
 
-  async proceedsReceiver(): Promise<Address> {
+  async proceedsReceiver(params: { blockNumber?: bigint } = {}): Promise<Address> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'proceedsReceiver',
@@ -1360,7 +1551,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1400,36 +1592,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async rolloverMinterWallet(params: {
-    args: { _minterWallet: Address };
-    value?: bigint;
-    gasPrice?: bigint;
-  }): Promise<TransactionReceipt> {
-    if (!this.walletClient) {
-      throw new Error('Wallet client is required for write operations.');
-    }
-
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'rolloverMinterWallet',
-      args: [params.args._minterWallet]
-    });
-
-    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
-      to: getAddress(this.contractAddress),
-      data: txData,
-      value: params.value ?? BigInt(0), // Optional value for payable methods
-      gasPrice: params.gasPrice // Optional gasPrice
-    };
-
-    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
-    const tx = await this.walletClient.sendTransaction(txInput as any);
-
-    // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async safeBatchTransferFrom(params: {
@@ -1458,7 +1621,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async safeTransferFrom(params: {
@@ -1487,30 +1650,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
-  }
-
-  async secondaryMinter(): Promise<Address> {
-    const txData = encodeFunctionData({
-      abi: this.abi,
-      functionName: 'secondaryMinter',
-      args: []
-    });
-
-    const { data } = await this.publicClient.call({
-      to: this.contractAddress,
-      data: txData
-    });
-
-    // Decode the result based on the expected return type
-    const result = decodeFunctionResult({
-      abi: this.abi,
-      functionName: 'secondaryMinter',
-      data: data as `0x${string}`
-    });
-
-    // Parse the result based on the return type
-    return result as Address;
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setApprovalForAll(params: {
@@ -1539,7 +1679,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setBaseUri(params: {
@@ -1568,7 +1708,36 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
+  }
+
+  async setMaxSupplyPerToken(params: {
+    args: { newMaxSupply: bigint };
+    value?: bigint;
+    gasPrice?: bigint;
+  }): Promise<TransactionReceipt> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client is required for write operations.');
+    }
+
+    const txData = encodeFunctionData({
+      abi: this.abi,
+      functionName: 'setMaxSupplyPerToken',
+      args: [params.args.newMaxSupply]
+    });
+
+    const txInput: Omit<Parameters<WalletClient['sendTransaction']>[0], 'account' | 'chain'> = {
+      to: getAddress(this.contractAddress),
+      data: txData,
+      value: params.value ?? BigInt(0), // Optional value for payable methods
+      gasPrice: params.gasPrice // Optional gasPrice
+    };
+
+    // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
+    const tx = await this.walletClient.sendTransaction(txInput as any);
+
+    // Return the transaction receipt
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setMinter(params: {
@@ -1597,7 +1766,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setPauser(params: {
@@ -1626,7 +1795,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async setProceedsReceiver(params: {
@@ -1655,10 +1824,10 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async supportsInterface(params: { args: { interfaceId: string } }): Promise<boolean> {
+  async supportsInterface(params: { args: { interfaceId: string }; blockNumber?: bigint }): Promise<boolean> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'supportsInterface',
@@ -1667,7 +1836,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1681,7 +1851,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as boolean;
   }
 
-  async symbol(): Promise<string> {
+  async symbol(params: { blockNumber?: bigint } = {}): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'symbol',
@@ -1690,7 +1860,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1704,7 +1875,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as string;
   }
 
-  async tokenURI(params: { args: { _tokenId: bigint } }): Promise<string> {
+  async tokenURI(params: { args: { _tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'tokenURI',
@@ -1713,7 +1884,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1727,7 +1899,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as string;
   }
 
-  async totalBuilderTokens(): Promise<bigint> {
+  async totalBuilderTokens(params: { blockNumber?: bigint } = {}): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalBuilderTokens',
@@ -1736,7 +1908,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1750,7 +1923,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     return result as bigint;
   }
 
-  async totalSupply(params: { args: { tokenId: bigint } }): Promise<bigint> {
+  async totalSupply(params: { args: { tokenId: bigint }; blockNumber?: bigint }): Promise<bigint> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'totalSupply',
@@ -1759,7 +1932,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type
@@ -1799,7 +1973,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async unPause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
@@ -1824,7 +1998,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async updateBuilderTokenAddress(params: {
@@ -1853,7 +2027,7 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
   async updatePriceIncrement(params: {
@@ -1882,10 +2056,10 @@ export class ScoutProtocolBuilderNFTImplementationClient {
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
     // Return the transaction receipt
-    return this.walletClient.waitForTransactionReceipt({ hash: tx });
+    return waitForTransactionReceipt(this.publicClient, tx);
   }
 
-  async uri(params: { args: { _tokenId: bigint } }): Promise<string> {
+  async uri(params: { args: { _tokenId: bigint }; blockNumber?: bigint }): Promise<string> {
     const txData = encodeFunctionData({
       abi: this.abi,
       functionName: 'uri',
@@ -1894,7 +2068,8 @@ export class ScoutProtocolBuilderNFTImplementationClient {
 
     const { data } = await this.publicClient.call({
       to: this.contractAddress,
-      data: txData
+      data: txData,
+      blockNumber: params.blockNumber
     });
 
     // Decode the result based on the expected return type

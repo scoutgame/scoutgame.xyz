@@ -4,7 +4,8 @@ import { getCurrentWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
 import { sendNotifications } from '../notifications/sendNotifications';
-import { getScoutTokenERC20Contract, devTokenDecimals } from '../protocol/constants';
+import { getScoutTokenERC20Client } from '../protocol/clients/getScoutTokenERC20Client';
+import { devTokenDecimals } from '../protocol/constants';
 
 import { refreshBuilderNftPrice } from './refreshBuilderNftPrice';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
@@ -51,7 +52,7 @@ export async function recordOnchainNftMint({
     }
   });
 
-  const currentBalanceInScoutToken = await getScoutTokenERC20Contract().balanceOf({
+  const currentBalanceInScoutToken = await getScoutTokenERC20Client().balanceOf({
     args: { account: recipientAddress }
   });
 
