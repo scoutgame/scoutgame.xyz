@@ -1,16 +1,7 @@
-import type {
-  PaletteOptions as MuiPaletteOptions,
-  PaletteColorOptions as MuiPaletteColorOptions,
-  Palette as MuiPalette,
-  PaletteColor as MuiPaletteColor,
-  BreakpointsOptions as MuiBreakpointsOptions,
-  BreakpointOverrides as MuiBreakpointOverrides,
-  TypeText,
-  PaletteTextChannel
-} from '@mui/material/styles';
+import type { PaletteOptions as MuiPaletteOptions, Palette as MuiPalette } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
-  export interface Palette extends MuiPalette {
+  export interface Palette {
     inputBackground: MuiPalette['primary'];
     black: MuiPalette['primary'];
     orange: MuiPalette['primary'];
@@ -19,7 +10,7 @@ declare module '@mui/material/styles' {
     blue: MuiPalette['primary'];
   }
 
-  export interface PaletteOptions extends MuiPaletteOptions {
+  export interface PaletteOptions {
     inputBackground: MuiPaletteOptions['primary'];
     black: MuiPaletteOptions['primary'];
     orange: MuiPaletteOptions['primary'];
@@ -28,18 +19,18 @@ declare module '@mui/material/styles' {
     blue: MuiPaletteOptions['primary'];
   }
 
-  export interface TypeBackground extends MuiTypeBackground {
+  export interface TypeBackground {
     default: string;
     paper: string;
     dark: string;
     light: string;
   }
 
-  export interface BreakpointOverrides extends MuiBreakpointOverrides {
+  export interface BreakpointOverrides {
     xsm: true;
   }
 
-  export interface BreakpointsOptions extends MuiBreakpointsOptions {
+  export interface BreakpointsOptions {
     xsm: number; // adds the `xsm` breakpoint
   }
 }

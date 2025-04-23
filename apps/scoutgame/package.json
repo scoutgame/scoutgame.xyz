@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@johanneskares/wallet-mock": "^1.4.1",
+    "@types/react-dom": "^19.1.2",
     "@types/web-push": "^3.6.3",
     "serwist": "^9.0.5"
   }
