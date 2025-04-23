@@ -22,7 +22,8 @@ export const loginWithWalletAction = actionClient
     const { walletAddress } = await verifyWalletSignature(parsedInput);
 
     if (parsedInput.inviteCode) {
-      cookies().set(
+      const cookieStore = await cookies();
+      cookieStore.set(
         'invite-code',
         await sealData({ inviteCode: parsedInput.inviteCode }, { password: authSecret as string })
       );
