@@ -4,8 +4,6 @@ import type { BasicUserInfo } from '@packages/users/interfaces';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
-import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId } from '../protocol/constants';
-
 export type ScoutInfo = BasicUserInfo & {
   displayName: string;
   nfts: number;

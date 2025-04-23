@@ -9,9 +9,10 @@ import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
 import { type Address } from 'viem';
 
+import { getBuilderNftContractAddress } from '../builderNfts/constants';
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 
-import { scoutProtocolBuilderNftContractAddress, scoutProtocolChainId, devTokenDecimals } from './constants';
+import { scoutProtocolChainId, devTokenDecimals } from './constants';
 import type { TokenOwnership } from './resolveTokenOwnership';
 
 type ClaimsBody = {
@@ -39,12 +40,10 @@ export type WeeklyClaimsCalculated = {
  */
 export async function calculateWeeklyClaims({
   week,
-  tokenBalances,
-  nftContractAddress = scoutProtocolBuilderNftContractAddress
+  tokenBalances
 }: {
   week: string;
   tokenBalances: TokenOwnership;
-  nftContractAddress?: string;
 }): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } =
     await getPointsCountForWeekWithNormalisation({
@@ -53,6 +52,7 @@ export async function calculateWeeklyClaims({
     });
 
   const season = getCurrentSeasonStart(week);
+  const nftContractAddress = getBuilderNftContractAddress(season);
 
   const builderEvents: Prisma.BuilderEventCreateManyInput[] = [];
   const tokenReceipts: Prisma.TokensReceiptCreateManyInput[] = [];

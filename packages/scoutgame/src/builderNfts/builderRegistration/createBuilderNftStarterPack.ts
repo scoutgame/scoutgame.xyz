@@ -2,9 +2,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
+import { getStarterNFTReadonlyClient } from '../../protocol/clients/getStarterNFTClient';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from '../artwork/uploadStarterPackArtwork';
-import { getStarterNFTReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { nftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 export async function createBuilderNftStarterPack({

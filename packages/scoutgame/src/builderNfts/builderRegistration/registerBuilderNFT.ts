@@ -5,7 +5,7 @@ import { stringUtils } from '@charmverse/core/utilities';
 import { attestDeveloperStatusEvent } from '@packages/scoutgameattestations/attestDeveloperStatusEvent';
 import type { Address, Chain } from 'viem';
 
-import { getBuilderNftContractMinterClient } from '../clients/builderNftContractReadonlyClient';
+import { getNFTMinterClient } from '../../protocol/clients/getNFTClient';
 import { nftChain, getBuilderNftContractAddress } from '../constants';
 import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
@@ -37,7 +37,7 @@ export async function registerBuilderNFT({
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
 
-  const minterClient = getBuilderNftContractMinterClient(season);
+  const minterClient = getNFTMinterClient(season);
   if (!minterClient) {
     throw new Error(`Minter client not found for season ${season}`);
   }

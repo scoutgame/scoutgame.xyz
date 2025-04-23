@@ -4,9 +4,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 
+import { getStarterNFTReadonlyClient } from '../../protocol/clients/getStarterNFTClient';
 import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
 import { getBuilderNftContractStarterPackMinterClient } from '../clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
-import { getStarterNFTReadonlyClient } from '../clients/starterPack/getBuilderContractStarterPackReadonlyClient';
 import { nftChain, getBuilderNftStarterPackContractAddress } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';

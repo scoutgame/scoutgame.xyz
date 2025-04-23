@@ -4,10 +4,10 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { parseEventLogs, type Address, type TransactionReceipt } from 'viem';
 
+import { getNFTMinterClient } from '../protocol/clients/getNFTClient';
+import { getStarterNFTMinterClient } from '../protocol/clients/getStarterNFTClient';
+
 import { transferSingleAbi } from './accounting/getTransferSingleEvents';
-import { getPreSeasonTwoBuilderNftContractMinterClient } from './clients/preseason02/getPreSeasonTwoBuilderNftContractMinterClient';
-import { getSeasonOneBuilderNftContractMinterClient } from './clients/season01/getSeasonOneBuilderNftContractMinterClient';
-import { getBuilderNftContractStarterPackMinterClient } from './clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
 import { recordNftMint } from './recordNftMint';
 
 export type MintNFTParams = {
@@ -35,7 +35,7 @@ export async function mintNFT(params: MintNFTParams) {
   let txResult: TransactionReceipt | null = null;
 
   if (nftType === 'starter_pack') {
-    const apiClient = getBuilderNftContractStarterPackMinterClient();
+    const apiClient = getStarterNFTMinterClient(season);
 
     txResult = await apiClient.mintTo({
       args: {
@@ -45,18 +45,8 @@ export async function mintNFT(params: MintNFTParams) {
         scout: scoutId
       }
     });
-  } else if (season === '2025-W02') {
-    const apiClient = getPreSeasonTwoBuilderNftContractMinterClient();
-
-    txResult = await apiClient.mintTo({
-      args: {
-        account: recipientAddress as Address,
-        tokenId: BigInt(builderNft.tokenId),
-        amount: BigInt(amount)
-      }
-    });
-  } else if (season === '2025-W18') {
-    const apiClient = getSeasonOneBuilderNftContractMinterClient();
+  } else {
+    const apiClient = getNFTMinterClient(season);
 
     txResult = await apiClient.mintTo({
       args: {

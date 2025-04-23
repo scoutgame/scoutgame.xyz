@@ -21,9 +21,5 @@ export const protocolStartBlock = 19_000_000;
  */
 export const scoutTokenDecimalsMultiplier = BigInt('1000000000000000000');
 
-export const scoutProtocolBuilderNftContractAddress = getBuilderNftContractAddress(getCurrentSeasonStart());
-export const scoutProtocolBuilderStarterNftContractAddress =
-  getBuilderNftStarterPackContractAddress(getCurrentSeasonStart());
-
 export const scoutProtocolAddress = (env('SCOUTPROTOCOL_CONTRACT_ADDRESS') ||
   process.env.REACT_APP_SCOUTPROTOCOL_CONTRACT_ADDRESS) as Address;

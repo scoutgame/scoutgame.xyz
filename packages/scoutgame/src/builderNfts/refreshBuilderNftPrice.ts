@@ -4,8 +4,7 @@ import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-
-import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
+import { getNFTReadonlyClient } from '../protocol/clients/getNFTClient';
 
 export async function refreshBuilderNftPrice({
   builderId,
@@ -19,7 +18,7 @@ export async function refreshBuilderNftPrice({
       throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
     }
 
-    const contractClient = getBuilderNftContractReadonlyClient();
+    const contractClient = getNFTReadonlyClient();
     if (!contractClient) {
       throw new Error('Cannot refresh builder nft price. Missing contract client');
     }

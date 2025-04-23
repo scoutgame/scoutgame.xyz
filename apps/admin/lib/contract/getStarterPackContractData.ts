@@ -1,10 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getSeasonConfig } from '@packages/dates/utils';
-import { getBuilderNftStarterPackProxyReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackProxyReadonlyClient';
 import { getBuilderNftStarterPackContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
-import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTReadonlyClient';
+import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
 

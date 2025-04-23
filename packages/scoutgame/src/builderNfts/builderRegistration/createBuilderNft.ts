@@ -1,9 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
+import { getNFTReadonlyClient } from '../../protocol/clients/getNFTClient';
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
-import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
 import { nftChain, getBuilderNftContractAddress } from '../constants';
 
 export async function createBuilderNft({
@@ -27,7 +27,7 @@ export async function createBuilderNft({
   contractAddress?: string;
 }) {
   contractAddress = contractAddress ?? getBuilderNftContractAddress(season);
-  const client = getBuilderNftContractReadonlyClient(season);
+  const client = getNFTReadonlyClient(season);
   if (!client || !contractAddress) {
     throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
   }

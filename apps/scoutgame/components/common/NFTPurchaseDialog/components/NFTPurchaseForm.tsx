@@ -21,19 +21,17 @@ import {
   Typography
 } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
 import {
   getBuilderNftContractAddressForNftType,
   scoutgameEthAddress,
   useTestnets
 } from '@packages/scoutgame/builderNfts/constants';
-import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
-import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTReadonlyClient';
+import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
+import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import {
   scoutTokenContractAddress,
-  getScoutProtocolBuilderNFTReadonlyContract,
   scoutProtocolChainId,
   devTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
@@ -108,7 +106,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { switchChainAsync } = useSwitchChain();
   const { data: nftStats } = useGetBuilderNftStats({ builderId });
 
-  const builderContractReadonlyApiClient = getBuilderNftContractReadonlyClient();
+  const builderContractReadonlyApiClient = getNFTReadonlyClient();
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({
     chainId: scoutProtocolChainId,
@@ -138,34 +136,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     purchaseCostInPoints: purchaseCost / BigInt(10 ** devTokenDecimals),
     notEnoughPoints: user && user.currentBalance && user.currentBalance < purchaseCost / BigInt(10 ** devTokenDecimals)
   };
-
-  const {
-    isExecuting: isExecutingPointsPurchase,
-    hasSucceeded: hasPurchasedWithPoints,
-    executeAsync: purchaseWithPoints
-  } = useAction(purchaseWithPointsAction, {
-    onError({ error, input }) {
-      if (error.serverError?.message?.includes('The Transaction may not be processed on a block yet')) {
-        log.warn('The Transaction may not be processed on a block yet', {
-          input,
-          error
-        });
-        toast.warning(
-          'Could not confirm transaction. Please allow a few minutes for Scout Game to process the transaction.'
-        );
-      } else {
-        scoutgameMintsLogger.error('Error purchasing with points', { input, userId: user?.id });
-        log.error('Error purchasing with points', { input, error });
-        setSubmitError(error.serverError?.message || 'Something went wrong');
-      }
-    },
-    onExecute() {
-      setSubmitError(null);
-    },
-    onSuccess() {
-      toast.success('NFT purchase with points was successful');
-    }
-  });
 
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
