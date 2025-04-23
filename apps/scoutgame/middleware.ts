@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { isDraftSeason } from '@packages/dates/utils';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { getPlatform } from '@packages/utils/platform';
@@ -11,7 +12,9 @@ const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/buil
 const disabledDraftLinks = ['/scout', '/developers', '/profile/projects'];
 
 export async function middleware(request: NextRequest) {
+  console.log('middleware', request);
   const session = await getSession();
+  console.log('session', session);
   const isLoggedIn = !!session.scoutId;
   const path = request.nextUrl.pathname;
   const response = NextResponse.next(); // Create a response object to set cookies
