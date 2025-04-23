@@ -13,7 +13,7 @@ export async function getSession<T extends object = SessionData>(cookieOptions?:
     ...cookieOptions
   });
 
-  const session = await getIronSession<T>(await cookies(), options);
+  const session = await getIronSession<T>(cookies(), options);
 
   // allow for a user override in development
   const userOverride = process.env.NODE_ENV === 'development' ? process.env.DEV_USER_ID : undefined;

@@ -14,8 +14,7 @@ export default async function Scout({
   const scoutOrder = (searchParams.scoutOrder as string) || 'desc';
   const scoutTab = (searchParams.scoutTab as string) || 'scouts';
   const buildersLayout = (searchParams.buildersLayout as string) || 'table';
-  const searchParamsResolved = await searchParams;
-  const tab = (searchParamsResolved.tab as string) || 'builders';
+  const tab = (searchParams.tab as string) || 'builders';
   const session = await getSession();
   const userId = session?.scoutId;
   // If the scout has purchased a starter card, show the top builders carousel

@@ -36,7 +36,7 @@ export const trackEventAction = actionClient
       event.isAnonymous = true;
     }
 
-    await trackUserEnhancedAction(eventName, event, ctx.session.utmParams);
+    trackUserEnhancedAction(eventName, event, ctx.session.utmParams);
 
     log.debug(`Track user event: ${eventName}`, {
       userId: event.userId,

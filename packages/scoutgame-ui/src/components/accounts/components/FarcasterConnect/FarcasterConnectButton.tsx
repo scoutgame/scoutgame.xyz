@@ -2,7 +2,8 @@
 
 import { log } from '@charmverse/core/log';
 import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
-import { Button, Paper, Stack, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Paper, Stack, Typography } from '@mui/material';
 import type { AuthSchema } from '@packages/farcaster/config';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { connectFarcasterAccountAction } from '@packages/scoutgame/farcaster/connectFarcasterAccountAction';
@@ -97,7 +98,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
         {user.farcasterName ? (
           <Typography variant='body1'>{user.farcasterName}</Typography>
         ) : (
-          <Button
+          <LoadingButton
             disabled={isConnecting}
             loading={isConnecting}
             sx={{ width: 'fit-content' }}
@@ -105,7 +106,7 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
             variant='contained'
           >
             {isConnecting ? 'Connecting...' : 'Connect'}
-          </Button>
+          </LoadingButton>
         )}
 
         {connectionError && (

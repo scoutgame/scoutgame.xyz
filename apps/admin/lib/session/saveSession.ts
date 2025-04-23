@@ -1,6 +1,6 @@
 import type { RequestContext, SessionData } from './interfaces';
 
-export async function saveSession(ctx: Pick<RequestContext, 'session'>, session: SessionData) {
+export async function saveSession(ctx: RequestContext, session: SessionData) {
   Object.assign(ctx.session, {
     adminId: session.adminId
   });

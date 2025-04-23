@@ -1,4 +1,4 @@
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
 import type { MyMatchup } from '@packages/matchup/getMyMatchup';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';

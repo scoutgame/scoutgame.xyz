@@ -2,8 +2,9 @@
 
 import { log } from '@charmverse/core/log';
 import { Add as AddIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
-  Button,
+  CircularProgress,
   Container,
   Paper,
   Stack,
@@ -164,10 +165,10 @@ export function FarcasterDashboard({ defaultAccount }: { defaultAccount?: Accoun
                   )}
                 </Box>
                 <Box display='flex' justifyContent='flex-end' gap={2}>
-                  <Button variant='outlined' onClick={() => reset()}>
+                  <LoadingButton variant='outlined' onClick={() => reset()}>
                     Clear
-                  </Button>
-                  <Button
+                  </LoadingButton>
+                  <LoadingButton
                     loading={isSending}
                     disabled={!isValid}
                     type='submit'
@@ -181,7 +182,7 @@ export function FarcasterDashboard({ defaultAccount }: { defaultAccount?: Accoun
                     }}
                   >
                     Send {recipientsCount || ''} Message{recipientsCount && recipientsCount > 1 ? 's' : ''}
-                  </Button>
+                  </LoadingButton>
                 </Box>
               </Box>
             </Stack>

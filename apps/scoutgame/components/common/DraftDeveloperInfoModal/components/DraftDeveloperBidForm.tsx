@@ -4,6 +4,7 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { EvmTransaction } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
+import { LoadingButton } from '@mui/lab';
 import { Button, Stack, TextField, Typography } from '@mui/material';
 import { MIN_DEV_BID } from '@packages/blockchain/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
@@ -322,7 +323,7 @@ function DraftDeveloperBidFormComponent({
           <Button onClick={onCancel} variant='outlined' color='secondary' size='large' disabled={isLoading}>
             Cancel
           </Button>
-          <Button
+          <LoadingButton
             loading={isLoading}
             onClick={handleSubmit}
             variant='contained'
@@ -337,7 +338,7 @@ function DraftDeveloperBidFormComponent({
             }
           >
             Confirm
-          </Button>
+          </LoadingButton>
         </Stack>
       ) : decentTransactionInfo && 'tx' in decentTransactionInfo ? (
         <ERC20ApproveButton

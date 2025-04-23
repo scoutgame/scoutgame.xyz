@@ -3,12 +3,7 @@
     "outDir": "../../dist/apps/scoutgame",
     "rootDir": "../../",
     "baseUrl": ".",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "webworker"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -26,35 +21,14 @@
       }
     ],
     "paths": {
-      "apiClient/*": [
-        "./apiClient/*"
-      ],
-      "components/*": [
-        "./components/*"
-      ],
-      "hooks/*": [
-        "./hooks/*"
-      ],
-      "lib/*": [
-        "./lib/*"
-      ],
-      "public/*": [
-        "./public/*"
-      ],
-      "theme/*": [
-        "./theme/*"
-      ]
-    },
-    "target": "ES2017"
+      "apiClient/*": ["./apiClient/*"],
+      "components/*": ["./components/*"],
+      "hooks/*": ["./hooks/*"],
+      "lib/*": ["./lib/*"],
+      "public/*": ["./public/*"],
+      "theme/*": ["./theme/*"]
+    }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "../../node_modules",
-    ".next/"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["../../node_modules", ".next/"]
 }

@@ -1,6 +1,6 @@
 import type { SessionData, RequestContext } from './interfaces';
 
-export async function saveSession(ctx: Pick<RequestContext, 'session'>, session: SessionData) {
+export async function saveSession(ctx: RequestContext, session: SessionData) {
   Object.assign(ctx.session, {
     anonymousUserId: session.anonymousUserId,
     // only override these when they are passed in, since apps use the same cookie currently.

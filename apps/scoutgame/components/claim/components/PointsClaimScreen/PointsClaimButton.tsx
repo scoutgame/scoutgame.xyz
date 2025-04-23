@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import type { SxProps } from '@mui/material';
 
 export function PointsClaimButton({
@@ -13,7 +13,7 @@ export function PointsClaimButton({
   sx?: SxProps;
 }) {
   return (
-    <Button
+    <LoadingButton
       variant='contained'
       color='primary'
       sx={{
@@ -29,6 +29,6 @@ export function PointsClaimButton({
       onClick={handleClaim}
     >
       Claim
-    </Button>
+    </LoadingButton>
   );
 }
