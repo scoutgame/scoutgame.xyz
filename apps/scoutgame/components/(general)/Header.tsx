@@ -40,9 +40,8 @@ import { useDevTokenBalance } from '../../hooks/useDevTokenBalance';
 import { SiteNavigation } from './components/SiteNavigation';
 
 export function Header() {
-  const router = useRouter();
   const platform = getPlatform();
-  const { user, refreshUser } = useUser();
+  const { user } = useUser();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const isFarcasterFrame = useIsFarcasterFrame();
   const { address } = useAccount();
