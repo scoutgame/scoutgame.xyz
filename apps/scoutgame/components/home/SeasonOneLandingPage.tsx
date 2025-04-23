@@ -11,9 +11,10 @@ import { isAirdropLive } from 'lib/airdrop/checkAirdropDates';
 
 import { CountdownTimer } from './CountdownTimer';
 
-function CustomButton({ children, ...props }: ButtonProps) {
+function CustomButton({ children, ...props }: ButtonProps & { href: string }) {
   return (
     <Button
+      component={Link}
       variant='contained'
       color='primary'
       sx={{
@@ -86,11 +87,11 @@ async function HeroSection() {
               <Typography variant='h6' textAlign='center'>
                 Happening NOW...
               </Typography>
-              <CustomButton variant='contained' color='primary'>
-                <Link href='/airdrop'>Claim Airdrop</Link>
+              <CustomButton variant='contained' color='primary' href='/airdrop'>
+                Claim Airdrop
               </CustomButton>
-              <CustomButton variant='blue'>
-                <Link href='/draft'>Play Scout Game</Link>
+              <CustomButton variant='blue' href='/draft'>
+                Play Scout Game
               </CustomButton>
             </Stack>
           </>
@@ -222,11 +223,9 @@ function FooterSection() {
           }}
           gap={2}
         >
-          <CustomButton>
-            <Link href='/airdrop'>Claim Airdrop</Link>
-          </CustomButton>
-          <CustomButton variant='blue'>
-            <Link href='/draft'>Play Scout Game</Link>
+          <CustomButton href='/airdrop'>Claim Airdrop</CustomButton>
+          <CustomButton variant='blue' href='/draft'>
+            Play Scout Game
           </CustomButton>
         </Stack>
       </Stack>
