@@ -18,8 +18,8 @@ export function defineMetadataSchema() {
 export const actionClientBase = createSafeActionClient({
   validationAdapter: yupAdapter(),
   defineMetadataSchema,
-  handleServerError: (err, utils) => {
-    handleServerErrorLog(err, utils);
+  handleServerError: async (err, utils) => {
+    await handleServerErrorLog(err, utils);
     return handleReturnedServerError(err, utils);
   },
   defaultValidationErrorsShape: 'flattened'
@@ -32,7 +32,7 @@ export const actionClient = actionClientBase
    */
   .use(async ({ next }) => {
     const session = await getSession();
-    const headerList = headers();
+    const headerList = await headers();
 
     return next({
       ctx: { session, headers: headerList }

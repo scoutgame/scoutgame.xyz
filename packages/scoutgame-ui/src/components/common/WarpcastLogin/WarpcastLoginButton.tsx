@@ -28,7 +28,8 @@ export function WarpcastLoginButton() {
   const { inviteCode, referralCode } = params;
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
   const searchParams = useSearchParams();
-  const utmCampaign = searchParams.get('utm_campaign');
+  const searchParamsResolved = await searchParams;
+  const utmCampaign = searchParamsResolved.get('utm_campaign');
 
   const {
     executeAsync: loginUser,

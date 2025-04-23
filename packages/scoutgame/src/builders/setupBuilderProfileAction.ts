@@ -13,7 +13,8 @@ export const setupBuilderProfileAction = authActionClient
   .metadata({ actionName: 'setup_builder_profile' })
   .schema(setupBuilderProfileSchema)
   .action(async ({ parsedInput }) => {
-    const inviteCodeCookie = cookies().get('invite-code');
+    const cookieStore = await cookies();
+    const inviteCodeCookie = cookieStore.get('invite-code');
     let inviteCode: string | null = null;
     if (inviteCodeCookie) {
       try {
@@ -36,7 +37,7 @@ export const setupBuilderProfileAction = authActionClient
     });
 
     if (inviteCode) {
-      cookies().set('invite-code', '', {
+      cookieStore.set('invite-code', '', {
         maxAge: 0
       });
     }

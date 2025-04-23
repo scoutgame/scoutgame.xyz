@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Grid2, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import Link from 'next/link';
 import React from 'react';
@@ -15,16 +15,16 @@ export function BuildersYouKnowContent({
   builders: BuilderInfo[];
 }) {
   return (
-    <Grid2 gap={2}>
-      <Grid2 size={{ xs: 12 }}>
+    <Grid gap={2}>
+      <Grid size={{ xs: 12 }}>
         <Typography color='secondary' textAlign='center' width='100%' fontWeight={700} variant='h5'>
           Developers You Know
         </Typography>
-      </Grid2>
+      </Grid>
 
       <DevelopersGallery size='small' builders={builders} />
 
-      <Grid2 size={{ xs: 12 }}>
+      <Grid size={{ xs: 12 }}>
         <Button
           LinkComponent={Link}
           variant='contained'
@@ -35,7 +35,7 @@ export function BuildersYouKnowContent({
         >
           Go to Scout Game
         </Button>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }
