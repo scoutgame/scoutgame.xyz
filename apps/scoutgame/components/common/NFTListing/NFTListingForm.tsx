@@ -2,8 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import type { BuilderStatus } from '@charmverse/core/prisma-client';
-import { LoadingButton } from '@mui/lab';
-import { Alert, Box, FormLabel, Stack } from '@mui/material';
+import { Button, Alert, Box, FormLabel, Stack } from '@mui/material';
 import { recordNftListingAction } from '@packages/scoutgame/nftListing/recordNftListingAction';
 import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import { recordSeaportListing } from '@packages/scoutgame/seaport/recordSeaportListing';
@@ -151,7 +150,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
           sx={{ '& input': { textAlign: 'center' } }}
         />
       </Stack>
-      <LoadingButton
+      <Button
         variant='contained'
         color='primary'
         disabled={priceInUsdc === 0 || isDisabled}
@@ -159,7 +158,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         loading={isListing || isLoading || isExecuting}
       >
         List
-      </LoadingButton>
+      </Button>
     </Stack>
   );
 }

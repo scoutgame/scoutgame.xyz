@@ -1,5 +1,4 @@
 import { log } from '@charmverse/core/log';
-import { LoadingButton } from '@mui/lab';
 import { Alert, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
@@ -134,7 +133,7 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
           >
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             variant='contained'
             loading={isCancelling}
             disabled={!isOwner}
@@ -142,7 +141,7 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
             onClick={onDeleteListing}
           >
             Delist
-          </LoadingButton>
+          </Button>
         </Stack>
       </Dialog>
     </>

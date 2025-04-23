@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab';
 import {
   Dialog,
   DialogTitle,
@@ -114,7 +113,7 @@ export function AddRepoModal({ open, onClose, onAdd, partner }: Props) {
           <Button variant='outlined' color='secondary' onClick={onClose}>
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             loading={isImporting}
             disabled={error || newRepos.length === 0}
             type='submit'
@@ -122,7 +121,7 @@ export function AddRepoModal({ open, onClose, onAdd, partner }: Props) {
             variant='contained'
           >
             Import
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </form>
     </Dialog>

@@ -1,6 +1,5 @@
 'use client';
 
-import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert, Button, Divider, FormLabel, Stack, TextField, Typography } from '@mui/material';
 import { FormErrors } from '@packages/scoutgame-ui/components/common/FormErrors';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
@@ -167,7 +166,7 @@ export function ProjectForm({
         <Button variant='outlined' color='primary' href={cancelLink} LinkComponent={Link}>
           Cancel
         </Button>
-        <LoadingButton
+        <Button
           variant='contained'
           color='primary'
           onClick={onSave}
@@ -177,7 +176,7 @@ export function ProjectForm({
           data-test='project-form-save-button'
         >
           Save
-        </LoadingButton>
+        </Button>
       </Stack>
     </>
   );

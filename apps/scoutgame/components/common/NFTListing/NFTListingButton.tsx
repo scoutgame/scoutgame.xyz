@@ -1,4 +1,4 @@
-import { LoadingButton } from '@mui/lab';
+import { Button } from '@mui/material';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
@@ -30,18 +30,18 @@ export function NFTListingButton({ builder }: { builder: NFTListingFormProps['bu
   if (builder.builderStatus === 'banned') {
     return (
       // @ts-ignore
-      <LoadingButton disabled variant='buy'>
+      <Button disabled variant='buy'>
         SUSPENDED
-      </LoadingButton>
+      </Button>
     );
   }
 
   return (
     <div>
       <DynamicLoadingContext.Provider value={setDialogLoadingStatus}>
-        <LoadingButton loading={dialogLoadingStatus} fullWidth onClick={handleClick} variant='buy'>
+        <Button loading={dialogLoadingStatus} fullWidth onClick={handleClick} variant='buy'>
           List
-        </LoadingButton>
+        </Button>
         <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>
     </div>
