@@ -82,6 +82,8 @@
     "@mui/material": "^7.0.2",
     "@mui/material-nextjs": "^7.0.2",
     "@mui/system": "^7.0.2",
+    "@rainbow-me/rainbowkit": "^2.2.4",
+    "@serwist/next": "^9.0.14",
     "@svgr/webpack": "^8.1.0",
     "@tanstack/react-query": "^5.61.3",
     "@vercel/og": "^0.6.3",
