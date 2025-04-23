@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { UnauthorisedActionError } from '@charmverse/core/errors';
 import { prisma } from '@charmverse/core/prisma-client';
 import { headers } from 'next/headers';
@@ -19,6 +20,7 @@ export const actionClientBase = createSafeActionClient({
   validationAdapter: yupAdapter(),
   defineMetadataSchema,
   handleServerError: async (err, utils) => {
+    console.log('handleServerError', err);
     await handleServerErrorLog(err, utils);
     return handleReturnedServerError(err, utils);
   },
@@ -30,11 +32,12 @@ export const actionClient = actionClientBase
    * Middleware used for auth purposes.
    * Returns the context with the session object.
    */
-  .use(async ({ next }) => {
+  .use(async (args) => {
+    console.log('handle action', args);
     const session = await getSession();
     const headerList = await headers();
 
-    return next({
+    return args.next({
       ctx: { session, headers: headerList }
     });
   });
@@ -51,7 +54,10 @@ export const authActionClient = actionClient.use(async ({ next, ctx }) => {
     select: { id: true }
   });
 
+  const session = { ...ctx.session, scoutId };
+  const _ctx = { ...ctx, session };
+
   return next({
-    ctx: { ...ctx, session: { ...ctx.session, scoutId } }
+    ctx: _ctx
   });
 });
