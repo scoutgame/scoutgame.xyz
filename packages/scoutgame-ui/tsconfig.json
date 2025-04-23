@@ -18,6 +18,7 @@
     }
   },
   "include": [
+    "src/theme/index.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx"
   ],
