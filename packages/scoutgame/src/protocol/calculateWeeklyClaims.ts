@@ -40,9 +40,11 @@ export type WeeklyClaimsCalculated = {
  */
 export async function calculateWeeklyClaims({
   week,
+  nftContractAddress,
   tokenBalances
 }: {
   week: string;
+  nftContractAddress: Address;
   tokenBalances: TokenOwnership;
 }): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } =
@@ -52,7 +54,7 @@ export async function calculateWeeklyClaims({
     });
 
   const season = getCurrentSeasonStart(week);
-  const nftContractAddress = getNFTContractAddress(season);
+  nftContractAddress ||= getNFTContractAddress(season) as Address;
 
   const builderEvents: Prisma.BuilderEventCreateManyInput[] = [];
   const tokenReceipts: Prisma.TokensReceiptCreateManyInput[] = [];

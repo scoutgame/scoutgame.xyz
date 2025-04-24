@@ -15,12 +15,12 @@ jest.unstable_mockModule('../constants', () => ({
 const { nftChain, getNFTContractAddress } = await import('../constants');
 
 jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
-  getBuilderNftContractMinterClient: () => ({
+  getNFTMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
   }),
-  getBuilderNftContractReadonlyClient: () => ({
+  getNFTReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
@@ -31,7 +31,7 @@ jest.unstable_mockModule('../registration/createBuilderNft', () => ({
   createBuilderNft: jest.fn()
 }));
 
-const { getBuilderNftContractMinterClient } = await import('../clients/builderNftContractReadonlyClient');
+const { getNFTMinterClient } = await import('../clients/builderNftContractReadonlyClient');
 
 const { registerBuilderNFT } = await import('../registration/registerBuilderNFT');
 
@@ -96,6 +96,6 @@ describe('registerBuilderNFT', () => {
     });
 
     expect(result?.id).toEqual(existingNft.id);
-    expect(getBuilderNftContractMinterClient()!.registerBuilderToken).not.toHaveBeenCalled();
+    expect(getNFTMinterClient()!.registerBuilderToken).not.toHaveBeenCalled();
   });
 });
