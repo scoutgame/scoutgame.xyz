@@ -44,7 +44,7 @@ export async function calculateWeeklyClaims({
   tokenBalances
 }: {
   week: string;
-  nftContractAddress: Address;
+  nftContractAddress?: Address;
   tokenBalances: TokenOwnership;
 }): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } =
