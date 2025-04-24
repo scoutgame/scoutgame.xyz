@@ -10,9 +10,7 @@ const privateKey = generatePrivateKey();
 const walletAddress = privateKeyToAccount(privateKey).address;
 
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
-  builderNftChain: { id: 1 },
-  builderSmartContractMinterKey: privateKey,
-  weeklyRewardableBuilders: 100,
+  nftChain: { id: 1 },
   validMintNftPurchaseEvent: {
     id: 'mock-id',
     createdAt: new Date(),
@@ -20,6 +18,11 @@ jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
     eventType: 'mock-event-type',
     eventData: {}
   }
+}));
+
+jest.unstable_mockModule('@packages/scoutgame/protocol/constants', () => ({
+  minterPrivateKey: privateKey,
+  weeklyRewardableBuilders: 100
 }));
 
 jest.unstable_mockModule('../getWalletGasBalanceInUSD', () => ({

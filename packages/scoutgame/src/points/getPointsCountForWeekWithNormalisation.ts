@@ -1,11 +1,11 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType, ScoutWallet } from '@charmverse/core/prisma-client';
 
-import { weeklyRewardableBuilders } from '../builderNfts/constants';
 import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
 import type { LeaderboardBuilder } from '../builders/getBuildersLeaderboard';
 import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
 import { getBuildersLeaderboardFromEAS } from '../builders/getBuildersLeaderboardFromEAS';
+import { weeklyRewardableBuilders } from '../protocol/constants';
 
 import { calculateEarnableScoutPointsForRank } from './calculatePoints';
 
@@ -19,8 +19,7 @@ export type PartialNftPurchaseEvent = {
 };
 
 export async function getPointsCountForWeekWithNormalisation({
-  week,
-  useOnchainLeaderboard
+  week
 }: {
   week: string;
   useOnchainLeaderboard?: boolean;

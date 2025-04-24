@@ -1,5 +1,5 @@
 import { getLogger } from '@charmverse/core/log';
-import { builderSmartContractMinterKey } from '@packages/scoutgame/protocol/constants';
+import { minterPrivateKey } from '@packages/scoutgame/protocol/constants';
 import { POST } from '@packages/utils/http';
 import type Koa from 'koa';
 import type { Address } from 'viem/accounts';
@@ -21,9 +21,7 @@ export async function alertLowWalletGasBalance(
   }
 
   const builderCreatorAddress = privateKeyToAccount(
-    builderSmartContractMinterKey.startsWith('0x')
-      ? (builderSmartContractMinterKey as Address)
-      : `0x${builderSmartContractMinterKey}`
+    minterPrivateKey.startsWith('0x') ? (minterPrivateKey as Address) : `0x${minterPrivateKey}`
   ).address;
 
   const balanceInUSD = await getWalletGasBalanceInUSD(builderCreatorAddress);

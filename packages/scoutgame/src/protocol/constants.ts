@@ -10,13 +10,16 @@ export const scoutProtocolChain = base; //  : optimism;
 
 export const devTokenContractAddress = '0x047157cffb8841a64db93fd4e29fa3796b78466c' as Address;
 
-export const builderSmartContractMinterKey = process.env.BUILDER_SMART_CONTRACT_MINTER_PRIVKEY as string;
+export const minterPrivateKey = process.env.BUILDER_SMART_CONTRACT_MINTER_PRIVKEY as string;
 
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
 export const devTokenDecimals = 18;
 
 export const protocolStartBlock = 19_000_000;
+
+// Selecting the top 100 builders
+export const weeklyRewardableBuilders = 100;
 
 /**
  * $SCOUT has 18 decimals

@@ -1,9 +1,5 @@
 import { jest } from '@jest/globals';
-import {
-  getBuilderNftStarterPackContractAddress,
-  isStarterNftContract,
-  isPreseason01Contract
-} from '@packages/scoutgame/builderNfts/constants';
+import { getStarterNFTContractAddress, isStarterNftContract } from '@packages/scoutgame/builderNfts/constants';
 import { renderHook, waitFor } from '@testing-library/react';
 import { v4 as uuid } from 'uuid';
 import { baseSepolia, optimism } from 'viem/chains';
@@ -25,10 +21,9 @@ const mockScoutProtocolChainId = baseSepolia.id;
 
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   optimismUsdcContractAddress: mockOptimismUsdcContractAddress,
-  builderNftChain: mockBuilderNftChain,
+  nftChain: mockBuilderNftChain,
   getDecentApiKey: jest.fn().mockImplementation(() => '123'),
   isStarterNftContract,
-  isPreseason01Contract,
   nftChain: mockBuilderNftChain
 }));
 
@@ -61,8 +56,7 @@ describe('useDecentTransaction', () => {
       sourceChainId: 10,
       sourceToken: tokenAddress,
       tokensToPurchase: BigInt(1),
-      contractAddress,
-      useScoutToken: false
+      contractAddress
     };
 
     const { result } = renderHook(() => useDecentTransaction(testInput));
@@ -115,7 +109,7 @@ describe('useDecentTransaction', () => {
 
     const { useDecentTransaction, _appendDecentQueryParams } = await import('../useDecentTransaction');
 
-    const contractAddress = getBuilderNftStarterPackContractAddress('2025-W02')!;
+    const contractAddress = getStarterNFTContractAddress('2025-W02')!;
 
     const testInput: DecentTransactionProps = {
       address,
@@ -125,7 +119,6 @@ describe('useDecentTransaction', () => {
       sourceToken: tokenAddress,
       tokensToPurchase: BigInt(1),
       contractAddress,
-      useScoutToken: false,
       scoutId
     };
 

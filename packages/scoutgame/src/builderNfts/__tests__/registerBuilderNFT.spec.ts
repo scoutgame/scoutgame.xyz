@@ -6,13 +6,13 @@ import { randomLargeInt } from '@packages/testing/generators';
 // Mock the constants module first
 jest.unstable_mockModule('../constants', () => ({
   nftChain: { id: 10 },
-  getBuilderNftContractAddress: () => '0x1234567890123456789012345678901234567890',
-  getBuilderNftStarterPackContractAddress: () => '0x1234567890123456789012345678901234567890',
+  getNFTContractAddress: () => '0x1234567890123456789012345678901234567890',
+  getStarterNFTContractAddress: () => '0x1234567890123456789012345678901234567890',
   scoutProtocolBuilderNftContractAddress: '0x1234567890123456789012345678901234567890'
 }));
 
 // Import constants after mocking
-const { nftChain, getBuilderNftContractAddress } = await import('../constants');
+const { nftChain, getNFTContractAddress } = await import('../constants');
 
 jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
   getBuilderNftContractMinterClient: () => ({
@@ -39,7 +39,7 @@ const { createBuilderNft } = await import('../registration/createBuilderNft');
 
 describe('registerBuilderNFT', () => {
   const mockSeason = '2025-W02';
-  const mockContractAddress = getBuilderNftContractAddress(mockSeason);
+  const mockContractAddress = getNFTContractAddress(mockSeason);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -86,13 +86,13 @@ describe('registerBuilderNFT', () => {
       builderId: builder.id,
       season: mockSeason,
       chainId: nftChain.id,
-      contractAddress: getBuilderNftContractAddress(mockSeason)
+      contractAddress: getNFTContractAddress(mockSeason)
     });
 
     const result = await registerBuilderNFT({
       builderId: builder.id,
       season: mockSeason,
-      contractAddress: getBuilderNftContractAddress(mockSeason)
+      contractAddress: getNFTContractAddress(mockSeason)
     });
 
     expect(result?.id).toEqual(existingNft.id);

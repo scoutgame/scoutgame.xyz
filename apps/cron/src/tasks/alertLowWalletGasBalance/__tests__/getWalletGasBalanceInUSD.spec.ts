@@ -11,8 +11,8 @@ const privateKey = generatePrivateKey();
 const walletAddress = privateKeyToAccount(privateKey).address;
 
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
-  builderNftChain: { id: 1 },
-  builderSmartContractMinterKey: privateKey
+  nftChain: { id: 1 },
+  minterPrivateKey: privateKey
 }));
 
 const { POST, GET } = await import('@packages/utils/http');

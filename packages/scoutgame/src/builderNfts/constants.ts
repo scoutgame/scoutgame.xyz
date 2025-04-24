@@ -49,9 +49,6 @@ export function getNFTContractAddressForNftType({
 export const scoutgameEthAddress = '0x93326D53d1E8EBf0af1Ff1B233c46C67c96e4d8D';
 export const treasuryAddress = '0x4a01d4c6821ba65B36420735E2397B40Ce64EB2F';
 
-// Selecting the top 100 builders
-export const weeklyRewardableBuilders = 100;
-
 export function isStarterNftContract(contractAddress: string): boolean {
   const starterPackAddresses = [
     getStarterNFTContractAddress('2024-W41'),

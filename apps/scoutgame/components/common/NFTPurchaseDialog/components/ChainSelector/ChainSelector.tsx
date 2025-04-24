@@ -49,8 +49,7 @@ function SelectField(
   ];
 
   const { tokens } = useGetTokenBalances({
-    address: address as Address,
-    useScoutToken
+    address: address as Address
   });
 
   return (

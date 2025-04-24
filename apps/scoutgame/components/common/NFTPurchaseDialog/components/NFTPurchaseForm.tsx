@@ -140,7 +140,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           ? await getStarterNFTReadonlyClient()?.getTokenPurchasePrice({
               args: { amount: BigInt(amount) }
             })
-          : await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
+          : await getNFTReadonlyClient()?.getTokenPurchasePrice({
               args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
             });
       if (_price) {
@@ -157,7 +157,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       setIsFetchingPrice(true);
       _builderTokenId = await (builder.nftType === 'starter_pack'
         ? getStarterNFTReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } })
-        : getScoutProtocolBuilderNFTReadonlyContract().getTokenIdForBuilder({ args: { builderId } }));
+        : getNFTReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } }));
 
       // builderTokenId is undefined if there is no nft contract for the season
       if (_builderTokenId) {
@@ -190,7 +190,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   }, [tokensToBuy, builderTokenId, refreshAsk]);
 
   useEffect(() => {
-    if (!builderId || isExecutingTransaction || isExecutingPointsPurchase || isSavingDecentTransaction) {
+    if (!builderId || isExecutingTransaction || isSavingDecentTransaction) {
       return;
     }
 
@@ -198,7 +198,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
     const interval = setInterval(refreshTokenData, PRICE_POLLING_INTERVAL);
     return () => clearInterval(interval);
-  }, [builderId, tokensToBuy, isExecutingTransaction, isExecutingPointsPurchase, isSavingDecentTransaction]);
+  }, [builderId, tokensToBuy, isExecutingTransaction, isSavingDecentTransaction]);
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
@@ -288,12 +288,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     });
   };
 
-  const isLoading =
-    isSavingDecentTransaction ||
-    isLoadingDecentSdk ||
-    isFetchingPrice ||
-    isExecutingTransaction ||
-    isExecutingPointsPurchase;
+  const isLoading = isSavingDecentTransaction || isLoadingDecentSdk || isFetchingPrice || isExecutingTransaction;
 
   const displayedBalance = !balanceInfo
     ? undefined
@@ -321,7 +316,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     typeof allowance === 'bigint' &&
     allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
 
-  if (hasPurchasedWithPoints || purchaseSuccess) {
+  if (purchaseSuccess) {
     return <SuccessView builder={builder} />;
   }
 
@@ -516,7 +511,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         </Typography>
       )}
 
-      {!approvalRequired || isExecutingTransaction || isExecutingPointsPurchase || isFetchingPrice ? (
+      {!approvalRequired || isExecutingTransaction || isFetchingPrice ? (
         <LoadingButton
           loading={isLoading}
           size='large'
@@ -529,7 +524,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             !scoutgameEthAddress ||
             isSavingDecentTransaction ||
             isExecutingTransaction ||
-            isExecutingPointsPurchase ||
             addressError
           }
           data-test='purchase-button'

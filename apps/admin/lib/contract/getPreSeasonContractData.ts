@@ -43,7 +43,8 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
     const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
       await Promise.all([
         builderProxyContractReadonlyApiClient.admin(),
-        builderContractReadonlyApiClient.getMinter(),
+        // builderContractReadonlyApiClient.getMinter(),
+        () => Promise.resolve(''),
         builderProxyContractReadonlyApiClient.implementation(),
         () => Promise.resolve(scoutgameDotEth),
         // builderProxyContractReadonlyApiClient.getProceedsReceiver(),
