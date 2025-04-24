@@ -1,12 +1,7 @@
 'use client';
 
 import { Box, Skeleton, Typography } from '@mui/material';
-import {
-  getCurrentSeasonWeekNumber,
-  getDraftSeasonEndDate,
-  getWeekStartEnd,
-  isDraftSeason
-} from '@packages/dates/utils';
+import { getCurrentSeasonWeekNumber, getWeekendDate, getWeekStartEnd, isDraftSeason } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 
@@ -16,11 +11,11 @@ export function HeaderMessage() {
   const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr());
   const isMounted = useIsMounted();
   const draftSeason = isDraftSeason();
-  const now = DateTime.now();
-  const isSaturday = now.weekday >= 6;
+  const now = DateTime.now().toUTC();
+  const isWeekend = now.weekday >= 6;
 
   useEffect(() => {
-    if (draftSeason && isSaturday) {
+    if (draftSeason && isWeekend) {
       return;
     }
 
@@ -29,18 +24,25 @@ export function HeaderMessage() {
     }, 1000);
 
     return () => clearInterval(timeout);
-  }, [draftSeason, isSaturday]);
+  }, [draftSeason, isWeekend]);
 
-  // Hide message on Saturdays during draft season
-  if (draftSeason && isSaturday) {
-    return null;
+  let message = '';
+
+  if (draftSeason) {
+    if (isWeekend) {
+      message = 'Draft has ended';
+    } else {
+      message = `Draft ends in ${timeLeftStr}`;
+    }
+  } else {
+    message = `Week ${getCurrentSeasonWeekNumber()} ends in ${timeLeftStr}`;
   }
 
   return (
     <Box width='100%' minHeight='40px' bgcolor='primary.dark' p={1} display='flex' justifyContent='center'>
       {isMounted ? (
         <Typography variant='body1' fontWeight='500' textAlign='center'>
-          {draftSeason ? 'Draft' : `Week ${getCurrentSeasonWeekNumber()}`} ends in {timeLeftStr}
+          {message}
         </Typography>
       ) : (
         <Skeleton width='50%' />
@@ -51,13 +53,10 @@ export function HeaderMessage() {
 
 function getTimeLeftStr() {
   const draftSeason = isDraftSeason();
-  let timeLeft = 0;
-  const now = new Date();
-  if (draftSeason) {
-    timeLeft = getDraftSeasonEndDate(new Date()).toJSDate().getTime() - now.getTime();
-  } else {
-    timeLeft = getWeekStartEnd(new Date()).end.toJSDate().getTime() - now.getTime();
-  }
+  const endOfWeek = draftSeason
+    ? getWeekendDate().toJSDate().getTime()
+    : getWeekStartEnd(new Date()).end.toJSDate().getTime();
+  const timeLeft = endOfWeek - new Date().getTime();
 
   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
   const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

@@ -116,7 +116,7 @@ export function validateISOWeek(week: ISOWeek): boolean {
   return date.isValid && date.year >= 2024 && date <= now;
 }
 
-export function getDraftSeasonEndDate(date: Date) {
+export function getWeekendDate(date: Date = new Date()) {
   const utcDate = DateTime.fromJSDate(date, { zone: 'utc' });
   const friday = utcDate.set({ weekday: 5 }); // 5 is Friday
   return friday.endOf('day');

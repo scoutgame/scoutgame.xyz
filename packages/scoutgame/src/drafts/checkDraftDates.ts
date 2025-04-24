@@ -1,5 +1,5 @@
 import env from '@beam-australia/react-env';
-import { getDraftSeasonEndDate, isDraftSeason } from '@packages/dates/utils';
+import { getWeekendDate, isDraftSeason } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
 export function hasDraftEnded(): boolean {
@@ -7,7 +7,7 @@ export function hasDraftEnded(): boolean {
   if (!draftSeason) {
     return false;
   }
-  const draftSeasonEndDate = getDraftSeasonEndDate(new Date());
+  const draftSeasonEndDate = getWeekendDate();
   const nowUtc = DateTime.utc();
   return nowUtc > draftSeasonEndDate;
 }
@@ -17,7 +17,7 @@ export function isDraftEnabled(): boolean {
   if (!draftSeason) {
     return false;
   }
-  const draftSeasonEndDate = getDraftSeasonEndDate(new Date());
+  const draftSeasonEndDate = getWeekendDate();
   const nowUtc = DateTime.now().toUTC();
   if (nowUtc > draftSeasonEndDate) {
     return false;
