@@ -5,7 +5,7 @@ import { InputAdornment, TextField } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export function SearchDraftDevelopers({ defaultSearch }: { defaultSearch: string }) {
+export function SearchDraftDevelopers({ defaultSearch }: { defaultSearch?: string }) {
   const [searchTerm, setSearchTerm] = useState(defaultSearch);
   const router = useRouter();
 
