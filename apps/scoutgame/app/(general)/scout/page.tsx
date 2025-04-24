@@ -6,15 +6,15 @@ import { ScoutPage } from 'components/scout/ScoutPage';
 export default async function Scout({
   searchParams
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const scoutSort = (searchParams.scoutSort as string) || 'points';
-  const builderSort = (searchParams.builderSort as BuildersSortBy) || 'week_gems';
-  const builderOrder = (searchParams.builderOrder as string) || 'desc';
-  const scoutOrder = (searchParams.scoutOrder as string) || 'desc';
-  const scoutTab = (searchParams.scoutTab as string) || 'scouts';
-  const buildersLayout = (searchParams.buildersLayout as string) || 'table';
   const searchParamsResolved = await searchParams;
+  const scoutSort = (searchParamsResolved.scoutSort as string) || 'points';
+  const builderSort = (searchParamsResolved.builderSort as BuildersSortBy) || 'week_gems';
+  const builderOrder = (searchParamsResolved.builderOrder as string) || 'desc';
+  const scoutOrder = (searchParamsResolved.scoutOrder as string) || 'desc';
+  const scoutTab = (searchParamsResolved.scoutTab as string) || 'scouts';
+  const buildersLayout = (searchParamsResolved.buildersLayout as string) || 'table';
   const tab = (searchParamsResolved.tab as string) || 'builders';
   const session = await getSession();
   const userId = session?.scoutId;
@@ -23,7 +23,7 @@ export default async function Scout({
   // const [, purchasedCards] = await safeAwaitSSRData(countStarterPackTokensPurchased(scoutId));
   // const hasPurchasedStarterCard= !!purchasedCards && purchasedCards > 0;
   const defaultNftType = 'default'; // scoutId ? (hasPurchasedStarterCard ? 'top_builders' : 'starter_pack') : 'starter_pack';
-  const nftType = (searchParams.nftType as 'default' | 'starter') || defaultNftType;
+  const nftType = (searchParamsResolved.nftType as 'default' | 'starter') || defaultNftType;
   return (
     <ScoutPage
       scoutSort={scoutSort}

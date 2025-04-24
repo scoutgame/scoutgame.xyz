@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 
 import { ProjectPage } from 'components/projects/[path]/ProjectPage';
 
-export default async function Project({ params }: { params: { path: string } }) {
-  const project = await getProjectByPath(params.path);
+export default async function Project({ params }: { params: Promise<{ path: string }> }) {
+  const paramsResolved = await params;
+  const project = await getProjectByPath(paramsResolved.path);
 
   if (!project) {
     return notFound();

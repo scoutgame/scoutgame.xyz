@@ -22,12 +22,13 @@ export const metadata: Metadata = {
 export default async function Profile({
   searchParams
 }: {
-  searchParams: {
+  searchParams: Promise<{
     tab: ProfileTab;
-  };
+  }>;
 }) {
   const user = await getUserFromSession();
-  const tab = searchParams.tab || (user?.builderStatus ? 'build' : 'scout');
+  const searchParamsResolved = await searchParams;
+  const tab = searchParamsResolved.tab || (user?.builderStatus ? 'build' : 'scout');
 
   if (!user) {
     return null;

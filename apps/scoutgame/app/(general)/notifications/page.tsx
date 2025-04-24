@@ -7,7 +7,7 @@ import { NotificationsPage } from 'components/notifications/NotificationsPage';
 export default async function NotificationsPageContainer({
   searchParams
 }: {
-  searchParams: { status: 'read' | 'unread' | 'all' };
+  searchParams: Promise<{ status: 'read' | 'unread' | 'all' }>;
 }) {
   const session = await getSession();
   const userId = session.scoutId;
@@ -16,7 +16,8 @@ export default async function NotificationsPageContainer({
     return null;
   }
 
-  const status = searchParams.status ?? 'all';
+  const searchParamsResolved = await searchParams;
+  const status = searchParamsResolved.status ?? 'all';
 
   const [error, data] = await safeAwaitSSRData(
     Promise.all([getAppNotifications({ userId, status }), getAppNotificationCount({ userId })])
