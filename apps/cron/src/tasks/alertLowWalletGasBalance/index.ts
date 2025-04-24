@@ -1,5 +1,5 @@
 import { getLogger } from '@charmverse/core/log';
-import { builderSmartContractMinterKey } from '@packages/scoutgame/builderNfts/constants';
+import { builderSmartContractMinterKey } from '@packages/scoutgame/protocol/constants';
 import { POST } from '@packages/utils/http';
 import type Koa from 'koa';
 import type { Address } from 'viem/accounts';

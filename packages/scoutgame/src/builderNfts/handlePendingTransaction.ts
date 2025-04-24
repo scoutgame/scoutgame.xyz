@@ -8,10 +8,10 @@ import {
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
 
-import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../constants';
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { scoutTokenDecimalsMultiplier } from '../protocol/constants';
 
+import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from './constants';
 import { recordNftMint } from './recordNftMint';
 import { recordOnchainNftMint } from './recordOnchainNftMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
