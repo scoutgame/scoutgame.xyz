@@ -9,7 +9,7 @@ import { base } from 'viem/chains';
 import { log } from './logger';
 
 const usdcTokenDecimals = 6;
-const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', usdcTokenDecimals);
+const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', usdcTokenDecimals).toString();
 
 export async function deployOctantBasePartnerRewards({ week }: { week: string }) {
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
@@ -63,7 +63,7 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
       contractAddress: airdropContractAddress,
       season: currentSeason.start,
       week,
-      tokenAddress: baseUsdcTokenAddress,
+      tokenAddress: BASE_USDC_ADDRESS,
       tokenSymbol: 'USDC',
       tokenDecimals: usdcTokenDecimals,
       partner: 'octant_base_contribution',
