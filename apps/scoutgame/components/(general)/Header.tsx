@@ -16,6 +16,7 @@ import {
   Badge
 } from '@mui/material';
 import { isDraftSeason } from '@packages/dates/utils';
+import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
@@ -24,9 +25,9 @@ import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';
 import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
+import { Link } from 'next-view-transitions';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
@@ -39,8 +40,9 @@ import { useDevTokenBalance } from '../../hooks/useDevTokenBalance';
 import { SiteNavigation } from './components/SiteNavigation';
 
 export function Header() {
+  const router = useRouter();
   const platform = getPlatform();
-  const { user } = useUser();
+  const { user, refreshUser } = useUser();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const isFarcasterFrame = useIsFarcasterFrame();
   const { address } = useAccount();
@@ -48,7 +50,16 @@ export function Header() {
   const { balance } = useDevTokenBalance({ address });
   const draftSeason = isDraftSeason();
 
-  const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction);
+  const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction, {
+    onSuccess: async () => {
+      await refreshUser();
+      revalidatePathAction();
+      router.push('/');
+    },
+    onError(err) {
+      log.error('Error on logout', { error: err.error.serverError });
+    }
+  });
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);

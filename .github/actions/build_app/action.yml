@@ -32,6 +32,7 @@ runs:
     - name: Build app
       shell: bash
       if: steps.restore_build.outputs.cache-hit != 'true'
+      with:
       # Note: "2>/dev/null || :" is a bash idiom that means "if the previous command fails, do nothing"
       run: |
         npm run build -w apps/${{ inputs.app_name }}

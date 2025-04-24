@@ -76,6 +76,7 @@ jobs:
       - name: Build app
         uses: ./.github/actions/build_app
         with:
+          NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
           app_name: admin
 
   test:
@@ -143,6 +144,8 @@ jobs:
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
+        env:
+          NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
         with:
           app_name: admin
 
@@ -184,6 +187,8 @@ jobs:
 
       - name: Restore app from cache
         uses: ./.github/actions/build_app
+        env:
+          NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
         with:
           app_name: admin
 

@@ -11,8 +11,6 @@ const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/buil
 const disabledDraftLinks = ['/scout', '/developers', '/profile/projects'];
 
 export async function middleware(request: NextRequest) {
-  // eslint-disable-next-line no-console
-  console.log('call middleware', request.nextUrl);
   const session = await getSession();
   const isLoggedIn = !!session.scoutId;
   const path = request.nextUrl.pathname;

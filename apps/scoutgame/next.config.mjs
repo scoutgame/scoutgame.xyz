@@ -1,5 +1,11 @@
 import withSerwistInit from '@serwist/next';
 
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+  swUrl: '/sw.js'
+});
+
 /** @type {import('next').NextConfig} */
 
 // Next.js requires this configured at build and run time
@@ -67,4 +73,4 @@ const nextConfig = {
   }
 };
 
-export default nextConfig;
+export default withSerwist(nextConfig);
