@@ -13,14 +13,15 @@ export const metadata: Metadata = {
   title: 'Claim Points'
 };
 
-export default async function Claim({ searchParams }: { searchParams: { tab: string; season?: string } }) {
+export default async function Claim({ searchParams }: { searchParams: Promise<{ tab: string; season?: string }> }) {
+  const searchParamsResolved = await searchParams;
   // if period is not 'season', ensure that season is the current season
-  if (searchParams.tab !== 'season' || !searchParams.season) {
-    searchParams.season = getCurrentSeasonStart();
+  if (searchParamsResolved.tab !== 'season' || !searchParamsResolved.season) {
+    searchParamsResolved.season = getCurrentSeasonStart();
   }
   return (
     <PageContainer>
-      <ClaimPage period={searchParams.tab} season={searchParams.season} />
+      <ClaimPage period={searchParamsResolved.tab} season={searchParamsResolved.season} />
     </PageContainer>
   );
 }

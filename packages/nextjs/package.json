@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@packages/mixpanel": "^0.0.0",
-    "@packages/utils": "^1.0.0",
-    "next-safe-action": "^7.10.2"
+    "@packages/utils": "^1.0.0"
   }
 }

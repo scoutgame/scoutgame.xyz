@@ -4,8 +4,9 @@ import { notFound, redirect } from 'next/navigation';
 
 import { EditProjectPage } from 'components/projects/[path]/edit/EditProjectPage';
 
-export default async function Page({ params }: { params: { path: string } }) {
-  const project = await getProjectByPath(params.path);
+export default async function Page({ params }: { params: Promise<{ path: string }> }) {
+  const paramsResolved = await params;
+  const project = await getProjectByPath(paramsResolved.path);
   if (!project) {
     return notFound();
   }

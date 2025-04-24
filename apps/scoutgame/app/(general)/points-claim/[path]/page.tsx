@@ -6,15 +6,17 @@ export default async function Claim({
   params,
   searchParams
 }: {
-  params: { path: string };
-  searchParams: { week?: string };
+  params: Promise<{ path: string }>;
+  searchParams: Promise<{ week?: string }>;
 }) {
-  const user = await getUserByPathCached(params.path);
+  const paramsResolved = await params;
+  const user = await getUserByPathCached(paramsResolved.path);
   if (!user) {
     return notFound();
   }
+  const searchParamsResolved = await searchParams;
 
-  const claimScreenUrl = `https://cdn.charmverse.io/points-claim/${user.id}/${searchParams.week || getLastWeek()}.png`;
+  const claimScreenUrl = `https://cdn.charmverse.io/points-claim/${user.id}/${searchParamsResolved.week || getLastWeek()}.png`;
 
   return (
     <>
@@ -24,7 +26,7 @@ export default async function Claim({
 
       <meta name='fc:frame:button:1' content='My profile' />
       <meta name='fc:frame:button:1:action' content='link' />
-      <meta name='fc:frame:button:1:target' content={`${process.env.DOMAIN}/u/${params.path}`} />
+      <meta name='fc:frame:button:1:target' content={`${process.env.DOMAIN}/u/${paramsResolved.path}`} />
 
       <meta name='fc:frame:button:2' content='Play now' />
       <meta name='fc:frame:button:2:action' content='link' />
@@ -33,7 +35,7 @@ export default async function Claim({
       <meta name='og:image' content={claimScreenUrl} />
       <meta name='og:image:width' content='600' />
       <meta name='og:image:height' content='600' />
-      <meta name='og:url' content={`https://scoutgame.xyz/u/${params.path}`} />
+      <meta name='og:url' content={`https://scoutgame.xyz/u/${paramsResolved.path}`} />
       <meta name='og:title' content={`Scout Game - ${user.displayName}`} />
       <meta name='og:description' content={`Points claim screen for ${user.displayName}`} />
 
@@ -41,7 +43,7 @@ export default async function Claim({
       <meta name='twitter:title' content={`Scout Game - ${user.displayName}`} />
       <meta name='twitter:description' content={`Points claim screen for ${user.displayName}`} />
       <meta name='twitter:image' content={claimScreenUrl} />
-      <meta name='twitter:url' content={`https://scoutgame.xyz/u/${params.path}`} />
+      <meta name='twitter:url' content={`https://scoutgame.xyz/u/${paramsResolved.path}`} />
     </>
   );
 }

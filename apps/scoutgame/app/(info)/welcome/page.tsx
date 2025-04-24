@@ -22,10 +22,11 @@ export const metadata: Metadata = {
 export default async function Welcome({
   searchParams
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const scoutSort = (searchParams.step as OnboardingStep | undefined) || '1';
-  const redirectUrl = searchParams.redirectUrl as string | undefined;
+  const searchParamsResolved = await searchParams;
+  const scoutSort = (searchParamsResolved.step as OnboardingStep | undefined) || '1';
+  const redirectUrl = searchParamsResolved.redirectUrl as string | undefined;
 
   const startingPagePath = redirectUrl || '/scout';
   // logic in  middleware.ts guarantees that user exists

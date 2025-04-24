@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 export default async function Developers({
   searchParams
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParamsResolved = await searchParams;
   const tab = (searchParamsResolved.tab as string) || 'leaderboard';
-  const week = searchParams.week as string | undefined;
-  const builderSort = (searchParams.builderSort as string | undefined) || 'rank';
-  const builderOrder = (searchParams.builderOrder as string | undefined) || 'asc';
+  const week = searchParamsResolved.week as string | undefined;
+  const builderSort = (searchParamsResolved.builderSort as string | undefined) || 'rank';
+  const builderOrder = (searchParamsResolved.builderOrder as string | undefined) || 'asc';
   const [, user] = await safeAwaitSSRData(getUserFromSession());
 
   return (

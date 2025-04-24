@@ -23,7 +23,7 @@ export async function trackUserEnhancedAction<T extends MixpanelEventName>(
 
   const reqUserAgent = userAgent({ headers: headersList });
 
-  const ip = getIPFromRequest();
+  const ip = await getIPFromRequest();
 
   const deviceProps = {
     $browser: reqUserAgent?.browser.name,
