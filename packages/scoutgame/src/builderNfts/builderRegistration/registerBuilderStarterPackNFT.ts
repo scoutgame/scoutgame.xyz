@@ -4,28 +4,21 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 
-import { getStarterNFTReadonlyClient } from '../../protocol/clients/getStarterNFTClient';
-import { getBuilderNftContractReadonlyClient } from '../clients/builderNftContractReadonlyClient';
-import { getBuilderNftContractStarterPackMinterClient } from '../clients/starterPack/getBuilderContractStarterPackMinterWriteClient';
-import { nftChain, getBuilderNftStarterPackContractAddress } from '../constants';
+import { getNFTReadonlyClient } from '../../protocol/clients/getNFTClient';
+import { getStarterNFTReadonlyClient, getStarterNFTMinterClient } from '../../protocol/clients/getStarterNFTClient';
+import { nftChain } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
 
 export async function registerBuilderStarterPackNFT({
   builderId,
   season,
-  chainId = nftChain.id,
-  contractAddress
+  chainId = nftChain.id
 }: {
   builderId: string;
   season: string;
   chainId?: number;
-  contractAddress?: Address;
 }) {
-  if (!contractAddress) {
-    contractAddress = getBuilderNftStarterPackContractAddress(season);
-  }
-
   if (!stringUtils.isUUID(builderId)) {
     throw new InvalidInputError(`Invalid builderId. Must be a uuid: ${builderId}`);
   }
@@ -61,9 +54,9 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Scout profile does not have a github user');
   }
 
-  const client = getBuilderNftContractReadonlyClient(season);
+  const client = getNFTReadonlyClient(season);
   if (!client) {
-    throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
+    throw new Error(`Dev NFT contract client not found: ${season}`);
   }
 
   // Read the tokenId from the existing builder NFT Contract so that they match
@@ -77,7 +70,7 @@ export async function registerBuilderStarterPackNFT({
 
   const starterPackClient = getStarterNFTReadonlyClient(season);
   if (!starterPackClient) {
-    throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);
+    throw new Error(`Dev NFT contract client not found: ${season}`);
   }
 
   const existingStarterPackTokenId = await starterPackClient
@@ -90,7 +83,7 @@ export async function registerBuilderStarterPackNFT({
     throw new InvalidInputError('Builder NFT already registered on starter pack contract but with a different tokenId');
   } else if (!existingStarterPackTokenId) {
     // Register the builder token on the starter pack contract so that it can be minted
-    await getBuilderNftContractStarterPackMinterClient(season).registerBuilderToken({
+    await getStarterNFTMinterClient(season).registerBuilderToken({
       args: { builderId, builderTokenId: tokenId }
     });
   }
@@ -102,7 +95,7 @@ export async function registerBuilderStarterPackNFT({
     path: builder.path!,
     displayName: builder.displayName,
     season,
-    contractAddress,
+    contractAddress: starterPackClient.contractAddress,
     chainId
   });
 
