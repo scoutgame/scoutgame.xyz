@@ -2,10 +2,7 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
-import {
-  getBuilderNftContractAddress,
-  getBuilderNftStarterPackContractAddress
-} from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress, getStarterNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import type { ProposedBurnParams } from '@packages/safetransactions/proposeBurnTransaction';
 import { proposePreSeason02OrStarterPackBurnTransactions } from '@packages/safetransactions/proposeBurnTransaction';
 import { prefix0x } from '@packages/utils/prefix0x';
@@ -92,13 +89,13 @@ export async function revertFraudulentMintTransactions({
   const defaultNftTransferSingleEvents = await getTransferSingleWithBatchMerged({
     chainId,
     fromBlock: blockNumber,
-    contractAddress: getBuilderNftContractAddress('2025-W02')!
+    contractAddress: getNFTContractAddress('2025-W02')!
   });
 
   const starterPackTransferSingleEvents = await getTransferSingleWithBatchMerged({
     chainId,
     fromBlock: blockNumber,
-    contractAddress: getBuilderNftStarterPackContractAddress('2025-W02')!
+    contractAddress: getStarterNFTContractAddress('2025-W02')!
   });
 
   const burnTransactions: ProposedBurnParams[] = [];

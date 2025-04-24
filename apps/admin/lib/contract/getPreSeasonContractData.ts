@@ -1,15 +1,10 @@
+import { OPTIMISM_USDC_ADDRESS } from '@packages/blockchain/constants';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
-import { getPreSeasonOneBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason01/getPreSeasonOneBuilderNftContractReadonlyClient';
-import { getPreSeasonOneBuilderNftProxyContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason01/getPreSeasonOneBuilderNftProxyContractReadonlyClient';
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient';
-import { getPreSeasonTwoBuilderNftProxyContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftProxyContractReadonlyClient';
-import {
-  getBuilderNftContractAddress,
-  lastBlockOfPreSeason01,
-  usdcOptimismMainnetContractAddress
-} from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress, lastBlockOfPreSeason01 } from '@packages/scoutgame/builderNfts/constants';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
+import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
+import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
 import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
 
@@ -33,7 +28,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
   const usdcClient = new UsdcErc20ABIClient({
     chain: optimism,
     publicClient: getPublicClient(optimism.id),
-    contractAddress: usdcOptimismMainnetContractAddress
+    contractAddress: OPTIMISM_USDC_ADDRESS
   });
 
   const preseason01Sales = await usdcClient.balanceOf({
@@ -42,15 +37,17 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
   });
 
   if (season === '2024-W41') {
-    const builderContractReadonlyApiClient = getPreSeasonOneBuilderNftContractReadonlyClient();
-    const builderProxyContractReadonlyApiClient = getPreSeasonOneBuilderNftProxyContractReadonlyClient();
+    const builderContractReadonlyApiClient = getNFTReadonlyClient(season);
+    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season)!);
 
     const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
       await Promise.all([
         builderProxyContractReadonlyApiClient.admin(),
-        builderContractReadonlyApiClient.getMinter(),
+        // builderContractReadonlyApiClient.getMinter(),
+        Promise.resolve('' as Address),
         builderProxyContractReadonlyApiClient.implementation(),
-        builderProxyContractReadonlyApiClient.getProceedsReceiver(),
+        Promise.resolve(scoutgameDotEth as Address),
+        // builderProxyContractReadonlyApiClient.getProceedsReceiver(),
         builderContractReadonlyApiClient.totalBuilderTokens(),
         aggregateNftSalesData({ nftType: 'default', season })
       ]);
@@ -61,14 +58,14 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       currentImplementation: currentImplementation as Address,
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
-      contractAddress: getBuilderNftContractAddress(season) as Address,
+      contractAddress: getNFTContractAddress(season) as Address,
       receiverUsdcBalance: Number(preseason01Sales / BigInt(1e6)),
       nftSalesData,
       chainName: 'optimism'
     };
-  } else if (season === '2025-W02') {
-    const builderImplementationContractReadonlyApiClient = getPreSeasonTwoBuilderNftContractReadonlyClient();
-    const builderProxyContractReadonlyApiClient = getPreSeasonTwoBuilderNftProxyContractReadonlyClient();
+  } else {
+    const builderImplementationContractReadonlyApiClient = getNFTReadonlyClient(season);
+    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season) as Address);
 
     const currentUsdcBalance = await usdcClient.balanceOf({ args: { account: scoutgameDotEth } });
 
@@ -89,11 +86,9 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
       chainName: 'optimism',
-      contractAddress: getBuilderNftContractAddress(season) as Address,
+      contractAddress: getNFTContractAddress(season) as Address,
       receiverUsdcBalance: Number((currentUsdcBalance - preseason01Sales) / BigInt(1e6)),
       nftSalesData
     };
-  } else {
-    throw new Error(`Season ${season} not supported`);
   }
 }

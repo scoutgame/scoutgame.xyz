@@ -1,6 +1,5 @@
 import type { ButtonProps } from '@mui/material';
 import { Button, Container, Stack, Typography } from '@mui/material';
-import { getSession } from '@packages/nextjs/session/getSession';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,9 +29,7 @@ function CustomButton({ children, ...props }: ButtonProps) {
 }
 
 async function HeroSection() {
-  const session = await getSession();
-
-  const airdropLive = isAirdropLive(session.scoutId);
+  const airdropLive = isAirdropLive();
 
   return (
     <Stack alignItems='center'>
@@ -235,8 +232,7 @@ function FooterSection() {
 }
 
 export async function SeasonOneLandingPage() {
-  const session = await getSession();
-  const airdropLive = isAirdropLive(session.scoutId);
+  const airdropLive = isAirdropLive();
   return (
     <>
       <Container

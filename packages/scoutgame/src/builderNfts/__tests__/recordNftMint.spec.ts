@@ -6,16 +6,16 @@ import { randomLargeInt, randomWalletAddress } from '@packages/testing/generator
 import { createReferralEvent } from '@packages/users/referrals/createReferralEvent';
 import { v4 } from 'uuid';
 
-jest.unstable_mockModule('../clients/starterPack/getBuilderContractStarterPackReadonlyClient', () => ({
-  getBuilderNftStarterPackReadonlyClient: () => ({
+jest.unstable_mockModule('../../protocol/clients/getStarterNFTClient', () => ({
+  getStarterNFTReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
   })
 }));
 
-jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
-  getBuilderNftContractReadonlyClient: () => ({
+jest.unstable_mockModule('../../protocol/clients/getNFTClient', () => ({
+  getNFTReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt()),

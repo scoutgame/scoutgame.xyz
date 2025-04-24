@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
-import { builderTokenDecimals } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { getWeekFromDate } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
@@ -27,7 +26,7 @@ export async function generateNftPurchaseEvents(
       await prisma.$transaction(async (tx) => {
         const builderNftId = builder.builderNftId as string;
         const nftPrice = builder.nftPrice as number;
-        const pointsValue = Number(nftPrice * nftsPurchased) / 10 ** builderTokenDecimals;
+        const pointsValue = Number(nftPrice * nftsPurchased) / 10 ** 6;
 
         await tx.builderNft.update({
           where: {

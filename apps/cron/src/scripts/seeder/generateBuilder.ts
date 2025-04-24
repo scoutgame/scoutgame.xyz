@@ -4,7 +4,7 @@ import { dirname, join } from 'path';
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { faker } from '@faker-js/faker';
-import { getBuilderNftContractAddress, nftChain } from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress, nftChain } from '@packages/scoutgame/builderNfts/constants';
 import { generateArtwork } from '@packages/scoutgame/builderNfts/artwork/generateArtwork';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
@@ -37,7 +37,7 @@ export async function generateBuilder({ tokenId }: { tokenId: number }) {
 
   let builderNft: undefined | Prisma.BuilderNftCreateWithoutBuilderInput;
   if (builderStatus === 'approved') {
-    const contractAddress = getBuilderNftContractAddress(getCurrentSeasonStart());
+    const contractAddress = getNFTContractAddress(getCurrentSeasonStart());
     // draft seasons do not have a contract address
     if (contractAddress) {
       const nftImageBuffer = await generateArtwork({

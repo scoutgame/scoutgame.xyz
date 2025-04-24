@@ -2,12 +2,8 @@
 
 import { Box, MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
-import {
-  NULL_EVM_ADDRESS,
-  DEV_TOKEN_ADDRESS,
-  OPTIMISM_USDC_ADDRESS,
-  BASE_USDC_ADDRESS
-} from '@packages/blockchain/constants';
+import { NULL_EVM_ADDRESS, OPTIMISM_USDC_ADDRESS, BASE_USDC_ADDRESS } from '@packages/blockchain/constants';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import Image from 'next/image';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
@@ -63,7 +59,7 @@ export type PaymentOption = {
 
 export const DEV_PAYMENT_OPTION: PaymentOption = {
   ...baseChainOption,
-  address: DEV_TOKEN_ADDRESS,
+  address: devTokenContractAddress,
   currency: 'DEV' as const,
   decimals: 18
 };

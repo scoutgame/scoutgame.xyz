@@ -45,7 +45,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   });
 
   const draftSeason = isDraftSeason();
-  const airdropLive = isAirdropLive(user?.id);
+  const airdropLive = isAirdropLive();
 
   if (draftSeason) {
     return (

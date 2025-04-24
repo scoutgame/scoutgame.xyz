@@ -12,13 +12,13 @@ jest.unstable_mockModule('@packages/users/findOrCreateWalletUser', () => ({
   findOrCreateWalletUser: jest.fn()
 }));
 
-jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
-  getBuilderNftContractMinterClient: () => ({
+jest.unstable_mockModule('../../protocol/clients/getNFTClient', () => ({
+  getNFTMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
   }),
-  getBuilderNftContractReadonlyClient: () => ({
+  getNFTReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt()),
@@ -26,8 +26,8 @@ jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
   })
 }));
 
-jest.unstable_mockModule('../clients/starterPack/getBuilderContractStarterPackReadonlyClient', () => ({
-  getBuilderNftStarterPackReadonlyClient: () => ({
+jest.unstable_mockModule('../../protocol/clients/getStarterNFTClient', () => ({
+  getStarterNFTReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
     getTokenPurchasePrice: () => Promise.resolve(randomLargeInt()),

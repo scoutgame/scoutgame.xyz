@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next(); // Create a response object to set cookies
   const platform = getPlatform();
   const draftSeason = isDraftSeason();
-  const airdropLive = isAirdropLive(session.scoutId);
+  const airdropLive = isAirdropLive();
 
   if (path === '/taiko') {
     return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
