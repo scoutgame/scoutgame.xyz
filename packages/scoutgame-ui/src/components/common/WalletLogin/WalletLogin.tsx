@@ -82,7 +82,7 @@ function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?:
     const message = siweMessage.prepareMessage();
     try {
       const signature = await signMessageAsync({ message });
-      await loginUser({ message, signature, inviteCode, referralCode, utmCampaign: utmCampaign as string });
+      await loginWithWalletAction({ message, signature, inviteCode, referralCode, utmCampaign: utmCampaign as string });
     } catch (error) {
       // examples: user cancels signature, user rejects signature
       log.warn('Error signing message', { error });
@@ -141,7 +141,7 @@ function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?:
         {text || (
           <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
             <AccountBalanceWalletOutlinedIcon />
-            {isLoading ? '' : 'Sign in with wallet'}
+            {isLoading ? <>&nbsp;</> : 'Sign in with wallet'}
           </Stack>
         )}
       </Button>
