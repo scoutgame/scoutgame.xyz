@@ -130,9 +130,7 @@ export function WarpcastLoginButton() {
           <Box height='24px' width='24px' display='flex' alignItems='center' justifyContent='center'>
             <WarpcastIcon size='20px' />
           </Box>
-          <Typography fontWeight={600} color='white'>
-            Sign in with Warpcast
-          </Typography>
+          Sign in with Warpcast
         </Stack>
       </Button>
       {errorMessage && (
