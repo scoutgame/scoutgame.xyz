@@ -1,6 +1,7 @@
 import withSerwistInit from '@serwist/next';
 
 const withSerwist = withSerwistInit({
+  // serwist is currently not compatible with turbopack
   disable: process.env.NODE_ENV !== 'production',
   swSrc: 'app/sw.ts',
   swDest: 'public/sw.js',
