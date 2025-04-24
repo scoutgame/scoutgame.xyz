@@ -97,7 +97,7 @@ export async function registerDeveloperStarterNFT({
   } else if (!existingStarterPackTokenId) {
     // Register the builder token on the starter pack contract so that it can be minted
     await getStarterNFTMinterClient(season).registerBuilderToken({
-      args: { builderId, builderTokenId: tokenId, builderWallet: primaryWallet.address }
+      args: { builderId, builderTokenId: tokenId, builderWallet: primaryWallet.address as Address }
     });
   }
 

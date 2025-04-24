@@ -27,7 +27,6 @@ export function getNFTMinterClient(season = getCurrentSeasonStart()) {
   }
 
   return new ScoutProtocolNFTImplementationClient({
-    chain: scoutProtocolChain,
     contractAddress,
     walletClient: getScoutGameNftMinterWallet()
   });
