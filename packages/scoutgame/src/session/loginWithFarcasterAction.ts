@@ -18,7 +18,8 @@ export const loginWithFarcasterAction = actionClient
     const { fid } = await verifyFarcasterUser(parsedInput);
 
     if (parsedInput.inviteCode) {
-      cookies().set(
+      const cookieStore = await cookies();
+      cookieStore.set(
         'invite-code',
         await sealData({ inviteCode: parsedInput.inviteCode }, { password: authSecret as string })
       );

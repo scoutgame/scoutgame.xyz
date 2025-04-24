@@ -1,7 +1,6 @@
 'use client';
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
-import { LoadingButton } from '@mui/lab';
 import { Button, Stack, Typography } from '@mui/material';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
@@ -50,9 +49,9 @@ export function ScoutButton({
   if (builder.builderStatus === 'banned') {
     return (
       // @ts-ignore
-      <LoadingButton disabled variant='buy'>
+      <Button disabled variant='buy'>
         SUSPENDED
-      </LoadingButton>
+      </Button>
     );
   }
 
@@ -67,7 +66,7 @@ export function ScoutButton({
             Owned
           </Button>
         ) : (
-          <LoadingButton
+          <Button
             loading={dialogLoadingStatus}
             fullWidth
             onClick={handleClick}
@@ -89,7 +88,7 @@ export function ScoutButton({
                 <Image src={image} alt='' width={21} height={12} style={{ marginLeft: 4, marginRight: 4 }} />
               </Stack>
             </Stack>
-          </LoadingButton>
+          </Button>
         )}
         <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>

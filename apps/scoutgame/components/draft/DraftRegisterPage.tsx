@@ -3,7 +3,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  Grid2 as Grid,
+  Grid,
   Paper,
   Stack,
   Typography,

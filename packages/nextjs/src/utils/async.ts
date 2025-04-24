@@ -26,7 +26,7 @@ export async function safeAwaitSSRData<T>(promise: Promise<T>) {
   return safeAwait(promise, {
     onError: async (err) => {
       const session = await getSession();
-      const headersList = headers();
+      const headersList = await headers();
       const fullUrl = headersList.get('referer') || '';
 
       const isValidSystemError = isSystemError(err);

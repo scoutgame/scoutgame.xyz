@@ -2,9 +2,8 @@
 
 import { log } from '@charmverse/core/log';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
-import { LoadingButton } from '@mui/lab';
 import type { ButtonProps } from '@mui/material';
-import { Box, Stack, Typography } from '@mui/material';
+import { Button, Box, Stack, Typography } from '@mui/material';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithWalletAction } from '@packages/scoutgame/session/loginWithWalletAction';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
@@ -123,14 +122,14 @@ function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?:
           {errorWalletMessage || 'There was an error while logging in with your wallet'}
         </Typography>
       )}
-      <LoadingButton
+      <Button
         loading={isLoading}
         size='large'
         color={color}
         variant='contained'
         onClick={onClick}
         sx={{
-          '& .MuiLoadingButton-label': {
+          '& .MuiButton-label': {
             width: '100%'
           },
           minWidth: '250px',
@@ -142,10 +141,10 @@ function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?:
         {text || (
           <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
             <AccountBalanceWalletOutlinedIcon />
-            {isLoading ? '' : 'Sign in with wallet'}
+            {isLoading ? <>&nbsp;</> : 'Sign in with wallet'}
           </Stack>
         )}
-      </LoadingButton>
+      </Button>
     </Box>
   );
 }

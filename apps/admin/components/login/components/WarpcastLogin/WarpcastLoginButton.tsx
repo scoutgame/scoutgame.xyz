@@ -2,9 +2,8 @@
 
 import { log } from '@charmverse/core/log';
 import type { StatusAPIResponse, AuthClientError } from '@farcaster/auth-kit';
-import { LoadingButton } from '@mui/lab';
 import type { ButtonProps } from '@mui/material';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { usePopupState } from 'material-ui-popup-state/hooks';
@@ -76,7 +75,7 @@ export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
 
   return (
     <Box width='100%' data-test='connect-with-farcaster'>
-      <LoadingButton
+      <Button
         loading={isRevalidatingPath || isLoggingIn}
         size='large'
         variant='contained'
@@ -97,7 +96,7 @@ export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
         {...props}
       >
         {children || 'Sign in with Warpcast'}
-      </LoadingButton>
+      </Button>
       {hasErrored && (
         <Typography variant='body2' sx={{ mt: 2 }} color='error'>
           {result?.serverError?.message}

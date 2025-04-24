@@ -4,10 +4,10 @@ import { AnnouncementBannerAlert } from './components/Alert';
 import { currentBanner, BANNERS_COOKIE_KEY } from './config';
 
 // Server component to get cookies during server rendering
-function getServerCookies() {
+async function getServerCookies() {
   try {
     // This will only work in a server component or route handler
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     return cookieStore.get(BANNERS_COOKIE_KEY)?.value;
   } catch (error) {
     // If called in client context, return undefined
@@ -15,8 +15,8 @@ function getServerCookies() {
   }
 }
 
-export function AnnouncementBanner() {
-  const lastSeenBanner = getServerCookies();
+export async function AnnouncementBanner() {
+  const lastSeenBanner = await getServerCookies();
 
   if (
     // no current banner

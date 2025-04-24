@@ -16,16 +16,17 @@
   "dependencies": {
     "@airstack/node": "^0.0.7",
     "@datadog/browser-logs": "^5.33.0",
+    "@decent.xyz/box-hooks": "^5.0.19",
     "@farcaster/auth-client": "^0.3.0",
     "@farcaster/auth-kit": "^0.6.0",
     "@hookform/resolvers": "^3.6.0",
-    "@mui/lab": "^6.0.0-beta.10",
     "@packages/dates": "^0.0.0",
     "@packages/dune": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
     "@packages/github": "^0.0.0",
     "@packages/mailer": "^0.0.0",
     "@packages/mixpanel": "^0.0.0",
+    "@packages/nextjs": "^0.0.0",
     "@packages/safetransactions": "^0.0.0",
     "@packages/scoutgame": "^0.0.0",
     "@packages/scoutgame-router": "^1.0.0",
@@ -36,7 +37,7 @@
     "@serwist/next": "^9.0.5",
     "@typeschema/yup": "^0.13.3",
     "embla-carousel-react": "^8.5.2",
-    "frames.js": "^0.21.2",
+    "frames.js": "^0.22.0",
     "install": "^0.13.0",
     "npm": "^11.2.0",
     "server-only": "^0.0.1",
@@ -45,7 +46,13 @@
   },
   "devDependencies": {
     "@johanneskares/wallet-mock": "^1.4.1",
+    "@types/react-dom": "^19.1.2",
     "@types/web-push": "^3.6.3",
     "serwist": "^9.0.5"
+  },
+  "overrides": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "next": "^15.3.1"
   }
 }

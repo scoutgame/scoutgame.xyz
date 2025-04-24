@@ -6,8 +6,8 @@ import type { BuilderNftType } from '@charmverse/core/prisma';
 import { ChainId } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
 import { InfoOutlined as InfoIcon } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
 import {
+  Button,
   Alert,
   Box,
   CircularProgress,
@@ -512,7 +512,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       )}
 
       {!approvalRequired || isExecutingTransaction || isFetchingPrice ? (
-        <LoadingButton
+        <Button
           loading={isLoading}
           size='large'
           onClick={handlePurchase}
@@ -529,7 +529,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           data-test='purchase-button'
         >
           {isFetchingPrice ? 'Updating Price...' : 'Buy'}
-        </LoadingButton>
+        </Button>
       ) : (
         <ERC20ApproveButton
           spender={decentTransactionInfo?.tx.to as Address}

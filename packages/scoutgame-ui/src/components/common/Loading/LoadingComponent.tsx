@@ -8,7 +8,7 @@ import { LoadingCard } from './LoadingCard';
 type CSSValue = number | string;
 
 interface LoadingProps {
-  component?: JSX.Element;
+  component?: React.ReactNode;
   height?: CSSValue;
   label?: string;
   minHeight?: CSSValue;
@@ -30,7 +30,7 @@ export function LoadingComponent({
   className,
   'data-test': dataTest,
   ...restProps
-}: LoadingProps & BoxProps): JSX.Element {
+}: LoadingProps & BoxProps): React.ReactNode {
   if (!isLoading) {
     return (
       component || (

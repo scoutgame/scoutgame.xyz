@@ -1,8 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { LoadingButton } from '@mui/lab';
-import { Stack, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import { connectWalletAccountAction } from '@packages/scoutgame/wallets/connectWalletAccountAction';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { fancyTrim } from '@packages/utils/strings';
@@ -98,7 +97,7 @@ function WalletConnectButton({ onSuccess, connected }: { onSuccess: () => void; 
 
   return (
     <Stack direction='column' justifyContent='center' alignItems='center' gap={1} width='100%'>
-      <LoadingButton
+      <Button
         disabled={isLoading || connected}
         loading={isLoading}
         sx={{ width: 'fit-content' }}
@@ -106,7 +105,7 @@ function WalletConnectButton({ onSuccess, connected }: { onSuccess: () => void; 
         variant='contained'
       >
         {connected ? `Connected as ${fancyTrim(address, 10)}` : isConnecting ? 'Connecting...' : 'Connect'}
-      </LoadingButton>
+      </Button>
 
       {connectionError && (
         <Typography variant='body2' color='error'>

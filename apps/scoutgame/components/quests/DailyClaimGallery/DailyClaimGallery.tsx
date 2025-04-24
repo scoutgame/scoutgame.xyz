@@ -1,6 +1,6 @@
 'use client';
 
-import { Grid2 as Grid, Skeleton, Stack, Typography } from '@mui/material';
+import { Grid, Skeleton, Stack, Typography } from '@mui/material';
 import type { DailyClaim } from '@packages/scoutgame/claims/getDailyClaims';
 import { getServerDate } from '@packages/utils/dates';
 import { motion } from 'framer-motion';

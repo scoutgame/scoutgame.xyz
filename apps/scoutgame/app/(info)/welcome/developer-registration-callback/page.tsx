@@ -12,9 +12,16 @@ export const metadata: Metadata = {
 };
 
 export default async function BuilderSetup({
-  searchParams: { state, code, error, 'profile-redirect': redirectToProfile }
+  searchParams
 }: {
-  searchParams: { state: string; code: string; error: string; 'profile-redirect': string };
+  searchParams: Promise<{ state: string; code: string; error: string; 'profile-redirect': string }>;
 }) {
-  return <DeveloperSetupPage state={state} code={code} githubRedirectError={error} />;
+  const searchParamsResolved = await searchParams;
+  return (
+    <DeveloperSetupPage
+      state={searchParamsResolved.state}
+      code={searchParamsResolved.code}
+      githubRedirectError={searchParamsResolved.error}
+    />
+  );
 }

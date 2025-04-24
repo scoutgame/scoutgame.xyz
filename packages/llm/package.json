@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@packages/utils": "^1.0.0",
-    "openai": "^4.78.1",
+    "openai": "^4.96.0",
     "tiktoken": "^1.0.18"
   }
 }
