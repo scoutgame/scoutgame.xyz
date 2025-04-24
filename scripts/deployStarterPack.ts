@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperStarterNFT';
+import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/registration/registerDeveloperStarterNFT';
 
 async function deployStarterPack() {
   const builders = await prisma.scout.findMany({

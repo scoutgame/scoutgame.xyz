@@ -4,8 +4,8 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getSeasonConfig } from '@packages/dates/utils';
 import { isTestEnv } from '@packages/utils/env';
 
-import { registerDeveloperNFT } from '../builderNfts/builderRegistration/registerDeveloperNFT';
-import { registerDeveloperStarterNFT } from '../builderNfts/builderRegistration/registerDeveloperStarterNFT';
+import { registerDeveloperNFT } from '../builderNfts/registration/registerDeveloperNFT';
+import { registerDeveloperStarterNFT } from '../builderNfts/registration/registerDeveloperStarterNFT';
 import { sendNotifications } from '../notifications/sendNotifications';
 
 export async function approveBuilder({

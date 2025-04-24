@@ -27,15 +27,15 @@ jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
   })
 }));
 
-jest.unstable_mockModule('../builderRegistration/createBuilderNft', () => ({
+jest.unstable_mockModule('../registration/createBuilderNft', () => ({
   createBuilderNft: jest.fn()
 }));
 
 const { getBuilderNftContractMinterClient } = await import('../clients/builderNftContractReadonlyClient');
 
-const { registerBuilderNFT } = await import('../builderRegistration/registerBuilderNFT');
+const { registerBuilderNFT } = await import('../registration/registerBuilderNFT');
 
-const { createBuilderNft } = await import('../builderRegistration/createBuilderNft');
+const { createBuilderNft } = await import('../registration/createBuilderNft');
 
 describe('registerBuilderNFT', () => {
   const mockSeason = '2025-W02';

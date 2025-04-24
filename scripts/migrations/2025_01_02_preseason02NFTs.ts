@@ -1,8 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { registerDeveloperNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperNFT';
+import { registerDeveloperNFT } from '@packages/scoutgame/builderNfts/registration/registerDeveloperNFT';
 
-import { starterPackBuilders } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
-import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperStarterNFT';
+import { starterPackBuilders } from '@packages/scoutgame/builderNfts/registration/starterPack/starterPackBuilders';
+import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/registration/registerDeveloperStarterNFT';
 import { nftChain } from '@packages/scoutgame/builderNfts/constants';
 
 // dev preseason 2

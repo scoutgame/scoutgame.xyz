@@ -4,14 +4,14 @@ import { jest } from '@jest/globals';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder } from '@packages/testing/database';
 
-jest.unstable_mockModule('../../builderNfts/builderRegistration/registerBuilderNFT', () => ({
+jest.unstable_mockModule('../../builderNfts/registration/registerBuilderNFT', () => ({
   registerBuilderNFT: jest.fn().mockResolvedValue({
     id: '1',
     imageUrl: 'https://example.com/image.png'
   } as never)
 }));
 
-jest.unstable_mockModule('../../builderNfts/builderRegistration/registerBuilderStarterPackNFT', () => ({
+jest.unstable_mockModule('../../builderNfts/registration/registerBuilderStarterPackNFT', () => ({
   registerBuilderStarterPackNFT: jest.fn()
 }));
 
@@ -21,10 +21,8 @@ jest.unstable_mockModule('../../importReposByUser', () => ({
 
 const { approveBuilder } = await import('../approveBuilder');
 
-const { registerBuilderNFT } = await import('../../builderNfts/builderRegistration/registerBuilderNFT');
-const { registerBuilderStarterPackNFT } = await import(
-  '../../builderNfts/builderRegistration/registerBuilderStarterPackNFT'
-);
+const { registerBuilderNFT } = await import('../../builderNfts/registration/registerBuilderNFT');
+const { registerBuilderStarterPackNFT } = await import('../../builderNfts/registration/registerBuilderStarterPackNFT');
 
 describe('approveBuilder', () => {
   beforeEach(() => {

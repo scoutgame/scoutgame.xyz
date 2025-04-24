@@ -1,7 +1,7 @@
 import { Prisma, prisma } from '@charmverse/core/prisma-client';
 
-import { registerDeveloperNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperNFT';
-import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperStarterNFT';
+import { registerDeveloperNFT } from '@packages/scoutgame/builderNfts/registration/registerDeveloperNFT';
+import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/registration/registerDeveloperStarterNFT';
 import { refreshUserStats } from '@packages/scoutgame/refreshUserStats';
 
 import { log } from '@charmverse/core/log';
