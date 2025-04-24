@@ -19,7 +19,8 @@ export type PartialNftPurchaseEvent = {
 };
 
 export async function getPointsCountForWeekWithNormalisation({
-  week
+  week,
+  useOnchainLeaderboard
 }: {
   week: string;
   useOnchainLeaderboard?: boolean;
