@@ -44,9 +44,9 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       await Promise.all([
         builderProxyContractReadonlyApiClient.admin(),
         // builderContractReadonlyApiClient.getMinter(),
-        () => Promise.resolve(''),
+        () => Promise.resolve('' as Address),
         builderProxyContractReadonlyApiClient.implementation(),
-        () => Promise.resolve(scoutgameDotEth),
+        () => Promise.resolve(scoutgameDotEth as Address),
         // builderProxyContractReadonlyApiClient.getProceedsReceiver(),
         builderContractReadonlyApiClient.totalBuilderTokens(),
         aggregateNftSalesData({ nftType: 'default', season })
@@ -65,7 +65,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
     };
   } else {
     const builderImplementationContractReadonlyApiClient = getNFTReadonlyClient(season);
-    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season));
+    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season) as Address);
 
     const currentUsdcBalance = await usdcClient.balanceOf({ args: { account: scoutgameDotEth } });
 
