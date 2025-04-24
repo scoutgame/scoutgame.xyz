@@ -51,5 +51,5 @@ export const authActionClient = actionClient.use(async ({ next, ctx }) => {
     select: { id: true }
   });
 
-  return next({ ctx });
+  return next({ ctx: { ...ctx, session: { ...ctx.session, scoutId } } });
 });
