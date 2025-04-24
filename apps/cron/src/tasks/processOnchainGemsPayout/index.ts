@@ -1,6 +1,6 @@
 import { getLogger } from '@charmverse/core/log';
 import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
-import { getBuilderNftContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeeklyClaims';
@@ -22,7 +22,7 @@ export async function processOnchainGemsPayout(
     return;
   }
 
-  const contractAddress = getBuilderNftContractAddress(season);
+  const contractAddress = getNFTContractAddress(season);
 
   if (!contractAddress) {
     log.warn('Gems Payout: No contract address found for season', { season });

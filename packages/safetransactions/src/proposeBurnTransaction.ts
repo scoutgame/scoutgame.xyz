@@ -2,10 +2,7 @@ import { log } from '@charmverse/core/log';
 import { type BuilderNftType } from '@charmverse/core/prisma-client';
 import { getAlchemyBaseUrl } from '@packages/blockchain/getAlchemyBaseUrl';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import {
-  getBuilderNftContractAddress,
-  getBuilderNftStarterPackContractAddress
-} from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress, getStarterNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { prefix0x } from '@packages/utils/prefix0x';
 import { prettyPrint } from '@packages/utils/strings';
 import SafeApiKit from '@safe-global/api-kit';
@@ -111,8 +108,8 @@ export async function proposePreSeason02OrStarterPackBurnTransactions({
   burnTransactions: ProposedBurnParams[];
   safeAddress: Address;
 }) {
-  const starterPackNftContractAddress = getBuilderNftStarterPackContractAddress('2025-W02')!;
-  const preseason02NftContractAddress = getBuilderNftContractAddress('2025-W02')!;
+  const starterPackNftContractAddress = getStarterNFTContractAddress('2025-W02')!;
+  const preseason02NftContractAddress = getNFTContractAddress('2025-W02')!;
 
   const protocolKitProposer = await Safe.init({
     provider: getAlchemyBaseUrl(chainId),

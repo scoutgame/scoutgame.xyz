@@ -1,8 +1,7 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
-import { getBuilderNftStarterPackContractAddress } from '../constants';
+import { getStarterNFTContractAddress, getArtworkFolderPath } from '../constants';
 
-import { getArtworkFolderPath } from './constants';
 import { getNftTokenUrlPath, imageDomain } from './utils';
 
 /**

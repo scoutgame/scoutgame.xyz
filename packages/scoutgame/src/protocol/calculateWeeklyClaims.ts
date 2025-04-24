@@ -9,7 +9,7 @@ import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
 import { type Address } from 'viem';
 
-import { getBuilderNftContractAddress } from '../builderNfts/constants';
+import { getNFTContractAddress } from '../builderNfts/constants';
 import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
 
 import { scoutProtocolChainId, devTokenDecimals } from './constants';
@@ -52,7 +52,7 @@ export async function calculateWeeklyClaims({
     });
 
   const season = getCurrentSeasonStart(week);
-  const nftContractAddress = getBuilderNftContractAddress(season);
+  const nftContractAddress = getNFTContractAddress(season);
 
   const builderEvents: Prisma.BuilderEventCreateManyInput[] = [];
   const tokenReceipts: Prisma.TokensReceiptCreateManyInput[] = [];

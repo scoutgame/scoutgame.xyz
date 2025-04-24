@@ -6,7 +6,7 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
-import { nftChain, getBuilderNftContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
+import { nftChain, getNFTContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
 import { recordOnchainNftMint } from '@packages/scoutgame/builderNfts/recordOnchainNftMint';
@@ -28,7 +28,7 @@ export async function findAndIndexMissingPurchases({
 
   const startBlockNumber = await getLastBlockOfWeek({ week: weekBeforeSeason, chainId: nftChain.id });
 
-  const contractAddress = getBuilderNftContractAddressForNftType({ nftType, season });
+  const contractAddress = getNFTContractAddressForNftType({ nftType, season });
 
   if (!contractAddress) {
     scoutgameMintsLogger.warn('No contract address found for nft type', { nftType, season });

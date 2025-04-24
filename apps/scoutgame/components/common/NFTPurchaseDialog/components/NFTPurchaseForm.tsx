@@ -21,7 +21,7 @@ import {
   Typography
 } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getBuilderNftContractAddressForNftType, scoutgameEthAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddressForNftType, scoutgameEthAddress } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
@@ -202,7 +202,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
-  const contractAddress = getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }) || '';
+  const contractAddress = getNFTContractAddressForNftType({ nftType: builder.nftType, season }) || '';
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address: address as Address,

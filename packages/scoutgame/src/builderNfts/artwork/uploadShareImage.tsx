@@ -5,9 +5,9 @@ import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
 import { devTokenDecimals } from '../../protocol/constants';
+import { getArtworkFolderPath } from '../constants';
 import { convertCostToPoints } from '../utils';
 
-import { getArtworkFolderPath } from './constants';
 import { generateShareImage } from './generateShareImage';
 import { getShareImagePath, imageDomain } from './utils';
 

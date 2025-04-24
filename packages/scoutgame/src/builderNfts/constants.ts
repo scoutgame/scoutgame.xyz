@@ -9,13 +9,11 @@ import { base } from 'viem/chains';
 
 // something to differentiate between different deployments of a contract
 export const getArtworkFolderPath = (season: string, isStarterNft?: boolean) =>
-  isStarterNft
-    ? getBuilderNftStarterPackContractAddress(season) || 'dev_starter'
-    : getBuilderNftContractAddress(season) || 'dev';
+  isStarterNft ? getStarterNFTContractAddress(season) || 'dev_starter' : getNFTContractAddress(season) || 'dev';
 
 export const nftChain: Chain = base;
 
-export function getBuilderNftContractAddress(season: ISOWeek): Address | undefined {
+export function getNFTContractAddress(season: ISOWeek): Address | undefined {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
@@ -28,7 +26,7 @@ export function getBuilderNftContractAddress(season: ISOWeek): Address | undefin
   return address?.toLowerCase() as Address | undefined;
 }
 
-export function getBuilderNftStarterPackContractAddress(season: ISOWeek): Address | undefined {
+export function getStarterNFTContractAddress(season: ISOWeek): Address | undefined {
   // Convert from ISOWeek "-" to "_" which is used in the env variables
   const seasonName = season.replace('-', '_');
 
@@ -37,16 +35,14 @@ export function getBuilderNftStarterPackContractAddress(season: ISOWeek): Addres
   return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address | undefined;
 }
 
-export function getBuilderNftContractAddressForNftType({
+export function getNFTContractAddressForNftType({
   nftType,
   season
 }: {
   nftType: BuilderNftType;
   season: ISOWeek;
 }): Address | undefined {
-  return nftType === 'starter_pack'
-    ? getBuilderNftStarterPackContractAddress(season)
-    : getBuilderNftContractAddress(season);
+  return nftType === 'starter_pack' ? getStarterNFTContractAddress(season) : getNFTContractAddress(season);
 }
 
 // Actual target wallet - Scoutgame.eth
@@ -58,9 +54,9 @@ export const weeklyRewardableBuilders = 100;
 
 export function isStarterNftContract(contractAddress: string): boolean {
   const starterPackAddresses = [
-    getBuilderNftStarterPackContractAddress('2024-W41'),
-    getBuilderNftStarterPackContractAddress('2025-W02'),
-    getBuilderNftStarterPackContractAddress('2025-W18')
+    getStarterNFTContractAddress('2024-W41'),
+    getStarterNFTContractAddress('2025-W02'),
+    getStarterNFTContractAddress('2025-W18')
   ];
 
   if (starterPackAddresses.includes(contractAddress.toLowerCase() as Address)) {

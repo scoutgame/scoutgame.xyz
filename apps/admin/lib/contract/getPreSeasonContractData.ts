@@ -1,7 +1,7 @@
 import { OPTIMISM_USDC_ADDRESS } from '@packages/blockchain/constants';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
-import { getBuilderNftContractAddress, lastBlockOfPreSeason01 } from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress, lastBlockOfPreSeason01 } from '@packages/scoutgame/builderNfts/constants';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
@@ -38,7 +38,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
 
   if (season === '2024-W41') {
     const builderContractReadonlyApiClient = getNFTReadonlyClient(season);
-    const builderProxyContractReadonlyApiClient = getProxyClient(getBuilderNftContractAddress(season));
+    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season));
 
     const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
       await Promise.all([
@@ -57,14 +57,14 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       currentImplementation: currentImplementation as Address,
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
-      contractAddress: getBuilderNftContractAddress(season) as Address,
+      contractAddress: getNFTContractAddress(season) as Address,
       receiverUsdcBalance: Number(preseason01Sales / BigInt(1e6)),
       nftSalesData,
       chainName: 'optimism'
     };
   } else {
     const builderImplementationContractReadonlyApiClient = getNFTReadonlyClient(season);
-    const builderProxyContractReadonlyApiClient = getProxyClient(getBuilderNftContractAddress(season));
+    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season));
 
     const currentUsdcBalance = await usdcClient.balanceOf({ args: { account: scoutgameDotEth } });
 
@@ -85,7 +85,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       proceedsReceiver: proceedsReceiver as Address,
       totalSupply,
       chainName: 'optimism',
-      contractAddress: getBuilderNftContractAddress(season) as Address,
+      contractAddress: getNFTContractAddress(season) as Address,
       receiverUsdcBalance: Number((currentUsdcBalance - preseason01Sales) / BigInt(1e6)),
       nftSalesData
     };

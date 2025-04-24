@@ -4,7 +4,7 @@ import { getNFTReadonlyClient } from '../../protocol/clients/getNFTClient';
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
-import { nftChain, getBuilderNftContractAddress } from '../constants';
+import { nftChain, getNFTContractAddress } from '../constants';
 
 export async function createBuilderNft({
   avatar,
@@ -26,7 +26,7 @@ export async function createBuilderNft({
   chainId?: number;
   contractAddress?: string;
 }) {
-  contractAddress = contractAddress ?? getBuilderNftContractAddress(season);
+  contractAddress = contractAddress ?? getNFTContractAddress(season);
   const client = getNFTReadonlyClient(season);
   if (!client || !contractAddress) {
     throw new Error(`Dev NFT contract client not found: ${season}, contractAddress: ${contractAddress}`);

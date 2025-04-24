@@ -3,7 +3,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
 
-import { getBuilderNftContractAddress, getBuilderNftStarterPackContractAddress } from '../builderNfts/constants';
+import { getNFTContractAddress, getStarterNFTContractAddress } from '../builderNfts/constants';
 
 // If we are onchain or not in preseason, use base, otherwise use optimism
 export const scoutProtocolChain = base; //  : optimism;

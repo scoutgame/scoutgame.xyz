@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { uploadMetadata } from '@packages/scoutgame/builderNfts/artwork/uploadMetadata';
-import { getBuilderNftContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { uploadArtwork } from '@packages/scoutgame/builderNfts/artwork/uploadArtwork';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
@@ -25,7 +25,7 @@ async function refreshArtworks() {
     }
   });
 
-  console.log('Contract ', getBuilderNftContractAddress(getCurrentSeasonStart()));
+  console.log('Contract ', getNFTContractAddress(getCurrentSeasonStart()));
 
   const totalNfts = builderNfts.length;
 

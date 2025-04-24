@@ -6,7 +6,7 @@ import { attestDeveloperStatusEvent } from '@packages/scoutgameattestations/atte
 import type { Address, Chain } from 'viem';
 
 import { getNFTMinterClient } from '../../protocol/clients/getNFTClient';
-import { nftChain, getBuilderNftContractAddress } from '../constants';
+import { nftChain, getNFTContractAddress } from '../constants';
 import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
 import { createBuilderNft } from './createBuilderNft';
@@ -27,7 +27,7 @@ export async function registerBuilderNFT({
   }
 
   if (!contractAddress) {
-    contractAddress = getBuilderNftContractAddress(season);
+    contractAddress = getNFTContractAddress(season);
     if (!contractAddress) {
       throw new Error('Cannot register builder nft. Missing contract address');
     }

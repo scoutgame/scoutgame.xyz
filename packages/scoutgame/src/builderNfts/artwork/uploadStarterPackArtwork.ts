@@ -5,7 +5,7 @@ import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
 import { devTokenDecimals } from '../../protocol/constants';
-import { getBuilderNftStarterPackContractAddress } from '../constants';
+import { getStarterNFTContractAddress } from '../constants';
 
 import { generateShareImage } from './generateShareImage';
 import { generateNftStarterPackImage } from './generateStarterPackNftImage';
@@ -22,7 +22,7 @@ export async function uploadStarterPackArtwork({
   avatar: string;
   tokenId: bigint | number;
 }) {
-  const contractName = getBuilderNftStarterPackContractAddress(season) || 'default';
+  const contractName = getStarterNFTContractAddress(season) || 'default';
   const imageBuffer = await generateNftStarterPackImage({
     avatar,
     displayName
@@ -56,7 +56,7 @@ export async function uploadStarterPackArtworkCongrats({
   userImage: string;
   builderId: string;
 }) {
-  const contractName = getBuilderNftStarterPackContractAddress(season) || 'default';
+  const contractName = getStarterNFTContractAddress(season) || 'default';
   const activities = await getBuilderActivities({ builderId, limit: 3 });
   const stats = await getBuilderStats(builderId);
   const builderScouts = await getBuilderScouts(builderId);
