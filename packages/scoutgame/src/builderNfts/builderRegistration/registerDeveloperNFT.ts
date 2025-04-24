@@ -11,7 +11,7 @@ import { refreshBuilderNftPrice } from '../refreshBuilderNftPrice';
 
 import { createBuilderNft } from './createBuilderNft';
 
-export async function registerBuilderNFT({
+export async function registerDeveloperNFT({
   builderId,
   season,
   chain = nftChain,

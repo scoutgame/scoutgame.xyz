@@ -1,7 +1,7 @@
 import { Prisma, prisma } from '@charmverse/core/prisma-client';
 
-import { registerBuilderNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderNFT';
-import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderStarterPackNFT';
+import { registerDeveloperNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperNFT';
+import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperStarterNFT';
 import { refreshUserStats } from '@packages/scoutgame/refreshUserStats';
 
 import { log } from '@charmverse/core/log';
@@ -159,9 +159,9 @@ async function seedBuilderNFTs(season: ISOWeek = getCurrentSeasonStart()) {
 
   for (const { builderId, login } of githubUser) {
     log.info(`-- Processing builder ${login}`);
-    const nft = await registerBuilderNFT({ builderId: builderId as string, season });
+    const nft = await registerDeveloperNFT({ builderId: builderId as string, season });
 
-    await registerBuilderStarterPackNFT({ builderId: nft.builderId, season }).catch((error) => {
+    await registerDeveloperStarterNFT({ builderId: nft.builderId, season }).catch((error) => {
       log.error(`Error registering starter pack for ${login}`, { error });
     });
 

@@ -10,7 +10,7 @@ import { nftChain } from '../constants';
 
 import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
 
-export async function registerBuilderStarterPackNFT({
+export async function registerDeveloperStarterNFT({
   builderId,
   season,
   chainId = nftChain.id
@@ -47,11 +47,26 @@ export async function registerBuilderStarterPackNFT({
       path: true,
       displayName: true,
       builderStatus: true
+    },
+    include: {
+      wallets: {
+        where: {
+          primary: true
+        },
+        select: {
+          address: true
+        }
+      }
     }
   });
 
   if (!builder.githubUsers.length) {
     throw new InvalidInputError('Scout profile does not have a github user');
+  }
+  const primaryWallet = builder.wallets[0];
+
+  if (!primaryWallet) {
+    throw new InvalidInputError('Builder does not have a primary wallet');
   }
 
   const client = getNFTReadonlyClient(season);
@@ -84,7 +99,7 @@ export async function registerBuilderStarterPackNFT({
   } else if (!existingStarterPackTokenId) {
     // Register the builder token on the starter pack contract so that it can be minted
     await getStarterNFTMinterClient(season).registerBuilderToken({
-      args: { builderId, builderTokenId: tokenId }
+      args: { builderId, builderTokenId: tokenId, builderWallet: primaryWallet.address }
     });
   }
 

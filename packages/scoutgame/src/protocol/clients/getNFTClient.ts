@@ -1,4 +1,5 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { getNFTContractAddress } from '../../builderNfts/constants';
 import { scoutProtocolChainId } from '../constants';
@@ -25,7 +26,7 @@ export function getNFTMinterClient(season = getCurrentSeasonStart()) {
     throw new Error(`starter pack contract address missing for season ${season}`);
   }
 
-  return new ScoutProtocolStarterNFTImplementationClient({
+  return new ScoutProtocolNFTImplementationClient({
     chain: scoutProtocolChain,
     contractAddress,
     walletClient: getScoutGameNftMinterWallet()

@@ -1,8 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { registerBuilderNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderNFT';
+import { registerDeveloperNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperNFT';
 
 import { starterPackBuilders } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
-import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderStarterPackNFT';
+import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerDeveloperStarterNFT';
 import { nftChain } from '@packages/scoutgame/builderNfts/constants';
 
 // dev preseason 2
@@ -24,7 +24,7 @@ const contractAddress = '0x8f2d2de6e1a7227021ad0ee3095fa3159560f96c';
   });
 
   for (const builder of builders) {
-    await registerBuilderNFT({
+    await registerDeveloperNFT({
       builderId: builder.id,
       season,
       contractAddress,
@@ -32,7 +32,7 @@ const contractAddress = '0x8f2d2de6e1a7227021ad0ee3095fa3159560f96c';
       // imageHostingBaseUrl:
     });
     // if (starterPackBuilders.some((b) => b.fid === builder.farcasterId)) {
-    //   await registerBuilderStarterPackNFT({
+    //   await registerDeveloperStarterNFT({
     //     builderId: builder.id,
     //     season,
     //     contractAddress: starterPackContractAddress
