@@ -34,7 +34,7 @@ export async function getDraftDevelopers({
 
   const developers = await prisma.scout.findMany({
     where: {
-      AND: search
+      OR: search
         ? [
             {
               path: {

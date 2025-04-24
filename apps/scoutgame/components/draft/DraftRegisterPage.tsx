@@ -157,7 +157,7 @@ export async function DraftRegisterPage({
           <Hidden mdUp>
             <DraftInfo isAccordion />
           </Hidden>
-          <SearchDraftDevelopers />
+          <SearchDraftDevelopers defaultSearch={search} />
           <Stack
             flexDirection='row'
             gap={{
