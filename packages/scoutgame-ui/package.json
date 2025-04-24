@@ -37,7 +37,6 @@
     "is-ua-webview": "^1.1.2",
     "puppeteer": "^23.8.0",
     "qrcode": "^1.5.4",
-    "react-dom": "18",
     "recharts": "^2.15.0",
     "siwe": "^3.0.0",
     "sonner": "^1.7.1",
