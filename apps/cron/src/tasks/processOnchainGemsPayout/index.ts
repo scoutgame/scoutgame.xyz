@@ -8,7 +8,9 @@ import { resolveTokenOwnership } from '@packages/scoutgame/protocol/resolveToken
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
-const log = getLogger('cron-process-onchain-gems-payout');
+import { log } from './logger';
+
+export { log };
 
 export async function processOnchainGemsPayout(
   ctx: Context,

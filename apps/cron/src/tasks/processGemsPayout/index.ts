@@ -11,9 +11,10 @@ import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutN
 import { deployMatchupRewards } from './deployMatchupRewards';
 import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards';
 import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
+import { log } from './logger';
 import { processScoutPointsPayout } from './processScoutPointsPayout';
 
-const log = getLogger('cron-process-gems-payout');
+export { log };
 
 export async function processGemsPayout(ctx: Context, { now = DateTime.utc() }: { now?: DateTime } = {}) {
   const week = getLastWeek(now);
