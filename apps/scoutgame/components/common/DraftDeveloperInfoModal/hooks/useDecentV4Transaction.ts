@@ -3,8 +3,8 @@ import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
 import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
-import { decentApiKey } from '@packages/scoutgame/builderNfts/constants';
 import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { decentApiKey } from '@packages/utils/constants';
 import { GET } from '@packages/utils/http';
 import useSWR from 'swr';
 import type { Address } from 'viem';

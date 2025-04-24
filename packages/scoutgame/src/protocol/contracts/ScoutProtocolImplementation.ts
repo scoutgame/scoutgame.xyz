@@ -30,7 +30,7 @@ export type ReadWriteWalletClient<
 >;
 
 export class ScoutProtocolImplementationClient {
-  private contractAddress: Address;
+  public contractAddress: Address;
 
   private publicClient: PublicClient;
 

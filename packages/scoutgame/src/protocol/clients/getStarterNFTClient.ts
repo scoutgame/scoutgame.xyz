@@ -3,7 +3,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { getBuilderNftStarterPackContractAddress } from '../../builderNfts/constants';
-import { scoutProtocolChain } from '../constants';
+import { scoutProtocolChainId } from '../constants';
 import { ScoutProtocolStarterNFTImplementationClient } from '../contracts/ScoutProtocolStarterNFTImplementation';
 
 import { getScoutGameNftMinterWallet } from './getScoutGameNftMinterWallet';
@@ -15,9 +15,8 @@ export function getStarterNFTReadonlyClient(season = getCurrentSeasonStart()) {
     return null;
   }
   return new ScoutProtocolStarterNFTImplementationClient({
-    chain: scoutProtocolChain,
     contractAddress,
-    publicClient: getPublicClient(scoutProtocolChain.id)
+    publicClient: getPublicClient(scoutProtocolChainId)
   });
 }
 
@@ -28,7 +27,6 @@ export function getStarterNFTMinterClient(season = getCurrentSeasonStart()) {
   }
 
   return new ScoutProtocolStarterNFTImplementationClient({
-    chain: scoutProtocolChain,
     contractAddress,
     walletClient: getScoutGameNftMinterWallet()
   });

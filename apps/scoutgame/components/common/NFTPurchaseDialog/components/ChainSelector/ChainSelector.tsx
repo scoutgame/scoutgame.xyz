@@ -24,7 +24,6 @@ function SelectField(
     onSelectChain,
     value,
     address,
-    useScoutToken,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
     helperMessage?: ReactNode;
@@ -32,24 +31,22 @@ function SelectField(
     value: SelectedPaymentOption;
     balance?: string;
     address?: Address;
-    useScoutToken?: boolean;
   },
   ref: Ref<unknown>
 ) {
   const { helperMessage, ...restProps } = props;
 
-  const chainOpts: ChainWithCurrency[] = useScoutToken
-    ? [
-        {
-          chain: scoutProtocolChain,
-          icon: '/images/crypto/base64.png',
-          id: scoutProtocolChain.id,
-          name: 'Base',
-          usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-          currency: 'DEV'
-        }
-      ]
-    : getChainOptions();
+  const chainOpts: ChainWithCurrency[] = [
+    {
+      chain: scoutProtocolChain,
+      icon: '/images/crypto/base64.png',
+      id: scoutProtocolChain.id,
+      name: 'Base',
+      usdcAddress: '',
+      currency: 'DEV'
+    },
+    ...getChainOptions()
+  ];
 
   const { tokens } = useGetTokenBalances({
     address: address as Address,

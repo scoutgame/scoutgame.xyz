@@ -15,6 +15,8 @@ export const cookieName = process.env.AUTH_COOKIE || 'scoutgame-session';
 export const GITHUB_CLIENT_ID = env('GITHUB_CLIENT_ID') ?? process.env.REACT_APP_GITHUB_CLIENT_ID;
 export const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
+export const decentApiKey = env('DECENT_API_KEY') || (process.env.REACT_APP_DECENT_API_KEY as string);
+
 export const whiteListedUserIds = [
   // Matt
   '00c4af4f-b0f8-41e8-b27d-29996d694034',

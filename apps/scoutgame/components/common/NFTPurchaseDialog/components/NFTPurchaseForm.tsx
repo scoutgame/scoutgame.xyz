@@ -484,7 +484,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             onSelectChain={(_paymentOption) => {
               setSelectedPaymentOption(_paymentOption);
             }}
-            useScoutToken={true}
           />
           {hasInsufficientBalance ? (
             <Typography sx={{ mt: 1 }} variant='caption' color='error' align='center'>

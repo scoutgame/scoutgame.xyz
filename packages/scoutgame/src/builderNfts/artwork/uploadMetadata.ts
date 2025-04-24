@@ -2,7 +2,7 @@ import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
 import { getBuilderNftStarterPackContractAddress } from '../constants';
 
-import { builderNftArtworkContractName } from './constants';
+import { getArtworkFolderPath } from './constants';
 import { getNftTokenUrlPath, imageDomain } from './utils';
 
 /**
@@ -108,8 +108,7 @@ export async function uploadMetadata({
   attributes?: { trait_type: string; value: string | number }[];
   starterPack?: boolean;
 }): Promise<string> {
-  let contractName = starterPack ? getBuilderNftStarterPackContractAddress(season) : builderNftArtworkContractName;
-  contractName = contractName || 'default';
+  const contractName = getArtworkFolderPath(season, starterPack);
 
   // Define the S3 path for metadata
   const metadataPath = getNftTokenUrlPath({

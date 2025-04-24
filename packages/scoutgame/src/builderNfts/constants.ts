@@ -2,11 +2,16 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType, Prisma } from '@charmverse/core/prisma';
 import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import { base } from 'viem/chains';
 
-export const decentApiKey = env('DECENT_API_KEY') || (process.env.REACT_APP_DECENT_API_KEY as string);
+// something to differentiate between different deployments of a contract
+export const getArtworkFolderPath = (season: string, isStarterNft?: boolean) =>
+  isStarterNft
+    ? getBuilderNftStarterPackContractAddress(season) || 'dev_starter'
+    : getBuilderNftContractAddress(season) || 'dev';
 
 export const nftChain: Chain = base;
 

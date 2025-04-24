@@ -1,8 +1,9 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
-import { decentApiKey, isStarterNftContract, nftChain } from '@packages/scoutgame/builderNfts/constants';
+import { isStarterNftContract, nftChain } from '@packages/scoutgame/builderNfts/constants';
 import { scoutProtocolChainId, scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { decentApiKey } from '@packages/utils/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';

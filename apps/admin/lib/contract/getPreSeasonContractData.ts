@@ -3,7 +3,7 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
 import { getBuilderNftContractAddress, lastBlockOfPreSeason01 } from '@packages/scoutgame/builderNfts/constants';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
-import { getNftReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
+import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
 import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
@@ -37,7 +37,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
   });
 
   if (season === '2024-W41') {
-    const builderContractReadonlyApiClient = getNftReadonlyClient(season);
+    const builderContractReadonlyApiClient = getNFTReadonlyClient(season);
     const builderProxyContractReadonlyApiClient = getProxyClient(getBuilderNftContractAddress(season));
 
     const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
@@ -63,7 +63,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
       chainName: 'optimism'
     };
   } else {
-    const builderImplementationContractReadonlyApiClient = getNftReadonlyClient(season);
+    const builderImplementationContractReadonlyApiClient = getNFTReadonlyClient(season);
     const builderProxyContractReadonlyApiClient = getProxyClient(getBuilderNftContractAddress(season));
 
     const currentUsdcBalance = await usdcClient.balanceOf({ args: { account: scoutgameDotEth } });

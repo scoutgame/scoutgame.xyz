@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getNftReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
+import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import path from 'node:path';
 import fs from 'node:fs';
 import { validatePreseason01orStarterPackMint } from '@packages/scoutgame/builderNfts/validatePreseason01orStarterPackMint';
@@ -46,7 +46,7 @@ async function checkSavedVsOnchainSupply() {
 
     const totalSold = nft.nftSoldEvents.reduce((acc, val) => acc + val.tokensPurchased, 0);
 
-    const actual = await getNftReadonlyClient(nft.season).totalSupply({
+    const actual = await getNFTReadonlyClient(nft.season).totalSupply({
       args: { tokenId: BigInt(tokenId) }
     });
 

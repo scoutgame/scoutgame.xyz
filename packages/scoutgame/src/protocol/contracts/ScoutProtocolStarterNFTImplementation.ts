@@ -30,7 +30,7 @@ type ReadWriteWalletClient<
 >;
 
 export class ScoutProtocolStarterNFTImplementationClient {
-  private contractAddress: Address;
+  public contractAddress: Address;
 
   private publicClient: PublicClient;
 

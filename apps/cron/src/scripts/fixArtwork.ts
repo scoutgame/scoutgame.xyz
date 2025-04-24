@@ -4,7 +4,7 @@ import { uploadMetadata } from '@packages/scoutgame/builderNfts/artwork/uploadMe
 import { getBuilderNftContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { uploadArtwork } from '@packages/scoutgame/builderNfts/artwork/uploadArtwork';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getNftReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
+import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 
 async function refreshArtworks() {
   const builderNfts = await prisma.builderNft.findMany({
@@ -41,7 +41,7 @@ async function refreshArtworks() {
       log.warn(`No avatar found for builder ${nft.builderId} at index ${i}`);
     }
 
-    const tokenId = await getNftReadonlyClient(getCurrentSeasonStart()).getTokenIdForBuilder({
+    const tokenId = await getNFTReadonlyClient(getCurrentSeasonStart()).getTokenIdForBuilder({
       args: { builderId: nft.builderId }
     });
 
