@@ -38,15 +38,15 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
 
   if (season === '2024-W41') {
     const builderContractReadonlyApiClient = getNFTReadonlyClient(season);
-    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season));
+    const builderProxyContractReadonlyApiClient = getProxyClient(getNFTContractAddress(season)!);
 
     const [currentAdmin, currentMinter, currentImplementation, proceedsReceiver, totalSupply, nftSalesData] =
       await Promise.all([
         builderProxyContractReadonlyApiClient.admin(),
         // builderContractReadonlyApiClient.getMinter(),
-        () => Promise.resolve('' as Address),
+        Promise.resolve('' as Address),
         builderProxyContractReadonlyApiClient.implementation(),
-        () => Promise.resolve(scoutgameDotEth as Address),
+        Promise.resolve(scoutgameDotEth as Address),
         // builderProxyContractReadonlyApiClient.getProceedsReceiver(),
         builderContractReadonlyApiClient.totalBuilderTokens(),
         aggregateNftSalesData({ nftType: 'default', season })
