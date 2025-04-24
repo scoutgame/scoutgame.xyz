@@ -49,14 +49,11 @@ async function HeroSection() {
         }}
         maxWidth='md'
         justifyContent='center'
-        alignItems={{
-          xs: 'center',
-          md: 'flex-end'
-        }}
+        alignItems='center'
       >
         {airdropLive ? (
           <>
-            <Stack gap={2}>
+            <Stack gap={2} alignItems='center'>
               <Typography variant='h4' fontWeight={500} textAlign='center'>
                 Season 1 Begins
               </Typography>
@@ -79,16 +76,18 @@ async function HeroSection() {
                 xs: '100%'
               }}
               justifyContent='center'
+              alignItems='center'
               bgcolor='#1B2653'
+              mt={{
+                xs: 1,
+                md: 7
+              }}
             >
               <Typography variant='h6' textAlign='center'>
                 Happening NOW...
               </Typography>
               <CustomButton variant='contained' color='primary' href='/airdrop'>
                 Claim Airdrop
-              </CustomButton>
-              <CustomButton variant='blue' href='/draft'>
-                Play Scout Game
               </CustomButton>
             </Stack>
           </>
@@ -221,9 +220,6 @@ function FooterSection() {
           gap={2}
         >
           <CustomButton href='/airdrop'>Claim Airdrop</CustomButton>
-          <CustomButton variant='blue' href='/draft'>
-            Play Scout Game
-          </CustomButton>
         </Stack>
       </Stack>
     </Stack>
