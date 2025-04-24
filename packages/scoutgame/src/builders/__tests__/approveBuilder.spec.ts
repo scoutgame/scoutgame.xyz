@@ -11,8 +11,8 @@ jest.unstable_mockModule('../../builderNfts/registration/registerDeveloperNFT', 
   } as never)
 }));
 
-jest.unstable_mockModule('../../builderNfts/registration/registerBuilderStarterPackNFT', () => ({
-  registerBuilderStarterPackNFT: jest.fn()
+jest.unstable_mockModule('../../builderNfts/registration/registerDeveloperStarterNFT', () => ({
+  registerDeveloperStarterNFT: jest.fn()
 }));
 
 jest.unstable_mockModule('../../importReposByUser', () => ({
@@ -22,7 +22,7 @@ jest.unstable_mockModule('../../importReposByUser', () => ({
 const { approveBuilder } = await import('../approveBuilder');
 
 const { registerDeveloperNFT } = await import('../../builderNfts/registration/registerDeveloperNFT');
-const { registerBuilderStarterPackNFT } = await import('../../builderNfts/registration/registerBuilderStarterPackNFT');
+const { registerDeveloperStarterNFT } = await import('../../builderNfts/registration/registerDeveloperStarterNFT');
 
 describe('approveBuilder', () => {
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe('approveBuilder', () => {
     );
 
     // Check starter pack NFT was registered
-    expect(registerBuilderStarterPackNFT).toHaveBeenCalledWith(
+    expect(registerDeveloperStarterNFT).toHaveBeenCalledWith(
       expect.objectContaining({
         builderId: builder.id,
         season: getCurrentSeasonStart()
