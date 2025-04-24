@@ -3,6 +3,7 @@ import { jest } from '@jest/globals';
 import { mockBuilderNft, mockBuilder, mockScout } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 import { prettyPrint } from '@packages/utils/strings';
+import { type Address } from 'viem';
 
 import type { WeeklyClaimsCalculated } from '../calculateWeeklyClaims';
 import { scoutProtocolChainId } from '../constants';
@@ -111,7 +112,7 @@ describe('calculateWeeklyClaims', () => {
     });
 
     const weeklyClaimsData = await calculateWeeklyClaims({
-      nftContractAddress: mockAddress,
+      nftContractAddress: mockAddress as Address,
       week: mockWeek,
       tokenBalances: {
         1: {

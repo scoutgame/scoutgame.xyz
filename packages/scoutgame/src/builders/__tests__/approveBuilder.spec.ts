@@ -4,8 +4,8 @@ import { jest } from '@jest/globals';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder } from '@packages/testing/database';
 
-jest.unstable_mockModule('../../builderNfts/registration/registerBuilderNFT', () => ({
-  registerBuilderNFT: jest.fn().mockResolvedValue({
+jest.unstable_mockModule('../../builderNfts/registration/registerDeveloperNFT', () => ({
+  registerDeveloperNFT: jest.fn().mockResolvedValue({
     id: '1',
     imageUrl: 'https://example.com/image.png'
   } as never)
@@ -21,7 +21,7 @@ jest.unstable_mockModule('../../importReposByUser', () => ({
 
 const { approveBuilder } = await import('../approveBuilder');
 
-const { registerBuilderNFT } = await import('../../builderNfts/registration/registerBuilderNFT');
+const { registerDeveloperNFT } = await import('../../builderNfts/registration/registerDeveloperNFT');
 const { registerBuilderStarterPackNFT } = await import('../../builderNfts/registration/registerBuilderStarterPackNFT');
 
 describe('approveBuilder', () => {
@@ -42,7 +42,7 @@ describe('approveBuilder', () => {
     expect(updatedBuilder?.builderStatus).toBe('approved');
 
     // Check NFT was registered
-    expect(registerBuilderNFT).toHaveBeenCalledWith(
+    expect(registerDeveloperNFT).toHaveBeenCalledWith(
       expect.objectContaining({
         builderId: builder.id,
         season: getCurrentSeasonStart()

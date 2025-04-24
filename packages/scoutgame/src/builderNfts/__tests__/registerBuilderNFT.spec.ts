@@ -14,7 +14,7 @@ jest.unstable_mockModule('../constants', () => ({
 // Import constants after mocking
 const { nftChain, getNFTContractAddress } = await import('../constants');
 
-jest.unstable_mockModule('../clients/builderNftContractReadonlyClient', () => ({
+jest.unstable_mockModule('../../protocol/clients/getNFTClient', () => ({
   getNFTMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
@@ -31,13 +31,13 @@ jest.unstable_mockModule('../registration/createBuilderNft', () => ({
   createBuilderNft: jest.fn()
 }));
 
-const { getNFTMinterClient } = await import('../clients/builderNftContractReadonlyClient');
+const { getNFTMinterClient } = await import('../../protocol/clients/getNFTClient');
 
-const { registerBuilderNFT } = await import('../registration/registerBuilderNFT');
+const { registerDeveloperNFT } = await import('../registration/registerDeveloperNFT');
 
 const { createBuilderNft } = await import('../registration/createBuilderNft');
 
-describe('registerBuilderNFT', () => {
+describe('registerDeveloperNFT', () => {
   const mockSeason = '2025-W02';
   const mockContractAddress = getNFTContractAddress(mockSeason);
 
@@ -57,7 +57,7 @@ describe('registerBuilderNFT', () => {
     });
 
     // Call the function
-    await registerBuilderNFT({
+    await registerDeveloperNFT({
       builderId: builder.id,
       season: mockSeason,
       contractAddress: mockContractAddress
@@ -89,7 +89,7 @@ describe('registerBuilderNFT', () => {
       contractAddress: getNFTContractAddress(mockSeason)
     });
 
-    const result = await registerBuilderNFT({
+    const result = await registerDeveloperNFT({
       builderId: builder.id,
       season: mockSeason,
       contractAddress: getNFTContractAddress(mockSeason)
