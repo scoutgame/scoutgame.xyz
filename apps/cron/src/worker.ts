@@ -14,7 +14,6 @@ import { processNftMints } from './tasks/processNftMints';
 import { processOnchainGemsPayout } from './tasks/processOnchainGemsPayout';
 import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
 import { refreshShareImagesTask } from './tasks/refreshShareImages';
-import { resolveBalanceIssues } from './tasks/resolveBalanceIssues/resolveBalanceIssues';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
 import { syncExternalUserProfilesTask } from './tasks/syncExternalUserProfiles/syncExternalUserProfilesTask';
 import { updateAllBuildersCardActivities } from './tasks/updateBuildersCardActivity';
@@ -73,8 +72,6 @@ addTask('/alert-low-wallet-gas-balance', alertLowWalletGasBalance);
 addTask('/update-builder-card-activity', updateAllBuildersCardActivities);
 
 addTask('/resync-nft-purchases', resolveMissingPurchasesTask);
-
-addTask('/resolve-balance-issues', resolveBalanceIssues);
 
 addTask('/refresh-nft-share-images', refreshShareImagesTask);
 

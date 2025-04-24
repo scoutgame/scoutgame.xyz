@@ -41,11 +41,6 @@ cron:
     # Every day at midnight
     schedule: '0 0 * * *'
 
-  - name: 'resolve-balance-issues'
-    url: '/resolve-balance-issues'
-    # Every day at midnight
-    schedule: '0 0 * * *'
-
   - name: 'refresh-nft-share-images'
     url: '/refresh-nft-share-images'
     # Every 1 hour
