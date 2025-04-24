@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "npx next dev",
+    "start": "npx next dev --turbopack",
     "build": "npx next build",
     "start:prod": "npx next start",
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts --maxWorkers=2",

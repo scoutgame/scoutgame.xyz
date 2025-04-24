@@ -1,6 +1,7 @@
 import withSerwistInit from '@serwist/next';
 
 const withSerwist = withSerwistInit({
+  disable: process.env.NODE_ENV !== 'production',
   swSrc: 'app/sw.ts',
   swDest: 'public/sw.js',
   swUrl: '/sw.js'
@@ -25,6 +26,14 @@ const nextConfig = {
   },
   productionBrowserSourceMaps: true,
   assetPrefix: useCDN ? 'https://cdn.charmverse.io' : undefined,
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js'
+      }
+    }
+  },
   webpack(_config) {
     // Fix for: "Module not found: Can't resolve 'canvas'"
     // _config.resolve.alias.canvas = false;
