@@ -1,9 +1,5 @@
 import { jest } from '@jest/globals';
-import {
-  getBuilderNftStarterPackContractAddress,
-  isStarterNftContract,
-  isPreseason01Contract
-} from '@packages/scoutgame/builderNfts/constants';
+import { getStarterNFTContractAddress, isStarterNftContract } from '@packages/scoutgame/builderNfts/constants';
 import { renderHook, waitFor } from '@testing-library/react';
 import { v4 as uuid } from 'uuid';
 import { baseSepolia, optimism } from 'viem/chains';
@@ -24,22 +20,26 @@ const mockScoutTokenAddress = '0xa5a71c88478894077650f27dd7b14fdabe3a03f0';
 const mockScoutProtocolChainId = baseSepolia.id;
 
 jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
-  optimismUsdcContractAddress: mockOptimismUsdcContractAddress,
-  builderNftChain: mockBuilderNftChain,
-  getDecentApiKey: jest.fn().mockImplementation(() => '123'),
-  isStarterNftContract,
-  isPreseason01Contract,
-  nftChain: mockBuilderNftChain
+  nftChain: mockBuilderNftChain,
+  isStarterNftContract
+}));
+
+jest.unstable_mockModule('@packages/utils/constants', () => ({
+  decentApiKey: '123'
+}));
+
+jest.unstable_mockModule('@packages/blockchain/constants', () => ({
+  OPTIMISM_USDC_ADDRESS: mockOptimismUsdcContractAddress
 }));
 
 jest.unstable_mockModule('@packages/scoutgame/protocol/constants', () => ({
   scoutProtocolChainId: mockScoutProtocolChainId,
-  scoutTokenErc20ContractAddress: jest.fn().mockImplementation(() => mockScoutTokenAddress)
+  devTokenContractAddress: mockScoutTokenAddress
 }));
 
 describe('useDecentTransaction', () => {
   const address = '0xc0ffee254729296a45a3885639AC7E10F9d54979';
-  const tokenAddress = '0x0b2c639c533813f4aa9d7837caf62653d097ff85';
+  const tokenAddress = mockScoutTokenAddress; // '0x0b2c639c533813f4aa9d7837caf62653d097ff85';
 
   it('should always use a contract address that was provided', async () => {
     const { GET: mockGET } = await import('@packages/utils/http');
@@ -61,8 +61,7 @@ describe('useDecentTransaction', () => {
       sourceChainId: 10,
       sourceToken: tokenAddress,
       tokensToPurchase: BigInt(1),
-      contractAddress,
-      useScoutToken: false
+      contractAddress
     };
 
     const { result } = renderHook(() => useDecentTransaction(testInput));
@@ -76,13 +75,13 @@ describe('useDecentTransaction', () => {
         arguments: {
           sender: testInput.address,
           srcToken: testInput.sourceToken,
-          dstToken: mockOptimismUsdcContractAddress,
+          dstToken: mockScoutTokenAddress,
           srcChainId: testInput.sourceChainId,
-          dstChainId: mockBuilderNftChain.id,
+          dstChainId: mockScoutProtocolChainId,
           slippage: 1,
           actionType: 'nft-mint',
           actionConfig: {
-            chainId: mockBuilderNftChain.id,
+            chainId: mockScoutProtocolChainId,
             contractAddress,
             cost: {
               amount: '1n',
@@ -115,7 +114,7 @@ describe('useDecentTransaction', () => {
 
     const { useDecentTransaction, _appendDecentQueryParams } = await import('../useDecentTransaction');
 
-    const contractAddress = getBuilderNftStarterPackContractAddress('2025-W02')!;
+    const contractAddress = getStarterNFTContractAddress('2025-W02')!;
 
     const testInput: DecentTransactionProps = {
       address,
@@ -125,7 +124,6 @@ describe('useDecentTransaction', () => {
       sourceToken: tokenAddress,
       tokensToPurchase: BigInt(1),
       contractAddress,
-      useScoutToken: false,
       scoutId
     };
 
@@ -140,13 +138,13 @@ describe('useDecentTransaction', () => {
         arguments: {
           sender: testInput.address,
           srcToken: testInput.sourceToken,
-          dstToken: mockOptimismUsdcContractAddress,
+          dstToken: mockScoutTokenAddress,
           srcChainId: testInput.sourceChainId,
-          dstChainId: mockBuilderNftChain.id,
+          dstChainId: mockScoutProtocolChainId,
           slippage: 1,
           actionType: 'nft-mint',
           actionConfig: {
-            chainId: mockBuilderNftChain.id,
+            chainId: mockScoutProtocolChainId,
             contractAddress,
             cost: {
               amount: '1n',

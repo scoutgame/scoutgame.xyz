@@ -4,15 +4,15 @@ import { jest } from '@jest/globals';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder } from '@packages/testing/database';
 
-jest.unstable_mockModule('../../builderNfts/builderRegistration/registerBuilderNFT', () => ({
-  registerBuilderNFT: jest.fn().mockResolvedValue({
+jest.unstable_mockModule('../../builderNfts/registration/registerDeveloperNFT', () => ({
+  registerDeveloperNFT: jest.fn().mockResolvedValue({
     id: '1',
     imageUrl: 'https://example.com/image.png'
   } as never)
 }));
 
-jest.unstable_mockModule('../../builderNfts/builderRegistration/registerBuilderStarterPackNFT', () => ({
-  registerBuilderStarterPackNFT: jest.fn()
+jest.unstable_mockModule('../../builderNfts/registration/registerDeveloperStarterNFT', () => ({
+  registerDeveloperStarterNFT: jest.fn()
 }));
 
 jest.unstable_mockModule('../../importReposByUser', () => ({
@@ -21,10 +21,8 @@ jest.unstable_mockModule('../../importReposByUser', () => ({
 
 const { approveBuilder } = await import('../approveBuilder');
 
-const { registerBuilderNFT } = await import('../../builderNfts/builderRegistration/registerBuilderNFT');
-const { registerBuilderStarterPackNFT } = await import(
-  '../../builderNfts/builderRegistration/registerBuilderStarterPackNFT'
-);
+const { registerDeveloperNFT } = await import('../../builderNfts/registration/registerDeveloperNFT');
+const { registerDeveloperStarterNFT } = await import('../../builderNfts/registration/registerDeveloperStarterNFT');
 
 describe('approveBuilder', () => {
   beforeEach(() => {
@@ -44,7 +42,7 @@ describe('approveBuilder', () => {
     expect(updatedBuilder?.builderStatus).toBe('approved');
 
     // Check NFT was registered
-    expect(registerBuilderNFT).toHaveBeenCalledWith(
+    expect(registerDeveloperNFT).toHaveBeenCalledWith(
       expect.objectContaining({
         builderId: builder.id,
         season: getCurrentSeasonStart()
@@ -52,7 +50,7 @@ describe('approveBuilder', () => {
     );
 
     // Check starter pack NFT was registered
-    expect(registerBuilderStarterPackNFT).toHaveBeenCalledWith(
+    expect(registerDeveloperStarterNFT).toHaveBeenCalledWith(
       expect.objectContaining({
         builderId: builder.id,
         season: getCurrentSeasonStart()

@@ -18,7 +18,6 @@ import { getMatchingNFTPurchaseEvent } from './getMatchingNFTPurchaseEvent';
 import type { MintNFTParams } from './mintNFT';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
-import { convertCostToPoints } from './utils';
 
 export async function recordNftMint(
   params: Omit<MintNFTParams, 'nftType' | 'scoutId'> & {

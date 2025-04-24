@@ -1,7 +1,7 @@
 // // useProposeSetImplementation.ts
 // import type {} from '@safe-global/api-kit';
 // import { getSafeApiClient } from '@packages/blockchain/getSafeApiClient';
-// import { getScoutProtocolAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
+// import { scoutProtocolAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 // import SafeApiKit, { ProposeTransactionProps } from '@safe-global/api-kit';
 // import { ethers } from 'ethers';
 // import { useState, useCallback } from 'react';
@@ -65,7 +65,7 @@
 //         // Create the Safe transaction
 //         const safeTransaction = safeApiClient.proposeTransaction({
 //           safeTransactionData: {
-//             to: getScoutProtocolAddress(),
+//             to: scoutProtocolAddress(),
 //             value: '0',
 //             data,
 
@@ -131,7 +131,7 @@
 // // useProposeSetImplementation.ts
 // import type {} from '@safe-global/api-kit';
 // import { getSafeApiClient } from '@packages/blockchain/getSafeApiClient';
-// import { getScoutProtocolAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
+// import { scoutProtocolAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 // import SafeApiKit, { ProposeTransactionProps } from '@safe-global/api-kit';
 // import { ethers } from 'ethers';
 // import { useState, useCallback } from 'react';
@@ -195,7 +195,7 @@
 //         // Create the Safe transaction
 //         const safeTransaction = safeApiClient.proposeTransaction({
 //           safeTransactionData: {
-//             to: getScoutProtocolAddress(),
+//             to: scoutProtocolAddress,
 //             value: '0',
 //             data,
 

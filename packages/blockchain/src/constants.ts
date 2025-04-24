@@ -6,7 +6,6 @@ export const AIRDROP_SAFE_WALLET = '0xCca0eeC96541fdC2D5C2D8BC93eeda7D3d2E7Aa4';
 export const optimismTokenDecimals = 18;
 export const optimismTokenAddress = '0x4200000000000000000000000000000000000042';
 
-export const DEV_TOKEN_ADDRESS = '0x047157cffb8841a64db93fd4e29fa3796b78466c' as Address;
 export const OPTIMISM_USDC_ADDRESS = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85';
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 export const MIN_DEV_BID = 100;

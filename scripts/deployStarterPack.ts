@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { registerBuilderStarterPackNFT } from '@packages/scoutgame/builderNfts/builderRegistration/registerBuilderStarterPackNFT';
+import { registerDeveloperStarterNFT } from '@packages/scoutgame/builderNfts/registration/registerDeveloperStarterNFT';
 
 async function deployStarterPack() {
   const builders = await prisma.scout.findMany({
@@ -32,7 +32,7 @@ async function deployStarterPack() {
   console.log('starter nfts', starterNfts.length);
   console.log('builders to mint starter pack nft', builders.length);
   for (const builder of builders) {
-    await registerBuilderStarterPackNFT({
+    await registerDeveloperStarterNFT({
       builderId: builder.id,
       season: getCurrentSeasonStart()
     });

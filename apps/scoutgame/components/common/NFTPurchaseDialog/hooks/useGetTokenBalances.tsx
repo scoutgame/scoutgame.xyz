@@ -3,8 +3,8 @@ import type { UserTokenInfo } from '@decent.xyz/box-common';
 import { ChainId } from '@decent.xyz/box-common';
 import type { UserBalanceArgs } from '@decent.xyz/box-hooks';
 import { useUsersBalances } from '@decent.xyz/box-hooks';
-import { DEV_TOKEN_ADDRESS, NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import { devTokenContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { useEffect, useRef, useState } from 'react';
 import type { Address } from 'viem';
 import { createPublicClient, http, parseAbi } from 'viem';
@@ -19,16 +19,14 @@ const erc20Abi = parseAbi([
   'function name() view returns (string)'
 ]);
 
-export function useGetTokenBalances({ address, useScoutToken }: { address: Address; useScoutToken?: boolean }) {
+export function useGetTokenBalances({ address }: { address: Address }) {
   const [scoutTokenInfo, setScoutTokenInfo] = useState<UserTokenInfo | null>(null);
-  const fetchScoutTokenInfoRef = useRef(false);
+  const fetchDevTokenInfoRef = useRef(false);
 
   // Regular token fetching logic
   const args: UserBalanceArgs = {
-    chainId: useScoutToken ? scoutProtocolChainId : ChainId.OPTIMISM,
-    selectChains: useScoutToken
-      ? [scoutProtocolChainId]
-      : arrayUtils.uniqueValues(getChainOptions().map((opt) => opt.id)),
+    chainId: scoutProtocolChainId,
+    selectChains: arrayUtils.uniqueValues([scoutProtocolChainId, ...getChainOptions().map((opt) => opt.id)]),
     address,
     enable: !!address,
     selectTokens: arrayUtils.uniqueValues(
@@ -46,9 +44,8 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
   const result = useUsersBalances(args);
 
   useEffect(() => {
-    async function fetchScoutTokenInfo() {
+    async function fetchDevTokenInfo() {
       try {
-        const scoutToken = DEV_TOKEN_ADDRESS;
         // Create a public client for Base chain
         const client = createPublicClient({
           chain: base,
@@ -58,23 +55,23 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
         // Fetch token information from the contract
         const [balance, decimals, symbol, name] = await Promise.all([
           client.readContract({
-            address: scoutToken as Address,
+            address: devTokenContractAddress,
             abi: erc20Abi,
             functionName: 'balanceOf',
             args: [address]
           }),
           client.readContract({
-            address: scoutToken as Address,
+            address: devTokenContractAddress,
             abi: erc20Abi,
             functionName: 'decimals'
           }),
           client.readContract({
-            address: scoutToken as Address,
+            address: devTokenContractAddress,
             abi: erc20Abi,
             functionName: 'symbol'
           }),
           client.readContract({
-            address: scoutToken as Address,
+            address: devTokenContractAddress,
             abi: erc20Abi,
             functionName: 'name'
           })
@@ -84,7 +81,7 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
         const balanceFloat = Number(balance) / 10 ** Number(decimals);
 
         setScoutTokenInfo({
-          address: scoutToken,
+          address: devTokenContractAddress,
           chainId: scoutProtocolChainId,
           name,
           symbol,
@@ -94,16 +91,16 @@ export function useGetTokenBalances({ address, useScoutToken }: { address: Addre
           isNative: false,
           logo: '/images/crypto/base64.png'
         });
-        fetchScoutTokenInfoRef.current = true;
+        fetchDevTokenInfoRef.current = true;
       } catch (error) {
         return null;
       }
     }
 
-    if (!fetchScoutTokenInfoRef.current && useScoutToken) {
-      fetchScoutTokenInfo();
+    if (!fetchDevTokenInfoRef.current) {
+      fetchDevTokenInfo();
     }
-  }, [address, useScoutToken]);
+  }, [address]);
 
   return {
     ...result,

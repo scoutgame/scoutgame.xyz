@@ -3,19 +3,12 @@
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import type { ReadWriteWalletClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
-import { ScoutProtocolImplementationClient } from '@packages/scoutgame/builderNfts/clients/protocol/wrappers/ScoutProtocolImplementation';
 import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
-import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
-import {
-  getScoutProtocolAddress,
-  scoutProtocolChain,
-  scoutProtocolChainId,
-  devTokenDecimals
-} from '@packages/scoutgame/protocol/constants';
+import { getProtocolWriteClient } from '@packages/scoutgame/protocol/clients/getProtocolWriteClient';
+import { scoutProtocolChainId, devTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import type { ReadWriteWalletClient } from '@packages/scoutgame/protocol/contracts/ScoutProtocolImplementation';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -104,10 +97,7 @@ function PointsClaimScreenComponent({
       });
     }
 
-    const protocolClient = new ScoutProtocolImplementationClient({
-      chain: scoutProtocolChain,
-      contractAddress: getScoutProtocolAddress(),
-      publicClient: getPublicClient(scoutProtocolChain.id),
+    const protocolClient = getProtocolWriteClient({
       walletClient: walletClient as ReadWriteWalletClient
     });
 

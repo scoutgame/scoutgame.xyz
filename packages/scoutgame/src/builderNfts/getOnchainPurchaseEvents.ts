@@ -8,12 +8,7 @@ import type { BuilderScoutedEvent } from './accounting/getBuilderScoutedEvents';
 import { getBuilderScoutedEvents } from './accounting/getBuilderScoutedEvents';
 import type { TransferSingleEvent } from './accounting/getTransferSingleEvents';
 import { getTransferSingleEvents } from './accounting/getTransferSingleEvents';
-import {
-  nftChain,
-  getBuilderNftContractAddress,
-  getBuilderNftStarterPackContractAddress,
-  validMintNftPurchaseEvent
-} from './constants';
+import { nftChain, getNFTContractAddress, getStarterNFTContractAddress, validMintNftPurchaseEvent } from './constants';
 
 type SimplifiedGroupedEvent = {
   scoutId: string;
@@ -50,8 +45,8 @@ export async function getOnchainPurchaseEvents({
   fromBlock?: number;
   toBlock?: number;
 }) {
-  const contractAddress = getBuilderNftContractAddress(season);
-  const starterPackContractAddress = getBuilderNftStarterPackContractAddress(season);
+  const contractAddress = getNFTContractAddress(season);
+  const starterPackContractAddress = getStarterNFTContractAddress(season);
   if (!contractAddress || !starterPackContractAddress) {
     log.error(`Contract address not found for season ${season}`);
     return [];

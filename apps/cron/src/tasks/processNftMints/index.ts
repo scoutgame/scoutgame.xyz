@@ -1,6 +1,6 @@
 import { TransactionStatus, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getBuilderNftContractAddress } from '@packages/scoutgame/builderNfts/constants';
+import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { handlePendingTransaction } from '@packages/scoutgame/builderNfts/handlePendingTransaction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 
@@ -8,7 +8,7 @@ export async function processNftMints() {
   const pending = await prisma.pendingNftTransaction.findMany({
     where: {
       status: TransactionStatus.pending,
-      contractAddress: getBuilderNftContractAddress(getCurrentSeasonStart()), // based on the season
+      contractAddress: getNFTContractAddress(getCurrentSeasonStart()), // based on the season
       createdAt: {
         // Only process transactions that are at least 1 minute old in the case user is already in the app
         lte: new Date(Date.now() - 1000 * 65) // 65 seconds ago

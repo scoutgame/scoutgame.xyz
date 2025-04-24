@@ -1,6 +1,7 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
-import { builderNftArtworkContractName } from './constants';
+import { getArtworkFolderPath } from '../constants';
+
 import { generateArtwork } from './generateArtwork';
 import { getNftTokenUrlPath, imageDomain } from './utils';
 
@@ -25,7 +26,7 @@ export async function uploadArtwork({
     season,
     tokenId: Number(tokenId),
     filename: 'artwork.png',
-    contractName: builderNftArtworkContractName || 'default'
+    contractName: getArtworkFolderPath(season)
   });
 
   await uploadFileToS3({

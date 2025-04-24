@@ -2,8 +2,8 @@ import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Address } from 'viem';
 
-import { getBuilderNftContractReadonlyClient } from './clients/builderNftContractReadonlyClient';
-import { getBuilderNftStarterPackReadonlyClient } from './clients/starterPack/getBuilderContractStarterPackReadonlyClient';
+import { getNFTReadonlyClient } from '../protocol/clients/getNFTClient';
+import { getStarterNFTReadonlyClient } from '../protocol/clients/getStarterNFTClient';
 
 export async function refreshScoutNftBalance({
   wallet,
@@ -28,8 +28,8 @@ export async function refreshScoutNftBalance({
     }
   });
 
-  const starterPackContract = getBuilderNftStarterPackReadonlyClient(season);
-  const regularContract = getBuilderNftContractReadonlyClient(season);
+  const starterPackContract = getStarterNFTReadonlyClient(season);
+  const regularContract = getNFTReadonlyClient(season);
 
   if (!starterPackContract || !regularContract) {
     throw new Error('Missing contract client');

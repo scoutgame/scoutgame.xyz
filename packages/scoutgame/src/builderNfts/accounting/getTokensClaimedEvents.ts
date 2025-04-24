@@ -3,7 +3,7 @@ import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
 import { getAddress, parseEventLogs } from 'viem';
 
-import { getScoutProtocolAddress, protocolStartBlock, scoutProtocolChainId } from '../../protocol/constants';
+import { scoutProtocolAddress, protocolStartBlock, scoutProtocolChainId } from '../../protocol/constants';
 
 import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
@@ -54,7 +54,7 @@ export function getTokensClaimedEvents({
   return getPublicClient(scoutProtocolChainId)
     .getLogs({
       ...convertBlockRange({ fromBlock, toBlock }),
-      address: getScoutProtocolAddress(),
+      address: scoutProtocolAddress,
       event: tokensClaimedAbi,
       args: { user: getAddress(address) }
     })

@@ -1,7 +1,7 @@
 import { MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
-import { NULL_EVM_ADDRESS, DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
-import { scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
+import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
+import { devTokenContractAddress, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
@@ -20,42 +20,36 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
 
 function SelectField(
   {
-    useTestnets,
     balance,
     onSelectChain,
     value,
     address,
-    useScoutToken,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
     helperMessage?: ReactNode;
     onSelectChain: (opt: SelectedPaymentOption) => void;
     value: SelectedPaymentOption;
-    useTestnets?: boolean;
     balance?: string;
     address?: Address;
-    useScoutToken?: boolean;
   },
   ref: Ref<unknown>
 ) {
   const { helperMessage, ...restProps } = props;
 
-  const chainOpts: ChainWithCurrency[] = useScoutToken
-    ? [
-        {
-          chain: scoutProtocolChain,
-          icon: '/images/crypto/base64.png',
-          id: scoutProtocolChain.id,
-          name: 'Base',
-          usdcAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-          currency: 'DEV'
-        }
-      ]
-    : getChainOptions({ useTestnets });
+  const chainOpts: ChainWithCurrency[] = [
+    {
+      chain: scoutProtocolChain,
+      icon: '/images/crypto/base64.png',
+      id: scoutProtocolChain.id,
+      name: 'Base',
+      usdcAddress: '',
+      currency: 'DEV'
+    },
+    ...getChainOptions()
+  ];
 
   const { tokens } = useGetTokenBalances({
-    address: address as Address,
-    useScoutToken
+    address: address as Address
   });
 
   return (
@@ -99,7 +93,7 @@ function SelectField(
             (_chain.currency === 'ETH'
               ? t.address === NULL_EVM_ADDRESS
               : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase() ||
-                t.address?.toLowerCase() === DEV_TOKEN_ADDRESS.toLowerCase())
+                t.address?.toLowerCase() === devTokenContractAddress.toLowerCase())
         );
         let _balance = Number(_tokenBalanceInfo?.balance);
 

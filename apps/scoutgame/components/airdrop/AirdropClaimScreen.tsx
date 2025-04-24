@@ -2,8 +2,9 @@
 
 import { log } from '@charmverse/core/log';
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
-import { AIRDROP_SAFE_WALLET, DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
+import { AIRDROP_SAFE_WALLET } from '@packages/blockchain/constants';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
@@ -153,7 +154,7 @@ export function AirdropClaimScreen() {
         }
 
         donationTxHash = await walletClient.writeContract({
-          address: DEV_TOKEN_ADDRESS,
+          address: devTokenContractAddress,
           abi: erc20Abi,
           functionName: 'transfer',
           args: [AIRDROP_SAFE_WALLET, donationAmount]

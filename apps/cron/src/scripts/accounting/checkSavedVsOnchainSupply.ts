@@ -1,10 +1,10 @@
-import { log } from "@charmverse/core/log";
-import { prisma } from "@charmverse/core/prisma-client";
-import { getPreSeasonTwoBuilderNftContractReadonlyClient } from "@packages/scoutgame/builderNfts/clients/preseason02/getPreSeasonTwoBuilderNftContractReadonlyClient";
-import path from "node:path";
-import fs from "node:fs"
-import { validatePreseason01orStarterPackMint } from "@packages/scoutgame/builderNfts/validatePreseason01orStarterPackMint";
-import { nftChain } from "@packages/scoutgame/builderNfts/constants";
+import { log } from '@charmverse/core/log';
+import { prisma } from '@charmverse/core/prisma-client';
+import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
+import path from 'node:path';
+import fs from 'node:fs';
+import { validatePreseason01orStarterPackMint } from '@packages/scoutgame/builderNfts/validatePreseason01orStarterPackMint';
+import { nftChain } from '@packages/scoutgame/builderNfts/constants';
 
 async function checkSavedVsOnchainSupply() {
   const builderNfts = await prisma.builderNft.findMany({
@@ -20,42 +20,43 @@ async function checkSavedVsOnchainSupply() {
       nftSoldEvents: {
         orderBy: {
           createdAt: 'desc'
-        },
+        }
       },
-     builder: true
+      builder: true
     },
     orderBy: {
       tokenId: 'asc'
     }
   });
 
-  const tokenDiffDir = path.resolve('token-diffs')
+  const tokenDiffDir = path.resolve('token-diffs');
 
   try {
-    fs.readdirSync(tokenDiffDir)
+    fs.readdirSync(tokenDiffDir);
   } catch {
-    fs.mkdirSync(tokenDiffDir)
+    fs.mkdirSync(tokenDiffDir);
   }
 
   for (let i = 0; i < builderNfts.length; i++) {
-
     const nft = builderNfts[i];
 
-    log.info(`Checking tokenId ${nft.tokenId}  (${i + 1} / ${builderNfts.length})`)
+    log.info(`Checking tokenId ${nft.tokenId}  (${i + 1} / ${builderNfts.length})`);
 
     const tokenId = nft.tokenId;
 
     const totalSold = nft.nftSoldEvents.reduce((acc, val) => acc + val.tokensPurchased, 0);
 
-    const actual = await getPreSeasonTwoBuilderNftContractReadonlyClient().totalSupply({args: {tokenId: BigInt(tokenId)}});
+    const actual = await getNFTReadonlyClient(nft.season).totalSupply({
+      args: { tokenId: BigInt(tokenId) }
+    });
 
     if (Number(actual) !== totalSold) {
       log.error(`Token ${tokenId} // ${nft.builder.path} error: Onchain supply ${actual} vs saved ${totalSold}`);
     }
 
-    log.info(`Validating ${nft.nftSoldEvents.length} events`)
+    log.info(`Validating ${nft.nftSoldEvents.length} events`);
 
-    let invalidTransactions: {id: string; txHash: string}[] = [];
+    let invalidTransactions: { id: string; txHash: string }[] = [];
 
     for (const purchaseEvent of nft.nftSoldEvents) {
       const validatedMint = await validatePreseason01orStarterPackMint({
@@ -64,27 +65,34 @@ async function checkSavedVsOnchainSupply() {
       });
 
       if (!validatedMint) {
-        log.error(`Tx ${purchaseEvent.txHash} with ${purchaseEvent.tokensPurchased} tokens is not a valid mint`)
+        log.error(`Tx ${purchaseEvent.txHash} with ${purchaseEvent.tokensPurchased} tokens is not a valid mint`);
         invalidTransactions.push({
           id: purchaseEvent.id,
           txHash: purchaseEvent.txHash
-        })
+        });
       }
     }
 
     if (invalidTransactions.length || Number(actual) !== totalSold) {
-      log.error(`Token ${tokenId} // ${nft.builder.path} error: Onchain supply ${actual} vs saved ${totalSold}, ${invalidTransactions.length} invalid txs`);
-      fs.writeFileSync(path.join(tokenDiffDir, `tokenId-${tokenId}.json`), JSON.stringify({
-        nft,
-        stats: {
-          onchain: actual,
-          recorded: totalSold,
-          diff: totalSold - Number(actual),
-          invalidTransactions
-        }
-      }, null, 2))
+      log.error(
+        `Token ${tokenId} // ${nft.builder.path} error: Onchain supply ${actual} vs saved ${totalSold}, ${invalidTransactions.length} invalid txs`
+      );
+      fs.writeFileSync(
+        path.join(tokenDiffDir, `tokenId-${tokenId}.json`),
+        JSON.stringify(
+          {
+            nft,
+            stats: {
+              onchain: actual,
+              recorded: totalSold,
+              diff: totalSold - Number(actual),
+              invalidTransactions
+            }
+          },
+          null,
+          2
+        )
+      );
     }
-        
   }
-
 }

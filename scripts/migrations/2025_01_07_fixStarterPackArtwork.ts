@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { uploadStarterPackArtwork } from '@packages/scoutgame/builderNfts/artwork/uploadStarterPackArtwork';
 
-import { starterPackBuilders } from '@packages/scoutgame/builderNfts/builderRegistration/starterPack/starterPackBuilders';
+import { starterPackBuilders } from '@packages/scoutgame/builderNfts/registration/starterPack/starterPackBuilders';
 import { getCurrentSeasonStart } from '@packages/scoutgame/dates/utils';
 
 async function fixStarterPackArtwork() {
@@ -17,11 +17,11 @@ async function fixStarterPackArtwork() {
       path: true,
       builderNfts: {
         where: {
-          nftType: "starter_pack",
+          nftType: 'starter_pack',
           season
         }
       }
-    },
+    }
   });
 
   for (const builder of builders) {
@@ -32,7 +32,7 @@ async function fixStarterPackArtwork() {
         avatar: builder.avatar as string,
         tokenId: builder.builderNfts[0].tokenId
       });
-  
+
       await prisma.builderNft.update({
         where: {
           id: builder.builderNfts[0].id

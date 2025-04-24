@@ -4,8 +4,8 @@ import type { Season } from '@packages/dates/config';
 import { getCurrentSeasonStart, getSeasonConfig } from '@packages/dates/utils';
 import { isTestEnv } from '@packages/utils/env';
 
-import { registerBuilderNFT } from '../builderNfts/builderRegistration/registerBuilderNFT';
-import { registerBuilderStarterPackNFT } from '../builderNfts/builderRegistration/registerBuilderStarterPackNFT';
+import { registerDeveloperNFT } from '../builderNfts/registration/registerDeveloperNFT';
+import { registerDeveloperStarterNFT } from '../builderNfts/registration/registerDeveloperStarterNFT';
 import { sendNotifications } from '../notifications/sendNotifications';
 
 export async function approveBuilder({
@@ -35,7 +35,7 @@ export async function approveBuilder({
     log.info('Do not create NFT for developer during draft season', { userId: builderId, season });
   } else {
     // Register an NFT for the builder
-    const builderNft = await registerBuilderNFT({
+    const builderNft = await registerDeveloperNFT({
       builderId,
       season
     });
@@ -43,7 +43,7 @@ export async function approveBuilder({
     builderNftImage = builderNft?.imageUrl;
 
     // register starter pack NFT as well
-    await registerBuilderStarterPackNFT({
+    await registerDeveloperStarterNFT({
       builderId,
       season
     });

@@ -20,20 +20,14 @@ import {
   ToggleButtonGroup,
   Typography
 } from '@mui/material';
-import { DEV_TOKEN_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getBuilderNftContractReadonlyClient } from '@packages/scoutgame/builderNfts/clients/builderNftContractReadonlyClient';
-import { getBuilderNftStarterPackReadonlyClient } from '@packages/scoutgame/builderNfts/clients/starterPack/getBuilderContractStarterPackReadonlyClient';
-import {
-  getBuilderNftContractAddressForNftType,
-  scoutgameEthAddress,
-  useTestnets
-} from '@packages/scoutgame/builderNfts/constants';
-import { purchaseWithPointsAction } from '@packages/scoutgame/builderNfts/purchaseWithPointsAction';
+import { getNFTContractAddressForNftType, scoutgameEthAddress } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
+import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
+import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import {
-  getScoutProtocolBuilderNFTReadonlyContract,
+  devTokenContractAddress,
   scoutProtocolChainId,
   devTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
@@ -108,7 +102,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { switchChainAsync } = useSwitchChain();
   const { data: nftStats } = useGetBuilderNftStats({ builderId });
 
-  const builderContractReadonlyApiClient = getBuilderNftContractReadonlyClient();
+  const builderContractReadonlyApiClient = getNFTReadonlyClient();
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({
     chainId: scoutProtocolChainId,
@@ -139,42 +133,14 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     notEnoughPoints: user && user.currentBalance && user.currentBalance < purchaseCost / BigInt(10 ** devTokenDecimals)
   };
 
-  const {
-    isExecuting: isExecutingPointsPurchase,
-    hasSucceeded: hasPurchasedWithPoints,
-    executeAsync: purchaseWithPoints
-  } = useAction(purchaseWithPointsAction, {
-    onError({ error, input }) {
-      if (error.serverError?.message?.includes('The Transaction may not be processed on a block yet')) {
-        log.warn('The Transaction may not be processed on a block yet', {
-          input,
-          error
-        });
-        toast.warning(
-          'Could not confirm transaction. Please allow a few minutes for Scout Game to process the transaction.'
-        );
-      } else {
-        scoutgameMintsLogger.error('Error purchasing with points', { input, userId: user?.id });
-        log.error('Error purchasing with points', { input, error });
-        setSubmitError(error.serverError?.message || 'Something went wrong');
-      }
-    },
-    onExecute() {
-      setSubmitError(null);
-    },
-    onSuccess() {
-      toast.success('NFT purchase with points was successful');
-    }
-  });
-
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
       const _price =
         builder.nftType === 'starter_pack'
-          ? await getBuilderNftStarterPackReadonlyClient()?.getTokenPurchasePrice({
+          ? await getStarterNFTReadonlyClient()?.getTokenPurchasePrice({
               args: { amount: BigInt(amount) }
             })
-          : await getScoutProtocolBuilderNFTReadonlyContract().getTokenPurchasePrice({
+          : await getNFTReadonlyClient()?.getTokenPurchasePrice({
               args: { amount: BigInt(amount), tokenId: BigInt(_builderTokenId) }
             });
       if (_price) {
@@ -190,8 +156,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     try {
       setIsFetchingPrice(true);
       _builderTokenId = await (builder.nftType === 'starter_pack'
-        ? getBuilderNftStarterPackReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } })
-        : getScoutProtocolBuilderNFTReadonlyContract().getTokenIdForBuilder({ args: { builderId } }));
+        ? getStarterNFTReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } })
+        : getNFTReadonlyClient()?.getTokenIdForBuilder({ args: { builderId } }));
 
       // builderTokenId is undefined if there is no nft contract for the season
       if (_builderTokenId) {
@@ -224,7 +190,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   }, [tokensToBuy, builderTokenId, refreshAsk]);
 
   useEffect(() => {
-    if (!builderId || isExecutingTransaction || isExecutingPointsPurchase || isSavingDecentTransaction) {
+    if (!builderId || isExecutingTransaction || isSavingDecentTransaction) {
       return;
     }
 
@@ -232,11 +198,11 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
     const interval = setInterval(refreshTokenData, PRICE_POLLING_INTERVAL);
     return () => clearInterval(interval);
-  }, [builderId, tokensToBuy, isExecutingTransaction, isExecutingPointsPurchase, isSavingDecentTransaction]);
+  }, [builderId, tokensToBuy, isExecutingTransaction, isSavingDecentTransaction]);
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
-  const contractAddress = getBuilderNftContractAddressForNftType({ nftType: builder.nftType, season }) || '';
+  const contractAddress = getNFTContractAddressForNftType({ nftType: builder.nftType, season }) || '';
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentTransaction({
     address: address as Address,
@@ -246,7 +212,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     contractAddress,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: getCurrencyContract(selectedPaymentOption),
-    useScoutToken: true,
     tokensToPurchase: BigInt(tokensToBuy)
   });
 
@@ -258,7 +223,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       selectedPaymentOption.currency === 'USDC'
         ? selectedChainCurrency
         : selectedPaymentOption.currency === 'DEV'
-          ? DEV_TOKEN_ADDRESS
+          ? devTokenContractAddress
           : null,
     owner: address as Address,
     spender: decentTransactionInfo?.tx.to as Address
@@ -323,12 +288,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     });
   };
 
-  const isLoading =
-    isSavingDecentTransaction ||
-    isLoadingDecentSdk ||
-    isFetchingPrice ||
-    isExecutingTransaction ||
-    isExecutingPointsPurchase;
+  const isLoading = isSavingDecentTransaction || isLoadingDecentSdk || isFetchingPrice || isExecutingTransaction;
 
   const displayedBalance = !balanceInfo
     ? undefined
@@ -356,7 +316,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     typeof allowance === 'bigint' &&
     allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
 
-  if (hasPurchasedWithPoints || purchaseSuccess) {
+  if (purchaseSuccess) {
     return <SuccessView builder={builder} />;
   }
 
@@ -515,12 +475,10 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           <BlockchainSelect
             value={selectedPaymentOption}
             balance={displayedBalance}
-            useTestnets={useTestnets}
             address={address}
             onSelectChain={(_paymentOption) => {
               setSelectedPaymentOption(_paymentOption);
             }}
-            useScoutToken={true}
           />
           {hasInsufficientBalance ? (
             <Typography sx={{ mt: 1 }} variant='caption' color='error' align='center'>
@@ -553,7 +511,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         </Typography>
       )}
 
-      {!approvalRequired || isExecutingTransaction || isExecutingPointsPurchase || isFetchingPrice ? (
+      {!approvalRequired || isExecutingTransaction || isFetchingPrice ? (
         <LoadingButton
           loading={isLoading}
           size='large'
@@ -566,7 +524,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             !scoutgameEthAddress ||
             isSavingDecentTransaction ||
             isExecutingTransaction ||
-            isExecutingPointsPurchase ||
             addressError
           }
           data-test='purchase-button'
