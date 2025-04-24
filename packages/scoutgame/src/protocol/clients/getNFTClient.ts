@@ -1,9 +1,10 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 
 import { getBuilderNftContractAddress } from '../../builderNfts/constants';
-import { getScoutGameNftMinterWallet } from '../../builderNfts/getScoutGameNftMinterWallet';
 import { scoutProtocolChainId } from '../constants';
 import { ScoutProtocolNFTImplementationClient } from '../contracts/ScoutProtocolNFTImplementation';
+
+import { getScoutGameNftMinterWallet } from './getScoutGameNftMinterWallet';
 
 export function getNFTReadonlyClient(season = getCurrentSeasonStart()) {
   const contractAddress = getBuilderNftContractAddress(season);

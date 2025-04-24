@@ -21,11 +21,7 @@ import {
   Typography
 } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import {
-  getBuilderNftContractAddressForNftType,
-  scoutgameEthAddress,
-  useTestnets
-} from '@packages/scoutgame/builderNfts/constants';
+import { getBuilderNftContractAddressForNftType, scoutgameEthAddress } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
@@ -216,7 +212,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     contractAddress,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: getCurrencyContract(selectedPaymentOption),
-    useScoutToken: true,
     tokensToPurchase: BigInt(tokensToBuy)
   });
 
@@ -485,7 +480,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           <BlockchainSelect
             value={selectedPaymentOption}
             balance={displayedBalance}
-            useTestnets={useTestnets}
             address={address}
             onSelectChain={(_paymentOption) => {
               setSelectedPaymentOption(_paymentOption);

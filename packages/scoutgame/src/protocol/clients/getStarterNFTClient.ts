@@ -2,10 +2,11 @@ import { log } from '@charmverse/core/log';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { getBuilderNftStarterPackContractAddress } from '../../constants';
-import { getScoutGameNftMinterWallet } from '../../getScoutGameNftMinterWallet';
+import { getBuilderNftStarterPackContractAddress } from '../../builderNfts/constants';
 import { scoutProtocolChain } from '../constants';
 import { ScoutProtocolStarterNFTImplementationClient } from '../contracts/ScoutProtocolStarterNFTImplementation';
+
+import { getScoutGameNftMinterWallet } from './getScoutGameNftMinterWallet';
 
 export function getStarterNFTReadonlyClient(season = getCurrentSeasonStart()) {
   const contractAddress = getBuilderNftStarterPackContractAddress(season);

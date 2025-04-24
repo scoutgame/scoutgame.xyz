@@ -20,7 +20,6 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
 
 function SelectField(
   {
-    useTestnets,
     balance,
     onSelectChain,
     value,
@@ -31,7 +30,6 @@ function SelectField(
     helperMessage?: ReactNode;
     onSelectChain: (opt: SelectedPaymentOption) => void;
     value: SelectedPaymentOption;
-    useTestnets?: boolean;
     balance?: string;
     address?: Address;
     useScoutToken?: boolean;
@@ -51,7 +49,7 @@ function SelectField(
           currency: 'DEV'
         }
       ]
-    : getChainOptions({ useTestnets });
+    : getChainOptions();
 
   const { tokens } = useGetTokenBalances({
     address: address as Address,

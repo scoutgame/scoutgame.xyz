@@ -1,7 +1,7 @@
-import { optimismUsdcContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import type { Address } from 'viem';
 import { optimism } from 'viem/chains';
 
+import { OPTIMISM_USDC_ADDRESS } from '../constants';
 import { getPublicClient } from '../getPublicClient';
 
 const USDC_TRANSFER_EVENT_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
@@ -27,7 +27,7 @@ export async function getUsdcTransactions({
   const publicClient = getPublicClient(optimism.id);
 
   const logs = await publicClient.getContractEvents({
-    address: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
+    address: OPTIMISM_USDC_ADDRESS,
     eventName: 'Transfer',
     abi: [
       {

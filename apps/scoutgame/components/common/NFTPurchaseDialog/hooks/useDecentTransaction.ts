@@ -1,12 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
-import {
-  getDecentApiKey,
-  isStarterNftContract,
-  nftChain,
-  optimismUsdcContractAddress
-} from '@packages/scoutgame/builderNfts/constants';
+import { decentApiKey, isStarterNftContract, nftChain } from '@packages/scoutgame/builderNfts/constants';
 import { scoutProtocolChainId, scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
@@ -23,7 +18,6 @@ export type DecentTransactionProps = {
   tokensToPurchase: bigint;
   scoutId?: string;
   contractAddress: string;
-  useScoutToken?: boolean;
 };
 
 const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
@@ -50,8 +44,6 @@ export async function prepareDecentTransaction({
 }: {
   txConfig: BoxActionRequest;
 }): Promise<BoxActionResponse> {
-  const DECENT_API_KEY = getDecentApiKey();
-
   const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';
 
   const response = await GET<BoxActionResponse>(
@@ -59,7 +51,7 @@ export async function prepareDecentTransaction({
     undefined,
     {
       headers: {
-        'x-api-key': DECENT_API_KEY
+        'x-api-key': decentApiKey
       },
       credentials: 'omit'
     }
@@ -76,25 +68,24 @@ export function useDecentTransaction({
   builderTokenId,
   scoutId,
   tokensToPurchase,
-  contractAddress,
-  useScoutToken
+  contractAddress
 }: DecentTransactionProps) {
   const isStarterContract = isStarterNftContract(contractAddress);
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
-    dstToken: useScoutToken ? scoutTokenContractAddress : optimismUsdcContractAddress,
+    dstToken: scoutTokenContractAddress,
     srcChainId: sourceChainId,
-    dstChainId: useScoutToken ? scoutProtocolChainId : nftChain.id,
+    dstChainId: scoutProtocolChainId,
     slippage: 1,
     actionType: ActionType.NftMint,
     actionConfig: {
-      chainId: useScoutToken ? scoutProtocolChainId : optimism.id,
+      chainId: scoutProtocolChainId,
       contractAddress,
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
-        tokenAddress: useScoutToken ? scoutTokenContractAddress : optimismUsdcContractAddress
+        tokenAddress: scoutTokenContractAddress
       },
       signature: isStarterContract ? transferableStarterNftMintSignature : transferableNftMintSignature,
       args: isStarterContract

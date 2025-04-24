@@ -1,5 +1,4 @@
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { useTestnets } from '@packages/scoutgame/builderNfts/constants';
 import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
@@ -97,7 +96,7 @@ export function getCurrencyContract({ currency, chainId }: SelectedPaymentOption
     return scoutTokenContractAddress;
   }
 
-  return (getChainOptions({ useTestnets }).find((chain) => chain.id === chainId)?.usdcAddress || '') as Address;
+  return (getChainOptions().find((chain) => chain.id === chainId)?.usdcAddress || '') as Address;
 }
 
 export function getChainOptions(opts: { useTestnets?: boolean } = { useTestnets: false }): ChainWithCurrency[] {

@@ -10,6 +10,8 @@ export const scoutProtocolChain = base; //  : optimism;
 
 export const scoutTokenContractAddress = '0x047157cffb8841a64db93fd4e29fa3796b78466c' as Address;
 
+export const builderSmartContractMinterKey = process.env.BUILDER_SMART_CONTRACT_MINTER_PRIVKEY as string;
+
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
 export const devTokenDecimals = 18;

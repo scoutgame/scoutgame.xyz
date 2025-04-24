@@ -1,10 +1,7 @@
+import { OPTIMISM_USDC_ADDRESS } from '@packages/blockchain/constants';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
-import {
-  getBuilderNftContractAddress,
-  lastBlockOfPreSeason01,
-  usdcOptimismMainnetContractAddress
-} from '@packages/scoutgame/builderNfts/constants';
+import { getBuilderNftContractAddress, lastBlockOfPreSeason01 } from '@packages/scoutgame/builderNfts/constants';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
 import { getNftReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
@@ -31,7 +28,7 @@ export async function getPreSeasonContractData({ season }: { season: ISOWeek }):
   const usdcClient = new UsdcErc20ABIClient({
     chain: optimism,
     publicClient: getPublicClient(optimism.id),
-    contractAddress: usdcOptimismMainnetContractAddress
+    contractAddress: OPTIMISM_USDC_ADDRESS
   });
 
   const preseason01Sales = await usdcClient.balanceOf({

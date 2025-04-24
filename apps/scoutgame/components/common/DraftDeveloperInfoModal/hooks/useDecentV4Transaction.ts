@@ -3,7 +3,7 @@ import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
 import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
-import { getDecentApiKey } from '@packages/scoutgame/builderNfts/constants';
+import { decentApiKey } from '@packages/scoutgame/builderNfts/constants';
 import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { GET } from '@packages/utils/http';
 import useSWR from 'swr';
@@ -36,8 +36,6 @@ async function prepareDecentV4Transaction({
 }: {
   txConfig: BoxActionRequest;
 }): Promise<BoxActionResponse | ErrorResponse> {
-  const DECENT_API_KEY = getDecentApiKey();
-
   const basePath = 'https://box-v4.api.decent.xyz/api/getBoxAction';
 
   const response = await GET<BoxActionResponse | ErrorResponse>(
@@ -45,7 +43,7 @@ async function prepareDecentV4Transaction({
     undefined,
     {
       headers: {
-        'x-api-key': DECENT_API_KEY
+        'x-api-key': decentApiKey
       },
       credentials: 'omit'
     }
