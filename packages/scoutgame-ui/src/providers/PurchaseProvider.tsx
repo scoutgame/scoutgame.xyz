@@ -4,8 +4,7 @@ import { checkDecentTransactionAction } from '@packages/scoutgame/builderNfts/ch
 import { nftChain } from '@packages/scoutgame/builderNfts/constants';
 import { saveDecentTransactionAction } from '@packages/scoutgame/builderNfts/saveDecentTransactionAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { scoutTokenDecimalsMultiplier } from '@packages/scoutgame/protocol/constants';
-import { scoutTokenContractAddress } from '@packages/scoutgame/src/protocol/constants';
+import { devTokenDecimalsMultiplier, devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { useAction } from 'next-safe-action/hooks';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
@@ -158,11 +157,11 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
                 sourceChainTxHash: _data
               },
               purchaseInfo: {
-                quotedPrice: Number(BigInt(purchaseCost) / scoutTokenDecimalsMultiplier),
+                quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier),
                 tokenAmount: tokensToBuy,
                 builderContractAddress: contractAddress,
                 tokenId: Number(builderTokenId),
-                quotedPriceCurrency: scoutTokenContractAddress
+                quotedPriceCurrency: devTokenContractAddress
               }
             });
 

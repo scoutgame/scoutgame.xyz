@@ -1,11 +1,11 @@
 import { ItemType } from '@opensea/seaport-js/lib/constants';
-import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 
 import { treasuryAddress } from '../builderNfts/constants';
 
 import { getSeaport } from './seaport';
 
-export const nftListingErc20Address = scoutTokenContractAddress;
+export const nftListingErc20Address = devTokenContractAddress;
 
 export async function recordSeaportListing({
   sellerWallet,

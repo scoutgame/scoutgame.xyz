@@ -9,7 +9,7 @@ import {
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { scoutTokenDecimalsMultiplier } from '../protocol/constants';
+import { devTokenDecimalsMultiplier } from '../protocol/constants';
 
 import { getNFTContractAddress, getStarterNFTContractAddress } from './constants';
 import { recordNftMint } from './recordNftMint';
@@ -109,7 +109,7 @@ export async function handlePendingTransaction({
 
       const pendingTxContractAddress = pendingTx.contractAddress.toLowerCase();
 
-      const pointsValue = Number(pendingTx.targetAmountReceived / scoutTokenDecimalsMultiplier);
+      const pointsValue = Number(pendingTx.targetAmountReceived / devTokenDecimalsMultiplier);
 
       if (
         pendingTxContractAddress === scoutProtocolBuilderNftContractAddress?.toLowerCase() ||

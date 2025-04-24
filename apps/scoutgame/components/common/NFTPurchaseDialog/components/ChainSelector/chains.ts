@@ -1,5 +1,5 @@
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import {
@@ -93,7 +93,7 @@ export function getCurrencyContract({ currency, chainId }: SelectedPaymentOption
   }
 
   if (currency === 'DEV') {
-    return scoutTokenContractAddress;
+    return devTokenContractAddress;
   }
 
   return (getChainOptions().find((chain) => chain.id === chainId)?.usdcAddress || '') as Address;

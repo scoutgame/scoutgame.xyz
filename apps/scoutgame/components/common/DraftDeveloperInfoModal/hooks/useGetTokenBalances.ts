@@ -2,7 +2,7 @@ import env from '@beam-australia/react-env';
 import { log } from '@charmverse/core/log';
 import { ChainId } from '@decent.xyz/box-common';
 import { BASE_USDC_ADDRESS, NULL_EVM_ADDRESS, OPTIMISM_USDC_ADDRESS } from '@packages/blockchain/constants';
-import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { useEffect, useState } from 'react';
 import type { Address } from 'viem';
 
@@ -64,7 +64,7 @@ function filterAndMapTokens(tokens: DecentTokenResponse[]): TokenBalance[] {
     NULL_EVM_ADDRESS.toLowerCase(),
     BASE_USDC_ADDRESS.toLowerCase(),
     OPTIMISM_USDC_ADDRESS.toLowerCase(),
-    scoutTokenContractAddress.toLowerCase()
+    devTokenContractAddress.toLowerCase()
   ];
 
   return tokens
@@ -93,7 +93,7 @@ export function useGetTokenBalances({ address }: { address: Address }) {
           fetchTokenBalances({
             address,
             chainId: ChainId.BASE,
-            additionalTokens: [NULL_EVM_ADDRESS, BASE_USDC_ADDRESS, scoutTokenContractAddress]
+            additionalTokens: [NULL_EVM_ADDRESS, BASE_USDC_ADDRESS, devTokenContractAddress]
           }),
           fetchTokenBalances({
             address,

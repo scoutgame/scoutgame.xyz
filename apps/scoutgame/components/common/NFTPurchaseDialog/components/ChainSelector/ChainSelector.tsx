@@ -1,7 +1,7 @@
 import { MenuItem, Select, Stack, Typography } from '@mui/material';
 import type { SelectProps } from '@mui/material/Select';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { scoutTokenContractAddress, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
+import { devTokenContractAddress, scoutProtocolChain } from '@packages/scoutgame/protocol/constants';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
@@ -94,7 +94,7 @@ function SelectField(
             (_chain.currency === 'ETH'
               ? t.address === NULL_EVM_ADDRESS
               : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase() ||
-                t.address?.toLowerCase() === scoutTokenContractAddress.toLowerCase())
+                t.address?.toLowerCase() === devTokenContractAddress.toLowerCase())
         );
         let _balance = Number(_tokenBalanceInfo?.balance);
 

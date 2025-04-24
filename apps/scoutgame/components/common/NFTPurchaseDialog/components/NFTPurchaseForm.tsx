@@ -27,7 +27,7 @@ import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokens
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import {
-  scoutTokenContractAddress,
+  devTokenContractAddress,
   scoutProtocolChainId,
   devTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
@@ -223,7 +223,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       selectedPaymentOption.currency === 'USDC'
         ? selectedChainCurrency
         : selectedPaymentOption.currency === 'DEV'
-          ? scoutTokenContractAddress
+          ? devTokenContractAddress
           : null,
     owner: address as Address,
     spender: decentTransactionInfo?.tx.to as Address

@@ -3,7 +3,7 @@ import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
 import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
-import { scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { decentApiKey } from '@packages/utils/constants';
 import { GET } from '@packages/utils/http';
 import useSWR from 'swr';
@@ -62,7 +62,7 @@ export function useDecentV4Transaction({
   const decentAPIParams: UseBoxActionArgs = {
     sender: address,
     srcToken: sourceToken,
-    dstToken: scoutTokenContractAddress,
+    dstToken: devTokenContractAddress,
     srcChainId: sourceChainId,
     dstChainId: base.id,
     slippage: 1,

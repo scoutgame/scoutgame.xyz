@@ -2,7 +2,7 @@ import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
 import { isStarterNftContract, nftChain } from '@packages/scoutgame/builderNfts/constants';
-import { scoutProtocolChainId, scoutTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { scoutProtocolChainId, devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { decentApiKey } from '@packages/utils/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
@@ -75,7 +75,7 @@ export function useDecentTransaction({
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,
-    dstToken: scoutTokenContractAddress,
+    dstToken: devTokenContractAddress,
     srcChainId: sourceChainId,
     dstChainId: scoutProtocolChainId,
     slippage: 1,
@@ -86,7 +86,7 @@ export function useDecentTransaction({
       cost: {
         amount: bigIntToString(paymentAmountOut) as any,
         isNative: false,
-        tokenAddress: scoutTokenContractAddress
+        tokenAddress: devTokenContractAddress
       },
       signature: isStarterContract ? transferableStarterNftMintSignature : transferableNftMintSignature,
       args: isStarterContract
