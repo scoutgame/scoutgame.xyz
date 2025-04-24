@@ -46,9 +46,7 @@ export async function registerDeveloperStarterNFT({
       avatar: true,
       path: true,
       displayName: true,
-      builderStatus: true
-    },
-    include: {
+      builderStatus: true,
       wallets: {
         where: {
           primary: true
@@ -66,7 +64,7 @@ export async function registerDeveloperStarterNFT({
   const primaryWallet = builder.wallets[0];
 
   if (!primaryWallet) {
-    throw new InvalidInputError('Builder does not have a primary wallet');
+    throw new InvalidInputError('Developer does not have a primary wallet');
   }
 
   const client = getNFTReadonlyClient(season);
@@ -80,7 +78,7 @@ export async function registerDeveloperStarterNFT({
   });
 
   if (!tokenId) {
-    throw new InvalidInputError('Builder NFT not found');
+    throw new InvalidInputError('Developer NFT not found');
   }
 
   const starterPackClient = getStarterNFTReadonlyClient(season);
@@ -95,7 +93,7 @@ export async function registerDeveloperStarterNFT({
     .catch(() => null);
 
   if (existingStarterPackTokenId && existingStarterPackTokenId !== tokenId) {
-    throw new InvalidInputError('Builder NFT already registered on starter pack contract but with a different tokenId');
+    throw new InvalidInputError('Developer NFT already registered on starter contract but with a different tokenId');
   } else if (!existingStarterPackTokenId) {
     // Register the builder token on the starter pack contract so that it can be minted
     await getStarterNFTMinterClient(season).registerBuilderToken({
@@ -114,7 +112,7 @@ export async function registerDeveloperStarterNFT({
     chainId
   });
 
-  log.info(`Registered builder NFT starter pack for builder`, {
+  log.info(`Registered developer NFT starter pack for builder`, {
     userId: builderId,
     builderPath: builder.path,
     tokenId,

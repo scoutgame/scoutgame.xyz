@@ -92,7 +92,7 @@ export async function registerDeveloperNFT({
 
   if (!tokenId) {
     log.info(`Registering builder token for builder`, { userId: builderId });
-    await minterClient.registerBuilderToken({ args: { builderId, account: primaryWallet.address } });
+    await minterClient.registerBuilderToken({ args: { builderId, account: primaryWallet.address as Address } });
 
     tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } });
 
