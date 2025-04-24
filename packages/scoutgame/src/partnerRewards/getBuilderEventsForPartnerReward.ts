@@ -1,5 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getWeekStartEnd, getDateFromISOWeek } from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 
 export async function getBuilderEventsForPartnerRewards({
@@ -9,18 +8,13 @@ export async function getBuilderEventsForPartnerRewards({
   week: string;
   bonusPartner: BonusPartner;
 }) {
-  const { start, end } = getWeekStartEnd(getDateFromISOWeek(week).toJSDate());
-
   const events = await prisma.githubEvent.findMany({
     where: {
       builderEvent: {
-        bonusPartner
+        bonusPartner,
+        week
       },
       type: 'merged_pull_request',
-      completedAt: {
-        gte: start.toJSDate(),
-        lt: end.toJSDate()
-      },
       githubUser: {
         builder: {
           deletedAt: null,

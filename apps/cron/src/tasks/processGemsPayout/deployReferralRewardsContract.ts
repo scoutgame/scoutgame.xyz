@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
 import { optimismTokenAddress, optimismTokenDecimals } from '@packages/blockchain/constants';
@@ -6,6 +5,8 @@ import { getCurrentSeason } from '@packages/dates/utils';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
+
+import { log } from './logger';
 
 export async function deployReferralChampionRewardsContract({ week }: { week: string }) {
   const currentSeason = getCurrentSeason(week);

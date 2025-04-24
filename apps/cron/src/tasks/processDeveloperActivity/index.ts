@@ -11,6 +11,7 @@ import { log } from './logger';
 import { processDeveloperActivity } from './processDeveloperActivity';
 
 export { log };
+
 type ProcessPullRequestsOptions = {
   createdAfter?: Date;
   season?: Season;

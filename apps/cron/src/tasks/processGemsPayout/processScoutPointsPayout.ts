@@ -7,7 +7,7 @@ import { resolveTokenOwnershipForBuilder } from '@packages/scoutgame/protocol/re
 import { v4 } from 'uuid';
 import { type Address } from 'viem';
 
-const log = getLogger('cron-process-scout-points-payout');
+import { log } from './logger';
 
 export async function processScoutPointsPayout({
   builderId,
