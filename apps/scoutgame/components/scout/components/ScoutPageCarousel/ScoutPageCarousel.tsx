@@ -36,7 +36,7 @@ export function ScoutPageCarousel({
           infoCard={
             <Box maxWidth='25em' margin='0 auto'>
               <Typography align='center' gutterBottom>
-                A Starter Developer Card costs only 20 Scout Points for 1/10 the rewards of a Standard Developer Card.
+                A Starter Developer Card costs only 100 DEV Tokens for 1/10 the rewards of a Standard Developer Card.
               </Typography>
             </Box>
           }
@@ -48,7 +48,7 @@ export function ScoutPageCarousel({
           }))}
           infoCard={
             <Typography align='center' gutterBottom>
-              Earn Scout Points by purchasing Developer Cards.
+              Earn DEV Tokens by purchasing Developer Cards.
               <br />
               When your Developer contributes, both of you will be rewarded!
             </Typography>

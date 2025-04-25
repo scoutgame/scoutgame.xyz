@@ -55,7 +55,7 @@ export function DeveloperStats({
             <Typography fontWeight={500} variant='h4' color='orange.main'>
               {builderPoints || 0}
             </Typography>
-            <Image src='/images/icons/binoculars-orange.svg' width='25' height='25' alt='scout game icon' />
+            <Image src='/images/dev-token-logo.png' width='25' height='25' alt='DEV token' />
           </Stack>
           <Typography fontWeight={500} variant='h4' color='orange.main' align='center'>
             {totalScouts || 0} Scouts

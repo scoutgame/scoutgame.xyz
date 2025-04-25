@@ -145,7 +145,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
       ) : (
         <Button
           color='primary'
-          variant='contained'
+          variant='outlined'
           fullWidth
           onClick={() => {
             if (!address && !connectModalOpen) {
@@ -157,7 +157,8 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
           disabled={!address}
           loading={isLoading || isExecuting}
         >
-          {listingPrice} &nbsp; DEV
+          {listingPrice} &nbsp;
+          <img src='/images/dev-token-logo.png' alt='DEV' width={18} height={18} />
         </Button>
       )}
     </Stack>

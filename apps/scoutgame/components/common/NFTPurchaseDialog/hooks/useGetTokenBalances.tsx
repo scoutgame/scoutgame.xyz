@@ -1,23 +1,15 @@
 import { arrayUtils } from '@charmverse/core/utilities';
 import type { UserTokenInfo } from '@decent.xyz/box-common';
-import { ChainId } from '@decent.xyz/box-common';
 import type { UserBalanceArgs } from '@decent.xyz/box-hooks';
 import { useUsersBalances } from '@decent.xyz/box-hooks';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { devTokenContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { useEffect, useRef, useState } from 'react';
 import type { Address } from 'viem';
-import { createPublicClient, http, parseAbi } from 'viem';
+import { createPublicClient, erc20Abi, http } from 'viem';
 import { base } from 'viem/chains';
 
 import { chainOptionsMainnet, getChainOptions } from '../components/ChainSelector/chains';
-
-const erc20Abi = parseAbi([
-  'function balanceOf(address owner) view returns (uint256)',
-  'function decimals() view returns (uint8)',
-  'function symbol() view returns (string)',
-  'function name() view returns (string)'
-]);
 
 export function useGetTokenBalances({ address }: { address: Address }) {
   const [scoutTokenInfo, setScoutTokenInfo] = useState<UserTokenInfo | null>(null);
@@ -53,39 +45,22 @@ export function useGetTokenBalances({ address }: { address: Address }) {
         });
 
         // Fetch token information from the contract
-        const [balance, decimals, symbol, name] = await Promise.all([
-          client.readContract({
-            address: devTokenContractAddress,
-            abi: erc20Abi,
-            functionName: 'balanceOf',
-            args: [address]
-          }),
-          client.readContract({
-            address: devTokenContractAddress,
-            abi: erc20Abi,
-            functionName: 'decimals'
-          }),
-          client.readContract({
-            address: devTokenContractAddress,
-            abi: erc20Abi,
-            functionName: 'symbol'
-          }),
-          client.readContract({
-            address: devTokenContractAddress,
-            abi: erc20Abi,
-            functionName: 'name'
-          })
-        ]);
+        const balance = await client.readContract({
+          address: devTokenContractAddress,
+          abi: erc20Abi,
+          functionName: 'balanceOf',
+          args: [address]
+        });
 
         // Calculate the human-readable balance
-        const balanceFloat = Number(balance) / 10 ** Number(decimals);
+        const balanceFloat = Number(balance) / 10 ** 18;
 
         setScoutTokenInfo({
           address: devTokenContractAddress,
           chainId: scoutProtocolChainId,
-          name,
-          symbol,
-          decimals: Number(decimals),
+          name: 'Scout Protocol Token',
+          symbol: 'DEV',
+          decimals: 18,
           balance: BigInt(balance.toString()),
           balanceFloat,
           isNative: false,

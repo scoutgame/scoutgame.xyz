@@ -61,7 +61,7 @@ export function BuilderRewardsTable({
           <TableCell align='left'>DEVELOPER</TableCell>
           <TableCell align='center'>CARDS HELD</TableCell>
           <TableCell align='center'>RANK</TableCell>
-          <TableCell align='right'>POINTS</TableCell>
+          <TableCell align='right'>TOKENS</TableCell>
         </TableRow>
       </StyledTableHead>
       <StyledTableBody
@@ -76,7 +76,7 @@ export function BuilderRewardsTable({
         ))}
         <TableRow>
           <TableCell colSpan={3}>
-            <Typography>Total Scout Points</Typography>
+            <Typography>Total DEV Tokens</Typography>
           </TableCell>
           <TableCell align='right'>
             <PointsCell points={totalPoints} />

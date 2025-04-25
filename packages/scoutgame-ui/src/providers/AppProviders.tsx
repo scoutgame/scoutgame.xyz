@@ -1,4 +1,4 @@
-import 'server-only';
+'use client';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -7,7 +7,6 @@ import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import { PurchaseProvider } from '@packages/scoutgame-ui/providers/PurchaseProvider';
 import { SnackbarProvider } from '@packages/scoutgame-ui/providers/SnackbarContext';
 import { UserProvider } from '@packages/scoutgame-ui/providers/UserProvider';
-import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
@@ -18,13 +17,17 @@ import { SWRProvider } from './SwrProvider';
 import { WagmiProvider } from './WagmiProvider';
 
 // This is required to provider the MUI theme otherwise the defaultProps are not applied
-export async function AppProviders({ children, user }: { children: ReactNode; user: SessionUser | null }) {
-  const headersList = await headers();
+export function AppProviders({
+  children,
+  cookieValue,
+  user
+}: {
+  children: ReactNode;
+  cookieValue?: string;
+  user: SessionUser | null;
+}) {
   return (
-    <WagmiProvider
-      cookie={headersList.get('cookie') ?? ''}
-      walletConnectProjectId={process.env.REACT_APP_WALLETCONNECT_PROJECTID}
-    >
+    <WagmiProvider cookie={cookieValue} walletConnectProjectId={process.env.REACT_APP_WALLETCONNECT_PROJECTID}>
       <AppRouterCacheProvider options={{ key: 'css' }}>
         <ThemeProvider theme={theme}>
           <CssBaseline enableColorScheme />

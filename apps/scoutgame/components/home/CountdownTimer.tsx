@@ -1,7 +1,7 @@
 'use client';
 
 import { Stack, Typography } from '@mui/material';
-import { getSeasonConfig } from '@packages/dates/utils';
+import { seasons } from '@packages/dates/config';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ type TimeLeft = {
   seconds: number;
 };
 
-const seasonOne = getSeasonConfig('2025-W18');
+const seasonOne = seasons.find((season) => season.title === 'Season 1')!;
 
 const SEASON_ONE_START = DateTime.fromISO(seasonOne.start).startOf('week');
 

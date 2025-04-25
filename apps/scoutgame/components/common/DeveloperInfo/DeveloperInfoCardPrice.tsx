@@ -94,10 +94,10 @@ function DeveloperCardPricingSection({
           <Stack direction='row' gap={0.5} alignItems='center'>
             <Typography variant={isDesktop ? 'h6' : 'body1'}>{estimatedPayout}</Typography>
             <Image
-              src='/images/icons/binoculars.svg'
+              src='/images/dev-token-logo.png'
               width={isDesktop ? 24 : 18.5}
               height={isDesktop ? 15.5 : 12}
-              alt='scoutgame icon'
+              alt='DEV Token'
             />
           </Stack>
         </Stack>

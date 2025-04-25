@@ -79,7 +79,7 @@ export function ScoutsTable({ scouts, order, sort }: { scouts: ScoutInfo[]; orde
             }}
           >
             <Stack direction='row' alignItems='center' justifyContent='flex-end'>
-              POINTS
+              TOKENS
               <SortIcon columnName='points' order={order} sort={sort} />
             </Stack>
           </TableCell>
@@ -133,7 +133,7 @@ export function ScoutsTable({ scouts, order, sort }: { scouts: ScoutInfo[]; orde
             <TableCell align='right' sx={{ display: 'table-cell' }}>
               <Stack alignItems='center' flexDirection='row' gap={1} justifyContent='flex-end'>
                 <TableCellText color='green.main'>{scout.points || 0}</TableCellText>
-                <Image width={15} height={15} src='/images/icons/binoculars-green.svg' alt='scout game icon ' />
+                <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV token' />
               </Stack>
             </TableCell>
             <TableCell align='center'>

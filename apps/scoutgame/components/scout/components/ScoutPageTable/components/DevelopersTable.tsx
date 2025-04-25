@@ -135,17 +135,17 @@ export function DevelopersTable({
         </TableRow>
       </TableHead>
       <TableBody>
-        {developers.map((builder) => (
+        {developers.map((developer) => (
           <TableRow
-            key={builder.path}
+            key={developer.path}
             sx={tableRowNoPaddingSx}
-            onClick={() => openModal('developerInfo', { path: builder.path })}
+            onClick={() => openModal('developerInfo', { path: developer.path })}
             style={{ cursor: 'pointer' }}
           >
             <TableCell>
               <Stack
                 component={Link}
-                href={`/u/${builder.path}`}
+                href={`/u/${developer.path}`}
                 onClick={(e) => {
                   e.preventDefault();
                 }}
@@ -154,12 +154,12 @@ export function DevelopersTable({
                 gap={{ xs: 0.75, md: 1.5 }}
                 maxWidth={{ xs: '65px', md: 'initial' }}
               >
-                <Avatar src={builder.avatar} name={builder.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
+                <Avatar src={developer.avatar} name={developer.displayName} size={isMdScreen ? 'medium' : 'xSmall'} />
                 <Stack maxWidth={{ xs: '50px', md: 'initial' }}>
-                  {builder.nftsSoldToLoggedInScout ? (
+                  {developer.nftsSoldToLoggedInScout ? (
                     <Stack direction='row' alignItems='center' gap={0.5}>
                       <Typography fontSize={{ xs: '10.5px', md: '14px' }} color='green.main' noWrap>
-                        {builder.nftsSoldToLoggedInScout}
+                        {developer.nftsSoldToLoggedInScout}
                       </Typography>
                       <Image
                         width={isMdScreen ? 15 : 13}
@@ -170,13 +170,13 @@ export function DevelopersTable({
                     </Stack>
                   ) : null}
                   <TableCellText deskTopfontSize='16px' overflow='hidden' textOverflow='ellipsis' noWrap>
-                    {builder.displayName}
+                    {developer.displayName}
                   </TableCellText>
                 </Stack>
               </Stack>
             </TableCell>
             <TableCell align='center' sx={{ display: 'table-cell' }}>
-              <TableCellText color='orange.main'>{builder.level}</TableCellText>
+              <TableCellText color='orange.main'>{developer.level}</TableCellText>
             </TableCell>
             <TableCell
               padding='none'
@@ -194,7 +194,7 @@ export function DevelopersTable({
                 }}
                 height='100%'
               >
-                <BuilderCardRankGraph ranks={builder.last14DaysRank} />
+                <BuilderCardRankGraph ranks={developer.last14DaysRank} />
                 <TableCellText
                   color='secondary'
                   minWidth={{
@@ -202,7 +202,7 @@ export function DevelopersTable({
                     md: 25
                   }}
                 >
-                  {builder.rank || '-'}
+                  {developer.rank || '-'}
                 </TableCellText>
               </Stack>
             </TableCell>
@@ -214,7 +214,7 @@ export function DevelopersTable({
                 ml={1.5}
                 justifyContent='flex-end'
               >
-                <TableCellText deskTopfontSize='16px'>{builder.gemsCollected}</TableCellText>
+                <TableCellText deskTopfontSize='16px'>{developer.gemsCollected}</TableCellText>
                 <Image
                   width={isMdScreen ? 15 : 12.5}
                   height={isMdScreen ? 15 : 12.5}
@@ -225,16 +225,16 @@ export function DevelopersTable({
             </TableCell>
             <TableCell align='right' width={isMdScreen ? 150 : 'auto'}>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
-                <TableCellText color='text.primary'>{builder.estimatedPayout}</TableCellText>
-                {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon' />}
+                <TableCellText color='text.primary'>{developer.estimatedPayout}</TableCellText>
+                {isMdScreen && <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV Token' />}
               </Stack>
             </TableCell>
             <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>
-                  {Number(builder.price || 0) / 10 ** devTokenDecimals}
+                  {Number(developer.price || 0) / 10 ** devTokenDecimals}
                 </TableCellText>
-                {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon ' />}
+                {isMdScreen && <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV Token' />}
               </Stack>
             </TableCell>
           </TableRow>

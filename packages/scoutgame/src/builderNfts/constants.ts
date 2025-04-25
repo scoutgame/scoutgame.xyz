@@ -1,8 +1,6 @@
-import env from '@beam-australia/react-env';
-import { log } from '@charmverse/core/log';
 import type { BuilderNftType, Prisma } from '@charmverse/core/prisma';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getSeasonConfig } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import type { Chain } from 'viem/chains';
 import { base } from 'viem/chains';
@@ -14,25 +12,15 @@ export const getArtworkFolderPath = (season: string, isStarterNft?: boolean) =>
 export const nftChain: Chain = base;
 
 export function getNFTContractAddress(season: ISOWeek): Address | undefined {
-  // Convert from ISOWeek "-" to "_" which is used in the env variables
-  const seasonName = season.replace('-', '_');
+  const seasonConfig = getSeasonConfig(season);
 
-  const envVarName = `BUILDER_NFT_CONTRACT_ADDRESS_${seasonName}`;
-
-  const address = env(envVarName) || process.env[`REACT_APP_${envVarName}`];
-  if (!address) {
-    log.warn(`Builder NFT contract address for ${season} not found`);
-  }
-  return address?.toLowerCase() as Address | undefined;
+  return seasonConfig.defaultNftAddress;
 }
 
 export function getStarterNFTContractAddress(season: ISOWeek): Address | undefined {
-  // Convert from ISOWeek "-" to "_" which is used in the env variables
-  const seasonName = season.replace('-', '_');
+  const seasonConfig = getSeasonConfig(season);
 
-  const envVarName = `BUILDER_NFT_STARTER_PACK_CONTRACT_ADDRESS_${seasonName}`;
-
-  return (env(envVarName) || process.env[`REACT_APP_${envVarName}`])?.toLowerCase() as Address | undefined;
+  return seasonConfig.starterNftAddress;
 }
 
 export function getNFTContractAddressForNftType({
@@ -48,20 +36,6 @@ export function getNFTContractAddressForNftType({
 // Actual target wallet - Scoutgame.eth
 export const scoutgameEthAddress = '0x93326D53d1E8EBf0af1Ff1B233c46C67c96e4d8D';
 export const treasuryAddress = '0x4a01d4c6821ba65B36420735E2397B40Ce64EB2F';
-
-export function isStarterNftContract(contractAddress: string): boolean {
-  const starterPackAddresses = [
-    getStarterNFTContractAddress('2024-W41'),
-    getStarterNFTContractAddress('2025-W02'),
-    getStarterNFTContractAddress('2025-W18')
-  ];
-
-  if (starterPackAddresses.includes(contractAddress.toLowerCase() as Address)) {
-    return true;
-  }
-
-  return false;
-}
 
 /**
  * Sunday night on January 6th 2025

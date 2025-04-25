@@ -3,6 +3,8 @@ import { jest } from '@jest/globals';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomLargeInt } from '@packages/testing/generators';
 
+import { devTokenDecimals } from '../../protocol/constants';
+
 // Mock the constants module first
 jest.unstable_mockModule('../constants', () => ({
   nftChain: { id: 10 },
@@ -18,12 +20,12 @@ jest.unstable_mockModule('../../protocol/clients/getNFTClient', () => ({
   getNFTMinterClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
-    getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
+    getTokenPurchasePrice: () => Promise.resolve(randomLargeInt(devTokenDecimals))
   }),
   getNFTReadonlyClient: () => ({
     getTokenIdForBuilder: () => Promise.resolve(randomLargeInt()),
     registerBuilderToken: jest.fn(),
-    getTokenPurchasePrice: () => Promise.resolve(randomLargeInt())
+    getTokenPurchasePrice: () => Promise.resolve(randomLargeInt(devTokenDecimals))
   })
 }));
 

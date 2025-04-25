@@ -9,7 +9,7 @@ import * as yup from 'yup';
 
 // This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package
 export const handleOnchainClaimAction = authActionClient
-  .metadata({ actionName: 'refresh_balance' })
+  .metadata({ actionName: 'handle_onchain_claim' })
   .schema(
     yup.object({
       wallet: yup.string().required(),

@@ -7,7 +7,10 @@ const mockSeason = '2023-W01';
 jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentWeek: jest.fn(() => '2023-W02'),
   getCurrentSeason: jest.fn(() => ({ start: mockSeason })),
-  getCurrentSeasonStart: jest.fn(() => mockSeason)
+  getCurrentSeasonStart: jest.fn(() => mockSeason),
+  getSeasonConfig: jest.fn(() => ({
+    gemsPerRank: 10
+  }))
 }));
 
 // Mock this so we don't get an error in the dependency tree

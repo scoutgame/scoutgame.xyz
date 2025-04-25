@@ -64,16 +64,15 @@ export async function generateWeeklyClaims({
   // get end of the next season, or this one if there are no more
   const nextSeason = getNextSeason(getCurrentSeasonStart()) || getCurrentSeasonStart();
   const weeksPerSeason = getSeasonConfig(nextSeason).weeksPerSeason;
-  const validUntil = getDateFromISOWeek(nextSeason).plus({ weeks: weeksPerSeason }).toISO();
+  const validUntilDate = getDateFromISOWeek(nextSeason).plus({ weeks: weeksPerSeason });
+  const validUntil = Math.floor(validUntilDate.toSeconds());
 
   await getProtocolWriteClient({ walletClient: getProtocolClaimsManagerWallet() }).setWeeklyMerkleRoot({
     args: {
       weeklyRoot: {
         isoWeek: week,
-        // Tokens can be claimed until the end of the season and the next season
         validUntil,
         merkleRoot: rootHashWithNullByte,
-        // Stub definition until we add in IPFS
         merkleTreeUri: `ipfs://scoutgame/merkle-tree/${week}`
       }
     }
@@ -86,7 +85,6 @@ export async function generateWeeklyClaims({
         week,
         merkleTreeRoot: rootHashWithNullByte,
         season: getCurrentSeasonStart(),
-        totalClaimable: claims.reduce((acc, claim) => acc + Number(claim.amount), 0),
         totalClaimableDevToken: claims.reduce((acc, claim) => acc + BigInt(claim.amount), BigInt(0)).toString(),
         claims: claimsBody,
         proofsMap

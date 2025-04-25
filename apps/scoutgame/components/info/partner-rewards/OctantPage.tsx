@@ -58,7 +58,7 @@ function Document() {
     <InfoCard>
       <Typography>
         Scout Game is teaming up with Octant and Base to bring developers even MORE rewards! Starting Feb 3, developers
-        contributing code to Octant + Base-aligned projects can earn Scout Points + USDC. The total prize pool for
+        contributing code to Octant + Base-aligned projects can earn DEV Tokens + USDC. The total prize pool for
         developers is 5 ETH paid out in USDC!
       </Typography>
       <Typography>

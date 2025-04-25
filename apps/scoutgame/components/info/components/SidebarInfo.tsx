@@ -15,7 +15,7 @@ const links = [
   { href: '/info/about-scoutgame', text: 'What is Scout Game?' },
   { href: '/info/scouts', text: 'How it works for Scouts' },
   { href: '/info/developers', text: 'How it works for Developers' },
-  { href: '/info/points', text: 'Scout Points' },
+  { href: '/info/points', text: 'DEV Tokens' },
   { href: '/info/weekly-rewards', text: 'Weekly Developer Ranking & Rewards' },
   { href: '/info/developer-nfts', text: 'Developer NFTs' },
   { href: '/info/contribution-guide', text: 'Contribution Guide' },

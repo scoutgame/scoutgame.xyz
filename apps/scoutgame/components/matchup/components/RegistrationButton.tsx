@@ -15,9 +15,9 @@ import {
 import { MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
 import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -73,7 +73,13 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
         disabled={registered}
         variant='contained'
         color='secondary'
-        endIcon={registered ? <CheckCircleIcon color='inherit' /> : <PointsIcon color='inherit' />}
+        endIcon={
+          registered ? (
+            <CheckCircleIcon color='inherit' />
+          ) : (
+            <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
+          )
+        }
         onClick={handleRegister}
         sx={{ whiteSpace: 'nowrap', width: { xs: '100%', md: 'auto' } }}
       >
@@ -86,10 +92,10 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
             <Stack spacing={2}>
               {hasEnoughPoints ? (
                 <Typography>
-                  You will be charged {MATCHUP_REGISTRATION_FEE} Scout Points to register for this matchup.
+                  You will be charged {MATCHUP_REGISTRATION_FEE} DEV Tokens to register for this matchup.
                 </Typography>
               ) : (
-                <Typography>You do not have enough Scout Points to register for this matchup.</Typography>
+                <Typography>You do not have enough DEV Tokens to register for this matchup.</Typography>
               )}
             </Stack>
           </DialogContentText>
@@ -102,7 +108,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
             onClick={handleConfirmRegistration}
             variant='contained'
             color='secondary'
-            endIcon={<PointsIcon color='inherit' />}
+            endIcon={<Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />}
             loading={isExecuting}
             disabled={!hasEnoughPoints}
             sx={{ whiteSpace: 'nowrap' }}

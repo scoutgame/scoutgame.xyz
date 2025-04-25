@@ -6,7 +6,7 @@ export function BuilderCardActivityTooltip() {
       <Stack>
         <Typography fontWeight='bold'>LEVEL</Typography>
         <Typography>
-          Represents the percentile of the Developer's weekly Scout Point average relative to the point average of all
+          Represents the percentile of the Developer's weekly DEV Token average relative to the DEV Token average of all
           active developers. The top 10% of Developers are Level 10.
         </Typography>
       </Stack>
@@ -23,22 +23,22 @@ export function BuilderCardActivityTooltip() {
         <Typography fontWeight='bold'>WEEK'S GEMS</Typography>
         <Typography>
           Number of Gems earned by contributing to approved projects for the current week. Developers are ranked by
-          number of Gems earned at the end of each week. Higher rank leads to more Scout Points.
+          number of Gems earned at the end of each week. Higher rank leads to more DEV Tokens.
         </Typography>
       </Stack>
 
       <Stack>
         <Typography fontWeight='bold'>EST. PAYOUT</Typography>
         <Typography>
-          Estimated weekly Scout Points rewarded to a Scout holding ONE of the Developer's regular cards.
+          Estimated weekly DEV Tokens rewarded to a Scout holding ONE of the Developer's regular cards.
         </Typography>
       </Stack>
 
       <Stack>
         <Typography fontWeight='bold'>PRICE</Typography>
         <Typography>
-          The current cost of the Developer's Card in Scout Points. Purchase the Developer's Card to scout the Developer
-          and earn Scout Points as they move up the leader board. Developer cards may also be purchased with USDC or ETH
+          The current cost of the Developer's Card in DEV Tokens. Purchase the Developer's Card to scout the Developer
+          and earn DEV Tokens as they move up the leader board. Developer cards may also be purchased with USDC or ETH
           on Optimism, Base, Arbitrum, and Zora.
         </Typography>
       </Stack>

@@ -154,7 +154,7 @@ export function InfoPageContent({ hideDeveloperCard = false }: { hideDeveloperCa
       <Step
         stepNumber='Step 4'
         title='Earn Rewards'
-        description='Collect Scout Points from the Developers you’ve scouted and score bonus prizes like $Moxie or $OP from our awesome partners. Supporting innovation has never been this exciting or this rewarding!'
+        description='Collect DEV Tokens from the Developers you’ve scouted and score bonus prizes like $Moxie or $OP from our awesome partners. Supporting innovation has never been this exciting or this rewarding!'
         iconSrc='/images/home/quests-icon.svg'
       />
     </Container>

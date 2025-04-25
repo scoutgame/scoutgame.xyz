@@ -7,6 +7,7 @@ declare module '@mui/material/styles' {
     orange: MuiPalette['primary'];
     green: MuiPalette['primary'];
     yellow: MuiPalette['primary'];
+    pink: MuiPalette['primary'];
     blue: MuiPalette['primary'];
   }
 
@@ -16,6 +17,7 @@ declare module '@mui/material/styles' {
     orange: MuiPaletteOptions['primary'];
     green: MuiPaletteOptions['primary'];
     yellow: MuiPaletteOptions['primary'];
+    pink: MuiPaletteOptions['primary'];
     blue: MuiPaletteOptions['primary'];
   }
 

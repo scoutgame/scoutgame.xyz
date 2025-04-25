@@ -9,9 +9,8 @@ import { approveDevelopers, log as approveDevelopersLog } from './tasks/approveD
 import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
 import { processAllDeveloperActivity, log as processAllDeveloperActivityLog } from './tasks/processDeveloperActivity';
 import { processDuneAnalytics } from './tasks/processDuneAnalytics';
-import { processGemsPayout } from './tasks/processGemsPayout';
 import { processNftMints } from './tasks/processNftMints';
-import { processOnchainGemsPayout } from './tasks/processOnchainGemsPayout';
+import { processOnchainGemsPayout, log as processOnchainGemsPayoutLog } from './tasks/processOnchainGemsPayout';
 import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
 import { refreshShareImagesTask } from './tasks/refreshShareImages';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
@@ -61,7 +60,7 @@ addTask('/approve-developers', approveDevelopers, approveDevelopersLog);
 
 addTask('/send-push-notifications', sendNotifications);
 
-addTask('/process-gems-payout', processGemsPayout);
+addTask('/process-gems-payout', processOnchainGemsPayout, processOnchainGemsPayoutLog);
 
 addTask('/process-nft-mints', processNftMints);
 
@@ -79,7 +78,7 @@ addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
 
 addTask('/process-builder-onchain-activity', processBuilderOnchainActivity);
 
-addTask('/process-onchain-gems-payout', processOnchainGemsPayout);
+addTask('/process-onchain-gems-payout', processOnchainGemsPayout, processOnchainGemsPayoutLog);
 
 addTask('/process-dune-analytics', processDuneAnalytics);
 

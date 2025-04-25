@@ -41,7 +41,7 @@ export function DeveloperInfoSeasonStats({
           }}
           color='secondary.main'
         >
-          {isLastSeason ? 'This' : 'Last'}
+          {!isLastSeason ? 'This' : 'Last'}
         </Typography>{' '}
         Season
       </Typography>
@@ -49,10 +49,10 @@ export function DeveloperInfoSeasonStats({
         <Stack direction='row' gap={0.5} alignItems='center'>
           <Typography variant={isDesktop ? 'h6' : 'body1'}>{seasonPoints}</Typography>
           <Image
-            src='/images/icons/binoculars.svg'
-            width={isDesktop ? '24' : '18'}
-            height={isDesktop ? '24' : '18'}
-            alt='gem icon'
+            src='/images/dev-token-logo.png'
+            width={isDesktop ? 24 : 18}
+            height={isDesktop ? 24 : 18}
+            alt='DEV Token'
           />
         </Stack>
         <Typography variant={isDesktop ? 'h6' : 'body1'}>{scoutedBy} Scouts</Typography>
