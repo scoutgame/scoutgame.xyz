@@ -26,7 +26,6 @@ import {
   scoutProtocolChainId
 } from '@packages/scoutgame/protocol/constants';
 import { IconButton } from '@packages/scoutgame-ui/components/common/Button/IconButton';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { usePurchase } from '@packages/scoutgame-ui/providers/PurchaseProvider';
@@ -81,7 +80,7 @@ export function NFTPurchaseForm(props: NFTPurchaseProps) {
 export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const season = getCurrentSeasonStart();
 
-  const { user, refreshUser } = useUser();
+  const { user } = useUser();
   const builderId = builder.id;
   const initialQuantities = [1, 11, 111];
   const pricePerNft = builder.price ? Number(builder.price) / 10 ** devTokenDecimals : '';
@@ -341,7 +340,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           <>
             {pricePerNft}{' '}
             <Box component='span' display='inline' position='relative' top={4}>
-              <PointsIcon color='blue' size={18} />
+              <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
             </Box>
           </>
         </Typography>
@@ -455,7 +454,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               <>
                 {purchaseCostInPoints.toLocaleString()}{' '}
                 <Box component='span' display='inline' position='relative' top={4}>
-                  <PointsIcon size={18} />
+                  <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
                 </Box>
               </>
             )}

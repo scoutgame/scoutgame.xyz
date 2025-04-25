@@ -1,6 +1,5 @@
 import { Box, Card, Link as MUILink, Stack, Typography } from '@mui/material';
 import type { MatchupDetails } from '@packages/matchup/getMatchupDetails';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -82,7 +81,8 @@ export function RegistrationHeader({
               <Typography component='span' sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }} noWrap>
                 {matchupPool ? (
                   <>
-                    {matchupPool} <PointsIcon /> +{' '}
+                    {matchupPool} <Image width={14} height={14} src='/images/dev-token-logo.png' alt='DEV token' />{' '}
+                    +{' '}
                   </>
                 ) : null}
                 {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />

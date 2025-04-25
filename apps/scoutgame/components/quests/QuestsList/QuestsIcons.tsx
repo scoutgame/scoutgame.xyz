@@ -1,11 +1,10 @@
 import EmailIcon from '@mui/icons-material/Email';
 import XIcon from '@mui/icons-material/X';
 import type { QuestType } from '@packages/scoutgame/quests/questRecords';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 
-const ScoutBinocularsIcon = <PointsIcon size={34} />;
+const ScoutBinocularsIcon = <Image src='/images/dev-token-logo.png' alt='DEV token' width={34} height={34} />;
 const BuilderDogIcon = (
   <div style={{ position: 'relative', width: 34, height: 34 }}>
     <Image

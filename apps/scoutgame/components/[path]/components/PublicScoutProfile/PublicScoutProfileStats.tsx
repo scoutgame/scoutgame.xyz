@@ -23,7 +23,7 @@ export function PublicScoutProfileStats({
             <Typography color='green.main' variant='subtitle2'>
               {seasonPoints || 0}
             </Typography>
-            <Image src='/images/icons/binoculars-green.svg' width='20' height='20' alt='scout game icon' />
+            <Image src='/images/dev-token-logo.png' width='20' height='20' alt='DEV token' />
             <Typography color='green.main' variant='subtitle2'>
               ({allTimePoints || 0})
             </Typography>

@@ -78,7 +78,7 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
                   ? seasonPoints?.pointsEarnedAsBuilder || 0
                   : allTimePoints?.pointsEarnedAsBuilder || 0}
               </Typography>
-              <Image src='/images/icons/binoculars-orange.svg' width='25' height='25' alt='build icon' />
+              <Image src='/images/dev-token-logo.png' width='25' height='25' alt='DEV token' />
             </Stack>
           </Stack>
           <Stack alignItems='center' gap={0.5}>
@@ -91,7 +91,7 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
                   ? seasonPoints?.pointsEarnedAsScout || 0
                   : allTimePoints?.pointsEarnedAsScout || 0}
               </Typography>
-              <Image src='/images/icons/binoculars-green.svg' width='25' height='25' alt='scout icon' />
+              <Image src='/images/dev-token-logo.png' width='25' height='25' alt='DEV token' />
             </Stack>
           </Stack>
         </Stack>
