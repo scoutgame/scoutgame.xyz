@@ -95,7 +95,7 @@ export function PointsTable({
           <TableRow>
             <TableCell align='left'>ACTION</TableCell>
             <TableCell align='center'>WEEK</TableCell>
-            <TableCell align='right'>POINTS</TableCell>
+            <TableCell align='right'>TOKENS</TableCell>
           </TableRow>
         </StyledTableHead>
         <StyledTableBody

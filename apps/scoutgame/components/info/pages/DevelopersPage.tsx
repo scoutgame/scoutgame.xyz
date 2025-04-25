@@ -24,7 +24,7 @@ function Document() {
       <Typography>
         Developers gain recognition and earn Gems by contributing to approved open-source projects and through onchain
         activity. Each season lasts three months, and Developers receive weekly rewards based on their contributions. At
-        the end of each week, Gems are converted into Scout Points, with higher-ranked Developers earning more points
+        the end of each week, Gems are converted into DEV Tokens, with higher-ranked Developers earning more DEV Tokens
         per gem.
       </Typography>
       <Typography variant='h6' color='secondary' mt={2}>
@@ -88,7 +88,7 @@ function Document() {
         <Typography mb={1}>2. Start contributing to open source projects from the approved project list.</Typography>
         <Typography mb={1}>3. Create Projects and attach smart contracts to earn bonus Onchain Gems.</Typography>
         <Typography mb={1}>4. Earn Scout Gems by completing milestones.</Typography>
-        <Typography mb={1}>5. Watch your rank grow as your Gems convert to Scout Points weekly.</Typography>
+        <Typography mb={1}>5. Watch your rank grow as your Gems convert to DEV Tokens weekly.</Typography>
         <Typography mb={1}>Start building, get recognized, and climb the ranks! 🚀</Typography>
       </div>
       <div>

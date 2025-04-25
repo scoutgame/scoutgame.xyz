@@ -60,7 +60,7 @@ export function PointsClaimScoutScreen({
           textAlign: 'center'
         }}
       >
-        scored {claimedPoints} Scout Points <br /> in week {lastWeek} of
+        scored {claimedPoints} DEV Tokens <br /> in week {lastWeek} of
       </div>
 
       <div

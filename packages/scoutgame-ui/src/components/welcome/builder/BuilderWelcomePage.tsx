@@ -35,8 +35,8 @@ export function BuilderPage() {
             show their support by minting your unique NFT.
           </Typography>
           <Typography>
-            Sign up as a Developer now, and you will be eligible to earn Scout Points and a share of your NFT sales
-            during the first season of Scout Game.
+            Sign up as a Developer now, and you will be eligible to earn DEV Tokens and a share of your NFT sales during
+            the first season of Scout Game.
           </Typography>
           <Image src='/images/github-logo.png' width={120} height={30} alt='github' />
           <Typography>Connect to GitHub to sign up and verify your code contributions.</Typography>

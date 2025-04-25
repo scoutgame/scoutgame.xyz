@@ -61,8 +61,8 @@ function getShareMessage({
 }: ShareMessageProps & { referralCode?: string }) {
   const imageUrl = `${window.location.origin}/points-claim/${userPath}?week=${week}`;
   let shareMessage = isBuilder
-    ? `I scored ${totalUnclaimedPoints} Scout Points this week as a Top Developer!`
-    : `I scored ${totalUnclaimedPoints} Scout Points this week as a Top Scout!`;
+    ? `I scored ${totalUnclaimedPoints} DEV Tokens this week as a Top Developer!`
+    : `I scored ${totalUnclaimedPoints} DEV Tokens this week as a Top Scout!`;
   // Twitter discounts tweets with links
   if (platform === 'x') {
     shareMessage += `\n\nI'm playing @scoutgamexyz.\n\n`;

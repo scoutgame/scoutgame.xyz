@@ -92,10 +92,10 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
             <Stack spacing={2}>
               {hasEnoughPoints ? (
                 <Typography>
-                  You will be charged {MATCHUP_REGISTRATION_FEE} Scout Points to register for this matchup.
+                  You will be charged {MATCHUP_REGISTRATION_FEE} DEV Tokens to register for this matchup.
                 </Typography>
               ) : (
-                <Typography>You do not have enough Scout Points to register for this matchup.</Typography>
+                <Typography>You do not have enough DEV Tokens to register for this matchup.</Typography>
               )}
             </Stack>
           </DialogContentText>

@@ -40,7 +40,7 @@ export function BuilderRewardsScreen({ period, season }: { period: string; seaso
       <Typography color='secondary' variant='h6'>
         Developer Rewards
       </Typography>
-      <Typography textAlign='center'>See how many Scout Points your Developers have earned for you!</Typography>
+      <Typography textAlign='center'>See how many DEV Tokens your Developers have earned for you!</Typography>
       <TabsMenu
         tabs={[
           { value: week || lastWeek, label: 'Weekly' },

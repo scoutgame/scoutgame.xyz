@@ -41,7 +41,7 @@ export function DeveloperInfoSeasonStats({
           }}
           color='secondary.main'
         >
-          {isLastSeason ? 'This' : 'Last'}
+          {!isLastSeason ? 'This' : 'Last'}
         </Typography>{' '}
         Season
       </Typography>

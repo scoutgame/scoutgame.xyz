@@ -79,7 +79,7 @@ export function ScoutsTable({ scouts, order, sort }: { scouts: ScoutInfo[]; orde
             }}
           >
             <Stack direction='row' alignItems='center' justifyContent='flex-end'>
-              POINTS
+              TOKENS
               <SortIcon columnName='points' order={order} sort={sort} />
             </Stack>
           </TableCell>
