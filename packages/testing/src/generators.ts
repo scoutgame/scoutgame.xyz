@@ -5,7 +5,7 @@ import { getLastWeek, getCurrentWeek } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import { keccak256 } from 'viem/utils';
 
-export const randomLargeInt = () => Math.floor(Math.random() * 1000000000) + 1000000000;
+export const randomLargeInt = (decimals = 6) => (Math.floor(Math.random() * 100) + 100) * 10 ** decimals;
 
 export function randomIntFromInterval(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
