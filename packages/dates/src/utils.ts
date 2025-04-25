@@ -58,6 +58,11 @@ export function isDraftSeason(season: Season = getCurrentSeason().start): boolea
   return currentSeason.draft ?? false;
 }
 
+export function isEndOfDraftWeek(now: DateTime = DateTime.now().toUTC()): boolean {
+  const isWeekend = now.weekday >= 6;
+  return isWeekend;
+}
+
 export function validateSeasonList(seasonList: Season[]): void {
   if (!seasonList.every((s) => s)) {
     throw new Error('Invalid season list');
