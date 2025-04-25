@@ -322,20 +322,7 @@ function DraftDeveloperBidFormComponent({
           <Button onClick={onCancel} variant='outlined' color='secondary' size='large' disabled={isLoading}>
             Cancel
           </Button>
-          <Button
-            loading={isLoading}
-            onClick={handleSubmit}
-            variant='contained'
-            color='secondary'
-            size='large'
-            disabled={
-              !!customError ||
-              (selectedPaymentOption.currency !== 'DEV' &&
-                (!decentTransactionInfo || !('tx' in decentTransactionInfo) || 'error' in decentTransactionInfo)) ||
-              !!draftError ||
-              !!addressError
-            }
-          >
+          <Button loading={isLoading} onClick={handleSubmit} variant='contained' color='secondary' size='large'>
             Confirm
           </Button>
         </Stack>

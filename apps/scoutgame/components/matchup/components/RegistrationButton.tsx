@@ -22,96 +22,49 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { useGlobalModal } from 'components/common/ModalProvider';
 import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
 
 export function RegistrationButton({ registered, week }: { registered: boolean; week: string }) {
   const { refreshUser, user } = useUser();
   const trackEvent = useTrackEvent();
   const [authPopup, setAuthPopup] = useState<boolean>(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const { openModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
   const hasEnoughPoints = user?.currentBalance && user.currentBalance >= MATCHUP_REGISTRATION_FEE;
 
-  function onClose() {
-    setIsRegisterModalOpen(false);
-  }
-
-  const { execute, isExecuting } = useAction(registerForMatchupAction, {
-    async onSuccess() {
-      toast.success('Successfully registered for matchup');
-      revalidatePathAction();
-      refreshUser();
-      onClose();
-    },
-    onError(err) {
-      toast.error('Error registering for matchup');
-      log.error('Error registering for matchup', { error: err });
-      onClose();
-    }
-  });
-
-  function handleConfirmRegistration() {
-    trackEvent('click_register_matchup');
-    if (isAuthenticated) {
-      execute({ week });
-    } else {
-      setAuthPopup(true);
-    }
-  }
+  // const { execute, isExecuting } = useAction(registerForMatchupAction, {
+  //   async onSuccess() {
+  //     toast.success('Successfully registered for matchup');
+  //     revalidatePathAction();
+  //     refreshUser();
+  //     onClose();
+  //   },
+  //   onError(err) {
+  //     toast.error('Error registering for matchup');
+  //     log.error('Error registering for matchup', { error: err });
+  //     onClose();
+  //   }
+  // });
 
   function handleRegister() {
     trackEvent('click_register_matchup');
     if (isAuthenticated) {
-      setIsRegisterModalOpen(true);
+      openModal('draftRegistration');
     } else {
       setAuthPopup(true);
     }
   }
   return (
-    <>
-      <Button
-        disabled={registered}
-        variant='contained'
-        color='secondary'
-        endIcon={registered ? <CheckCircleIcon color='inherit' /> : <PointsIcon color='inherit' />}
-        onClick={handleRegister}
-        sx={{ whiteSpace: 'nowrap', width: { xs: '100%', md: 'auto' } }}
-      >
-        {registered ? 'Registered' : `Register ${MATCHUP_REGISTRATION_FEE}`}
-      </Button>
-      <Dialog open={isRegisterModalOpen} onClose={onClose} maxWidth='xs' fullWidth>
-        <DialogTitle>Confirm Registration</DialogTitle>
-        <DialogContent>
-          <DialogContentText component='div'>
-            <Stack spacing={2}>
-              {hasEnoughPoints ? (
-                <Typography>
-                  You will be charged {MATCHUP_REGISTRATION_FEE} Scout Points to register for this matchup.
-                </Typography>
-              ) : (
-                <Typography>You do not have enough Scout Points to register for this matchup.</Typography>
-              )}
-            </Stack>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button variant='outlined' onClick={onClose} disabled={isExecuting}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmRegistration}
-            variant='contained'
-            color='secondary'
-            endIcon={<PointsIcon color='inherit' />}
-            loading={isExecuting}
-            disabled={!hasEnoughPoints}
-            sx={{ whiteSpace: 'nowrap' }}
-          >
-            Register {MATCHUP_REGISTRATION_FEE}
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} />
-    </>
+    <Button
+      disabled={registered}
+      variant='contained'
+      color='secondary'
+      endIcon={registered ? <CheckCircleIcon color='inherit' /> : <PointsIcon color='inherit' />}
+      onClick={handleRegister}
+      sx={{ whiteSpace: 'nowrap', width: { xs: '100%', md: 'auto' } }}
+    >
+      {registered ? 'Registered' : `Register ${MATCHUP_REGISTRATION_FEE}`}
+    </Button>
   );
 }

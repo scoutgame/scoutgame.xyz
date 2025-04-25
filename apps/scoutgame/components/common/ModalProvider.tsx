@@ -8,6 +8,7 @@ import { NFTListingDialog } from 'components/common/NFTListing/NFTListingDialog'
 import { NFTListingPurchaseDialog } from 'components/common/NFTListingPurchase/NFTListingPurchaseDialog';
 import { NFTPurchaseDialog } from 'components/common/NFTPurchaseDialog/NFTPurchaseDialog';
 import { InviteModal } from 'components/developers/InviteModal/InviteModal';
+import { DraftRegistrationDialog } from 'components/matchup/components/DraftRegistrationDialog';
 
 import { DeveloperInfoModal } from './DeveloperInfoModal/DeveloperInfoModal';
 import { DraftDeveloperInfoModal } from './DraftDeveloperInfoModal/DraftDeveloperInfoModal';
@@ -19,85 +20,61 @@ type ModalType =
   | 'nftListing'
   | 'nftListingPurchase'
   | 'developerInfo'
-  | 'draftDeveloper';
-
-type ModalState = {
-  [key in ModalType]: { open: boolean; data?: any };
-};
+  | 'draftDeveloper'
+  | 'draftRegistration';
 
 type ModalContextType = {
   openModal: (type: ModalType, data?: any) => void;
-  closeModal: (type: ModalType) => void;
-  isOpen: (type: ModalType) => boolean;
+  closeModal: () => void;
 };
 
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [modalState, setModalState] = useState<ModalState>({
-    newBuilder: { open: false, data: null },
-    nftPurchase: { open: false, data: null },
-    nftListing: { open: false, data: null },
-    nftListingPurchase: { open: false, data: null },
-    developerInfo: { open: false, data: null },
-    draftDeveloper: { open: false, data: null }
-  });
+  const [modalType, setModalType] = useState<ModalType | null>(null);
+  const [modalData, setModalData] = useState<any>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
 
   const openModal = useCallback((type: ModalType, data?: any) => {
-    setModalState((prevState) => ({ ...prevState, [type]: { open: true, data } }));
+    setModalType(type);
+    setModalData(data);
+    setIsOpen(true);
   }, []);
 
-  const closeModal = useCallback((type: ModalType) => {
-    setModalState((prevState) => ({ ...prevState, [type]: { open: false, data: null } }));
+  const closeModal = useCallback(() => {
+    setModalType(null);
+    setModalData(null);
+    setIsOpen(false);
   }, []);
-
-  const isOpen = useCallback(
-    (type: ModalType) => {
-      return type in modalState ? modalState[type]?.open : false;
-    },
-    [modalState]
-  );
 
   const value = useMemo(
     () => ({
       openModal,
-      closeModal,
-      isOpen
+      closeModal
     }),
-    [openModal, closeModal, isOpen]
+    [openModal, closeModal]
   );
+
+  function isTypeOpen(type: ModalType) {
+    return modalType === type && isOpen;
+  }
 
   return (
     <ModalContext.Provider value={value}>
       {children}
-      <InviteModal open={modalState?.newBuilder?.open} onClose={() => closeModal('newBuilder')} signedIn={!!user} />
-      <NFTPurchaseDialog
-        builder={modalState?.nftPurchase?.data}
-        open={modalState?.nftPurchase?.open}
-        onClose={() => closeModal('nftPurchase')}
-      />
-      <NFTListingDialog
-        builder={modalState?.nftListing?.data}
-        open={modalState?.nftListing?.open}
-        onClose={() => closeModal('nftListing')}
-      />
+      <InviteModal open={isTypeOpen('newBuilder')} onClose={closeModal} signedIn={!!user} />
+      <NFTPurchaseDialog builder={modalData} open={isTypeOpen('nftPurchase')} onClose={closeModal} />
+      <NFTListingDialog builder={modalData} open={isTypeOpen('nftListing')} onClose={closeModal} />
       <NFTListingPurchaseDialog
-        listing={modalState?.nftListingPurchase?.data?.listing}
-        builder={modalState?.nftListingPurchase?.data?.builder}
-        open={modalState?.nftListingPurchase?.open}
-        onClose={() => closeModal('nftListingPurchase')}
+        listing={modalData?.listing}
+        builder={modalData?.builder}
+        open={isTypeOpen('nftListingPurchase')}
+        onClose={closeModal}
       />
-      <DeveloperInfoModal
-        open={modalState?.developerInfo?.open}
-        data={modalState?.developerInfo?.data}
-        onClose={() => closeModal('developerInfo')}
-      />
-      <DraftDeveloperInfoModal
-        open={modalState?.draftDeveloper?.open}
-        data={modalState?.draftDeveloper?.data}
-        onClose={() => closeModal('draftDeveloper')}
-      />
+      <DeveloperInfoModal open={isTypeOpen('developerInfo')} data={modalData} onClose={closeModal} />
+      <DraftDeveloperInfoModal open={isTypeOpen('draftDeveloper')} data={modalData} onClose={closeModal} />
+      <DraftRegistrationDialog open={isTypeOpen('draftRegistration')} onClose={closeModal} />
     </ModalContext.Provider>
   );
 }
