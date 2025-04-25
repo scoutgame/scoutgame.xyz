@@ -52,17 +52,17 @@ export const seasons: SeasonConfig[] = [
     weeksPerSeason: 15, // extended season
     preseason: true
   },
-  {
-    start: '2025-W17',
-    title: 'Draft Season',
-    starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 1,
-    draft: true
-  },
+  // {
+  //   start: '2025-W17',
+  //   title: 'Draft Season',
+  //   starterNftAddress: '0x0000000000000000000000000000000000000000',
+  //   defaultNftAddress: '0x0000000000000000000000000000000000000000',
+  //   weeksPerSeason: 1,
+  //   draft: true
+  // },
   // Season 1
   {
-    start: '2025-W18', // April 28th 2025
+    start: '2025-W17', // April 28th 2025
     title: 'Season 1',
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     defaultNftAddress: '0x0000000000000000000000000000000000000000',

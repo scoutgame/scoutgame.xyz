@@ -13,16 +13,6 @@ export const apps: { [key: string]: { stg?: Options; prd?: Options } } = {
       sslCert: scoutgameCert
     }
   },
-  'scoutgame-draft': {
-    prd: {
-      sslCert: scoutgameCert
-    }
-  },
-  'scoutgame-airdrop': {
-    prd: {
-      sslCert: scoutgameCert
-    }
-  },
   scoutgamecron: {
     prd: {
       workerTimeout: 36000, // 10 hours
