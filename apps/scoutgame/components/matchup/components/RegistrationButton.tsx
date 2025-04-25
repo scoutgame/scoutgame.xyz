@@ -64,7 +64,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
         registered ? (
           <CheckCircleIcon color='inherit' />
         ) : (
-          <Image src='/images/points.png' alt='Points' width={20} height={20} />
+          <Image src='/images/dev-token-logo.png' alt='DEV' width={20} height={20} />
         )
       }
       onClick={handleRegister}

@@ -18,11 +18,13 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
 
 import type { ConnectedWalletDialogProps } from 'components/common/ConnectedWalletDialog';
 import { ConnectedWalletDialog } from 'components/common/ConnectedWalletDialog';
 import { useGlobalModal } from 'components/common/ModalProvider';
+import { getCurrencyContract } from 'components/common/NFTPurchaseDialog/components/ChainSelector/chains';
 import type { SelectedPaymentOption } from 'components/common/NFTPurchaseDialog/components/ChainSelector/ChainSelector';
 import { BlockchainSelect } from 'components/common/NFTPurchaseDialog/components/ChainSelector/ChainSelector';
 import { useGetTokenBalances } from 'components/common/NFTPurchaseDialog/hooks/useGetTokenBalances';
@@ -35,16 +37,18 @@ function DraftRegistrationDialogComponent() {
   const [authPopup, setAuthPopup] = useState<boolean>(false);
   const { closeModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
-  const hasEnoughPoints = user?.currentBalance && user.currentBalance >= MATCHUP_REGISTRATION_FEE;
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({
     chainId: scoutProtocolChainId,
     currency: 'DEV'
   });
+  const selectedChainCurrency = getCurrencyContract(selectedPaymentOption) as Address;
+  const { address } = useAccount();
   const { tokens: userTokenBalances } = useGetTokenBalances({ address: address as Address });
 
   const balanceInfo = userTokenBalances?.find(
     (_token) => _token.chainId === selectedPaymentOption.chainId && _token.address === selectedChainCurrency
   );
+  const hasInsufficientBalance = balanceInfo && balanceInfo.balance < MATCHUP_REGISTRATION_FEE;
   const displayedBalance = !balanceInfo
     ? undefined
     : selectedPaymentOption.currency === 'ETH' || selectedPaymentOption.currency === 'DEV'
