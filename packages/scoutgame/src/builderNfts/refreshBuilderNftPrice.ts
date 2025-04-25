@@ -28,6 +28,7 @@ export async function refreshBuilderNftPrice({
     const currentPrice = await contractClient.getTokenPurchasePrice({
       args: { tokenId, amount: BigInt(1) }
     });
+
     const existingNft = await prisma.builderNft.findFirstOrThrow({
       where: {
         builderId,
