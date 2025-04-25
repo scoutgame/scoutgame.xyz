@@ -20,7 +20,7 @@ export function CollapsibleTableHeader() {
         </TableCell>
         <TableCell sx={{ textAlign: 'center' }}>
           <Stack>
-            <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>POINTS</Typography>
+            <Typography sx={{ fontSize: { xs: 12, md: 16 } }}>TOKENS</Typography>
             <Typography sx={{ display: { xs: 'none', md: 'block' } }} variant='caption'>
               (LAST SEASON)
             </Typography>

@@ -1,6 +1,5 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
-import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 

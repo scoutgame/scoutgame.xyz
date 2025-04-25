@@ -56,7 +56,6 @@ export function ScoutButton({
   }
 
   const color = type === 'starter_pack' ? 'green.main' : undefined;
-  const image = type === 'starter_pack' ? '/images/icons/binoculars-green.svg' : '/images/icons/binoculars-blue.svg';
 
   return (
     <div>
@@ -85,7 +84,13 @@ export function ScoutButton({
               )}{' '}
               <Stack direction='row' alignItems='center' justifyContent='center'>
                 {purchaseCostInPoints}
-                <Image src={image} alt='' width={21} height={12} style={{ marginLeft: 4, marginRight: 4 }} />
+                <Image
+                  src='/images/dev-token-logo.png'
+                  alt='DEV Token'
+                  width={20}
+                  height={20}
+                  style={{ marginLeft: 4, marginRight: 4 }}
+                />
               </Stack>
             </Stack>
           </Button>

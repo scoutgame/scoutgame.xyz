@@ -1,16 +1,16 @@
 'use client';
 
-import { Stack, Tooltip, Typography } from '@mui/material';
+import { lighten, Stack, Tooltip, Typography } from '@mui/material';
 import { useDynamicFontSize } from '@packages/scoutgame-ui/hooks/useDynamicFontSize';
 import { useIsMounted } from '@packages/scoutgame-ui/hooks/useIsMounted';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
-import { brandColor } from '@packages/scoutgame-ui/theme/colors.ts';
+import { brandColor, secondaryText } from '@packages/scoutgame-ui/theme/colors.ts';
 import Image from 'next/image';
 
 export const builderCardBackground = (isStarterCard: boolean | undefined) => {
   return isStarterCard
-    ? 'linear-gradient(90deg, #86ff9e 0%, #fcff6c 50%, #86ff9e 100%)'
-    : `linear-gradient(90deg, ${brandColor} 0%, #FFAC81 50%, ${brandColor} 100%)`;
+    ? 'linear-gradient(90deg, #86ff9e 0%, #ec7cbf 50%, #86ff9e 100%)'
+    : `linear-gradient(90deg, ${lighten(brandColor, 0.25)} 0%, ${secondaryText} 60%)`;
 };
 
 export function BuilderCardName({

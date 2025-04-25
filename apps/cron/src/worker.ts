@@ -9,7 +9,6 @@ import { approveDevelopers, log as approveDevelopersLog } from './tasks/approveD
 import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
 import { processAllDeveloperActivity, log as processAllDeveloperActivityLog } from './tasks/processDeveloperActivity';
 import { processDuneAnalytics } from './tasks/processDuneAnalytics';
-import { processGemsPayout, log as processGemsPayoutLog } from './tasks/processGemsPayout';
 import { processNftMints } from './tasks/processNftMints';
 import { processOnchainGemsPayout, log as processOnchainGemsPayoutLog } from './tasks/processOnchainGemsPayout';
 import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
@@ -61,7 +60,7 @@ addTask('/approve-developers', approveDevelopers, approveDevelopersLog);
 
 addTask('/send-push-notifications', sendNotifications);
 
-addTask('/process-gems-payout', processGemsPayout, processGemsPayoutLog);
+addTask('/process-gems-payout', processOnchainGemsPayout, processOnchainGemsPayoutLog);
 
 addTask('/process-nft-mints', processNftMints);
 

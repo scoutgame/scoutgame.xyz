@@ -163,10 +163,10 @@ export function DeveloperInfoProfile({
             alignItems='center'
           >
             <Image
-              src='/images/icons/binoculars.svg'
+              src='/images/dev-token-logo.png'
               width={isDesktop ? '24' : '18'}
               height={isDesktop ? '24' : '18'}
-              alt='scoutgame icon'
+              alt='DEV Token'
             />
             <Typography
               fontSize={{

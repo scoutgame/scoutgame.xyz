@@ -58,7 +58,7 @@ function Document() {
       </Table>
       <Typography>Gem rewards do not stack. The maximum score for a single PR is 100 Gems.</Typography>
       <Typography>
-        At the end of each week, Developers are ranked by the number of Gems they collected that week. Scout Points are
+        At the end of each week, Developers are ranked by the number of Gems they collected that week. DEV Tokens are
         allocated to the top-ranking Developers and the Scouts who hold their NFTs according to this formula:
       </Typography>
       <Blockquote>
@@ -69,7 +69,7 @@ function Document() {
         </Typography>
         <Typography>Where</Typography>
         <Typography>
-          A = Total Scout Point Allocation for the Week
+          A = Total DEV Token Allocation for the Week
           <br />R = Rank
           <br />D = Decay Rate = 3%
         </Typography>

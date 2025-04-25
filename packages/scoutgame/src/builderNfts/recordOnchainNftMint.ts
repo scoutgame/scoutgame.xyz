@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getWeekFromDate } from '@packages/dates/utils';
+import { updateReferralUsers } from '@packages/users/referrals/updateReferralUsers';
 import type { Address } from 'viem';
 
 import { sendNotifications } from '../notifications/sendNotifications';
@@ -17,7 +18,7 @@ export async function recordOnchainNftMint({
   recipientAddress,
   scoutId,
   amount,
-  pointsValue,
+  tokenValue,
   sentAt = new Date(),
   txLogIndex,
   txHash
@@ -26,7 +27,7 @@ export async function recordOnchainNftMint({
   recipientAddress: Address;
   scoutId: string;
   amount: number;
-  pointsValue: number;
+  tokenValue: number;
   sentAt?: Date;
   txLogIndex: number;
   txHash: string;
@@ -58,12 +59,6 @@ export async function recordOnchainNftMint({
 
   const week = getWeekFromDate(sentAt);
 
-  await refreshNftPurchaseStats({
-    scoutId,
-    builderId: builderNft.builderId,
-    season: builderNft.season
-  });
-
   await prisma.builderEvent.create({
     data: {
       type: 'nft_purchase',
@@ -77,7 +72,7 @@ export async function recordOnchainNftMint({
       createdAt: sentAt,
       nftPurchaseEvent: {
         create: {
-          pointsValue,
+          pointsValue: tokenValue,
           tokensPurchased: amount,
           createdAt: sentAt,
           txHash: txHash.toLowerCase(),
@@ -98,6 +93,7 @@ export async function recordOnchainNftMint({
       currentBalanceDevToken: currentBalanceInScoutToken.toString()
     }
   });
+
   const balance = await refreshScoutNftBalance({
     contractAddress: builderNft.contractAddress as Address,
     nftType: builderNft.nftType,
@@ -146,7 +142,7 @@ export async function recordOnchainNftMint({
             builder_name: builderNft.builder.displayName,
             builder_profile_link: `https://scoutgame.xyz/u/${builderNft.builder.path}`,
             cards_purchased: amount,
-            total_purchase_cost: pointsValue,
+            total_purchase_cost: tokenValue,
             builder_card_image: builderNft.imageUrl,
             scout_name: scout.displayName,
             scout_profile_link: `https://scoutgame.xyz/u/${scout.path}`,
@@ -168,6 +164,19 @@ export async function recordOnchainNftMint({
       });
     }
   }
+
+  try {
+    // check if we should count a referral
+    await updateReferralUsers(scoutId);
+  } catch (error) {
+    log.error('Error recording referral bonus', { error, builderId: builderNft.builderId, userId: scoutId });
+  }
+
+  await refreshNftPurchaseStats({
+    scoutId,
+    builderId: builderNft.builderId,
+    season: builderNft.season
+  });
 
   return { balance };
 }

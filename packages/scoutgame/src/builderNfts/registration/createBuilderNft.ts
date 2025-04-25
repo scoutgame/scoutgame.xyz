@@ -1,6 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { formatUnits } from 'viem';
 
 import { getNFTReadonlyClient } from '../../protocol/clients/getNFTClient';
+import { devTokenDecimals } from '../../protocol/constants';
 import { uploadArtwork } from '../artwork/uploadArtwork';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadShareImage } from '../artwork/uploadShareImage';
@@ -62,6 +64,7 @@ export async function createBuilderNft({
       contractAddress,
       tokenId: Number(tokenId),
       season,
+      currentPrice: BigInt(parseInt(formatUnits(currentPrice, devTokenDecimals))),
       currentPriceDevToken: currentPrice.toString(),
       imageUrl: fileUrl,
       congratsImageUrl

@@ -18,7 +18,7 @@ export function ScoutStats({
       <Stack flexDirection='row' justifyContent='space-between'>
         <Stack flexDirection='row' gap={1}>
           <Typography color='green.main'>{scoutPoints || 0}</Typography>
-          <Image src='/images/icons/binoculars-green.svg' width='25' height='25' alt='scout game icon' />
+          <Image src='/images/dev-token-logo.png' width='25' height='25' alt='DEV token' />
         </Stack>
         <Typography color='green.main'>{buildersScouted} Developers</Typography>
         <Stack flexDirection='row' gap={1} alignItems='center'>

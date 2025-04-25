@@ -15,9 +15,9 @@ import {
 import { MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
 import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -60,7 +60,13 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
       disabled={registered}
       variant='contained'
       color='secondary'
-      endIcon={registered ? <CheckCircleIcon color='inherit' /> : <PointsIcon color='inherit' />}
+      endIcon={
+        registered ? (
+          <CheckCircleIcon color='inherit' />
+        ) : (
+          <Image src='/images/points.png' alt='Points' width={20} height={20} />
+        )
+      }
       onClick={handleRegister}
       sx={{ whiteSpace: 'nowrap', width: { xs: '100%', md: 'auto' } }}
     >

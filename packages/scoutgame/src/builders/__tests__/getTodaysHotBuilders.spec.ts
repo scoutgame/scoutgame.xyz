@@ -10,7 +10,10 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentWeek: jest.fn(() => '2020-W40'),
   getPreviousWeek: jest.fn(() => '2020-W39'),
   getCurrentSeason: jest.fn(() => ({ start: mockSeason })),
-  getCurrentSeasonStart: jest.fn(() => mockSeason)
+  getCurrentSeasonStart: jest.fn(() => mockSeason),
+  getSeasonConfig: jest.fn(() => ({
+    gemsPerRank: 10
+  }))
 }));
 
 const { getTodaysHotBuilders } = await import('../getTodaysHotBuilders');

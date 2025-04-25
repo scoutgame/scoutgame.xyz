@@ -12,19 +12,6 @@ export function GemsIcon({ size = 20, color }: { size?: number; color?: 'bronze'
   return <Image width={size} height={size} src={src} alt='' />;
 }
 
-const pointsSrc = {
-  orange: '/images/icons/binoculars-orange.svg',
-  green: '/images/icons/binoculars-green.svg',
-  blue: '/images/icons/binoculars-blue.svg',
-  inherit: '/images/icons/binoculars-inherit.svg',
-  default: '/images/icons/binoculars.svg'
-} as const;
-
-export function PointsIcon({ size = 20, color }: { size?: number; color?: 'orange' | 'green' | 'blue' | 'inherit' }) {
-  const src = (color && pointsSrc[color]) || pointsSrc.default;
-  return <Image width={size} height={size} src={src} alt='' style={{ fill: 'red !important' }} />;
-}
-
 export function TransactionIcon({ size = 20 }: { size?: number }) {
   return <Image width={size} height={size} src='/images/icons/transaction.svg' alt='' />;
 }

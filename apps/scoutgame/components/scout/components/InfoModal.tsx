@@ -15,15 +15,15 @@ function ScoutInfoContent() {
         RANK
       </Typography>
       <Typography mb={2}>
-        Scout's current rank in the season based on Scout Points earned to date. Scouts earn Scout Points by holding the
+        Scout's current rank in the season based on DEV Tokens earned to date. Scouts earn DEV Tokens by holding the
         Cards of Developers participating in the weekly Gem competition by contributing to qualified open source
         repositories.
       </Typography>
 
       <Typography variant='body2' fontWeight='bold'>
-        POINTS
+        TOKENS
       </Typography>
-      <Typography mb={2}>Scout Points earned by the Scout this season to date.</Typography>
+      <Typography mb={2}>DEV Tokens earned by the Scout this season to date.</Typography>
 
       <Typography variant='body2' fontWeight='bold'>
         DEVELOPERS

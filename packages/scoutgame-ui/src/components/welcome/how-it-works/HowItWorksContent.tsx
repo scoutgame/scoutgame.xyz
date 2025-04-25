@@ -1,8 +1,8 @@
 'use client';
 
 import { Button, List, ListItem, ListItemAvatar, Stack, Typography } from '@mui/material';
-import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
+import Image from 'next/image';
 import type { MouseEventHandler } from 'react';
 
 export function HowItWorksContent({ onClickContinue }: { onClickContinue?: MouseEventHandler }) {
@@ -39,7 +39,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: Mouse
                   fontWeight='inherit'
                   style={{ display: 'inline-flex', gap: 4 }}
                 >
-                  points <PointsIcon color='blue' size={iconSize} />
+                  points <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
                 </Typography>
               </strong>{' '}
               or <strong>ETH / USDC</strong> on
@@ -67,7 +67,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: Mouse
                 fontWeight='inherit'
                 style={{ display: 'inline-flex', gap: 4 }}
               >
-                points <PointsIcon color='blue' size={iconSize} />
+                points <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
               </Typography>
               {'  '}
               increase

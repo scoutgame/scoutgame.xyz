@@ -182,7 +182,7 @@ export async function findAndIndexMissingPurchases({
               blockNumber: missingTx.blockNumber
             }));
 
-        const asPoints = Number(price / BigInt(10 ** devTokenDecimals));
+        const tokenValue = Number(price / BigInt(10 ** devTokenDecimals));
 
         const singleEvent = transferSingleEventsMapped[uniqueNftPurchaseEventKey(missingTx)];
 
@@ -209,7 +209,7 @@ export async function findAndIndexMissingPurchases({
 
         await recordOnchainNftMint({
           amount: Number(singleEvent.args.value),
-          pointsValue: asPoints,
+          tokenValue,
           builderNftId: matchingNft.id,
           recipientAddress: address.toLowerCase() as Address,
           txHash: missingTx.transactionHash,

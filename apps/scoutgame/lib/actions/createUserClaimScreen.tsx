@@ -1,13 +1,12 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
-import { getLastWeek } from '@packages/dates/utils';
 import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
 import { baseUrl } from '@packages/utils/constants';
 import puppeteer from 'puppeteer';
 
-import { PointsClaimBuilderScreen } from 'components/claim/components/PointsClaimScreen/PointsClaimModal/PointsClaimBuilderScreen';
-import { PointsClaimScoutScreen } from 'components/claim/components/PointsClaimScreen/PointsClaimModal/PointsClaimScoutScreen';
+import { TokensClaimBuilderScreen } from 'components/claim/components/TokensClaimScreen/TokensClaimModal/TokensClaimBuilderScreen';
+import { TokensClaimScoutScreen } from 'components/claim/components/TokensClaimScreen/TokensClaimModal/TokensClaimScoutScreen';
 
 export async function createUserClaimScreen({ userId, week }: { userId: string; week: string }) {
   const { renderToString } = await import('react-dom/server');
@@ -28,17 +27,17 @@ export async function createUserClaimScreen({ userId, week }: { userId: string; 
 
   try {
     const component = isBuilder ? (
-      <PointsClaimBuilderScreen
+      <TokensClaimBuilderScreen
         displayName={displayName}
-        claimedPoints={claimedPoints}
+        claimedTokens={claimedPoints}
         repos={repos}
         // Need to pass baseUrl to the component to load the fonts and images
         baseUrl={baseUrl}
       />
     ) : (
-      <PointsClaimScoutScreen
+      <TokensClaimScoutScreen
         displayName={displayName}
-        claimedPoints={claimedPoints}
+        claimedTokens={claimedPoints}
         builders={builders}
         baseUrl={baseUrl}
       />

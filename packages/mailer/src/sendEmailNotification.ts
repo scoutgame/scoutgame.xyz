@@ -100,7 +100,7 @@ export const NotificationTypesRecord = {
   weekly_claim: {
     template: 'Weekly Claim',
     subject: ({ partner_rewards }: Variables['weekly_claim']) =>
-      `Claim Your Scout Points ${partner_rewards ? '& Partner Rewards' : ''} This Week! 🎉`
+      `Claim Your DEV Tokens ${partner_rewards ? '& Partner Rewards' : ''} This Week! 🎉`
   },
   zero_weekly_claim: {
     template: 'Zero weekly claim',

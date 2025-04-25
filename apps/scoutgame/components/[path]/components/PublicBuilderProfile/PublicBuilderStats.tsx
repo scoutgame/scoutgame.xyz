@@ -26,10 +26,10 @@ export function PublicBuilderStats({
           {seasonPoints || 0}
         </Typography>
         <Image
-          src='/images/icons/binoculars-orange.svg'
+          src='/images/dev-token-logo.png'
           width={isDesktop ? '25' : '16'}
           height={isDesktop ? '25' : '16'}
-          alt='scout game icon'
+          alt='DEV token'
         />
         <Typography fontWeight={500} variant={isDesktop ? 'h6' : 'body2'} color='orange.main'>
           ({allTimePoints || 0})
