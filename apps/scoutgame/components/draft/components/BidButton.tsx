@@ -11,7 +11,7 @@ import { useGlobalModal } from 'components/common/ModalProvider';
 export function BidButton({ developerPath, bidsReceived }: { developerPath: string; bidsReceived: number }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
-  const draftIsOver = true; // isEndOfDraftWeek();
+  const draftIsOver = isEndOfDraftWeek();
   const draftEnabled = isDraftEnabled() && !draftIsOver;
   const router = useRouter();
 
