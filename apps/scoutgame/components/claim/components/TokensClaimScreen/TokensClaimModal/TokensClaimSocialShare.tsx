@@ -4,7 +4,7 @@ import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
 
 type ShareMessageProps = {
-  totalUnclaimedPoints: number;
+  totalUnclaimedTokens: number;
   isBuilder: boolean;
   platform: 'x' | 'telegram' | 'warpcast';
   userPath: string;
@@ -12,7 +12,7 @@ type ShareMessageProps = {
   week: string;
 };
 
-export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'>) {
+export function TokensClaimSocialShare(props: Omit<ShareMessageProps, 'platform'>) {
   const isMd = useMdScreen();
   const { user } = useUser();
 
@@ -51,7 +51,7 @@ export function PointsClaimSocialShare(props: Omit<ShareMessageProps, 'platform'
 }
 
 function getShareMessage({
-  totalUnclaimedPoints,
+  totalUnclaimedTokens,
   referralCode,
   isBuilder,
   platform,
@@ -61,8 +61,8 @@ function getShareMessage({
 }: ShareMessageProps & { referralCode?: string }) {
   const imageUrl = `${window.location.origin}/points-claim/${userPath}?week=${week}`;
   let shareMessage = isBuilder
-    ? `I scored ${totalUnclaimedPoints} DEV Tokens this week as a Top Developer!`
-    : `I scored ${totalUnclaimedPoints} DEV Tokens this week as a Top Scout!`;
+    ? `I earned ${totalUnclaimedTokens} DEV Tokens this week as a Top Developer!`
+    : `I earned ${totalUnclaimedTokens} DEV Tokens this week as a Top Scout!`;
   // Twitter discounts tweets with links
   if (platform === 'x') {
     shareMessage += `\n\nI'm playing @scoutgamexyz.\n\n`;

@@ -6,9 +6,9 @@ import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import { getPointsReceiptsRewards } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 
-import { PointsTable } from './PointsTable';
+import { TokensTable } from './TokensTable';
 
-export async function ClaimedPointsTable() {
+export async function ClaimedTokensTable() {
   const user = await getUserFromSession();
 
   if (!user) {
@@ -36,7 +36,7 @@ export async function ClaimedPointsTable() {
   const [pointsReceiptRewards, partnerRewards] = data;
 
   return (
-    <PointsTable
+    <TokensTable
       emptyMessage='History yet to be made.'
       pointsReceiptRewards={pointsReceiptRewards}
       partnerRewards={partnerRewards}

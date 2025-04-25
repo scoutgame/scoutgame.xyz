@@ -6,10 +6,10 @@ import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getCla
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { Suspense } from 'react';
 
-import { PointsClaimScreen } from './PointsClaimScreen/PointsClaimScreen';
-import { UnclaimedPointsTable } from './PointsTable/UnclaimedPointsTable';
+import { UnclaimedTokensTable } from './PointsTable/UnclaimedTokensTable';
+import { TokensClaimScreen } from './TokensClaimScreen/TokensClaimScreen';
 
-export async function PointsClaimContainer() {
+export async function TokensClaimContainer() {
   const session = await getSession();
   const scoutId = session.scoutId;
 
@@ -31,7 +31,7 @@ export async function PointsClaimContainer() {
 
   return (
     <>
-      <PointsClaimScreen
+      <TokensClaimScreen
         totalUnclaimedPoints={points}
         builders={builders}
         repos={repos}
@@ -41,7 +41,7 @@ export async function PointsClaimContainer() {
       />
       {points === 0 && unclaimedPartnerRewards.length === 0 ? null : (
         <Suspense fallback={<LoadingTable />}>
-          <UnclaimedPointsTable />
+          <UnclaimedTokensTable />
         </Suspense>
       )}
     </>

@@ -1,20 +1,17 @@
-import { getCurrentSeasonStart, getLastWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
 import { primaryTextColorDarkMode, secondaryText } from '@packages/scoutgame-ui/theme/colors';
 import React from 'react';
 
-export function PointsClaimScoutScreen({
-  claimedPoints,
+export function TokensClaimScoutScreen({
+  claimedTokens,
   displayName,
   builders,
   baseUrl = ''
 }: {
   baseUrl?: string;
   displayName: string;
-  claimedPoints: number;
+  claimedTokens: number;
   builders: { avatar: string | null; displayName: string }[];
 }) {
-  const lastWeek = getSeasonWeekFromISOWeek({ season: getCurrentSeasonStart(), week: getLastWeek() });
-
   return (
     <div
       style={{
@@ -60,7 +57,7 @@ export function PointsClaimScoutScreen({
           textAlign: 'center'
         }}
       >
-        scored {claimedPoints} DEV Tokens <br /> in week {lastWeek} of
+        scored {claimedTokens} DEV Tokens <br /> in
       </div>
 
       <div

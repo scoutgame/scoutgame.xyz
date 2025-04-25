@@ -19,7 +19,7 @@ const rewardTypes = [
   'octant_base_contribution'
 ];
 
-export function PointsTable({
+export function TokensTable({
   pointsReceiptRewards,
   partnerRewards,
   title,

@@ -3,6 +3,7 @@
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { getLastWeek } from '@packages/dates/utils';
 import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
@@ -16,18 +17,18 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { formatUnits } from 'viem';
 import { useWalletClient } from 'wagmi';
 
-import { claimPointsAction } from 'lib/actions/claimPointsAction';
 import { handleOnchainClaimAction } from 'lib/actions/handleOnchainClaimAction';
 import { revalidateClaimPointsAction } from 'lib/actions/revalidateClaimPointsAction';
 
 import { BonusPartnersDisplay } from './BonusPartnersDisplay';
 import { PartnerRewardsClaimButton } from './PartnerRewardsClaimButton/PartnerRewardsClaimButton';
-import { PointsClaimButton } from './PointsClaimButton';
-import { PointsClaimSocialShare } from './PointsClaimModal/PointsClaimSocialShare';
+import { TokensClaimButton } from './TokensClaimButton';
+import { TokensClaimSocialShare } from './TokensClaimModal/TokensClaimSocialShare';
 
-type PointsClaimScreenProps = {
+type TokensClaimScreenProps = {
   totalUnclaimedPoints: number;
   partnerRewards: UnclaimedPartnerReward[];
   builders: {
@@ -39,24 +40,23 @@ type PointsClaimScreenProps = {
   processingPayouts: boolean;
 };
 
-export function PointsClaimScreen(props: PointsClaimScreenProps) {
+export function TokensClaimScreen(props: TokensClaimScreenProps) {
   return (
     <RainbowKitProvider>
-      <PointsClaimScreenComponent {...props} />
+      <TokensClaimScreenComponent {...props} />
     </RainbowKitProvider>
   );
 }
 
-function PointsClaimScreenComponent({
+function TokensClaimScreenComponent({
   totalUnclaimedPoints,
   partnerRewards,
   builders,
   repos,
   onchainClaimData,
   processingPayouts
-}: PointsClaimScreenProps) {
-  const { executeAsync: claimPoints, isExecuting, result } = useAction(claimPointsAction);
-  const { executeAsync: handleOnchainClaim } = useAction(handleOnchainClaimAction, {
+}: TokensClaimScreenProps) {
+  const { executeAsync: handleOnchainClaim, result } = useAction(handleOnchainClaimAction, {
     onSuccess() {
       toast.success('You claimed your points successfully');
     },
@@ -74,16 +74,17 @@ function PointsClaimScreenComponent({
 
   const bonusPartners = partnerRewards.map((reward) => reward.partner);
 
-  const handleClaim = async () => {
-    await claimPoints();
-    await refreshUser();
-    // only show the modal if there's something worth showing, eg points only came from selling NFTs
-    if (builders.length > 0 || repos.length > 0) {
-      setShowModal(true);
-    } else {
-      await revalidateClaimPoints();
-    }
-  };
+  const totalUnclaimedTokens = onchainClaimData
+    ? Number(
+        formatUnits(
+          BigInt(onchainClaimData.weeklyProofs.reduce((acc, claim) => acc + Number(claim.amount), 0)),
+          devTokenDecimals
+        )
+      )
+    : 0;
+
+  // use last week as claims can span multiple weeks
+  const week = getLastWeek();
 
   async function handleWalletClaim() {
     if (!walletClient) {
@@ -197,10 +198,9 @@ function PointsClaimScreenComponent({
                     connectedAddress !== onchainClaimData.address.toLowerCase() ? (
                       <WalletLogin />
                     ) : (
-                      <PointsClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+                      <TokensClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
                     )
                   ) : null}
-                  {!onchainClaimData && <PointsClaimButton isExecuting={isExecuting} handleClaim={handleClaim} />}
                 </Box>
               </Stack>
             </>
@@ -283,17 +283,17 @@ function PointsClaimScreenComponent({
                   height: '100%',
                   objectFit: 'contain'
                 }}
-                src={`https://cdn.charmverse.io/points-claim/${user.id}/${result.data.week}.png`}
+                src={`https://cdn.charmverse.io/points-claim/${user.id}/${week}.png`}
                 alt='Claim success modal'
               />
             </Stack>
             <Stack width='100%'>
-              <PointsClaimSocialShare
+              <TokensClaimSocialShare
                 isBuilder={repos.length > 0}
-                totalUnclaimedPoints={result.data.claimedPoints / 10 ** devTokenDecimals}
+                totalUnclaimedTokens={totalUnclaimedTokens}
                 builders={builders}
                 userPath={user.path}
-                week={result.data.week}
+                week={week}
               />
             </Stack>
           </>

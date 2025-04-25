@@ -5,9 +5,9 @@ import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartner
 import { checkIsProcessingPayouts } from '@packages/scoutgame/points/checkIsProcessingPayouts';
 import { getPointsReceiptsRewards } from '@packages/scoutgame/points/getPointsReceiptsRewards';
 
-import { PointsTable } from './PointsTable';
+import { TokensTable } from './TokensTable';
 
-export async function UnclaimedPointsTable() {
+export async function UnclaimedTokensTable() {
   const session = await getSession();
   const scoutId = session.scoutId;
 
@@ -37,7 +37,7 @@ export async function UnclaimedPointsTable() {
   const [pointsReceiptRewards, partnerRewards, processingPayouts = false] = data;
 
   return (
-    <PointsTable
+    <TokensTable
       emptyMessage='Nice, you have claimed all of your rewards to date!'
       pointsReceiptRewards={pointsReceiptRewards}
       partnerRewards={partnerRewards}

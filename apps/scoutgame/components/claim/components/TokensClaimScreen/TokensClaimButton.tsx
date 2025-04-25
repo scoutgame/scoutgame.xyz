@@ -3,7 +3,7 @@
 import { Button } from '@mui/material';
 import type { SxProps } from '@mui/material';
 
-export function PointsClaimButton({
+export function TokensClaimButton({
   isExecuting,
   handleClaim,
   sx
