@@ -64,7 +64,7 @@ export async function createBuilderNft({
       contractAddress,
       tokenId: Number(tokenId),
       season,
-      currentPrice: Number(formatUnits(currentPrice, devTokenDecimals)),
+      currentPrice: BigInt(formatUnits(currentPrice, devTokenDecimals)),
       currentPriceDevToken: currentPrice.toString(),
       imageUrl: fileUrl,
       congratsImageUrl

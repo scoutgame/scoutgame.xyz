@@ -45,7 +45,7 @@ export async function refreshBuilderNftPrice({
         id: existingNft.id
       },
       data: {
-        currentPrice: Number(formatUnits(currentPrice, devTokenDecimals)),
+        currentPrice: BigInt(formatUnits(currentPrice, devTokenDecimals)),
         currentPriceDevToken: currentPrice.toString()
       }
     });
