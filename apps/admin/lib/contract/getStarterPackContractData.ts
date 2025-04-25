@@ -5,7 +5,6 @@ import { getStarterNFTContractAddress } from '@packages/scoutgame/builderNfts/co
 import { getProxyClient } from '@packages/scoutgame/protocol/clients/getProxyClient';
 import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import type { Address } from 'viem';
-import { optimism } from 'viem/chains';
 
 import { aggregateNftSalesData, type NftSalesData } from './aggregateNftSalesData';
 

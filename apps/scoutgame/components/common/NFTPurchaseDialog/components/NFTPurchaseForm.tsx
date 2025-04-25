@@ -1,20 +1,14 @@
 'use client';
 
 import env from '@beam-australia/react-env';
-import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma';
-import { ChainId } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
 import { InfoOutlined as InfoIcon } from '@mui/icons-material';
 import {
-  Button,
   Alert,
   Box,
+  Button,
   CircularProgress,
-  FormControlLabel,
-  Paper,
-  Radio,
-  RadioGroup,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -28,8 +22,8 @@ import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNF
 import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import {
   devTokenContractAddress,
-  scoutProtocolChainId,
-  devTokenDecimals
+  devTokenDecimals,
+  scoutProtocolChainId
 } from '@packages/scoutgame/protocol/constants';
 import { IconButton } from '@packages/scoutgame-ui/components/common/Button/IconButton';
 import { PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
@@ -41,7 +35,6 @@ import type { MinimalUserInfo } from '@packages/users/interfaces';
 import { isTestEnv } from '@packages/utils/constants';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
@@ -53,8 +46,8 @@ import { useGetERC20Allowance } from '../hooks/useGetERC20Allowance';
 import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
 
 import { getCurrencyContract } from './ChainSelector/chains';
-import { BlockchainSelect } from './ChainSelector/ChainSelector';
 import type { SelectedPaymentOption } from './ChainSelector/ChainSelector';
+import { BlockchainSelect } from './ChainSelector/ChainSelector';
 import { ERC20ApproveButton } from './ERC20Approve';
 import { NumberInputField } from './NumberField';
 import { SuccessView } from './SuccessView';
@@ -212,7 +205,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     contractAddress,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: getCurrencyContract(selectedPaymentOption),
-    tokensToPurchase: BigInt(tokensToBuy)
+    tokensToPurchase: BigInt(tokensToBuy),
+    isStarterContract: builder.nftType === 'starter_pack'
   });
 
   const selectedChainCurrency = getCurrencyContract(selectedPaymentOption) as Address;

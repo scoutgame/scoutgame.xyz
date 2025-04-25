@@ -7,6 +7,7 @@ export type ISOWeek = string; // isoweek, e.g. '2024-W01'
 
 export type SeasonConfig = {
   title: string;
+  id: string;
   start: ISOWeek;
   preseason?: boolean;
   starterNftAddress: Address;
@@ -24,7 +25,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     defaultNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    id: 'dev-season'
   },
   // pre-release season
   {
@@ -33,7 +35,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     defaultNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    id: 'pre-season-0'
   },
   // Preseason 1
   {
@@ -42,7 +45,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0xd0b718589a51b07d05f03b8150e830d3627da972',
     defaultNftAddress: '0x743ec903FE6D05E73b19a6DB807271bb66100e83',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    id: 'pre-season-1'
   },
   // Preseason 2
   {
@@ -51,7 +55,8 @@ export const seasons: SeasonConfig[] = [
     defaultNftAddress: '0x6fbbd55274169d67f6fe9c868327003c90143440',
     title: 'Season 2',
     weeksPerSeason: 15, // extended season
-    preseason: true
+    preseason: true,
+    id: 'pre-season-2'
   },
   ...(isProdEnv
     ? [
@@ -61,7 +66,8 @@ export const seasons: SeasonConfig[] = [
           starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
           defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
           weeksPerSeason: 1,
-          draft: true
+          draft: true,
+          id: 'draft-season'
         },
         // Season 1
         {
@@ -69,16 +75,18 @@ export const seasons: SeasonConfig[] = [
           title: 'Season 1',
           starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
           defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          weeksPerSeason: 13
+          weeksPerSeason: 13,
+          id: 'season-1'
         }
       ]
     : [
         {
-          start: '2025-W17', // April 28th 2025
+          start: '2025-W17', // April 21th 2025
           title: 'Season 1',
           starterNftAddress: '0x00Cda67D2254D6b63b6cd21701FCd8862060e7cd' as Address,
           defaultNftAddress: '0x956Fe293b683599ef2Aad565c107d8B844B148B6' as Address,
-          weeksPerSeason: 13
+          weeksPerSeason: 13,
+          id: 'season-1'
         }
       ])
 ] satisfies SeasonConfig[];
