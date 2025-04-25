@@ -14,6 +14,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 export type ConnectedWalletDialogProps = DialogProps & {
   open: boolean;
   onClose: VoidFunction;
+  hideCloseButton?: boolean;
   children?: ReactNode;
 };
 

@@ -10,11 +10,12 @@ export function Dialog({
 }: Omit<DialogProps, 'children' | 'onClose'> & {
   children: ReactNode;
   onClose?: () => void;
+  hideCloseButton?: boolean;
 }) {
   return (
     <MuiDialog {...props}>
       {props.title && <DialogTitle color='secondary'>{props.title}</DialogTitle>}
-      {props.onClose && <CloseButton onClick={props.onClose} />}
+      {!props.hideCloseButton && props.onClose && <CloseButton onClick={props.onClose} />}
       <DialogContent sx={{ pt: 0 }}>{children}</DialogContent>
     </MuiDialog>
   );

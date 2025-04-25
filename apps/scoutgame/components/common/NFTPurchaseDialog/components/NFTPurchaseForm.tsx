@@ -88,7 +88,7 @@ export function NFTPurchaseForm(props: NFTPurchaseProps) {
 export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const season = getCurrentSeasonStart();
 
-  const { user, refreshUser } = useUser();
+  const { user } = useUser();
   const builderId = builder.id;
   const initialQuantities = [1, 11, 111];
   const pricePerNft = builder.price ? Number(builder.price) / 10 ** devTokenDecimals : '';
