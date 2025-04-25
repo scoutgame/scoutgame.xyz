@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge, Button, Tooltip } from '@mui/material';
+import { isEndOfDraftWeek } from '@packages/dates/utils';
 import { isDraftEnabled } from '@packages/scoutgame/drafts/checkDraftDates';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useRouter } from 'next/navigation';
@@ -10,7 +11,7 @@ import { useGlobalModal } from 'components/common/ModalProvider';
 export function BidButton({ developerPath, bidsReceived }: { developerPath: string; bidsReceived: number }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
-  const draftEnabled = isDraftEnabled();
+  const draftEnabled = isDraftEnabled() && !isEndOfDraftWeek();
   const router = useRouter();
 
   const button = (
