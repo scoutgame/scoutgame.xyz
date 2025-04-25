@@ -17,7 +17,7 @@ const pointsSrc = {
   green: '/images/icons/binoculars-green.svg',
   blue: '/images/icons/binoculars-blue.svg',
   inherit: '/images/icons/binoculars-inherit.svg',
-  default: '/images/icons/binoculars.svg'
+  default: '/images/dev-token-logo.png'
 } as const;
 
 export function PointsIcon({ size = 20, color }: { size?: number; color?: 'orange' | 'green' | 'blue' | 'inherit' }) {

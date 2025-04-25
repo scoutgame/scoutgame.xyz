@@ -132,7 +132,7 @@ export function BuilderShareImage({
             <h6 style={{ fontSize: '14px', color: '#69DDFF', margin: 0 }}>THIS SEASON</h6>
             <div style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
               <span>{seasonPoints}</span>
-              <img width={21} height={12} src={`${domain}/images/icons/binoculars.svg`} alt='points' />
+              <img width={21} height={12} src={`${domain}/images/dev-token-logo.png`} alt='DEV Token' />
             </div>
             <p style={{ margin: 0 }}>{totalScouts} Scouts</p>
             <p style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
@@ -151,7 +151,7 @@ export function BuilderShareImage({
             <h6 style={{ fontSize: '14px', color: '#69DDFF', margin: 0 }}>CURRENT PRICE</h6>
             <p style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
               <span>{builderPrice}</span>
-              <img width={21} height={12} src={`${domain}/images/icons/binoculars.svg`} alt='points' />
+              <img width={21} height={12} src={`${domain}/images/dev-token-logo.png`} alt='DEV Token' />
             </p>
           </div>
         </div>

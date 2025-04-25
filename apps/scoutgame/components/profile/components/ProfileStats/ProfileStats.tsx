@@ -5,10 +5,15 @@ import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import type { UserStats } from '@packages/users/getUserStats';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useAccount } from 'wagmi';
+
+import { useDevTokenBalance } from 'hooks/useDevTokenBalance';
 
 export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: points }: UserStats) {
   const [selectedDuration, setSelectedDuration] = useState<'season' | 'allTime'>('season');
   const isDesktop = useMdScreen();
+  const { address } = useAccount();
+  const { balance } = useDevTokenBalance({ address });
 
   return (
     <Paper
@@ -34,9 +39,9 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
         </Typography>
         <Stack flexDirection='row' gap={1} alignItems='center'>
           <Typography variant={isDesktop ? 'h3' : 'h4'} fontWeight={400}>
-            {points || 0}
+            {balance}
           </Typography>
-          <Image src='/images/icons/binoculars.svg' width='40' height='40' alt='scout game icon' />
+          <Image src='/images/dev-token-logo.png' width='40' height='40' alt='DEV Token' />
         </Stack>
       </Stack>
       <Stack gap={2}>

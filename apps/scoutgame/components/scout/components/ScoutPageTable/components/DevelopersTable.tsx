@@ -226,7 +226,7 @@ export function DevelopersTable({
             <TableCell align='right' width={isMdScreen ? 150 : 'auto'}>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>{builder.estimatedPayout}</TableCellText>
-                {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon' />}
+                {isMdScreen && <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV Token' />}
               </Stack>
             </TableCell>
             <TableCell align='center'>
@@ -234,7 +234,7 @@ export function DevelopersTable({
                 <TableCellText color='text.primary'>
                   {Number(builder.price || 0) / 10 ** devTokenDecimals}
                 </TableCellText>
-                {isMdScreen && <Image width={15} height={15} src='/images/icons/binoculars.svg' alt='points icon ' />}
+                {isMdScreen && <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV Token' />}
               </Stack>
             </TableCell>
           </TableRow>

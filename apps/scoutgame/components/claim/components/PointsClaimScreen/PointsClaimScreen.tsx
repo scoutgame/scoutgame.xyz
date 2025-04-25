@@ -185,8 +185,8 @@ function PointsClaimScreenComponent({
                       width={35}
                       height={35}
                       style={{ marginRight: 10 }}
-                      src='/images/icons/binoculars.svg'
-                      alt='Scouts'
+                      src='/images/dev-token-logo.png'
+                      alt='DEV Token'
                     />{' '}
                     {bonusPartners.length > 0 ? '+ ' : ''}
                     <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
