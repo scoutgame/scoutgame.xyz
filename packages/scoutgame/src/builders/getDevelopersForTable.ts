@@ -337,6 +337,7 @@ export async function getDevelopersForTable({
             }
           }
         },
+        currentPrice: true,
         currentPriceDevToken: true
       }
     });
@@ -364,7 +365,7 @@ export async function getDevelopersForTable({
       lastItem && developers.length === limit
         ? {
             id: lastItem.createdAt.toISOString(),
-            value: Number(lastItem.currentPriceDevToken),
+            value: Number(lastItem.currentPrice),
             order,
             sortType: sortBy
           }

@@ -2,9 +2,12 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { BuilderNft } from '@charmverse/core/prisma';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
+import { format } from 'sharp';
+import { formatUnits } from 'viem';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { getNFTReadonlyClient } from '../protocol/clients/getNFTClient';
+import { devTokenDecimals } from '../protocol/constants';
 
 export async function refreshBuilderNftPrice({
   builderId,
@@ -42,6 +45,7 @@ export async function refreshBuilderNftPrice({
         id: existingNft.id
       },
       data: {
+        currentPrice: Number(formatUnits(currentPrice, devTokenDecimals)),
         currentPriceDevToken: currentPrice.toString()
       }
     });

@@ -1,8 +1,10 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { formatUnits } from 'ethers';
 import type { Address } from 'viem';
 
 import { getStarterNFTReadonlyClient } from '../../protocol/clients/getStarterNFTClient';
+import { devTokenDecimals } from '../../protocol/constants';
 import { uploadMetadata } from '../artwork/uploadMetadata';
 import { uploadStarterPackArtwork, uploadStarterPackArtworkCongrats } from '../artwork/uploadStarterPackArtwork';
 import { nftChain, getStarterNFTContractAddress } from '../constants';
@@ -65,6 +67,7 @@ export async function createBuilderNftStarterPack({
       contractAddress,
       tokenId: Number(tokenId),
       season,
+      currentPrice: Number(formatUnits(currentPrice, devTokenDecimals)),
       currentPriceDevToken: currentPrice.toString(),
       imageUrl: fileUrl,
       congratsImageUrl,
