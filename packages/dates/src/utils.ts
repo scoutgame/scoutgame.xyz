@@ -58,7 +58,7 @@ export function isDraftSeason(season: Season = getCurrentSeason().start): boolea
   return currentSeason.draft ?? false;
 }
 
-export function isEndOfDraftWeek(now: DateTime = DateTime.now().toUTC()): boolean {
+export function isEndOfDraftWeek(now: DateTime = DateTime.utc()): boolean {
   const isWeekend = now.weekday >= 6;
   return isWeekend;
 }

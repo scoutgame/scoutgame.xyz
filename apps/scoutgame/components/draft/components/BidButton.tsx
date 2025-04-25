@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge, Button, Tooltip } from '@mui/material';
+import { isEndOfDraftWeek } from '@packages/dates/utils';
 import { isDraftEnabled } from '@packages/scoutgame/drafts/checkDraftDates';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useRouter } from 'next/navigation';
@@ -10,7 +11,8 @@ import { useGlobalModal } from 'components/common/ModalProvider';
 export function BidButton({ developerPath, bidsReceived }: { developerPath: string; bidsReceived: number }) {
   const { openModal } = useGlobalModal();
   const { user } = useUser();
-  const draftEnabled = isDraftEnabled();
+  const draftIsOver = isEndOfDraftWeek();
+  const draftEnabled = isDraftEnabled() && !draftIsOver;
   const router = useRouter();
 
   const button = (
@@ -53,13 +55,9 @@ export function BidButton({ developerPath, bidsReceived }: { developerPath: stri
     </Badge>
   );
 
-  if (!draftEnabled) {
-    return (
-      <Tooltip title='Draft has closed or not started yet' placement='top'>
-        <div>{button}</div>
-      </Tooltip>
-    );
-  }
-
-  return button;
+  return (
+    <Tooltip title={draftEnabled ? '' : draftIsOver ? 'Draft has closed' : 'Draft has not started yet'} placement='top'>
+      <span>{button}</span>
+    </Tooltip>
+  );
 }
