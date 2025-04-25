@@ -3,6 +3,7 @@ import { AppProviders } from '@packages/scoutgame-ui/providers/AppProviders';
 import { DraftProvider } from '@packages/scoutgame-ui/providers/DraftProvider';
 import type { Metadata, Viewport } from 'next';
 import dynamic from 'next/dynamic';
+import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 
 import { ModalProvider } from 'components/common/ModalProvider';
@@ -68,6 +69,8 @@ export default async function RootLayout({
   children: ReactNode;
 }>) {
   const user = await getUserFromSession();
+  const headersList = await headers();
+  const cookieValue = headersList.get('cookie') ?? '';
 
   return (
     <html lang='en' dir='ltr' suppressHydrationWarning>
@@ -75,7 +78,7 @@ export default async function RootLayout({
         {/* load env vars for the frontend - note that the parent body tag is required for React to not complain */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src='/__ENV.js' />
-        <AppProviders user={user}>
+        <AppProviders cookieValue={cookieValue} user={user}>
           <DraftProvider>
             <ModalProvider>
               <ClientGlobals userId={user?.id} />
