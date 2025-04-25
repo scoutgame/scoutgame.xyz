@@ -1,3 +1,4 @@
+import { isProdEnv } from '@packages/utils/constants';
 import type { Address } from 'viem';
 
 export type ISOWeek = string; // isoweek, e.g. '2024-W01'
@@ -52,22 +53,34 @@ export const seasons: SeasonConfig[] = [
     weeksPerSeason: 15, // extended season
     preseason: true
   },
-  {
-    start: '2025-W17',
-    title: 'Draft Season',
-    starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 1,
-    draft: true
-  },
-  // Season 1
-  {
-    start: '2025-W18', // April 28th 2025
-    title: 'Season 1',
-    starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 13
-  }
+  ...(isProdEnv
+    ? [
+        {
+          start: '2025-W17',
+          title: 'Draft Season',
+          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          weeksPerSeason: 1,
+          draft: true
+        },
+        // Season 1
+        {
+          start: '2025-W18', // April 28th 2025
+          title: 'Season 1',
+          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          weeksPerSeason: 13
+        }
+      ]
+    : [
+        {
+          start: '2025-W17', // April 28th 2025
+          title: 'Season 1',
+          starterNftAddress: '0x00Cda67D2254D6b63b6cd21701FCd8862060e7cd' as Address,
+          defaultNftAddress: '0x956Fe293b683599ef2Aad565c107d8B844B148B6' as Address,
+          weeksPerSeason: 13
+        }
+      ])
 ] satisfies SeasonConfig[];
 
 export const seasonStarts = seasons.map((s) => s.start);
