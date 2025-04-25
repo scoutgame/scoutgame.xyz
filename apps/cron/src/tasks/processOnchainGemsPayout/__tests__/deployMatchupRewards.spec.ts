@@ -11,7 +11,7 @@ jest.unstable_mockModule('@packages/blockchain/airdrop/createThirdwebAirdropCont
 }));
 
 const { createThirdwebAirdropContract } = await import('@packages/blockchain/airdrop/createThirdwebAirdropContract');
-const { deployMatchupRewards } = await import('../deployMatchupRewards');
+const { deployMatchupRewards } = await import('../../processOnchainGemsPayout/deployMatchupRewards');
 
 describe('deployMatchupRewards', () => {
   const mockAirdropAddress = '0x123AirdropContractAddress';
