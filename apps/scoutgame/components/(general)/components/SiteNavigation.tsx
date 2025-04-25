@@ -1,7 +1,7 @@
 'use client';
 
 import { BottomNavigationAction } from '@mui/material';
-import { isDraftSeason } from '@packages/dates/utils';
+import { isDraftSeason, isEndOfDraftWeek } from '@packages/dates/utils';
 import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';

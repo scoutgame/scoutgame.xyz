@@ -34,7 +34,7 @@ export function HeaderMessage() {
   let message = '';
 
   if (draftSeason) {
-    if (isWeekend) {
+    if (isDraftOver) {
       message = 'Draft has ended';
     } else {
       message = `Draft ends in ${timeLeftStr}`;
