@@ -66,6 +66,15 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
               LinkComponent={Link}
             />
           ) : null}
+          {isEndOfDraftWeek() ? null : (
+            <BottomNavigationAction
+              label='Draft'
+              href='/draft'
+              value='draft'
+              icon={<ScoutIcon size='24px' />}
+              LinkComponent={Link}
+            />
+          )}
         </StyledBottomNavigation>
         <SignInModalMessage
           open={authPopup.open}
