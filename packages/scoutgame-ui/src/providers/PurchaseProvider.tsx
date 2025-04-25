@@ -4,13 +4,13 @@ import { checkDecentTransactionAction } from '@packages/scoutgame/builderNfts/ch
 import { nftChain } from '@packages/scoutgame/builderNfts/constants';
 import { saveDecentTransactionAction } from '@packages/scoutgame/builderNfts/saveDecentTransactionAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { devTokenDecimalsMultiplier, devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { devTokenContractAddress, devTokenDecimalsMultiplier } from '@packages/scoutgame/protocol/constants';
 import { useAction } from 'next-safe-action/hooks';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
-import { useSendTransaction } from 'wagmi';
+import { useSendTransaction, useWalletClient } from 'wagmi';
 
 import { useRefreshShareImage } from '../hooks/api/builders';
 
@@ -33,6 +33,17 @@ type MintTransactionInput = {
   };
 };
 
+type DevNftMintTransactionInput = {
+  scoutId: string;
+  builderTokenId: number;
+  contractAddress: Address;
+  tokensToBuy: number;
+  isStarterContract: boolean;
+  purchaseCost: number;
+  fromAddress: Address;
+  builderId: string;
+};
+
 type PurchaseContext = {
   isExecutingTransaction: boolean;
   isSavingDecentTransaction: boolean;
@@ -43,6 +54,7 @@ type PurchaseContext = {
   sendNftMintTransaction: (input: MintTransactionInput) => Promise<unknown>;
   clearPurchaseSuccess: () => void;
   purchaseSuccess: boolean;
+  sendDevNftMintTransaction: (input: DevNftMintTransactionInput) => Promise<any>;
 };
 
 export const PurchaseContext = createContext<Readonly<PurchaseContext | null>>(null);
@@ -51,6 +63,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
   const { trigger: refreshShareImage } = useRefreshShareImage();
   const { refreshUser } = useUser();
   const { sendTransactionAsync } = useSendTransaction();
+  const { data: walletClient } = useWalletClient();
 
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
 
@@ -121,6 +134,85 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
       });
     }
   });
+
+  const sendDevNftMintTransaction = useCallback(async (input: DevNftMintTransactionInput) => {
+    const {
+      scoutId,
+      builderTokenId,
+      tokensToBuy,
+      purchaseCost,
+      isStarterContract,
+      contractAddress,
+      fromAddress,
+      builderId
+    } = input;
+
+    if (!walletClient) {
+      throw new Error('Wallet client not found');
+    }
+
+    const txHash = await walletClient.writeContract({
+      address: contractAddress,
+      abi: [
+        {
+          name: 'mint',
+          inputs: [
+            {
+              name: 'account',
+              type: 'address'
+            },
+            {
+              name: 'tokenId',
+              type: 'uint256'
+            },
+            {
+              name: 'amount',
+              type: 'uint256'
+            },
+            ...(isStarterContract ? [{ name: 'scoutId', type: 'string' }] : [])
+          ],
+          outputs: []
+        }
+      ],
+      functionName: 'mint',
+      args: isStarterContract
+        ? [fromAddress, builderTokenId, tokensToBuy, scoutId]
+        : [fromAddress, builderTokenId, tokensToBuy]
+    });
+
+    toast.info('NFT purchase is sent and will be confirmed shortly');
+
+    const output = await saveDecentTransaction({
+      purchaseInfo: {
+        builderContractAddress: contractAddress,
+        tokenId: builderTokenId,
+        tokenAmount: tokensToBuy,
+        quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier),
+        quotedPriceCurrency: devTokenContractAddress
+      },
+      transactionInfo: {
+        sourceChainId: 8453,
+        sourceChainTxHash: txHash,
+        destinationChainId: 8453
+      },
+      user: {
+        id: builderId,
+        walletAddress: fromAddress
+      }
+    });
+
+    if (output?.serverError) {
+      scoutgameMintsLogger.error(`Saving mint transaction failed`, {
+        builderId,
+        contractAddress,
+        purchaseCost,
+        tokensToBuy,
+        txHash
+      });
+    } else {
+      scoutgameMintsLogger.info(`Successfully sent mint transaction`, { data: txHash });
+    }
+  }, []);
 
   const sendNftMintTransaction = useCallback(
     async (input: MintTransactionInput) => {
@@ -203,7 +295,8 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
       savedDecentTransaction,
       isSavingDecentTransaction,
       clearPurchaseSuccess,
-      purchaseSuccess
+      purchaseSuccess,
+      sendDevNftMintTransaction
     }),
     [
       isExecutingTransaction,
@@ -214,7 +307,8 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
       isSavingDecentTransaction,
       purchaseError,
       clearPurchaseSuccess,
-      purchaseSuccess
+      purchaseSuccess,
+      sendDevNftMintTransaction
     ]
   );
 

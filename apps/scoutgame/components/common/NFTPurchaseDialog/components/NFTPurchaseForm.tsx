@@ -87,14 +87,18 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const { address, chainId } = useAccount();
   const { error: addressError } = useUserWalletAddress(address);
-  const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
-    usePurchase();
+  const {
+    isExecutingTransaction,
+    sendNftMintTransaction,
+    isSavingDecentTransaction,
+    purchaseSuccess,
+    purchaseError,
+    sendDevNftMintTransaction
+  } = usePurchase();
   const trackEvent = useTrackEvent();
 
   const { switchChainAsync } = useSwitchChain();
   const { data: nftStats } = useGetBuilderNftStats({ builderId });
-
-  const builderContractReadonlyApiClient = getNFTReadonlyClient();
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({
     chainId: scoutProtocolChainId,
@@ -120,10 +124,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const [purchaseCost, setPurchaseCost] = useState(BigInt(0));
   const [builderTokenId, setBuilderTokenId] = useState<bigint>(BigInt(0));
 
-  const { purchaseCostInPoints, notEnoughPoints } = {
-    purchaseCostInPoints: purchaseCost / BigInt(10 ** devTokenDecimals),
-    notEnoughPoints: user && user.currentBalance && user.currentBalance < purchaseCost / BigInt(10 ** devTokenDecimals)
-  };
+  const purchaseCostInTokens = purchaseCost / BigInt(10 ** devTokenDecimals);
 
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
@@ -231,54 +232,74 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const hasInsufficientBalance = !!amountToPay && !!balanceInfo && balanceInfo.balance < amountToPay;
 
   const handlePurchase = async () => {
-    if (!decentTransactionInfo?.tx) {
-      return;
-    }
+    try {
+      setSubmitError(null);
 
-    if (chainId !== selectedPaymentOption.chainId) {
-      await switchChainAsync(
-        { chainId: selectedPaymentOption.chainId },
-        {
-          onError() {
-            toast.error('Failed to switch chain');
+      if (chainId !== selectedPaymentOption.chainId) {
+        await switchChainAsync(
+          { chainId: selectedPaymentOption.chainId },
+          {
+            onError() {
+              toast.error('Failed to switch chain');
+            }
           }
-        }
-      );
-    }
-
-    const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
-    setSubmitError(null);
-
-    sendNftMintTransaction({
-      txData: {
-        to: decentTransactionInfo.tx.to as Address,
-        data: decentTransactionInfo.tx.data as any,
-        value: _value
-      },
-      txMetadata: {
-        contractAddress,
-        fromAddress: address as Address,
-        sourceChainId: selectedPaymentOption.chainId,
-        builderTokenId: Number(builderTokenId),
-        builderId: builder.id,
-        purchaseCost: Number(purchaseCost),
-        tokensToBuy
+        );
       }
-    }).catch((error) => {
+
+      if (selectedPaymentOption.currency === 'DEV') {
+        if (!user || !user.id) {
+          throw new Error('User not found');
+        }
+
+        sendDevNftMintTransaction({
+          builderId: builder.id,
+          contractAddress,
+          purchaseCost: Number(purchaseCost),
+          tokensToBuy,
+          isStarterContract: builder.nftType === 'starter_pack',
+          fromAddress: address as Address,
+          builderTokenId: Number(builderTokenId),
+          scoutId: user?.id as string
+        });
+      } else {
+        if (!decentTransactionInfo?.tx) {
+          return;
+        }
+
+        const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
+
+        sendNftMintTransaction({
+          txData: {
+            to: decentTransactionInfo.tx.to as Address,
+            data: decentTransactionInfo.tx.data as any,
+            value: _value
+          },
+          txMetadata: {
+            contractAddress,
+            fromAddress: address as Address,
+            sourceChainId: selectedPaymentOption.chainId,
+            builderTokenId: Number(builderTokenId),
+            builderId: builder.id,
+            purchaseCost: Number(purchaseCost),
+            tokensToBuy
+          }
+        });
+      }
+
+      trackEvent('nft_purchase', {
+        amount: tokensToBuy,
+        builderPath: builder.path,
+        season: getCurrentSeasonStart(),
+        nftType: builder.nftType
+      });
+    } catch (error) {
       setSubmitError(
         typeof error === 'string'
           ? 'Error'
-          : error.message || 'Something went wrong. Check your wallet is connected and has a sufficient balance'
+          : (error as Error).message ||
+              'Something went wrong. Check your wallet is connected and has a sufficient balance'
       );
-    });
-
-    trackEvent('nft_purchase', {
-      amount: tokensToBuy,
-      paidWithPoints: false,
-      builderPath: builder.path,
-      season: getCurrentSeasonStart(),
-      nftType: builder.nftType
-    });
+    }
   };
 
   const isLoading = isSavingDecentTransaction || isLoadingDecentSdk || isFetchingPrice || isExecutingTransaction;
@@ -452,7 +473,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           <Typography align='left' flexGrow={1}>
             {purchaseCost && (
               <>
-                {purchaseCostInPoints.toLocaleString()}{' '}
+                {purchaseCostInTokens.toLocaleString()}{' '}
                 <Box component='span' display='inline' position='relative' top={4}>
                   <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
                 </Box>
@@ -517,7 +538,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             !scoutgameEthAddress ||
             isSavingDecentTransaction ||
             isExecutingTransaction ||
-            addressError
+            addressError ||
+            hasInsufficientBalance
           }
           data-test='purchase-button'
         >
