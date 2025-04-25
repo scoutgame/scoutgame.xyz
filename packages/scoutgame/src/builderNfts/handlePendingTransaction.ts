@@ -13,7 +13,6 @@ import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 import { devTokenDecimalsMultiplier } from '../protocol/constants';
 
 import { getNFTContractAddress, getStarterNFTContractAddress } from './constants';
-import { recordNftMint } from './recordNftMint';
 import { recordOnchainNftMint } from './recordOnchainNftMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
@@ -110,32 +109,17 @@ export async function handlePendingTransaction({
 
       const pendingTxContractAddress = pendingTx.contractAddress.toLowerCase();
 
-      const pointsValue = Number(pendingTx.targetAmountReceived / devTokenDecimalsMultiplier);
+      const tokenValue = Number(pendingTx.targetAmountReceived / devTokenDecimalsMultiplier);
 
-      if (
-        pendingTxContractAddress === scoutProtocolBuilderNftContractAddress?.toLowerCase() ||
-        pendingTxContractAddress === scoutProtocolBuilderStarterNftContractAddress?.toLowerCase()
-      ) {
-        await recordOnchainNftMint({
-          builderNftId: builderNft.id,
-          recipientAddress: pendingTx.senderAddress as `0x${string}`,
-          scoutId: pendingTx.userId,
-          amount: pendingTx.tokenAmount,
-          pointsValue,
-          txLogIndex: validatedMint.txLogIndex,
-          txHash
-        });
-      } else {
-        await recordNftMint({
-          amount: pendingTx.tokenAmount,
-          builderNftId: builderNft.id,
-          mintTxHash: txHash,
-          paidWithPoints: false,
-          pointsValue,
-          recipientAddress: pendingTx.senderAddress,
-          mintTxLogIndex: validatedMint.txLogIndex
-        });
-      }
+      await recordOnchainNftMint({
+        builderNftId: builderNft.id,
+        recipientAddress: pendingTx.senderAddress as `0x${string}`,
+        scoutId: pendingTx.userId,
+        amount: pendingTx.tokenAmount,
+        tokenValue,
+        txLogIndex: validatedMint.txLogIndex,
+        txHash
+      });
     }
   } catch (error) {
     if (error instanceof DecentTxFailedPermanently) {

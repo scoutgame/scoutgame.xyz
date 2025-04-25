@@ -245,46 +245,28 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           }
         );
       }
-
-      if (selectedPaymentOption.currency === 'DEV') {
-        if (!user || !user.id) {
-          throw new Error('User not found');
-        }
-
-        sendDevNftMintTransaction({
-          builderId: builder.id,
-          contractAddress,
-          purchaseCost: Number(purchaseCost),
-          tokensToBuy,
-          isStarterContract: builder.nftType === 'starter_pack',
-          fromAddress: address as Address,
-          builderTokenId: Number(builderTokenId),
-          scoutId: user?.id as string
-        });
-      } else {
-        if (!decentTransactionInfo?.tx) {
-          return;
-        }
-
-        const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
-
-        sendNftMintTransaction({
-          txData: {
-            to: decentTransactionInfo.tx.to as Address,
-            data: decentTransactionInfo.tx.data as any,
-            value: _value
-          },
-          txMetadata: {
-            contractAddress,
-            fromAddress: address as Address,
-            sourceChainId: selectedPaymentOption.chainId,
-            builderTokenId: Number(builderTokenId),
-            builderId: builder.id,
-            purchaseCost: Number(purchaseCost),
-            tokensToBuy
-          }
-        });
+      if (!decentTransactionInfo?.tx) {
+        return;
       }
+
+      const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
+
+      sendNftMintTransaction({
+        txData: {
+          to: decentTransactionInfo.tx.to as Address,
+          data: decentTransactionInfo.tx.data as any,
+          value: _value
+        },
+        txMetadata: {
+          contractAddress,
+          fromAddress: address as Address,
+          sourceChainId: selectedPaymentOption.chainId,
+          builderTokenId: Number(builderTokenId),
+          builderId: builder.id,
+          purchaseCost: Number(purchaseCost),
+          tokensToBuy
+        }
+      });
 
       trackEvent('nft_purchase', {
         amount: tokensToBuy,

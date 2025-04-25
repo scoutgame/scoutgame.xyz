@@ -35,16 +35,18 @@ export async function refreshScoutNftBalance({
     throw new Error('Missing contract client');
   }
 
+  const walletAddress = wallet.toLowerCase() as Address;
+
   const balance = await (nftType === 'starter_pack'
     ? starterPackContract.balanceOf({
         args: {
-          account: wallet,
+          account: walletAddress,
           id: BigInt(tokenId)
         }
       })
     : regularContract.balanceOf({
         args: {
-          account: wallet,
+          account: walletAddress,
           tokenId: BigInt(tokenId)
         }
       }));
@@ -53,7 +55,7 @@ export async function refreshScoutNftBalance({
     where: {
       builderNftId_walletAddress: {
         builderNftId: existingBuilderNft.id,
-        walletAddress: wallet
+        walletAddress
       }
     },
     update: {

@@ -155,6 +155,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
       address: contractAddress,
       abi: [
         {
+          type: 'function',
           name: 'mint',
           inputs: [
             {
