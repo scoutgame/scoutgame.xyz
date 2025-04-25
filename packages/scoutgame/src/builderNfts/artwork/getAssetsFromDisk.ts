@@ -1,18 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getSeasonConfig } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import type { Font } from 'satori';
 
 export function getAssetsFromDisk() {
-  const currentSeason = getCurrentSeasonStart();
+  const seasonConfig = getSeasonConfig(getCurrentSeasonStart());
   const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../../src'), 'assets');
-  const overlaysFolder = `${folder}/overlays/${currentSeason}`;
+  const overlaysFolder = `${folder}/overlays/${seasonConfig.id}`;
   const overlayFiles = fs.readdirSync(overlaysFolder).filter((file) => file.endsWith('.png'));
   const overlaysBase64 = overlayFiles
     .map((file) => {
-      if (file === 'starter_pack.png') {
+      if (file === 'starter.png') {
         return null;
       }
       const filePath = path.join(overlaysFolder, file);
@@ -20,8 +20,8 @@ export function getAssetsFromDisk() {
       return `data:image/png;base64,${data.toString('base64')}`;
     })
     .filter(isTruthy);
-  const starterPackOverlay = `${overlaysFolder}/starter_pack.png`;
-  const starterPackOverlayBase64 = `data:image/png;base64,${fs.readFileSync(starterPackOverlay).toString('base64')}`;
+  const starterOverlay = `${overlaysFolder}/starter.png`;
+  const starterOverlayBase64 = `data:image/png;base64,${fs.readFileSync(starterOverlay).toString('base64')}`;
   const noPfpAvatarFile = `${folder}/no_pfp_avatar.png`;
   const noPfpAvatarBase64 = `data:image/png;base64,${fs.readFileSync(noPfpAvatarFile).toString('base64')}`;
   const fontPath = `${folder}/fonts/K2D-Medium.ttf`;
@@ -32,7 +32,7 @@ export function getAssetsFromDisk() {
     style: 'normal',
     weight: 400
   };
-  return { font, noPfpAvatarBase64, overlaysBase64, starterPackOverlayBase64 };
+  return { font, noPfpAvatarBase64, overlaysBase64, starterOverlayBase64 };
 }
 
 // Function to determine font size
