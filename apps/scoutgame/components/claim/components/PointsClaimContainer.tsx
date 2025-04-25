@@ -1,7 +1,6 @@
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getUnclaimedPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
-import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
 import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';

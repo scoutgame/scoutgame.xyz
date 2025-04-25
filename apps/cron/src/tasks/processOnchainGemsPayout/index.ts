@@ -14,6 +14,8 @@ import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards
 import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { log } from './logger';
 
+export { log };
+
 export async function processOnchainGemsPayout(
   ctx: Context,
   { season = getCurrentSeasonStart(), now = DateTime.utc() }: { season?: string; now?: DateTime } = {}

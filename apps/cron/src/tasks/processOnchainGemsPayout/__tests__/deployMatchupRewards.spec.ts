@@ -1,17 +1,15 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { optimismTokenDecimals } from '@packages/blockchain/constants';
-import { mockBuilder, mockScout, mockMatchup, mockBuilderEvent, mockUserWeeklyStats } from '@packages/testing/database';
+import { mockBuilder, mockMatchup, mockScout, mockUserWeeklyStats } from '@packages/testing/database';
 import { parseUnits } from 'viem';
-import { optimism } from 'viem/chains';
 
 jest.unstable_mockModule('@packages/blockchain/airdrop/createThirdwebAirdropContract', () => ({
   createThirdwebAirdropContract: jest.fn()
 }));
 
 const { createThirdwebAirdropContract } = await import('@packages/blockchain/airdrop/createThirdwebAirdropContract');
-const { deployMatchupRewards } = await import('../../processOnchainGemsPayout/deployMatchupRewards');
+const { deployMatchupRewards } = await import('../deployMatchupRewards');
 
 describe('deployMatchupRewards', () => {
   const mockAirdropAddress = '0x123AirdropContractAddress';
