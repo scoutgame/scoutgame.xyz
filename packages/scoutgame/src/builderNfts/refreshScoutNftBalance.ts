@@ -63,7 +63,7 @@ export async function refreshScoutNftBalance({
     },
     create: {
       balance: Number(balance),
-      walletAddress: wallet,
+      walletAddress,
       builderNftId: existingBuilderNft.id
     }
   });

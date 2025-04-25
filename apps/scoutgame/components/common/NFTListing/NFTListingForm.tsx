@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { parseUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { useGetDeveloperToken } from '../../../hooks/api/builders';
@@ -29,7 +30,7 @@ export type NFTListingFormProps = {
 };
 
 export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
-  const [priceInUsdc, setPriceInUsdc] = useState(0);
+  const [price, setPrice] = useState(0);
   const { address: sellerWallet, chainId } = useAccount();
   const { executeAsync: recordNftListing, isExecuting } = useAction(recordNftListingAction);
   const { data: developerToken, isLoading } = useGetDeveloperToken({ builderId: builder.id, nftType: 'default' });
@@ -63,7 +64,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
 
       const order = await recordSeaportListing({
         sellerWallet,
-        price: BigInt(priceInUsdc * 10 ** 6),
+        price: parseUnits(price.toString(), 18),
         amount: 1,
         contractAddress: developerToken.contractAddress,
         tokenId: developerToken.tokenId.toString(),
@@ -72,7 +73,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
 
       await recordNftListing({
         builderNftId: developerToken.builderNftId,
-        price: priceInUsdc,
+        price,
         amount: 1,
         order,
         sellerWallet
@@ -90,7 +91,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
     } finally {
       setIsListing(false);
     }
-  }, [builder, priceInUsdc, sellerWallet, isExecuting, chainId, switchChainAsync, developerToken]);
+  }, [builder, price, sellerWallet, isExecuting, chainId, switchChainAsync, developerToken]);
 
   const isOwner = developerToken && developerToken.scoutAddress.toLowerCase() === sellerWallet?.toLowerCase();
   const isDisabled = !sellerWallet || !developerToken || !isOwner;
@@ -127,7 +128,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         </Alert>
       )}
       <Stack>
-        <FormLabel>Listing price (USDC)</FormLabel>
+        <FormLabel>Listing price (DEV)</FormLabel>
         <NumberInputField
           fullWidth
           color='secondary'
@@ -138,11 +139,11 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
               step: 0.1
             }
           }}
-          value={priceInUsdc}
+          value={price}
           onChange={(e) => {
             const value = parseFloat(e.target.value);
             if (!Number.isNaN(value) && value > 0) {
-              setPriceInUsdc(value);
+              setPrice(value);
             }
           }}
           disabled={isDisabled}
@@ -153,7 +154,7 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
       <Button
         variant='contained'
         color='primary'
-        disabled={priceInUsdc === 0 || isDisabled}
+        disabled={price === 0 || isDisabled}
         onClick={onListing}
         loading={isListing || isLoading || isExecuting}
       >

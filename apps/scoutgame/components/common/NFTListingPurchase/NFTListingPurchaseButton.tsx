@@ -46,7 +46,7 @@ export function NFTListingPurchaseButton({
     <div>
       <DynamicLoadingContext.Provider value={setDialogLoadingStatus}>
         <Button loading={dialogLoadingStatus} fullWidth onClick={handleClick} variant='buy'>
-          {listingPrice} &nbsp; DEV
+          {listingPrice} &nbsp; <img src='/images/dev-token-logo.png' alt='DEV' width={18} height={18} />
         </Button>
         <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>
