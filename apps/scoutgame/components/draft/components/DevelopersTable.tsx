@@ -95,10 +95,10 @@ export function DevelopersTable({
                         {formatSeasonPoints(developer.seasonPoints)}
                       </Typography>
                       <Hidden mdDown display='flex' sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <Image src='/images/icons/binoculars.svg' alt='binoculars' width={24} height={24} />
+                        <Image src='/images/dev-token-logo.png' alt='DEV Token' width={24} height={24} />
                       </Hidden>
                       <Hidden mdUp display='flex' sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                        <Image src='/images/icons/binoculars.svg' alt='binoculars' width={14} height={14} />
+                        <Image src='/images/dev-token-logo.png' alt='DEV Token' width={14} height={14} />
                       </Hidden>
                     </Stack>
                   </Stack>

@@ -22,7 +22,7 @@ function Document() {
         more points you earn.
       </Typography>
       <Typography>
-        By accumulating Scout Points, you can exchange them to scout even more developers, boosting your standing within
+        By accumulating DEV Tokens, you can exchange them to scout even more developers, boosting your standing within
         the game and increasing your potential rewards.
       </Typography>
       <div>
@@ -31,7 +31,7 @@ function Document() {
         </Typography>
         <List>
           <ListItem>Collect NFTs from top developers every season.</ListItem>
-          <ListItem>Earn Scout Points when the developers you back succeed in open-source contributions.</ListItem>
+          <ListItem>Earn DEV Tokens when the developers you back succeed in open-source contributions.</ListItem>
         </List>
       </div>
     </InfoCard>

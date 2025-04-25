@@ -1,4 +1,3 @@
-import { getLogger } from '@charmverse/core/log';
 import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
@@ -8,6 +7,11 @@ import { resolveTokenOwnership } from '@packages/scoutgame/protocol/resolveToken
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
+import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
+
+import { deployMatchupRewards } from './deployMatchupRewards';
+import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards';
+import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { log } from './logger';
 
 export { log };
@@ -47,4 +51,20 @@ export async function processOnchainGemsPayout(
   log.info(`Processed ${generatedClaims.totalBuilders} builders points payout`, {
     totalBuilders: generatedClaims.totalBuilders
   });
+
+  await Promise.all([
+    deployMatchupRewards({ week }).catch((error) => {
+      log.error('Error deploying matchup rewards', { error, week, season });
+    }),
+    deployReferralChampionRewardsContract({ week }).catch((error) => {
+      log.error('Error deploying referral champion rewards contract', { error, week, season });
+    }),
+    deployOctantBasePartnerRewards({ week }).catch((error) => {
+      log.error('Error deploying octant & base partner rewards contract', { error, week, season });
+    })
+  ]);
+
+  const notificationsSent = await sendGemsPayoutNotifications({ week });
+
+  log.info(`Processed ${generatedClaims.totalBuilders} builders points payout`, { notificationsSent });
 }

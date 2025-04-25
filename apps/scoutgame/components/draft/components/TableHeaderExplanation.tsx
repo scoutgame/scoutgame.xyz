@@ -28,11 +28,11 @@ export function TableHeaderExplanation() {
         gap: 2
       }}
     >
-      <ExplanationItem title='POINTS' description='Total # of points earned last season.' />
+      <ExplanationItem title='DEV' description='Total # of DEV Tokens earned last season.' />
 
       <ExplanationItem
         title='LEVEL'
-        description="Represents the percentile of the Developer's weekly Scout Point average relative to that of all active developers from last season. The top 10% of Developers are Level 10."
+        description="Represents the percentile of the Developer's weekly DEV Token average relative to that of all active developers from last season. The top 10% of Developers are Level 10."
       />
 
       <ExplanationItem

@@ -19,7 +19,7 @@ const slides: SlideContent[] = [
     iconSrc: '/images/matchup/howtoplay_open.svg',
     text: (
       <Typography variant='body2'>
-        Kick things off by registering! Pay the {MATCHUP_REGISTRATION_FEE} Scout Point entry fee before 11:59 PM Monday
+        Kick things off by registering! Pay the {MATCHUP_REGISTRATION_FEE} DEV Token entry fee before 11:59 PM Monday
         UTC to join this week’s action.
       </Typography>
     )
@@ -83,8 +83,8 @@ const closedRegistrationFirstSlide: SlideContent = {
   iconSrc: '/images/matchup/howtoplay_closed.svg',
   text: (
     <Typography variant='body2'>
-      Registration for this week’s Match Up is closed. Come back Monday and pay the {MATCHUP_REGISTRATION_FEE} Scout
-      Point entry fee before 11:59 PM Monday UTC to join next week’s action..
+      Registration for this week’s Match Up is closed. Come back Monday and pay the {MATCHUP_REGISTRATION_FEE} DEV Token
+      entry fee before 11:59 PM Monday UTC to join next week’s action..
     </Typography>
   )
 };

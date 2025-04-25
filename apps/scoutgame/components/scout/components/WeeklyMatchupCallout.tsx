@@ -4,7 +4,7 @@ import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { getCurrentMatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { getMatchupLeaderboard } from '@packages/matchup/getMatchupLeaderboard';
 import { getSession } from '@packages/nextjs/session/getSession';
-import { GemsIcon, PointsIcon } from '@packages/scoutgame-ui/components/common/Icons';
+import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
 import Image from 'next/image';
 
@@ -53,7 +53,8 @@ export async function WeeklyMatchupCallout() {
                   <Typography component='span' sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
                     {matchupPool ? (
                       <>
-                        {matchupPool} <PointsIcon /> +{' '}
+                        {matchupPool} <Image width={14} height={14} src='/images/dev-token-logo.png' alt='DEV token' />{' '}
+                        +{' '}
                       </>
                     ) : null}
                     {opPrize} <Image width={14} height={14} src='/images/crypto/op.png' alt='' />

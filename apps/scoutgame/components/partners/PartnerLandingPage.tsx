@@ -228,7 +228,7 @@ export function HowToPlaySection({
         <Step
           stepNumber='Step 3'
           title='Earn Rewards'
-          description="Every week is a fresh leaderboard battle. Rank high and earn Scout Points to showcase your skills. You'll also get 20% of the revenue from Developer Card sales, boosting your rewards!"
+          description="Every week is a fresh leaderboard battle. Rank high and earn DEV Tokens to showcase your skills. You'll also get 20% of the revenue from Developer Card sales, boosting your rewards!"
           iconSrc='/images/home/trophy-icon.svg'
           activeBorder={activeBorder}
         />

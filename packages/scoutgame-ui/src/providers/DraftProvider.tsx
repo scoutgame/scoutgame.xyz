@@ -143,7 +143,12 @@ export function DraftProvider({ children }: { children: ReactNode }) {
       });
 
       if (output?.serverError) {
-        scoutgameDraftsLogger.error(`Saving draft transaction failed`, {});
+        scoutgameDraftsLogger.error(`Saving draft transaction failed`, {
+          developerId,
+          bidAmountInDev,
+          fromAddress,
+          txHash
+        });
       } else {
         scoutgameDraftsLogger.info(`Successfully sent draft transaction`, { data: { txHash } });
       }

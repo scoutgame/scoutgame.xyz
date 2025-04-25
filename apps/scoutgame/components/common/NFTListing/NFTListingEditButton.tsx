@@ -95,7 +95,7 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
       >
         <Button variant='text' fullWidth>
           <Typography color='secondary'>{listingPrice} &nbsp;</Typography>
-          DEV
+          <img src='/images/dev-token-logo.png' alt='DEV' width={18} height={18} />
         </Button>
         <Tooltip title='Delist your nft listing'>
           <div>

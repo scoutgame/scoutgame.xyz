@@ -42,7 +42,7 @@ export function BuilderCardLevel({
             },
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: isStarterCard ? 'yellow.main' : 'orange.main',
+            backgroundColor: isStarterCard ? 'pink.main' : 'secondary.main',
             borderRadius: '50%',
             border: '3.5px solid #000'
           }}

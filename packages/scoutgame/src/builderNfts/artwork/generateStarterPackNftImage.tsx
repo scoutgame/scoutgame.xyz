@@ -2,11 +2,6 @@
 import React from 'react';
 import sharp from 'sharp';
 
-import type { BuilderActivity } from '../../builders/getBuilderActivities';
-import type { BuilderScouts } from '../../builders/getBuilderScouts';
-import type { BuilderStats } from '../../builders/getBuilderStats';
-
-import { BuilderShareImage } from './components/BuilderShareImage';
 import { calculateFontSize, getAssetsFromDisk } from './getAssetsFromDisk';
 
 export async function updateNftStarterPackImage({
@@ -86,7 +81,7 @@ export async function generateNftStarterPackImage({
   avatar: string;
   displayName: string;
 }): Promise<Buffer> {
-  const { starterPackOverlayBase64, font } = getAssetsFromDisk();
+  const { starterOverlayBase64, font } = getAssetsFromDisk();
   const response = await fetch(avatar);
   const avatarBuffer = await sharp(Buffer.from(await response.arrayBuffer()))
     .resize(300, 300)
@@ -118,7 +113,7 @@ export async function generateNftStarterPackImage({
           }}
         />
         <img
-          src={starterPackOverlayBase64}
+          src={starterOverlayBase64}
           width={cutoutWidth}
           height={cutoutHeight}
           style={{ position: 'absolute', top: 0, left: 0 }}

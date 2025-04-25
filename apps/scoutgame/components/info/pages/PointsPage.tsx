@@ -5,7 +5,7 @@ import { InfoPageContainer } from '../components/InfoPageContainer';
 
 export function PointsPage() {
   return (
-    <InfoPageContainer data-test='points-page' image='/images/info/info_banner.png' title='Scout Points'>
+    <InfoPageContainer data-test='points-page' image='/images/info/info_banner.png' title='DEV Tokens'>
       <Document />
     </InfoPageContainer>
   );
@@ -14,9 +14,9 @@ export function PointsPage() {
 function Document() {
   return (
     <InfoCard>
-      <Typography>Scouts and Developers are rewarded in-game with Scout Points.</Typography>
+      <Typography>Scouts and Developers are rewarded in-game with DEV Tokens.</Typography>
       <Typography>
-        Scout Points are claimable at the end of each week and remain claimable for only the current season and the next
+        DEV Tokens are claimable at the end of each week and remain claimable for only the current season and the next
         season.
       </Typography>
     </InfoCard>

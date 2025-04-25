@@ -96,7 +96,7 @@ export function BuilderCardActivity({
               >
                 {estimatedPayout}
               </Typography>
-              <Image width={15} height={15} src='/images/icons/binoculars-green.svg' alt='scout game icon' />
+              <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV token' />
             </Stack>
           </Stack>
         </Stack>

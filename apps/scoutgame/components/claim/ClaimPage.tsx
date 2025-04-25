@@ -4,8 +4,8 @@ import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/L
 import { Suspense } from 'react';
 
 import { BuilderRewardsScreen } from './components/BuilderRewardsScreen/BuilderRewardsScreen';
-import { PointsClaimContainer } from './components/PointsClaimContainer';
-import { ClaimedPointsTable } from './components/PointsTable/ClaimedPointsTable';
+import { ClaimedTokensTable } from './components/PointsTable/ClaimedTokensTable';
+import { TokensClaimContainer } from './components/TokensClaimContainer';
 
 export type ClaimPageProps = {
   period: string;
@@ -24,7 +24,7 @@ export function ClaimPage({ period, season }: ClaimPageProps) {
     >
       <Stack flex={1} gap={4}>
         <Suspense fallback={<LoadingComponent />}>
-          <PointsClaimContainer />
+          <TokensClaimContainer />
         </Suspense>
         <Stack
           sx={{
@@ -37,7 +37,7 @@ export function ClaimPage({ period, season }: ClaimPageProps) {
           <BuilderRewardsScreen period={period} season={season} />
         </Stack>
         <Suspense fallback={<LoadingTable />}>
-          <ClaimedPointsTable />
+          <ClaimedTokensTable />
         </Suspense>
       </Stack>
       <Stack

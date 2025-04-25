@@ -1,3 +1,5 @@
+import env from '@beam-australia/react-env';
+import { isProdEnv } from '@packages/utils/constants';
 import type { Address } from 'viem';
 
 export type ISOWeek = string; // isoweek, e.g. '2024-W01'
@@ -13,6 +15,8 @@ export type SeasonConfig = {
   weeksPerSeason: number;
   draft?: boolean;
 };
+
+const IS_SEASON_ONE_LIVE = (env('IS_SEASON_ONE_LIVE') || process.env.REACT_APP_IS_SEASON_ONE_LIVE) === 'true';
 
 // the end of each season is the start of the next season
 export const seasons: SeasonConfig[] = [
@@ -52,22 +56,34 @@ export const seasons: SeasonConfig[] = [
     weeksPerSeason: 15, // extended season
     preseason: true
   },
-  {
-    start: '2025-W17',
-    title: 'Draft Season',
-    starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 1,
-    draft: true
-  },
-  // Season 1
-  {
-    start: '2025-W18', // April 28th 2025
-    title: 'Season 1',
-    starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 13
-  }
+  ...(IS_SEASON_ONE_LIVE
+    ? [
+        {
+          start: '2025-W17', // April 21th 2025
+          title: 'Season 1',
+          starterNftAddress: '0xff03318ed6e2225e14ef1da248682145d2b29718' as Address,
+          defaultNftAddress: '0xc5932fed90c2c88e9e5f829e1c170cb832babc93' as Address,
+          weeksPerSeason: 13
+        }
+      ]
+    : [
+        {
+          start: '2025-W17',
+          title: 'Draft Season',
+          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          weeksPerSeason: 1,
+          draft: true
+        },
+        // Season 1
+        {
+          start: '2025-W18', // April 28th 2025
+          title: 'Season 1',
+          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          weeksPerSeason: 13
+        }
+      ])
 ] satisfies SeasonConfig[];
 
 export const seasonStarts = seasons.map((s) => s.start);

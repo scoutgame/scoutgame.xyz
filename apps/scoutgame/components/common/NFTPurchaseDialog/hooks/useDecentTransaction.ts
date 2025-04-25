@@ -1,14 +1,12 @@
 import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
-import { isStarterNftContract, nftChain } from '@packages/scoutgame/builderNfts/constants';
-import { scoutProtocolChainId, devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { devTokenContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { decentApiKey } from '@packages/utils/constants';
 import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
 import useSWR from 'swr';
 import type { Address } from 'viem';
-import { optimism } from 'viem/chains';
 
 export type DecentTransactionProps = {
   address: Address;
@@ -19,6 +17,7 @@ export type DecentTransactionProps = {
   tokensToPurchase: bigint;
   scoutId?: string;
   contractAddress: string;
+  isStarterContract: boolean;
 };
 
 const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
@@ -69,9 +68,9 @@ export function useDecentTransaction({
   builderTokenId,
   scoutId,
   tokensToPurchase,
-  contractAddress
+  contractAddress,
+  isStarterContract
 }: DecentTransactionProps) {
-  const isStarterContract = isStarterNftContract(contractAddress);
   const decentAPIParams: BoxActionRequest = {
     sender: address as `0x${string}`,
     srcToken: sourceToken,

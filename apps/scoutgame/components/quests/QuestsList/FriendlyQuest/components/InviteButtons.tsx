@@ -26,7 +26,7 @@ export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: 
   const encodedUrl = encodeURIComponent(url);
   const encodedTelegramUrl = encodeURIComponent(telegramUrl);
   const encodedText = encodeURIComponent(
-    "Join me in Scout Game. Collect developer cards to earn Scout Points, OP, Moxie and more! Use my link to sign up and we'll both earn 5 Scout Points to play.🫡"
+    "Join me in Scout Game. Collect developer cards to earn DEV Tokens, OP, Moxie and more! Use my link to sign up and we'll both earn 5 DEV Tokens to play.🫡"
   );
   const shareImageSize = 35;
 

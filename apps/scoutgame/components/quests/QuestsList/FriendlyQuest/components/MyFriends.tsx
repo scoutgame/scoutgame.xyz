@@ -70,7 +70,7 @@ export function MyFriends({ friends, title }: { friends: Friend[]; title?: strin
             <TableRow>
               <TableCell align='left'>FRIEND</TableCell>
               <TableCell align='center'>STATUS</TableCell>
-              <TableCell align='right'>POINTS</TableCell>
+              <TableCell align='right'>TOKENS</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
