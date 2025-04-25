@@ -13,7 +13,7 @@ type TimeLeft = {
   seconds: number;
 };
 
-const seasonOne = seasons.find((season) => season.id === 'season-1')!;
+const seasonOne = seasons.find((season) => season.title === 'Season 1')!;
 
 const SEASON_ONE_START = DateTime.fromISO(seasonOne.start).startOf('week');
 

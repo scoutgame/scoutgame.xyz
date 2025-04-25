@@ -8,7 +8,7 @@ import type { Font } from 'satori';
 export function getAssetsFromDisk() {
   const seasonConfig = getSeasonConfig(getCurrentSeasonStart());
   const folder = process.env.NFT_ASSETS_FOLDER || path.join(path.resolve(__dirname, '../../../src'), 'assets');
-  const overlaysFolder = `${folder}/overlays/${seasonConfig.id}`;
+  const overlaysFolder = `${folder}/overlays/${seasonConfig.start}`;
   const overlayFiles = fs.readdirSync(overlaysFolder).filter((file) => file.endsWith('.png'));
   const overlaysBase64 = overlayFiles
     .map((file) => {

@@ -87,14 +87,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const { address, chainId } = useAccount();
   const { error: addressError } = useUserWalletAddress(address);
-  const {
-    isExecutingTransaction,
-    sendNftMintTransaction,
-    isSavingDecentTransaction,
-    purchaseSuccess,
-    purchaseError,
-    sendDevNftMintTransaction
-  } = usePurchase();
+  const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
+    usePurchase();
   const trackEvent = useTrackEvent();
 
   const { switchChainAsync } = useSwitchChain();

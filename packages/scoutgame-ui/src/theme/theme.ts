@@ -84,7 +84,7 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
           main: '#fcff6c'
         },
         pink: {
-          main: '#ec7cbf'
+          main: '#FF66C5'
         },
         blue: {
           main: '#045BCA',
