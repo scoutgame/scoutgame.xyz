@@ -50,7 +50,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
   function handleRegister() {
     trackEvent('click_register_matchup');
     if (isAuthenticated) {
-      openModal('draftRegistration');
+      openModal('draftRegistration', { week });
     } else {
       openModal('signIn', { path: pathname });
     }

@@ -6,7 +6,7 @@ import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
 
-import { useGetTokenBalances } from '../../hooks/useGetTokenBalances';
+import type { UserTokenInfo } from '../../hooks/useGetTokenBalances';
 
 import { ChainComponent } from './ChainComponent';
 import type { ChainWithCurrency } from './chains';
@@ -24,6 +24,7 @@ function SelectField(
     onSelectChain,
     value,
     address,
+    userTokenBalances,
     ...props
   }: Omit<SelectProps<SelectedPaymentOption>, 'onClick' | 'value'> & {
     helperMessage?: ReactNode;
@@ -31,6 +32,7 @@ function SelectField(
     value: SelectedPaymentOption;
     balance?: string;
     address?: Address;
+    userTokenBalances?: UserTokenInfo[];
   },
   ref: Ref<unknown>
 ) {
@@ -47,10 +49,6 @@ function SelectField(
     },
     ...getChainOptions()
   ];
-
-  const { tokens } = useGetTokenBalances({
-    address: address as Address
-  });
 
   return (
     <Select<SelectedPaymentOption>
@@ -87,7 +85,7 @@ function SelectField(
         Select a Chain
       </MenuItem>
       {chainOpts.map((_chain) => {
-        const _tokenBalanceInfo = tokens?.find(
+        const _tokenBalanceInfo = userTokenBalances?.find(
           (t) =>
             t.chainId === _chain.id &&
             (_chain.currency === 'ETH'

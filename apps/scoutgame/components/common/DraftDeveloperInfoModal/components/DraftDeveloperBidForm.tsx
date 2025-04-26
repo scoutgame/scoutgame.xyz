@@ -18,13 +18,13 @@ import type { Address } from 'viem';
 import { formatUnits, parseUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
+import { DEV_PAYMENT_OPTION, PaymentTokenSelector, TOKEN_LOGO_RECORD } from 'components/common/PaymentTokenSelector';
+import type { SelectedPaymentOption } from 'components/common/PaymentTokenSelector';
+import { useGetTokenBalances } from 'hooks/useGetTokenBalances';
+
 import { ERC20ApproveButton } from '../../NFTPurchaseDialog/components/ERC20Approve';
 import { useGetERC20Allowance } from '../../NFTPurchaseDialog/hooks/useGetERC20Allowance';
 import { useDecentV4Transaction } from '../hooks/useDecentV4Transaction';
-import { useGetTokenBalances } from '../hooks/useGetTokenBalances';
-
-import type { SelectedPaymentOption } from './DraftPaymentOptionSelector';
-import { DEV_PAYMENT_OPTION, DraftPaymentOptionSelector, TOKEN_LOGO_RECORD } from './DraftPaymentOptionSelector';
 
 export function DraftDeveloperBidForm({ onCancel, developerId }: { onCancel: () => void; developerId: string }) {
   const { address } = useAccount();
@@ -59,12 +59,7 @@ function DraftDeveloperBidFormComponent({
   const [isConfirmingBid, setIsConfirmingBid] = useState(false);
 
   // Default to DEV token payment option
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({
-    chainId: DEV_PAYMENT_OPTION.chain.id,
-    address: DEV_PAYMENT_OPTION.address,
-    currency: DEV_PAYMENT_OPTION.currency,
-    decimals: DEV_PAYMENT_OPTION.decimals
-  });
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({ ...DEV_PAYMENT_OPTION });
 
   const { tokens, isLoading: isLoadingTokenBalances } = useGetTokenBalances({
     address
@@ -224,9 +219,8 @@ function DraftDeveloperBidFormComponent({
 
   return (
     <Stack gap={1}>
-      <DraftPaymentOptionSelector
+      <PaymentTokenSelector
         selectedPaymentOption={selectedPaymentOption}
-        address={address}
         onSelectPaymentOption={(option) => {
           setBidAmount(MIN_DEV_BID.toString());
           setSelectedPaymentOption(option);

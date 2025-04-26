@@ -10,13 +10,24 @@ import { forwardRef } from 'react';
 import type { Address } from 'viem';
 import { base, optimism } from 'viem/chains';
 
-import { ChainComponent } from '../../NFTPurchaseDialog/components/ChainSelector/ChainComponent';
+import { ChainComponent } from 'components/common/NFTPurchaseDialog/components/ChainSelector/ChainComponent';
 
 export type AvailableCurrency = 'ETH' | 'USDC' | 'DEV';
 
+const chainConfig = {
+  [base.id]: {
+    icon: '/images/crypto/base64.png',
+    name: 'Base'
+  },
+  [optimism.id]: {
+    icon: '/images/crypto/op.png',
+    name: 'Optimism'
+  }
+};
+
 export type SelectedPaymentOption = {
   decimals: number;
-  chainId: number;
+  chainId: keyof typeof chainConfig;
   currency: AvailableCurrency;
   address: Address;
 };
@@ -25,22 +36,6 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency && a.address === b.address;
 }
 
-const optimismChainOption = {
-  name: 'Optimism',
-  id: optimism.id,
-  icon: '/images/crypto/op.png',
-  chain: optimism,
-  usdcAddress: OPTIMISM_USDC_ADDRESS
-};
-
-const baseChainOption = {
-  name: 'Base',
-  id: base.id,
-  icon: '/images/crypto/base64.png',
-  chain: base,
-  usdcAddress: BASE_USDC_ADDRESS
-};
-
 export const TOKEN_LOGO_RECORD = {
   ETH: '/images/crypto/ethereum-eth-logo.png',
   USDC: '/images/crypto/usdc.png',
@@ -48,24 +43,21 @@ export const TOKEN_LOGO_RECORD = {
 };
 
 export type PaymentOption = {
-  chain: {
-    id: number;
-    name: string;
-  };
+  chainId: keyof typeof chainConfig;
   address: Address;
   currency: AvailableCurrency;
   decimals: number;
 };
 
 export const DEV_PAYMENT_OPTION: PaymentOption = {
-  ...baseChainOption,
+  chainId: base.id,
   address: devTokenContractAddress,
   currency: 'DEV' as const,
   decimals: 18
 };
 
 export const BASE_USDC_PAYMENT_OPTION: PaymentOption = {
-  ...baseChainOption,
+  chainId: base.id,
   address: BASE_USDC_ADDRESS,
   currency: 'USDC' as const,
   decimals: 6
@@ -74,20 +66,20 @@ export const BASE_USDC_PAYMENT_OPTION: PaymentOption = {
 const paymentOptions: PaymentOption[] = [
   DEV_PAYMENT_OPTION,
   {
-    ...baseChainOption,
+    chainId: base.id,
     address: NULL_EVM_ADDRESS,
     currency: 'ETH' as const,
     decimals: 18
   },
   BASE_USDC_PAYMENT_OPTION,
   {
-    ...optimismChainOption,
+    chainId: optimism.id,
     address: NULL_EVM_ADDRESS,
     currency: 'ETH' as const,
     decimals: 18
   },
   {
-    ...optimismChainOption,
+    chainId: optimism.id,
     address: OPTIMISM_USDC_ADDRESS,
     currency: 'USDC' as const,
     decimals: 6
@@ -99,7 +91,6 @@ function PaymentOptionSelector(
     onSelectPaymentOption,
     selectedPaymentOption,
     selectedTokenBalance,
-    address,
     disabled,
     tokensWithBalances,
     ...props
@@ -113,7 +104,6 @@ function PaymentOptionSelector(
       address: Address;
       balance: number;
     }[];
-    address: Address;
     disabled?: boolean;
   },
   ref: Ref<unknown>
@@ -123,7 +113,7 @@ function PaymentOptionSelector(
   return (
     <Stack gap={1} my={1}>
       <Stack direction='row' gap={1} alignItems='center' justifyContent='space-between'>
-        <Typography color='secondary' fontWeight={500}>
+        <Typography color='secondary' fontWeight={500} gutterBottom>
           Select Tokens
         </Typography>
       </Stack>
@@ -144,7 +134,7 @@ function PaymentOptionSelector(
           disabled={disabled}
           renderValue={(selected) => {
             const paymentOption = paymentOptions.find(
-              ({ chain, currency }) => selected.chainId === chain.id && selected.currency === currency
+              ({ chainId, currency }) => selected.chainId === chainId && selected.currency === currency
             );
             if (!paymentOption) return null;
 
@@ -159,7 +149,7 @@ function PaymentOptionSelector(
                 <Stack>
                   <Stack flexDirection='row' gap={0.5} alignItems='center'>
                     <Typography>{paymentOption.currency}</Typography>
-                    <Typography variant='caption'>on {paymentOption.chain.name}</Typography>
+                    <Typography variant='caption'>on {chainConfig[paymentOption.chainId]?.name}</Typography>
                   </Stack>
                   <Stack direction='row' gap={0.5} alignItems='center'>
                     <Typography variant='caption'>
@@ -189,12 +179,12 @@ function PaymentOptionSelector(
         >
           {paymentOptions.map((paymentOption) => (
             <MenuItem
-              key={`${paymentOption.chain.id}-${paymentOption.currency}-${paymentOption.address}`}
+              key={`${paymentOption.chainId}-${paymentOption.currency}-${paymentOption.address}`}
               onClick={(ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
                 onSelectPaymentOption({
-                  chainId: paymentOption.chain.id,
+                  chainId: paymentOption.chainId,
                   currency: paymentOption.currency,
                   address: paymentOption.address,
                   decimals: paymentOption.decimals
@@ -204,25 +194,19 @@ function PaymentOptionSelector(
             >
               <ChainComponent
                 chain={{
-                  id: paymentOption.chain.id,
-                  name: paymentOption.chain.name,
+                  id: paymentOption.chainId,
+                  name: chainConfig[paymentOption.chainId]?.name,
                   icon: TOKEN_LOGO_RECORD[paymentOption.currency],
                   currency: paymentOption.currency
                 }}
                 balance={
                   tokensWithBalances?.find(
                     (token) =>
-                      token.chainId === paymentOption.chain.id &&
+                      token.chainId === paymentOption.chainId &&
                       token.address.toLowerCase() === paymentOption.address.toLowerCase()
                   )?.balance
                 }
-                selected={isSameOption(
-                  {
-                    chainId: paymentOption.chain.id,
-                    ...paymentOption
-                  },
-                  selectedPaymentOption
-                )}
+                selected={isSameOption(paymentOption, selectedPaymentOption)}
               />
             </MenuItem>
           ))}
@@ -232,4 +216,4 @@ function PaymentOptionSelector(
   );
 }
 
-export const DraftPaymentOptionSelector = forwardRef(PaymentOptionSelector);
+export const PaymentTokenSelector = forwardRef(PaymentOptionSelector);
