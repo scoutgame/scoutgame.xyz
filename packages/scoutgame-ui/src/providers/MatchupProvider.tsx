@@ -35,7 +35,7 @@ type DirectTransactionInput = {
 };
 
 type MatchupContext = {
-  isSaving: boolean;
+  isExecutingTransaction: boolean;
   error?: string;
   sendTransactionViaDecent: (input: DecentTransactionInput) => Promise<unknown>;
   sendDirectTransaction: (input: DirectTransactionInput) => Promise<unknown>;
@@ -204,7 +204,7 @@ export function MatchupProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
-      isSaving: isSavingTransaction,
+      isExecutingTransaction: isSavingTransaction,
       error,
       sendTransactionViaDecent,
       sendDirectTransaction

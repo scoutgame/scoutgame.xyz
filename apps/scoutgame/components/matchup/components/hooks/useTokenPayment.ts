@@ -91,5 +91,13 @@ export function useTokenPayment({
 
   const isLoading = paymentOption.currency !== 'DEV' && isLoadingDecentSdk;
 
-  return { isLoading, exchangeRate, sourceTokenAmount, approvalRequired, decentError, decentTransactionInfo };
+  return {
+    isLoading,
+    exchangeRate,
+    sourceTokenAmount,
+    approvalRequired,
+    decentError,
+    decentTransactionInfo,
+    refreshAllowance
+  };
 }

@@ -26,6 +26,7 @@ import { ConnectedWalletDialog } from 'components/common/ConnectedWalletDialog';
 import { useGlobalModal } from 'components/common/ModalProvider';
 import { getCurrencyContract } from 'components/common/NFTPurchaseDialog/components/ChainSelector/chains';
 import { BlockchainSelect } from 'components/common/NFTPurchaseDialog/components/ChainSelector/ChainSelector';
+import { ERC20ApproveButton } from 'components/common/NFTPurchaseDialog/components/ERC20Approve';
 import { DEV_PAYMENT_OPTION, PaymentTokenSelector, TOKEN_LOGO_RECORD } from 'components/common/PaymentTokenSelector';
 import type { SelectedPaymentOption } from 'components/common/PaymentTokenSelector';
 import { useGetTokenBalances } from 'hooks/useGetTokenBalances';
@@ -50,18 +51,20 @@ function MatchupRegistrationForm({ week }: { week: string }) {
   )?.balance;
 
   // prepare the transaction
-  const { isLoading, sourceTokenAmount, approvalRequired, decentTransactionInfo } = useTokenPayment({
+  const { isLoading, sourceTokenAmount, approvalRequired, decentTransactionInfo, refreshAllowance } = useTokenPayment({
     paymentOption: selectedPaymentOption,
     devTokenAmount: MATCHUP_REGISTRATION_FEE,
     hasTokenBalance: !!selectedTokenBalance,
     toAddress: DRAFT_BID_RECIPIENT_ADDRESS
   });
 
-  const hasInsufficientBalance = Boolean(selectedTokenBalance && selectedTokenBalance < MATCHUP_REGISTRATION_FEE);
+  const hasInsufficientBalance = Boolean(
+    selectedTokenBalance && sourceTokenAmount && selectedTokenBalance < sourceTokenAmount
+  );
 
   const [isConfirmingTx, setIsConfirmingTx] = useState(false);
 
-  const { sendTransactionViaDecent, isSaving, sendDirectTransaction } = useMatchup();
+  const { sendTransactionViaDecent, isExecutingTransaction, sendDirectTransaction } = useMatchup();
 
   async function handleSubmit() {
     setIsConfirmingTx(true);
@@ -151,33 +154,60 @@ function MatchupRegistrationForm({ week }: { week: string }) {
           tokensWithBalances={userTokenBalances}
         />
         {hasInsufficientBalance ? (
-          <Typography sx={{ mt: 1 }} variant='caption' color='error' align='center'>
+          <Typography sx={{ mt: 1 }} variant='caption' color='error'>
             Insufficient balance
           </Typography>
         ) : null}
       </Box>
-      <Stack gap={0.5} alignItems='center' flexDirection='row' mb={2}>
-        <Typography align='center'>You will be charged {sourceTokenAmount}</Typography>
-        <Image
-          src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
-          alt={selectedPaymentOption.currency}
-          width={16}
-          height={16}
-        />
-      </Stack>
+      {!hasInsufficientBalance && (
+        <>
+          <Stack gap={0.5} alignItems='center' flexDirection='row' mb={1}>
+            <Typography align='center'>You will be charged {sourceTokenAmount}</Typography>
+            <Image
+              src={TOKEN_LOGO_RECORD[selectedPaymentOption.currency]}
+              alt={selectedPaymentOption.currency}
+              width={16}
+              height={16}
+            />
+          </Stack>
+
+          {approvalRequired && (
+            <Typography variant='caption' component='p' sx={{ pb: 2 }}>
+              Note: You must approve a token swap before you can register for matchup
+            </Typography>
+          )}
+        </>
+      )}
       <Stack direction='row' spacing={2} justifyContent='flex-end'>
         <Button variant='outlined' color='secondary' onClick={closeModal}>
           Cancel
         </Button>
-        <Button
-          loading={isLoading || isConfirmingTx || isSaving}
-          onClick={registerForMatchup}
-          disabled={hasInsufficientBalance}
-          color='primary'
-          variant='contained'
-        >
-          Pay
-        </Button>
+        {!approvalRequired || isExecutingTransaction || hasInsufficientBalance ? (
+          <Button
+            loading={isLoading || isConfirmingTx || isExecutingTransaction}
+            onClick={registerForMatchup}
+            disabled={hasInsufficientBalance}
+            color='primary'
+            variant='contained'
+          >
+            Pay
+          </Button>
+        ) : decentTransactionInfo && 'tx' in decentTransactionInfo && !hasInsufficientBalance ? (
+          <ERC20ApproveButton
+            spender={decentTransactionInfo?.tx.to as Address}
+            chainId={selectedPaymentOption.chainId}
+            erc20Address={selectedPaymentOption.address}
+            amount={
+              sourceTokenAmount ? parseUnits(sourceTokenAmount.toString(), selectedPaymentOption.decimals) : undefined
+            }
+            onSuccess={refreshAllowance}
+            decimals={selectedPaymentOption.decimals}
+            currency={selectedPaymentOption.currency}
+            actionType='bid'
+            color='secondary'
+            hideWarning
+          />
+        ) : null}
       </Stack>
     </Box>
   );
