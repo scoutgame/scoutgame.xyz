@@ -1,7 +1,13 @@
 'use client';
 
 import { Box, Skeleton, Typography } from '@mui/material';
-import { getCurrentSeasonWeekNumber, getWeekendDate, getWeekStartEnd, isDraftSeason } from '@packages/dates/utils';
+import {
+  getCurrentSeasonWeekNumber,
+  getWeekendDate,
+  getWeekStartEnd,
+  isDraftSeason,
+  isEndOfDraftWeek
+} from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 
@@ -11,11 +17,10 @@ export function HeaderMessage() {
   const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr());
   const isMounted = useIsMounted();
   const draftSeason = isDraftSeason();
-  const now = DateTime.now().toUTC();
-  const isWeekend = now.weekday >= 6;
+  const isDraftOver = isEndOfDraftWeek();
 
   useEffect(() => {
-    if (draftSeason && isWeekend) {
+    if (draftSeason && isDraftOver) {
       return;
     }
 
@@ -24,12 +29,12 @@ export function HeaderMessage() {
     }, 1000);
 
     return () => clearInterval(timeout);
-  }, [draftSeason, isWeekend]);
+  }, [draftSeason, isDraftOver]);
 
   let message = '';
 
   if (draftSeason) {
-    if (isWeekend) {
+    if (isDraftOver) {
       message = 'Draft has ended';
     } else {
       message = `Draft ends in ${timeLeftStr}`;

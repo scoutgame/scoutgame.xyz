@@ -1,7 +1,7 @@
 'use client';
 
 import { BottomNavigationAction } from '@mui/material';
-import { isDraftSeason } from '@packages/dates/utils';
+import { isDraftSeason, isEndOfDraftWeek } from '@packages/dates/utils';
 import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
@@ -66,13 +66,15 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
               LinkComponent={Link}
             />
           ) : null}
-          <BottomNavigationAction
-            label='Draft'
-            href='/draft'
-            value='draft'
-            icon={<ScoutIcon size='24px' />}
-            LinkComponent={Link}
-          />
+          {isEndOfDraftWeek() ? null : (
+            <BottomNavigationAction
+              label='Draft'
+              href='/draft'
+              value='draft'
+              icon={<ScoutIcon size='24px' />}
+              LinkComponent={Link}
+            />
+          )}
         </StyledBottomNavigation>
         <SignInModalMessage
           open={authPopup.open}
