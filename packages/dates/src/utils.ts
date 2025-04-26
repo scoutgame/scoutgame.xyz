@@ -54,7 +54,6 @@ export function isDraftSeason(season: Season = getCurrentSeason().start): boolea
   if (IS_DRAFT_SEASON) {
     return IS_DRAFT_SEASON === 'true';
   }
-
   return currentSeason.draft ?? false;
 }
 

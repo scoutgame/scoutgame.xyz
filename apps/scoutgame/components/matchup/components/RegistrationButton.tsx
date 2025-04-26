@@ -18,18 +18,18 @@ import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAct
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
-import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
 
 export function RegistrationButton({ registered, week }: { registered: boolean; week: string }) {
-  const { refreshUser, user } = useUser();
+  const { user } = useUser();
   const trackEvent = useTrackEvent();
-  const [authPopup, setAuthPopup] = useState<boolean>(false);
   const { openModal } = useGlobalModal();
+  const pathname = usePathname();
   const isAuthenticated = Boolean(user?.id);
   const hasEnoughPoints = user?.currentBalance && user.currentBalance >= MATCHUP_REGISTRATION_FEE;
 
@@ -52,7 +52,7 @@ export function RegistrationButton({ registered, week }: { registered: boolean; 
     if (isAuthenticated) {
       openModal('draftRegistration');
     } else {
-      setAuthPopup(true);
+      openModal('signIn', { path: pathname });
     }
   }
   return (

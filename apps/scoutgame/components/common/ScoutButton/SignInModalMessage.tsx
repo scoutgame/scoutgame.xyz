@@ -6,6 +6,19 @@ import { useRouter } from 'next/navigation';
 
 import { Dialog } from '../Dialog';
 
+const customTitle = {
+  '/claim': 'Please sign in to view your very own Claim page and collect your rewards!',
+  '/quests': 'Please sign in to continue your Quest!',
+  '/u': 'Please sign in to scout this builder!',
+  default: 'Please sign in to continue!'
+};
+
+const customSrc = {
+  '/claim': '/images/profile/magnifying_glass.png',
+  '/quests': '/images/profile/magnifying_glass.png',
+  default: '/images/profile/builder-dog.png'
+};
+
 export function SignInModalMessage({
   open,
   onClose,
@@ -19,20 +32,12 @@ export function SignInModalMessage({
 
   const handleClose = () => {
     router.push(`/login?redirectUrl=${encodeURIComponent(path)}`);
+    onClose();
   };
 
-  const title =
-    path === 'claim'
-      ? 'Please sign in to view your very own Claim page and collect your rewards!'
-      : path === 'quests'
-        ? 'Please sign in to continue your Quest!'
-        : 'Please sign in to scout this builder!';
-  const src =
-    path === 'claim'
-      ? '/images/profile/purple-unicorn.png'
-      : path === 'quests'
-        ? '/images/profile/magnifying_glass.png'
-        : '/images/profile/builder-dog.png';
+  const pathPrefix = `/${path.split('/')[1]}`;
+  const title = customTitle[pathPrefix as keyof typeof customTitle] || customTitle.default;
+  const src = customSrc[pathPrefix as keyof typeof customSrc] || customSrc.default;
 
   return (
     <Dialog

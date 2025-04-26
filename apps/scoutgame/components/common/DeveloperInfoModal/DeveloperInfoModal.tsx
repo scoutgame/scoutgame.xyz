@@ -26,6 +26,37 @@ export const DeveloperModal = styled(Dialog)(({ theme }) => ({
   }
 }));
 
+function DeveloperInfoModalComponent({ data: { path }, onClose }: { data: { path: string }; onClose: () => void }) {
+  const { user } = useUser();
+  const router = useRouter();
+  const { data: developer, isLoading } = useSWR(
+    path ? `developer-${path}` : null,
+    async () => {
+      if (!path) {
+        return null;
+      }
+
+      const _developer = await getDeveloperInfo({ path, scoutId: user?.id });
+      if (!_developer) {
+        // If the developer doesn't exist, redirect to the user's profile
+        router.push(`/u/${path}`);
+      }
+      return _developer;
+    },
+    {
+      onError: (error) => {
+        log.error('Error fetching developer info', { error, path });
+        toast.error('Error fetching developer info');
+      }
+    }
+  );
+
+  if (isLoading || !developer) {
+    return <DeveloperInfoSkeleton />;
+  }
+  return <DeveloperInfoCard onClose={onClose} developer={developer} />;
+}
+
 export function DeveloperInfoModal({
   onClose,
   data,
@@ -35,46 +66,13 @@ export function DeveloperInfoModal({
   data: { path: string } | null;
   open: boolean;
 }) {
-  const { user } = useUser();
-  const router = useRouter();
-
-  const { data: developer, isLoading } = useSWR(
-    data?.path ? `developer-${data.path}` : null,
-    async () => {
-      if (!data?.path) {
-        return null;
-      }
-
-      const _developer = await getDeveloperInfo({ path: data.path, scoutId: user?.id });
-      if (!_developer) {
-        // If the developer doesn't exist, redirect to the user's profile
-        router.push(`/u/${data.path}`);
-      }
-      return _developer;
-    },
-    {
-      onError: (error) => {
-        log.error('Error fetching developer info', { error, path: data?.path });
-        toast.error('Error fetching developer info');
-      }
-    }
-  );
-
-  if (isLoading) {
-    return (
-      <DeveloperModal open={open} onClose={onClose}>
-        <DeveloperInfoSkeleton />
-      </DeveloperModal>
-    );
-  }
-
-  if (data?.path && !developer) {
+  if (!data?.path) {
     return null;
   }
 
-  return developer ? (
+  return (
     <DeveloperModal open={open} onClose={onClose}>
-      <DeveloperInfoCard onClose={onClose} developer={developer} />
+      <DeveloperInfoModalComponent data={data} onClose={onClose} />
     </DeveloperModal>
-  ) : null;
+  );
 }

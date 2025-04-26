@@ -34,7 +34,6 @@ import { useGetTokenBalances } from 'components/common/NFTPurchaseDialog/hooks/u
 // This component opens the wallet connect modal if the user is not connected yet
 function DraftRegistrationDialogComponent() {
   const { refreshUser, user } = useUser();
-  const [authPopup, setAuthPopup] = useState<boolean>(false);
   const { closeModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({

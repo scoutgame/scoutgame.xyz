@@ -12,6 +12,7 @@ import { DraftRegistrationDialog } from 'components/matchup/components/DraftRegi
 
 import { DeveloperInfoModal } from './DeveloperInfoModal/DeveloperInfoModal';
 import { DraftDeveloperInfoModal } from './DraftDeveloperInfoModal/DraftDeveloperInfoModal';
+import { SignInModalMessage } from './ScoutButton/SignInModalMessage';
 
 // Add here all the modal names you need
 type ModalType =
@@ -21,7 +22,8 @@ type ModalType =
   | 'nftListingPurchase'
   | 'developerInfo'
   | 'draftDeveloper'
-  | 'draftRegistration';
+  | 'draftRegistration'
+  | 'signIn';
 
 type ModalContextType = {
   openModal: (type: ModalType, data?: any) => void;
@@ -75,6 +77,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       <DeveloperInfoModal open={isTypeOpen('developerInfo')} data={modalData} onClose={closeModal} />
       <DraftDeveloperInfoModal open={isTypeOpen('draftDeveloper')} data={modalData} onClose={closeModal} />
       <DraftRegistrationDialog open={isTypeOpen('draftRegistration')} onClose={closeModal} />
+      <SignInModalMessage open={isTypeOpen('signIn')} onClose={closeModal} path={modalData?.path} />
     </ModalContext.Provider>
   );
 }

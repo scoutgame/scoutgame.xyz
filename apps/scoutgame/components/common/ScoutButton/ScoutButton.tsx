@@ -7,14 +7,13 @@ import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
 
 import type { NFTPurchaseProps } from '../NFTPurchaseDialog/components/NFTPurchaseForm';
-
-import { SignInModalMessage } from './SignInModalMessage';
 
 export function ScoutButton({
   builder,
@@ -28,11 +27,11 @@ export function ScoutButton({
   type?: 'default' | 'starter_pack';
 }) {
   const trackEvent = useTrackEvent();
-  const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [dialogLoadingStatus, setDialogLoadingStatus] = useState<boolean>(false);
   const { user, isLoading } = useUser();
   const { openModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
+  const pathname = usePathname();
 
   const purchaseCostInPoints = Number(builder?.price || 0) / 10 ** devTokenDecimals;
 
@@ -42,7 +41,7 @@ export function ScoutButton({
     if (isAuthenticated) {
       openModal('nftPurchase', { ...builder, nftType: type });
     } else {
-      setAuthPopup(true);
+      openModal('signIn', { path: pathname });
     }
   };
 
@@ -95,7 +94,6 @@ export function ScoutButton({
             </Stack>
           </Button>
         )}
-        <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>
     </div>
   );

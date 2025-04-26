@@ -14,11 +14,10 @@ import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 import { ImGift as QuestsIcon } from 'react-icons/im';
 import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
 
-import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
+import { useGlobalModal } from 'components/common/ModalProvider';
 import { useGetQuests } from 'hooks/api/quests';
 import { isAirdropLive } from 'lib/airdrop/checkAirdropDates';
 
@@ -26,6 +25,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const platform = getPlatform();
   const pathname = usePathname();
   const { user } = useUser();
+  const { openModal } = useGlobalModal();
   const isAuthenticated = Boolean(user);
   const value = getActiveButton(pathname);
   const { data: claimablePoints = { points: 0, processingPayouts: false } } = useGetClaimablePoints();
@@ -39,54 +39,12 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
 
   const enableMatchups = enableMatchupsFeatureFlag(user?.id);
   const canClaim = todaysClaim ? !todaysClaim?.claimed : false;
-  const [authPopup, setAuthPopup] = useState({
-    open: false,
-    path: 'scout'
-  });
 
   const draftSeason = isDraftSeason();
   const airdropLive = isAirdropLive();
 
   if (draftSeason) {
     return (
-      <>
-        <StyledBottomNavigation
-          showLabels
-          value={value}
-          data-test='site-navigation'
-          topNav={topNav}
-          largerNavbar={platform === 'telegram' || isFarcasterFrame}
-        >
-          {airdropLive ? (
-            <BottomNavigationAction
-              label='Airdrop'
-              href='/airdrop'
-              value='airdrop'
-              icon={<ClaimIcon />}
-              LinkComponent={Link}
-            />
-          ) : null}
-          {isEndOfDraftWeek() ? null : (
-            <BottomNavigationAction
-              label='Draft'
-              href='/draft'
-              value='draft'
-              icon={<ScoutIcon size='24px' />}
-              LinkComponent={Link}
-            />
-          )}
-        </StyledBottomNavigation>
-        <SignInModalMessage
-          open={authPopup.open}
-          onClose={() => setAuthPopup({ open: false, path: authPopup.path })}
-          path={authPopup.path}
-        />
-      </>
-    );
-  }
-
-  return (
-    <>
       <StyledBottomNavigation
         showLabels
         value={value}
@@ -94,67 +52,93 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
         topNav={topNav}
         largerNavbar={platform === 'telegram' || isFarcasterFrame}
       >
-        <BottomNavigationAction
-          label='Scout'
-          href='/scout'
-          value='scout'
-          icon={<ScoutIcon size='24px' />}
-          LinkComponent={Link}
-        />
-        {enableMatchups && (
+        {airdropLive ? (
           <BottomNavigationAction
-            label='Match Up'
-            href='/matchup'
-            value='matchup'
-            icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
+            label='Airdrop'
+            href='/airdrop'
+            value='airdrop'
+            icon={<ClaimIcon />}
+            LinkComponent={Link}
+          />
+        ) : null}
+        {isEndOfDraftWeek() ? null : (
+          <BottomNavigationAction
+            label='Draft'
+            href='/draft'
+            value='draft'
+            icon={<ScoutIcon size='24px' />}
             LinkComponent={Link}
           />
         )}
-        <BottomNavigationAction
-          label='Developers'
-          href='/developers'
-          value='developers'
-          icon={<BuilderIcon />}
-          LinkComponent={Link}
-        />
-        <BottomNavigationAction
-          LinkComponent={Link}
-          label='Claim'
-          href={isAuthenticated ? '/claim' : '#'}
-          value='claim'
-          icon={<ClaimIcon animate={claimablePoints.points > 0 && !claimablePoints.processingPayouts} />}
-          onClick={(e) => {
-            if (!isAuthenticated) {
-              setAuthPopup({ open: true, path: 'claim' });
-            }
-          }}
-        />
-        <BottomNavigationAction
-          label='Quests'
-          href={isAuthenticated ? '/quests' : '#'}
-          value='quests'
-          icon={
-            <QuestsIcon
-              size='24px'
-              style={{
-                animation: canClaim ? 'wiggle 2s ease-in-out infinite' : 'none'
-              }}
-            />
-          }
-          LinkComponent={Link}
-          onClick={(e) => {
-            if (!isAuthenticated) {
-              setAuthPopup({ open: true, path: 'quests' });
-            }
-          }}
-        />
       </StyledBottomNavigation>
-      <SignInModalMessage
-        open={authPopup.open}
-        onClose={() => setAuthPopup({ open: false, path: authPopup.path })}
-        path={authPopup.path}
+    );
+  }
+
+  return (
+    <StyledBottomNavigation
+      showLabels
+      value={value}
+      data-test='site-navigation'
+      topNav={topNav}
+      largerNavbar={platform === 'telegram' || isFarcasterFrame}
+    >
+      <BottomNavigationAction
+        label='Scout'
+        href='/scout'
+        value='scout'
+        icon={<ScoutIcon size='24px' />}
+        LinkComponent={Link}
       />
-    </>
+      {enableMatchups && (
+        <BottomNavigationAction
+          label='Match Up'
+          href='/matchup'
+          value='matchup'
+          icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
+          LinkComponent={Link}
+        />
+      )}
+      <BottomNavigationAction
+        label='Developers'
+        href='/developers'
+        value='developers'
+        icon={<BuilderIcon />}
+        LinkComponent={Link}
+      />
+      <BottomNavigationAction
+        LinkComponent={Link}
+        label='Claim'
+        href='/claim'
+        value='claim'
+        icon={<ClaimIcon animate={claimablePoints.points > 0 && !claimablePoints.processingPayouts} />}
+        onClick={(e) => {
+          if (!isAuthenticated) {
+            e.preventDefault();
+            openModal('signIn', { path: '/claim' });
+          }
+        }}
+      />
+      <BottomNavigationAction
+        label='Quests'
+        href='/quests'
+        value='quests'
+        icon={
+          <QuestsIcon
+            size='24px'
+            style={{
+              animation: canClaim ? 'wiggle 2s ease-in-out infinite' : 'none'
+            }}
+          />
+        }
+        LinkComponent={Link}
+        onClick={(e) => {
+          if (!isAuthenticated) {
+            e.preventDefault();
+            openModal('signIn', { path: '/quests' });
+          }
+        }}
+      />
+    </StyledBottomNavigation>
   );
 }
 

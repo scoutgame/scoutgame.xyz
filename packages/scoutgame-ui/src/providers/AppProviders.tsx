@@ -1,5 +1,6 @@
 'use client';
 
+import env from '@beam-australia/react-env';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
@@ -27,7 +28,10 @@ export function AppProviders({
   user: SessionUser | null;
 }) {
   return (
-    <WagmiProvider cookie={cookieValue} walletConnectProjectId={process.env.REACT_APP_WALLETCONNECT_PROJECTID}>
+    <WagmiProvider
+      cookie={cookieValue}
+      walletConnectProjectId={env('REACT_APP_WALLETCONNECT_PROJECTID') || process.env.REACT_APP_WALLETCONNECT_PROJECTID}
+    >
       <AppRouterCacheProvider options={{ key: 'css' }}>
         <ThemeProvider theme={theme}>
           <CssBaseline enableColorScheme />
