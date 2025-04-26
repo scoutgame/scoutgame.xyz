@@ -15,3 +15,7 @@ export function GemsIcon({ size = 20, color }: { size?: number; color?: 'bronze'
 export function TransactionIcon({ size = 20 }: { size?: number }) {
   return <Image width={size} height={size} src='/images/icons/transaction.svg' alt='' />;
 }
+
+export function DevTokenIcon({ size = 20 }: { size?: number }) {
+  return <Image width={size} height={size} src='/images/dev-token-logo.png' alt='DEV' />;
+}

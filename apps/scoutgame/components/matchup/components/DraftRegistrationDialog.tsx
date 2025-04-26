@@ -1,7 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
 import { registerForMatchupAction } from '@packages/matchup/registerForMatchupAction';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
@@ -10,6 +10,7 @@ import {
   scoutProtocolChainId,
   devTokenDecimals
 } from '@packages/scoutgame/protocol/constants';
+import { DevTokenIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { useSmScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { usePurchase } from '@packages/scoutgame-ui/providers/PurchaseProvider';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
@@ -72,16 +73,20 @@ function DraftRegistrationDialogComponent() {
     <Box width='350px' maxWidth='100%' mx='auto'>
       <Box display='flex' alignItems='center' justifyContent='center' py={2} gap={1}>
         <Image src='/images/matchup/vs_icon.svg' alt='' width={50} height={50} />
-        <Typography variant='h6' color='secondary'>
+        <Typography variant='h6' color='secondary' fontWeight={600}>
           Match Up Registration
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 2 }}>
+      <Box display='flex' justifyContent='space-between' width='100%' mb={2}>
         <Typography variant='body1'>Registration Fee:</Typography>
-        <Typography variant='body1'>250 DEV</Typography>
+        <Typography variant='body1' display='flex' alignItems='center' gap={1}>
+          {MATCHUP_REGISTRATION_FEE} <DevTokenIcon />
+        </Typography>
       </Box>
-      <Box>
-        <Typography color='secondary'>Select payment</Typography>
+      <Box mb={4}>
+        <Typography color='secondary' gutterBottom>
+          Select payment
+        </Typography>
         <>
           <BlockchainSelect
             value={selectedPaymentOption}
@@ -98,6 +103,20 @@ function DraftRegistrationDialogComponent() {
           ) : null}
         </>
       </Box>
+      <Stack direction='row' spacing={2} justifyContent='flex-end'>
+        <Button variant='outlined' color='secondary' onClick={closeModal}>
+          Cancel
+        </Button>
+        <Button
+          loading={isExecuting}
+          onClick={() => execute({ week: '1' })}
+          disabled={hasInsufficientBalance}
+          color='primary'
+          variant='contained'
+        >
+          Pay
+        </Button>
+      </Stack>
     </Box>
   );
 }
