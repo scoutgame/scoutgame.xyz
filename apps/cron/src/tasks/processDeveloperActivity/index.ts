@@ -28,11 +28,6 @@ export async function processAllDeveloperActivity(
   const developers = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
-      builderNfts: {
-        some: {
-          season
-        }
-      },
       deletedAt: null
     },
     // Add a sort so that we can start mid-way if we need to (when running from a script)
