@@ -247,6 +247,48 @@ function HowToPlaySection() {
 }
 
 function FooterSection() {
+  const draftSeason = isDraftSeason();
+
+  if (!draftSeason) {
+    return (
+      <Stack position='relative' alignItems='center' gap={2} py={{ xs: 0, md: 4 }} mb={{ xs: 4, md: 0 }}>
+        <Hidden mdDown>
+          <Image
+            src='/images/home/landing-bg.png'
+            width='500'
+            height='250'
+            alt='footer bg'
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              position: 'absolute',
+              top: 0,
+              left: 0
+            }}
+          />
+        </Hidden>
+        <Stack
+          mx='auto'
+          zIndex={{
+            xs: 0,
+            md: 1
+          }}
+          justifyContent='center'
+          alignItems='center'
+          gap={2}
+        >
+          <Typography variant='h6' textAlign='center'>
+            Pick great developers. Earn rewards. <br /> Everyone can play. No coding required!
+          </Typography>
+          <Button variant='contained' sx={{ width: '50%', py: 1 }}>
+            <Link href='/login'>Play Scout Game</Link>
+          </Button>
+        </Stack>
+      </Stack>
+    );
+  }
+
   return (
     <Stack
       position='relative'
