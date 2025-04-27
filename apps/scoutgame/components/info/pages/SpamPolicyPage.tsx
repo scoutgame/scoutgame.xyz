@@ -29,7 +29,7 @@ function Document() {
         </ListItem>
         <ListItem>
           <Typography>
-            Developers receiving 3 abuse reports will be suspended from the Scout Game and unable to score points
+            Developers receiving 3 abuse reports will be suspended from the Scout Game and unable to score DEV tokens
           </Typography>
         </ListItem>
         <ListItem>

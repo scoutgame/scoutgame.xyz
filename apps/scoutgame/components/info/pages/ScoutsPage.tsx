@@ -18,11 +18,11 @@ function Document() {
       <Typography>Step into the shoes of an onchain Scout.</Typography>
       <Typography>
         Scouts participate by collecting NFTs associated with top developers during each season. As these developers
-        excel—by contributing to codebases—Scouts accumulate points. The more successful your chosen developers, the
-        more points you earn.
+        excel—by contributing to codebases—Scouts accumulate DEV tokens. The more successful your chosen developers, the
+        more DEV tokens you earn.
       </Typography>
       <Typography>
-        By accumulating DEV Tokens, you can exchange them to scout even more developers, boosting your standing within
+        By accumulating DEV tokens, you can exchange them to scout even more developers, boosting your standing within
         the game and increasing your potential rewards.
       </Typography>
       <div>
