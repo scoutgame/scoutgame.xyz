@@ -129,7 +129,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
             }
           }}
         />
-        <BottomNavigationAction
+        {/* <BottomNavigationAction
           label='Quests'
           href={isAuthenticated ? '/quests' : '#'}
           value='quests'
@@ -147,7 +147,7 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
               setAuthPopup({ open: true, path: 'quests' });
             }
           }}
-        />
+        /> */}
       </StyledBottomNavigation>
       <SignInModalMessage
         open={authPopup.open}

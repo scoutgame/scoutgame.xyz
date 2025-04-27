@@ -27,6 +27,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
   }
 
+  if (path === '/quests') {
+    return NextResponse.redirect(new URL('/scout', request.url));
+  }
+
   if (draftSeason) {
     if ((path === '/airdrop' && !airdropLive) || path.startsWith('/u/')) {
       return NextResponse.redirect(new URL(isLoggedIn ? '/draft/register' : '/draft', request.url));
