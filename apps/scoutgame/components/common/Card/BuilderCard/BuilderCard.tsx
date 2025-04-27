@@ -105,19 +105,20 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
           <BuilderCardStats {...builder} isStarterCard={type === 'starter_pack'} size={size} />
         )}
       </BuilderCardNftDisplay>
-      {ActionSlotComponent ? (
-        <ActionSlotComponent builder={builder} {...(actionSlotProps as any)} />
-      ) : !showListButton ? (
-        lowestNonUserListing ? (
-          <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
-            <NFTListingPurchaseButton builder={builder} listing={lowestNonUserListing} />
-          </Stack>
-        ) : typeof builder.price !== 'undefined' && showPurchaseButton ? (
-          <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
-            <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} type={type} />
-          </Stack>
-        ) : null
-      ) : (
+      {
+        ActionSlotComponent ? (
+          <ActionSlotComponent builder={builder} {...(actionSlotProps as any)} />
+        ) : !showListButton ? (
+          lowestNonUserListing ? (
+            <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
+              <NFTListingPurchaseButton builder={builder} listing={lowestNonUserListing} />
+            </Stack>
+          ) : typeof builder.price !== 'undefined' && showPurchaseButton ? (
+            <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
+              <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} type={type} />
+            </Stack>
+          ) : null
+        ) : null /* (
         type !== 'starter_pack' &&
         (!userListings.length ? (
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
@@ -126,7 +127,8 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
         ) : (
           <NFTListingEditButton listing={userListings[0]} />
         ))
-      )}
+      ) */
+      }
     </Card>
   );
 }
