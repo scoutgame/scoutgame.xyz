@@ -190,7 +190,7 @@ async function exportDraftBids() {
 
   console.log(`Total value of all bids: ${formatUnits(totalValue, 18)} DEV`);
   // Generate a CSV of winners (top 50 bids per developer)
-  console.log('\nGenerating winners CSV...');
+  console.log('\nGenerating winners...');
 
   // Group bids by developer
   const bidsByDeveloper = databaseBids.reduce(
@@ -216,6 +216,27 @@ async function exportDraftBids() {
     walletAddress: string;
   }[] = [];
 
+  const losers: {
+    developerId: string;
+    scoutId: string;
+    amount: string;
+    displayName: string;
+    email: string;
+    farcaster: string;
+    telegram: string;
+    walletAddress: string;
+  }[] = [];
+
+  const devPayouts: {
+    developerId: string;
+    amount: string;
+    displayName: string;
+    email: string | null;
+    farcaster: string | null;
+    telegram: string | null;
+    walletAddress: string;
+  }[] = [];
+
   for (const [developerId, bids] of Object.entries(bidsByDeveloper)) {
     // Sort bids by value in descending order
     shuffleArray(bids); // shuffle the bids so that the lower bids are randomly distributed
@@ -226,11 +247,45 @@ async function exportDraftBids() {
     });
 
     // Take the top 50 bids
-    const topBids = sortedBids.slice(0, 50);
+    const cutoff = 50;
+    const devShare = 0.2;
+    const totalBidAmount = sortedBids.slice(0, cutoff).reduce((sum, bid) => sum + BigInt(bid.value), BigInt(0));
+    const totalBidTokens = parseInt(formatUnits(totalBidAmount, 18));
+    const developer = await prisma.scout.findFirstOrThrow({
+      where: {
+        id: developerId
+      },
+      select: {
+        id: true,
+        displayName: true,
+        farcasterName: true,
+        email: true,
+        telegramName: true,
+        wallets: {
+          select: {
+            address: true
+          },
+          where: {
+            primary: true
+          }
+        }
+      }
+    });
+    const devPayout = {
+      developerId,
+      amount: Math.ceil(totalBidTokens * devShare).toString(),
+      displayName: developer.displayName,
+      email: developer.email,
+      farcaster: developer.farcasterName,
+      telegram: developer.telegramName,
+      walletAddress: developer.wallets[0].address
+    };
+    devPayouts.push(devPayout);
+    // console.log(`Dev ${developer.displayName} receives ${devPayout.amount} from ${totalBidTokens} DEV`);
 
     // Get scout information for each winning bid
-    const _winners = await Promise.all(
-      topBids.map(async (bid) => {
+    await Promise.all(
+      sortedBids.map(async (bid, index) => {
         const scout = await prisma.scout.findFirstOrThrow({
           where: {
             wallets: {
@@ -247,18 +302,7 @@ async function exportDraftBids() {
             telegramName: true
           }
         });
-
-        // mark it as completed so we know it was a winner
-        // await prisma.draftSeasonOffer.update({
-        //   where: {
-        //     id: bid.id
-        //   },
-        //   data: {
-        //     completedAt: new Date()
-        //   }
-        // });
-
-        return {
+        const row = {
           developerId: bid.developerId,
           scoutId: scout.id,
           amount: formatUnits(BigInt(bid.value), 18),
@@ -268,15 +312,30 @@ async function exportDraftBids() {
           telegram: scout.telegramName || '',
           walletAddress: bid.makerWalletAddress
         };
+
+        if (index < cutoff) {
+          // mark it as completed so we know it was a winner
+          // await prisma.draftSeasonOffer.update({
+          //   where: {
+          //     id: bid.id
+          //   },
+          //   data: {
+          //     completedAt: new Date()
+          //   }
+          // });
+          winners.push(row);
+        } else {
+          losers.push(row);
+        }
       })
     );
-    winners.push(..._winners);
   }
 
   console.log(`Found ${winners.length} winners across all developers`);
+  console.log(`Found ${losers.length} losers`);
 
   // Generate CSV content
-  const winnersCsvHeaders = [
+  const csvHeaders = [
     'developerId',
     'scoutId',
     'amount',
@@ -287,7 +346,22 @@ async function exportDraftBids() {
     'walletAddress'
   ];
   const winnersCsvContent = [
-    winnersCsvHeaders.join(','),
+    csvHeaders.join(','),
+    ...winners.map((winner) =>
+      [
+        winner.developerId,
+        winner.scoutId,
+        winner.amount,
+        `"${winner.displayName.replace(/"/g, '""')}"`,
+        winner.email,
+        winner.farcaster,
+        winner.telegram,
+        winner.walletAddress
+      ].join(',')
+    )
+  ].join('\n');
+  const losersCsvContent = [
+    csvHeaders.join(','),
     ...winners.map((winner) =>
       [
         winner.developerId,
@@ -307,6 +381,15 @@ async function exportDraftBids() {
   console.log(`Winners CSV exported to: ${winnersOutputPath}`);
   fs.writeFileSync('./draft-winners.json', JSON.stringify(winners, null, 2));
   console.log(`Winners JSON exported to: ./draft-winners.json`);
+
+  const losersOutputPath = './draft-losers.csv';
+  fs.writeFileSync(losersOutputPath, losersCsvContent);
+  console.log(`Losers CSV exported to: ${losersOutputPath}`);
+  fs.writeFileSync('./draft-losers.json', JSON.stringify(losers, null, 2));
+  console.log(`Losers JSON exported to: ./draft-losers.json`);
+
+  fs.writeFileSync('./draft-payout.json', JSON.stringify(devPayouts, null, 2));
+  console.log(`Losers JSON exported to: ./dev-payout.json`);
 }
 
 // source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
