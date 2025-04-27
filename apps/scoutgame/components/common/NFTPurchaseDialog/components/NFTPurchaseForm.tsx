@@ -39,6 +39,7 @@ import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
+import { useDevTokenBalance } from '../../../../hooks/useDevTokenBalance';
 import { useDecentTransaction } from '../hooks/useDecentTransaction';
 import { useGetBuilderNftStats } from '../hooks/useGetBuilderNftStats';
 import { useGetERC20Allowance } from '../hooks/useGetERC20Allowance';
@@ -225,6 +226,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const hasInsufficientBalance = !!amountToPay && !!balanceInfo && balanceInfo.balance < amountToPay;
 
+  const { refreshBalance } = useDevTokenBalance({ address });
+
   const handlePurchase = async () => {
     try {
       setSubmitError(null);
@@ -245,7 +248,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
       const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
 
-      sendNftMintTransaction({
+      await sendNftMintTransaction({
         txData: {
           to: decentTransactionInfo.tx.to as Address,
           data: decentTransactionInfo.tx.data as any,
@@ -268,6 +271,10 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         season: getCurrentSeasonStart(),
         nftType: builder.nftType
       });
+
+      setTimeout(() => {
+        refreshBalance();
+      }, 2500);
     } catch (error) {
       setSubmitError(
         typeof error === 'string'
