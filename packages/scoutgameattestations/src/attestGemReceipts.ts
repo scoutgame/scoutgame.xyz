@@ -11,6 +11,46 @@ import { uploadContributionReceiptToS3 } from './uploadContributionReceiptToS3';
 
 const minimumGemsDate = new Date('2024-11-04T00:00:00Z');
 
+function getDescription(ev: {
+  type: string;
+  event: {
+    onchainAchievement?: { project?: { name: string }; tier: string } | null;
+  };
+}) {
+  if (ev.type === 'onchain_achievement') {
+    return `Project ${ev.event.onchainAchievement?.project?.name} reached ${capitalize(ev.event.onchainAchievement?.tier)} tier`;
+  }
+  return ev.type === 'daily_commit'
+    ? `Contributed a regular commit to the repository`
+    : ev.type === 'first_pr'
+      ? 'First pull request in the repository'
+      : ev.type === 'regular_pr'
+        ? 'Authored pull request in the repository'
+        : ev.type === 'third_pr_in_streak'
+          ? 'Third pull request in a streak'
+          : '';
+}
+
+function getUrl(ev: {
+  type: string;
+  event: {
+    onchainAchievement?: { project?: { path: string } } | null;
+    githubEvent?: {
+      repo: { owner: string; name: string };
+      commitHash: string | null;
+      pullRequestNumber: number | null;
+    } | null;
+  };
+}) {
+  if (ev.type === 'onchain_achievement') {
+    return `https://scoutgame.xyz/p/${ev.event.onchainAchievement?.project?.path}`;
+  }
+  if (ev.type === 'daily_commit') {
+    return `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/commit/${ev.event.githubEvent?.commitHash}`;
+  }
+  return `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/pull/${ev.event.githubEvent?.pullRequestNumber}`;
+}
+
 export async function attestGemReceipts(): Promise<void> {
   const gemsReceiptQuery = {
     createdAt: {
@@ -53,7 +93,7 @@ export async function attestGemReceipts(): Promise<void> {
 
   for (let i = 0; i < usersToProcess; i++) {
     const user = usersWithoutProfile[i];
-    attestationLogger.info(`Populating profile attestion for user ${user.id} ${i + 1} / ${usersToProcess}`);
+    attestationLogger.info(`Populating profile attestation for user ${user.id} ${i + 1} / ${usersToProcess}`);
 
     await createOrGetUserProfileAttestation({ scoutId: user.id });
   }
@@ -101,52 +141,31 @@ export async function attestGemReceipts(): Promise<void> {
     }
   });
 
-  function getDescription(ev: (typeof gemReceiptsWithoutAttestation)[number]) {
-    if (ev.type === 'onchain_achievement') {
-      return `Project ${ev.event.onchainAchievement?.project?.name} reached ${capitalize(ev.event.onchainAchievement?.tier)} tier`;
-    }
-    return ev.type === 'daily_commit'
-      ? `Contributed a regular commit to the repository`
-      : ev.type === 'first_pr'
-        ? 'First pull request in the repository'
-        : ev.type === 'regular_pr'
-          ? 'Authored pull request in the repository'
-          : ev.type === 'third_pr_in_streak'
-            ? 'Third pull request in a streak'
-            : '';
-  }
-
-  function getUrl(ev: (typeof gemReceiptsWithoutAttestation)[number]) {
-    if (ev.type === 'onchain_achievement') {
-      return `https://scoutgame.xyz/p/${ev.event.onchainAchievement?.project?.path}`;
-    }
-    if (ev.type === 'daily_commit') {
-      return `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/commit/${ev.event.githubEvent?.commitHash}`;
-    }
-    return `https://github.com/${ev.event.githubEvent?.repo.owner}/${ev.event.githubEvent?.repo.name}/pull/${ev.event.githubEvent?.pullRequestNumber}`;
-  }
-
   const attestationInputs: Omit<ScoutGameAttestationInput, 'schemaId' | 'chainId'>[] = [];
 
   for (const ev of gemReceiptsWithoutAttestation) {
-    const { metadataUrl } = await uploadContributionReceiptToS3({
-      scoutId: ev.event.builder.id,
-      gemReceiptId: ev.id,
-      metadata: {
-        description: getDescription(ev)
-      }
-    });
+    try {
+      const { metadataUrl } = await uploadContributionReceiptToS3({
+        scoutId: ev.event.builder.id,
+        gemReceiptId: ev.id,
+        metadata: {
+          description: getDescription(ev)
+        }
+      });
 
-    attestationInputs.push({
-      refUID: ev.event.builder.onchainProfileAttestationUid as `0x${string}`,
-      data: encodeContributionReceiptAttestation({
-        value: ev.value,
-        type: ev.type,
-        metadataUrl,
-        description: getDescription(ev),
-        url: getUrl(ev)
-      })
-    });
+      attestationInputs.push({
+        refUID: ev.event.builder.onchainProfileAttestationUid as `0x${string}`,
+        data: encodeContributionReceiptAttestation({
+          value: ev.value,
+          type: ev.type,
+          metadataUrl,
+          description: getDescription(ev),
+          url: getUrl(ev)
+        })
+      });
+    } catch (error) {
+      attestationLogger.error(`Error uploading contribution receipt to S3`, { error, gemReceiptId: ev.id });
+    }
   }
 
   await multiAttestOnchain({

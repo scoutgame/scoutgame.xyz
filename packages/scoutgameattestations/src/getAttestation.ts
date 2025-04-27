@@ -6,7 +6,7 @@ import { scoutGameAttestationChainId } from './constants';
 import type { EASSchemaChain } from './easSchemas/constants';
 import { easConfig } from './easSchemas/constants';
 
-export function getAttestion({ attestationUid, chainId }: { attestationUid: string; chainId: EASSchemaChain }) {
+export function getAttestation({ attestationUid, chainId }: { attestationUid: string; chainId: EASSchemaChain }) {
   const rpcUrl = getChainById(chainId)?.rpcUrls[0] as string;
   // ethers v6 version of StaticJSONRPCProvider https://github.com/ethers-io/ethers.js/discussions/3994
   const provider = new JsonRpcProvider(rpcUrl, undefined, {

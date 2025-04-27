@@ -147,6 +147,4 @@ export async function processDeveloperActivity({
     eventsWithWeek: thisWeekEvents.length,
     gemsCollected
   });
-
-  await attestGemReceipts();
 }
