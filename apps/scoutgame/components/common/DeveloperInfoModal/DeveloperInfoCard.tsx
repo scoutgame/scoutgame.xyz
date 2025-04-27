@@ -27,7 +27,7 @@ export function DeveloperInfoCard({ onClose, developer }: { onClose: () => void;
           <DeveloperInfoWeekStats rank={developer.rank} gemsCollected={developer.gemsCollected} />
           <DeveloperInfoRanksGraph ranks={developer.last14DaysRank} label='14D Rank' />
           <DeveloperInfoSeasonStats
-            seasonPoints={developer.seasonPoints}
+            seasonTokens={developer.seasonTokens}
             scoutedBy={developer.scoutedBy}
             cardsSold={developer.cardsSold}
           />

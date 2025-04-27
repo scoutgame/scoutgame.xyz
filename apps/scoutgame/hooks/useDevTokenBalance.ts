@@ -48,7 +48,7 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
   const cacheKey = address ? getCacheKey(address, publicClient?.chain?.id) : null;
 
   const { data: balance = 0 } = useSWR(cacheKey, fetcher, {
-    revalidateOnFocus: false,
+    revalidateOnFocus: true,
     revalidateOnReconnect: true
   });
 

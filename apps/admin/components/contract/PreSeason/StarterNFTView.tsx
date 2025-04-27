@@ -99,13 +99,6 @@ export function StarterNFTView(data: StarterPackNFTContractData) {
       </Grid>
       <Grid size={itemSizeThreeColumnMd}>
         {/* Currently, this is the balance of the proceeds receiver wallet. Once we start moving funds, we should look at logs instead */}
-        <Typography variant='h6'>NFTs paid with points</Typography>
-        <Typography variant='body1' fontWeight='bold'>
-          {Number(data.nftSalesData.nftsPaidWithPoints).toLocaleString('en-US')}
-        </Typography>
-      </Grid>
-      <Grid size={itemSizeThreeColumnMd}>
-        {/* Currently, this is the balance of the proceeds receiver wallet. Once we start moving funds, we should look at logs instead */}
         <Typography variant='h6'>NFTs paid with crypto</Typography>
         <Typography variant='body1' fontWeight='bold'>
           {Number(data.nftSalesData.nftsPaidWithCrypto).toLocaleString('en-US')}

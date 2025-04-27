@@ -14,7 +14,7 @@ export const nftChain: Chain = base;
 export function getNFTContractAddress(season: ISOWeek): Address | undefined {
   const seasonConfig = getSeasonConfig(season);
 
-  return seasonConfig.defaultNftAddress;
+  return seasonConfig.standardNftAddress;
 }
 
 export function getStarterNFTContractAddress(season: ISOWeek): Address | undefined {

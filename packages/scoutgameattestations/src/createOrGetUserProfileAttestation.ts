@@ -7,7 +7,7 @@ import {
 
 import { attestOnchain } from './attestOnchain';
 import { scoutGameAttestationChainId, scoutGameUserProfileSchemaUid } from './constants';
-import { getAttestion } from './getAttestation';
+import { getAttestation } from './getAttestation';
 import { uploadScoutProfileToS3 } from './uploadScoutProfileToS3';
 
 export async function createOrGetUserProfileAttestation({
@@ -26,7 +26,7 @@ export async function createOrGetUserProfileAttestation({
   });
 
   if (scout.onchainProfileAttestationUid && scout.onchainProfileAttestationChainId === scoutGameAttestationChainId) {
-    const attestation = await getAttestion({
+    const attestation = await getAttestation({
       attestationUid: scout.onchainProfileAttestationUid,
       chainId: scoutGameAttestationChainId
     });

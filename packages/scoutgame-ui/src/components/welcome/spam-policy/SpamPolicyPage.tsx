@@ -31,7 +31,7 @@ export function SpamPolicyPage() {
         <Typography mb={2}>The Scout Game has a strict no spam policy.</Typography>
         <Typography mb={2}>
           If 3 of your PRs are rejected, your account will be labeled as spam. You will be suspended from Scout Game and
-          unable to score points.
+          unable to score DEV tokens.
         </Typography>
         <Typography mb={2}>
           If you are suspended, you may appeal this decision. An appeal link will be included in the suspension

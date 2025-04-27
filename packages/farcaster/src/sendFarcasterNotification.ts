@@ -40,7 +40,8 @@ type Variables = {
 const FarcasterNotificationTypesRecord = {
   weekly_claim: {
     title: 'Weekly Claim',
-    description: ({ points }: Variables['weekly_claim']) => `You earned ${points} points this week! Click to Claim!`,
+    description: ({ points }: Variables['weekly_claim']) =>
+      `You earned ${points} DEV tokens this week! Click to Claim!`,
     targetUrl: () => `https://scoutgame.xyz/claim`
   },
   zero_weekly_claim: {

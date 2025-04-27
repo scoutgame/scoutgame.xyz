@@ -49,8 +49,7 @@ export async function calculateWeeklyClaims({
 }): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } =
     await getPointsCountForWeekWithNormalisation({
-      week,
-      useOnchainLeaderboard: true
+      week
     });
 
   const season = getCurrentSeasonStart(week);

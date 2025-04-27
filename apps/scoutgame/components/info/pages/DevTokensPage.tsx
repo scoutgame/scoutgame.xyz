@@ -3,9 +3,9 @@ import { InfoCard } from '@packages/scoutgame-ui/components/common/DocumentPageC
 
 import { InfoPageContainer } from '../components/InfoPageContainer';
 
-export function PointsPage() {
+export function DevTokensPage() {
   return (
-    <InfoPageContainer data-test='points-page' image='/images/info/info_banner.png' title='DEV Tokens'>
+    <InfoPageContainer data-test='dev-tokens-page' image='/images/info/info_banner.png' title='DEV Tokens'>
       <Document />
     </InfoPageContainer>
   );

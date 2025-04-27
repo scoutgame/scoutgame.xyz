@@ -56,6 +56,7 @@
     "admin": "npx react-env --path .env.local --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:remote": "npx react-env --path .env.production --dest ./apps/admin/public -- npm start -w=apps/admin",
     "admin:test": "dotenv -e .env.test.local -- npm test -w apps/admin",
+    "admin:staging": "npx react-env --path .env.staging.local --dest ./apps/admin/public -- npm start -w=apps/admin",
     "airdrop": "npx react-env --path .env.local --dest ./apps/airdrop/public -- npm start -w=apps/airdrop",
     "airdrop:remote": "npx react-env --path .env.production --dest ./apps/airdrop/public -- npm start -w=apps/airdrop",
     "airdrop:onchain": "npx react-env --path .env.onchain --dest ./apps/airdrop/public -- npm start -w=apps/airdrop",
