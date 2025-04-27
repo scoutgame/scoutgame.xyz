@@ -26,6 +26,7 @@ function readTokenTransfers(filePath: string, tokenNameFilter?: string, tokenSym
     records.forEach((record: any) => {
       record['TokenValue'] = record['TokenValue'].replace(/,/g, '');
     });
+    console.log(records.slice(0, 4));
     // console.log(records.slice(0, 4));
     // Filter records if tokenNameFilter is provided
     if (tokenNameFilter) {
@@ -33,7 +34,7 @@ function readTokenTransfers(filePath: string, tokenNameFilter?: string, tokenSym
         (record: any) =>
           record.TokenName === tokenNameFilter &&
           record.TokenSymbol === tokenSymbol &&
-          record.To === DRAFT_BID_RECIPIENT_ADDRESS
+          record.To.toLowerCase() === DRAFT_BID_RECIPIENT_ADDRESS.toLowerCase()
       );
     }
 
@@ -110,7 +111,7 @@ async function exportMissingBids() {
     })
   );
 
-  const outputPath = './missing-bids-export.json';
+  const outputPath = './draft-missing-bids-export.json';
   fs.writeFileSync(outputPath, JSON.stringify(rows, null, 2));
   console.log(`${rows.length} missing bids exported to: ${outputPath}`);
 }
