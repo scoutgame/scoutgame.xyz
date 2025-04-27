@@ -1,4 +1,4 @@
-import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getLastWeek, getSeasonConfig } from '@packages/dates/utils';
 import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
@@ -53,6 +53,7 @@ export async function processOnchainGemsPayout(
     });
 
     const notificationsSent = await sendGemsPayoutNotifications({ week });
+    log.info(`Sent notifications for ${notificationsSent} developers`, { notificationsSent });
   }
 
   await Promise.all([
@@ -66,6 +67,4 @@ export async function processOnchainGemsPayout(
       log.error('Error deploying octant & base partner rewards contract', { error, week, season });
     })
   ]);
-
-  log.info(`Processed ${generatedClaims.totalBuilders} developers for payout`, { notificationsSent });
 }
