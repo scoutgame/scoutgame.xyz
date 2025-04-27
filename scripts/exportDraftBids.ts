@@ -26,7 +26,6 @@ function readTokenTransfers(filePath: string, tokenNameFilter?: string, tokenSym
     records.forEach((record: any) => {
       record['TokenValue'] = record['TokenValue'].replace(/,/g, '');
     });
-    console.log(records.slice(0, 4));
     // console.log(records.slice(0, 4));
     // Filter records if tokenNameFilter is provided
     if (tokenNameFilter) {
