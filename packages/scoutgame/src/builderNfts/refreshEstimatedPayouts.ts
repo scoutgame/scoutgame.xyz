@@ -16,19 +16,16 @@ import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';
  */
 export async function refreshEstimatedPayouts({
   week,
-  builderIdToRefresh,
-  useOnchainLeaderboard
+  builderIdToRefresh
 }: {
   week: ISOWeek;
   builderIdToRefresh?: string;
-  useOnchainLeaderboard?: boolean;
 }): Promise<void> {
   const season = getCurrentSeasonStart(week);
 
   const [{ normalisedBuilders }, data] = await Promise.all([
     getPointsCountForWeekWithNormalisation({
-      week,
-      useOnchainLeaderboard
+      week
     }),
     getAllSeasonNftsWithOwners({ season })
   ]);
