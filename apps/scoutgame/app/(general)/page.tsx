@@ -31,6 +31,5 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const showNewLandingPage = isDraftSeason();
-  return showNewLandingPage ? <SeasonOneLandingPage /> : <LandingPage />;
+  return <SeasonOneLandingPage />;
 }
