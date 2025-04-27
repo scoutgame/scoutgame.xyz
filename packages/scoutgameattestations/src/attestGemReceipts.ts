@@ -52,6 +52,9 @@ function getUrl(ev: {
 }
 
 export async function attestGemReceipts(): Promise<void> {
+  // TODO: Re-enable this once we have EAS resolver
+  return;
+
   const gemsReceiptQuery = {
     createdAt: {
       gte: minimumGemsDate
