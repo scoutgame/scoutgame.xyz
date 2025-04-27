@@ -18,7 +18,7 @@ export type DraftDeveloperInfo = {
   githubConnectedAt: Date;
   githubLogin: string;
   farcasterUsername: string | null;
-  seasonPoints: number;
+  seasonTokens: number;
   scoutedBy: number;
   githubActivities: DeveloperGithubActivity[];
   weeklyRanks: (number | null)[];
@@ -143,7 +143,7 @@ export async function getDraftDeveloperInfo({ path }: { path: string }): Promise
     githubConnectedAt: developer.githubUsers[0].createdAt,
     githubLogin: developer.githubUsers[0].login,
     farcasterUsername: developer.farcasterName || null,
-    seasonPoints: developer.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
+    seasonTokens: developer.userSeasonStats[0]?.pointsEarnedAsBuilder || 0,
     githubActivities: developer.events
       .filter((event) => event.githubEvent && event.gemsReceipt)
       .map((event) => ({
