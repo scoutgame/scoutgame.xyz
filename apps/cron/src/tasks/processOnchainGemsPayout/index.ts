@@ -1,4 +1,4 @@
-import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getLastWeek, getSeasonConfig } from '@packages/dates/utils';
 import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
@@ -21,36 +21,40 @@ export async function processOnchainGemsPayout(
   { season = getCurrentSeasonStart(), now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
 ) {
   const week = getLastWeek(now);
+  const seasonConfig = getSeasonConfig(season);
 
   // run for the first few hours every Monday at midnight UTC
   if (now.weekday !== 1 || now.hour > 3) {
     log.info('Gems Payout: It is not yet Sunday at 12:00 AM UTC, skipping');
     return;
   }
-
   const contractAddress = getNFTContractAddress(season);
 
   if (!contractAddress) {
     log.warn('Gems Payout: No contract address found for season', { season });
-    return;
   }
 
-  const tokenBalances = await resolveTokenOwnership({
-    chainId: scoutProtocolChainId,
-    contractAddress,
-    week
-  });
+  if (contractAddress && !seasonConfig.draft) {
+    const tokenBalances = await resolveTokenOwnership({
+      chainId: scoutProtocolChainId,
+      contractAddress,
+      week
+    });
 
-  const weeklyClaimsCalculated = await calculateWeeklyClaims({
-    week,
-    tokenBalances
-  });
+    const weeklyClaimsCalculated = await calculateWeeklyClaims({
+      week,
+      tokenBalances
+    });
 
-  const generatedClaims = await generateWeeklyClaims({ week, weeklyClaimsCalculated });
+    const generatedClaims = await generateWeeklyClaims({ week, weeklyClaimsCalculated });
 
-  log.info(`Processed ${generatedClaims.totalBuilders} builders points payout`, {
-    totalBuilders: generatedClaims.totalBuilders
-  });
+    log.info(`Processed ${generatedClaims.totalBuilders} builders points payout`, {
+      totalBuilders: generatedClaims.totalBuilders
+    });
+
+    const notificationsSent = await sendGemsPayoutNotifications({ week });
+    log.info(`Sent notifications for ${notificationsSent} developers`, { notificationsSent });
+  }
 
   await Promise.all([
     deployMatchupRewards({ week }).catch((error) => {
@@ -63,8 +67,4 @@ export async function processOnchainGemsPayout(
       log.error('Error deploying octant & base partner rewards contract', { error, week, season });
     })
   ]);
-
-  const notificationsSent = await sendGemsPayoutNotifications({ week });
-
-  log.info(`Processed ${generatedClaims.totalBuilders} builders points payout`, { notificationsSent });
 }
