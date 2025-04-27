@@ -1,5 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { handlePendingDraftTransaction } from '@packages/scoutgame/builderNfts/handlePendingDraftTransaction';
 const season = '2025-W17';
 
 import fs from 'fs';
@@ -110,42 +109,10 @@ async function exportMissingBids() {
       };
     })
   );
-  // Export rows to CSV
-  const csvContent = [
-    // CSV header
-    [
-      'Scout ID',
-      'Display Name',
-      // 'Total Bids',
-      'Farcaster',
-      'Telegram',
-      'Email',
-      'Wallet Address',
-      'Transaction Hash',
-      'Amount'
-    ].join(','),
-    // CSV data rows
-    ...rows
-      .sort((a, b) => (a.scoutId > b.scoutId ? 1 : -1))
-      .map((row) =>
-        [
-          row.scoutId,
-          row.displayName,
-          // row.totalBids,
-          row.scoutFarcaster || '',
-          row.scoutTelegram || '',
-          row.email || '',
-          row.walletAddress,
-          row.transferHash,
-          row.amount
-        ].join(',')
-      )
-  ].join('\n');
 
-  const outputPath = './missing-bids-export.csv';
-  fs.writeFileSync(outputPath, csvContent);
-  console.log(`CSV exported to: ${outputPath}`);
-  console.log(`Total rows exported: ${rows.length}`);
+  const outputPath = './missing-bids-export.json';
+  fs.writeFileSync(outputPath, JSON.stringify(rows, null, 2));
+  console.log(`${rows.length} missing bids exported to: ${outputPath}`);
 }
 
 async function exportDraftBids() {
@@ -208,7 +175,7 @@ async function exportDraftBids() {
   const winners: {
     developerId: string;
     scoutId: string;
-    amount: string;
+    amount: number;
     displayName: string;
     email: string;
     farcaster: string;
@@ -219,7 +186,7 @@ async function exportDraftBids() {
   const losers: {
     developerId: string;
     scoutId: string;
-    amount: string;
+    amount: number;
     displayName: string;
     email: string;
     farcaster: string;
@@ -229,7 +196,7 @@ async function exportDraftBids() {
 
   const devPayouts: {
     developerId: string;
-    amount: string;
+    amount: number;
     displayName: string;
     email: string | null;
     farcaster: string | null;
@@ -273,7 +240,7 @@ async function exportDraftBids() {
     });
     const devPayout = {
       developerId,
-      amount: Math.ceil(totalBidTokens * devShare).toString(),
+      amount: Math.ceil(totalBidTokens * devShare),
       displayName: developer.displayName,
       email: developer.email,
       farcaster: developer.farcasterName,
@@ -305,7 +272,7 @@ async function exportDraftBids() {
         const row = {
           developerId: bid.developerId,
           scoutId: scout.id,
-          amount: formatUnits(BigInt(bid.value), 18),
+          amount: parseInt(formatUnits(BigInt(bid.value), 18)),
           displayName: scout.displayName || 'Unknown',
           email: scout.email || 'Unknown',
           farcaster: scout.farcasterName || '',
@@ -334,62 +301,14 @@ async function exportDraftBids() {
   console.log(`Found ${winners.length} winners across all developers`);
   console.log(`Found ${losers.length} losers`);
 
-  // Generate CSV content
-  const csvHeaders = [
-    'developerId',
-    'scoutId',
-    'amount',
-    'displayName',
-    'email',
-    'farcaster',
-    'telegram',
-    'walletAddress'
-  ];
-  const winnersCsvContent = [
-    csvHeaders.join(','),
-    ...winners.map((winner) =>
-      [
-        winner.developerId,
-        winner.scoutId,
-        winner.amount,
-        `"${winner.displayName.replace(/"/g, '""')}"`,
-        winner.email,
-        winner.farcaster,
-        winner.telegram,
-        winner.walletAddress
-      ].join(',')
-    )
-  ].join('\n');
-  const losersCsvContent = [
-    csvHeaders.join(','),
-    ...winners.map((winner) =>
-      [
-        winner.developerId,
-        winner.scoutId,
-        winner.amount,
-        `"${winner.displayName.replace(/"/g, '""')}"`,
-        winner.email,
-        winner.farcaster,
-        winner.telegram,
-        winner.walletAddress
-      ].join(',')
-    )
-  ].join('\n');
-
-  const winnersOutputPath = './draft-winners.csv';
-  fs.writeFileSync(winnersOutputPath, winnersCsvContent);
-  console.log(`Winners CSV exported to: ${winnersOutputPath}`);
   fs.writeFileSync('./draft-winners.json', JSON.stringify(winners, null, 2));
   console.log(`Winners JSON exported to: ./draft-winners.json`);
 
-  const losersOutputPath = './draft-losers.csv';
-  fs.writeFileSync(losersOutputPath, losersCsvContent);
-  console.log(`Losers CSV exported to: ${losersOutputPath}`);
   fs.writeFileSync('./draft-losers.json', JSON.stringify(losers, null, 2));
   console.log(`Losers JSON exported to: ./draft-losers.json`);
 
   fs.writeFileSync('./draft-payout.json', JSON.stringify(devPayouts, null, 2));
-  console.log(`Losers JSON exported to: ./dev-payout.json`);
+  console.log(`Payout JSON exported to: ./draft-payout.json`);
 }
 
 // source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
@@ -399,5 +318,6 @@ function shuffleArray(array: any[]) {
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
+exportMissingBids();
 
 exportDraftBids();
