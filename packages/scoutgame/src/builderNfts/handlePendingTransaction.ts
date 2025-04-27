@@ -107,8 +107,6 @@ export async function handlePendingTransaction({
         }
       });
 
-      const pendingTxContractAddress = pendingTx.contractAddress.toLowerCase();
-
       const tokenValue = Number(pendingTx.targetAmountReceived / devTokenDecimalsMultiplier);
 
       await recordOnchainNftMint({

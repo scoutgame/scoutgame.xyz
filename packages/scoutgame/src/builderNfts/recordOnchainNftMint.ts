@@ -178,5 +178,15 @@ export async function recordOnchainNftMint({
     season: builderNft.season
   });
 
-  return { balance };
+  await prisma.userSeasonStats.update({
+    where: {
+      userId_season: {
+        userId: builderNft.builderId,
+        season: builderNft.season
+      }
+    },
+    data: {
+      pointsEarnedAsBuilder: { increment: tokenValue * 0.2 }
+    }
+  });
 }
