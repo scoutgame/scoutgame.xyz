@@ -27,7 +27,7 @@ export function CountdownTimer() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = DateTime.now();
+      const now = DateTime.utc();
       const diff = SEASON_ONE_START.diff(now, ['days', 'hours', 'minutes', 'seconds']);
 
       setTimeLeft({
