@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import type { ButtonProps } from '@mui/material';
 import { Button, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
@@ -7,7 +8,6 @@ import { useSwitchChain, useWalletClient } from 'wagmi';
 import { useUpdateERC20Allowance } from '../hooks/useUpdateERC20Allowance';
 
 import type { AvailableCurrency } from './ChainSelector/chains';
-
 // Component for approving ERC20 tokens
 type ERC20ApproveButtonProps = {
   onSuccess: () => void;
@@ -50,8 +50,13 @@ export function ERC20ApproveButton({
     if (!amountToApprove) {
       throw new Error('Amount to approve is required');
     }
-    await triggerApproveSpender({ amount: amountToApprove });
-    onSuccess();
+    try {
+      await triggerApproveSpender({ amount: amountToApprove });
+      onSuccess();
+    } catch (error) {
+      onSuccess();
+      log.error('Error approving spend', { error });
+    }
   }
 
   const displayAmount = (Number(amountToApprove || 0) / 10 ** decimals).toFixed(2);
