@@ -6,7 +6,7 @@ import type { Address, Chain } from 'viem';
 
 // Define a hook for checking allowances
 export type UseERC20AllowanceProps = {
-  owner: Address;
+  owner?: Address;
   spender: Address | null;
   erc20Address: Address | null;
   chainId: number;
@@ -31,7 +31,7 @@ export function useGetERC20Allowance({ owner, spender, erc20Address, chainId }: 
       });
 
       // Spender is not null here since we check for it in the hook
-      if (!spender) {
+      if (!spender || !owner) {
         return BigInt(0);
       }
 

@@ -59,7 +59,7 @@ export function useTokenPayment({
   const { allowance, refreshAllowance } = useGetERC20Allowance({
     chainId: paymentOption.chainId,
     erc20Address: paymentOption.currency === 'USDC' || paymentOption.currency === 'DEV' ? selectedChainCurrency : null,
-    owner: toAddress,
+    owner: address,
     spender: decentTransactionInfo && 'tx' in decentTransactionInfo ? decentTransactionInfo.tx.to : null
   });
 
