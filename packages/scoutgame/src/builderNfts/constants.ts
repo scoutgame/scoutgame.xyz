@@ -11,6 +11,9 @@ export const getArtworkFolderPath = (season: string, isStarterNft?: boolean) =>
 
 export const nftChain: Chain = base;
 
+// the "51st" dev token would cost 5100, which is impossible so we can use this as a proxy for "no price"
+export const maxDevTokenPrice = 5100;
+
 export function getNFTContractAddress(season: ISOWeek): Address | undefined {
   const seasonConfig = getSeasonConfig(season);
 

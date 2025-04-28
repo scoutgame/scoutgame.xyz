@@ -3,6 +3,7 @@
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import type { SxProps } from '@mui/material';
 import { Box, Button, Stack, Typography } from '@mui/material';
+import { maxDevTokenPrice } from '@packages/scoutgame/builderNfts/constants';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
@@ -15,8 +16,6 @@ import { useState } from 'react';
 import { useGlobalModal } from 'components/common/ModalProvider';
 
 import type { NFTPurchaseProps } from '../NFTPurchaseDialog/components/NFTPurchaseForm';
-
-const MAX_DEV_TOKEN_PRICE = 5100; // the "51st" dev token would cost 5100, which is impossible so we can use this as a proxy for "no price"
 
 export function ScoutButton({
   builder,
@@ -59,7 +58,7 @@ export function ScoutButton({
     );
   }
 
-  if (formattedPrice === MAX_DEV_TOKEN_PRICE) {
+  if (formattedPrice === maxDevTokenPrice) {
     return (
       <Button disabled variant='buy' sx={soldOutButtonSx}>
         <Box px={1}>SOLD OUT</Box>
