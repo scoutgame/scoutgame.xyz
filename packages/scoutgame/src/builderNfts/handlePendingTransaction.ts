@@ -9,7 +9,6 @@ import {
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { devTokenDecimalsMultiplier } from '../protocol/constants';
 
 import { recordOnchainNftMint } from './recordOnchainNftMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
@@ -101,7 +100,7 @@ export async function handlePendingTransaction({
         }
       });
 
-      const tokenValue = Number(pendingTx.targetAmountReceived / devTokenDecimalsMultiplier);
+      const tokenValue = Number(pendingTx.targetAmountReceived);
 
       await recordOnchainNftMint({
         builderNftId: builderNft.id,

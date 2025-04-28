@@ -11,6 +11,7 @@ import { devTokenDecimals } from '../protocol/constants';
 import { refreshBuilderNftPrice } from './refreshBuilderNftPrice';
 import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshNftPurchaseStats } from './refreshNftPurchaseStats';
+import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
 export async function recordOnchainNftMint({
   builderNftId,
@@ -91,6 +92,13 @@ export async function recordOnchainNftMint({
     data: {
       currentBalanceDevToken: currentBalanceInScoutToken.toString()
     }
+  });
+
+  const balance = await refreshScoutNftBalance({
+    contractAddress: builderNft.contractAddress as Address,
+    nftType: builderNft.nftType,
+    tokenId: builderNft.tokenId,
+    wallet: recipientAddress.toLowerCase() as Address
   });
 
   await refreshBuilderNftPrice({
@@ -181,4 +189,6 @@ export async function recordOnchainNftMint({
       pointsEarnedAsBuilder: { increment: tokenValue * 0.2 }
     }
   });
+
+  return { balance };
 }

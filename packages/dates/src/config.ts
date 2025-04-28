@@ -15,8 +15,6 @@ export type SeasonConfig = {
   draft?: boolean;
 };
 
-const IS_SEASON_ONE_LIVE = (env('IS_SEASON_ONE_LIVE') || process.env.REACT_APP_IS_SEASON_ONE_LIVE) === 'true';
-
 // the end of each season is the start of the next season
 export const seasons: SeasonConfig[] = [
   // dev season
@@ -55,34 +53,23 @@ export const seasons: SeasonConfig[] = [
     weeksPerSeason: 15, // extended season
     preseason: true
   },
-  ...(IS_SEASON_ONE_LIVE
-    ? [
-        {
-          start: '2025-W17', // April 21th 2025
-          title: 'Season 1',
-          starterNftAddress: '0x4c46237000049cc085eb4e03d9910ca0ee9da25a' as Address,
-          standardNftAddress: '0xc69e8e5cf18ec5102eea722f7cce9fb154ad96cc' as Address,
-          weeksPerSeason: 13
-        }
-      ]
-    : [
-        {
-          start: '2025-W17',
-          title: 'Draft Season',
-          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          weeksPerSeason: 1,
-          draft: true
-        },
-        // Season 1
-        {
-          start: '2025-W18', // April 28th 2025
-          title: 'Season 1',
-          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          weeksPerSeason: 13
-        }
-      ])
+
+  {
+    start: '2025-W17',
+    title: 'Draft Season',
+    starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+    standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+    weeksPerSeason: 1,
+    draft: true
+  },
+  // Season 1
+  {
+    start: '2025-W18', // April 28th 2025
+    title: 'Season 1',
+    starterNftAddress: '0xb4d54EE57f6F7EfBb5c1F9c7b4aDBF0cc0D756DB' as Address,
+    standardNftAddress: '0xF6d6634b16b044878d5BA86A1cCfC6dCbe4FF138' as Address,
+    weeksPerSeason: 13
+  }
 ] satisfies SeasonConfig[];
 
 export const seasonStarts = seasons.map((s) => s.start);
