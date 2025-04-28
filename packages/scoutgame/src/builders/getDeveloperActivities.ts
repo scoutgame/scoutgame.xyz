@@ -60,13 +60,9 @@ export async function getDeveloperActivities({
         builderStatus: 'approved',
         deletedAt: null
       },
-      OR: [
-        {
-          type: {
-            in: [...builderEventTypes]
-          }
-        }
-      ]
+      type: {
+        in: [...builderEventTypes]
+      }
     },
     orderBy: {
       createdAt: 'desc'
@@ -129,19 +125,7 @@ export async function getDeveloperActivities({
 
   return builderEvents
     .map((event) => {
-      if (event.type === 'nft_purchase' && event.nftPurchaseEvent) {
-        return {
-          ...event.builder,
-          path: event.builder.path,
-          id: event.id,
-          createdAt: event.createdAt,
-          type: 'nft_purchase',
-          scout: {
-            path: event.nftPurchaseEvent.scoutWallet!.scout.path,
-            displayName: event.nftPurchaseEvent.scoutWallet!.scout.displayName
-          }
-        } as BuilderActivity<NftPurchaseActivity>;
-      } else if (
+      if (
         (event.type === 'merged_pull_request' || event.type === 'daily_commit') &&
         event.githubEvent &&
         event.gemsReceipt
