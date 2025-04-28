@@ -90,7 +90,7 @@ export function MatchupProvider({ children }: { children: ReactNode }) {
             // developerId: res.input.draftInfo.developerId,
             // value: res.input.draftInfo.value
           });
-          toast.success('Draft offer submitted successfully');
+          toast.success('Matchup offer submitted successfully');
         }
       } else {
         log.warn(`Matchup transaction saved but no transaction id returned`, {
