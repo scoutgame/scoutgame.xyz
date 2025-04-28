@@ -1,6 +1,7 @@
 import { getChainById } from '@packages/blockchain/chains';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
+import { useCallback } from 'react';
 import useSWR from 'swr';
 import type { Address, Chain } from 'viem';
 
@@ -41,5 +42,30 @@ export function useGetERC20Allowance({ owner, spender, erc20Address, chainId }: 
     }
   );
 
-  return { allowance, refreshAllowance, isLoadingAllowance, error: allowanceError };
+  // Function to continuously poll for allowance updates until component unmounts
+  const pollAllowanceUntilUnmount = useCallback(
+    (intervalMs = 500) => {
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      // Start polling
+      const intervalId = setInterval(() => {
+        refreshAllowance();
+        attempts += 1;
+
+        // Clear interval after 10 tries
+        if (attempts >= maxAttempts) {
+          clearInterval(intervalId);
+        }
+      }, intervalMs);
+
+      // Return cleanup function to stop polling when component unmounts
+      return () => {
+        clearInterval(intervalId);
+      };
+    },
+    [refreshAllowance]
+  );
+
+  return { allowance, refreshAllowance: pollAllowanceUntilUnmount, isLoadingAllowance, error: allowanceError };
 }
