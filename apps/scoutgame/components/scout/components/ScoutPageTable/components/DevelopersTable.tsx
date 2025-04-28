@@ -93,7 +93,7 @@ export function DevelopersTable({
           >
             RANK
           </TableCell>
-          {/* <TableCell
+          <TableCell
             onClick={() => handleSort('week_gems')}
             sx={{
               fontSize: { xs: '9px', md: 'initial' },
@@ -131,7 +131,7 @@ export function DevelopersTable({
               PRICE
               <SortIcon columnName='price' order={order} sort={sort} />
             </Stack>
-          </TableCell> */}
+          </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -206,7 +206,7 @@ export function DevelopersTable({
                 </TableCellText>
               </Stack>
             </TableCell>
-            {/* <TableCell align='center'>
+            <TableCell align='center'>
               <Stack
                 alignItems='center'
                 flexDirection='row'
@@ -228,15 +228,15 @@ export function DevelopersTable({
                 <TableCellText color='text.primary'>{developer.estimatedPayout}</TableCellText>
                 {isMdScreen && <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV Token' />}
               </Stack>
-            </TableCell> */}
-            {/* <TableCell align='center'>
+            </TableCell>
+            <TableCell align='center'>
               <Stack alignItems='center' flexDirection='row' gap={{ xs: 0.5, md: 1 }} justifyContent='flex-end'>
                 <TableCellText color='text.primary'>
                   {Number(developer.price || 0) / 10 ** devTokenDecimals}
                 </TableCellText>
                 {isMdScreen && <Image width={15} height={15} src='/images/dev-token-logo.png' alt='DEV Token' />}
               </Stack>
-            </TableCell> */}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
