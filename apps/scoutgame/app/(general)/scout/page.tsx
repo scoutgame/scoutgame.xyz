@@ -22,7 +22,7 @@ export default async function Scout({
   // Otherwise, show the starter card view unless logged out
   // const [, purchasedCards] = await safeAwaitSSRData(countStarterPackTokensPurchased(scoutId));
   // const hasPurchasedStarterCard= !!purchasedCards && purchasedCards > 0;
-  const defaultNftType = 'default'; // scoutId ? (hasPurchasedStarterCard ? 'top_builders' : 'starter_pack') : 'starter_pack';
+  const defaultNftType = 'starter'; // scoutId ? (hasPurchasedStarterCard ? 'top_builders' : 'starter_pack') : 'starter_pack';
   const nftType = (searchParamsResolved.nftType as 'default' | 'starter') || defaultNftType;
   return (
     <ScoutPage

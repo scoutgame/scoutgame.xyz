@@ -24,8 +24,8 @@ export const scoutTabOptions: TabItem[] = [{ label: 'Top Scouts', value: 'scouts
 export const scoutTabMobileOptions: TabItem[] = [{ label: 'Developers', value: 'builders' }, ...scoutTabOptions];
 
 const nftTypeOptions = [
-  { label: 'Standard', value: 'default' },
-  { label: 'Starters', value: 'starter' }
+  { label: 'Starters', value: 'starter' },
+  { label: 'Standard', value: 'default' }
 ];
 
 export async function ScoutPage({
