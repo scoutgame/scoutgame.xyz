@@ -66,8 +66,8 @@ export const seasons: SeasonConfig[] = [
   {
     start: '2025-W18', // April 28th 2025
     title: 'Season 1',
-    starterNftAddress: '0xb4d54EE57f6F7EfBb5c1F9c7b4aDBF0cc0D756DB' as Address,
-    standardNftAddress: '0xF6d6634b16b044878d5BA86A1cCfC6dCbe4FF138' as Address,
+    starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
+    standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
     weeksPerSeason: 13
   }
 ] satisfies SeasonConfig[];
