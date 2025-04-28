@@ -49,19 +49,23 @@ export const saveOnboardingDetailsAction = authActionClient
     });
 
     if (parsedInput.sendMarketing) {
-      await registerLoops(
-        {
+      try {
+        await registerLoops(
+          {
+            email: parsedInput.email,
+            displayName: parsedInput.displayName,
+            sendMarketing: !!parsedInput.sendMarketing,
+            createdAt: existingUser.createdAt
+          },
+          getPlatform()
+        );
+        await registerBeehiiv({
           email: parsedInput.email,
-          displayName: parsedInput.displayName,
-          sendMarketing: !!parsedInput.sendMarketing,
-          createdAt: existingUser.createdAt
-        },
-        getPlatform()
-      );
-      await registerBeehiiv({
-        email: parsedInput.email,
-        sendMarketing: !!parsedInput.sendMarketing
-      });
+          sendMarketing: !!parsedInput.sendMarketing
+        });
+      } catch (error) {
+        log.error('Error registering marketing contacts', { error, userId });
+      }
     }
 
     try {
