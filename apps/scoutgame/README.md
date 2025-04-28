@@ -1,1 +1,1 @@
-# scoutgame.xyz
+# scoutgame webapp
