@@ -16,7 +16,11 @@ import {
   Typography
 } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getNFTContractAddressForNftType, scoutgameEthAddress } from '@packages/scoutgame/builderNfts/constants';
+import {
+  getNFTContractAddressForNftType,
+  scoutgameEthAddress,
+  maxDevTokenPrice
+} from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
@@ -121,6 +125,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const [builderTokenId, setBuilderTokenId] = useState<bigint>(BigInt(0));
 
   const purchaseCostInTokens = purchaseCost / BigInt(10 ** devTokenDecimals);
+
+  const overLimit = purchaseCostInTokens === maxDevTokenPrice;
 
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
@@ -520,7 +526,11 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         </Typography>
       )}
 
-      {!approvalRequired || isExecutingTransaction || isFetchingPrice ? (
+      {overLimit ? (
+        <Button disabled variant='buy'>
+          <Box px={1}>SOLD OUT</Box>
+        </Button>
+      ) : !approvalRequired || isExecutingTransaction || isFetchingPrice ? (
         <Button
           loading={isLoading}
           size='large'
