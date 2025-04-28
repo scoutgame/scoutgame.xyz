@@ -13,7 +13,7 @@ export default async function Scout({
   const builderSort = (searchParamsResolved.builderSort as BuildersSortBy) || 'week_gems';
   const builderOrder = (searchParamsResolved.builderOrder as string) || 'desc';
   const scoutOrder = (searchParamsResolved.scoutOrder as string) || 'desc';
-  const scoutTab = (searchParamsResolved.scoutTab as string) || 'starter';
+  const scoutTab = (searchParamsResolved.scoutTab as string) || 'scouts';
   const buildersLayout = (searchParamsResolved.buildersLayout as string) || 'table';
   const tab = (searchParamsResolved.tab as string) || 'builders';
   const session = await getSession();
@@ -22,7 +22,7 @@ export default async function Scout({
   // Otherwise, show the starter card view unless logged out
   // const [, purchasedCards] = await safeAwaitSSRData(countStarterPackTokensPurchased(scoutId));
   // const hasPurchasedStarterCard= !!purchasedCards && purchasedCards > 0;
-  const defaultNftType = 'default'; // scoutId ? (hasPurchasedStarterCard ? 'top_builders' : 'starter_pack') : 'starter_pack';
+  const defaultNftType = 'starter'; // scoutId ? (hasPurchasedStarterCard ? 'top_builders' : 'starter_pack') : 'starter_pack';
   const nftType = (searchParamsResolved.nftType as 'default' | 'starter') || defaultNftType;
   return (
     <ScoutPage
