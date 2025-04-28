@@ -15,7 +15,7 @@ export const addMatchupSelectionAction = authActionClient
       developerNftId: yup.string().required()
     })
   )
-  .action(async ({ ctx, parsedInput }) => {
+  .action(async ({ parsedInput }) => {
     const selections = await prisma.scoutMatchupSelection.count({
       where: {
         matchupId: parsedInput.matchupId
