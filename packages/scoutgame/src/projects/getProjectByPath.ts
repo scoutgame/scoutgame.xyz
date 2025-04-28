@@ -165,6 +165,7 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
     ...scoutProject.contracts.flatMap((contract) => contract.dailyStats),
     ...scoutProject.wallets.flatMap((wallet) => wallet.dailyStats)
   ];
+
   const contractDailyStats = Object.entries(
     scoutProject.contracts.reduce<Record<string, Record<string, number>>>((acc, contract) => {
       const weeklyTotals = new Map<string, number>();
@@ -210,13 +211,13 @@ export async function getProjectByPath(path: string): Promise<ScoutProjectDetail
     contracts: scoutProject.contracts.map((contract) => ({
       ...contract,
       loadingStats: contract.dailyStats.length === 0,
-      txCount: contract.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)
+      txCount: contract.dailyStats.filter((d) => d.week === week).reduce((acc, curr) => acc + curr.transactions, 0)
     })),
     wallets: scoutProject.wallets.map((wallet) => ({
       ...wallet,
       chainId: wallet.chainId!,
       loadingStats: wallet.dailyStats.length === 0,
-      txCount: wallet.dailyStats.reduce((acc, curr) => acc + curr.transactions, 0)
+      txCount: wallet.dailyStats.filter((d) => d.week === week).reduce((acc, curr) => acc + curr.transactions, 0)
     })),
     // take the latest tier from the members events
     tier,
