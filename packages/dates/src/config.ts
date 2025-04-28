@@ -72,17 +72,6 @@ export const seasons: SeasonConfig[] = [
   }
 ] satisfies SeasonConfig[];
 
-if (env('ONCHAIN_SEASON_START') || process.env.REACT_APP_ONCHAIN_SEASON_START) {
-  // Remove the last two entries and replace with one
-  seasons.splice(seasons.length - 2, 2, {
-    start: '2025-W17', // April 28th 2025
-    title: 'Season 1',
-    starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
-    weeksPerSeason: 13
-  });
-}
-
 export const seasonStarts = seasons.map((s) => s.start);
 
 export type Season = (typeof seasons)[number]['start'];
