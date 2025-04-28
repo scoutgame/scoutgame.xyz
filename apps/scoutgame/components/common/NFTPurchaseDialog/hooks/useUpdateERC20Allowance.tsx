@@ -22,7 +22,6 @@ export function useUpdateERC20Allowance({ spender, erc20Address, chainId }: UseE
       contractAddress: erc20Address,
       walletClient: walletClient?.extend(publicActions)
     });
-
     await client.approve({ args: { spender, value: amount } });
   }
 

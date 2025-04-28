@@ -3,7 +3,7 @@ import { whiteListedUserIds, isProdEnv } from '@packages/utils/constants';
 // Fee in DEV that scouts pay to register for a matchup
 export const MATCHUP_REGISTRATION_FEE = 250;
 // Portion of registration fee (80%) that goes into the prize pool for winners
-export const MATCHUP_REGISTRATION_POOL = 40;
+export const MATCHUP_REGISTRATION_POOL = Math.floor(MATCHUP_REGISTRATION_FEE * 0.8);
 // Fixed OP token prize awarded to matchup winners
 export const MATCHUP_OP_PRIZE = 100;
 // The day of the week when matchup registration is open

@@ -101,8 +101,9 @@ function MatchupRegistrationForm({ week }: { week: string }) {
           }
         });
       }
+      toast.success('Successfully registered for matchup');
     } catch (error) {
-      log.error('Error submitting payment:', { error, address });
+      log.error('Error registering for matchup', { error });
       if ((error as Error).message.includes('rejected')) {
         toast.error('Transaction rejected');
       } else {
@@ -117,16 +118,10 @@ function MatchupRegistrationForm({ week }: { week: string }) {
       toast.error('Please approve the token transfer');
       return;
     }
-    try {
-      await handleSubmit();
-      toast.success('Successfully registered for matchup');
-      revalidatePathAction();
-      refreshUser();
-      closeModal();
-    } catch (error) {
-      toast.error('Error registering for matchup');
-      log.error('Error registering for matchup', { error });
-    }
+    await handleSubmit();
+    revalidatePathAction();
+    refreshUser();
+    closeModal();
   }
 
   return (
