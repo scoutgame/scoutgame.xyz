@@ -38,7 +38,7 @@ export const seasons: SeasonConfig[] = [
   // Preseason 1
   {
     start: '2024-W41',
-    title: 'Pre Season',
+    title: 'Pre Season 1',
     starterNftAddress: '0xd0b718589a51b07d05f03b8150e830d3627da972',
     standardNftAddress: '0x743ec903FE6D05E73b19a6DB807271bb66100e83',
     weeksPerSeason: 13,
@@ -49,7 +49,7 @@ export const seasons: SeasonConfig[] = [
     start: '2025-W02',
     starterNftAddress: '0xcbbdb9e378a4c33b1b202392b10e1be5e01a97f8',
     standardNftAddress: '0x6fbbd55274169d67f6fe9c868327003c90143440',
-    title: 'Season 2',
+    title: 'Pre Season 2',
     weeksPerSeason: 15, // extended season
     preseason: true
   },

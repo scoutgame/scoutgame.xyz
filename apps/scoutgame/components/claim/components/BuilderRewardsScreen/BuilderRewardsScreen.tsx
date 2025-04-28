@@ -6,9 +6,10 @@ import {
   getPreviousWeek,
   getSeasonConfig,
   getNextWeek,
-  getSeasonWeekFromISOWeek,
+  getCurrentSeasonWeekNumber,
   getPreviousSeason,
-  getNextSeason
+  getNextSeason,
+  getCurrentSeason
 } from '@packages/dates/utils';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { TabsMenu } from '@packages/scoutgame-ui/components/common/Tabs/TabsMenu';
@@ -26,6 +27,7 @@ export function BuilderRewardsScreen({ period, season }: { period: string; seaso
   const week = isSeason ? null : period || lastWeek;
   const previousWeek = week ? (week === season ? null : getPreviousWeek(week)) : null;
   const nextWeek = week ? (week === lastWeek ? null : getNextWeek(week)) : null;
+  const weekSeason = week ? getCurrentSeason(week) : null;
   const previousLink =
     (isSeason && lastSeason && `/claim?tab=season&season=${lastSeason}`) ||
     (previousWeek && lastWeek && `/claim?tab=${previousWeek}`) ||
@@ -55,7 +57,9 @@ export function BuilderRewardsScreen({ period, season }: { period: string; seaso
           </IconButton>
         </Link>
         <Typography>
-          {!week ? `${currentSeason.title}` : `Week ${getSeasonWeekFromISOWeek({ season: currentSeason.start, week })}`}
+          {!week
+            ? `${currentSeason.title}`
+            : `Week ${getCurrentSeasonWeekNumber(week)}${weekSeason && currentSeason.start !== weekSeason.start ? ` (${weekSeason?.title})` : ''}`}
         </Typography>
         <Link href={nextLink}>
           <IconButton disabled={!nextLink} size='small'>

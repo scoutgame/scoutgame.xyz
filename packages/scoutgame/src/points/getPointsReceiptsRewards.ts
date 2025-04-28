@@ -5,7 +5,7 @@ import { seasons } from '@packages/dates/config';
 import {
   getCurrentSeasonStart,
   getPreviousSeason,
-  getSeasonWeekFromISOWeek,
+  getCurrentSeasonWeekNumber,
   getValidSeasons
 } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
@@ -252,10 +252,7 @@ export async function getPointsReceiptsRewards({
     const points = receipt.value;
     const week = receipt.event.week;
     const weeklyRank = weeklyRankRecord[week];
-    const weekNumber = getSeasonWeekFromISOWeek({
-      season: receipt.event.season,
-      week
-    });
+    const weekNumber = getCurrentSeasonWeekNumber(week);
 
     if (receipt.event.type === 'nft_purchase' && receipt.event.nftPurchaseEvent) {
       // points received from selling NFTs
