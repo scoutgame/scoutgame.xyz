@@ -14,8 +14,12 @@ export async function registerScout({ oldEmail, ...scout }: ScoutFields, source:
     return { success: false, isNewContact: false };
   }
   if (oldEmail && oldEmail !== scout.email) {
-    await deleteLoopsContact({ email: oldEmail });
-    log.debug('Deleted loops contact due to email change', { oldEmail });
+    try {
+      await deleteLoopsContact({ email: oldEmail });
+      log.debug('Deleted loops contact due to email change', { oldEmail });
+    } catch (error) {
+      log.error('Error deleting loops contact', { error, oldEmail });
+    }
   }
   try {
     const result = await createOrUpdateContact({
