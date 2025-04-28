@@ -219,6 +219,13 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     spender: decentTransactionInfo?.tx.to as Address
   });
 
+  const [gaveAllowance, setGaveAllowance] = useState(false);
+
+  const refreshAllowanceHack = useCallback(() => {
+    setGaveAllowance(true);
+    refreshAllowance();
+  }, [refreshAllowance]);
+
   const balanceInfo = userTokenBalances?.find(
     (_token) => _token.chainId === selectedPaymentOption.chainId && _token.address === selectedChainCurrency
   );
@@ -311,8 +318,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   };
   const approvalRequired =
     selectedPaymentOption.currency !== 'ETH' &&
-    typeof allowance === 'bigint' &&
-    allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
+    (gaveAllowance ||
+      (typeof allowance === 'bigint' && allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0))));
 
   if (approvalRequired) {
     log.info('Approval required for NFT purchase', {
@@ -546,7 +553,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           chainId={selectedPaymentOption.chainId}
           erc20Address={getCurrencyContract(selectedPaymentOption) as Address}
           amount={amountToPay}
-          onSuccess={() => refreshAllowance()}
+          onSuccess={() => refreshAllowanceHack()}
           decimals={selectedPaymentOption.currency === 'USDC' ? 6 : devTokenDecimals}
           currency={selectedPaymentOption.currency}
           actionType='mint'
