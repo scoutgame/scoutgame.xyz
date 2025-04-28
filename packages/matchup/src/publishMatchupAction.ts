@@ -58,23 +58,6 @@ export const publishMatchupAction = authActionClient
       throw new Error('You have exceeded the maximum number of credits');
     }
 
-    const matchup = await prisma.scoutMatchup.findUnique({
-      where: {
-        id: parsedInput.matchupId
-      },
-      select: {
-        registrationTx: {
-          select: {
-            status: true
-          }
-        }
-      }
-    });
-
-    if (matchup?.registrationTx?.status !== 'success') {
-      throw new Error('Matchup registration tx is not yet successful');
-    }
-
     // record the credits value for each selection just in case we need to review
     await prisma.$transaction([
       prisma.scoutMatchup.update({
