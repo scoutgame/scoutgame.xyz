@@ -13,10 +13,6 @@ jest.unstable_mockModule('@packages/dates/utils', () => ({
 
 const defaultScoutShare = 0.7;
 const starterPackShare = 0.1;
-// Mock this so we don't get an error in the dependency tree
-jest.unstable_mockModule('@packages/scoutgame/builders/getBuildersLeaderboardFromEAS', () => ({
-  getBuildersLeaderboardFromEAS: jest.fn()
-}));
 
 describe('refreshEstimatedPayouts', () => {
   it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {

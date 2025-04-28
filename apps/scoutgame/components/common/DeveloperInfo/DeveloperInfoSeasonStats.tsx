@@ -5,12 +5,12 @@ import Image from 'next/image';
 const dialogPaperBgColor = 'background.dark';
 
 export function DeveloperInfoSeasonStats({
-  seasonPoints,
+  seasonTokens,
   scoutedBy,
   cardsSold,
   isLastSeason
 }: {
-  seasonPoints: number;
+  seasonTokens: number;
   scoutedBy: number;
   cardsSold: number;
   isLastSeason?: boolean;
@@ -41,13 +41,13 @@ export function DeveloperInfoSeasonStats({
           }}
           color='secondary.main'
         >
-          {!isLastSeason ? 'This' : 'Last'}
+          {isLastSeason ? 'Last' : 'This'}
         </Typography>{' '}
         Season
       </Typography>
       <Stack>
         <Stack direction='row' gap={0.5} alignItems='center'>
-          <Typography variant={isDesktop ? 'h6' : 'body1'}>{seasonPoints}</Typography>
+          <Typography variant={isDesktop ? 'h6' : 'body1'}>{seasonTokens}</Typography>
           <Image
             src='/images/dev-token-logo.png'
             width={isDesktop ? 24 : 18}

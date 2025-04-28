@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
+import { useDevTokenBalance } from '../../../hooks/useDevTokenBalance';
 import { ERC20ApproveButton } from '../NFTPurchaseDialog/components/ERC20Approve';
 import { useGetERC20Allowance } from '../NFTPurchaseDialog/hooks/useGetERC20Allowance';
 
@@ -38,6 +39,7 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
+  const { refreshBalance } = useDevTokenBalance({ address });
 
   const { allowance, refreshAllowance } = useGetERC20Allowance({
     chainId: scoutProtocolChainId,
@@ -95,6 +97,10 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
         buyerWallet: address as `0x${string}`,
         txHash: receipt.transactionHash
       });
+
+      setTimeout(() => {
+        refreshBalance();
+      }, 2500);
     } catch (error) {
       let message = error instanceof Error ? error.message : 'Error purchasing listed NFT';
       if (message.includes('denied')) {

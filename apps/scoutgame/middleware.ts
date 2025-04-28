@@ -23,8 +23,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
   }
 
+  if (path === '/matchup') {
+    return NextResponse.redirect(new URL('/scout', request.url));
+  }
+
   if (path === '/good-dollar') {
     return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
+  }
+
+  if (path === '/quests') {
+    return NextResponse.redirect(new URL('/scout', request.url));
   }
 
   if (draftSeason) {
@@ -40,7 +48,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (path.startsWith('/draft')) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/scout', request.url));
   }
 
   if (!isLoggedIn && path !== '/home' && platform === 'telegram') {

@@ -4,6 +4,7 @@ import { getStartOfWeek, getCurrentWeek, getCurrentSeasonStart } from '@packages
 import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refreshEstimatedPayouts';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
 import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
+import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
 import type Koa from 'koa';
 import { DateTime } from 'luxon';
 
@@ -27,11 +28,6 @@ export async function processAllDeveloperActivity(
   const developers = await prisma.scout.findMany({
     where: {
       builderStatus: 'approved',
-      builderNfts: {
-        some: {
-          season
-        }
-      },
       deletedAt: null
     },
     // Add a sort so that we can start mid-way if we need to (when running from a script)
@@ -82,6 +78,10 @@ export async function processAllDeveloperActivity(
   });
 
   await updateStats({ week: getCurrentWeek(), season });
+
+  await attestGemReceipts().catch((error) => {
+    log.error('Error attesting gem receipts', { error });
+  });
 }
 
 async function updateStats({ week, season }: { week: string; season: Season }) {

@@ -1,7 +1,7 @@
 'use client';
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
-import { Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
@@ -14,6 +14,8 @@ import { useState } from 'react';
 import { useGlobalModal } from 'components/common/ModalProvider';
 
 import type { NFTPurchaseProps } from '../NFTPurchaseDialog/components/NFTPurchaseForm';
+
+const MAX_DEV_TOKEN_PRICE = 5100; // the "51st" dev token would cost 5100, which is impossible so we can use this as a proxy for "no price"
 
 export function ScoutButton({
   builder,
@@ -33,11 +35,11 @@ export function ScoutButton({
   const isAuthenticated = Boolean(user?.id);
   const pathname = usePathname();
 
-  const purchaseCostInPoints = Number(builder?.price || 0) / 10 ** devTokenDecimals;
+  const formattedPrice = Number(builder?.price || 0) / 10 ** devTokenDecimals;
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    trackEvent('click_scout_button', { builderPath: builder.path, price: purchaseCostInPoints });
+    trackEvent('click_scout_button', { builderPath: builder.path, price: formattedPrice });
     if (isAuthenticated) {
       openModal('nftPurchase', { ...builder, nftType: type });
     } else {
@@ -49,7 +51,15 @@ export function ScoutButton({
     return (
       // @ts-ignore
       <Button disabled variant='buy'>
-        SUSPENDED
+        <Box px={1}>SUSPENDED</Box>
+      </Button>
+    );
+  }
+
+  if (formattedPrice === MAX_DEV_TOKEN_PRICE) {
+    return (
+      <Button disabled variant='buy'>
+        <Box px={1}>SOLD OUT</Box>
       </Button>
     );
   }
@@ -82,7 +92,7 @@ export function ScoutButton({
                 </Typography>
               )}{' '}
               <Stack direction='row' alignItems='center' justifyContent='center'>
-                {purchaseCostInPoints}
+                {formattedPrice}
                 <Image
                   src='/images/dev-token-logo.png'
                   alt='DEV Token'

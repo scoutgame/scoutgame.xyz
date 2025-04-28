@@ -27,7 +27,7 @@ export function DraftDeveloperInfoCard({ onClose, developer }: { onClose: () => 
         <Stack direction='row' gap={0.5}>
           <DeveloperInfoRanksGraph ranks={developer.weeklyRanks} label='Last Season Weekly Rank' />
           <DeveloperInfoSeasonStats
-            seasonPoints={developer.seasonPoints}
+            seasonTokens={developer.seasonTokens}
             scoutedBy={developer.scoutedBy}
             cardsSold={developer.cardsSold}
             isLastSeason

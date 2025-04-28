@@ -15,6 +15,9 @@ export async function attestDeveloperStatusEvent({
   builderId: string;
   event: DeveloperStatusEventAttestation;
 }): Promise<void> {
+  // TODO: Re-enable this once we have EAS resolver
+  return;
+
   try {
     const developerStatusEventAttestationData = encodeDeveloperStatusEventAttestation(event);
 

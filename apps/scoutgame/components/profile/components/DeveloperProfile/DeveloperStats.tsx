@@ -55,7 +55,7 @@ export function DeveloperStats({
             <Typography fontWeight={500} variant='h4' color='orange.main'>
               {builderPoints || 0}
             </Typography>
-            <Image src='/images/dev-token-logo.png' width='25' height='25' alt='DEV token' />
+            <Image src='/images/dev-token-logo.png' width='30' height='30' alt='DEV token' />
           </Stack>
           <Typography fontWeight={500} variant='h4' color='orange.main' align='center'>
             {totalScouts || 0} Scouts
@@ -64,7 +64,7 @@ export function DeveloperStats({
             <Typography fontWeight={500} variant='h4' color='orange.main'>
               {totalNftsSold || 0}
             </Typography>
-            <Image src='/images/profile/icons/cards-orange.svg' width='20' height='20' alt='cards icon' />
+            <Image src='/images/profile/icons/cards-orange.svg' width='25' height='25' alt='cards icon' />
             <Typography fontWeight={500} variant='h4' color='orange.main'>
               Sold
             </Typography>
@@ -74,9 +74,12 @@ export function DeveloperStats({
           <Typography fontWeight={500} color='secondary' variant='subtitle1' align='center'>
             CURRENT CARD PRICE
           </Typography>
-          <Typography fontWeight={500} variant='h4' color='orange.main' align='center'>
-            {currentNftPrice}
-          </Typography>
+          <Stack flexDirection='row' gap={1} alignItems='center' justifyContent='center'>
+            <Typography fontWeight={500} variant='h4' color='orange.main' align='center'>
+              {currentNftPrice}
+            </Typography>
+            <Image src='/images/dev-token-logo.png' width='30' height='30' alt='DEV token' />
+          </Stack>
         </Stack>
       </Stack>
     </Paper>

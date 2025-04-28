@@ -44,7 +44,7 @@ export function RegistrationHeader({
                 Week {weekNumber} Match Up!
               </Typography>
             </Box>
-            <Box>
+            {/* <Box>
               {registrationOpen || registered ? (
                 <RegistrationButton registered={registered} week={week} />
               ) : (
@@ -55,7 +55,7 @@ export function RegistrationHeader({
                   </MUILink>
                 </Typography>
               )}
-            </Box>
+            </Box> */}
             <Typography
               variant='body2'
               component='em'

@@ -7,12 +7,9 @@ import {
   DecentTxFailedPermanently,
   waitForDecentTransactionSettlement
 } from '@packages/blockchain/waitForDecentTransactionSettlement';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { devTokenDecimalsMultiplier } from '../protocol/constants';
 
-import { getNFTContractAddress, getStarterNFTContractAddress } from './constants';
 import { recordOnchainNftMint } from './recordOnchainNftMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
@@ -24,10 +21,6 @@ export async function handlePendingTransaction({
   if (!stringUtils.isUUID(pendingTransactionId)) {
     throw new InvalidInputError(`Pending transaction id must be a valid uuid`);
   }
-  const season = getCurrentSeasonStart();
-  const scoutProtocolBuilderNftContractAddress = getNFTContractAddress(season);
-  const scoutProtocolBuilderStarterNftContractAddress = getStarterNFTContractAddress(season);
-
   // Atomically set the status to 'processing' only if it's currently 'pending'
   const updatedTx = await prisma.pendingNftTransaction.updateMany({
     where: {
@@ -107,9 +100,7 @@ export async function handlePendingTransaction({
         }
       });
 
-      const pendingTxContractAddress = pendingTx.contractAddress.toLowerCase();
-
-      const tokenValue = Number(pendingTx.targetAmountReceived / devTokenDecimalsMultiplier);
+      const tokenValue = Number(pendingTx.targetAmountReceived);
 
       await recordOnchainNftMint({
         builderNftId: builderNft.id,

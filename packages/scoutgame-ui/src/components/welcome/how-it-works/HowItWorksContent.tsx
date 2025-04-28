@@ -39,7 +39,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: Mouse
                   fontWeight='inherit'
                   style={{ display: 'inline-flex', gap: 4 }}
                 >
-                  points <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
+                  DEV <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
                 </Typography>
               </strong>{' '}
               or <strong>ETH / USDC</strong> on
@@ -67,7 +67,7 @@ export function HowItWorksContent({ onClickContinue }: { onClickContinue?: Mouse
                 fontWeight='inherit'
                 style={{ display: 'inline-flex', gap: 4 }}
               >
-                points <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
+                DEV <Image src='/images/dev-token-logo.png' alt='DEV token' width={18} height={18} />
               </Typography>
               {'  '}
               increase

@@ -99,6 +99,11 @@ export async function getPaginatedScouts({
             wallets: {
               select: {
                 scoutedNfts: {
+                  where: {
+                    builderNft: {
+                      season: getCurrentSeasonStart()
+                    }
+                  },
                   select: {
                     builderNft: {
                       select: {

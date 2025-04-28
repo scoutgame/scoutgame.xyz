@@ -20,9 +20,9 @@ export function ScoutStats({
           <Typography color='green.main'>{scoutPoints || 0}</Typography>
           <Image src='/images/dev-token-logo.png' width='25' height='25' alt='DEV token' />
         </Stack>
-        <Typography color='green.main'>{buildersScouted} Developers</Typography>
+        <Typography color='green.main'>{buildersScouted || 0} Developers</Typography>
         <Stack flexDirection='row' gap={1} alignItems='center'>
-          <Typography color='green.main'>{nftsPurchased}</Typography>
+          <Typography color='green.main'>{nftsPurchased || 0}</Typography>
           <Image src='/images/profile/icons/cards-green.svg' width='20' height='20' alt='cards icon' />
         </Stack>
       </Stack>

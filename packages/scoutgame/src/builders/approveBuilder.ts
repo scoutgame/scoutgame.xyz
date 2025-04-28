@@ -22,6 +22,7 @@ export async function approveBuilder({
     },
     select: {
       id: true,
+      builderStatus: true,
       githubUsers: true,
       displayName: true,
       path: true
@@ -59,10 +60,10 @@ export async function approveBuilder({
     }
   });
 
-  log.info('Builder approved', { userId: builderId, season });
-
   try {
-    if (builderNftImage) {
+    // check developer was not already approved
+    if (builderNftImage && scout.builderStatus !== 'approved') {
+      log.info('Developer approved', { userId: builderId, season });
       await sendNotifications({
         userId: scout.id,
         notificationType: 'builder_approved',
@@ -82,6 +83,6 @@ export async function approveBuilder({
       });
     }
   } catch (error) {
-    log.error('Error sending builder approval email', { error, userId: scout.id });
+    log.error('Error sending developer approval email', { error, userId: scout.id });
   }
 }

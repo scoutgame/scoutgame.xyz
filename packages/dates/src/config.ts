@@ -10,12 +10,10 @@ export type SeasonConfig = {
   start: ISOWeek;
   preseason?: boolean;
   starterNftAddress: Address;
-  defaultNftAddress: Address;
+  standardNftAddress: Address;
   weeksPerSeason: number;
   draft?: boolean;
 };
-
-const IS_SEASON_ONE_LIVE = (env('IS_SEASON_ONE_LIVE') || process.env.REACT_APP_IS_SEASON_ONE_LIVE) === 'true';
 
 // the end of each season is the start of the next season
 export const seasons: SeasonConfig[] = [
@@ -24,7 +22,7 @@ export const seasons: SeasonConfig[] = [
     start: '2024-W38',
     title: 'Dev Season',
     starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
+    standardNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
     preseason: true
   },
@@ -33,7 +31,7 @@ export const seasons: SeasonConfig[] = [
     start: '2024-W40',
     title: 'Pre Season Alpha',
     starterNftAddress: '0x0000000000000000000000000000000000000000',
-    defaultNftAddress: '0x0000000000000000000000000000000000000000',
+    standardNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
     preseason: true
   },
@@ -42,7 +40,7 @@ export const seasons: SeasonConfig[] = [
     start: '2024-W41',
     title: 'Pre Season',
     starterNftAddress: '0xd0b718589a51b07d05f03b8150e830d3627da972',
-    defaultNftAddress: '0x743ec903FE6D05E73b19a6DB807271bb66100e83',
+    standardNftAddress: '0x743ec903FE6D05E73b19a6DB807271bb66100e83',
     weeksPerSeason: 13,
     preseason: true
   },
@@ -50,39 +48,28 @@ export const seasons: SeasonConfig[] = [
   {
     start: '2025-W02',
     starterNftAddress: '0xcbbdb9e378a4c33b1b202392b10e1be5e01a97f8',
-    defaultNftAddress: '0x6fbbd55274169d67f6fe9c868327003c90143440',
+    standardNftAddress: '0x6fbbd55274169d67f6fe9c868327003c90143440',
     title: 'Season 2',
     weeksPerSeason: 15, // extended season
     preseason: true
   },
-  ...(IS_SEASON_ONE_LIVE
-    ? [
-        {
-          start: '2025-W17', // April 21th 2025
-          title: 'Season 1',
-          starterNftAddress: '0xff03318ed6e2225e14ef1da248682145d2b29718' as Address,
-          defaultNftAddress: '0xc5932fed90c2c88e9e5f829e1c170cb832babc93' as Address,
-          weeksPerSeason: 13
-        }
-      ]
-    : [
-        {
-          start: '2025-W17',
-          title: 'Draft Season',
-          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          weeksPerSeason: 1,
-          draft: true
-        },
-        // Season 1
-        {
-          start: '2025-W18', // April 28th 2025
-          title: 'Season 1',
-          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          defaultNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-          weeksPerSeason: 13
-        }
-      ])
+
+  {
+    start: '2025-W17',
+    title: 'Draft Season',
+    starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+    standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+    weeksPerSeason: 1,
+    draft: true
+  },
+  // Season 1
+  {
+    start: '2025-W18', // April 28th 2025
+    title: 'Season 1',
+    starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
+    standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
+    weeksPerSeason: 13
+  }
 ] satisfies SeasonConfig[];
 
 if (env('ONCHAIN_SEASON_START') || process.env.REACT_APP_ONCHAIN_SEASON_START) {
