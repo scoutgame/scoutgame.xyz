@@ -1,10 +1,7 @@
 import 'server-only';
 
-import { Stack } from '@mui/material';
-import { getCurrentWeek } from '@packages/dates/utils';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getDevelopersForTable } from '@packages/scoutgame/builders/getDevelopersForTable';
-import { getScoutedBuilders } from '@packages/scoutgame/scouts/getScoutedBuilders';
 import { ErrorSSRMessage } from '@packages/scoutgame-ui/components/common/ErrorSSRMessage';
 
 import { AllDevelopersTableContainer } from './AllDevelopersTableContainer';

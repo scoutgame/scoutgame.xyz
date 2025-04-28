@@ -8,6 +8,32 @@ import { DeveloperModal } from '../DeveloperInfoModal/DeveloperInfoModal';
 import { DraftDeveloperInfoCard } from './DraftDeveloperInfoCard';
 import { DraftDeveloperInfoSkeleton } from './DraftDeveloperInfoSkeleton';
 
+function DeveloperInfoModalComponent({ data: { path }, onClose }: { data: { path: string }; onClose: () => void }) {
+  const { data: developer, isLoading } = useSWR(
+    path ? `draft-developer-${path}` : null,
+    async () => {
+      if (!path) {
+        return null;
+      }
+
+      const _developer = await getDraftDeveloperInfo({ path });
+      return _developer;
+    },
+    {
+      onError: (error) => {
+        log.error('Error fetching draft developer info', { error, path });
+        toast.error('Error fetching developer info');
+      }
+    }
+  );
+
+  if (isLoading || !developer) {
+    return <DraftDeveloperInfoSkeleton />;
+  }
+
+  return <DraftDeveloperInfoCard onClose={onClose} developer={developer} />;
+}
+
 export function DraftDeveloperInfoModal({
   onClose,
   data,
@@ -17,39 +43,13 @@ export function DraftDeveloperInfoModal({
   data: { path: string } | null;
   open: boolean;
 }) {
-  const { data: developer, isLoading } = useSWR(
-    data?.path ? `draft-developer-${data.path}` : null,
-    async () => {
-      if (!data?.path) {
-        return null;
-      }
-
-      const _developer = await getDraftDeveloperInfo({ path: data.path });
-      return _developer;
-    },
-    {
-      onError: (error) => {
-        log.error('Error fetching draft developer info', { error, path: data?.path });
-        toast.error('Error fetching developer info');
-      }
-    }
-  );
-
-  if (isLoading) {
-    return (
-      <DeveloperModal open={open} onClose={onClose}>
-        <DraftDeveloperInfoSkeleton />
-      </DeveloperModal>
-    );
-  }
-
-  if (data?.path && !developer) {
+  if (!data?.path) {
     return null;
   }
 
-  return developer ? (
+  return (
     <DeveloperModal open={open} onClose={onClose}>
-      <DraftDeveloperInfoCard onClose={onClose} developer={developer} />
+      <DeveloperInfoModalComponent data={data} onClose={onClose} />
     </DeveloperModal>
-  ) : null;
+  );
 }

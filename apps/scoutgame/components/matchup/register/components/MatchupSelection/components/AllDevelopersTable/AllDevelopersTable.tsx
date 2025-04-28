@@ -19,7 +19,6 @@ import { TableCellText } from 'components/common/TableCellText';
 import { tableRowNoPaddingSx } from 'components/scout/components/ScoutPageTable/components/CommonTableRow';
 
 const desktopSx = getSXProps({ mdDown: true, display: 'table-cell' });
-const mobileSx = getSXProps({ mdUp: true, display: 'table-cell' });
 
 function SortIcon({ columnName, order, sort }: { columnName: string; order: string; sort: string }) {
   if (sort !== columnName) return null;
@@ -67,10 +66,7 @@ export function AllDevelopersTable({
       <TableHead
         sx={{
           position: 'sticky',
-          top: {
-            xs: 20,
-            md: 45
-          },
+          top: 0,
           zIndex: 1000,
           backgroundColor: 'background.dark'
         }}
@@ -121,7 +117,7 @@ export function AllDevelopersTable({
         {developers
           // hide cards the scout already owns
           .filter((builder) => !builder.nftsSoldToLoggedInScout)
-          .map((builder, index) => (
+          .map((builder) => (
             <TableRow
               key={builder.path}
               sx={tableRowNoPaddingSx}
@@ -225,6 +221,12 @@ export function AllDevelopersTable({
                   builder={{
                     ...builder,
                     builderStatus: 'approved'
+                  }}
+                  soldOutButtonSx={{
+                    '& .MuiBox-root': {
+                      fontSize: '13.5px',
+                      py: 0.35
+                    }
                   }}
                 />
               </TableCell>

@@ -1,6 +1,6 @@
 import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentSeasonWeekNumber, getPreviousNonDraftSeason } from '@packages/dates/utils';
 import { normalizeLast14DaysRank } from '@packages/scoutgame/builders/utils/normalizeLast14DaysRank';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 
@@ -25,7 +25,8 @@ export async function getMyMatchup({ scoutId, week }: { scoutId?: string; week: 
   if (!scoutId) {
     return null;
   }
-  const season = getCurrentSeasonStart(week);
+  const weekNumber = getCurrentSeasonWeekNumber();
+  const season = weekNumber === 1 ? getPreviousNonDraftSeason(week)! : getCurrentSeasonStart();
   const matchup = await prisma.scoutMatchup.findUnique({
     where: {
       createdBy_week: {

@@ -1,12 +1,14 @@
 'use client';
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
+import type { SxProps } from '@mui/material';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
@@ -14,27 +16,27 @@ import { useGlobalModal } from 'components/common/ModalProvider';
 
 import type { NFTPurchaseProps } from '../NFTPurchaseDialog/components/NFTPurchaseForm';
 
-import { SignInModalMessage } from './SignInModalMessage';
-
 const MAX_DEV_TOKEN_PRICE = 5100; // the "51st" dev token would cost 5100, which is impossible so we can use this as a proxy for "no price"
 
 export function ScoutButton({
   builder,
   markStarterCardPurchased = false,
   isStarterCard = false,
-  type = 'default'
+  type = 'default',
+  soldOutButtonSx
 }: {
+  soldOutButtonSx?: SxProps;
   builder: Omit<NFTPurchaseProps['builder'], 'nftType'> & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
   isStarterCard?: boolean;
   type?: 'default' | 'starter_pack';
 }) {
   const trackEvent = useTrackEvent();
-  const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [dialogLoadingStatus, setDialogLoadingStatus] = useState<boolean>(false);
   const { user, isLoading } = useUser();
   const { openModal } = useGlobalModal();
   const isAuthenticated = Boolean(user?.id);
+  const pathname = usePathname();
 
   const formattedPrice = Number(builder?.price || 0) / 10 ** devTokenDecimals;
 
@@ -44,7 +46,7 @@ export function ScoutButton({
     if (isAuthenticated) {
       openModal('nftPurchase', { ...builder, nftType: type });
     } else {
-      setAuthPopup(true);
+      openModal('signIn', { path: pathname });
     }
   };
 
@@ -59,7 +61,7 @@ export function ScoutButton({
 
   if (formattedPrice === MAX_DEV_TOKEN_PRICE) {
     return (
-      <Button disabled variant='buy'>
+      <Button disabled variant='buy' sx={soldOutButtonSx}>
         <Box px={1}>SOLD OUT</Box>
       </Button>
     );
@@ -105,7 +107,6 @@ export function ScoutButton({
             </Stack>
           </Button>
         )}
-        <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>
     </div>
   );

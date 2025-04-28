@@ -42,7 +42,7 @@ export function useLoginSuccessHandler() {
       return '/airdrop';
     }
 
-    return redirectUrl || draftSeason ? '/draft' : '/scout';
+    return redirectUrl || (draftSeason ? '/draft' : '/scout');
   }
 
   return {

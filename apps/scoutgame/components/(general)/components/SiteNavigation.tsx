@@ -101,15 +101,13 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           icon={<ScoutIcon size='24px' />}
           LinkComponent={Link}
         />
-        {/* {enableMatchups && (
-          <BottomNavigationAction
-            label='Match Up'
-            href='/matchup'
-            value='matchup'
-            icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
-            LinkComponent={Link}
-          />
-        )} */}
+        <BottomNavigationAction
+          label='Match Up'
+          href='/matchup'
+          value='matchup'
+          icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
+          LinkComponent={Link}
+        />
         <BottomNavigationAction
           label='Developers'
           href='/developers'

@@ -3,11 +3,10 @@ import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
-
-import { SignInModalMessage } from '../ScoutButton/SignInModalMessage';
 
 import type { NFTListingPurchaseFormProps } from './NFTListingPurchaseForm';
 
@@ -16,6 +15,7 @@ export function NFTListingPurchaseButton({
   listing
 }: Pick<NFTListingPurchaseFormProps, 'builder' | 'listing'>) {
   const trackEvent = useTrackEvent();
+  const pathname = usePathname();
   const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [dialogLoadingStatus, setDialogLoadingStatus] = useState<boolean>(false);
   const { user } = useUser();
@@ -27,7 +27,7 @@ export function NFTListingPurchaseButton({
     if (isAuthenticated) {
       openModal('nftListingPurchase', { builder, listing });
     } else {
-      setAuthPopup(true);
+      openModal('signIn', { path: pathname });
     }
   };
 
@@ -48,7 +48,6 @@ export function NFTListingPurchaseButton({
         <Button loading={dialogLoadingStatus} fullWidth onClick={handleClick} variant='buy'>
           {listingPrice} &nbsp; <img src='/images/dev-token-logo.png' alt='DEV' width={18} height={18} />
         </Button>
-        <SignInModalMessage open={authPopup} onClose={() => setAuthPopup(false)} path={`/u/${builder.path}`} />
       </DynamicLoadingContext.Provider>
     </div>
   );

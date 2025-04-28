@@ -11,6 +11,8 @@ import { base } from 'viem/chains';
 
 import { chainOptionsMainnet, getChainOptions } from '../components/ChainSelector/chains';
 
+export type { UserTokenInfo };
+
 export function useGetTokenBalances({ address }: { address: Address }) {
   const [scoutTokenInfo, setScoutTokenInfo] = useState<UserTokenInfo | null>(null);
   const fetchDevTokenInfoRef = useRef(false);

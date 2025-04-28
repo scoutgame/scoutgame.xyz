@@ -473,6 +473,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             value={selectedPaymentOption}
             balance={displayedBalance}
             address={address}
+            userTokenBalances={userTokenBalances}
             onSelectChain={(_paymentOption) => {
               setSelectedPaymentOption(_paymentOption);
             }}

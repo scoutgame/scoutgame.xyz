@@ -1,7 +1,7 @@
 import { getCurrentWeek } from '@packages/dates/utils';
 import { whiteListedUserIds, isProdEnv } from '@packages/utils/constants';
-// Fee in points that scouts pay to register for a matchup
-export const MATCHUP_REGISTRATION_FEE = 50;
+// Fee in DEV that scouts pay to register for a matchup
+export const MATCHUP_REGISTRATION_FEE = 250;
 // Portion of registration fee (80%) that goes into the prize pool for winners
 export const MATCHUP_REGISTRATION_POOL = 40;
 // Fixed OP token prize awarded to matchup winners

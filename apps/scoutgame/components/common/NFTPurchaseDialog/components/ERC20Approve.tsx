@@ -19,6 +19,7 @@ type ERC20ApproveButtonProps = {
   currency?: AvailableCurrency;
   actionType: 'mint' | 'purchase' | 'bid';
   color?: ButtonProps['color'];
+  hideWarning?: boolean;
 };
 
 export function ERC20ApproveButton({
@@ -31,7 +32,8 @@ export function ERC20ApproveButton({
   decimals = 6,
   currency = 'USDC',
   actionType,
-  color = 'primary'
+  color = 'primary',
+  hideWarning = false
 }: ERC20ApproveButtonProps) {
   const amountToApprove = amount ? amount + amount / BigInt(50) : undefined;
 
@@ -55,22 +57,22 @@ export function ERC20ApproveButton({
   const displayAmount = (Number(amountToApprove || 0) / 10 ** decimals).toFixed(2);
 
   return (
-    <div>
-      <Stack>
-        <Button
-          loading={isApprovingSpender}
-          variant='contained'
-          color={color}
-          onClick={approveSpender}
-          disabled={isApprovingSpender}
-          data-test='approve-spending-nft-purchase-button'
-        >
-          {isApprovingSpender ? 'Approving...' : `Approve ${displayAmount} ${currency}`}
-        </Button>
+    <Stack>
+      <Button
+        loading={isApprovingSpender}
+        variant='contained'
+        color={color}
+        onClick={approveSpender}
+        disabled={isApprovingSpender}
+        data-test='approve-spending-nft-purchase-button'
+      >
+        {isApprovingSpender ? 'Approving...' : `Approve ${displayAmount} ${currency}`}
+      </Button>
+      {!hideWarning && (
         <Typography sx={{ mb: 1 }} variant='caption'>
           You must approve the {currency} spend before you can {actionType} an NFT
         </Typography>
-      </Stack>
-    </div>
+      )}
+    </Stack>
   );
 }
