@@ -117,7 +117,7 @@ export async function registerDeveloperNFT({
     contractAddress
   });
 
-  log.info(`Registered builder NFT for builder`, {
+  log.info(`Registered NFT for developer`, {
     userId: builderId,
     builderPath: builder.path,
     tokenId,

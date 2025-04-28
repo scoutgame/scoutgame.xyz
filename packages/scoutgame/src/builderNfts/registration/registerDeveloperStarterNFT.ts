@@ -112,7 +112,7 @@ export async function registerDeveloperStarterNFT({
     chainId
   });
 
-  log.info(`Registered developer NFT starter pack for builder`, {
+  log.info(`Registered starter NFT for developer`, {
     userId: builderId,
     builderPath: builder.path,
     tokenId,
