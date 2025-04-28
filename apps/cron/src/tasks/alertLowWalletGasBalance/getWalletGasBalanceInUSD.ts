@@ -7,7 +7,7 @@ export async function getWalletGasBalanceInUSD(
   if (!apiKey) {
     throw new Error('No Alchemy API key found');
   }
-  const alchemyApiUrl = `https://opt-mainnet.g.alchemy.com/v2/${apiKey}`;
+  const alchemyApiUrl = `https://base-mainnet.g.alchemy.com/v2/${apiKey}`;
 
   const response = await POST<{ result: string }>(alchemyApiUrl, {
     jsonrpc: '2.0',
