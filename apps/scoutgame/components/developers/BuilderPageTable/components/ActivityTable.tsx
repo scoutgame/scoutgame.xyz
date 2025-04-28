@@ -3,7 +3,7 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
-import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
+import type { BuilderActivity } from '@packages/scoutgame/builders/getDeveloperActivities';
 import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 import { bonusPartnersRecord } from '@packages/scoutgame/partnerRewards/constants';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';

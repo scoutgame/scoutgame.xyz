@@ -1,9 +1,9 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
-import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
+import { getDeveloperActivities } from '../../builders/getDeveloperActivities';
 import { devTokenDecimals } from '../../protocol/constants';
 import { getArtworkFolderPath } from '../constants';
 import { convertCostToPoints } from '../utils';
@@ -23,7 +23,7 @@ export async function uploadShareImage({
   builderId: string;
 }) {
   const [activities, stats, builderScouts, builderNft] = await Promise.all([
-    getBuilderActivities({ builderId, limit: 3 }),
+    getDeveloperActivities({ builderId, limit: 3 }),
     getBuilderStats(builderId),
     getBuilderScouts(builderId),
     getBuilderNft(builderId)

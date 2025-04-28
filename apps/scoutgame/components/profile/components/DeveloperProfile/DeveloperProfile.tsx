@@ -3,9 +3,9 @@ import 'server-only';
 import { prisma } from '@charmverse/core/prisma-client';
 import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderActivities';
 import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
+import { getDeveloperActivities } from '@packages/scoutgame/builders/getDeveloperActivities';
 import { appealUrl } from '@packages/scoutgame/constants';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { JoinGithubButton } from '@packages/scoutgame-ui/components/common/JoinGithubButton';
@@ -39,7 +39,7 @@ export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }
             }
           }),
           getBuilderStats(builder.id),
-          getBuilderActivities({ builderId: builder.id, limit: 200 }),
+          getDeveloperActivities({ builderId: builder.id, limit: 200 }),
           getBuilderScouts(builder.id)
         ])
       : [];

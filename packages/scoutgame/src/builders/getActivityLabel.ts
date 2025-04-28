@@ -1,6 +1,6 @@
 import { capitalize } from '@packages/utils/strings';
 
-import type { BuilderActivity } from './getBuilderActivities';
+import type { BuilderActivity } from './getDeveloperActivities';
 
 export function getActivityLabel(activity: BuilderActivity, shorten = false) {
   if (activity.type === 'onchain_achievement') {
