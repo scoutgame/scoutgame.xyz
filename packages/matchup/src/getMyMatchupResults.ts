@@ -1,7 +1,7 @@
 import type { ScoutMatchup, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
-import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getBuilderActivities';
+import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getDeveloperActivities';
 import { getShortenedRelativeTime } from '@packages/utils/dates';
 
 type DeveloperMeta = Pick<Scout, 'id' | 'displayName' | 'path' | 'avatar'> & {

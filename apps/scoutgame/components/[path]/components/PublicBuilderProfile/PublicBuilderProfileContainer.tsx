@@ -2,10 +2,10 @@
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { Box, Paper, Stack, styled, Typography } from '@mui/material';
-import type { BuilderActivity } from '@packages/scoutgame/builders/getBuilderActivities';
 import type { BuilderCardStats } from '@packages/scoutgame/builders/getBuilderCardStats';
 import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts';
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
+import type { BuilderActivity } from '@packages/scoutgame/builders/getDeveloperActivities';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { BackButton } from '@packages/scoutgame-ui/components/common/Button/BackButton';

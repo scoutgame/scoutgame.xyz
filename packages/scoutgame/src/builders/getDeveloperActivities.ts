@@ -46,7 +46,7 @@ export type BuilderActivity<T = AnyActivity> = Pick<
   githubLogin?: string;
 } & T;
 
-export async function getBuilderActivities({
+export async function getDeveloperActivities({
   builderId,
   limit = 10
 }: {
@@ -65,10 +65,6 @@ export async function getBuilderActivities({
           type: {
             in: [...builderEventTypes]
           }
-        },
-        {
-          type: 'nft_purchase',
-          nftPurchaseEvent: validMintNftPurchaseEvent
         }
       ]
     },

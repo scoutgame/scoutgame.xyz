@@ -1,9 +1,9 @@
 import { mockBuilder, mockScout, mockBuilderNft } from '@packages/testing/database';
 
-import { getBuilderActivities } from '../getBuilderActivities';
+import { getDeveloperActivities } from '../getDeveloperActivities';
 
-describe('getBuilderActivities', () => {
-  it('should return builder activities from different seasons', async () => {
+describe('getDeveloperActivities', () => {
+  it('should return developer activities from different seasons', async () => {
     const builder = await mockBuilder();
     const scout = await mockScout();
     await mockBuilderNft({
@@ -16,7 +16,7 @@ describe('getBuilderActivities', () => {
       owners: [scout],
       season: '2023-01'
     });
-    const result = await getBuilderActivities({ builderId: builder.id, limit: 5 });
+    const result = await getDeveloperActivities({ builderId: builder.id, limit: 5 });
 
     expect(result).toHaveLength(2);
   });
