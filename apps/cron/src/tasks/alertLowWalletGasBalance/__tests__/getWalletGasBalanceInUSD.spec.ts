@@ -34,7 +34,7 @@ describe('getWalletGasBalanceInUSD', () => {
 
     expect(balance).toBeCloseTo(25, 2); // $25 with 2 decimal places precision
     expect(POST).toHaveBeenCalledWith(
-      expect.stringContaining('https://opt-mainnet.g.alchemy.com/v2/test-api-key'),
+      expect.stringContaining('https://base-mainnet.g.alchemy.com/v2/test-api-key'),
       expect.any(Object)
     );
     expect(GET).toHaveBeenCalledWith('https://api.coingecko.com/api/v3/simple/price', expect.any(Object));
