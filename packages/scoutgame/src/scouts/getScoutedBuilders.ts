@@ -1,6 +1,12 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import {
+  getCurrentSeasonStart,
+  getCurrentSeasonWeekNumber,
+  getCurrentWeek,
+  getLastWeek,
+  getPreviousSeason
+} from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
@@ -50,6 +56,9 @@ export async function getScoutedBuilders({
 
   const uniqueBuilderIds = Array.from(new Set(scoutedNfts.map((nft) => nft.builderNft.builderId)));
 
+  const weekNumber = getCurrentSeasonWeekNumber();
+  const season = weekNumber === 1 ? getPreviousSeason(getLastWeek())! : getCurrentSeasonStart();
+
   const builders = await prisma.scout.findMany({
     where: {
       id: {
@@ -61,7 +70,7 @@ export async function getScoutedBuilders({
       ...BasicUserInfoSelect,
       userSeasonStats: {
         where: {
-          season: getCurrentSeasonStart()
+          season
         },
         select: {
           level: true

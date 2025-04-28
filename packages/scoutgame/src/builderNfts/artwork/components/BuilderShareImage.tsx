@@ -150,7 +150,7 @@ export function BuilderShareImage({
           >
             <h6 style={{ fontSize: '14px', color: '#69DDFF', margin: 0 }}>CURRENT PRICE</h6>
             <p style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
-              <span>{builderPrice}</span>
+              <span>{Number(builderPrice)}</span>
               <img width={20} height={20} src={`${domain}/images/dev-token-logo.png`} alt='DEV Token' />
             </p>
           </div>

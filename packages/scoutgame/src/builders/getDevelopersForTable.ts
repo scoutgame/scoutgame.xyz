@@ -1,6 +1,12 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
+import {
+  getCurrentSeasonStart,
+  getCurrentSeasonWeekNumber,
+  getCurrentWeek,
+  getLastWeek,
+  getPreviousSeason
+} from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -35,8 +41,10 @@ export async function getDevelopersForTable({
   cursor?: DeveloperTableCursor;
 }): Promise<{ developers: DeveloperMetadata[]; nextCursor: DeveloperTableCursor | null }> {
   const nftType = _nftType === 'default' ? BuilderNftType.default : BuilderNftType.starter_pack;
-  const season = '2025-W02';
-  const week = '2025-W16';
+  const week = getCurrentWeek();
+  const season = getCurrentSeasonStart(week);
+  const lastSeason = getPreviousSeason(getLastWeek());
+  const weekNumber = getCurrentSeasonWeekNumber();
 
   // Skip cursor processing if it doesn't match current sort type
   const activeCursor = cursor?.sortType === sortBy && cursor?.order === order ? cursor : undefined;
@@ -47,14 +55,9 @@ export async function getDevelopersForTable({
       where: {
         user: {
           builderStatus: 'approved',
-          deletedAt: null,
-          builderNfts: {
-            some: {
-              season: '2025-W18'
-            }
-          }
+          deletedAt: null
         },
-        season
+        season: weekNumber === 1 ? lastSeason! : season
       },
       orderBy: [
         {
@@ -157,12 +160,7 @@ export async function getDevelopersForTable({
         nftType,
         builder: {
           builderStatus: 'approved',
-          deletedAt: null,
-          builderNfts: {
-            some: {
-              season: '2025-W18'
-            }
-          }
+          deletedAt: null
         }
       },
       orderBy: [
@@ -219,7 +217,7 @@ export async function getDevelopersForTable({
             },
             userSeasonStats: {
               where: {
-                season
+                season: weekNumber === 1 ? lastSeason! : season
               },
               select: {
                 level: true
@@ -264,7 +262,6 @@ export async function getDevelopersForTable({
     // For price sorting, we fetch from builderNft
     const builderNfts = await prisma.builderNft.findMany({
       where: {
-        season: '2025-W18',
         nftType,
         builder: {
           builderStatus: 'approved',
@@ -315,7 +312,7 @@ export async function getDevelopersForTable({
             displayName: true,
             userSeasonStats: {
               where: {
-                season
+                season: weekNumber === 1 ? lastSeason! : season
               },
               select: {
                 level: true
@@ -379,12 +376,7 @@ export async function getDevelopersForTable({
         week,
         user: {
           builderStatus: 'approved',
-          deletedAt: null,
-          builderNfts: {
-            some: {
-              season: '2025-W18'
-            }
-          }
+          deletedAt: null
         }
       },
       orderBy: [
@@ -448,7 +440,7 @@ export async function getDevelopersForTable({
             },
             userSeasonStats: {
               where: {
-                season
+                season: weekNumber === 1 ? lastSeason! : season
               },
               select: {
                 level: true

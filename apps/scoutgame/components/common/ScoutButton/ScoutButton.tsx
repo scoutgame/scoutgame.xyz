@@ -1,6 +1,7 @@
 'use client';
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
+import type { SxProps } from '@mui/material';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
@@ -21,8 +22,10 @@ export function ScoutButton({
   builder,
   markStarterCardPurchased = false,
   isStarterCard = false,
-  type = 'default'
+  type = 'default',
+  soldOutButtonSx
 }: {
+  soldOutButtonSx?: SxProps;
   builder: Omit<NFTPurchaseProps['builder'], 'nftType'> & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
   isStarterCard?: boolean;
@@ -58,7 +61,7 @@ export function ScoutButton({
 
   if (formattedPrice === MAX_DEV_TOKEN_PRICE) {
     return (
-      <Button disabled variant='buy'>
+      <Button disabled variant='buy' sx={soldOutButtonSx}>
         <Box px={1}>SOLD OUT</Box>
       </Button>
     );
