@@ -32,7 +32,7 @@ export async function alertLowWalletGasBalance(
       embeds: [
         {
           title: `View wallet: ${builderCreatorAddress}`,
-          url: 'https://optimism.blockscout.com/address/0x518AF6fA5eEC4140e4283f7BDDaB004D45177946'
+          url: 'https://base.blockscout.com/address/0x518AF6fA5eEC4140e4283f7BDDaB004D45177946'
         }
       ]
     });
