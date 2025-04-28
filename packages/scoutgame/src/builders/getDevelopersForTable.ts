@@ -4,8 +4,7 @@ import {
   getCurrentSeasonStart,
   getCurrentSeasonWeekNumber,
   getCurrentWeek,
-  getLastWeek,
-  getPreviousSeason
+  getPreviousNonDraftSeason
 } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
@@ -43,7 +42,7 @@ export async function getDevelopersForTable({
   const nftType = _nftType === 'default' ? BuilderNftType.default : BuilderNftType.starter_pack;
   const week = getCurrentWeek();
   const season = getCurrentSeasonStart(week);
-  const lastSeason = getPreviousSeason(getLastWeek());
+  const lastSeason = getPreviousNonDraftSeason(season);
   const weekNumber = getCurrentSeasonWeekNumber();
 
   // Skip cursor processing if it doesn't match current sort type
