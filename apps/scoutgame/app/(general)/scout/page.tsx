@@ -13,7 +13,7 @@ export default async function Scout({
   const builderSort = (searchParamsResolved.builderSort as BuildersSortBy) || 'week_gems';
   const builderOrder = (searchParamsResolved.builderOrder as string) || 'desc';
   const scoutOrder = (searchParamsResolved.scoutOrder as string) || 'desc';
-  const scoutTab = (searchParamsResolved.scoutTab as string) || 'scouts';
+  const scoutTab = (searchParamsResolved.scoutTab as string) || 'starter';
   const buildersLayout = (searchParamsResolved.buildersLayout as string) || 'table';
   const tab = (searchParamsResolved.tab as string) || 'builders';
   const session = await getSession();
