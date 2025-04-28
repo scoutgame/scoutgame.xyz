@@ -24,28 +24,34 @@ export async function registerForMatchup({
   tx?: { chainId: number; hash: string };
   decentTx?: { chainId: number; hash: string };
 }) {
+  let decentRegistrationTxId: string | undefined;
+  let registrationTxId: string | undefined;
+  if (decentTx) {
+    const decentRegistrationTx = await prisma.blockchainTransaction.create({
+      data: {
+        chainId: decentTx.chainId,
+        hash: decentTx.hash,
+        status: 'pending' as const
+      }
+    });
+    decentRegistrationTxId = decentRegistrationTx.id;
+  }
+  if (tx) {
+    const registrationTx = await prisma.blockchainTransaction.create({
+      data: {
+        chainId: tx.chainId,
+        hash: tx.hash,
+        status: 'success' as const
+      }
+    });
+    registrationTxId = registrationTx.id;
+  }
   return prisma.scoutMatchup.create({
     data: {
       createdBy: scoutId,
       week,
-      decentRegistrationTx: decentTx
-        ? {
-            create: {
-              chainId: decentTx.chainId,
-              hash: decentTx.hash,
-              status: 'pending' as const
-            }
-          }
-        : undefined,
-      registrationTx: tx
-        ? {
-            create: {
-              chainId: tx.chainId,
-              hash: tx.hash,
-              status: 'success' as const
-            }
-          }
-        : undefined
+      decentRegistrationTxId,
+      registrationTxId
     }
   });
 }
