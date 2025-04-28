@@ -2,8 +2,12 @@ import type { BuilderEvent, NFTPurchaseEvent } from '@charmverse/core/prisma-cli
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { seasons } from '@packages/dates/config';
-import { getCurrentSeasonStart, getPreviousSeason, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
-import { getPlatform } from '@packages/utils/platform';
+import {
+  getCurrentSeasonStart,
+  getPreviousSeason,
+  getSeasonWeekFromISOWeek,
+  getValidSeasons
+} from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import { formatUnits } from 'viem';
 
@@ -75,7 +79,7 @@ export async function getPointsReceiptsRewards({
       event: {
         season: {
           // Can only claim points for this season and previous seasons
-          in: isClaimed ? seasons.map((s) => s.start) : claimableSeasons
+          in: isClaimed ? getValidSeasons().map((s) => s.start) : claimableSeasons
         }
       },
       value: {

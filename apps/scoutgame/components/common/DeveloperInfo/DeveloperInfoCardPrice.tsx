@@ -96,7 +96,7 @@ function DeveloperCardPricingSection({
             <Image
               src='/images/dev-token-logo.png'
               width={isDesktop ? 24 : 18.5}
-              height={isDesktop ? 15.5 : 12}
+              height={isDesktop ? 24 : 18.5}
               alt='DEV Token'
             />
           </Stack>
