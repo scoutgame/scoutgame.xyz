@@ -128,6 +128,12 @@ export async function getTodaysHotBuilders({ week = getCurrentWeek() }: { week?:
         id: {
           notIn: currentWeekBuilders.map((builder) => builder.user.id)
         },
+        builderNfts: {
+          some: {
+            season,
+            nftType: BuilderNftType.default
+          }
+        },
         builderStatus: 'approved'
       },
       week: getPreviousWeek(week)

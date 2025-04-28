@@ -50,7 +50,7 @@ export async function getDevelopersForTable({
           deletedAt: null,
           builderNfts: {
             some: {
-              season
+              season: '2025-W18'
             }
           }
         },
@@ -160,7 +160,7 @@ export async function getDevelopersForTable({
           deletedAt: null,
           builderNfts: {
             some: {
-              season
+              season: '2025-W18'
             }
           }
         }
@@ -264,7 +264,7 @@ export async function getDevelopersForTable({
     // For price sorting, we fetch from builderNft
     const builderNfts = await prisma.builderNft.findMany({
       where: {
-        season,
+        season: '2025-W18',
         nftType,
         builder: {
           builderStatus: 'approved',
@@ -377,7 +377,7 @@ export async function getDevelopersForTable({
     const userWeeklyStats = await prisma.userWeeklyStats.findMany({
       where: {
         week,
-        season,
+        season: '2025-W18',
         user: {
           builderStatus: 'approved',
           deletedAt: null
