@@ -13,18 +13,39 @@ export function isValidRegistrationWeek(week: string, now = DateTime.utc()) {
   return currentDay === REGISTRATION_DAY_OF_WEEK ? week === currentWeek : week === nextWeek;
 }
 
-export async function registerForMatchup(scoutId: string, week: string) {
-  await sendPointsForMiscEvent({
-    builderId: scoutId,
-    points: -1 * MATCHUP_REGISTRATION_FEE,
-    description: 'Matchup registration fee',
-    claimed: true,
-    hideFromNotifications: true
-  });
+export async function registerForMatchup({
+  scoutId,
+  week,
+  tx,
+  decentTx
+}: {
+  scoutId: string;
+  week: string;
+  tx?: { chainId: number; hash: string };
+  decentTx?: { chainId: number; hash: string };
+}) {
   return prisma.scoutMatchup.create({
     data: {
       createdBy: scoutId,
-      week
+      week,
+      decentRegistrationTx: decentTx
+        ? {
+            create: {
+              chainId: decentTx.chainId,
+              hash: decentTx.hash,
+              status: 'pending' as const
+            }
+          }
+        : undefined,
+      registrationTx: tx
+        ? {
+            create: {
+              chainId: tx.chainId,
+              hash: tx.hash,
+              status: 'success' as const
+            }
+          }
+        : undefined
     }
   });
 }
