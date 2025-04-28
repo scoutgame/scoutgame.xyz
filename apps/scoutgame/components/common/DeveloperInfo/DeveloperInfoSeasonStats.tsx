@@ -46,7 +46,7 @@ export function DeveloperInfoSeasonStats({
         Season
       </Typography>
       <Stack>
-        <Stack direction='row' gap={0.5} alignItems='center'>
+        {/* <Stack direction='row' gap={0.5} alignItems='center'>
           <Typography variant={isDesktop ? 'h6' : 'body1'}>{seasonTokens}</Typography>
           <Image
             src='/images/dev-token-logo.png'
@@ -54,7 +54,7 @@ export function DeveloperInfoSeasonStats({
             height={isDesktop ? 24 : 18}
             alt='DEV Token'
           />
-        </Stack>
+        </Stack> */}
         <Typography variant={isDesktop ? 'h6' : 'body1'}>{scoutedBy} Scouts</Typography>
         <Stack direction='row' gap={0.5} alignItems='center'>
           <Typography variant={isDesktop ? 'h6' : 'body1'}>{cardsSold}</Typography>
