@@ -5,9 +5,9 @@ import { capitalize } from '@packages/utils/strings';
 import React from 'react';
 import type { CSSProperties } from 'react';
 
-import type { BuilderActivity } from '../../../builders/getBuilderActivities';
 import type { BuilderScouts } from '../../../builders/getBuilderScouts';
 import type { BuilderStats } from '../../../builders/getBuilderStats';
+import type { BuilderActivity } from '../../../builders/getDeveloperActivities';
 import { bonusPartnersRecord } from '../../../partnerRewards/constants';
 import type { BonusPartner } from '../../../partnerRewards/constants';
 

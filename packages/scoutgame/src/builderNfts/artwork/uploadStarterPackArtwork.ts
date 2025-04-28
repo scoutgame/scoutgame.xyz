@@ -1,9 +1,9 @@
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 
-import { getBuilderActivities } from '../../builders/getBuilderActivities';
 import { getBuilderNft } from '../../builders/getBuilderNft';
 import { getBuilderScouts } from '../../builders/getBuilderScouts';
 import { getBuilderStats } from '../../builders/getBuilderStats';
+import { getDeveloperActivities } from '../../builders/getDeveloperActivities';
 import { devTokenDecimals } from '../../protocol/constants';
 import { getStarterNFTContractAddress } from '../constants';
 
@@ -57,7 +57,7 @@ export async function uploadStarterPackArtworkCongrats({
   builderId: string;
 }) {
   const contractName = getStarterNFTContractAddress(season) || 'default';
-  const activities = await getBuilderActivities({ builderId, limit: 3 });
+  const activities = await getDeveloperActivities({ builderId, limit: 3 });
   const stats = await getBuilderStats(builderId);
   const builderScouts = await getBuilderScouts(builderId);
   const builderNft = await getBuilderNft(builderId);

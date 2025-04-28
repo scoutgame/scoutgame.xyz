@@ -1,8 +1,8 @@
 import 'server-only';
 
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { getBuilderActivities } from '@packages/scoutgame/builders/getBuilderActivities';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
+import { getDeveloperActivities } from '@packages/scoutgame/builders/getDeveloperActivities';
 import { getLeaderboard } from '@packages/scoutgame/builders/getLeaderboard';
 
 import { ScoutPageTable } from '../../scout/components/ScoutPageTable/ScoutPageTable';
@@ -24,7 +24,7 @@ export async function BuilderPageTable({
   userId?: string;
 }) {
   if (tab === 'activity') {
-    const [, activities = []] = await safeAwaitSSRData(getBuilderActivities({ limit: 100 }));
+    const [, activities = []] = await safeAwaitSSRData(getDeveloperActivities({ limit: 100 }));
     return <ActivityTable activities={activities} />;
   }
 
