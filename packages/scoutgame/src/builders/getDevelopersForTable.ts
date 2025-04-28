@@ -377,10 +377,14 @@ export async function getDevelopersForTable({
     const userWeeklyStats = await prisma.userWeeklyStats.findMany({
       where: {
         week,
-        season: '2025-W18',
         user: {
           builderStatus: 'approved',
-          deletedAt: null
+          deletedAt: null,
+          builderNfts: {
+            some: {
+              season: '2025-W18'
+            }
+          }
         }
       },
       orderBy: [
