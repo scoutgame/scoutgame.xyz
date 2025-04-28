@@ -1,7 +1,7 @@
 import type { PartnerRewardPayoutContractProvider } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getCurrentSeasonStart, getDateFromISOWeek, getSeasonWeekFromISOWeek } from '@packages/dates/utils';
+import { getCurrentSeasonWeekNumber, getDateFromISOWeek } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
@@ -110,10 +110,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
     unclaimedPartnerRewardsByContractAddress[reward.contractAddress] = {
       ...reward,
       amount: reward.amount + (unclaimedPartnerRewardsByContractAddress[reward.contractAddress]?.amount ?? 0),
-      week: getSeasonWeekFromISOWeek({
-        season: reward.season,
-        week: reward.week
-      })
+      week: getCurrentSeasonWeekNumber(reward.week)
     };
   });
 
@@ -162,10 +159,7 @@ export async function getPartnerRewards({
     const partnerReward: PartnerRewardBase<any> = {
       points: Number(formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)),
       season,
-      week: getSeasonWeekFromISOWeek({
-        season,
-        week: payout.payoutContract.week
-      }),
+      week: getCurrentSeasonWeekNumber(payout.payoutContract.week),
       tokenDecimals: payout.payoutContract.tokenDecimals,
       txHash: payout.txHash,
       chainId: payout.payoutContract.chainId
