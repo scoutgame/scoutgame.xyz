@@ -1,6 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
@@ -35,8 +35,8 @@ export async function getDevelopersForTable({
   cursor?: DeveloperTableCursor;
 }): Promise<{ developers: DeveloperMetadata[]; nextCursor: DeveloperTableCursor | null }> {
   const nftType = _nftType === 'default' ? BuilderNftType.default : BuilderNftType.starter_pack;
-  const week = getCurrentWeek();
-  const season = getCurrentSeasonStart(week);
+  const season = '2025-W02';
+  const week = '2025-W16';
 
   // Skip cursor processing if it doesn't match current sort type
   const activeCursor = cursor?.sortType === sortBy && cursor?.order === order ? cursor : undefined;

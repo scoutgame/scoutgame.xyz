@@ -61,27 +61,27 @@ export async function approveBuilder({
 
   log.info('Builder approved', { userId: builderId, season });
 
-  // try {
-  //   if (builderNftImage) {
-  //     await sendNotifications({
-  //       userId: scout.id,
-  //       notificationType: 'builder_approved',
-  //       email: {
-  //         templateVariables: {
-  //           builder_name: scout.displayName,
-  //           builder_card_image: builderNftImage,
-  //           builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
-  //         }
-  //       },
-  //       farcaster: {
-  //         templateVariables: undefined
-  //       },
-  //       app: {
-  //         templateVariables: undefined
-  //       }
-  //     });
-  //   }
-  // } catch (error) {
-  //   log.error('Error sending builder approval email', { error, userId: scout.id });
-  // }
+  try {
+    if (builderNftImage) {
+      await sendNotifications({
+        userId: scout.id,
+        notificationType: 'builder_approved',
+        email: {
+          templateVariables: {
+            builder_name: scout.displayName,
+            builder_card_image: builderNftImage,
+            builder_profile_link: `https://scoutgame.xyz/u/${scout.path}`
+          }
+        },
+        farcaster: {
+          templateVariables: undefined
+        },
+        app: {
+          templateVariables: undefined
+        }
+      });
+    }
+  } catch (error) {
+    log.error('Error sending builder approval email', { error, userId: scout.id });
+  }
 }
