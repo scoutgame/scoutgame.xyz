@@ -245,3 +245,7 @@ export function getSeasonFromDate(date: Date) {
     return null;
   }
 }
+
+export function getValidSeasons(): SeasonConfig[] {
+  return seasons.filter((s) => !s.draft && !s.preseason);
+}
