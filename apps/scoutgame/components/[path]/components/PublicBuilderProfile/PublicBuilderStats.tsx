@@ -21,7 +21,7 @@ export function PublicBuilderStats({
       <Typography fontWeight={500} color='secondary' variant={isDesktop ? 'subtitle1' : 'caption'}>
         THIS SEASON
       </Typography>
-      <Stack flexDirection='row' gap={1} alignItems='center'>
+      {/* <Stack flexDirection='row' gap={1} alignItems='center'>
         <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
           {seasonPoints || 0}
         </Typography>
@@ -34,7 +34,7 @@ export function PublicBuilderStats({
         <Typography fontWeight={500} variant={isDesktop ? 'h6' : 'body2'} color='orange.main'>
           ({allTimePoints || 0})
         </Typography>
-      </Stack>
+      </Stack> */}
       <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
         {totalScouts || 0} Scouts
       </Typography>
