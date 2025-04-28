@@ -1,6 +1,7 @@
 import type { Prisma } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
 import type { NftListing } from '../builders/interfaces';
@@ -22,10 +23,16 @@ export async function getNftListings({
 
   if (sellerWallet) {
     filters.sellerWallet = sellerWallet;
+    filters.builderNft = {
+      season: getCurrentSeasonStart()
+    };
   }
 
   if (isActive) {
     filters.completedAt = null;
+    filters.builderNft = {
+      season: getCurrentSeasonStart()
+    };
   }
 
   const listings = await prisma.developerNftListing.findMany({
@@ -45,7 +52,8 @@ export async function getDeveloperNftListings(developerId: string): Promise<NftL
   const developerNftListings = await prisma.developerNftListing.findMany({
     where: {
       builderNft: {
-        builderId: developerId
+        builderId: developerId,
+        season: getCurrentSeasonStart()
       },
       completedAt: null
     },
