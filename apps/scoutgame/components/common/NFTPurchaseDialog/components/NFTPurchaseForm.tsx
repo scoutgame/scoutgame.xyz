@@ -126,7 +126,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const purchaseCostInTokens = purchaseCost / BigInt(10 ** devTokenDecimals);
 
-  const overLimit = purchaseCostInTokens >= maxDevTokenPrice;
+  const overLimit = purchaseCostInTokens === maxDevTokenPrice;
 
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
