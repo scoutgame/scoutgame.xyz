@@ -127,7 +127,7 @@ export const NotificationTypesRecord = {
     subject: 'Your draft bid for a developer failed'
   },
   builder_card_scouted: {
-    template: 'Builder card scouted',
+    template: 'Developer card scouted',
     subject: 'Your Developer Card Was Just Scouted! 🎉'
   },
   builder_approved: {

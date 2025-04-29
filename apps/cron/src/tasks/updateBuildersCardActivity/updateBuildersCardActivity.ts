@@ -61,7 +61,7 @@ export async function updateBuildersCardActivity(date: DateTime) {
         ({ rank: _rank }) => _rank
       );
     } catch (error) {
-      log.error(`Error updating builder card activity for builder`, {
+      log.error(`Error updating dev card activity for builder`, {
         builderId: builder.id,
         date,
         error

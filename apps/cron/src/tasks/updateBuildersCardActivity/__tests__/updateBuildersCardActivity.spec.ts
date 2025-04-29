@@ -19,7 +19,7 @@ describe('updateBuildersCardActivity', () => {
     const lastWeek = getLastWeek();
     const builders = await Promise.all(Array.from({ length: 3 }, () => mockBuilder()));
 
-    // Create builder card activity for builder 1 for last week to check if it stays the same
+    // Create activity for dev 1 for last week to check if it stays the same
     await prisma.builderCardActivity.create({
       data: {
         last14Days: [
