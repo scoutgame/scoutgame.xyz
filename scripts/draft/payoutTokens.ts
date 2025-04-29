@@ -10,6 +10,7 @@ const MISSING_BIDS_FILE = 'draft-missing-bids-export.json';
 const LOSERS_FILE = 'draft-losers.json';
 const PAYOUTS_FILE = 'draft-payout.json';
 const OUTPUT_FILE = 'payout-transactions-final.json';
+const REFUNDS_FILE = 'refunds.json';
 
 type DraftPayout = {
   walletAddress: string;
@@ -26,6 +27,11 @@ type DraftLoser = {
   amount: number; 
 };
 
+type DraftRefund = {
+  walletAddress: string;
+  amount: number;
+};
+
 async function generatePayoutTransactions() {
   const basePath = path.join(process.cwd(), 'scripts/draft');
   const outputFilepath = path.join(basePath, OUTPUT_FILE);
@@ -33,7 +39,7 @@ async function generatePayoutTransactions() {
   const draftMissingBids: DraftMissingBid[] = JSON.parse(fs.readFileSync(path.join(basePath, MISSING_BIDS_FILE), 'utf8'));
   const draftLosers: DraftLoser[] = JSON.parse(fs.readFileSync(path.join(basePath, LOSERS_FILE), 'utf8'));
   const draftPayouts: DraftPayout[] = JSON.parse(fs.readFileSync(path.join(basePath, PAYOUTS_FILE), 'utf8'));
-
+  const draftRefunds: DraftRefund[] = JSON.parse(fs.readFileSync(path.join(basePath, REFUNDS_FILE), 'utf8'));
   const userTokensRecord: Record<string, bigint> = {};
 
   const addToRecord = (address: string, amount: bigint) => {
@@ -58,6 +64,10 @@ async function generatePayoutTransactions() {
   
   for (const draftLoser of draftLosers) {
     addToRecord(draftLoser.walletAddress, parseUnits(draftLoser.amount.toString(), 18));
+  }
+
+  for (const draftRefund of draftRefunds) {
+    addToRecord(draftRefund.walletAddress, parseUnits(draftRefund.amount.toString(), 18));
   }
 
   // Prepare Safe Transaction Data
