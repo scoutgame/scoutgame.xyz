@@ -25,7 +25,17 @@ import { useState } from 'react';
 import { formatUnits } from 'viem';
 
 // a component that takes a wallet address and returns a shortened version of it with an icon button to copy the full address
-export function WalletAddress({ color, address, chainId }: { color?: string; address: string; chainId: number }) {
+export function WalletAddress({
+  color,
+  address,
+  chainId,
+  expanded = false
+}: {
+  color?: string;
+  address: string;
+  chainId: number;
+  expanded?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
   const blockExplorerUrl = getChainById(chainId)?.blockExplorerUrls[0];
 
@@ -53,7 +63,7 @@ export function WalletAddress({ color, address, chainId }: { color?: string; add
             }
           }}
         >
-          {shortenHex(address)}
+          {expanded ? address : shortenHex(address)}
         </Box>
       </Tooltip>
       <Tooltip title={copied ? 'Copied!' : 'Copy address'}>

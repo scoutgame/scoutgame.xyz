@@ -157,7 +157,7 @@ export async function recordOnchainNftMint({
         }
       });
     } catch (error) {
-      log.error('Error sending builder card scouted email', {
+      log.error('Error sending dev card scouted email', {
         error,
         builderId: builderNft.builderId,
         userId: scoutId

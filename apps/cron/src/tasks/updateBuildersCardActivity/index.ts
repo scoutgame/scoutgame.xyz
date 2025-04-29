@@ -10,9 +10,9 @@ export async function updateAllBuildersCardActivities(
   { date = DateTime.now() }: { date?: DateTime } = {}
 ) {
   const weekday = date.weekday;
-  log.info('Updating builder card activities');
+  log.info('Updating dev card activities');
   const buildersRanksRecord = await updateBuildersCardActivity(date);
-  log.info(`Updated ${Object.keys(buildersRanksRecord).length} builder card activities`);
+  log.info(`Updated ${Object.keys(buildersRanksRecord).length} dev card activities`);
 
   // Make sure not to send emails on monday at the start of the week
   if (weekday !== 1) {
