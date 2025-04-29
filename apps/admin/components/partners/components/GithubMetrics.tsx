@@ -13,20 +13,13 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import {
-  getCurrentSeasonStart,
-  getWeekFromDate,
-  getPreviousSeason,
-  getAllISOWeeksFromSeasonStartUntilSeasonEnd,
-  getCurrentWeek
-} from '@packages/dates/utils';
+import { getWeekFromDate } from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
-import { isTruthy } from '@packages/utils/types';
 
 import { WeekValue } from './AirdropMetrics';
-import { getWeeksToDisplay } from './PartnerCard';
+import { getWeeksToDisplay } from './getWeeksToDisplay';
 
-const allWeeks = getWeeksToDisplay();
+const { seasons, weeks } = getWeeksToDisplay();
 
 type WeeklyStat = {
   week: string;
@@ -104,7 +97,7 @@ export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {allWeeks.map((week) => {
+                {weeks.map((week) => {
                   const weeklyStat = weeklyStats[week];
                   return (
                     <TableRow key={week}>

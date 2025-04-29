@@ -20,38 +20,20 @@ import {
 } from '@mui/material';
 import {
   getLastWeek,
+  getCurrentSeasonWeekNumber,
   getWeekStartEndFormatted,
   getDateFromISOWeek,
-  getCurrentWeek,
-  getCurrentSeasonStart,
-  getPreviousSeason,
-  getAllISOWeeksFromSeasonStartUntilSeasonEnd
+  getCurrentWeek
 } from '@packages/dates/utils';
-import { isTruthy } from '@packages/utils/types';
 import React, { useState } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
 import { useFileDownload } from 'hooks/useFileDownload';
 
 import { AddRepoMenuItem } from './AddRepoMenuItem';
+import { getWeeksToDisplay } from './getWeeksToDisplay';
 
-export function getWeeksToDisplay() {
-  const currentWeek = getCurrentWeek();
-  const currentSeason = getCurrentSeasonStart();
-  // include last 2 seasons
-  const seasons = [
-    getPreviousSeason(getPreviousSeason(currentSeason)),
-    getPreviousSeason(currentSeason),
-    currentSeason
-  ].filter(isTruthy);
-  return seasons
-    .flatMap((season) => getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }))
-    .filter((week) => week <= currentWeek)
-    .sort()
-    .reverse();
-}
-
-const allWeeks = getWeeksToDisplay();
+const allWeeks = getWeeksToDisplay().weeks;
 
 export function PartnerCard({
   partner,
@@ -160,7 +142,9 @@ export function PartnerCard({
                     {allWeeks.map((week, index) => (
                       <MenuItem key={week} value={week}>
                         <Stack width='100%' gap={1} direction='row' justifyContent='space-between'>
-                          <Typography>{week === currentWeek ? 'Current Week' : `Week ${index + 1}`}</Typography>
+                          <Typography>
+                            {week === currentWeek ? 'Current Week' : `Week ${getCurrentSeasonWeekNumber(week)}`}
+                          </Typography>
                           <Typography color='secondary'>{`${getDateFromISOWeek(week).toFormat('MMM d')}`}</Typography>
                         </Stack>
                       </MenuItem>
