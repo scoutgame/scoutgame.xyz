@@ -19,7 +19,8 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
   getNFTContractAddressForNftType,
   scoutgameEthAddress,
-  maxDevTokenPrice
+  maxDevTokenPrice,
+  maxTokenSupply
 } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
@@ -88,7 +89,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const { user } = useUser();
   const builderId = builder.id;
-  const initialQuantities = [1, 11, 111];
+  const initialQuantities = [1, 2, 3];
   const pricePerNft = builder.price ? Number(builder.price) / 10 ** devTokenDecimals : '';
 
   const { address, chainId } = useAccount();
@@ -100,6 +101,8 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { switchChainAsync } = useSwitchChain();
   const { data: nftStats } = useGetBuilderNftStats({ builderId });
 
+  const maxQuantity =
+    builder.nftType === 'starter_pack' ? 1 : nftStats ? maxTokenSupply - nftStats.nftSupply.default : maxTokenSupply;
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<SelectedPaymentOption>({
     chainId: scoutProtocolChainId,
     currency: 'DEV'
@@ -126,7 +129,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const purchaseCostInTokens = purchaseCost / BigInt(10 ** devTokenDecimals);
 
-  const overLimit = purchaseCostInTokens === BigInt(maxDevTokenPrice);
+  const reachedMaxSupply = nftStats?.nftSupply.total === maxTokenSupply;
 
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
@@ -312,6 +315,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const [selectedQuantity, setSelectedQuantity] = useState<number | 'custom'>(1);
   const [customQuantity, setCustomQuantity] = useState(2);
 
+  // the # of tokens selected, regardless of whether it's a toggle or a custom quantity
+  const desiredTokens = typeof selectedQuantity === 'number' ? selectedQuantity : customQuantity;
+
   const handleQuantityChange = (value: number | 'custom') => {
     if (builder.nftType === 'starter_pack') {
       throw new Error('Only one Starter card can be purchased at a time');
@@ -321,7 +327,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       setTokensToBuy(customQuantity);
     } else if (value) {
       setSelectedQuantity(value);
-      setTokensToBuy(value);
+      if (value <= maxQuantity) {
+        setTokensToBuy(value);
+      }
     }
   };
   const approvalRequired =
@@ -422,11 +430,14 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
                 type='number'
                 placeholder='Quantity'
                 value={customQuantity}
+                error={customQuantity > maxQuantity}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10);
                   if (!Number.isNaN(value) && value > 0) {
                     setCustomQuantity(value);
-                    setTokensToBuy(value);
+                    if (value <= maxQuantity) {
+                      setTokensToBuy(value);
+                    }
                   }
                 }}
                 disableArrows
@@ -434,6 +445,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               />
               <IconButton
                 color='secondary'
+                disabled={tokensToBuy >= maxQuantity}
                 onClick={() => {
                   setCustomQuantity((prev) => prev + 1);
                   setTokensToBuy((prev) => prev + 1);
@@ -443,21 +455,26 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
               </IconButton>
             </Stack>
           )}
-          {nftStats ? (
-            <Typography align='right' variant='caption' color='secondary'>
-              {tokensToBuy} out of {nftStats.nftSupply.total + tokensToBuy} Cards. Reward:{' '}
-              {calculateFutureReward({
-                nftSupply: nftStats.nftSupply,
-                nftType: builder.nftType,
-                tokensToBuy
-              })}
-              %
+          <Stack direction='row' justifyContent='space-between'>
+            <Typography align='right' variant='caption' color={desiredTokens > maxQuantity ? 'error' : 'secondary'}>
+              {desiredTokens > maxQuantity ? `Remaining supply: ${maxQuantity}` : ''}
             </Typography>
-          ) : (
-            <Typography align='right' variant='caption'>
-              <CircularProgress color='inherit' size={14} />
-            </Typography>
-          )}
+            {nftStats ? (
+              <Typography align='right' variant='caption' color='secondary'>
+                {tokensToBuy} out of {nftStats.nftSupply.total + tokensToBuy} Cards. Reward:{' '}
+                {calculateFutureReward({
+                  nftSupply: nftStats.nftSupply,
+                  nftType: builder.nftType,
+                  tokensToBuy
+                })}
+                %
+              </Typography>
+            ) : (
+              <Typography align='right' variant='caption'>
+                <CircularProgress color='inherit' size={14} />
+              </Typography>
+            )}
+          </Stack>
         </Stack>
       )}
       <Stack>
@@ -535,7 +552,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         </Typography>
       )}
 
-      {overLimit ? (
+      {reachedMaxSup ? (
         <Button disabled variant='buy'>
           <Box px={1}>SOLD OUT</Box>
         </Button>
