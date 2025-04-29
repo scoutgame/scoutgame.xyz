@@ -45,7 +45,12 @@ export function ERC20ApproveButton({
 
   async function approveSpender() {
     if (walletClient?.chain.id !== chainId) {
-      return switchChainAsync({ chainId });
+      try {
+        await switchChainAsync({ chainId });
+      } catch (error) {
+        // some wallets dont support switching chain
+        log.warn('Error switching chain for approve spend', { chainId, error });
+      }
     }
     if (!amountToApprove) {
       throw new Error('Amount to approve is required');

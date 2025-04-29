@@ -6,7 +6,6 @@ import { cancelNftListingAction } from '@packages/scoutgame/nftListing/cancelNft
 import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { cancelSeaportListing } from '@packages/scoutgame/seaport/cancelSeaportListing';
 import { fancyTrim } from '@packages/utils/strings';
-import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { FcCancel } from 'react-icons/fc';
@@ -48,9 +47,14 @@ export function NFTListingEditButton({ listing }: { listing: NonNullable<Builder
       }
 
       if (chainId !== scoutProtocolChainId) {
-        await switchChainAsync({
-          chainId: scoutProtocolChainId
-        });
+        try {
+          await switchChainAsync({
+            chainId: scoutProtocolChainId
+          });
+        } catch (error) {
+          // some wallets dont support switching chain
+          log.warn('Error switching chain for nft listing delist', { chainId, error });
+        }
       }
 
       const preparedTx = await cancelSeaportListing({

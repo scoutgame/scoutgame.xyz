@@ -240,14 +240,23 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       setSubmitError(null);
 
       if (chainId !== selectedPaymentOption.chainId) {
-        await switchChainAsync(
-          { chainId: selectedPaymentOption.chainId },
-          {
-            onError() {
-              toast.error('Failed to switch chain');
+        try {
+          await switchChainAsync(
+            { chainId: selectedPaymentOption.chainId },
+            {
+              onError() {
+                toast.error('Failed to switch chain');
+              }
             }
-          }
-        );
+          );
+        } catch (error) {
+          // some wallets dont support switching chain
+          log.warn('Error switching chain for nft purchase', {
+            chainId,
+            selectedChainId: selectedPaymentOption.chainId,
+            error
+          });
+        }
       }
       if (!decentTransactionInfo?.tx) {
         return;

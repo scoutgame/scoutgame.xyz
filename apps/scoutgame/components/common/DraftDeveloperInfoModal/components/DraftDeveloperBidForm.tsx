@@ -201,16 +201,29 @@ function DraftDeveloperBidFormComponent({
 
   // Switch chain automatically when payment option changes
   useEffect(() => {
-    if (chainId !== selectedPaymentOption.chainId) {
-      switchChainAsync(
-        { chainId: selectedPaymentOption.chainId },
-        {
-          onError() {
-            setCustomError('Failed to switch chain');
-          }
+    async function switchChain() {
+      if (chainId !== selectedPaymentOption.chainId) {
+        try {
+          await switchChainAsync(
+            { chainId: selectedPaymentOption.chainId },
+            {
+              onError() {
+                setCustomError('Failed to switch chain');
+              }
+            }
+          );
+        } catch (error) {
+          // some wallets dont support switching chain
+          log.warn('Error switching chain for developer bid', {
+            chainId,
+            selectedChainId: selectedPaymentOption.chainId,
+            error
+          });
         }
-      );
+      }
     }
+
+    switchChain();
   }, [chainId, selectedPaymentOption.chainId, switchChainAsync]);
 
   const isLoading =
