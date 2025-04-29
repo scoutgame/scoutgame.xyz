@@ -22,9 +22,12 @@ import {
   getLastWeek,
   getWeekStartEndFormatted,
   getDateFromISOWeek,
-  getAllISOWeeksFromSeasonStart,
-  getCurrentWeek
+  getCurrentWeek,
+  getCurrentSeasonStart,
+  getPreviousSeason,
+  getAllISOWeeksFromSeasonStartUntilSeasonEnd
 } from '@packages/dates/utils';
+import { isTruthy } from '@packages/utils/types';
 import React, { useState } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
@@ -32,7 +35,23 @@ import { useFileDownload } from 'hooks/useFileDownload';
 
 import { AddRepoMenuItem } from './AddRepoMenuItem';
 
-const allWeeks = getAllISOWeeksFromSeasonStart();
+export function getWeeksToDisplay() {
+  const currentWeek = getCurrentWeek();
+  const currentSeason = getCurrentSeasonStart();
+  // include last 2 seasons
+  const seasons = [
+    getPreviousSeason(getPreviousSeason(currentSeason)),
+    getPreviousSeason(currentSeason),
+    currentSeason
+  ].filter(isTruthy);
+  return seasons
+    .flatMap((season) => getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }))
+    .filter((week) => week <= currentWeek)
+    .sort()
+    .reverse();
+}
+
+const allWeeks = getWeeksToDisplay();
 
 export function PartnerCard({
   partner,
