@@ -68,3 +68,5 @@ chats.json
 
 # Don't save the ingested txt files, only the json files
 apps/agents/src/agents/BuilderAgent/lib/enriched/*.txt
+
+scripts/draft/*.json
