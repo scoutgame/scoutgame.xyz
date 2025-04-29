@@ -129,7 +129,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const purchaseCostInTokens = purchaseCost / BigInt(10 ** devTokenDecimals);
 
-  const reachedMaxSupply = nftStats?.nftSupply.total === maxTokenSupply;
+  const reachedMaxSupply = builder.nftType === 'default' && nftStats?.nftSupply.total === maxTokenSupply;
 
   const refreshAsk = useCallback(
     async ({ _builderTokenId, amount }: { _builderTokenId: bigint | number; amount: bigint | number }) => {
@@ -552,7 +552,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         </Typography>
       )}
 
-      {reachedMaxSup ? (
+      {reachedMaxSupply ? (
         <Button disabled variant='buy'>
           <Box px={1}>SOLD OUT</Box>
         </Button>
