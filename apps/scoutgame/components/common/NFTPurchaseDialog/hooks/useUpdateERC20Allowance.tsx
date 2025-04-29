@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { getChainById } from '@packages/blockchain/chains';
 import { UsdcErc20ABIClient } from '@packages/scoutgame/builderNfts/usdcContractApiClient';
 import useSWRMutation from 'swr/mutation';
@@ -17,6 +18,9 @@ export function useUpdateERC20Allowance({ spender, erc20Address, chainId }: UseE
   const { data: walletClient } = useWalletClient();
 
   async function mutationFn(_url: string, { arg: { amount } }: { arg: { amount: bigint } }) {
+    if (!walletClient) {
+      log.error('No wallet client found for update allowance');
+    }
     const client = new UsdcErc20ABIClient({
       chain: getChainById(chainId)?.viem as Chain,
       contractAddress: erc20Address,
@@ -29,7 +33,8 @@ export function useUpdateERC20Allowance({ spender, erc20Address, chainId }: UseE
     trigger: triggerApproveSpender,
     isMutating: isApprovingSpender,
     error: errorApprovingSpender
-  } = useSWRMutation('updateAllowance', mutationFn);
+    // not sure if we need walletClient, but sometimes it is undefined at first
+  } = useSWRMutation(`updateAllowance-${!!walletClient}`, mutationFn);
 
   return { triggerApproveSpender, isApprovingSpender, errorApprovingSpender };
 }

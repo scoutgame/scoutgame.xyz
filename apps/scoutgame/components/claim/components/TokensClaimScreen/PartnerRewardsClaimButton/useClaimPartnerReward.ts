@@ -51,7 +51,12 @@ function usePartnerReward({
 
     if (chainId !== rewardChainId) {
       try {
-        await switchChainAsync({ chainId: rewardChainId });
+        try {
+          await switchChainAsync({ chainId: rewardChainId });
+        } catch (error) {
+          // some wallets dont support switching chain
+          log.warn('Error switching chain for partner reward', { chainId, rewardChainId, error });
+        }
         await new Promise((resolve) => {
           setTimeout(resolve, 1000);
         });

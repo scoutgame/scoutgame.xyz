@@ -57,9 +57,14 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
       }
 
       if (chainId !== scoutProtocolChain.id) {
-        await switchChainAsync({
-          chainId: scoutProtocolChain.id
-        });
+        try {
+          await switchChainAsync({
+            chainId: scoutProtocolChain.id
+          });
+        } catch (error) {
+          // some wallets dont support switching chain
+          log.warn('Error switching chain for nft listing', { chainId, error });
+        }
       }
 
       const order = await recordSeaportListing({

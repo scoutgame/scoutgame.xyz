@@ -77,16 +77,22 @@ export function useTokenPayment({
 
   // Switch chain automatically when payment option changes
   useEffect(() => {
-    if (chainId !== paymentOption.chainId) {
-      switchChainAsync(
-        { chainId: paymentOption.chainId },
-        {
-          onError() {
-            log.error('Failed to switch chain');
-          }
+    async function switchChain() {
+      if (chainId !== paymentOption.chainId) {
+        try {
+          await switchChainAsync({ chainId: paymentOption.chainId });
+        } catch (error) {
+          // some wallets dont support switching chain
+          log.warn('Error switching chain for token payment', {
+            chainId,
+            selectedChainId: paymentOption.chainId,
+            error
+          });
         }
-      );
+      }
     }
+
+    switchChain();
   }, [chainId, paymentOption.chainId, switchChainAsync]);
 
   const isLoading = paymentOption.currency !== 'DEV' && isLoadingDecentSdk;

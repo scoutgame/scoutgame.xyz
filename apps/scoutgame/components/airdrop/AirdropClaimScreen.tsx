@@ -115,9 +115,14 @@ export function AirdropClaimScreen() {
     }
 
     if (chainId !== base.id) {
-      await switchChainAsync({
-        chainId: base.id
-      });
+      try {
+        await switchChainAsync({
+          chainId: base.id
+        });
+      } catch (error) {
+        // some wallets dont support switching chain
+        log.warn('Error switching chain for airdrop claim', { chainId, error });
+      }
     }
 
     setIsClaimingTokens(true);

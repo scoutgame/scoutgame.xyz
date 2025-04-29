@@ -73,9 +73,14 @@ export function NFTListingPurchaseForm({ listing, builder, onSuccess }: NFTListi
     setIsLoading(true);
 
     if (chainId !== scoutProtocolChainId) {
-      await switchChainAsync({
-        chainId: scoutProtocolChainId
-      });
+      try {
+        await switchChainAsync({
+          chainId: scoutProtocolChainId
+        });
+      } catch (error) {
+        // some wallets dont support switching chain
+        log.warn('Error switching chain for nft listing purchase', { chainId, error });
+      }
     }
 
     try {

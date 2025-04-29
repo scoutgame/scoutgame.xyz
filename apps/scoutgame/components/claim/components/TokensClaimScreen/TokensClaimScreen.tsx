@@ -93,9 +93,14 @@ function TokensClaimScreenComponent({
     }
 
     if (walletClient.chain.id !== scoutProtocolChainId) {
-      await walletClient.switchChain({
-        id: scoutProtocolChainId
-      });
+      try {
+        await walletClient.switchChain({
+          id: scoutProtocolChainId
+        });
+      } catch (error) {
+        // some wallets dont support switching chain
+        log.warn('Error switching chain for tokens claim', { error });
+      }
     }
 
     const protocolClient = getProtocolWriteClient({
