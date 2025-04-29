@@ -88,7 +88,7 @@ export function getNextWeek(week: ISOWeek): ISOWeek {
   return _formatWeek(getDateFromISOWeek(week).plus({ week: 1 }));
 }
 
-export function getPreviousSeason(season: Season): Season | null {
+export function getPreviousSeason(season: Season | null): Season | null {
   const seasonIndex = seasons.findIndex((s) => s.start === season);
   return seasons[seasonIndex - 1]?.start || null;
 }
