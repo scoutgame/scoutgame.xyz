@@ -18,9 +18,8 @@ import {
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
   getNFTContractAddressForNftType,
-  scoutgameEthAddress,
-  maxDevTokenPrice,
-  maxTokenSupply
+  maxTokenSupply,
+  scoutgameEthAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
@@ -94,8 +93,14 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const { address, chainId } = useAccount();
   const { error: addressError } = useUserWalletAddress(address);
-  const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
-    usePurchase();
+  const {
+    isExecutingTransaction,
+    sendNftMintTransaction,
+    isSavingDecentTransaction,
+    purchaseSuccess,
+    purchaseError,
+    sendDevNftMintTransaction
+  } = usePurchase();
   const trackEvent = useTrackEvent();
 
   const { switchChainAsync } = useSwitchChain();
@@ -216,6 +221,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const selectedChainCurrency = getCurrencyContract(selectedPaymentOption) as Address;
 
+  const spender =
+    selectedPaymentOption.currency === 'DEV' ? contractAddress : (decentTransactionInfo?.tx.to as Address);
+
   const { allowance, refreshAllowance } = useGetERC20Allowance({
     chainId: selectedPaymentOption.chainId,
     erc20Address:
@@ -225,7 +233,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           ? devTokenContractAddress
           : null,
     owner: address as Address,
-    spender: decentTransactionInfo?.tx.to as Address
+    spender
   });
 
   const balanceInfo = userTokenBalances?.find(
@@ -261,28 +269,42 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           });
         }
       }
-      if (!decentTransactionInfo?.tx) {
-        return;
-      }
 
-      const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
-
-      await sendNftMintTransaction({
-        txData: {
-          to: decentTransactionInfo.tx.to as Address,
-          data: decentTransactionInfo.tx.data as any,
-          value: _value
-        },
-        txMetadata: {
-          contractAddress,
-          fromAddress: address as Address,
-          sourceChainId: selectedPaymentOption.chainId,
+      if (selectedPaymentOption.currency === 'DEV') {
+        await sendDevNftMintTransaction({
+          scoutId: user?.id as string,
           builderTokenId: Number(builderTokenId),
-          builderId: builder.id,
+          contractAddress,
+          tokensToBuy,
+          isStarterContract: builder.nftType === 'starter_pack',
           purchaseCost: Number(purchaseCost),
-          tokensToBuy
+          fromAddress: address as Address,
+          builderId: builder.id
+        });
+      } else {
+        if (!decentTransactionInfo?.tx) {
+          return;
         }
-      });
+
+        const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
+
+        await sendNftMintTransaction({
+          txData: {
+            to: decentTransactionInfo.tx.to as Address,
+            data: decentTransactionInfo.tx.data as any,
+            value: _value
+          },
+          txMetadata: {
+            contractAddress,
+            fromAddress: address as Address,
+            sourceChainId: selectedPaymentOption.chainId,
+            builderTokenId: Number(builderTokenId),
+            builderId: builder.id,
+            purchaseCost: Number(purchaseCost),
+            tokensToBuy
+          }
+        });
+      }
 
       trackEvent('nft_purchase', {
         amount: tokensToBuy,
@@ -343,7 +365,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       allowance,
       amountToPay,
       account: address,
-      spender: decentTransactionInfo?.tx.to
+      spender
     });
   }
 
@@ -578,7 +600,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         </Button>
       ) : (
         <ERC20ApproveButton
-          spender={decentTransactionInfo?.tx.to as Address}
+          spender={spender}
           chainId={selectedPaymentOption.chainId}
           erc20Address={getCurrencyContract(selectedPaymentOption) as Address}
           amount={amountToPay}
