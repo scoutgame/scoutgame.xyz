@@ -99,11 +99,23 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
           txHash: res.data.txHash
         });
 
-        toast.promise(checkResultPromise, {
-          loading: 'Transaction is being settled...',
-          success: () => `Transaction ${res?.data?.txHash || ''} was successful`,
-          error: (data) => `Transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
-        });
+        toast.promise(
+          // reject the promise if there is a server error
+          new Promise((resolve, reject) => {
+            checkResultPromise.then((_res) => {
+              if (_resres.serverError) {
+                reject(_res);
+              } else {
+                resolve(_res);
+              }
+            });
+          }),
+          {
+            loading: 'Transaction is being settled...',
+            success: () => `Transaction ${res?.data?.txHash || ''} was successful`,
+            error: (data) => `Transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
+          }
+        );
 
         const checkResult = await checkResultPromise;
 
