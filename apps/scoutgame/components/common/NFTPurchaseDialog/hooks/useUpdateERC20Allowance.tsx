@@ -34,7 +34,7 @@ export function useUpdateERC20Allowance({ spender, erc20Address, chainId }: UseE
     isMutating: isApprovingSpender,
     error: errorApprovingSpender
     // not sure if we need walletClient, but sometimes it is undefined at first
-  } = useSWRMutation(`updateAllowance-${!!walletClient}`, mutationFn);
+  } = useSWRMutation(`updateAllowance-${walletClient?.account.address}`, mutationFn);
 
   return { triggerApproveSpender, isApprovingSpender, errorApprovingSpender };
 }

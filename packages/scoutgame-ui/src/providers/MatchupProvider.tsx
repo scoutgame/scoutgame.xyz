@@ -115,24 +115,12 @@ export function MatchupProvider({ children }: { children: ReactNode }) {
         functionName: 'transfer',
         args: [toAddress, tokenAmount]
       });
-      toast.info('Processing registration...');
-      const output = await saveMatchupRegistration({
+      await saveMatchupRegistration({
         week: matchupWeek,
         tx: { chainId: base.id, hash: txHash }
       });
-
-      if (output?.serverError) {
-        log.error(`Saving matchup transaction failed`, {
-          tokenAmount,
-          tokenAddress,
-          fromAddress,
-          txHash
-        });
-      } else {
-        log.info(`Successfully sent matchup transaction`, { data: { txHash } });
-      }
     },
-    [walletClient?.account.address, saveMatchupRegistration]
+    [saveMatchupRegistration, walletClient]
   );
 
   const sendTransactionViaDecent = useCallback(
@@ -150,20 +138,13 @@ export function MatchupProvider({ children }: { children: ReactNode }) {
         },
         {
           onSuccess: async (_data) => {
-            toast.info('Matchup offer is sent and will be confirmed shortly');
-            const output = await saveMatchupRegistration({
+            await saveMatchupRegistration({
               week: matchupWeek,
               decentTx: {
                 chainId: sourceChainId,
                 hash: _data
               }
             });
-
-            if (output?.serverError) {
-              log.error(`Saving matchup transaction failed`, { data: _data });
-            } else {
-              log.info(`Successfully sent matchup registration`, { data: _data });
-            }
           },
           onError: (err: any) => {
             log.error(`Creating a matchup transaction failed`, {

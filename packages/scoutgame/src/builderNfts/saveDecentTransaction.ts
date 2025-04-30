@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 
-type PendingNftTransactionToSave = {
+type TransactionToSave = {
   user: {
     scoutId: string;
     walletAddress: string;
@@ -19,7 +19,7 @@ type PendingNftTransactionToSave = {
   };
 };
 
-export async function savePendingTransaction(data: PendingNftTransactionToSave) {
+export async function saveDecentTransaction(data: TransactionToSave) {
   return prisma.pendingNftTransaction.create({
     data: {
       userId: data.user.scoutId,

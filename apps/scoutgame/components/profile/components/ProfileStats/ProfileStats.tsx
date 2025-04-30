@@ -13,7 +13,7 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
   const [selectedDuration, setSelectedDuration] = useState<'season' | 'allTime'>('season');
   const isDesktop = useMdScreen();
   const { address } = useAccount();
-  const { balance } = useDevTokenBalance({ address });
+  const { formattedBalance } = useDevTokenBalance({ address });
 
   return (
     <Paper
@@ -39,7 +39,7 @@ export function ProfileStats({ seasonPoints, allTimePoints, currentBalance: poin
         </Typography>
         <Stack flexDirection='row' gap={1} alignItems='center'>
           <Typography variant={isDesktop ? 'h3' : 'h4'} fontWeight={400}>
-            {balance}
+            {formattedBalance}
           </Typography>
           <Image src='/images/dev-token-logo.png' width='40' height='40' alt='DEV Token' />
         </Stack>

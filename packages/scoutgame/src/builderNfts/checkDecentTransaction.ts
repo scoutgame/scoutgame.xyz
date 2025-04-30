@@ -10,10 +10,10 @@ import {
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
 
-import { recordOnchainNftMint } from './recordOnchainNftMint';
+import { recordNftMint } from './recordNftMint';
 import { validateTransferrableNftMint } from './validateTransferrableNftMint';
 
-export async function handlePendingTransaction({
+export async function checkDecentTransaction({
   pendingTransactionId
 }: {
   pendingTransactionId: string;
@@ -85,33 +85,35 @@ export async function handlePendingTransaction({
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {
-        userId: pendingTx.userId
-      });
-      throw new DecentTxFailedPermanently();
-    } else {
-      // Update the pending transaction status to 'completed' and set destination details
-      await prisma.pendingNftTransaction.update({
-        where: {
-          id: pendingTransactionId
-        },
-        data: {
-          status: TransactionStatus.completed,
-          destinationChainTxHash: txHash.toLowerCase()
-        }
-      });
-
-      const tokenValue = Number(pendingTx.targetAmountReceived);
-
-      await recordOnchainNftMint({
-        builderNftId: builderNft.id,
-        recipientAddress: pendingTx.senderAddress as `0x${string}`,
-        scoutId: pendingTx.userId,
-        amount: pendingTx.tokenAmount,
-        tokenValue,
-        txLogIndex: validatedMint.txLogIndex,
+        userId: pendingTx.userId,
+        destinationChainId: pendingTx.destinationChainId,
         txHash
       });
+      throw new DecentTxFailedPermanently();
     }
+
+    // Update the pending transaction status to 'completed' and set destination details
+    await prisma.pendingNftTransaction.update({
+      where: {
+        id: pendingTransactionId
+      },
+      data: {
+        status: TransactionStatus.completed,
+        destinationChainTxHash: txHash.toLowerCase()
+      }
+    });
+
+    const tokenValue = Number(pendingTx.targetAmountReceived);
+
+    await recordNftMint({
+      builderNftId: builderNft.id,
+      recipientAddress: pendingTx.senderAddress as `0x${string}`,
+      scoutId: pendingTx.userId,
+      amount: pendingTx.tokenAmount,
+      tokenValue,
+      txLogIndex: validatedMint.txLogIndex,
+      txHash
+    });
   } catch (error) {
     if (error instanceof DecentTxFailedPermanently) {
       // Update the pending transaction status to 'failed'

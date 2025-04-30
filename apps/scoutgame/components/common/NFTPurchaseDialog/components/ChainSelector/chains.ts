@@ -39,14 +39,15 @@ export const chainOptionsMainnet: ChainOption[] = [
     chain: arbitrum,
     usdcAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
   },
-  { name: 'Zora', id: zora.id, icon: '/images/crypto/zora64.png', chain: zora, usdcAddress: '' },
-  {
-    name: 'Mainnet',
-    id: mainnet.id,
-    icon: '/images/crypto/ethereum-eth-logo.png',
-    chain: mainnet,
-    usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-  }
+  { name: 'Zora', id: zora.id, icon: '/images/crypto/zora64.png', chain: zora, usdcAddress: '' }
+  // no liquidity for USDC on mainnet
+  // {
+  //   name: 'Mainnet',
+  //   id: mainnet.id,
+  //   icon: '/images/crypto/ethereum-eth-logo.png',
+  //   chain: mainnet,
+  //   usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+  // }
 ];
 
 export const chainOptionsTestnet: ChainOption[] = [
