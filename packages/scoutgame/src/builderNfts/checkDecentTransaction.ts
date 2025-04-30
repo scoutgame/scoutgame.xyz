@@ -85,7 +85,9 @@ export async function checkDecentTransaction({
 
     if (!validatedMint) {
       scoutgameMintsLogger.error(`Transaction on chain ${pendingTx.destinationChainId} failed`, {
-        userId: pendingTx.userId
+        userId: pendingTx.userId,
+        destinationChainId: pendingTx.destinationChainId,
+        txHash
       });
       throw new DecentTxFailedPermanently();
     }

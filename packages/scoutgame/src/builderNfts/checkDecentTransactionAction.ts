@@ -9,7 +9,7 @@ import { checkDecentTransaction } from './checkDecentTransaction';
 import { handleEmailFailedTransaction } from './handleEmailFailedTransaction';
 
 export const checkDecentTransactionAction = authActionClient
-  .metadata({ actionName: 'handle-mint-nft' })
+  .metadata({ actionName: 'check-decent-transaction' })
   .schema(
     yup.object().shape({
       pendingTransactionId: yup.string().required(),

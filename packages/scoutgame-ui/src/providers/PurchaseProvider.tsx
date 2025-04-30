@@ -102,13 +102,15 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         toast.promise(
           // reject the promise if there is a server error
           new Promise((resolve, reject) => {
-            checkResultPromise.then((_res) => {
-              if (_resres.serverError) {
-                reject(_res);
-              } else {
-                resolve(_res);
-              }
-            });
+            checkResultPromise
+              .then((_res) => {
+                if (_res.serverError) {
+                  reject(_res);
+                } else {
+                  resolve(_res);
+                }
+              })
+              .catch(reject);
           }),
           {
             loading: 'Transaction is being settled...',
@@ -279,13 +281,15 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
       toast.promise(
         // reject the promise if there is a server error
         new Promise((resolve, reject) => {
-          outputPromise.then((res) => {
-            if (res.serverError) {
-              reject(res);
-            } else {
-              resolve(res);
-            }
-          });
+          outputPromise
+            .then((res) => {
+              if (res.serverError) {
+                reject(res);
+              } else {
+                resolve(res);
+              }
+            })
+            .catch(reject);
         }),
         {
           loading: 'Transaction is being settled...',
