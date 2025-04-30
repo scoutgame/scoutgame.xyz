@@ -104,7 +104,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
           new Promise((resolve, reject) => {
             checkResultPromise
               .then((_res) => {
-                if (_res.serverError) {
+                if (_res?.serverError) {
                   reject(_res);
                 } else {
                   resolve(_res);
@@ -283,7 +283,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         new Promise((resolve, reject) => {
           outputPromise
             .then((res) => {
-              if (res.serverError) {
+              if (res?.serverError) {
                 reject(res);
               } else {
                 resolve(res);
