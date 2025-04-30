@@ -1,5 +1,6 @@
 import { log } from '@charmverse/core/log';
 import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import { ceilToPrecision } from '@packages/utils/numbers';
 import { useCallback, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import type { Address } from 'viem';
@@ -58,5 +59,5 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
     }
   }
 
-  return { balance, refreshBalance, isLoading };
+  return { balance, formattedBalance: ceilToPrecision(balance, 3), refreshBalance, isLoading };
 }
