@@ -1,73 +1,27 @@
 'use client';
 
-import { log } from '@charmverse/core/log';
 import InfoIcon from '@mui/icons-material/Info';
-import {
-  Box,
-  Container,
-  Menu,
-  MenuItem,
-  Toolbar,
-  AppBar,
-  Button,
-  Typography,
-  Stack,
-  IconButton,
-  Badge
-} from '@mui/material';
+import { Container, Toolbar, AppBar, Button, Stack, IconButton, Badge } from '@mui/material';
 import { isDraftSeason } from '@packages/dates/utils';
-import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
-import { logoutAction } from '@packages/nextjs/session/logoutAction';
-import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { ceilToPrecision } from '@packages/utils/numbers';
 import { getPlatform } from '@packages/utils/platform';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAction } from 'next-safe-action/hooks';
-import type { MouseEvent } from 'react';
-import { useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
-import { useAccount } from 'wagmi';
 
 import { useGetUnreadNotificationsCount } from 'hooks/api/notifications';
 
-import { useDevTokenBalance } from '../../hooks/useDevTokenBalance';
-
+import { AccountMenu } from './components/AccountMenu';
 import { SiteNavigation } from './components/SiteNavigation';
 
 export function Header() {
-  const router = useRouter();
   const platform = getPlatform();
-  const { user, refreshUser } = useUser();
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const { user } = useUser();
   const isFarcasterFrame = useIsFarcasterFrame();
-  const { address } = useAccount();
   const { data: unreadNotificationsCount } = useGetUnreadNotificationsCount();
-  const { balance } = useDevTokenBalance({ address });
   const draftSeason = isDraftSeason();
-
-  const { execute: logoutUser, isExecuting: isExecutingLogout } = useAction(logoutAction, {
-    onSuccess: async () => {
-      await refreshUser();
-      revalidatePathAction();
-      router.push('/');
-    },
-    onError(err) {
-      log.error('Error on logout', { error: err.error.serverError });
-    }
-  });
-
-  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
 
   return (
     <AppBar
@@ -120,7 +74,8 @@ export function Header() {
                       </IconButton>
                     </Link>
                   </Stack>
-                  <Box
+                  <AccountMenu user={user} />
+                  {/* <Box
                     borderColor='secondary.main'
                     borderRadius='30px'
                     sx={{
@@ -197,9 +152,8 @@ export function Header() {
                           Sign Out
                         </MenuItem>
                       )}
-                      {/* <InstallAppMenuItem>Install</InstallAppMenuItem> */}
                     </Menu>
-                  </Box>
+                  </Box> */}
                 </>
               ) : (
                 <>

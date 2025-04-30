@@ -20,17 +20,41 @@ import { useLoginSuccessHandler } from '../../../hooks/useLoginSuccessHandler';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function WalletLogin({ text, color = 'primary' }: { text?: string; color?: ButtonProps['color'] }) {
+export function WalletLogin({
+  text = 'Sign in with wallet',
+  color = 'primary',
+  size = 'large',
+  variant = 'contained',
+  sx
+}: {
+  text?: string;
+  color?: ButtonProps['color'];
+  size?: ButtonProps['size'];
+  variant?: ButtonProps['variant'];
+  sx?: ButtonProps['sx'];
+}) {
   return (
     <RainbowKitProvider>
       <Suspense>
-        <WalletLoginButton text={text} color={color} />
+        <WalletLoginButton text={text} color={color} size={size} variant={variant} sx={sx} />
       </Suspense>
     </RainbowKitProvider>
   );
 }
 
-function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?: ButtonProps['color'] }) {
+function WalletLoginButton({
+  text,
+  color,
+  size,
+  variant,
+  sx
+}: {
+  text?: string;
+  color?: ButtonProps['color'];
+  size?: ButtonProps['size'];
+  variant?: ButtonProps['variant'];
+  sx?: ButtonProps['sx'];
+}) {
   const [isConnecting, setIsConnecting] = useState(false);
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const { address, chainId, isConnected } = useAccount();
@@ -90,7 +114,9 @@ function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?:
     }
   };
 
-  function onClick() {
+  function onClick(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    e.preventDefault();
     if (!address) {
       // openConnectModal exists if wallet is already connected
       openConnectModal?.();
@@ -124,26 +150,25 @@ function WalletLoginButton({ text, color = 'primary' }: { text?: string; color?:
       )}
       <Button
         loading={isLoading}
-        size='large'
+        size={size}
         color={color}
-        variant='contained'
+        variant={variant}
         onClick={onClick}
         sx={{
           '& .MuiButton-label': {
             width: '100%'
           },
-          minWidth: '250px',
-          px: 2.5,
-          py: 1.5,
-          fontWeight: 600
+          minWidth: size === 'large' ? '250px' : 0,
+          px: size === 'large' ? 2.5 : 0,
+          py: size === 'large' ? 1.5 : 0,
+          fontWeight: 600,
+          ...sx
         }}
       >
-        {text || (
-          <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
-            <AccountBalanceWalletOutlinedIcon />
-            {isLoading ? <>&nbsp;</> : 'Sign in with wallet'}
-          </Stack>
-        )}
+        <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
+          <AccountBalanceWalletOutlinedIcon fontSize={size === 'large' ? 'medium' : 'small'} />
+          {isLoading ? <>&nbsp;</> : text}
+        </Stack>
       </Button>
     </Box>
   );
