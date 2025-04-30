@@ -140,6 +140,67 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
     }
   });
 
+  const sendMintTransactionViaDecent = useCallback(
+    async (input: MintTransactionInput) => {
+      const {
+        txData: { to, data, value: _txValue },
+        txMetadata: {
+          sourceChainId,
+          builderTokenId,
+          purchaseCost,
+          tokensToBuy,
+          fromAddress,
+          builderId,
+          contractAddress
+        }
+      } = input;
+      return sendTransactionAsync(
+        {
+          to,
+          data,
+          value: _txValue
+        },
+        {
+          onSuccess: async (_data) => {
+            setPurchaseSuccess(true);
+            const output = await saveDecentTransaction({
+              developerId: builderId,
+              user: {
+                walletAddress: fromAddress
+              },
+              transactionInfo: {
+                destinationChainId: nftChain.id,
+                sourceChainId,
+                sourceChainTxHash: _data
+              },
+              purchaseInfo: {
+                quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier),
+                tokenAmount: tokensToBuy,
+                builderContractAddress: contractAddress,
+                tokenId: Number(builderTokenId),
+                quotedPriceCurrency: devTokenContractAddress
+              }
+            });
+
+            if (output?.serverError) {
+              scoutgameMintsLogger.error(`Saving mint transaction failed`, {});
+            } else {
+              scoutgameMintsLogger.info(`Successfully sent mint transaction`, { data: _data });
+            }
+          },
+          onError: (err: any) => {
+            scoutgameMintsLogger.error(`Creating a mint transaction failed`, {
+              txData: input.txData,
+              txMetadata: input.txMetadata,
+              error: err
+            });
+          }
+        }
+      );
+    },
+    [sendTransactionAsync, saveDecentTransaction]
+  );
+
   const sendMintTransactionDirectly = useCallback(
     async (input: DevNftMintTransactionInput) => {
       const {
@@ -156,6 +217,9 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
       if (!walletClient) {
         throw new Error('Wallet client not found');
       }
+
+      // Refresh the congrats image without awaiting it since we don't want to slow down the process
+      refreshShareImage({ builderId });
 
       const txHash = await walletClient.writeContract({
         address: contractAddress,
@@ -230,72 +294,12 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         });
       } else {
         scoutgameMintsLogger.info(`Successfully sent mint transaction`, { data: txHash });
+        setPurchaseSuccess(true);
 
         await refreshUser();
       }
     },
     [walletClient, recordNftMint]
-  );
-
-  const sendMintTransactionViaDecent = useCallback(
-    async (input: MintTransactionInput) => {
-      const {
-        txData: { to, data, value: _txValue },
-        txMetadata: {
-          sourceChainId,
-          builderTokenId,
-          purchaseCost,
-          tokensToBuy,
-          fromAddress,
-          builderId,
-          contractAddress
-        }
-      } = input;
-      return sendTransactionAsync(
-        {
-          to,
-          data,
-          value: _txValue
-        },
-        {
-          onSuccess: async (_data) => {
-            setPurchaseSuccess(true);
-            const output = await saveDecentTransaction({
-              developerId: builderId,
-              user: {
-                walletAddress: fromAddress
-              },
-              transactionInfo: {
-                destinationChainId: nftChain.id,
-                sourceChainId,
-                sourceChainTxHash: _data
-              },
-              purchaseInfo: {
-                quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier),
-                tokenAmount: tokensToBuy,
-                builderContractAddress: contractAddress,
-                tokenId: Number(builderTokenId),
-                quotedPriceCurrency: devTokenContractAddress
-              }
-            });
-
-            if (output?.serverError) {
-              scoutgameMintsLogger.error(`Saving mint transaction failed`, {});
-            } else {
-              scoutgameMintsLogger.info(`Successfully sent mint transaction`, { data: _data });
-            }
-          },
-          onError: (err: any) => {
-            scoutgameMintsLogger.error(`Creating a mint transaction failed`, {
-              txData: input.txData,
-              txMetadata: input.txMetadata,
-              error: err
-            });
-          }
-        }
-      );
-    },
-    [sendTransactionAsync, saveDecentTransaction]
   );
 
   const clearPurchaseSuccess = useCallback(() => {
