@@ -2,6 +2,7 @@
 
 import { checkDecentTransactionAction } from '@packages/scoutgame/builderNfts/checkDecentTransactionAction';
 import { nftChain } from '@packages/scoutgame/builderNfts/constants';
+import { recordNftMintAction } from '@packages/scoutgame/builderNfts/recordNftMintAction';
 import { saveDecentTransactionAction } from '@packages/scoutgame/builderNfts/saveDecentTransactionAction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { devTokenContractAddress, devTokenDecimalsMultiplier } from '@packages/scoutgame/protocol/constants';
@@ -46,15 +47,11 @@ type DevNftMintTransactionInput = {
 
 type PurchaseContext = {
   isExecutingTransaction: boolean;
-  isSavingDecentTransaction: boolean;
-  savedDecentTransaction: boolean;
-  transactionHasSucceeded: boolean;
-  checkDecentTransaction: (input: { pendingTransactionId: string; txHash: string }) => Promise<any>;
   purchaseError?: string;
-  sendNftMintTransaction: (input: MintTransactionInput) => Promise<unknown>;
+  sendMintTransactionDirectly: (input: DevNftMintTransactionInput) => Promise<any>;
+  sendMintTransactionViaDecent: (input: MintTransactionInput) => Promise<unknown>;
   clearPurchaseSuccess: () => void;
   purchaseSuccess: boolean;
-  sendDevNftMintTransaction: (input: DevNftMintTransactionInput) => Promise<any>;
 };
 
 export const PurchaseContext = createContext<Readonly<PurchaseContext | null>>(null);
@@ -68,9 +65,18 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
 
   const {
-    isExecuting: isExecutingTransaction,
-    hasSucceeded: transactionHasSucceeded,
-    result: transactionResult,
+    isExecuting: isRecordingNftMint,
+    result: recordNftMintResult,
+    executeAsync: recordNftMint
+  } = useAction(recordNftMintAction, {
+    onError({ error, input }) {
+      scoutgameMintsLogger.error(`Error recording NFT mint`, { error, input });
+    }
+  });
+
+  const {
+    isExecuting: isCheckingDecentTransaction,
+    result: decentTransactionResult,
     executeAsync: checkDecentTransaction
   } = useAction(checkDecentTransactionAction, {
     onError({ error, input }) {
@@ -81,13 +87,12 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
   const {
     executeAsync: saveDecentTransaction,
     isExecuting: isSavingDecentTransaction,
-    hasSucceeded: savedDecentTransaction,
     result: saveTransactionResult
   } = useAction(saveDecentTransactionAction, {
     async onSuccess(res) {
       if (res.data?.id) {
         // Refresh the congrats image without awaiting it since we don't want to slow down the process
-        refreshShareImage({ builderId: res.input.user.id });
+        refreshShareImage({ builderId: res.input.developerId });
 
         const checkResultPromise = checkDecentTransaction({
           pendingTransactionId: res.data.id,
@@ -135,7 +140,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const sendDevNftMintTransaction = useCallback(
+  const sendMintTransactionDirectly = useCallback(
     async (input: DevNftMintTransactionInput) => {
       const {
         scoutId,
@@ -182,26 +187,26 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
           : [fromAddress, builderTokenId, tokensToBuy]
       });
 
-      toast.info('NFT purchase is sent and will be confirmed shortly');
-
-      const output = await saveDecentTransaction({
+      const outputPromise = recordNftMint({
         purchaseInfo: {
-          builderContractAddress: contractAddress,
+          chainId: nftChain.id,
+          contractAddress,
+          developerId: builderId,
           tokenId: builderTokenId,
           tokenAmount: tokensToBuy,
-          quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier),
-          quotedPriceCurrency: devTokenContractAddress
+          quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier)
         },
-        transactionInfo: {
-          sourceChainId: 8453,
-          sourceChainTxHash: txHash,
-          destinationChainId: 8453
-        },
-        user: {
-          id: builderId,
-          walletAddress: fromAddress
-        }
+        txHash,
+        walletAddress: fromAddress
       });
+
+      toast.promise(outputPromise, {
+        loading: 'Transaction is being settled...',
+        success: () => `Transaction ${txHash || ''} was successful`,
+        error: (data) => `Transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
+      });
+
+      const output = await outputPromise;
 
       if (output?.serverError) {
         scoutgameMintsLogger.error(`Saving mint transaction failed`, {
@@ -218,7 +223,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
     [walletClient]
   );
 
-  const sendNftMintTransaction = useCallback(
+  const sendMintTransactionViaDecent = useCallback(
     async (input: MintTransactionInput) => {
       const {
         txData: { to, data, value: _txValue },
@@ -241,10 +246,9 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         {
           onSuccess: async (_data) => {
             setPurchaseSuccess(true);
-            toast.info('NFT purchase is sent and will be confirmed shortly');
             const output = await saveDecentTransaction({
+              developerId: builderId,
               user: {
-                id: builderId,
                 walletAddress: fromAddress
               },
               transactionInfo: {
@@ -285,34 +289,30 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
   }, [setPurchaseSuccess]);
 
   const purchaseError =
-    !isExecutingTransaction && !isSavingDecentTransaction
-      ? transactionResult.serverError?.message || saveTransactionResult.serverError?.message
+    !isCheckingDecentTransaction && !isSavingDecentTransaction && !isRecordingNftMint
+      ? decentTransactionResult.serverError?.message ||
+        saveTransactionResult.serverError?.message ||
+        recordNftMintResult.serverError?.message
       : undefined;
 
   const value = useMemo(
     () => ({
-      isExecutingTransaction,
-      transactionHasSucceeded,
-      checkDecentTransaction,
+      isExecutingTransaction: isSavingDecentTransaction || isCheckingDecentTransaction || isRecordingNftMint,
       purchaseError,
-      sendNftMintTransaction,
-      savedDecentTransaction,
-      isSavingDecentTransaction,
+      sendMintTransactionViaDecent,
       clearPurchaseSuccess,
       purchaseSuccess,
-      sendDevNftMintTransaction
+      sendMintTransactionDirectly
     }),
     [
-      isExecutingTransaction,
-      transactionHasSucceeded,
-      checkDecentTransaction,
-      sendNftMintTransaction,
-      savedDecentTransaction,
+      sendMintTransactionDirectly,
+      isRecordingNftMint,
       isSavingDecentTransaction,
+      sendMintTransactionViaDecent,
+      isCheckingDecentTransaction,
       purchaseError,
       clearPurchaseSuccess,
-      purchaseSuccess,
-      sendDevNftMintTransaction
+      purchaseSuccess
     ]
   );
 

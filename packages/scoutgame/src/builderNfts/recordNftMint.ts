@@ -13,7 +13,7 @@ import { refreshEstimatedPayouts } from './refreshEstimatedPayouts';
 import { refreshNftPurchaseStats } from './refreshNftPurchaseStats';
 import { refreshScoutNftBalance } from './refreshScoutNftBalance';
 
-export async function recordOnchainNftMint({
+export async function recordNftMint({
   builderNftId,
   recipientAddress,
   scoutId,

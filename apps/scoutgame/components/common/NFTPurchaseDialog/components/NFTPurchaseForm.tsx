@@ -95,11 +95,10 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { error: addressError } = useUserWalletAddress(address);
   const {
     isExecutingTransaction,
-    sendNftMintTransaction,
-    isSavingDecentTransaction,
+    sendMintTransactionDirectly,
+    sendMintTransactionViaDecent,
     purchaseSuccess,
-    purchaseError,
-    sendDevNftMintTransaction
+    purchaseError
   } = usePurchase();
   const trackEvent = useTrackEvent();
 
@@ -150,7 +149,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         setPurchaseCost(_price);
       }
     },
-    [setPurchaseCost]
+    [setPurchaseCost, builder.nftType]
   );
 
   async function refreshTokenData() {
@@ -193,7 +192,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   }, [tokensToBuy, builderTokenId, refreshAsk]);
 
   useEffect(() => {
-    if (!builderId || isExecutingTransaction || isSavingDecentTransaction) {
+    if (!builderId || isExecutingTransaction) {
       return;
     }
 
@@ -201,7 +200,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
     const interval = setInterval(refreshTokenData, PRICE_POLLING_INTERVAL);
     return () => clearInterval(interval);
-  }, [builderId, tokensToBuy, isExecutingTransaction, isSavingDecentTransaction]);
+  }, [builderId, tokensToBuy, isExecutingTransaction]);
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
@@ -271,7 +270,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       }
 
       if (selectedPaymentOption.currency === 'DEV') {
-        await sendDevNftMintTransaction({
+        await sendMintTransactionDirectly({
           scoutId: user?.id as string,
           builderTokenId: Number(builderTokenId),
           contractAddress,
@@ -288,7 +287,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
         const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
 
-        await sendNftMintTransaction({
+        await sendMintTransactionViaDecent({
           txData: {
             to: decentTransactionInfo.tx.to as Address,
             data: decentTransactionInfo.tx.data as any,
@@ -337,7 +336,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     }
   };
 
-  const isLoading = isSavingDecentTransaction || isLoadingDecentSdk || isFetchingPrice || isExecutingTransaction;
+  const isLoading = isLoadingDecentSdk || isFetchingPrice || isExecutingTransaction;
 
   const displayedBalance = !balanceInfo
     ? undefined
@@ -600,7 +599,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             isLoadingDecentSdk ||
             isFetchingPrice ||
             !scoutgameEthAddress ||
-            isSavingDecentTransaction ||
             isExecutingTransaction ||
             addressError ||
             hasInsufficientBalance

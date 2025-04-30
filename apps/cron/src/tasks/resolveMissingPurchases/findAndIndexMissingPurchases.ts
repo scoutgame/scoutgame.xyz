@@ -8,8 +8,8 @@ import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accoun
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { nftChain, getNFTContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
 import { uniqueNftPurchaseEventKey } from '@packages/scoutgame/builderNfts/getMatchingNFTPurchaseEvent';
+import { recordNftMint } from '@packages/scoutgame/builderNfts/recordNftMint';
 import { recordNftTransfer } from '@packages/scoutgame/builderNfts/recordNftTransfer';
-import { recordOnchainNftMint } from '@packages/scoutgame/builderNfts/recordOnchainNftMint';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
@@ -207,7 +207,7 @@ export async function findAndIndexMissingPurchases({
           }
         });
 
-        await recordOnchainNftMint({
+        await recordNftMint({
           amount: Number(singleEvent.args.value),
           tokenValue,
           builderNftId: matchingNft.id,

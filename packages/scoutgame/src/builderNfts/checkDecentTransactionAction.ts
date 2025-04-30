@@ -5,8 +5,8 @@ import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
 
+import { checkDecentTransaction } from './checkDecentTransaction';
 import { handleEmailFailedTransaction } from './handleEmailFailedTransaction';
-import { handlePendingTransaction } from './handlePendingTransaction';
 
 export const checkDecentTransactionAction = authActionClient
   .metadata({ actionName: 'handle-mint-nft' })
@@ -19,7 +19,7 @@ export const checkDecentTransactionAction = authActionClient
   .action(async ({ parsedInput, ctx }) => {
     const userId = ctx.session.scoutId;
 
-    await handlePendingTransaction({
+    await checkDecentTransaction({
       pendingTransactionId: parsedInput.pendingTransactionId
     }).catch(async (err: Error | DecentTxFailedPermanently) => {
       await handleEmailFailedTransaction({

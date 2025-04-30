@@ -1,7 +1,7 @@
 import { TransactionStatus, prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { checkDecentTransaction } from '@packages/scoutgame/builderNfts/checkDecentTransaction';
 import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
-import { handlePendingTransaction } from '@packages/scoutgame/builderNfts/handlePendingTransaction';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 
 export async function processNftMints() {
@@ -36,7 +36,7 @@ export async function processNftMints() {
         sourceChainTxHash: pendingTx.sourceChainTxHash,
         scoutId: pendingTx.userId
       });
-      await handlePendingTransaction({ pendingTransactionId: pendingTx.id });
+      await checkDecentTransaction({ pendingTransactionId: pendingTx.id });
 
       scoutgameMintsLogger.info(`Processed ${i + 1}/${totalPendingTxs} pending txs`);
     } catch (error) {
