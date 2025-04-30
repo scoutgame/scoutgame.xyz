@@ -200,11 +200,23 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         walletAddress: fromAddress
       });
 
-      toast.promise(outputPromise, {
-        loading: 'Transaction is being settled...',
-        success: () => `Transaction ${txHash || ''} was successful`,
-        error: (data) => `Transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
-      });
+      toast.promise(
+        // reject the promise if there is a server error
+        new Promise((resolve, reject) => {
+          outputPromise.then((res) => {
+            if (res.serverError) {
+              reject(res);
+            } else {
+              resolve(res);
+            }
+          });
+        }),
+        {
+          loading: 'Transaction is being settled...',
+          success: (output) => `Transaction ${txHash || ''} was successful`,
+          error: (data) => data?.serverError?.message || 'Something went wrong'
+        }
+      );
 
       const output = await outputPromise;
 
@@ -218,9 +230,11 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         });
       } else {
         scoutgameMintsLogger.info(`Successfully sent mint transaction`, { data: txHash });
+
+        await refreshUser();
       }
     },
-    [walletClient]
+    [walletClient, recordNftMint]
   );
 
   const sendMintTransactionViaDecent = useCallback(
