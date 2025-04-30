@@ -369,15 +369,15 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     typeof allowance === 'bigint' &&
     allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
 
-  if (approvalRequired) {
-    log.info('Approval required for NFT purchase', {
-      selectedPaymentOption,
-      allowance,
-      amountToPay,
-      account: address,
-      spender
-    });
-  }
+  // if (approvalRequired) {
+  //   log.info('Approval required for NFT purchase', {
+  //     selectedPaymentOption,
+  //     allowance,
+  //     amountToPay,
+  //     account: address,
+  //     spender
+  //   });
+  // }
 
   if (purchaseSuccess) {
     return <SuccessView builder={builder} />;
