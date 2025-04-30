@@ -10,7 +10,6 @@ import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
-import { useMdScreen, useSmScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';
 import { getPlatform } from '@packages/utils/platform';
@@ -26,7 +25,6 @@ import { useAccount } from 'wagmi';
 import { useDevTokenBalance } from '../../../hooks/useDevTokenBalance';
 
 export function AccountMenu({ user }: { user: SessionUser }) {
-  const isDesktop = useMdScreen();
   const { refreshUser } = useUser();
   const { address } = useAccount();
   const router = useRouter();
@@ -152,15 +150,8 @@ function BalanceDisplay({
   isLoadingBalance: boolean;
   address: string;
 }) {
-  const isDesktop = useSmScreen();
   return (
-    <Box
-      display='flex'
-      flexDirection={{ xs: 'row', sm: 'column' }}
-      alignItems={{ xs: 'center', sm: 'flex-end' }}
-      gap={{ xs: 1, sm: 0 }}
-      px={1}
-    >
+    <Box display='flex' flexDirection='column' alignItems='flex-end' px={1}>
       <Stack flexDirection='row' alignItems='center' gap={0.5}>
         <Typography
           fontSize='16px'
@@ -184,12 +175,14 @@ function BalanceDisplay({
         <Image src='/images/dev-token-logo.png' width={18} height={18} alt='DEV token icon' priority={true} />
       </Stack>
       <Stack flexDirection='row' alignItems='center' gap={0.5}>
-        <AccountBalanceWalletOutlinedIcon
-          color='disabled'
-          sx={{ fontSize: '14px', display: { xs: 'none', sm: 'block' } }}
-        />
-        <Typography color='textDisabled' fontSize='12px'>
-          {shortenHex(address, isDesktop ? 4 : 3)}
+        <AccountBalanceWalletOutlinedIcon color='disabled' sx={{ fontSize: '14px' }} />
+        <Typography color='textDisabled' fontSize='12px' whiteSpace='nowrap'>
+          <Box component='span' display={{ xs: 'none', sm: 'block' }}>
+            {shortenHex(address, 4)}
+          </Box>
+          <Box component='span' display={{ xs: 'block', sm: 'none' }}>
+            {shortenHex(address, 3)}
+          </Box>
         </Typography>
       </Stack>
     </Box>
