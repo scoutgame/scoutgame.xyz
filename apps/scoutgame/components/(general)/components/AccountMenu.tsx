@@ -10,7 +10,7 @@ import { logoutAction } from '@packages/nextjs/session/logoutAction';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
-import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
+import { useMdScreen, useSmScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';
 import { getPlatform } from '@packages/utils/platform';
@@ -61,7 +61,9 @@ export function AccountMenu({ user }: { user: SessionUser }) {
         borderRadius='30px'
         sx={{
           padding: '1px',
-          pl: 1,
+          pl: {
+            xs: 1
+          },
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
@@ -150,24 +152,19 @@ function BalanceDisplay({
   isLoadingBalance: boolean;
   address: string;
 }) {
-  const isDesktop = useMdScreen();
+  const isDesktop = useSmScreen();
   return (
     <Box
       display='flex'
-      flexDirection={{ xs: 'row', md: 'column' }}
-      alignItems={{ xs: 'center', md: 'flex-end' }}
-      gap={{ xs: 1, md: 0 }}
+      flexDirection={{ xs: 'row', sm: 'column' }}
+      alignItems={{ xs: 'center', sm: 'flex-end' }}
+      gap={{ xs: 1, sm: 0 }}
+      px={1}
     >
-      <Stack
-        flexDirection='row'
-        alignItems='center'
-        gap={{
-          xs: 0.25,
-          md: 1
-        }}
-      >
+      <Stack flexDirection='row' alignItems='center' gap={0.5}>
         <Typography
-          fontSize='14px'
+          fontSize='16px'
+          lineHeight='100%'
           component='span'
           color='text.primary'
           data-test='user-points-balance'
@@ -186,10 +183,10 @@ function BalanceDisplay({
 
         <Image src='/images/dev-token-logo.png' width={18} height={18} alt='DEV token icon' priority={true} />
       </Stack>
-      <Stack flexDirection='row' alignItems='center' gap={1}>
+      <Stack flexDirection='row' alignItems='center' gap={0.5}>
         <AccountBalanceWalletOutlinedIcon
           color='disabled'
-          sx={{ fontSize: '14px', display: { xs: 'none', md: 'block' } }}
+          sx={{ fontSize: '14px', display: { xs: 'none', sm: 'block' } }}
         />
         <Typography color='textDisabled' fontSize='12px'>
           {shortenHex(address, isDesktop ? 4 : 3)}
