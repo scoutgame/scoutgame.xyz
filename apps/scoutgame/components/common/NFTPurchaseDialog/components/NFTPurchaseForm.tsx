@@ -317,12 +317,23 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         refreshBalance();
       }, 2500);
     } catch (error) {
-      setSubmitError(
-        typeof error === 'string'
-          ? 'Error'
-          : (error as Error).message ||
-              'Something went wrong. Check your wallet is connected and has a sufficient balance'
-      );
+      log.error('Error purchasing NFT', { error });
+      let errorMessage = 'Something went wrong. Check your wallet is connected and has a sufficient balance';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        if (errorMessage.includes('insufficient')) {
+          errorMessage = 'Insufficient balance';
+        } else if (errorMessage.includes('reverted')) {
+          errorMessage = 'Transaction reverted';
+        } else if (errorMessage.includes('already in use')) {
+          errorMessage = 'Address is already in use';
+        } else if (errorMessage.includes('failed')) {
+          errorMessage = 'Transaction failed';
+        } else if (errorMessage.includes('rejected')) {
+          errorMessage = 'Transaction cancelled';
+        }
+      }
+      setSubmitError(errorMessage);
     }
   };
 

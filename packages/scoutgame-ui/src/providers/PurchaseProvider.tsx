@@ -135,85 +135,88 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const sendDevNftMintTransaction = useCallback(async (input: DevNftMintTransactionInput) => {
-    const {
-      scoutId,
-      builderTokenId,
-      tokensToBuy,
-      purchaseCost,
-      isStarterContract,
-      contractAddress,
-      fromAddress,
-      builderId
-    } = input;
-
-    if (!walletClient) {
-      throw new Error('Wallet client not found');
-    }
-
-    const txHash = await walletClient.writeContract({
-      address: contractAddress,
-      abi: [
-        {
-          type: 'function',
-          name: 'mint',
-          inputs: [
-            {
-              name: 'account',
-              type: 'address'
-            },
-            {
-              name: 'tokenId',
-              type: 'uint256'
-            },
-            {
-              name: 'amount',
-              type: 'uint256'
-            },
-            ...(isStarterContract ? [{ name: 'scoutId', type: 'string' }] : [])
-          ],
-          outputs: []
-        }
-      ],
-      functionName: 'mint',
-      args: isStarterContract
-        ? [fromAddress, builderTokenId, tokensToBuy, scoutId]
-        : [fromAddress, builderTokenId, tokensToBuy]
-    });
-
-    toast.info('NFT purchase is sent and will be confirmed shortly');
-
-    const output = await saveDecentTransaction({
-      purchaseInfo: {
-        builderContractAddress: contractAddress,
-        tokenId: builderTokenId,
-        tokenAmount: tokensToBuy,
-        quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier),
-        quotedPriceCurrency: devTokenContractAddress
-      },
-      transactionInfo: {
-        sourceChainId: 8453,
-        sourceChainTxHash: txHash,
-        destinationChainId: 8453
-      },
-      user: {
-        id: builderId,
-        walletAddress: fromAddress
-      }
-    });
-
-    if (output?.serverError) {
-      scoutgameMintsLogger.error(`Saving mint transaction failed`, {
-        builderId,
-        contractAddress,
-        purchaseCost,
+  const sendDevNftMintTransaction = useCallback(
+    async (input: DevNftMintTransactionInput) => {
+      const {
+        scoutId,
+        builderTokenId,
         tokensToBuy,
-        txHash
+        purchaseCost,
+        isStarterContract,
+        contractAddress,
+        fromAddress,
+        builderId
+      } = input;
+
+      if (!walletClient) {
+        throw new Error('Wallet client not found');
+      }
+
+      const txHash = await walletClient.writeContract({
+        address: contractAddress,
+        abi: [
+          {
+            type: 'function',
+            name: 'mint',
+            inputs: [
+              {
+                name: 'account',
+                type: 'address'
+              },
+              {
+                name: 'tokenId',
+                type: 'uint256'
+              },
+              {
+                name: 'amount',
+                type: 'uint256'
+              },
+              ...(isStarterContract ? [{ name: 'scoutId', type: 'string' }] : [])
+            ],
+            outputs: []
+          }
+        ],
+        functionName: 'mint',
+        args: isStarterContract
+          ? [fromAddress, builderTokenId, tokensToBuy, scoutId]
+          : [fromAddress, builderTokenId, tokensToBuy]
       });
-    } else {
-      scoutgameMintsLogger.info(`Successfully sent mint transaction`, { data: txHash });
-    }
-  }, []);
+
+      toast.info('NFT purchase is sent and will be confirmed shortly');
+
+      const output = await saveDecentTransaction({
+        purchaseInfo: {
+          builderContractAddress: contractAddress,
+          tokenId: builderTokenId,
+          tokenAmount: tokensToBuy,
+          quotedPrice: Number(BigInt(purchaseCost) / devTokenDecimalsMultiplier),
+          quotedPriceCurrency: devTokenContractAddress
+        },
+        transactionInfo: {
+          sourceChainId: 8453,
+          sourceChainTxHash: txHash,
+          destinationChainId: 8453
+        },
+        user: {
+          id: builderId,
+          walletAddress: fromAddress
+        }
+      });
+
+      if (output?.serverError) {
+        scoutgameMintsLogger.error(`Saving mint transaction failed`, {
+          builderId,
+          contractAddress,
+          purchaseCost,
+          tokensToBuy,
+          txHash
+        });
+      } else {
+        scoutgameMintsLogger.info(`Successfully sent mint transaction`, { data: txHash });
+      }
+    },
+    [walletClient]
+  );
 
   const sendNftMintTransaction = useCallback(
     async (input: MintTransactionInput) => {
