@@ -104,9 +104,13 @@ export function useDecentTransaction({
     () =>
       prepareDecentTransaction({
         txConfig: decentAPIParams
-      }).catch((error) => {
-        log.error(`There was an error communicating with Decent API`, { error, decentAPIParams });
-        throw error;
+      }).catch((result) => {
+        log.error(`There was an error communicating with Decent API`, { error: result, decentAPIParams });
+        const message = (result as any).error.message;
+        if (message) {
+          throw new Error(message);
+        }
+        throw result;
       }),
     {
       shouldRetryOnError: (error) => {

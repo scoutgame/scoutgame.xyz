@@ -18,9 +18,8 @@ import {
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import {
   getNFTContractAddressForNftType,
-  scoutgameEthAddress,
-  maxDevTokenPrice,
-  maxTokenSupply
+  maxTokenSupply,
+  scoutgameEthAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
 import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
@@ -94,8 +93,13 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const { address, chainId } = useAccount();
   const { error: addressError } = useUserWalletAddress(address);
-  const { isExecutingTransaction, sendNftMintTransaction, isSavingDecentTransaction, purchaseSuccess, purchaseError } =
-    usePurchase();
+  const {
+    isExecutingTransaction,
+    sendMintTransactionDirectly,
+    sendMintTransactionViaDecent,
+    purchaseSuccess,
+    purchaseError
+  } = usePurchase();
   const trackEvent = useTrackEvent();
 
   const { switchChainAsync } = useSwitchChain();
@@ -145,7 +149,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         setPurchaseCost(_price);
       }
     },
-    [setPurchaseCost]
+    [setPurchaseCost, builder.nftType]
   );
 
   async function refreshTokenData() {
@@ -188,7 +192,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   }, [tokensToBuy, builderTokenId, refreshAsk]);
 
   useEffect(() => {
-    if (!builderId || isExecutingTransaction || isSavingDecentTransaction) {
+    if (!builderId || isExecutingTransaction) {
       return;
     }
 
@@ -196,7 +200,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
     const interval = setInterval(refreshTokenData, PRICE_POLLING_INTERVAL);
     return () => clearInterval(interval);
-  }, [builderId, tokensToBuy, isExecutingTransaction, isSavingDecentTransaction]);
+  }, [builderId, tokensToBuy, isExecutingTransaction]);
 
   const enableNftButton = !!address && !!purchaseCost && !!user;
 
@@ -216,6 +220,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const selectedChainCurrency = getCurrencyContract(selectedPaymentOption) as Address;
 
+  const spender =
+    selectedPaymentOption.currency === 'DEV' ? contractAddress : (decentTransactionInfo?.tx.to as Address);
+
   const { allowance, refreshAllowance } = useGetERC20Allowance({
     chainId: selectedPaymentOption.chainId,
     erc20Address:
@@ -225,7 +232,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           ? devTokenContractAddress
           : null,
     owner: address as Address,
-    spender: decentTransactionInfo?.tx.to as Address
+    spender
   });
 
   const balanceInfo = userTokenBalances?.find(
@@ -261,28 +268,42 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           });
         }
       }
-      if (!decentTransactionInfo?.tx) {
-        return;
-      }
 
-      const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
-
-      await sendNftMintTransaction({
-        txData: {
-          to: decentTransactionInfo.tx.to as Address,
-          data: decentTransactionInfo.tx.data as any,
-          value: _value
-        },
-        txMetadata: {
-          contractAddress,
-          fromAddress: address as Address,
-          sourceChainId: selectedPaymentOption.chainId,
+      if (selectedPaymentOption.currency === 'DEV') {
+        await sendMintTransactionDirectly({
+          scoutId: user?.id as string,
           builderTokenId: Number(builderTokenId),
-          builderId: builder.id,
+          contractAddress,
+          tokensToBuy,
+          isStarterContract: builder.nftType === 'starter_pack',
           purchaseCost: Number(purchaseCost),
-          tokensToBuy
+          fromAddress: address as Address,
+          builderId: builder.id
+        });
+      } else {
+        if (!decentTransactionInfo?.tx) {
+          return;
         }
-      });
+
+        const _value = BigInt(String((decentTransactionInfo.tx as any).value || 0).replace('n', ''));
+
+        await sendMintTransactionViaDecent({
+          txData: {
+            to: decentTransactionInfo.tx.to as Address,
+            data: decentTransactionInfo.tx.data as any,
+            value: _value
+          },
+          txMetadata: {
+            contractAddress,
+            fromAddress: address as Address,
+            sourceChainId: selectedPaymentOption.chainId,
+            builderTokenId: Number(builderTokenId),
+            builderId: builder.id,
+            purchaseCost: Number(purchaseCost),
+            tokensToBuy
+          }
+        });
+      }
 
       trackEvent('nft_purchase', {
         amount: tokensToBuy,
@@ -295,16 +316,27 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         refreshBalance();
       }, 2500);
     } catch (error) {
-      setSubmitError(
-        typeof error === 'string'
-          ? 'Error'
-          : (error as Error).message ||
-              'Something went wrong. Check your wallet is connected and has a sufficient balance'
-      );
+      log.error('Error purchasing NFT', { error });
+      let errorMessage = 'Something went wrong. Check your wallet is connected and has a sufficient balance';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        if (errorMessage.includes('insufficient')) {
+          errorMessage = 'Insufficient balance';
+        } else if (errorMessage.includes('reverted')) {
+          errorMessage = 'Transaction reverted';
+        } else if (errorMessage.includes('already in use')) {
+          errorMessage = 'Address is already in use';
+        } else if (errorMessage.includes('failed')) {
+          errorMessage = 'Transaction failed';
+        } else if (errorMessage.includes('rejected')) {
+          errorMessage = 'Transaction cancelled';
+        }
+      }
+      setSubmitError(errorMessage);
     }
   };
 
-  const isLoading = isSavingDecentTransaction || isLoadingDecentSdk || isFetchingPrice || isExecutingTransaction;
+  const isLoading = isLoadingDecentSdk || isFetchingPrice || isExecutingTransaction;
 
   const displayedBalance = !balanceInfo
     ? undefined
@@ -337,15 +369,15 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     typeof allowance === 'bigint' &&
     allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
 
-  if (approvalRequired) {
-    log.info('Approval required for NFT purchase', {
-      selectedPaymentOption,
-      allowance,
-      amountToPay,
-      account: address,
-      spender: decentTransactionInfo?.tx.to
-    });
-  }
+  // if (approvalRequired) {
+  //   log.info('Approval required for NFT purchase', {
+  //     selectedPaymentOption,
+  //     allowance,
+  //     amountToPay,
+  //     account: address,
+  //     spender
+  //   });
+  // }
 
   if (purchaseSuccess) {
     return <SuccessView builder={builder} />;
@@ -534,9 +566,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           {fetchError.shortMessage || 'Something went wrong'}
         </Typography>
       )}
-      {decentSdkError instanceof Error ? (
+      {decentSdkError ? (
         <Typography variant='caption' color='error' align='center'>
-          There was an error communicating with Decent API
+          {decentSdkError.message || 'There was an error communicating with Decent API'}
         </Typography>
       ) : null}
       {addressError && (
@@ -567,7 +599,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
             isLoadingDecentSdk ||
             isFetchingPrice ||
             !scoutgameEthAddress ||
-            isSavingDecentTransaction ||
             isExecutingTransaction ||
             addressError ||
             hasInsufficientBalance
@@ -578,7 +609,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
         </Button>
       ) : (
         <ERC20ApproveButton
-          spender={decentTransactionInfo?.tx.to as Address}
+          spender={spender}
           chainId={selectedPaymentOption.chainId}
           erc20Address={getCurrencyContract(selectedPaymentOption) as Address}
           amount={amountToPay}

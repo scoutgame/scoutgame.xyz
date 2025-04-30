@@ -5,14 +5,15 @@ import { isAddress } from 'viem';
 import * as yup from 'yup';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';
-import { savePendingTransaction } from '../savePendingTransaction';
+
+import { saveDecentTransaction } from './saveDecentTransaction';
 
 export const saveDecentTransactionAction = authActionClient
   .metadata({ actionName: 'save-decent-transaction' })
   .schema(
     yup.object().shape({
+      developerId: yup.string().required(),
       user: yup.object().shape({
-        id: yup.string().required(),
         walletAddress: yup.string().required()
         // .test('Valid address', (v) => isAddress(v))
       }),
@@ -38,9 +39,9 @@ export const saveDecentTransactionAction = authActionClient
     }
 
     // Cron process will handle the tx
-    const data = await savePendingTransaction({
+    const data = await saveDecentTransaction({
       ...parsedInput,
-      user: { ...(parsedInput.user as any), scoutId: userId }
+      user: { walletAddress: parsedInput.user.walletAddress, scoutId: userId }
     });
     scoutgameMintsLogger.info('Saved NFT transaction', {
       transactionInfo: parsedInput.transactionInfo,
