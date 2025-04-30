@@ -16,11 +16,9 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
   const publicClient = usePublicClient({
     chainId: base.id
   });
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetcher = useCallback(
     async (args: [string, Address, undefined | number]) => {
-      setIsLoading(true);
       const [_, _address, connectedChainId] = args;
       if (!_address || !publicClient) {
         return 0;
@@ -38,8 +36,6 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
         return Number(tokenBalance) / 10 ** 18;
       } catch (error) {
         log.error('Error fetching token balance', { _address, connectedChainId, error });
-      } finally {
-        setIsLoading(false);
       }
     },
     [publicClient]
@@ -47,7 +43,7 @@ export function useDevTokenBalance({ address }: { address?: Address }) {
 
   const cacheKey = address ? getCacheKey(address, publicClient?.chain?.id) : null;
 
-  const { data: balance = 0 } = useSWR(cacheKey, fetcher, {
+  const { data: balance = 0, isLoading } = useSWR(cacheKey, fetcher, {
     revalidateOnFocus: true,
     revalidateOnReconnect: true
   });
