@@ -2,7 +2,7 @@
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import type { SxProps } from '@mui/material';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { maxDevTokenPrice } from '@packages/scoutgame/builderNfts/constants';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
@@ -76,35 +76,40 @@ export function ScoutButton({
             Owned
           </Button>
         ) : (
-          <Button
-            loading={dialogLoadingStatus}
-            fullWidth
-            onClick={handleClick}
-            data-test={isLoading ? '' : 'scout-button'}
-            variant={type === 'starter_pack' ? 'buy-starter' : 'buy'}
-            sx={{
-              color,
-              borderColor: color
-            }}
-          >
-            <Stack px={1} direction='row' alignItems='center' justifyContent='center' width='100%'>
-              {isStarterCard && (
-                <Typography variant='body2' color='inherit' sx={{ mr: 1, textTransform: 'uppercase' }}>
-                  Starter
-                </Typography>
-              )}{' '}
-              <Stack direction='row' alignItems='center' justifyContent='center'>
-                {formattedPrice}
-                <Image
-                  src='/images/dev-token-logo.png'
-                  alt='DEV Token'
-                  width={20}
-                  height={20}
-                  style={{ marginLeft: 4, marginRight: 4 }}
-                />
-              </Stack>
-            </Stack>
-          </Button>
+          <Tooltip title={builder.id === user?.id ? 'You cannot purchase your own card' : ''}>
+            <span>
+              <Button
+                loading={dialogLoadingStatus}
+                fullWidth
+                disabled={builder.id === user?.id}
+                onClick={handleClick}
+                data-test={isLoading ? '' : 'scout-button'}
+                variant={type === 'starter_pack' ? 'buy-starter' : 'buy'}
+                sx={{
+                  color,
+                  borderColor: builder.id === user?.id ? 'grey.700' : color
+                }}
+              >
+                <Stack px={1} direction='row' alignItems='center' justifyContent='center' width='100%'>
+                  {isStarterCard && (
+                    <Typography variant='body2' color='inherit' sx={{ mr: 1, textTransform: 'uppercase' }}>
+                      Starter
+                    </Typography>
+                  )}{' '}
+                  <Stack direction='row' alignItems='center' justifyContent='center'>
+                    {formattedPrice}
+                    <Image
+                      src='/images/dev-token-logo.png'
+                      alt='DEV Token'
+                      width={20}
+                      height={20}
+                      style={{ marginLeft: 4, marginRight: 4 }}
+                    />
+                  </Stack>
+                </Stack>
+              </Button>
+            </span>
+          </Tooltip>
         )}
       </DynamicLoadingContext.Provider>
     </div>
