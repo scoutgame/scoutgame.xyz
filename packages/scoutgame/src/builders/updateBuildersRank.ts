@@ -5,13 +5,13 @@ import { getCurrentWeek } from '@packages/dates/utils';
 import { getDevelopersLeaderboard } from './getDevelopersLeaderboard';
 
 export async function updateBuildersRank({ week = getCurrentWeek(), season }: { week?: string; season?: string } = {}) {
-  const buildersLeaderboard = await getDevelopersLeaderboard({ week, season });
+  const developersLeaderboard = await getDevelopersLeaderboard({ week, season });
 
-  for (const { builder, rank } of buildersLeaderboard) {
+  for (const { developer, rank } of developersLeaderboard) {
     await prisma.userWeeklyStats.update({
       where: {
         userId_week: {
-          userId: builder.id,
+          userId: developer.id,
           week
         }
       },
@@ -20,5 +20,5 @@ export async function updateBuildersRank({ week = getCurrentWeek(), season }: { 
       }
     });
   }
-  return buildersLeaderboard;
+  return developersLeaderboard;
 }

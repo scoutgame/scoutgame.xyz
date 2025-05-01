@@ -29,7 +29,7 @@ export async function GET(request: Request) {
   for (const builder of topBuilders) {
     const fullBuilder = await prisma.scout.findUniqueOrThrow({
       where: {
-        id: builder.builder.id,
+        id: builder.developer.id,
         deletedAt: null
       },
       select: {

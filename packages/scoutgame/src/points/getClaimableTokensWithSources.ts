@@ -11,7 +11,6 @@ import { devTokenDecimals } from '../protocol/constants';
 import type { WeeklyClaimsTyped } from '../protocol/generateWeeklyClaims';
 
 import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
-import type { UnclaimedPointsSource } from './getClaimablePointsWithSources';
 
 export type ClaimInput = {
   week: ISOWeek;
@@ -24,7 +23,16 @@ export type ClaimData = {
   weeklyProofs: ClaimInput[];
 };
 
-export type UnclaimedTokensSource = UnclaimedPointsSource & {
+export type UnclaimedTokensSource = {
+  developers: {
+    id: string;
+    avatar: string | null;
+    farcasterHandle?: string;
+    displayName: string;
+  }[];
+  points: number;
+  repos: string[];
+  processingPayouts: boolean;
   claimData: ClaimData;
 };
 
@@ -76,29 +84,29 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     (ev) => ev.args.week
   );
 
-  const builderIdScoutPointsRecord: Record<string, number> = {};
+  const developerIdScoutPointsRecord: Record<string, number> = {};
   for (const receipt of tokenReceipts) {
     if (receipt.event.type === 'gems_payout' && receipt.event.builderId !== userId) {
-      if (!builderIdScoutPointsRecord[receipt.event.builderId]) {
-        builderIdScoutPointsRecord[receipt.event.builderId] = Number(
+      if (!developerIdScoutPointsRecord[receipt.event.builderId]) {
+        developerIdScoutPointsRecord[receipt.event.builderId] = Number(
           BigInt(receipt.value) / BigInt(10 ** devTokenDecimals)
         );
       } else {
-        builderIdScoutPointsRecord[receipt.event.builderId] += Number(
+        developerIdScoutPointsRecord[receipt.event.builderId] += Number(
           BigInt(receipt.value) / BigInt(10 ** devTokenDecimals)
         );
       }
     }
   }
 
-  const topBuilderIds = Object.entries(builderIdScoutPointsRecord)
-    .sort((builder1, builder2) => builder2[1] - builder1[1])
-    .map(([builderId]) => builderId)
+  const topDeveloperIds = Object.entries(developerIdScoutPointsRecord)
+    .sort((developer1, developer2) => developer2[1] - developer1[1])
+    .map(([developerId]) => developerId)
     .slice(0, 3);
 
-  const builders = await prisma.scout.findMany({
+  const developers = await prisma.scout.findMany({
     where: {
-      id: { in: topBuilderIds },
+      id: { in: topDeveloperIds },
       deletedAt: null
     },
     select: {
@@ -109,15 +117,15 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
-  const farcasterIds = builders.map((b) => b.farcasterId).filter(isTruthy);
+  const farcasterIds = developers.map((d) => d.farcasterId).filter(isTruthy);
   const farcasterUsers = await getFarcasterUserByIds(farcasterIds).catch((err) => {
     log.error('Could not retrieve farcaster profiles', { farcasterIds, error: err });
     return [];
   });
-  const buildersWithFarcaster: UnclaimedPointsSource['builders'] = builders.map((builder) => {
-    const farcasterUser = farcasterUsers.find((f) => f.fid === builder.farcasterId);
+  const developersWithFarcaster: UnclaimedTokensSource['developers'] = developers.map((developer) => {
+    const farcasterUser = farcasterUsers.find((f) => f.fid === developer.farcasterId);
     return {
-      ...builder,
+      ...developer,
       farcasterHandle: farcasterUser?.username
     };
   });
@@ -162,7 +170,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
   const isProcessing = await checkIsProcessingPayouts({ week: getLastWeek() });
 
   return {
-    builders: buildersWithFarcaster,
+    developers: developersWithFarcaster,
     points: claimProofs.reduce((acc, proof) => acc + Number(proof.amount), 0),
     repos: uniqueRepos.slice(0, 3),
     claimData: {

@@ -31,7 +31,7 @@ import { TokensClaimSocialShare } from './TokensClaimModal/TokensClaimSocialShar
 type TokensClaimScreenProps = {
   totalUnclaimedPoints: number;
   partnerRewards: UnclaimedPartnerReward[];
-  builders: {
+  developers: {
     farcasterHandle?: string;
     displayName: string;
   }[];
@@ -51,7 +51,7 @@ export function TokensClaimScreen(props: TokensClaimScreenProps) {
 function TokensClaimScreenComponent({
   totalUnclaimedPoints,
   partnerRewards,
-  builders,
+  developers,
   repos,
   onchainClaimData,
   processingPayouts
@@ -296,7 +296,7 @@ function TokensClaimScreenComponent({
               <TokensClaimSocialShare
                 isBuilder={repos.length > 0}
                 totalUnclaimedTokens={totalUnclaimedTokens}
-                builders={builders}
+                developers={developers}
                 userPath={user.path}
                 week={week}
               />

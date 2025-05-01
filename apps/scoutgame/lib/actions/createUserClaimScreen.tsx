@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
-import { getClaimablePointsWithSources } from '@packages/scoutgame/points/getClaimablePointsWithSources';
+import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { baseUrl } from '@packages/utils/constants';
 import puppeteer from 'puppeteer';
 
@@ -17,7 +17,7 @@ export async function createUserClaimScreen({ userId, week }: { userId: string; 
       displayName: true
     }
   });
-  const { builders, points: claimedPoints, repos } = await getClaimablePointsWithSources(userId);
+  const { developers, points: claimedPoints, repos } = await getClaimableTokensWithSources(userId);
   const browser = await puppeteer.launch({
     // These flags are required to load the fonts and run the browser inside docker container
     args: ['--disable-web-security', '--disable-setuid-sandbox', '--no-sandbox']
@@ -38,7 +38,7 @@ export async function createUserClaimScreen({ userId, week }: { userId: string; 
       <TokensClaimScoutScreen
         displayName={displayName}
         claimedTokens={claimedPoints}
-        builders={builders}
+        developers={developers}
         baseUrl={baseUrl}
       />
     );
