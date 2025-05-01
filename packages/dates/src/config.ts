@@ -13,6 +13,7 @@ export type SeasonConfig = {
   standardNftAddress: Address;
   weeksPerSeason: number;
   draft?: boolean;
+  allocatedTokens: number;
 };
 
 // the end of each season is the start of the next season
@@ -24,7 +25,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     standardNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    allocatedTokens: 0
   },
   // pre-release season
   {
@@ -33,7 +35,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     standardNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    allocatedTokens: 0
   },
   // Preseason 1
   {
@@ -42,7 +45,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0xd0b718589a51b07d05f03b8150e830d3627da972',
     standardNftAddress: '0x743ec903FE6D05E73b19a6DB807271bb66100e83',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    allocatedTokens: 0
   },
   // Preseason 2
   {
@@ -51,7 +55,8 @@ export const seasons: SeasonConfig[] = [
     standardNftAddress: '0x6fbbd55274169d67f6fe9c868327003c90143440',
     title: 'Pre Season 2',
     weeksPerSeason: 15, // extended season
-    preseason: true
+    preseason: true,
+    allocatedTokens: 0
   },
 
   {
@@ -60,7 +65,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
     standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
     weeksPerSeason: 1,
-    draft: true
+    draft: true,
+    allocatedTokens: 0
   },
   // Season 1
   {
@@ -68,7 +74,8 @@ export const seasons: SeasonConfig[] = [
     title: 'Season 1',
     starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
     standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
-    weeksPerSeason: 13
+    weeksPerSeason: 13,
+    allocatedTokens: 1_200_000
   }
 ] satisfies SeasonConfig[];
 

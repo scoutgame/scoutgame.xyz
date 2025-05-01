@@ -7,10 +7,10 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getPointsCountForWeekWithNormalisation } from '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
-import { type Address } from 'viem';
+import { parseUnits, type Address } from 'viem';
 
 import { getNFTContractAddress } from '../builderNfts/constants';
-import { divideTokensBetweenBuilderAndHolders } from '../points/divideTokensBetweenBuilderAndHolders';
+import { divideTokensBetweenDeveloperAndHolders } from '../points/divideTokensBetweenDeveloperAndHolders';
 
 import { scoutProtocolChainId, devTokenDecimals } from './constants';
 import type { TokenOwnership } from './resolveTokenOwnership';
@@ -47,7 +47,7 @@ export async function calculateWeeklyClaims({
   nftContractAddress?: Address;
   tokenBalances: TokenOwnership;
 }): Promise<WeeklyClaimsCalculated> {
-  const { normalisationFactor, topWeeklyBuilders, weeklyAllocatedPoints } =
+  const { normalisationFactor, topWeeklyDevelopers, weeklyAllocatedTokens } =
     await getPointsCountForWeekWithNormalisation({
       week
     });
@@ -121,39 +121,48 @@ export async function calculateWeeklyClaims({
       builderId: true,
       builder: {
         select: {
-          wallets: true
+          wallets: {
+            where: {
+              primary: true
+            },
+            select: {
+              address: true
+            }
+          }
         }
       }
     }
   });
 
   const allClaims = await Promise.all(
-    topWeeklyBuilders
+    topWeeklyDevelopers
       // We only want to issue claims for builders that have sold at least one NFT
       .filter(
-        (builder) =>
-          !!tokenBalances[builderNfts.find((nft) => nft.builderId === builder.builder.id)!.tokenId.toString()]
+        (developer) =>
+          !!tokenBalances[builderNfts.find((nft) => nft.builderId === developer.developer.id)!.tokenId.toString()]
       )
       .sort((a, b) => a.rank - b.rank)
-      .map(async (builder, index) => {
-        const builderNft = builderNfts.find((nft) => nft.builderId === builder.builder.id);
+      .map(async (developer, index) => {
+        const developerNft = builderNfts.find((nft) => nft.builderId === developer.developer.id);
 
-        if (!builderNft) {
-          throw new Error(`Builder ${builder.builder.id} does not have an NFT`);
+        if (!developerNft) {
+          throw new Error(`Developer ${developer.developer.id} does not have an NFT`);
         }
 
-        const builderWallet = builderNft.builder.wallets[0].address.toLowerCase();
+        const developerWallet = developerNft.builder.wallets[0].address.toLowerCase();
 
-        if (!builderWallet) {
-          throw new Error(`Builder ${builder.builder.id} with token id ${builderNft.tokenId} does not have a wallet`);
+        if (!developerWallet) {
+          throw new Error(
+            `Developer ${developer.developer.id} with token id ${developerNft.tokenId} does not have a wallet`
+          );
         }
 
         // Edge case if the builder has no nfts sold
-        const owners = tokenBalances[builderNft.tokenId.toString()] || {};
+        const owners = tokenBalances[developerNft.tokenId.toString()] || {};
 
         const ownersByWallet = Object.entries(owners).map(([wallet, balance]) => ({
           wallet: wallet as Address,
-          totalNft: Number(balance),
+          totalNft: balance,
           totalStarter: 0
         }));
 
@@ -163,11 +172,10 @@ export async function calculateWeeklyClaims({
           totalStarter: 0
         }));
 
-        const { tokensPerScoutByWallet, tokensForBuilder } = divideTokensBetweenBuilderAndHolders({
-          builderId: builder.builder.id,
+        const { tokensPerScoutByWallet, tokensForDeveloper } = divideTokensBetweenDeveloperAndHolders({
           normalisationFactor,
           rank: index + 1,
-          weeklyAllocatedTokens: weeklyAllocatedPoints,
+          weeklyAllocatedTokens,
           owners: { byWallet: ownersByWallet, byScoutId: ownersByScoutId }
         });
 
@@ -175,7 +183,7 @@ export async function calculateWeeklyClaims({
 
         const builderEventInput: Prisma.BuilderEventCreateManyInput = {
           id: builderEventId,
-          builderId: builder.builder.id,
+          builderId: developer.developer.id,
           week,
           season,
           type: 'gems_payout',
@@ -184,29 +192,27 @@ export async function calculateWeeklyClaims({
 
         builderEvents.push(builderEventInput);
 
-        const builderTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
+        const developerTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
           eventId: builderEventId,
-          value: (BigInt(tokensForBuilder) * BigInt(10 ** devTokenDecimals)).toString(),
-          recipientWalletAddress: builderWallet
+          value: (BigInt(tokensForDeveloper) * BigInt(10 ** devTokenDecimals)).toString(),
+          recipientWalletAddress: developerWallet
         };
 
         const scoutTokenReceipts: Prisma.TokensReceiptCreateManyInput[] = tokensPerScoutByWallet.map(
           (scoutClaim) =>
             ({
               eventId: builderEventId,
-              // Convert decimal value to integer first by multiplying by 100 (2 decimal places)
-              // Then add 16 more decimals to reach 18 total decimals for $SCOUT token
-              value: (BigInt(Math.round(scoutClaim.erc20Tokens * 100)) * BigInt(10 ** 16)).toString(),
+              value: parseUnits(scoutClaim.erc20Tokens.toString(), 18).toString(),
               recipientWalletAddress: scoutClaim.wallet
             }) as Prisma.TokensReceiptCreateManyInput
         );
 
-        tokenReceipts.push(builderTokenReceiptInput, ...scoutTokenReceipts);
+        tokenReceipts.push(developerTokenReceiptInput, ...scoutTokenReceipts);
 
         return {
           tokensPerScoutByWallet,
-          tokensForBuilder: { wallet: builderWallet, amount: tokensForBuilder },
-          builderId: builder.builder.id
+          tokensForDeveloper: { wallet: developerWallet, amount: tokensForDeveloper },
+          developerId: developer.developer.id
         };
       })
   );
@@ -216,8 +222,8 @@ export async function calculateWeeklyClaims({
 
   // Add builder claims
   allClaims.forEach((c) => {
-    const wallet = c.tokensForBuilder.wallet as string;
-    claimsByWallet.set(wallet, (claimsByWallet.get(wallet) || 0) + c.tokensForBuilder.amount);
+    const wallet = c.tokensForDeveloper.wallet as string;
+    claimsByWallet.set(wallet, (claimsByWallet.get(wallet) || 0) + c.tokensForDeveloper.amount);
   });
 
   // Add scout claims

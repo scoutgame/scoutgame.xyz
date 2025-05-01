@@ -1,9 +1,9 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType, ScoutWallet } from '@charmverse/core/prisma-client';
+import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 
-import { getCurrentWeekPointsAllocation } from '../builderNfts/getCurrentWeekPointsAllocation';
-import type { LeaderboardBuilder } from '../builders/getBuildersLeaderboard';
-import { getBuildersLeaderboard } from '../builders/getBuildersLeaderboard';
+import type { LeaderboardDeveloper } from '../builders/getDevelopersLeaderboard';
+import { getDevelopersLeaderboard } from '../builders/getDevelopersLeaderboard';
 import { weeklyRewardableBuilders } from '../protocol/constants';
 
 import { calculateEarnableScoutPointsForRank } from './calculatePoints';
@@ -17,41 +17,45 @@ export type PartialNftPurchaseEvent = {
   builderNft: { nftType: BuilderNftType; builderId: string };
 };
 
+const WEEKLY_TOKENS_ALLOCATION_PERCENTAGES = [5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10];
+
 export async function getPointsCountForWeekWithNormalisation({ week }: { week: string }): Promise<{
-  totalPoints: number;
+  totalTokens: number;
   normalisationFactor: number;
-  normalisedBuilders: { builder: LeaderboardBuilder; normalisedPoints: number }[];
-  weeklyAllocatedPoints: number;
-  topWeeklyBuilders: LeaderboardBuilder[];
+  normalisedDevelopers: { developer: LeaderboardDeveloper; normalisedTokens: number }[];
+  weeklyAllocatedTokens: number;
+  topWeeklyDevelopers: LeaderboardDeveloper[];
 }> {
-  const leaderboard = await getBuildersLeaderboard({ week, quantity: weeklyRewardableBuilders });
+  const leaderboard = await getDevelopersLeaderboard({ week, quantity: weeklyRewardableBuilders });
+  const weekNumber = getCurrentSeasonWeekNumber(week);
+  const weeklyTokensAllocationPercentage = WEEKLY_TOKENS_ALLOCATION_PERCENTAGES[weekNumber - 1];
+  const season = getCurrentSeason(week);
+  const weeklyAllocatedTokens = season.allocatedTokens * (weeklyTokensAllocationPercentage / 100);
 
-  const weeklyAllocatedPoints = await getCurrentWeekPointsAllocation({ week });
-
-  const pointsQuotas = leaderboard.map((builder, index) => ({
-    builder,
-    earnablePoints: calculateEarnableScoutPointsForRank({ rank: builder.rank, weeklyAllocatedPoints })
+  const tokensQuotas = leaderboard.map((developer) => ({
+    developer,
+    earnableTokens: calculateEarnableScoutPointsForRank({ rank: developer.rank, weeklyAllocatedTokens })
   }));
 
-  const points = pointsQuotas.reduce((acc, val) => acc + val.earnablePoints, 0);
+  const totalEarnableTokens = tokensQuotas.reduce((acc, val) => acc + val.earnableTokens, 0);
 
-  if (points === 0) {
-    log.warn('Points evaluated to 0', {
+  if (totalEarnableTokens === 0) {
+    log.warn('Tokens evaluated to 0', {
       week
     });
-    throw new Error('Points evaluated to 0');
+    throw new Error('Tokens evaluated to 0');
   }
 
-  const normalisationFactor = weeklyAllocatedPoints / points;
+  const normalisationFactor = weeklyAllocatedTokens / totalEarnableTokens;
 
   return {
-    totalPoints: points,
+    totalTokens: totalEarnableTokens,
     normalisationFactor,
-    normalisedBuilders: pointsQuotas.map(({ builder, earnablePoints }) => ({
-      builder,
-      normalisedPoints: earnablePoints * normalisationFactor
+    normalisedDevelopers: tokensQuotas.map(({ developer, earnableTokens }) => ({
+      developer,
+      normalisedTokens: earnableTokens * normalisationFactor
     })),
-    weeklyAllocatedPoints,
-    topWeeklyBuilders: leaderboard
+    weeklyAllocatedTokens,
+    topWeeklyDevelopers: leaderboard
   };
 }

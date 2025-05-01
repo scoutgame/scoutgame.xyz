@@ -1,8 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-export type LeaderboardBuilder = {
-  builder: {
+export type LeaderboardDeveloper = {
+  developer: {
     id: string;
     path: string;
     displayName: string;
@@ -11,7 +11,7 @@ export type LeaderboardBuilder = {
   rank: number;
 };
 
-export async function getBuildersLeaderboard({
+export async function getDevelopersLeaderboard({
   quantity,
   week,
   season
@@ -19,7 +19,7 @@ export async function getBuildersLeaderboard({
   quantity?: number;
   week: string;
   season?: string;
-}): Promise<LeaderboardBuilder[]> {
+}): Promise<LeaderboardDeveloper[]> {
   season ||= getCurrentSeasonStart(week);
   const userWeeklyStats = await prisma.userWeeklyStats.findMany({
     where: {
@@ -76,14 +76,14 @@ export async function getBuildersLeaderboard({
       return b.gemsCollected - a.gemsCollected;
     })
     .map((userWeeklyStat, index) => ({
-      builder: {
+      developer: {
         id: userWeeklyStat.user.id,
         path: userWeeklyStat.user.path,
         displayName: userWeeklyStat.user.displayName
       },
       gemsCollected: userWeeklyStat.gemsCollected,
       rank: index + 1
-    })) as LeaderboardBuilder[];
+    })) as LeaderboardDeveloper[];
 
   if (quantity) {
     return topBuilders.slice(0, quantity);

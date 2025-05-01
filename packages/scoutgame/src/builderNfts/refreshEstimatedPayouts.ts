@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { calculateRewardForScout } from '../points/divideTokensBetweenBuilderAndHolders';
+import { calculateRewardForScout } from '../points/divideTokensBetweenDeveloperAndHolders';
 import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
 import { devTokenDecimals } from '../protocol/constants';
 
@@ -23,7 +23,7 @@ export async function refreshEstimatedPayouts({
 }): Promise<void> {
   const season = getCurrentSeasonStart(week);
 
-  const [{ normalisedBuilders }, data] = await Promise.all([
+  const [{ normalisedDevelopers }, data] = await Promise.all([
     getPointsCountForWeekWithNormalisation({
       week
     }),
@@ -51,7 +51,7 @@ export async function refreshEstimatedPayouts({
     where: {
       season,
       builderId: {
-        notIn: normalisedBuilders.map((b) => b.builder.builder.id)
+        notIn: normalisedDevelopers.map((b) => b.developer.developer.id)
       }
     },
     data: {
@@ -60,10 +60,10 @@ export async function refreshEstimatedPayouts({
     }
   });
 
-  for (const { builder, normalisedPoints } of normalisedBuilders) {
-    if (!builderIdToRefresh || builderIdToRefresh === builder.builder.id) {
-      const defaultNft = seasonBuilderNfts[builder.builder.id];
-      const starterPackNft = seasonStarterPackNfts[builder.builder.id];
+  for (const { developer, normalisedTokens } of normalisedDevelopers) {
+    if (!builderIdToRefresh || builderIdToRefresh === developer.developer.id) {
+      const defaultNft = seasonBuilderNfts[developer.developer.id];
+      const starterPackNft = seasonStarterPackNfts[developer.developer.id];
 
       const supply = {
         starterPack: (starterPackNft?.nftOwners || []).reduce((acc, nft) => acc + nft.balance, 0),
@@ -77,14 +77,14 @@ export async function refreshEstimatedPayouts({
       const nextDefaultReward = calculateRewardForScout({
         purchased: { default: 1 },
         supply,
-        scoutsRewardPool: normalisedPoints
+        scoutsRewardPool: normalisedTokens
       });
       const expectedPayoutForNextNftPurchase = Math.floor(nextDefaultReward);
 
       const nextStarterPackReward = calculateRewardForScout({
         purchased: { starterPack: 1 },
         supply,
-        scoutsRewardPool: normalisedPoints
+        scoutsRewardPool: normalisedTokens
       });
       const expectedPayoutForNextStarterPackPurchase = Math.floor(nextStarterPackReward);
 

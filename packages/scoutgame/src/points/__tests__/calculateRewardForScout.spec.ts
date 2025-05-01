@@ -1,4 +1,4 @@
-import { calculateRewardForScout } from '../divideTokensBetweenBuilderAndHolders';
+import { calculateRewardForScout } from '../divideTokensBetweenDeveloperAndHolders';
 
 describe('calculateRewardForScout', () => {
   it('should calculate rewards with default pool values', () => {

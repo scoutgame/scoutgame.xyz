@@ -1,14 +1,13 @@
 import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
-import { stringUtils } from '@charmverse/core/utilities';
 import type { Address } from 'viem';
 
 import type { TokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
 import { calculateEarnableScoutPointsForRank as calculateEarnableScoutTokensForRank } from './calculatePoints';
 
-// percent that goes to the builder
-export const defaultBuilderPool = 20;
+// percent that goes to the developer
+export const defaultDeveloperPool = 20;
 // go to owners of starter pack
 export const defaultStarterPackPool = 10;
 // go to owners of default NFTs
@@ -31,34 +30,28 @@ export type TokenDistribution = {
     nftTokens: number;
     erc20Tokens: number;
   }[];
-  tokensForBuilder: number;
+  tokensForDeveloper: number;
 };
 
 /**
  * Function to calculate scout tokens
- * @param builderId - ID of the builder
+ * @param developerId - ID of the builder
  * @param rank - Rank of the builder
  * @param weeklyAllocatedTokens - Tokens allocated for the week
  * @param normalisationFactor - Normalisation factor for tokens to ensure we hit the full quota allocated
  * @param owners - Snapshot of the owners of the NFTs purchased
  */
-export function divideTokensBetweenBuilderAndHolders({
-  builderId,
+export function divideTokensBetweenDeveloperAndHolders({
   rank,
   weeklyAllocatedTokens,
   normalisationFactor,
   owners
 }: {
-  builderId: string;
   rank: number;
   weeklyAllocatedTokens: number;
   normalisationFactor: number;
   owners: TokenOwnershipForBuilder;
 }): TokenDistribution {
-  if (!stringUtils.isUUID(builderId)) {
-    throw new InvalidInputError('Invalid builderId must be a valid UUID');
-  }
-
   if (rank < 1 || typeof rank !== 'number') {
     throw new InvalidInputError('Invalid rank provided. Must be a number greater than 0');
   }
@@ -68,7 +61,7 @@ export function divideTokensBetweenBuilderAndHolders({
   const starterPackSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
 
   const earnableScoutTokens = Math.floor(
-    calculateEarnableScoutTokensForRank({ rank, weeklyAllocatedPoints: weeklyAllocatedTokens }) * normalisationFactor
+    calculateEarnableScoutTokensForRank({ rank, weeklyAllocatedTokens }) * normalisationFactor
   );
 
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
@@ -92,7 +85,7 @@ export function divideTokensBetweenBuilderAndHolders({
     return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
-  const tokensForBuilder = Math.floor((defaultBuilderPool * earnableScoutTokens) / 100);
+  const tokensForDeveloper = Math.floor((defaultDeveloperPool * earnableScoutTokens) / 100);
 
   return {
     nftSupply: {
@@ -103,21 +96,21 @@ export function divideTokensBetweenBuilderAndHolders({
     earnableScoutTokens,
     tokensPerScoutByWallet,
     tokensPerScoutByScoutId,
-    tokensForBuilder
+    tokensForDeveloper
   };
 }
 
 // Returns the total weekly rewards that a scout should receive
 // Note: We use whole numbers for pools to avoid issues with addition and subtraction of floating point numbers
 export function calculateRewardForScout({
-  builderPool = defaultBuilderPool,
+  developerPool = defaultDeveloperPool,
   starterPackPool = defaultStarterPackPool,
   defaultPool = defaultScoutPool,
   purchased,
   supply,
   scoutsRewardPool
 }: {
-  builderPool?: number;
+  developerPool?: number;
   starterPackPool?: number;
   defaultPool?: number;
   purchased: { starterPack?: number; default?: number };
@@ -125,9 +118,9 @@ export function calculateRewardForScout({
   scoutsRewardPool: number;
 }): number {
   // sanity check
-  if (defaultPool + builderPool + starterPackPool !== 100) {
+  if (defaultPool + developerPool + starterPackPool !== 100) {
     throw new Error(
-      `Pool percentages must add up to 1. Builder pool: ${builderPool}, starter pack pool: ${starterPackPool}, default pool: ${defaultPool}`
+      `Pool percentages must add up to 1. Developer pool: ${developerPool}, starter pack pool: ${starterPackPool}, default pool: ${defaultPool}`
     );
   }
   if (purchased.default && purchased.default > supply.default) {

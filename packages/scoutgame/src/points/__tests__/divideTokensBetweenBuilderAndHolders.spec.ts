@@ -3,8 +3,8 @@ import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 import { v4 as uuid } from 'uuid';
 
-import type { TokenDistribution } from '../divideTokensBetweenBuilderAndHolders';
-import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenBuilderAndHolders';
+import type { TokenDistribution } from '../divideTokensBetweenDeveloperAndHolders';
+import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenDeveloperAndHolders';
 
 describe('divideTokensBetweenBuilderAndHolders', () => {
   let builder: MockBuilder;

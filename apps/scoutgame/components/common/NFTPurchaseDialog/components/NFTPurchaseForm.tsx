@@ -22,7 +22,7 @@ import {
   scoutgameEthAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenBuilderAndHolders';
+import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenDeveloperAndHolders';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import {
