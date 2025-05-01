@@ -96,7 +96,14 @@ export function AccountMenu({ user }: { user: SessionUser }) {
             />
           </div>
         )}
-        <Avatar src={user.avatar || undefined} size='medium' name={user.displayName || ''} />
+        <Box width='40px' height='40px' overflow='visible' display='flex' alignItems='center' justifyContent='center'>
+          <Avatar
+            sx={{ width: '46px', height: '46px' }}
+            src={user.avatar || undefined}
+            size='medium'
+            name={user.displayName || ''}
+          />
+        </Box>
       </Box>
       <Menu
         sx={{ mt: 5 }}
