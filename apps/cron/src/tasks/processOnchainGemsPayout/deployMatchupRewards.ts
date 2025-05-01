@@ -4,6 +4,12 @@ import { optimismTokenAddress, optimismTokenDecimals } from '@packages/blockchai
 import { getCurrentSeason } from '@packages/dates/utils';
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
 import { saveMatchupResults } from '@packages/matchup/saveMatchupResults';
+import {
+  devTokenContractAddress,
+  devTokenDecimals,
+  devTokenSymbol,
+  devTokenChain
+} from '@packages/scoutgame/protocol/constants';
 import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
@@ -30,25 +36,77 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     return;
   }
 
-  // Deploy the Sablier airdrop contract
-  const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
-    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
+  const { txHash, contractAddress } = await deployAirdropContract({
+    week,
     chainId: optimism.id,
-    tokenAddress: optimismTokenAddress,
+    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
     recipients: recipients.map(({ address, opAmount }) => ({
       address,
-      amount: opAmount.toString()
+      amount: opAmount
     })),
-    nullAddressAmount: parseUnits('0.001', optimismTokenDecimals).toString(),
-    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30)
+    tokenAddress: optimismTokenAddress,
+    tokenDecimals: optimismTokenDecimals,
+    tokenSymbol: 'OP'
   });
 
-  log.info('Matchup rewards contract deployed', {
-    hash: deployTxHash,
-    contractAddress: airdropContractAddress,
+  log.info('Matchup Optimism rewards contract deployed', {
+    txHash,
+    contractAddress,
     week,
     season: currentSeason.start,
     recipientsCount: recipients.length
+  });
+
+  const { txHash: devAirdropHash, contractAddress: devAirdropContractAddress } = await deployAirdropContract({
+    week,
+    chainId: devTokenChain.id,
+    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
+    recipients: recipients.map(({ address, devAmount }) => ({
+      address,
+      amount: devAmount
+    })),
+    tokenAddress: devTokenContractAddress,
+    tokenDecimals: devTokenDecimals,
+    tokenSymbol: devTokenSymbol
+  });
+
+  log.info('Matchup DEV token rewards contract deployed', {
+    txHash: devAirdropHash,
+    contractAddress: devAirdropContractAddress,
+    week,
+    season: currentSeason.start,
+    recipientsCount: recipients.length
+  });
+}
+
+async function deployAirdropContract({
+  week,
+  recipients,
+  tokenAddress,
+  tokenDecimals,
+  tokenSymbol,
+  chainId,
+  adminPrivateKey
+}: {
+  week: string;
+  recipients: { address: `0x${string}`; amount: bigint }[];
+  tokenAddress: `0x${string}`;
+  tokenDecimals: number;
+  tokenSymbol: string;
+  chainId: number;
+  adminPrivateKey: `0x${string}`;
+}) {
+  // Deploy the thirdweb airdrop contract
+  const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
+    adminPrivateKey,
+    chainId,
+    tokenAddress,
+    recipients: recipients.map(({ address, amount }) => ({
+      address,
+      amount: amount.toString()
+    })),
+    nullAddressAmount: parseUnits('0.001', tokenDecimals).toString(),
+    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30)
   });
 
   // Record the payout in the database
@@ -56,21 +114,21 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     data: {
       chainId: optimism.id,
       contractAddress: airdropContractAddress,
-      season: currentSeason.start,
+      season: getCurrentSeason(week).start,
       week,
       ipfsCid: '',
       provider: 'thirdweb',
       merkleTreeJson: merkleTree,
-      tokenAddress: optimismTokenAddress,
-      tokenDecimals: optimismTokenDecimals,
-      tokenSymbol: 'OP',
+      tokenAddress,
+      tokenDecimals,
+      tokenSymbol,
       partner: 'matchup_rewards',
       deployTxHash,
       blockNumber,
       rewardPayouts: {
         createMany: {
-          data: recipients.map(({ address, opAmount }) => ({
-            amount: opAmount.toString(),
+          data: recipients.map(({ address, amount }) => ({
+            amount: amount.toString(),
             walletAddress: address,
             meta: {
               week,
@@ -82,22 +140,5 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     }
   });
 
-  // create builder event + pointsReciepts for each recipient
-  for (const recipient of recipients) {
-    await prisma.builderEvent.create({
-      data: {
-        week,
-        season: currentSeason.start,
-        type: 'matchup_winner',
-        pointsReceipts: {
-          create: {
-            value: recipient.pointsAmount,
-            recipientId: recipient.scoutId,
-            season: currentSeason.start
-          }
-        },
-        builderId: recipient.scoutId
-      }
-    });
-  }
+  return { txHash: deployTxHash, contractAddress: airdropContractAddress };
 }
