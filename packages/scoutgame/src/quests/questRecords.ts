@@ -31,7 +31,7 @@ export type QuestType =
   | 'first-repo-contribution'
   | 'share-builder-profile'
   | 'contribute-celo-repo'
-  | 'contribute-game7-repo'
+  // | 'contribute-game7-repo'
   | 'contribute-octant-repo'
   // | 'contribute-lit-repo'
   | 'link-telegram-account'
@@ -214,16 +214,16 @@ export const questsRecord: Record<QuestType, QuestRecord> = {
     resettable: true,
     verifiable: true
   },
-  'contribute-game7-repo': {
-    label: 'Contribute to a Game7 Repo',
-    points: 25,
-    rewards: '$250',
-    partner: 'Game7',
-    link: '/info/partner-rewards/game7',
-    tag: 'builder',
-    resettable: true,
-    verifiable: true
-  },
+  // 'contribute-game7-repo': {
+  //   label: 'Contribute to a Game7 Repo',
+  //   points: 25,
+  //   rewards: '$250',
+  //   partner: 'Game7',
+  //   link: '/info/partner-rewards/game7',
+  //   tag: 'builder',
+  //   resettable: true,
+  //   verifiable: true
+  // },
   'contribute-octant-repo': {
     label: 'Contribute to a Octant Repo',
     points: 25,
