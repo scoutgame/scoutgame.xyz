@@ -18,21 +18,6 @@ describe('deployMatchupRewards', () => {
   const mockMerkleTree = { root: '0x789MerkleRoot' } as any;
   const mockBlockNumber = BigInt(12345);
 
-  const mockRecipients = [
-    {
-      scoutId: 'scout1',
-      address: '0xRecipient1Address',
-      opAmount: 10,
-      pointsAmount: 1000
-    },
-    {
-      scoutId: 'scout2',
-      address: '0xRecipient2Address',
-      opAmount: 5,
-      pointsAmount: 500
-    }
-  ];
-
   beforeEach(() => {
     // Reset mocks before each test
     jest.clearAllMocks();
