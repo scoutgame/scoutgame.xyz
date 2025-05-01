@@ -13,10 +13,10 @@ export const bonusPartnersRecord = {
     name: 'Celo',
     icon: 'https://scoutgame.xyz/images/crypto/celo.png'
   },
-  game7: {
-    name: 'Game7',
-    icon: 'https://scoutgame.xyz/images/crypto/game7.png'
-  },
+  // game7: {
+  //   name: 'Game7',
+  //   icon: 'https://scoutgame.xyz/images/crypto/game7.png'
+  // },
   // lit_protocol: {
   //   name: 'Lit Protocol',
   //   icon: 'https://scoutgame.xyz/images/logos/lit-protocol.png'

@@ -8,7 +8,6 @@ export function PartnersDashboard() {
     <Container maxWidth='md'>
       <Stack spacing={3} justifyContent='center' mb={3}>
         <PartnerCardContainer partner='celo' partnerName='Celo' hasGithubRepos />
-        <PartnerCardContainer partner='game7' partnerName='Game7' hasGithubRepos />
         <PartnerCardContainer partner='gooddollar' partnerName='GoodDollar' hasGithubRepos />
         <PartnerCardContainer
           partner='octant'
@@ -35,6 +34,7 @@ export function PartnersDashboard() {
           Completed
         </Typography>
 
+        <PartnerCardContainer partner='game7' partnerName='Game7' hasGithubRepos />
         <PartnerCardContainer
           partner='optimism'
           partnerName='Optimism (Top New Scouts)'
