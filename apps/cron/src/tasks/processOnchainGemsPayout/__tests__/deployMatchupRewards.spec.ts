@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { optimismTokenDecimals } from '@packages/blockchain/constants';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { mockBuilder, mockMatchup, mockScout, mockUserWeeklyStats } from '@packages/testing/database';
 import { parseUnits } from 'viem';
 
@@ -63,7 +64,7 @@ describe('deployMatchupRewards', () => {
 
     await deployMatchupRewards({ week: mockWeek });
 
-    expect(createThirdwebAirdropContract).toHaveBeenCalled();
+    expect(createThirdwebAirdropContract).toHaveBeenCalledTimes(2);
 
     const matchup = await prisma.scoutMatchup.findFirstOrThrow({
       where: {
@@ -84,16 +85,22 @@ describe('deployMatchupRewards', () => {
     });
 
     expect(payout.rewardPayouts.length).toBe(1);
+    // First place payout is 60 OP
     expect(payout.rewardPayouts[0].amount).toBe(parseUnits('60', optimismTokenDecimals).toString());
 
-    const builderEvent = await prisma.builderEvent.findFirstOrThrow({
+    const devPayout = await prisma.partnerRewardPayoutContract.findFirstOrThrow({
       where: {
         week: mockWeek,
-        type: 'matchup_winner'
+        partner: 'matchup_pool_rewards'
+      },
+      include: {
+        rewardPayouts: true
       }
     });
 
-    expect(builderEvent.builderId).toBe(scout.id);
+    expect(devPayout.rewardPayouts.length).toBe(1);
+    // First place is 100 DEV for a single-user matchup (First place payout is 50% of pool, with 80% of fees going to the pool)
+    expect(devPayout.rewardPayouts[0].amount).toBe(parseUnits('100', devTokenDecimals).toString());
   });
 
   it('should skip deployment if no recipients are found', async () => {
