@@ -31,7 +31,7 @@ export type QuestType =
   | 'first-repo-contribution'
   | 'share-builder-profile'
   | 'contribute-celo-repo'
-  | 'contribute-game7-repo'
+  // | 'contribute-game7-repo'
   | 'contribute-octant-repo'
   // | 'contribute-lit-repo'
   | 'link-telegram-account'
