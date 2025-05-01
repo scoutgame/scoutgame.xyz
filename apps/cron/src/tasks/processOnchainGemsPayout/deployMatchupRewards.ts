@@ -37,9 +37,10 @@ export async function deployMatchupRewards({ week }: { week: string }) {
   }
 
   const { txHash, contractAddress } = await deployAirdropContract({
+    partner: 'matchup_rewards',
     week,
     chainId: optimism.id,
-    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
+    adminPrivateKey: process.env.REWARDS_WALLET_PRIVATE_KEY as `0x${string}`,
     recipients: recipients.map(({ address, opAmount }) => ({
       address,
       amount: opAmount
@@ -58,9 +59,10 @@ export async function deployMatchupRewards({ week }: { week: string }) {
   });
 
   const { txHash: devAirdropHash, contractAddress: devAirdropContractAddress } = await deployAirdropContract({
+    partner: 'matchup_pool_rewards',
     week,
     chainId: devTokenChain.id,
-    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
+    adminPrivateKey: process.env.REWARDS_WALLET_PRIVATE_KEY as `0x${string}`,
     recipients: recipients.map(({ address, devAmount }) => ({
       address,
       amount: devAmount
@@ -80,6 +82,7 @@ export async function deployMatchupRewards({ week }: { week: string }) {
 }
 
 async function deployAirdropContract({
+  partner,
   week,
   recipients,
   tokenAddress,
@@ -88,6 +91,7 @@ async function deployAirdropContract({
   chainId,
   adminPrivateKey
 }: {
+  partner: string;
   week: string;
   recipients: { address: `0x${string}`; amount: bigint }[];
   tokenAddress: `0x${string}`;
@@ -122,7 +126,7 @@ async function deployAirdropContract({
       tokenAddress,
       tokenDecimals,
       tokenSymbol,
-      partner: 'matchup_rewards',
+      partner,
       deployTxHash,
       blockNumber,
       rewardPayouts: {

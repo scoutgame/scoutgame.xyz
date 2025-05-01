@@ -24,7 +24,8 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
       week,
       submittedAt: {
         not: null
-      }
+      },
+      registrationTx: { status: 'success' }
     },
     orderBy: {
       createdAt: 'desc'

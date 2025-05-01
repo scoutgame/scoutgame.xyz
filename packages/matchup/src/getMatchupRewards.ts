@@ -28,7 +28,8 @@ export async function getMatchupRewards(week: string) {
       week,
       totalScore: {
         gt: 0
-      }
+      },
+      registrationTx: { status: 'success' }
     },
     select: {
       totalScore: true,

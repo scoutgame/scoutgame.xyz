@@ -20,14 +20,20 @@ export function PartnersDashboard() {
           partner='referrals'
           partnerName='Referral Rewards'
           airdropPartner='optimism_referral_champion'
-          airdropWalletAddress={process.env.REFERRAL_CHAMPION_REWARD_ADMIN_ADDRESS}
+          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
         />
         <PartnerCardContainer partner='talent' partnerName='Talent Protocol' />
         <PartnerCardContainer
           partner='matchup'
-          partnerName='Matchup Rewards'
+          partnerName='Matchup OP Rewards'
           airdropPartner='matchup_rewards'
-          airdropWalletAddress={process.env.REFERRAL_CHAMPION_REWARD_ADMIN_ADDRESS}
+          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
+        />
+        <PartnerCardContainer
+          partner='matchup_pool'
+          partnerName='Matchup Pool Rewards'
+          airdropPartner='matchup_pool_rewards'
+          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
         />
 
         <Typography variant='h4' align='center'>
@@ -39,7 +45,7 @@ export function PartnersDashboard() {
           partner='optimism'
           partnerName='Optimism (Top New Scouts)'
           airdropPartner='optimism_new_scout'
-          airdropWalletAddress={process.env.NEW_SCOUT_REWARD_ADMIN_ADDRESS}
+          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
         />
         <PartnerCardContainer partner='op_supersim' partnerName='OP Supersim' hasGithubRepos />
         <PartnerCardContainer partner='moxie' partnerName='Moxie' />
