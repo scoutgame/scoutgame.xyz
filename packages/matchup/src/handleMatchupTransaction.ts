@@ -35,7 +35,11 @@ export async function handlePendingMatchupTransaction({ userId, matchupId }: { u
       sourceTxHashChainId: matchup.decentRegistrationTx.chainId
     });
 
-    log.info('Matchup transaction settled', { matchupId, txHash });
+    log.info('Matchup transaction settled', {
+      matchupId,
+      sourceTxHash: matchup.decentRegistrationTx.hash,
+      destinationTxHash
+    });
 
     await prisma.$transaction(async (tx) => {
       const sourceTx = await tx.blockchainTransaction.update({
@@ -46,7 +50,7 @@ export async function handlePendingMatchupTransaction({ userId, matchupId }: { u
       });
 
       // if the destination chain are the same, we end up with the same tx hash
-      if (destinationTxHash === matchup.decentRegistrationTx.hash) {
+      if (destinationTxHash === matchup.decentRegistrationTx!.hash) {
         await tx.scoutMatchup.update({
           where: { id: matchupId },
           data: {
