@@ -30,11 +30,13 @@ function SortIcon({ columnName, order, sort }: { columnName: string; order: stri
 export function DevelopersTable({
   developers,
   order,
-  sort
+  sort,
+  nftType
 }: {
   developers: DeveloperMetadata[];
   order: string;
   sort: DevelopersSortBy;
+  nftType: 'default' | 'starter';
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -128,8 +130,8 @@ export function DevelopersTable({
               py: 1
             }}
           >
-            <Stack direction='row' alignItems='center' justifyContent='flex-end'>
-              PRICE
+            <Stack direction='row' alignItems='center' justifyContent='flex-end' lineHeight={1.5}>
+              {nftType === 'starter' ? 'STARTER PRICE' : 'PRICE'}
               <SortIcon columnName='price' order={order} sort={sort} />
             </Stack>
           </TableCell>
