@@ -50,8 +50,7 @@ describe('alertLowAirdropWalletBalance', () => {
     process.env = { ...originalEnv };
 
     // Set up mock private keys
-    process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY = '0xreferral_champion_private_key';
-    process.env.NEW_SCOUT_REWARD_ADMIN_PRIVATE_KEY = '0xnew_scout_private_key';
+    process.env.REWARDS_WALLET_PRIVATE_KEY = '0xreferral_champion_private_key';
     process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY = '0xoctant_private_key';
 
     // Mock privateKeyToAccount

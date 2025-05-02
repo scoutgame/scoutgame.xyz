@@ -1071,9 +1071,20 @@ export async function mockMatchup({
 }) {
   const matchup = await prisma.scoutMatchup.create({
     data: {
-      createdBy,
+      scout: {
+        connect: {
+          id: createdBy
+        }
+      },
       week,
       submittedAt,
+      registrationTx: {
+        create: {
+          hash: `0x${Math.random().toString(16).substring(2)}`,
+          chainId: 8453,
+          status: 'success' as const
+        }
+      },
       selections: {
         createMany: {
           data: selectedNfts.map((developerNftId) => ({

@@ -36,7 +36,8 @@ export function getCurrentMatchupDetails() {
 export async function getMatchupDetails(week: string, now = DateTime.utc()): Promise<MatchupDetails> {
   const matchups = await prisma.scoutMatchup.count({
     where: {
-      week
+      week,
+      registrationTx: { status: 'success' }
     }
   });
   const startTime = getStartOfMatchup(week).getTime();

@@ -64,6 +64,12 @@ export const partnerRewardRecord: Record<
     label: 'Matchup Rewards',
     icon: '/images/crypto/op.png',
     partnerLink: 'https://scoutgame.xyz/matchup',
+    chain: 'Optimism'
+  },
+  matchup_pool_rewards: {
+    label: 'Matchup Pool Rewards',
+    icon: '/images/dev-token-logo.png',
+    partnerLink: 'https://scoutgame.xyz/matchup',
     chain: 'Base'
   }
 };

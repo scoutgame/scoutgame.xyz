@@ -21,9 +21,9 @@ import { getChainById } from '@packages/blockchain/chains';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { shortenHex } from '@packages/utils/strings';
 import { formatUnits } from 'viem';
-
+import { base } from 'viem/chains';
 // a function that takes a wallet address and returns a shortened version of it with an icon button to copy the full address
-export function WalletAddress({ address, chainId }: { address: string; chainId: number }) {
+export function WalletAddress({ address, chainId = base.id }: { address: string; chainId?: number }) {
   const blockExplorerUrl = getChainById(chainId)?.blockExplorerUrls[0];
   return (
     <span>

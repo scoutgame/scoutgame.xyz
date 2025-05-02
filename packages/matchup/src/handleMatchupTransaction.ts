@@ -30,35 +30,49 @@ export async function handlePendingMatchupTransaction({ userId, matchupId }: { u
   }
 
   try {
-    const txHash = await waitForDecentV4TransactionSettlement({
+    const destinationTxHash = await waitForDecentV4TransactionSettlement({
       sourceTxHash: matchup.decentRegistrationTx.hash.toLowerCase(),
       sourceTxHashChainId: matchup.decentRegistrationTx.chainId
     });
 
-    log.info('Matchup transaction settled', { matchupId, txHash });
+    log.info('Matchup transaction settled', {
+      matchupId,
+      sourceTxHash: matchup.decentRegistrationTx.hash,
+      destinationTxHash
+    });
 
     await prisma.$transaction(async (tx) => {
-      await tx.blockchainTransaction.update({
+      const sourceTx = await tx.blockchainTransaction.update({
         where: { id: matchup.decentRegistrationTx!.id },
         data: {
           status: 'success'
         }
       });
 
-      const finalTx = await tx.blockchainTransaction.create({
-        data: {
-          status: 'success',
-          hash: txHash,
-          chainId: base.id
-        }
-      });
+      // if the destination chain are the same, we end up with the same tx hash
+      if (destinationTxHash === matchup.decentRegistrationTx!.hash) {
+        await tx.scoutMatchup.update({
+          where: { id: matchupId },
+          data: {
+            registrationTxId: sourceTx.id
+          }
+        });
+      } else {
+        const finalTx = await tx.blockchainTransaction.create({
+          data: {
+            status: 'success',
+            hash: destinationTxHash,
+            chainId: base.id
+          }
+        });
 
-      await tx.scoutMatchup.update({
-        where: { id: matchupId },
-        data: {
-          registrationTxId: finalTx.id
-        }
-      });
+        await tx.scoutMatchup.update({
+          where: { id: matchupId },
+          data: {
+            registrationTxId: finalTx.id
+          }
+        });
+      }
     });
   } catch (error) {
     await prisma.scoutMatchup.update({
