@@ -2,7 +2,9 @@ import type { MockBuilder } from '@packages/testing/database';
 import { mockBuilder, mockBuilderNft } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 import { v4 as uuid } from 'uuid';
+import { parseUnits } from 'viem';
 
+import { devTokenDecimals } from '../../protocol/constants';
 import type { TokenDistribution } from '../divideTokensBetweenDeveloperAndHolders';
 import { divideTokensBetweenDeveloperAndHolders } from '../divideTokensBetweenDeveloperAndHolders';
 
@@ -14,8 +16,9 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
   const season = 'season-1';
 
   const rank = 1;
-  const weeklyAllocatedTokens = 100_000;
-  const normalisationFactor = 0.8;
+  const weeklyAllocatedTokens = parseUnits('100000', devTokenDecimals);
+  const normalisationFactor = parseUnits('80', devTokenDecimals);
+  const normalisationScale = parseUnits('100', devTokenDecimals);
 
   const userId1 = uuid();
   const userId2 = uuid();
@@ -36,6 +39,7 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
       rank,
       weeklyAllocatedTokens,
       normalisationFactor,
+      normalisationScale,
       owners: {
         byWallet: [
           {
@@ -71,20 +75,23 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
           starterPack: 2,
           total: 17
         },
-        earnableTokens: 2400,
+        earnableTokens: parseUnits('2400', devTokenDecimals),
         tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
-          { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1119 },
-          { wallet: userAddress2, nftTokens: 5, erc20Tokens: 800 }
+          { wallet: userAddress1, nftTokens: 10, erc20Tokens: parseUnits('1119', devTokenDecimals) },
+          { wallet: userAddress2, nftTokens: 5, erc20Tokens: parseUnits('800', devTokenDecimals) }
         ]),
         tokensPerScoutByScoutId: expect.arrayContaining<TokenDistribution['tokensPerScoutByScoutId'][number]>([
-          { scoutId: userId1, nftTokens: 10, erc20Tokens: 1119 },
-          { scoutId: userId2, nftTokens: 5, erc20Tokens: 800 }
+          { scoutId: userId1, nftTokens: 10, erc20Tokens: parseUnits('1119', devTokenDecimals) },
+          { scoutId: userId2, nftTokens: 5, erc20Tokens: parseUnits('800', devTokenDecimals) }
         ]),
-        tokensForDeveloper: 480
+        tokensForDeveloper: parseUnits('480', devTokenDecimals)
       })
     );
 
-    const totalTokensDistributed = result.tokensPerScoutByWallet.reduce((acc, scout) => acc + scout.erc20Tokens, 0);
+    const totalTokensDistributed = result.tokensPerScoutByWallet.reduce(
+      (acc, scout) => acc + scout.erc20Tokens,
+      BigInt(0)
+    );
     expect(totalTokensDistributed + result.tokensForDeveloper).toBeLessThanOrEqual(result.earnableTokens);
   });
 
@@ -94,6 +101,7 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
         rank: -1,
         weeklyAllocatedTokens,
         normalisationFactor,
+        normalisationScale,
         owners: {
           byScoutId: [],
           byWallet: []

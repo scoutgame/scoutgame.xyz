@@ -21,7 +21,8 @@ const WEEKLY_TOKENS_ALLOCATION_PERCENTAGES = [5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 
 
 export async function getTokensCountForWeekWithNormalisation({ week }: { week: string }): Promise<{
   totalTokens: bigint;
-  normalisationFactor: number;
+  normalisationFactor: bigint;
+  normalisationScale: bigint;
   normalisedDevelopers: { developer: LeaderboardDeveloper; normalisedTokens: bigint }[];
   weeklyAllocatedTokens: bigint;
   topWeeklyDevelopers: LeaderboardDeveloper[];
@@ -49,11 +50,13 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
     throw new Error('Tokens evaluated to 0');
   }
 
-  const normalisationFactor = Number(weeklyAllocatedTokens / totalEarnableTokens);
+  const normalisationScale = BigInt(100_000);
+  const normalisationFactor = (weeklyAllocatedTokens / totalEarnableTokens) * normalisationScale;
 
   return {
     totalTokens: totalEarnableTokens,
     normalisationFactor,
+    normalisationScale,
     normalisedDevelopers: tokensQuotas.map(({ developer, earnableTokens }) => ({
       developer,
       normalisedTokens: earnableTokens * BigInt(normalisationFactor)

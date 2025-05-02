@@ -5,12 +5,13 @@ import { getTokensCountForWeekWithNormalisation } from './getTokensCountForWeekW
 
 // return a map of points per scout for the week
 export async function getEstimatedTokensForWeek({ week }: { week: string }) {
-  const [{ normalisationFactor, topWeeklyDevelopers, weeklyAllocatedTokens }, nftPurchaseEvents] = await Promise.all([
-    getTokensCountForWeekWithNormalisation({
-      week
-    }),
-    getNftPurchaseEvents({ week })
-  ]);
+  const [{ normalisationFactor, normalisationScale, topWeeklyDevelopers, weeklyAllocatedTokens }, nftPurchaseEvents] =
+    await Promise.all([
+      getTokensCountForWeekWithNormalisation({
+        week
+      }),
+      getNftPurchaseEvents({ week })
+    ]);
 
   // aggregate values for each scout per topWeeklyBuilder
   const tokensPerScout = topWeeklyDevelopers.reduce<Record<string, bigint>>((__tokensPerScout, developer) => {
@@ -22,6 +23,7 @@ export async function getEstimatedTokensForWeek({ week }: { week: string }) {
       rank: developer.rank,
       weeklyAllocatedTokens,
       normalisationFactor,
+      normalisationScale,
       owners: tokenOwnership
     });
     developerTokensPerScout.forEach(({ scoutId, erc20Tokens }) => {
