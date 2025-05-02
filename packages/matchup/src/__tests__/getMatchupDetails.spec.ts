@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
 import { getWeekFromDate, getNextWeek } from '@packages/dates/utils';
-import { mockScout } from '@packages/testing/database';
+import { mockMatchup, mockScout } from '@packages/testing/database';
 import { DateTime } from 'luxon';
 
 import { MATCHUP_REGISTRATION_POOL, MATCHUP_OP_PRIZE, REGISTRATION_DAY_OF_WEEK } from '../config';
@@ -39,13 +39,11 @@ describe('getMatchupDetails', () => {
     const scout3 = await mockScout({ displayName: 'Scout 3' });
 
     // Create matchups for these scouts
-    await prisma.scoutMatchup.createMany({
-      data: [
-        { createdBy: scout1.id, week: currentWeek },
-        { createdBy: scout2.id, week: currentWeek },
-        { createdBy: scout3.id, week: currentWeek }
-      ]
-    });
+    await Promise.all([
+      mockMatchup({ createdBy: scout1.id, week: currentWeek }),
+      mockMatchup({ createdBy: scout2.id, week: currentWeek }),
+      mockMatchup({ createdBy: scout3.id, week: currentWeek })
+    ]);
 
     const details = await getMatchupDetails(currentWeek, now);
 

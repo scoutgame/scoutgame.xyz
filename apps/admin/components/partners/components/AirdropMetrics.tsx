@@ -152,6 +152,20 @@ export async function AirdropMetrics({
         total: upcomingPayout
       });
     }
+  } else if (partner === 'matchup_pool_rewards') {
+    const rewards = await getMatchupRewards(currentWeek);
+    if (rewards.length > 0) {
+      const upcomingPayout = rewards.reduce((sum, payout) => sum + payout.devAmount, BigInt(0));
+      airdrops.unshift({
+        isCurrentWeek: true,
+        week: currentWeek,
+        wallets: rewards.length,
+        walletAddresses: rewards.map((r) => r.address),
+        claimed: zero,
+        unclaimed: upcomingPayout,
+        total: upcomingPayout
+      });
+    }
   } else {
     log.error(`Please implement the current week payout for partner: ${partner}`);
   }
@@ -182,7 +196,7 @@ export async function AirdropMetrics({
     }
   }
 
-  const isLowBalance = walletBalance < airdrops[0].total;
+  const isLowBalance = walletBalance < (airdrops[0]?.total || 0);
 
   return (
     <Card>

@@ -25,7 +25,7 @@ export async function deployReferralChampionRewardsContract({ week }: { week: st
   }
 
   const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
-    adminPrivateKey: process.env.REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY as `0x${string}`,
+    adminPrivateKey: process.env.REWARDS_WALLET_PRIVATE_KEY as `0x${string}`,
     chainId: optimism.id,
     // 30 days in seconds from now
     expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),

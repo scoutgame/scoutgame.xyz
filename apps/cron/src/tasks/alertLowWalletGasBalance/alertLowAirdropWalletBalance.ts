@@ -15,7 +15,7 @@ const log = getLogger('cron-alert-low-wallet-gas-balance');
 const PARTNERS = [
   {
     id: 'optimism_referral_champion',
-    privateKeyEnvVar: 'REFERRAL_CHAMPION_REWARD_ADMIN_PRIVATE_KEY'
+    privateKeyEnvVar: 'REWARDS_WALLET_PRIVATE_KEY'
   },
   {
     id: 'octant_base_contribution',

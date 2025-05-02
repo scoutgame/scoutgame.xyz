@@ -12,6 +12,8 @@ export const minterPrivateKey = process.env.BUILDER_SMART_CONTRACT_MINTER_PRIVKE
 export const scoutProtocolChainId = scoutProtocolChain.id;
 
 export const devTokenDecimals = 18;
+export const devTokenSymbol = 'DEV';
+export const devTokenChain = base;
 
 export const protocolStartBlock = 19_000_000;
 
