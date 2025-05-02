@@ -45,7 +45,7 @@ export async function calculateWeeklyClaims({
   week: string;
   tokenBalances: TokenOwnership;
 }): Promise<WeeklyClaimsCalculated> {
-  const { normalisationFactor, topWeeklyDevelopers, weeklyAllocatedTokens } =
+  const { normalisationFactor, normalisationScale, topWeeklyDevelopers, weeklyAllocatedTokens } =
     await getTokensCountForWeekWithNormalisation({
       week
     });
@@ -222,6 +222,7 @@ export async function calculateWeeklyClaims({
 
       const { tokensPerScoutByWallet, tokensForDeveloper } = divideTokensBetweenDeveloperAndHolders({
         normalisationFactor,
+        normalisationScale,
         rank: index + 1,
         weeklyAllocatedTokens,
         owners: { byWallet: ownersByWallet, byScoutId: ownersByScoutId }
