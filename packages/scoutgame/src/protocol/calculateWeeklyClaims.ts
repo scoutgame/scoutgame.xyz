@@ -114,8 +114,8 @@ export async function calculateWeeklyClaims({
       season
     },
     select: {
-      contractAddress: true,
       tokenId: true,
+      nftType: true,
       builderId: true,
       builder: {
         select: {
@@ -132,20 +132,18 @@ export async function calculateWeeklyClaims({
     }
   });
 
-  const starterContractAddress = getStarterNFTContractAddress(week);
-  const standardContractAddress = getNFTContractAddress(week);
-
   const allClaims = topWeeklyDevelopers
     // We only want to issue claims for builders that have sold at least one NFT
     .filter((developer) => {
       const starterNft = builderNfts.find(
-        (nft) => nft.builderId === developer.developer.id && nft.contractAddress === starterContractAddress
+        (nft) => nft.builderId === developer.developer.id && nft.nftType === 'starter_pack'
       );
       const standardNft = builderNfts.find(
-        (nft) => nft.builderId === developer.developer.id && nft.contractAddress === standardContractAddress
+        (nft) => nft.builderId === developer.developer.id && nft.nftType === 'default'
       );
-
-      return !!starterNft || !!standardNft;
+      const starterBalance = starterNft ? !!tokenBalances.starter[starterNft.tokenId.toString()] : false;
+      const standardBalance = standardNft ? !!tokenBalances.standard[standardNft.tokenId.toString()] : false;
+      return starterBalance || standardBalance;
     })
     .sort((a, b) => a.rank - b.rank)
     .map((developer, index) => {

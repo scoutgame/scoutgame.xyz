@@ -11,10 +11,11 @@ jest.unstable_mockModule('@packages/scoutgame/tokens/getTokensCountForWeekWithNo
 }));
 
 const mockWeek = '2024-W42';
+const mockSeasonStart = '2024-W41';
 
 jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentWeek: jest.fn(() => mockWeek),
-  getCurrentSeasonStart: jest.fn(() => '2024-W42'),
+  getCurrentSeasonStart: jest.fn(() => mockSeasonStart),
   getSeasonConfig: jest.fn(() => ({
     gemsPerRank: 10
   }))
@@ -38,7 +39,7 @@ describe('calculateWeeklyClaims', () => {
       tokenId: 1,
       chainId: scoutProtocolChainId,
       contractAddress: mockAddress,
-      season: mockWeek
+      season: mockSeasonStart
     });
 
     const builder2Wallet = randomWalletAddress().toLowerCase();
@@ -51,7 +52,7 @@ describe('calculateWeeklyClaims', () => {
       tokenId: 2,
       chainId: scoutProtocolChainId,
       contractAddress: mockAddress,
-      season: mockWeek
+      season: mockSeasonStart
     });
 
     const builder3Wallet = randomWalletAddress().toLowerCase();
@@ -64,7 +65,7 @@ describe('calculateWeeklyClaims', () => {
       tokenId: 3,
       chainId: scoutProtocolChainId,
       contractAddress: mockAddress,
-      season: mockWeek
+      season: mockSeasonStart
     });
 
     const scout1Wallet = randomWalletAddress().toLowerCase();
@@ -95,7 +96,8 @@ describe('calculateWeeklyClaims', () => {
     (
       getTokensCountForWeekWithNormalisation as jest.Mock<typeof getTokensCountForWeekWithNormalisation>
     ).mockResolvedValueOnce({
-      normalisationFactor: 1,
+      normalisationFactor: BigInt(1),
+      normalisationScale: BigInt(1),
       weeklyAllocatedTokens: BigInt(1000),
       totalTokens: BigInt(1000),
       normalisedDevelopers: [],
@@ -158,7 +160,7 @@ describe('calculateWeeklyClaims', () => {
         {
           builderId: builder1.id,
           id: expect.any(String),
-          season: '2024-W41',
+          season: mockSeasonStart,
           type: 'gems_payout',
           week: mockWeek,
           weeklyClaimId
@@ -166,7 +168,7 @@ describe('calculateWeeklyClaims', () => {
         {
           builderId: builder2.id,
           id: expect.any(String),
-          season: '2024-W41',
+          season: mockSeasonStart,
           type: 'gems_payout',
           week: mockWeek,
           weeklyClaimId
@@ -174,7 +176,7 @@ describe('calculateWeeklyClaims', () => {
         {
           builderId: builder3.id,
           id: expect.any(String),
-          season: '2024-W41',
+          season: mockSeasonStart,
           type: 'gems_payout',
           week: mockWeek,
           weeklyClaimId

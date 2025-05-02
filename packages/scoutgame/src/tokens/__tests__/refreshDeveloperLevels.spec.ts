@@ -5,11 +5,11 @@ import {
   writeSeededBuildersGemPayoutsToDatabase
 } from '@packages/testing/deterministicBuildersGemPayoutsData';
 
-import { refreshBuilderLevels } from '../refreshBuilderLevels';
+import { refreshDeveloperLevels } from '../refreshDeveloperLevels';
 
 jest.useFakeTimers();
 
-describe('refreshBuilderLevels', () => {
+describe('refreshDeveloperLevels', () => {
   beforeEach(() => {
     jest.setSystemTime(new Date('2025-01-25'));
   });
@@ -29,7 +29,7 @@ describe('refreshBuilderLevels', () => {
     const builder170 = builders[170];
 
     // Trigger the function we are testing
-    await refreshBuilderLevels({ season });
+    await refreshDeveloperLevels({ season });
 
     const [builder1, builder2, builder3] = await Promise.all([
       prisma.userSeasonStats.findFirstOrThrow({
