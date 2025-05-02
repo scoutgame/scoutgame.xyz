@@ -13,7 +13,7 @@ export async function getEstimatedTokensForWeek({ week }: { week: string }) {
   ]);
 
   // aggregate values for each scout per topWeeklyBuilder
-  const tokensPerScout = topWeeklyDevelopers.reduce<Record<string, number>>((__tokensPerScout, developer) => {
+  const tokensPerScout = topWeeklyDevelopers.reduce<Record<string, bigint>>((__tokensPerScout, developer) => {
     const tokenOwnership = computeTokenOwnershipForBuilder({
       purchaseEvents: nftPurchaseEvents.filter((event) => event.builderNft.builderId === developer.developer.id)
     });
@@ -25,7 +25,7 @@ export async function getEstimatedTokensForWeek({ week }: { week: string }) {
       owners: tokenOwnership
     });
     developerTokensPerScout.forEach(({ scoutId, erc20Tokens }) => {
-      __tokensPerScout[scoutId] = (__tokensPerScout[scoutId] || 0) + erc20Tokens;
+      __tokensPerScout[scoutId] = (__tokensPerScout[scoutId] || BigInt(0)) + erc20Tokens;
     });
     return __tokensPerScout;
   }, {});
