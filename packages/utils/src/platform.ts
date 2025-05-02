@@ -1,7 +1,7 @@
 import env from '@beam-australia/react-env';
 import type { ReferralPlatform } from '@charmverse/core/prisma';
 
-const availablePlatforms: ReferralPlatform[] = ['telegram', 'farcaster', 'webapp', 'unknown'];
+const availablePlatforms: ReferralPlatform[] = ['telegram', 'farcaster', 'webapp', 'unknown', 'onchain_webapp'];
 
 const platform = env('SCOUTGAME_PLATFORM') || process.env.REACT_APP_SCOUTGAME_PLATFORM;
 
