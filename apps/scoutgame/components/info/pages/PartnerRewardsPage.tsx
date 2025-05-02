@@ -68,13 +68,13 @@ function Document() {
             <PartnerReward name='Base' image='/images/crypto/base.svg' href='/info/partner-rewards/octant' />
             <PartnerReward name='Octant' image='/images/crypto/octant.svg' href='/info/partner-rewards/octant' />
             <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
-            <PartnerReward name='Game7' image='/images/crypto/game7.png' href='/info/partner-rewards/game7' />
             <PartnerReward name='Celo' image='/images/crypto/celo.png' href='/info/partner-rewards/celo' />
             <PartnerReward
               name='GoodDollar'
               image='/images/logos/good-dollar.png'
               href='/info/partner-rewards/good-dollar'
             />
+            <PartnerReward name='Game7' image='/images/crypto/game7.png' status='completed' />
             <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='completed' />
             <PartnerReward name='Lit Protocol' image='/images/crypto/lit.png' status='completed' />
             <PartnerReward name='Talent Protocol' image='/images/crypto/talent.jpg' status='completed' />

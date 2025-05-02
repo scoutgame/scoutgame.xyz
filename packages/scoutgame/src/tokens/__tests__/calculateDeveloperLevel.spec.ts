@@ -10,8 +10,8 @@ import {
 import { randomWalletAddress } from '@packages/testing/generators';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
-import type { BuilderAggregateScore } from '../calculateDeveloperLevels';
-import { calculateBuilderLevels, decileTable } from '../calculateDeveloperLevels';
+import type { DeveloperAggregateScore } from '../calculateDeveloperLevels';
+import { calculateDeveloperLevels, decileTable } from '../calculateDeveloperLevels';
 
 const season = '2025-W02';
 
@@ -21,7 +21,7 @@ function validateCalculations({
   levels
 }: {
   builders: DeterministicRandomBuilderGemsPayoutActivity[];
-  levels: BuilderAggregateScore[];
+  levels: DeveloperAggregateScore[];
 }) {
   expect(levels.length).toBeGreaterThan(0);
 
@@ -40,10 +40,10 @@ function validateCalculations({
   // Verify average gems per week calculation
   for (let i = 0; i < levels.length; i++) {
     const builderFromCalculation = levels[i];
-    const matchingBuilderInput = builders.find((b) => b.id === builderFromCalculation.builderId);
+    const matchingBuilderInput = builders.find((b) => b.id === builderFromCalculation.developerId);
 
     expect(builderFromCalculation.averageGemsPerWeek).toBe(
-      Math.floor(builderFromCalculation.totalPoints / matchingBuilderInput!.activeWeeks.length)
+      Math.floor(builderFromCalculation.totalTokens / matchingBuilderInput!.activeWeeks.length)
     );
   }
 
@@ -57,18 +57,18 @@ function validateCalculations({
   const builder87 = levels[87];
   const builder156 = levels[156];
 
-  expect(builder42).toMatchObject<BuilderAggregateScore>({
-    builderId: expect.any(String),
-    totalPoints: 4800,
+  expect(builder42).toMatchObject<DeveloperAggregateScore>({
+    developerId: expect.any(String),
+    totalTokens: 4800,
     averageGemsPerWeek: 2400,
     centile: 80,
     level: 9,
     firstActiveWeek: '2025-W03',
     activeWeeks: 2
   });
-  expect(builder87).toMatchObject<BuilderAggregateScore>({
-    builderId: expect.any(String),
-    totalPoints: 1600,
+  expect(builder87).toMatchObject<DeveloperAggregateScore>({
+    developerId: expect.any(String),
+    totalTokens: 1600,
     averageGemsPerWeek: 1600,
     centile: 57,
     level: 6,
@@ -76,9 +76,9 @@ function validateCalculations({
     activeWeeks: 1
   });
 
-  expect(builder156).toMatchObject<BuilderAggregateScore>({
-    builderId: expect.any(String),
-    totalPoints: 2000,
+  expect(builder156).toMatchObject<DeveloperAggregateScore>({
+    developerId: expect.any(String),
+    totalTokens: 2000,
     averageGemsPerWeek: 666,
     centile: 23,
     level: 3,
@@ -92,7 +92,7 @@ function validateCalculations({
  */
 const indexOffset = 12344;
 
-describe('calculateBuilderLevels', () => {
+describe('calculateDeveloperLevels', () => {
   beforeEach(() => {
     jest.useFakeTimers();
 
@@ -134,7 +134,7 @@ describe('calculateBuilderLevels', () => {
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
-    const levels = await calculateBuilderLevels({ season });
+    const levels = await calculateDeveloperLevels({ season });
 
     validateCalculations({ builders, levels });
   });
@@ -156,7 +156,7 @@ describe('calculateBuilderLevels', () => {
       })
     );
 
-    const levels = await calculateBuilderLevels({ season });
+    const levels = await calculateDeveloperLevels({ season });
 
     validateCalculations({
       builders,
@@ -206,7 +206,7 @@ describe('calculateBuilderLevels', () => {
       }
     }
 
-    const levels = await calculateBuilderLevels({ season });
+    const levels = await calculateDeveloperLevels({ season });
 
     // Ignored builders should not show up
     expect(levels.length).toBe(builders.length);
