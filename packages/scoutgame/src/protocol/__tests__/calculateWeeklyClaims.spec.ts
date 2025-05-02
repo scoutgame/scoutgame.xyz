@@ -96,8 +96,8 @@ describe('calculateWeeklyClaims', () => {
       getTokensCountForWeekWithNormalisation as jest.Mock<typeof getTokensCountForWeekWithNormalisation>
     ).mockResolvedValueOnce({
       normalisationFactor: 1,
-      weeklyAllocatedTokens: 1000,
-      totalTokens: 1000,
+      weeklyAllocatedTokens: BigInt(1000),
+      totalTokens: BigInt(1000),
       normalisedDevelopers: [],
       topWeeklyDevelopers: [
         {

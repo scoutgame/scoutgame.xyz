@@ -14,5 +14,8 @@ export function calculateEarnableTokensForRank({
   // 4. This proportion is then multiplied by the total weekly allocated tokens to get the actual token amount
   //
   // As rank increases, the amount of tokens earned decreases exponentially based on the decay rate
-  return weeklyAllocatedTokens * BigInt((1 - decayRate) ** (rank - 1) - (1 - decayRate) ** rank);
+  const coefficient = (1 - decayRate) ** (rank - 1) - (1 - decayRate) ** rank;
+  const scale = 1000000; // up to 6 decimal places
+  const coefficientBigInt = BigInt(Math.floor(coefficient * scale));
+  return (weeklyAllocatedTokens * coefficientBigInt) / BigInt(scale);
 }
