@@ -15,7 +15,7 @@ describe('calculateRewardForScout', () => {
 
   it('should calculate rewards with custom pool values', () => {
     const result = calculateRewardForScout({
-      builderPool: 30,
+      developerPool: 30,
       starterPackPool: 20,
       defaultPool: 50,
       purchased: { default: 2, starterPack: 2 },
@@ -73,7 +73,7 @@ describe('calculateRewardForScout', () => {
   it('should throw an error if builder and starter pack pool are too big', () => {
     expect(() =>
       calculateRewardForScout({
-        builderPool: 0.5,
+        developerPool: 0.5,
         starterPackPool: 0.5,
         purchased: { default: 1, starterPack: 1 },
         supply: { default: 1, starterPack: 1 },

@@ -2,8 +2,6 @@ import { stringUtils } from '@charmverse/core/utilities';
 import { jest } from '@jest/globals';
 import { mockBuilderNft, mockBuilder, mockScout } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
-import { prettyPrint } from '@packages/utils/strings';
-import { type Address } from 'viem';
 
 import type { WeeklyClaimsCalculated } from '../calculateWeeklyClaims';
 import { scoutProtocolChainId } from '../constants';
@@ -151,7 +149,7 @@ describe('calculateWeeklyClaims', () => {
       }
     });
 
-    const weeklyClaimId = weeklyClaimsData.builderEvents[0].weeklyClaimId as string;
+    const weeklyClaimId = weeklyClaimsData.weeklyClaimId as string;
 
     expect(stringUtils.isUUID(weeklyClaimId)).toBe(true);
 
