@@ -8,7 +8,8 @@ import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 
 jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentSeasonStart: jest.fn(() => '2024-TEST78'),
-  getCurrentSeason: jest.fn(() => seasons[2])
+  getCurrentSeason: jest.fn(() => seasons[2]),
+  getCurrentSeasonWeekNumber: jest.fn(() => 1)
 }));
 
 const defaultScoutShare = 0.7;
@@ -17,7 +18,7 @@ const starterPackShare = 0.1;
 describe('refreshEstimatedPayouts', () => {
   it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {
     const { refreshEstimatedPayouts } = await import('../refreshEstimatedPayouts');
-    const { getPointsCountForWeekWithNormalisation } = await import(
+    const { getTokensCountForWeekWithNormalisation } = await import(
       '../../tokens/getTokensCountForWeekWithNormalisation'
     );
 
@@ -171,23 +172,23 @@ describe('refreshEstimatedPayouts', () => {
 
     const nftPayouts = await getAllSeasonNftsWithOwners({ season });
 
-    const { topWeeklyBuilders, weeklyAllocatedPoints, totalPoints, normalisationFactor, normalisedBuilders } =
-      await getPointsCountForWeekWithNormalisation({
+    const { topWeeklyDevelopers, weeklyAllocatedTokens, totalTokens, normalisationFactor, normalisedDevelopers } =
+      await getTokensCountForWeekWithNormalisation({
         week: season
       });
 
-    expect(weeklyAllocatedPoints).toBe(7_500);
+    expect(weeklyAllocatedTokens).toBe(7_500);
 
-    expect(totalPoints * normalisationFactor).toBe(7_500);
+    expect(totalTokens * normalisationFactor).toBe(7_500);
 
-    const builder1Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder1.id);
-    expect(builder1Normalised!.builder.rank).toBe(1);
+    const builder1Normalised = normalisedDevelopers.find((b) => b.developer.developer.id === builder1.id);
+    expect(builder1Normalised!.developer.rank).toBe(1);
 
-    const builder2Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder2.id);
-    expect(builder2Normalised!.builder.rank).toBe(2);
+    const builder2Normalised = normalisedDevelopers.find((b) => b.developer.developer.id === builder2.id);
+    expect(builder2Normalised!.developer.rank).toBe(2);
 
-    const builder3Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder3.id);
-    expect(builder3Normalised!.builder.rank).toBe(3);
+    const builder3Normalised = normalisedDevelopers.find((b) => b.developer.developer.id === builder3.id);
+    expect(builder3Normalised!.developer.rank).toBe(3);
 
     // Verify default NFT payouts
     const defaultNftsPayouts = nftPayouts.default;
@@ -214,7 +215,7 @@ describe('refreshEstimatedPayouts', () => {
       0
     );
 
-    const builder1PointsAllocation = builder1Normalised!.normalisedPoints;
+    const builder1PointsAllocation = builder1Normalised!.normalisedTokens;
 
     expect(builder1DefaultNftHoldersCount).toBe(2);
     expect(builder1StarterPackHoldersCount).toBe(1);
@@ -248,7 +249,7 @@ describe('refreshEstimatedPayouts', () => {
       0
     );
 
-    const builder2PointsAllocation = builder2Normalised!.normalisedPoints;
+    const builder2PointsAllocation = builder2Normalised!.normalisedTokens;
 
     expect(Math.floor(builder2PointsAllocation)).toBe(2499);
 
@@ -277,7 +278,7 @@ describe('refreshEstimatedPayouts', () => {
       0
     );
 
-    const builder3PointsAllocation = builder3Normalised!.normalisedPoints;
+    const builder3PointsAllocation = builder3Normalised!.normalisedTokens;
 
     expect(Math.floor(builder3PointsAllocation)).toBe(2424);
 

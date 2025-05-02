@@ -4,9 +4,9 @@ import { randomWalletAddress } from '@packages/testing/generators';
 import { v4 as uuid } from 'uuid';
 
 import type { TokenDistribution } from '../divideTokensBetweenDeveloperAndHolders';
-import { divideTokensBetweenBuilderAndHolders } from '../divideTokensBetweenDeveloperAndHolders';
+import { divideTokensBetweenDeveloperAndHolders } from '../divideTokensBetweenDeveloperAndHolders';
 
-describe('divideTokensBetweenBuilderAndHolders', () => {
+describe('divideTokensBetweenDeveloperAndHolders', () => {
   let builder: MockBuilder;
   let builderNft: Awaited<ReturnType<typeof mockBuilderNft>>;
   let starterPackNft: Awaited<ReturnType<typeof mockBuilderNft>>;
@@ -32,8 +32,7 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
 
   // Success Cases
   it('should correctly distribute tokens among scouts and builder, counting normal NFTs as 10x compared to starter pack NFTs', async () => {
-    const result = divideTokensBetweenBuilderAndHolders({
-      builderId: builder.id,
+    const result = divideTokensBetweenDeveloperAndHolders({
       rank,
       weeklyAllocatedTokens,
       normalisationFactor,
@@ -72,7 +71,7 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
           starterPack: 2,
           total: 17
         },
-        earnableScoutTokens: 2400,
+        earnableTokens: 2400,
         tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
           { wallet: userAddress1, nftTokens: 10, erc20Tokens: 1119 },
           { wallet: userAddress2, nftTokens: 5, erc20Tokens: 800 }
@@ -81,34 +80,17 @@ describe('divideTokensBetweenBuilderAndHolders', () => {
           { scoutId: userId1, nftTokens: 10, erc20Tokens: 1119 },
           { scoutId: userId2, nftTokens: 5, erc20Tokens: 800 }
         ]),
-        tokensForBuilder: 480
+        tokensForDeveloper: 480
       })
     );
 
     const totalTokensDistributed = result.tokensPerScoutByWallet.reduce((acc, scout) => acc + scout.erc20Tokens, 0);
-    expect(totalTokensDistributed + result.tokensForBuilder).toBeLessThanOrEqual(result.earnableScoutTokens);
-  });
-
-  // Error Cases
-  it('should throw an error if builderId is invalid', async () => {
-    expect(() =>
-      divideTokensBetweenBuilderAndHolders({
-        builderId: 'invalid-builder-id',
-        rank,
-        weeklyAllocatedTokens,
-        normalisationFactor,
-        owners: {
-          byScoutId: [],
-          byWallet: []
-        }
-      })
-    ).toThrow('Invalid builderId must be a valid UUID');
+    expect(totalTokensDistributed + result.tokensForDeveloper).toBeLessThanOrEqual(result.earnableTokens);
   });
 
   it('should throw an error if rank is invalid', async () => {
     expect(() =>
-      divideTokensBetweenBuilderAndHolders({
-        builderId: builder.id,
+      divideTokensBetweenDeveloperAndHolders({
         rank: -1,
         weeklyAllocatedTokens,
         normalisationFactor,

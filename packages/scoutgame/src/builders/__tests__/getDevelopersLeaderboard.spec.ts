@@ -2,9 +2,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { mockBuilder } from '@packages/testing/database';
 import { v4 } from 'uuid';
 
-import { getBuildersLeaderboard } from '../getBuildersLeaderboard';
+import { getDevelopersLeaderboard } from '../getDevelopersLeaderboard';
 
-describe('getBuildersLeaderboard', () => {
+describe('getDevelopersLeaderboard', () => {
   it('should return top builders sorted by gems collected, handle ties, and respect quantity parameter', async () => {
     const testWeek = '2024-W02';
     const previousWeek = '2024-W01';
@@ -79,7 +79,7 @@ describe('getBuildersLeaderboard', () => {
       data: { gemsCollected: 7 }
     });
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
+    const topBuilders = await getDevelopersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(5);
 
@@ -89,8 +89,8 @@ describe('getBuildersLeaderboard', () => {
     expect(topBuilders[3].gemsCollected).toBe(7);
     expect(topBuilders[4].gemsCollected).toBe(6);
 
-    expect(topBuilders[2].builder.id).toBe(builders[2].id);
-    expect(topBuilders[3].builder.id).toBe(builders[3].id);
+    expect(topBuilders[2].developer.id).toBe(builders[2].id);
+    expect(topBuilders[3].developer.id).toBe(builders[3].id);
 
     topBuilders.forEach((item, index) => {
       expect(item.rank).toBe(index + 1);
@@ -123,13 +123,13 @@ describe('getBuildersLeaderboard', () => {
       })
     );
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
+    const topBuilders = await getDevelopersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(5);
 
     // Check if builders are sorted by username in ascending order
     sortedBuilders.forEach((builder, index) => {
-      expect(topBuilders[index].builder.displayName).toBe(builder.displayName);
+      expect(topBuilders[index].developer.displayName).toBe(builder.displayName);
     });
 
     // Verify that all builders have the same gems collected
@@ -168,10 +168,10 @@ describe('getBuildersLeaderboard', () => {
       })
     );
 
-    const topBuilders = await getBuildersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
+    const topBuilders = await getDevelopersLeaderboard({ quantity: 5, week: testWeek, season: 'blah' });
 
     expect(topBuilders).toHaveLength(3);
-    expect(topBuilders.map((b) => b.builder.id)).toEqual(
+    expect(topBuilders.map((b) => b.developer.id)).toEqual(
       builders.filter((b) => b.builderStatus === 'approved').map((b) => b.id)
     );
   });

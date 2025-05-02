@@ -29,6 +29,9 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
   const leaderboard = await getDevelopersLeaderboard({ week, quantity: weeklyRewardableBuilders });
   const weekNumber = getCurrentSeasonWeekNumber(week);
   const weeklyTokensAllocationPercentage = WEEKLY_TOKENS_ALLOCATION_PERCENTAGES[weekNumber - 1];
+  if (!weeklyTokensAllocationPercentage) {
+    throw new Error('Weekly tokens allocation percentage not found');
+  }
   const season = getCurrentSeason(week);
   const weeklyAllocatedTokens = season.allocatedTokens * (weeklyTokensAllocationPercentage / 100);
 

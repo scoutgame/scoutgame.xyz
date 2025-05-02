@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
 import { getAllISOWeeksFromSeasonStart, getCurrentWeek } from '@packages/dates/utils';
-import { calculateBuilderLevels } from '@packages/scoutgame/points/calculateBuilderLevel';
+import { calculateDeveloperLevels } from '@packages/scoutgame/points/calculateBuilderLevel';
 
 import fs from 'fs';
 import path from 'path';
@@ -37,7 +37,7 @@ async function script() {
   }
 
   for (const week of weeks) {
-    const levels = await calculateBuilderLevels({
+    const levels = await calculateDeveloperLevels({
       season,
       week
     });
