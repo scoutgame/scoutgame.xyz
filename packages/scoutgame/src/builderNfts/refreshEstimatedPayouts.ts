@@ -74,41 +74,37 @@ export async function refreshEstimatedPayouts({
       supply.default += 1;
       supply.starterPack += 1;
 
-      const nextDefaultReward = calculateRewardForScout({
+      const expectedPayoutForNextNftPurchase = calculateRewardForScout({
         purchased: { default: 1 },
         supply,
         scoutsRewardPool: normalisedTokens
       });
-      const expectedPayoutForNextNftPurchase = Math.floor(nextDefaultReward);
 
-      const nextStarterPackReward = calculateRewardForScout({
+      const expectedPayoutForNextStarterPackPurchase = calculateRewardForScout({
         purchased: { starterPack: 1 },
         supply,
         scoutsRewardPool: normalisedTokens
       });
-      const expectedPayoutForNextStarterPackPurchase = Math.floor(nextStarterPackReward);
 
-      if (expectedPayoutForNextNftPurchase !== defaultNft.estimatedPayout) {
-        await prisma.builderNft.update({
-          where: {
-            id: defaultNft.id
-          },
-          data: {
-            estimatedPayout: expectedPayoutForNextNftPurchase,
-            estimatedPayoutDevToken: (
-              BigInt(expectedPayoutForNextNftPurchase) * BigInt(10 ** devTokenDecimals)
-            ).toString()
-          }
-        });
-      }
+      await prisma.builderNft.update({
+        where: {
+          id: defaultNft.id
+        },
+        data: {
+          estimatedPayout: Number(expectedPayoutForNextNftPurchase),
+          estimatedPayoutDevToken: (
+            BigInt(expectedPayoutForNextNftPurchase) * BigInt(10 ** devTokenDecimals)
+          ).toString()
+        }
+      });
 
-      if (starterPackNft && expectedPayoutForNextStarterPackPurchase !== starterPackNft.estimatedPayout) {
+      if (starterPackNft) {
         await prisma.builderNft.update({
           where: {
             id: starterPackNft.id
           },
           data: {
-            estimatedPayout: expectedPayoutForNextStarterPackPurchase,
+            estimatedPayout: Number(expectedPayoutForNextStarterPackPurchase),
             estimatedPayoutDevToken: (
               BigInt(expectedPayoutForNextStarterPackPurchase) * BigInt(10 ** devTokenDecimals)
             ).toString()

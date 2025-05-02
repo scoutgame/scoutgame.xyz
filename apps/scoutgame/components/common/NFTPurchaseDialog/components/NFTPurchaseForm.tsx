@@ -632,8 +632,8 @@ function calculateFutureReward({
   nftType: BuilderNftType;
   tokensToBuy: number;
 }) {
-  let rewardPercent: number;
-  const scoutsRewardPool = 100;
+  let rewardPercent: bigint;
+  const scoutsRewardPool = BigInt(100);
 
   if (nftType === 'starter_pack') {
     rewardPercent = calculateRewardForScout({
@@ -654,5 +654,5 @@ function calculateFutureReward({
       scoutsRewardPool
     });
   }
-  return Math.floor(rewardPercent);
+  return Math.floor(Number(rewardPercent));
 }

@@ -19,18 +19,18 @@ export type TokenDistribution = {
     starterPack: number;
     total: number;
   };
-  earnableTokens: number;
+  earnableTokens: bigint;
   tokensPerScoutByWallet: {
     wallet: Address;
     nftTokens: number;
-    erc20Tokens: number;
+    erc20Tokens: bigint;
   }[];
   tokensPerScoutByScoutId: {
     scoutId: string;
     nftTokens: number;
-    erc20Tokens: number;
+    erc20Tokens: bigint;
   }[];
-  tokensForDeveloper: number;
+  tokensForDeveloper: bigint;
 };
 
 /**
@@ -48,7 +48,7 @@ export function divideTokensBetweenDeveloperAndHolders({
   owners
 }: {
   rank: number;
-  weeklyAllocatedTokens: number;
+  weeklyAllocatedTokens: bigint;
   normalisationFactor: number;
   owners: TokenOwnershipForBuilder;
 }): TokenDistribution {
@@ -60,9 +60,7 @@ export function divideTokensBetweenDeveloperAndHolders({
   const nftSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalNft, 0);
   const starterPackSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
 
-  const earnableTokens = Math.floor(
-    calculateEarnableTokensForRank({ rank, weeklyAllocatedTokens }) * normalisationFactor
-  );
+  const earnableTokens = calculateEarnableTokensForRank({ rank, weeklyAllocatedTokens }) * BigInt(normalisationFactor);
 
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
     const scoutReward = calculateRewardForScout({
@@ -70,8 +68,7 @@ export function divideTokensBetweenDeveloperAndHolders({
       supply: { default: nftSupply, starterPack: starterPackSupply },
       scoutsRewardPool: earnableTokens
     });
-    const scoutTokens = Math.floor(scoutReward);
-    return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
+    return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutReward };
   });
 
   const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
@@ -80,12 +77,11 @@ export function divideTokensBetweenDeveloperAndHolders({
       supply: { default: nftSupply, starterPack: starterPackSupply },
       scoutsRewardPool: earnableTokens
     });
-    const scoutTokens = Math.floor(scoutReward);
 
-    return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
+    return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutReward };
   });
 
-  const tokensForDeveloper = Math.floor((defaultDeveloperPool * earnableTokens) / 100);
+  const tokensForDeveloper = (BigInt(defaultDeveloperPool) * earnableTokens) / BigInt(100);
 
   return {
     nftSupply: {
@@ -115,8 +111,8 @@ export function calculateRewardForScout({
   defaultPool?: number;
   purchased: { starterPack?: number; default?: number };
   supply: { starterPack: number; default: number };
-  scoutsRewardPool: number;
-}): number {
+  scoutsRewardPool: bigint;
+}): bigint {
   // sanity check
   if (defaultPool + developerPool + starterPackPool !== 100) {
     throw new Error(
@@ -128,7 +124,7 @@ export function calculateRewardForScout({
   }
   if (purchased.starterPack && starterPackPool === 0) {
     log.debug('Returning 0 for starter pack reward because starter pack pool is 0');
-    return 0;
+    return BigInt(0);
   }
   if (purchased.starterPack && purchased.starterPack > supply.starterPack) {
     throw new Error(
@@ -137,7 +133,6 @@ export function calculateRewardForScout({
   }
 
   const shareOfDefault = supply.default <= 0 ? 0 : (purchased.default ?? 0) / supply.default;
-  const shareOfStarterPack = supply.starterPack <= 0 ? 0 : (purchased.starterPack ?? 0) / supply.starterPack;
-  // Note: do as much multiplication as possible in one line to avoid precision loss
-  return (shareOfDefault * (defaultPool / 100) + shareOfStarterPack * (starterPackPool / 100)) * scoutsRewardPool;
+  const shareOfStarter = supply.starterPack <= 0 ? 0 : (purchased.starterPack ?? 0) / supply.starterPack;
+  return BigInt(shareOfDefault * (defaultPool / 100) + shareOfStarter * (starterPackPool / 100)) * scoutsRewardPool;
 }

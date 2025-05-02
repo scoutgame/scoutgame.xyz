@@ -20,10 +20,10 @@ export type PartialNftPurchaseEvent = {
 const WEEKLY_TOKENS_ALLOCATION_PERCENTAGES = [5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10];
 
 export async function getTokensCountForWeekWithNormalisation({ week }: { week: string }): Promise<{
-  totalTokens: number;
+  totalTokens: bigint;
   normalisationFactor: number;
-  normalisedDevelopers: { developer: LeaderboardDeveloper; normalisedTokens: number }[];
-  weeklyAllocatedTokens: number;
+  normalisedDevelopers: { developer: LeaderboardDeveloper; normalisedTokens: bigint }[];
+  weeklyAllocatedTokens: bigint;
   topWeeklyDevelopers: LeaderboardDeveloper[];
 }> {
   const leaderboard = await getDevelopersLeaderboard({ week, quantity: weeklyRewardableBuilders });
@@ -33,30 +33,30 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
     throw new Error('Weekly tokens allocation percentage not found');
   }
   const season = getCurrentSeason(week);
-  const weeklyAllocatedTokens = season.allocatedTokens * (weeklyTokensAllocationPercentage / 100);
+  const weeklyAllocatedTokens = season.allocatedTokens * BigInt(weeklyTokensAllocationPercentage / 100);
 
   const tokensQuotas = leaderboard.map((developer) => ({
     developer,
     earnableTokens: calculateEarnableTokensForRank({ rank: developer.rank, weeklyAllocatedTokens })
   }));
 
-  const totalEarnableTokens = tokensQuotas.reduce((acc, val) => acc + val.earnableTokens, 0);
+  const totalEarnableTokens = tokensQuotas.reduce((acc, val) => acc + val.earnableTokens, BigInt(0));
 
-  if (totalEarnableTokens === 0) {
+  if (totalEarnableTokens === BigInt(0)) {
     log.warn('Tokens evaluated to 0', {
       week
     });
     throw new Error('Tokens evaluated to 0');
   }
 
-  const normalisationFactor = weeklyAllocatedTokens / totalEarnableTokens;
+  const normalisationFactor = Number(weeklyAllocatedTokens / totalEarnableTokens);
 
   return {
     totalTokens: totalEarnableTokens,
     normalisationFactor,
     normalisedDevelopers: tokensQuotas.map(({ developer, earnableTokens }) => ({
       developer,
-      normalisedTokens: earnableTokens * normalisationFactor
+      normalisedTokens: earnableTokens * BigInt(normalisationFactor)
     })),
     weeklyAllocatedTokens,
     topWeeklyDevelopers: leaderboard

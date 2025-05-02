@@ -99,7 +99,7 @@ describe('refreshEstimatedPayouts', () => {
     });
 
     // Create builder events
-    const builderEvent1 = await prisma.builderEvent.create({
+    await prisma.builderEvent.create({
       data: {
         builderId: builder1.id,
         season,
@@ -109,7 +109,7 @@ describe('refreshEstimatedPayouts', () => {
       }
     });
 
-    const builderEvent2 = await prisma.builderEvent.create({
+    await prisma.builderEvent.create({
       data: {
         builderId: builder2.id,
         season,
@@ -175,7 +175,7 @@ describe('refreshEstimatedPayouts', () => {
 
     const nftPayouts = await getAllSeasonNftsWithOwners({ season });
 
-    const { topWeeklyDevelopers, weeklyAllocatedTokens, totalTokens, normalisationFactor, normalisedDevelopers } =
+    const { weeklyAllocatedTokens, totalTokens, normalisationFactor, normalisedDevelopers } =
       await getTokensCountForWeekWithNormalisation({
         week: season
       });

@@ -5,7 +5,7 @@ export function calculateEarnableTokensForRank({
   weeklyAllocatedTokens
 }: {
   rank: number;
-  weeklyAllocatedTokens: number;
+  weeklyAllocatedTokens: bigint;
 }) {
   // This equation calculates the tokens earned for a specific rank using a geometric decay model:
   // 1. (1 - decayRate) ** (rank - 1) represents the proportion of tokens remaining after decay for the previous rank
@@ -14,5 +14,5 @@ export function calculateEarnableTokensForRank({
   // 4. This proportion is then multiplied by the total weekly allocated tokens to get the actual token amount
   //
   // As rank increases, the amount of tokens earned decreases exponentially based on the decay rate
-  return weeklyAllocatedTokens * ((1 - decayRate) ** (rank - 1) - (1 - decayRate) ** rank);
+  return weeklyAllocatedTokens * BigInt((1 - decayRate) ** (rank - 1) - (1 - decayRate) ** rank);
 }

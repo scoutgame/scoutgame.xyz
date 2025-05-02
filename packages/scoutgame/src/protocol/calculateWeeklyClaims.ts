@@ -265,19 +265,19 @@ export async function calculateWeeklyClaims({
     });
 
   // Aggregate amounts by wallet address
-  const claimsByWallet = new Map<string, number>();
+  const claimsByWallet = new Map<string, bigint>();
 
   // Add builder claims
   allClaims.forEach((c) => {
     const wallet = c.tokensForDeveloper.wallet as string;
-    claimsByWallet.set(wallet, (claimsByWallet.get(wallet) || 0) + c.tokensForDeveloper.amount);
+    claimsByWallet.set(wallet, (claimsByWallet.get(wallet) || BigInt(0)) + c.tokensForDeveloper.amount);
   });
 
   // Add scout claims
   allClaims.forEach((c) => {
     c.tokensPerScoutByWallet.forEach((scoutClaim) => {
       const wallet = scoutClaim.wallet as string;
-      claimsByWallet.set(wallet, (claimsByWallet.get(wallet) || 0) + scoutClaim.erc20Tokens);
+      claimsByWallet.set(wallet, (claimsByWallet.get(wallet) || BigInt(0)) + scoutClaim.erc20Tokens);
     });
   });
 

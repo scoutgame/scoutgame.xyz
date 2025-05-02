@@ -219,7 +219,7 @@ function TokensClaimScreenComponent({
                     connectedAddress !== onchainClaimData.address.toLowerCase() ? (
                       <WalletLogin />
                     ) : (
-                      <TokensClaimButton isExecuting={false} handleClaim={handleWalletClaim} />
+                      <TokensClaimButton isExecuting={isExecuting} handleClaim={handleWalletClaim} />
                     )
                   ) : null}
                 </Box>
