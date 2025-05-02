@@ -290,9 +290,7 @@ export async function recordMergedPullRequest({
               questTypes.push('first-repo-contribution');
             }
 
-            if (repo.bonusPartner === 'game7') {
-              questTypes.push('contribute-game7-repo');
-            } else if (repo.bonusPartner === 'celo') {
+            if (repo.bonusPartner === 'celo') {
               questTypes.push('contribute-celo-repo');
             } else if (repo.bonusPartner === 'octant') {
               questTypes.push('contribute-octant-repo');

@@ -262,6 +262,7 @@ export async function getDevelopersForTable({
     const builderNfts = await prisma.builderNft.findMany({
       where: {
         nftType,
+        season,
         builder: {
           builderStatus: 'approved',
           deletedAt: null
