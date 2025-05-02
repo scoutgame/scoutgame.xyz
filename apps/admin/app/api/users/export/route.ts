@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import { getEstimatedPointsForWeek } from '@packages/scoutgame/points/getEstimatedPointsForWeek';
+import { getEstimatedTokensForWeek } from '@packages/scoutgame/tokens/getEstimatedTokensForWeek';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -31,7 +31,8 @@ type ScoutWithGithubUser = {
   pointsEarnedAsScout: number;
   pointsEarnedAsDeveloper: number;
   pointsEarnedTotal: number;
-  currentWeekPoints: number;
+  currentWeekTokens: number;
+  tokensEarnedTotal: number;
   dailyClaimsCount: number;
   questsCompleted: number;
   referrals: number;
@@ -144,9 +145,9 @@ export async function GET() {
     }
   });
 
-  let estimatedPointsPerScout: Record<string, number> = {};
+  let estimatedTokensPerScout: Record<string, number> = {};
   try {
-    ({ pointsPerScout: estimatedPointsPerScout } = await getEstimatedPointsForWeek({ week: getCurrentWeek() }));
+    ({ tokensPerScout: estimatedTokensPerScout } = await getEstimatedTokensForWeek({ week: getCurrentWeek() }));
   } catch (error) {
     // console.error(error);
   }
@@ -183,8 +184,8 @@ export async function GET() {
       farcasterName: user.farcasterName || undefined,
       githubLogin: user.githubUsers[0]?.login,
       currentBalance: Number(BigInt(user.currentBalanceDevToken ?? 0) / BigInt(10 ** 18)),
-      currentWeekPoints: estimatedPointsPerScout[user.id] || 0,
-      pointsEarnedTotal: estimatedPointsPerScout[user.id] || 0
+      currentWeekTokens: estimatedTokensPerScout[user.id] || 0,
+      tokensEarnedTotal: estimatedTokensPerScout[user.id] || 0
     } as const;
     const activeSeasons = [
       ...user.userSeasonStats,
@@ -237,7 +238,7 @@ export async function GET() {
           pointsEarnedAsDeveloper: seasonStat?.pointsEarnedAsBuilder || 0,
           pointsEarnedTotal: user.pointsReceived
             .filter((p) => p.season === season)
-            .reduce((acc, curr) => acc + curr.value, userProfile.currentWeekPoints),
+            .reduce((acc, curr) => acc + curr.value, userProfile.currentWeekTokens),
           regularNftsPurchased: purchaseEvents
             .filter((e) => e.builderNft?.nftType === 'default')
             .reduce((acc, curr) => acc + curr.tokensPurchased, 0),

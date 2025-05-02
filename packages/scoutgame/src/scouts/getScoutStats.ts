@@ -44,8 +44,8 @@ export async function getScoutStats(scoutId: string) {
   });
 
   return {
-    allTimePoints: scout.userAllTimeStats[0]?.pointsEarnedAsScout,
-    seasonPoints: scout.userSeasonStats[0]?.pointsEarnedAsScout,
+    allTimeTokens: scout.userAllTimeStats[0]?.pointsEarnedAsScout,
+    seasonTokens: scout.userSeasonStats[0]?.pointsEarnedAsScout,
     nftsPurchased: scout.userSeasonStats[0]?.nftsPurchased,
     buildersScouted: new Set(
       scout.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))

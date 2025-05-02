@@ -18,8 +18,8 @@ export type ScoutProfileProps = {
   scout: BasicUserInfo & {
     builderStatus?: BuilderStatus | null;
   };
-  allTimePoints: number;
-  seasonPoints: number;
+  allTimeTokens: number;
+  seasonTokens: number;
   nftsPurchased: number;
   scoutedBuilders: BuilderInfo[];
   scoutProjects?: ScoutProjectMinimal[];
@@ -27,8 +27,8 @@ export type ScoutProfileProps = {
 
 export function PublicScoutProfileContainer({
   scout,
-  allTimePoints,
-  seasonPoints,
+  allTimeTokens,
+  seasonTokens,
   nftsPurchased,
   scoutedBuilders,
   scoutProjects
@@ -62,8 +62,8 @@ export function PublicScoutProfileContainer({
         elevation={0}
       >
         <PublicScoutProfileStats
-          allTimePoints={allTimePoints}
-          seasonPoints={seasonPoints}
+          allTimeTokens={allTimeTokens}
+          seasonTokens={seasonTokens}
           buildersScouted={scoutedBuilders.length}
           nftsPurchased={nftsPurchased}
         />

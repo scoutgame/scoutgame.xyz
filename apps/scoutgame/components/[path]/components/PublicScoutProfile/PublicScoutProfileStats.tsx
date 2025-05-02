@@ -2,13 +2,13 @@ import { Box, Paper, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
 export function PublicScoutProfileStats({
-  allTimePoints,
-  seasonPoints,
+  allTimeTokens,
+  seasonTokens,
   buildersScouted,
   nftsPurchased
 }: {
-  allTimePoints: number;
-  seasonPoints: number;
+  allTimeTokens: number;
+  seasonTokens: number;
   buildersScouted: number;
   nftsPurchased: number;
 }) {
@@ -21,11 +21,11 @@ export function PublicScoutProfileStats({
         <Stack flexDirection='row' justifyContent='space-between' gap={2}>
           <Stack flexDirection='row' gap={0.5}>
             <Typography color='green.main' variant='subtitle2'>
-              {seasonPoints || 0}
+              {seasonTokens || 0}
             </Typography>
             <Image src='/images/dev-token-logo.png' width='20' height='20' alt='DEV token' />
             <Typography color='green.main' variant='subtitle2'>
-              ({allTimePoints || 0})
+              ({allTimeTokens || 0})
             </Typography>
           </Stack>
           <Typography color='green.main' variant='subtitle2'>

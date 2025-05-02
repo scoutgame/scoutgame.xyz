@@ -5,7 +5,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { DeveloperAggregateScore } from './calculateDeveloperLevels';
 import { calculateDeveloperLevels } from './calculateDeveloperLevels';
 
-export async function refreshBuilderLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek } = {}): Promise<
+export async function refreshDeveloperLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek } = {}): Promise<
   DeveloperAggregateScore[]
 > {
   const levels = await calculateDeveloperLevels({ season });

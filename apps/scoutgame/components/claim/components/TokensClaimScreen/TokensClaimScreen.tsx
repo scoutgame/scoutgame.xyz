@@ -304,7 +304,7 @@ function TokensClaimScreenComponent({
                   height: '100%',
                   objectFit: 'contain'
                 }}
-                src={`https://cdn.charmverse.io/points-claim/${user.id}/${week}.png`}
+                src={`https://cdn.charmverse.io/tokens-claim/${user.id}/${week}.png`}
                 alt='Claim success modal'
               />
             </Stack>
