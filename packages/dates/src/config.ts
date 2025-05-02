@@ -1,3 +1,4 @@
+import { getPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
 export type ISOWeek = string; // isoweek, e.g. '2024-W01'
@@ -14,6 +15,8 @@ export type SeasonConfig = {
   draft?: boolean;
   allocatedTokens: number;
 };
+
+const platform = getPlatform();
 
 // the end of each season is the start of the next season
 export const seasons: SeasonConfig[] = [
@@ -57,25 +60,37 @@ export const seasons: SeasonConfig[] = [
     preseason: true,
     allocatedTokens: 0
   },
-
-  {
-    start: '2025-W17',
-    title: 'Draft Season',
-    starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-    standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-    weeksPerSeason: 1,
-    draft: true,
-    allocatedTokens: 0
-  },
-  // Season 1
-  {
-    start: '2025-W18', // April 28th 2025
-    title: 'Season 1',
-    starterNftAddress: '0x9b11a12f267b21580ef911e404e96659d27eef84' as Address,
-    standardNftAddress: '0xa32f8737513454d6a938359614fdf47838a2b6d7' as Address,
-    weeksPerSeason: 13,
-    allocatedTokens: 2500
-  }
+  ...(platform === 'onchain_webapp'
+    ? [
+        {
+          start: '2025-W17', // April 28th 2025
+          title: 'Season 1',
+          starterNftAddress: '0x9b11a12f267b21580ef911e404e96659d27eef84' as Address,
+          standardNftAddress: '0xa32f8737513454d6a938359614fdf47838a2b6d7' as Address,
+          weeksPerSeason: 13,
+          allocatedTokens: 2500
+        }
+      ]
+    : [
+        {
+          start: '2025-W17',
+          title: 'Draft Season',
+          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          weeksPerSeason: 1,
+          draft: true,
+          allocatedTokens: 0
+        },
+        // Season 1
+        {
+          start: '2025-W18', // April 28th 2025
+          title: 'Season 1',
+          starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
+          standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
+          weeksPerSeason: 13,
+          allocatedTokens: 2500
+        }
+      ])
 ] satisfies SeasonConfig[];
 
 export const seasonStarts = seasons.map((s) => s.start);
