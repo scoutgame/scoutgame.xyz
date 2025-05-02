@@ -14,7 +14,7 @@ describe('getClaimableTokens', () => {
       season: getCurrentSeasonStart()
     });
     const result = await getClaimableTokens({ userId: builder.id });
-    expect(result.tokens).toEqual(10);
+    expect(result).toEqual(10);
   });
 
   xit('should skip points already claimed', async () => {
@@ -27,6 +27,6 @@ describe('getClaimableTokens', () => {
     });
     // await claimPoints({ userId: builder.id });
     const result = await getClaimableTokens({ userId: builder.id });
-    expect(result.tokens).toEqual(0);
+    expect(result).toEqual(0);
   });
 });

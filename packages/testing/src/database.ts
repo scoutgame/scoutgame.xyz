@@ -12,7 +12,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { randomString } from '@packages/utils/strings';
 import { v4 as uuid } from 'uuid';
-import type { Address } from 'viem';
+import { parseUnits, type Address } from 'viem';
 
 import { randomLargeInt, mockSeason, randomWalletAddress } from './generators';
 
@@ -312,6 +312,7 @@ export async function mockGemPayoutEvent({
   week?: string;
   season?: string;
 }) {
+  const recipientWallet = await prisma.scoutWallet.findFirstOrThrow({ where: { scoutId: recipientId } });
   return prisma.gemsPayoutEvent.create({
     data: {
       gems: amount,
@@ -333,16 +334,12 @@ export async function mockGemPayoutEvent({
               id: builderId
             }
           },
-          pointsReceipts: {
+          tokensReceipts: {
             create: {
-              value: amount,
-              recipientId,
-              season,
-              activities: {
-                create: {
-                  recipientType: 'scout',
-                  type: 'points',
-                  userId: recipientId
+              value: parseUnits(amount.toString(), 18).toString(),
+              recipientWallet: {
+                connect: {
+                  address: recipientWallet.address
                 }
               }
             }
