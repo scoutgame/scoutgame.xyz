@@ -66,7 +66,8 @@
     "agents:staging": "npm run start:prod:node18 -w apps/agents",
     "agents:prod": "npm run start:prod:node18 -w apps/agents",
     "agents:test": "dotenv -e .env.test.local -- npm test -w apps/agents",
-    "seed:staging": "dotenv -e .env.staging -- tsx apps/cron/src/scripts/seeder/seedWithRealCharmverseGithubData.ts"
+    "seed:staging": "dotenv -e .env.staging -- tsx apps/cron/src/scripts/seeder/seedWithRealCharmverseGithubData.ts",
+    "test:packages": "npx dotenv -e .env.test.local -- npm run test -w packages"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
