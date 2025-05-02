@@ -20,10 +20,6 @@ jest.unstable_mockModule('@packages/scoutgame/quests/getReferralsToReward', () =
   getReferralsToReward: jest.fn()
 }));
 
-jest.unstable_mockModule('@packages/scoutgame/scouts/getNewScoutRewards', () => ({
-  getNewScoutRewards: jest.fn()
-}));
-
 jest.unstable_mockModule('viem/accounts', () => ({
   privateKeyToAccount: jest.fn()
 }));
@@ -40,7 +36,6 @@ const { getBuilderEventsForPartnerRewards } = await import(
   '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward'
 );
 const { getReferralsToReward } = await import('@packages/scoutgame/quests/getReferralsToReward');
-const { getNewScoutRewards } = await import('@packages/scoutgame/scouts/getNewScoutRewards');
 const { privateKeyToAccount } = await import('viem/accounts');
 const { sendDiscordAlert } = await import('@packages/discord/sendDiscordAlert');
 
@@ -113,12 +108,6 @@ describe('alertLowAirdropWalletBalance', () => {
       { address: '0xuser1', opAmount: 40 },
       { address: '0xuser2', opAmount: 40 }
     ] as unknown as Awaited<ReturnType<typeof getReferralsToReward>>);
-
-    // Mock getNewScoutRewards
-    (getNewScoutRewards as jest.Mock<typeof getNewScoutRewards>).mockResolvedValue([
-      { address: '0xuser3', opAmount: 50 },
-      { address: '0xuser4', opAmount: 50 }
-    ]);
 
     // Mock getBuilderEventsForPartnerRewards
     (getBuilderEventsForPartnerRewards as jest.Mock<typeof getBuilderEventsForPartnerRewards>).mockResolvedValue([
