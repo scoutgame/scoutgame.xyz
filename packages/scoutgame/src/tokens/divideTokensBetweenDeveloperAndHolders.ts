@@ -8,13 +8,13 @@ import type { TokenOwnershipForBuilder } from '../protocol/resolveTokenOwnership
 import { calculateEarnableTokensForRank } from './calculateTokens';
 
 // percent that goes to the developer
-export const defaultDeveloperPool = parseUnits('20', 18);
+export const developerPool = parseUnits('20', 18);
 // go to owners of starter pack
-export const defaultStarterPackPool = parseUnits('10', 18);
+export const starterNftPool = parseUnits('10', 18);
 // go to owners of default NFTs
-export const defaultScoutPool = parseUnits('70', 18);
+export const defaultNftPool = parseUnits('70', 18);
 
-const poolScale = parseUnits('100', 18);
+export const poolScale = parseUnits('100', 18);
 
 export type TokenDistribution = {
   nftSupply: {
@@ -87,7 +87,7 @@ export function divideTokensBetweenDeveloperAndHolders({
     return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutReward };
   });
 
-  const tokensForDeveloper = (earnableTokens * defaultDeveloperPool) / poolScale;
+  const tokensForDeveloper = (earnableTokens * developerPool) / poolScale;
 
   return {
     nftSupply: {
@@ -105,14 +105,14 @@ export function divideTokensBetweenDeveloperAndHolders({
 // Returns the total weekly rewards that a scout should receive
 // Note: We use whole numbers for pools to avoid issues with addition and subtraction of floating point numbers
 export function calculateRewardForScout({
-  developerPool = defaultDeveloperPool,
-  starterPackPool = defaultStarterPackPool,
-  defaultPool = defaultScoutPool,
+  devPool = developerPool,
+  starterPackPool = starterNftPool,
+  defaultPool = defaultNftPool,
   purchased,
   supply,
   scoutsRewardPool
 }: {
-  developerPool?: bigint;
+  devPool?: bigint;
   starterPackPool?: bigint;
   defaultPool?: bigint;
   purchased: { starterPack?: number; default?: number };
@@ -120,9 +120,9 @@ export function calculateRewardForScout({
   scoutsRewardPool: bigint;
 }): bigint {
   // sanity check
-  if (defaultPool + developerPool + starterPackPool !== poolScale) {
+  if (defaultPool + devPool + starterPackPool !== poolScale) {
     throw new Error(
-      `Pool percentages must add up to ${formatUnits(poolScale, 18)}. Developer pool: ${formatUnits(developerPool, 18)}, starter pack pool: ${formatUnits(starterPackPool, 18)}, default pool: ${formatUnits(defaultPool, 18)}`
+      `Pool percentages must add up to ${formatUnits(poolScale, 18)}. Developer pool: ${formatUnits(devPool, 18)}, starter pack pool: ${formatUnits(starterPackPool, 18)}, default pool: ${formatUnits(defaultPool, 18)}`
     );
   }
   if (purchased.default && purchased.default > supply.default) {

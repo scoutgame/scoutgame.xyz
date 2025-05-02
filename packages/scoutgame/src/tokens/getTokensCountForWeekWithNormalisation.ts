@@ -34,7 +34,7 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
     throw new Error('Weekly tokens allocation percentage not found');
   }
   const season = getCurrentSeason(week);
-  const weeklyAllocatedTokens = season.allocatedTokens * BigInt(weeklyTokensAllocationPercentage / 100);
+  const weeklyAllocatedTokens = (season.allocatedTokens * BigInt(weeklyTokensAllocationPercentage)) / BigInt(100);
 
   const tokensQuotas = leaderboard.map((developer) => ({
     developer,
@@ -59,7 +59,7 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
     normalisationScale,
     normalisedDevelopers: tokensQuotas.map(({ developer, earnableTokens }) => ({
       developer,
-      normalisedTokens: earnableTokens * BigInt(normalisationFactor)
+      normalisedTokens: (earnableTokens * normalisationFactor) / normalisationScale
     })),
     weeklyAllocatedTokens,
     topWeeklyDevelopers: leaderboard

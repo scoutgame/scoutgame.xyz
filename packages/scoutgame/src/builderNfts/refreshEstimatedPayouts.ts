@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { formatUnits } from 'viem';
 
 import { devTokenDecimals } from '../protocol/constants';
 import { calculateRewardForScout } from '../tokens/divideTokensBetweenDeveloperAndHolders';
@@ -91,10 +92,8 @@ export async function refreshEstimatedPayouts({
           id: defaultNft.id
         },
         data: {
-          estimatedPayout: Number(expectedPayoutForNextNftPurchase),
-          estimatedPayoutDevToken: (
-            BigInt(expectedPayoutForNextNftPurchase) * BigInt(10 ** devTokenDecimals)
-          ).toString()
+          estimatedPayout: Math.floor(Number(formatUnits(expectedPayoutForNextNftPurchase, devTokenDecimals))),
+          estimatedPayoutDevToken: expectedPayoutForNextNftPurchase.toString()
         }
       });
 
@@ -104,10 +103,10 @@ export async function refreshEstimatedPayouts({
             id: starterPackNft.id
           },
           data: {
-            estimatedPayout: Number(expectedPayoutForNextStarterPackPurchase),
-            estimatedPayoutDevToken: (
-              BigInt(expectedPayoutForNextStarterPackPurchase) * BigInt(10 ** devTokenDecimals)
-            ).toString()
+            estimatedPayout: Math.floor(
+              Number(formatUnits(expectedPayoutForNextStarterPackPurchase, devTokenDecimals))
+            ),
+            estimatedPayoutDevToken: expectedPayoutForNextStarterPackPurchase.toString()
           }
         });
       }

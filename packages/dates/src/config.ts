@@ -1,6 +1,8 @@
 import { getPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
 
+const devTokenDecimals = 18;
+
 export type ISOWeek = string; // isoweek, e.g. '2024-W01'
 
 // Season start MUST be on a Monday, when isoweek begins
@@ -88,7 +90,7 @@ export const seasons: SeasonConfig[] = [
           starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
           standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
           weeksPerSeason: 13,
-          allocatedTokens: BigInt(1_200_000)
+          allocatedTokens: BigInt(1_200_000 * 10 ** devTokenDecimals)
         }
       ])
 ] satisfies SeasonConfig[];
