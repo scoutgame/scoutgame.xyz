@@ -1,10 +1,11 @@
 import { log } from '@charmverse/core/log';
 import type { BuilderNftType, ScoutWallet } from '@charmverse/core/prisma-client';
 import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { parseUnits } from 'viem';
 
 import type { LeaderboardDeveloper } from '../builders/getDevelopersLeaderboard';
 import { getDevelopersLeaderboard } from '../builders/getDevelopersLeaderboard';
-import { weeklyRewardableBuilders } from '../protocol/constants';
+import { devTokenDecimals, weeklyRewardableBuilders } from '../protocol/constants';
 
 import { calculateEarnableTokensForRank } from './calculateTokens';
 
@@ -50,7 +51,7 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
     throw new Error('Tokens evaluated to 0');
   }
 
-  const normalisationScale = BigInt(100_000);
+  const normalisationScale = parseUnits('1', devTokenDecimals); // account for 18 decimals
   const normalisationFactor = (normalisationScale * weeklyAllocatedTokens) / totalEarnableTokens;
 
   return {
