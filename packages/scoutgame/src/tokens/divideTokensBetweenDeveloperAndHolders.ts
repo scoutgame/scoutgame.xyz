@@ -63,7 +63,7 @@ export function divideTokensBetweenDeveloperAndHolders({
 
   // Calculate the total number of NFTs purchased by each scout
   const nftSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalNft, 0);
-  const starterPackSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
+  const starterSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
 
   const earnableTokens =
     (calculateEarnableTokensForRank({ rank, weeklyAllocatedTokens }) * normalisationFactor) / normalisationScale;
@@ -71,7 +71,7 @@ export function divideTokensBetweenDeveloperAndHolders({
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
     const scoutReward = calculateRewardForScout({
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: starterPackSupply },
+      supply: { default: nftSupply, starterPack: starterSupply },
       scoutsRewardPool: earnableTokens
     });
     return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutReward };
@@ -80,7 +80,7 @@ export function divideTokensBetweenDeveloperAndHolders({
   const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
     const scoutReward = calculateRewardForScout({
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: starterPackSupply },
+      supply: { default: nftSupply, starterPack: starterSupply },
       scoutsRewardPool: earnableTokens
     });
 
@@ -92,8 +92,8 @@ export function divideTokensBetweenDeveloperAndHolders({
   return {
     nftSupply: {
       default: nftSupply,
-      starterPack: starterPackSupply,
-      total: nftSupply + starterPackSupply
+      starterPack: starterSupply,
+      total: nftSupply + starterSupply
     },
     earnableTokens,
     tokensPerScoutByWallet,

@@ -3,10 +3,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { getScoutTokenERC20Client } from '@packages/scoutgame/protocol/clients/getScoutTokenERC20Client';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { revalidatePath } from 'next/cache';
-import { formatUnits, type Address } from 'viem';
+import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
 // This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package

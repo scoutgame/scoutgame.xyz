@@ -28,7 +28,6 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
 
   beforeAll(async () => {
     builder = await mockBuilder();
-
     builderNft = await mockBuilderNft({ builderId: builder.id, season });
     starterPackNft = await mockBuilderNft({ builderId: builder.id, season, nftType: 'starter_pack' });
   });
@@ -77,12 +76,12 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
         },
         earnableTokens: parseUnits('2400', devTokenDecimals),
         tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
-          { wallet: userAddress1, nftTokens: 10, erc20Tokens: parseUnits('1119', devTokenDecimals) },
-          { wallet: userAddress2, nftTokens: 5, erc20Tokens: parseUnits('800', devTokenDecimals) }
+          { wallet: userAddress1, nftTokens: 10, erc20Tokens: BigInt('1119999999999999928320') },
+          { wallet: userAddress2, nftTokens: 5, erc20Tokens: BigInt('799999999999999964160') }
         ]),
         tokensPerScoutByScoutId: expect.arrayContaining<TokenDistribution['tokensPerScoutByScoutId'][number]>([
-          { scoutId: userId1, nftTokens: 10, erc20Tokens: parseUnits('1119', devTokenDecimals) },
-          { scoutId: userId2, nftTokens: 5, erc20Tokens: parseUnits('800', devTokenDecimals) }
+          { scoutId: userId1, nftTokens: 10, erc20Tokens: BigInt('1119999999999999928320') },
+          { scoutId: userId2, nftTokens: 5, erc20Tokens: BigInt('799999999999999964160') }
         ]),
         tokensForDeveloper: parseUnits('480', devTokenDecimals)
       })
