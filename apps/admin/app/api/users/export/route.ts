@@ -1,7 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { convertCostToPoints } from '@packages/scoutgame/builderNfts/utils';
-import { getEstimatedPointsForWeek } from '@packages/scoutgame/points/getEstimatedPointsForWeek';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { getEstimatedTokensForWeek } from '@packages/scoutgame/tokens/getEstimatedTokensForWeek';
+import { parseUnits } from 'viem';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
 
@@ -31,7 +33,8 @@ type ScoutWithGithubUser = {
   pointsEarnedAsScout: number;
   pointsEarnedAsDeveloper: number;
   pointsEarnedTotal: number;
-  currentWeekPoints: number;
+  currentWeekTokens: number;
+  tokensEarnedTotal: number;
   dailyClaimsCount: number;
   questsCompleted: number;
   referrals: number;
@@ -123,12 +126,6 @@ export async function GET() {
         }
       },
       userWeeklyStats: true,
-      pointsReceived: {
-        select: {
-          season: true,
-          value: true
-        }
-      },
       builderNfts: {
         select: {
           season: true,
@@ -144,9 +141,9 @@ export async function GET() {
     }
   });
 
-  let estimatedPointsPerScout: Record<string, number> = {};
+  let estimatedTokensPerScout: Record<string, bigint> = {};
   try {
-    ({ pointsPerScout: estimatedPointsPerScout } = await getEstimatedPointsForWeek({ week: getCurrentWeek() }));
+    ({ tokensPerScout: estimatedTokensPerScout } = await getEstimatedTokensForWeek({ week: getCurrentWeek() }));
   } catch (error) {
     // console.error(error);
   }
@@ -183,15 +180,10 @@ export async function GET() {
       farcasterName: user.farcasterName || undefined,
       githubLogin: user.githubUsers[0]?.login,
       currentBalance: Number(BigInt(user.currentBalanceDevToken ?? 0) / BigInt(10 ** 18)),
-      currentWeekPoints: estimatedPointsPerScout[user.id] || 0,
-      pointsEarnedTotal: estimatedPointsPerScout[user.id] || 0
+      currentWeekTokens: Number(parseUnits(estimatedTokensPerScout[user.id]?.toString() || '0', devTokenDecimals)),
+      tokensEarnedTotal: Number(parseUnits(estimatedTokensPerScout[user.id]?.toString() || '0', devTokenDecimals))
     } as const;
-    const activeSeasons = [
-      ...user.userSeasonStats,
-      ...user.events,
-      ...user.pointsReceived,
-      ...allUserPurchaseEvents.map((e) => e.builderNft)
-    ]
+    const activeSeasons = [...user.userSeasonStats, ...user.events, ...allUserPurchaseEvents.map((e) => e.builderNft)]
       .filter(({ season }) => whitelistedSeasons.includes(season))
       .reduce<string[]>((acc, curr) => {
         if (!acc.includes(curr.season) && whitelistedSeasons.includes(curr.season)) {
@@ -204,6 +196,8 @@ export async function GET() {
       return {
         ...userProfile,
         pointsEarnedAsScout: 0,
+        currentWeekTokens: Number(parseUnits(userProfile.currentWeekTokens.toString(), devTokenDecimals)),
+        tokensEarnedTotal: Number(parseUnits(userProfile.tokensEarnedTotal.toString(), devTokenDecimals)),
         pointsEarnedAsDeveloper: 0,
         pointsEarnedTotal: 0,
         referrals: 0,
@@ -235,9 +229,7 @@ export async function GET() {
           tokenId: regularNft?.tokenId || undefined,
           pointsEarnedAsScout: seasonStat?.pointsEarnedAsScout || 0,
           pointsEarnedAsDeveloper: seasonStat?.pointsEarnedAsBuilder || 0,
-          pointsEarnedTotal: user.pointsReceived
-            .filter((p) => p.season === season)
-            .reduce((acc, curr) => acc + curr.value, userProfile.currentWeekPoints),
+          pointsEarnedTotal: (seasonStat?.pointsEarnedAsScout || 0) + (seasonStat?.pointsEarnedAsBuilder || 0),
           regularNftsPurchased: purchaseEvents
             .filter((e) => e.builderNft?.nftType === 'default')
             .reduce((acc, curr) => acc + curr.tokensPurchased, 0),
@@ -270,7 +262,7 @@ export async function GET() {
           ...acc,
           pointsEarnedAsScout: acc.pointsEarnedAsScout + curr.pointsEarnedAsScout,
           pointsEarnedAsDeveloper: acc.pointsEarnedAsDeveloper + curr.pointsEarnedAsDeveloper,
-          pointsEarnedTotal: acc.pointsEarnedTotal + curr.pointsEarnedTotal,
+          pointsEarnedTotal: acc.pointsEarnedTotal + curr.pointsEarnedAsScout + curr.pointsEarnedAsDeveloper,
           regularNftsPurchased: acc.regularNftsPurchased + curr.regularNftsPurchased,
           regularNftsSold: acc.regularNftsSold + curr.regularNftsSold,
           starterNftsPurchased: acc.starterNftsPurchased + curr.starterNftsPurchased,

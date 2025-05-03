@@ -7,7 +7,7 @@ import { formatUnits } from 'viem';
 
 type PartnerRewardBase<T> = T & {
   week: number;
-  points: number;
+  tokens: number;
   season: Season;
   tokenDecimals: number;
   txHash: string | null;
@@ -29,10 +29,7 @@ export type OctantBaseContributionPartnerReward = PartnerRewardBase<{
   prLink: string;
 }>;
 
-export type PartnerReward =
-  | OptimismNewScoutPartnerReward
-  | OptimismReferralChampionPartnerReward
-  | OctantBaseContributionPartnerReward;
+export type PartnerReward = OptimismReferralChampionPartnerReward | OctantBaseContributionPartnerReward;
 
 export type UnclaimedPartnerReward = {
   id: string;
@@ -157,7 +154,7 @@ export async function getPartnerRewards({
 
   partnerRewardPayouts.forEach((payout) => {
     const partnerReward: PartnerRewardBase<any> = {
-      points: Number(formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)),
+      tokens: Number(formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)),
       season,
       week: getCurrentSeasonWeekNumber(payout.payoutContract.week),
       tokenDecimals: payout.payoutContract.tokenDecimals,
@@ -191,7 +188,7 @@ export async function getPartnerRewards({
 
   return partnerRewards.sort((a, b) => {
     if (a.week === b.week) {
-      return b.points - a.points;
+      return b.tokens - a.tokens;
     }
     return b.week - a.week;
   });

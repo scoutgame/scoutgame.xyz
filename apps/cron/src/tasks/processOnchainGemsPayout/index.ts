@@ -37,7 +37,6 @@ export async function processOnchainGemsPayout(
   if (contractAddress && !seasonConfig.draft) {
     const tokenBalances = await resolveTokenOwnership({
       chainId: scoutProtocolChainId,
-      contractAddress,
       week
     });
 
@@ -48,8 +47,8 @@ export async function processOnchainGemsPayout(
 
     const generatedClaims = await generateWeeklyClaims({ week, weeklyClaimsCalculated });
 
-    log.info(`Processed ${generatedClaims.totalBuilders} builders points payout`, {
-      totalBuilders: generatedClaims.totalBuilders
+    log.info(`Processed ${generatedClaims.totalDevelopers} developers points payout`, {
+      totalDevelopers: generatedClaims.totalDevelopers
     });
 
     const notificationsSent = await sendGemsPayoutNotifications({ week });

@@ -9,7 +9,7 @@ import { BuilderCardNftDisplay } from 'components/common/Card/BuilderCard/Builde
 export function DeveloperStats({
   nftImageUrl,
   path,
-  builderPoints,
+  developerTokens,
   totalScouts,
   totalNftsSold,
   currentNftPrice,
@@ -17,7 +17,7 @@ export function DeveloperStats({
 }: {
   nftImageUrl?: string | null;
   path: string;
-  builderPoints?: number;
+  developerTokens?: number;
   totalScouts?: number;
   totalNftsSold?: number;
   currentNftPrice?: number | bigint;
@@ -53,7 +53,7 @@ export function DeveloperStats({
           </Typography>
           <Stack flexDirection='row' gap={1} alignItems='center' justifyContent='center'>
             <Typography fontWeight={500} variant='h4' color='orange.main'>
-              {builderPoints || 0}
+              {developerTokens || 0}
             </Typography>
             <Image src='/images/dev-token-logo.png' width='30' height='30' alt='DEV token' />
           </Stack>

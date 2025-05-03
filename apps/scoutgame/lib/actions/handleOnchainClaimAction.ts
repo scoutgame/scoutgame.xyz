@@ -1,10 +1,11 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { getScoutTokenERC20Client } from '@packages/scoutgame/protocol/clients/getScoutTokenERC20Client';
+import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { revalidatePath } from 'next/cache';
-import type { Address } from 'viem';
+import { formatUnits } from 'viem';
 import * as yup from 'yup';
 
 // This action needs to be in the scoutgame-ui package because it uses the createUserClaimScreen function which imports components from the scoutgame-ui package
@@ -28,8 +29,6 @@ export const handleOnchainClaimAction = authActionClient
   .action(async ({ ctx, parsedInput }) => {
     const userId = ctx.session.scoutId;
 
-    const balance = await getScoutTokenERC20Client().balanceOf({ args: { account: parsedInput.wallet as Address } });
-
     const scout = await prisma.scout.findFirst({
       where: {
         id: userId,
@@ -45,7 +44,7 @@ export const handleOnchainClaimAction = authActionClient
       throw new Error('Scout wallet is not connected to the user account');
     }
 
-    await prisma.tokensReceipt.updateMany({
+    const tokenReceipts = await prisma.tokensReceipt.findMany({
       where: {
         recipientWalletAddress: parsedInput.wallet.toLowerCase(),
         event: {
@@ -54,18 +53,62 @@ export const handleOnchainClaimAction = authActionClient
           }
         }
       },
-      data: {
-        claimTxHash: parsedInput.claimTxHash,
-        claimedAt: new Date()
+      select: {
+        recipientWallet: {
+          select: {
+            scoutId: true
+          }
+        },
+        id: true,
+        value: true,
+        event: {
+          select: {
+            builderId: true,
+            type: true
+          }
+        }
       }
     });
 
-    await prisma.scout.update({
+    let pointsEarnedAsDeveloper = BigInt(0);
+    let pointsEarnedAsScout = BigInt(0);
+
+    for (const receipt of tokenReceipts) {
+      if (receipt.event.type === 'gems_payout') {
+        if (receipt.event.builderId === receipt.recipientWallet?.scoutId) {
+          pointsEarnedAsDeveloper += BigInt(receipt.value);
+        } else {
+          pointsEarnedAsScout += BigInt(receipt.value);
+        }
+      }
+    }
+
+    await prisma.userSeasonStats.update({
       where: {
-        id: scout.id
+        userId_season: {
+          userId,
+          season: getCurrentSeasonStart()
+        }
       },
       data: {
-        currentBalanceDevToken: balance.toString()
+        pointsEarnedAsBuilder: {
+          increment: Number(formatUnits(pointsEarnedAsDeveloper, devTokenDecimals))
+        },
+        pointsEarnedAsScout: {
+          increment: Number(formatUnits(pointsEarnedAsScout, devTokenDecimals))
+        }
+      }
+    });
+
+    await prisma.tokensReceipt.updateMany({
+      where: {
+        id: {
+          in: tokenReceipts.map((receipt) => receipt.id)
+        }
+      },
+      data: {
+        claimTxHash: parsedInput.claimTxHash,
+        claimedAt: new Date()
       }
     });
 

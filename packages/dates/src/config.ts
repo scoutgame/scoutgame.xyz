@@ -1,5 +1,7 @@
-import env from '@beam-australia/react-env';
+import { getPlatform } from '@packages/utils/platform';
 import type { Address } from 'viem';
+
+const devTokenDecimals = 18;
 
 export type ISOWeek = string; // isoweek, e.g. '2024-W01'
 
@@ -13,7 +15,10 @@ export type SeasonConfig = {
   standardNftAddress: Address;
   weeksPerSeason: number;
   draft?: boolean;
+  allocatedTokens: bigint;
 };
+
+const platform = getPlatform();
 
 // the end of each season is the start of the next season
 export const seasons: SeasonConfig[] = [
@@ -24,7 +29,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     standardNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    allocatedTokens: BigInt(0)
   },
   // pre-release season
   {
@@ -33,7 +39,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0x0000000000000000000000000000000000000000',
     standardNftAddress: '0x0000000000000000000000000000000000000000',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    allocatedTokens: BigInt(0)
   },
   // Preseason 1
   {
@@ -42,7 +49,8 @@ export const seasons: SeasonConfig[] = [
     starterNftAddress: '0xd0b718589a51b07d05f03b8150e830d3627da972',
     standardNftAddress: '0x743ec903FE6D05E73b19a6DB807271bb66100e83',
     weeksPerSeason: 13,
-    preseason: true
+    preseason: true,
+    allocatedTokens: BigInt(0)
   },
   // Preseason 2
   {
@@ -51,25 +59,40 @@ export const seasons: SeasonConfig[] = [
     standardNftAddress: '0x6fbbd55274169d67f6fe9c868327003c90143440',
     title: 'Pre Season 2',
     weeksPerSeason: 15, // extended season
-    preseason: true
+    preseason: true,
+    allocatedTokens: BigInt(0)
   },
-
-  {
-    start: '2025-W17',
-    title: 'Draft Season',
-    starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-    standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
-    weeksPerSeason: 1,
-    draft: true
-  },
-  // Season 1
-  {
-    start: '2025-W18', // April 28th 2025
-    title: 'Season 1',
-    starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
-    standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
-    weeksPerSeason: 13
-  }
+  ...(platform === 'onchain_webapp'
+    ? [
+        {
+          start: '2025-W17', // April 28th 2025
+          title: 'Season 1',
+          starterNftAddress: '0x9b11a12f267b21580ef911e404e96659d27eef84' as Address,
+          standardNftAddress: '0xa32f8737513454d6a938359614fdf47838a2b6d7' as Address,
+          weeksPerSeason: 13,
+          allocatedTokens: BigInt(2500)
+        }
+      ]
+    : [
+        {
+          start: '2025-W17',
+          title: 'Draft Season',
+          starterNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          standardNftAddress: '0x0000000000000000000000000000000000000000' as Address,
+          weeksPerSeason: 1,
+          draft: true,
+          allocatedTokens: BigInt(0)
+        },
+        // Season 1
+        {
+          start: '2025-W18', // April 28th 2025
+          title: 'Season 1',
+          starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
+          standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
+          weeksPerSeason: 13,
+          allocatedTokens: BigInt(1_200_000 * 10 ** devTokenDecimals)
+        }
+      ])
 ] satisfies SeasonConfig[];
 
 export const seasonStarts = seasons.map((s) => s.start);

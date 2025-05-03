@@ -7,7 +7,7 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { formatEther, type Address } from 'viem';
 
-import { revalidateClaimPointsAction } from 'lib/actions/revalidateClaimPointsAction';
+import { revalidateClaimTokensAction } from 'lib/actions/revalidateClaimTokensAction';
 
 import { useClaimSablierAirdrop, useClaimThirdwebAirdrop } from './useClaimPartnerReward';
 
@@ -45,7 +45,7 @@ function SablierPartnerRewardsClaimButton({
   setShowPartnerRewardModal: (show: boolean) => void;
   chain: string;
 }) {
-  const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
+  const { executeAsync: revalidateClaimTokens } = useAction(revalidateClaimTokensAction);
   const { claim, isClaiming, isConnected, hasEnoughFee, feeAmount } = useClaimSablierAirdrop({
     payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
@@ -53,7 +53,7 @@ function SablierPartnerRewardsClaimButton({
     recipientAddress: partnerReward.recipientAddress as Address,
     onSuccess: () => {
       setShowPartnerRewardModal(false);
-      revalidateClaimPoints();
+      revalidateClaimTokens();
     }
   });
 
@@ -141,15 +141,13 @@ function SablierPartnerRewardsClaimButton({
 function ThirdwebPartnerRewardsClaimButton({
   partnerReward,
   showPartnerRewardModal,
-  setShowPartnerRewardModal,
-  chain
+  setShowPartnerRewardModal
 }: {
   partnerReward: UnclaimedPartnerReward;
   showPartnerRewardModal: boolean;
   setShowPartnerRewardModal: (show: boolean) => void;
-  chain: string;
 }) {
-  const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
+  const { executeAsync: revalidateClaimTokens } = useAction(revalidateClaimTokensAction);
   const { claim, isClaiming, isConnected } = useClaimThirdwebAirdrop({
     payoutContractId: partnerReward.payoutContractId,
     contractAddress: partnerReward.contractAddress as Address,
@@ -157,7 +155,7 @@ function ThirdwebPartnerRewardsClaimButton({
     recipientAddress: partnerReward.recipientAddress as Address,
     onSuccess: () => {
       setShowPartnerRewardModal(false);
-      revalidateClaimPoints();
+      revalidateClaimTokens();
     }
   });
 
@@ -257,7 +255,6 @@ function PartnerRewardsClaimButtonContent({
       partnerReward={partnerReward}
       showPartnerRewardModal={showPartnerRewardModal}
       setShowPartnerRewardModal={setShowPartnerRewardModal}
-      chain={chain}
     />
   );
 }

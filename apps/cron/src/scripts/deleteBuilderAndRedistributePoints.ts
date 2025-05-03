@@ -1,7 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
-import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
+import { sendPointsForMiscEvent } from '@packages/scoutgame/tokens/builderEvents/sendPointsForMiscEvent';
 
 async function deleteBuilderAndRedistributePoints({ builderPath }: { builderPath: string }) {
   const builder = await prisma.scout.findUnique({

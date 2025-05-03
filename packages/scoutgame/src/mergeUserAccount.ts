@@ -5,8 +5,6 @@ import { arrayUtils } from '@charmverse/core/utilities';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { v4 } from 'uuid';
 
-import { refreshPointStatsFromHistory } from './points/refreshPointStatsFromHistory';
-
 export type ProfileToKeep = 'current' | 'new';
 
 export const mergeUserAccount = async ({
@@ -245,13 +243,6 @@ export const mergeUserAccount = async ({
       timeout: 100000
     }
   );
-
-  await refreshPointStatsFromHistory({ userIdOrPath: retainedUserId }).catch((error) => {
-    log.error('Could not refresh point stats', {
-      error,
-      userId: retainedUserId
-    });
-  });
 
   await prisma
     .$transaction(

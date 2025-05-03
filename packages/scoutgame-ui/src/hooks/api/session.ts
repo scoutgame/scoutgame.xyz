@@ -16,9 +16,9 @@ export function useUserWalletAddress(address?: string) {
   return useGETImmutable(address ? `/api/session/wallet` : null, { address });
 }
 
-export function useGetClaimablePoints() {
-  return useGETImmutable<{ points: number; processingPayouts: boolean }>(
-    '/api/session/claimable-points',
+export function useGetClaimableTokens() {
+  return useGETImmutable<{ tokens: number; processingPayouts: boolean }>(
+    '/api/session/claimable-tokens',
     {},
     {
       refreshInterval: 30000

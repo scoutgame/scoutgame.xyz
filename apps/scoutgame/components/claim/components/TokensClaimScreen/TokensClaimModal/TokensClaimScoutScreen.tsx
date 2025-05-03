@@ -4,13 +4,13 @@ import React from 'react';
 export function TokensClaimScoutScreen({
   claimedTokens,
   displayName,
-  builders,
+  developers,
   baseUrl = ''
 }: {
   baseUrl?: string;
   displayName: string;
   claimedTokens: number;
-  builders: { avatar: string | null; displayName: string }[];
+  developers: { avatar: string | null; displayName: string }[];
 }) {
   return (
     <div
@@ -71,7 +71,7 @@ export function TokensClaimScoutScreen({
         SCOUT GAME!
       </div>
 
-      {builders.length ? (
+      {developers.length ? (
         <div
           style={{
             display: 'flex',
@@ -100,9 +100,9 @@ export function TokensClaimScoutScreen({
               My Top Developers:
             </h2>
 
-            {builders.map((builder) => (
+            {developers.map((developer) => (
               <div
-                key={builder.displayName}
+                key={developer.displayName}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -110,15 +110,15 @@ export function TokensClaimScoutScreen({
                 }}
               >
                 <img
-                  src={builder.avatar ?? ''}
-                  alt={builder.displayName}
+                  src={developer.avatar ?? ''}
+                  alt={developer.displayName}
                   style={{
                     width: '24px',
                     height: '24px',
                     borderRadius: '50%'
                   }}
                 />
-                <span style={{ fontWeight: 600 }}>{builder.displayName}</span>
+                <span style={{ fontWeight: 600 }}>{developer.displayName}</span>
               </div>
             ))}
           </div>

@@ -2,7 +2,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
-import { sendPointsForSocialQuest } from '../points/builderEvents/sendPointsForSocialQuest';
+import { sendPointsForSocialQuest } from '../tokens/builderEvents/sendPointsForSocialQuest';
 
 import type { QuestType } from './questRecords';
 import { resettableQuestTypes, nonResettableQuestTypes, questsRecord } from './questRecords';

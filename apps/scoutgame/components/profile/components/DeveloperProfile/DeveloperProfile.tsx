@@ -109,7 +109,7 @@ export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }
       <DeveloperStats
         nftImageUrl={builderNft?.imageUrl}
         path={builder.path}
-        builderPoints={builderStats?.seasonPoints}
+        developerTokens={builderStats?.seasonTokens}
         totalScouts={totalScouts}
         totalNftsSold={totalNftsSold}
         currentNftPrice={Number(builderNft?.currentPriceDevToken || 0) / 10 ** devTokenDecimals}

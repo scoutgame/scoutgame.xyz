@@ -662,7 +662,7 @@ export class ScoutProtocolImplementationClient {
     return result as boolean;
   }
 
-  async multiClaim(params: { args: { claims: any }; value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {
+  async multiClaim(params: { args: { claims: any }; value?: bigint; gasPrice?: bigint }): Promise<Address> {
     if (!this.walletClient) {
       throw new Error('Wallet client is required for write operations.');
     }
@@ -683,8 +683,7 @@ export class ScoutProtocolImplementationClient {
     // This is necessary because the wallet client requires account and chain, which actually cause writes to throw
     const tx = await this.walletClient.sendTransaction(txInput as any);
 
-    // Return the transaction receipt
-    return waitForTransactionReceipt(this.publicClient, tx);
+    return tx;
   }
 
   async pause(params: { value?: bigint; gasPrice?: bigint }): Promise<TransactionReceipt> {

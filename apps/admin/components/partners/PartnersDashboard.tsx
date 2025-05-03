@@ -41,12 +41,6 @@ export function PartnersDashboard() {
         </Typography>
 
         <PartnerCardContainer partner='game7' partnerName='Game7' hasGithubRepos />
-        <PartnerCardContainer
-          partner='optimism'
-          partnerName='Optimism (Top New Scouts)'
-          airdropPartner='optimism_new_scout'
-          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
-        />
         <PartnerCardContainer partner='op_supersim' partnerName='OP Supersim' hasGithubRepos />
         <PartnerCardContainer partner='moxie' partnerName='Moxie' />
       </Stack>

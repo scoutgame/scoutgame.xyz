@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import type { WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
@@ -31,7 +30,7 @@ export async function generateWeeklyClaims({
 }: {
   week: string;
   weeklyClaimsCalculated: WeeklyClaimsCalculated;
-}): Promise<{ weeklyClaims: WeeklyClaimsTyped; totalBuilders: number; totalPoints: number }> {
+}): Promise<{ weeklyClaims: WeeklyClaimsTyped; totalDevelopers: number }> {
   const existingClaim = await prisma.weeklyClaims.findUnique({
     where: {
       week
@@ -103,7 +102,6 @@ export async function generateWeeklyClaims({
 
   return {
     weeklyClaims: weeklyClaim as WeeklyClaimsTyped,
-    totalBuilders: builderEvents.length,
-    totalPoints: tokenReceipts.length
+    totalDevelopers: builderEvents.length
   };
 }

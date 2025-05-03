@@ -2,8 +2,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
 export type BuilderStats = {
-  seasonPoints?: number;
-  allTimePoints?: number;
+  seasonTokens?: number;
+  allTimeTokens?: number;
   rank: number | null;
   gemsCollected?: number;
 };
@@ -40,8 +40,8 @@ export async function getBuilderStats(builderId: string): Promise<BuilderStats> 
   });
 
   return {
-    seasonPoints: builder.userSeasonStats[0]?.pointsEarnedAsBuilder,
-    allTimePoints: builder.userAllTimeStats[0]?.pointsEarnedAsBuilder,
+    seasonTokens: builder.userSeasonStats[0]?.pointsEarnedAsBuilder,
+    allTimeTokens: builder.userAllTimeStats[0]?.pointsEarnedAsBuilder,
     rank: builder.userWeeklyStats[0]?.rank,
     gemsCollected: builder.userWeeklyStats[0]?.gemsCollected
   };

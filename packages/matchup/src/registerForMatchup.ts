@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getNextWeek, getWeekFromDate } from '@packages/dates/utils';
-import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
+import { sendPointsForMiscEvent } from '@packages/scoutgame/tokens/builderEvents/sendPointsForMiscEvent';
 import { DateTime } from 'luxon';
 
 import { REGISTRATION_DAY_OF_WEEK, MATCHUP_REGISTRATION_FEE } from './config';

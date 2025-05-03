@@ -4,21 +4,23 @@ import { seasons } from '@packages/dates/config';
 import { mockBuilder, mockBuilderNft, mockScout } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
 
+import { defaultNftPool, poolScale, starterNftPool } from '../../tokens/divideTokensBetweenDeveloperAndHolders';
 import { getAllSeasonNftsWithOwners } from '../getAllSeasonNftsWithOwners';
 
 jest.unstable_mockModule('@packages/dates/utils', () => ({
   getCurrentSeasonStart: jest.fn(() => '2024-TEST78'),
-  getCurrentSeason: jest.fn(() => seasons[2])
+  getCurrentSeason: jest.fn(() => ({
+    ...seasons[2],
+    allocatedTokens: BigInt(7500 * 10 ** 18)
+  })),
+  getCurrentSeasonWeekNumber: jest.fn(() => 1)
 }));
-
-const defaultScoutShare = 0.7;
-const starterPackShare = 0.1;
 
 describe('refreshEstimatedPayouts', () => {
   it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {
     const { refreshEstimatedPayouts } = await import('../refreshEstimatedPayouts');
-    const { getPointsCountForWeekWithNormalisation } = await import(
-      '../../points/getPointsCountForWeekWithNormalisation'
+    const { getTokensCountForWeekWithNormalisation } = await import(
+      '../../tokens/getTokensCountForWeekWithNormalisation'
     );
 
     const season = '2024-TEST78';
@@ -95,7 +97,7 @@ describe('refreshEstimatedPayouts', () => {
     });
 
     // Create builder events
-    const builderEvent1 = await prisma.builderEvent.create({
+    await prisma.builderEvent.create({
       data: {
         builderId: builder1.id,
         season,
@@ -105,7 +107,7 @@ describe('refreshEstimatedPayouts', () => {
       }
     });
 
-    const builderEvent2 = await prisma.builderEvent.create({
+    await prisma.builderEvent.create({
       data: {
         builderId: builder2.id,
         season,
@@ -115,7 +117,7 @@ describe('refreshEstimatedPayouts', () => {
       }
     });
 
-    const builderEvent3 = await prisma.builderEvent.create({
+    await prisma.builderEvent.create({
       data: {
         builderId: builder3.id,
         season,
@@ -130,9 +132,9 @@ describe('refreshEstimatedPayouts', () => {
     const scout2Wallet = randomWalletAddress();
     const scout3Wallet = randomWalletAddress();
 
-    const scout1 = await mockScout({ wallets: [scout1Wallet] });
-    const scout2 = await mockScout({ wallets: [scout2Wallet] });
-    const scout3 = await mockScout({ wallets: [scout3Wallet] });
+    await mockScout({ wallets: [scout1Wallet] });
+    await mockScout({ wallets: [scout2Wallet] });
+    await mockScout({ wallets: [scout3Wallet] });
 
     // Distribute NFTs to scouts
     await prisma.scoutNft.createMany({
@@ -164,30 +166,28 @@ describe('refreshEstimatedPayouts', () => {
         }
       ]
     });
-
-    // TODO: Add assertions to verify estimated payouts
     // Call the function to refresh estimated payouts
     await refreshEstimatedPayouts({ week: season });
 
     const nftPayouts = await getAllSeasonNftsWithOwners({ season });
 
-    const { topWeeklyBuilders, weeklyAllocatedPoints, totalPoints, normalisationFactor, normalisedBuilders } =
-      await getPointsCountForWeekWithNormalisation({
+    const { weeklyAllocatedTokens, totalTokens, normalisationFactor, normalisationScale, normalisedDevelopers } =
+      await getTokensCountForWeekWithNormalisation({
         week: season
       });
 
-    expect(weeklyAllocatedPoints).toBe(7_500);
+    expect(weeklyAllocatedTokens).toBe(BigInt(375 * 10 ** 18));
 
-    expect(totalPoints * normalisationFactor).toBe(7_500);
+    expect((totalTokens * normalisationFactor) / normalisationScale).toBe(BigInt('374999999999999999996'));
 
-    const builder1Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder1.id);
-    expect(builder1Normalised!.builder.rank).toBe(1);
+    const builder1Normalised = normalisedDevelopers.find((b) => b.developer.developer.id === builder1.id);
+    expect(builder1Normalised!.developer.rank).toBe(1);
 
-    const builder2Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder2.id);
-    expect(builder2Normalised!.builder.rank).toBe(2);
+    const builder2Normalised = normalisedDevelopers.find((b) => b.developer.developer.id === builder2.id);
+    expect(builder2Normalised!.developer.rank).toBe(2);
 
-    const builder3Normalised = normalisedBuilders.find((b) => b.builder.builder.id === builder3.id);
-    expect(builder3Normalised!.builder.rank).toBe(3);
+    const builder3Normalised = normalisedDevelopers.find((b) => b.developer.developer.id === builder3.id);
+    expect(builder3Normalised!.developer.rank).toBe(3);
 
     // Verify default NFT payouts
     const defaultNftsPayouts = nftPayouts.default;
@@ -214,28 +214,20 @@ describe('refreshEstimatedPayouts', () => {
       0
     );
 
-    const builder1PointsAllocation = builder1Normalised!.normalisedPoints;
+    const builder1PointsAllocation = builder1Normalised!.normalisedTokens;
 
     expect(builder1DefaultNftHoldersCount).toBe(2);
     expect(builder1StarterPackHoldersCount).toBe(1);
 
-    expect(Math.floor(builder1PointsAllocation)).toBe(2576);
+    expect(builder1PointsAllocation).toBe(BigInt('128826136246521694320'));
 
-    const expectedNftPayout = Math.floor(
-      (defaultScoutShare * builder1PointsAllocation) / (builder1DefaultNftHoldersCount + 1)
-    );
+    const expectedNftPayout = '30059431790855060084';
 
-    expect(Math.floor(builder1DefaultNftPayout!.estimatedPayout!)).toBe(expectedNftPayout);
+    expect(builder1DefaultNftPayout!.estimatedPayoutDevToken!).toBe(expectedNftPayout);
 
-    expect(expectedNftPayout).toBe(601);
+    const expectedStarterPackPayout = '6441306812326084716';
 
-    const expectedStarterPackPayout = Math.floor(
-      (starterPackShare * builder1PointsAllocation) / (builder1StarterPackHoldersCount + 1)
-    );
-
-    expect(expectedStarterPackPayout).toBe(128);
-
-    expect(Math.floor(builder1StarterPackPayout!.estimatedPayout!)).toBe(expectedStarterPackPayout);
+    expect(builder1StarterPackPayout!.estimatedPayoutDevToken!).toBe(expectedStarterPackPayout.toString());
 
     // Builder 2 calculations
     const builder2DefaultNftHoldersCount = builder2DefaultNftPayout!.nftOwners.reduce(
@@ -248,28 +240,26 @@ describe('refreshEstimatedPayouts', () => {
       0
     );
 
-    const builder2PointsAllocation = builder2Normalised!.normalisedPoints;
+    const builder2PointsAllocation = builder2Normalised!.normalisedTokens;
 
-    expect(Math.floor(builder2PointsAllocation)).toBe(2499);
+    expect(builder2PointsAllocation).toBe(BigInt('124961352159126043490'));
 
     expect(builder2DefaultNftHoldersCount).toBe(1);
     expect(builder2StarterPackHoldersCount).toBe(1);
 
-    const expectedBuilder2NftPayout = Math.floor(
-      (defaultScoutShare * builder2PointsAllocation) / (builder2DefaultNftHoldersCount + 1)
-    );
+    const expectedBuilder2NftPayout =
+      (defaultNftPool * builder2PointsAllocation) / BigInt(builder2DefaultNftHoldersCount + 1) / poolScale;
 
-    expect(expectedBuilder2NftPayout).toBe(874);
+    expect(expectedBuilder2NftPayout).toBe(BigInt('43736473255694115221'));
 
-    expect(Math.floor(builder2DefaultNftPayout!.estimatedPayout!)).toBe(expectedBuilder2NftPayout);
+    expect(builder2DefaultNftPayout!.estimatedPayoutDevToken!).toBe(expectedBuilder2NftPayout.toString());
 
-    const expectedBuilder2StarterPackPayout = Math.floor(
-      (starterPackShare * builder2PointsAllocation) / (builder2StarterPackHoldersCount + 1)
-    );
+    const expectedBuilder2StarterPackPayout =
+      (starterNftPool * builder2PointsAllocation) / BigInt(builder2StarterPackHoldersCount + 1) / poolScale;
 
-    expect(expectedBuilder2StarterPackPayout).toBe(124);
+    expect(expectedBuilder2StarterPackPayout).toBe(BigInt('6248067607956302174'));
 
-    expect(Math.floor(builder2StarterPackPayout!.estimatedPayout!)).toBe(expectedBuilder2StarterPackPayout);
+    expect(builder2StarterPackPayout!.estimatedPayoutDevToken!).toBe(expectedBuilder2StarterPackPayout.toString());
 
     // Builder 3 calculations
     const builder3DefaultNftHoldersCount = builder3DefaultNftPayout!.nftOwners.reduce(
@@ -277,9 +267,9 @@ describe('refreshEstimatedPayouts', () => {
       0
     );
 
-    const builder3PointsAllocation = builder3Normalised!.normalisedPoints;
+    const builder3PointsAllocation = builder3Normalised!.normalisedTokens;
 
-    expect(Math.floor(builder3PointsAllocation)).toBe(2424);
+    expect(builder3PointsAllocation).toBe(BigInt('121212511594352262185'));
 
     expect(builder3DefaultNftHoldersCount).toBe(3);
 
@@ -287,11 +277,13 @@ describe('refreshEstimatedPayouts', () => {
 
     expect(builder3WeightedHolders).toBe(builder3DefaultNftHoldersCount);
 
-    const expectedBuilder3NftPayout = Math.floor(0.7 * builder3PointsAllocation * (1 / (builder3WeightedHolders + 1)));
+    const expectedBuilder3NftPayout =
+      ((builder3PointsAllocation / BigInt(builder3WeightedHolders + 1)) * defaultNftPool) / poolScale;
 
-    expect(expectedBuilder3NftPayout).toBe(424);
+    expect(expectedBuilder3NftPayout).toBe(BigInt('21212189529011645882'));
 
-    expect(Math.floor(builder3DefaultNftPayout!.estimatedPayout!)).toBe(expectedBuilder3NftPayout);
+    expect(builder3DefaultNftPayout!.estimatedPayoutDevToken!).toBe(expectedBuilder3NftPayout.toString());
+    // TODO expect(builder3DefaultNftPayout!.estimatedPayout!).toBe(expectedBuilder3NftPayout);
 
     const nft4AfterRefresh = await prisma.builderNft.findUniqueOrThrow({
       where: {
@@ -299,6 +291,7 @@ describe('refreshEstimatedPayouts', () => {
       }
     });
 
+    expect(nft4AfterRefresh.estimatedPayoutDevToken).toBe('0');
     expect(nft4AfterRefresh.estimatedPayout).toBe(0);
   });
 });

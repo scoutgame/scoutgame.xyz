@@ -1,15 +1,16 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { formatUnits } from 'viem';
 
 export type TopScout = {
   id: string;
   path: string;
   displayName: string;
   avatar: string | null;
-  buildersScouted: number;
+  developersScouted: number;
   nftsHeld: number;
-  allTimePoints?: number;
-  seasonPoints?: number;
+  allTimeTokens?: number;
+  seasonTokens?: number;
 };
 
 export async function getTopScouts({ limit }: { limit: number }): Promise<TopScout[]> {
@@ -66,31 +67,31 @@ export async function getTopScouts({ limit }: { limit: number }): Promise<TopSco
   });
   return topScouts
     .map((scout) => {
-      const buildersScouted = new Set(
+      const developersScouted = new Set(
         scout.user.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
       ).size;
       const nftsHeld = scout.user.userSeasonStats[0]?.nftsPurchased || 0;
-      const allTimePoints = scout.user.userAllTimeStats[0]?.pointsEarnedAsScout || 0;
-      const seasonPoints = scout.pointsEarnedAsScout;
+      const allTimeTokens = scout.user.userAllTimeStats[0]?.pointsEarnedAsScout || 0;
+      const seasonTokens = scout.pointsEarnedAsScout;
       return {
         id: scout.user.id,
         path: scout.user.path,
         displayName: scout.user.displayName,
         avatar: scout.user.avatar,
-        buildersScouted,
+        developersScouted,
         nftsHeld,
-        allTimePoints,
-        seasonPoints
+        allTimeTokens,
+        seasonTokens
       };
     })
     .sort((a, b) => {
-      const seasonPointsDifference = b.seasonPoints - a.seasonPoints;
-      if (seasonPointsDifference !== 0) {
-        return seasonPointsDifference;
+      const seasonTokensDifference = b.seasonTokens - a.seasonTokens;
+      if (seasonTokensDifference !== 0) {
+        return seasonTokensDifference;
       }
-      const allTimePointsDifference = b.allTimePoints - a.allTimePoints;
-      if (allTimePointsDifference !== 0) {
-        return allTimePointsDifference;
+      const allTimeTokensDifference = b.allTimeTokens - a.allTimeTokens;
+      if (allTimeTokensDifference !== 0) {
+        return allTimeTokensDifference;
       }
       const nftsHeldDifference = b.nftsHeld - a.nftsHeld;
       if (nftsHeldDifference !== 0) {
@@ -98,12 +99,12 @@ export async function getTopScouts({ limit }: { limit: number }): Promise<TopSco
       }
       return 0;
     })
-    .filter((scout) => scout.seasonPoints || scout.allTimePoints || scout.nftsHeld);
+    .filter((scout) => scout.seasonTokens || scout.allTimeTokens || scout.nftsHeld);
 }
 
 // TODO: cache the pointsEarned as part of userWeeklyStats like we do in userSeasonStats
 export async function getTopScoutsByWeek({ week, limit = 10 }: { week: string; limit?: number }) {
-  const receipts = await prisma.pointsReceipt.findMany({
+  const receipts = await prisma.tokensReceipt.findMany({
     where: {
       event: {
         type: 'gems_payout',
@@ -111,20 +112,33 @@ export async function getTopScoutsByWeek({ week, limit = 10 }: { week: string; l
         week
       }
     },
-    include: {
+    select: {
       event: {
-        include: { gemsPayoutEvent: true }
-      }
+        select: {
+          builderId: true
+        }
+      },
+      recipientWallet: {
+        select: {
+          scoutId: true
+        }
+      },
+      value: true
     }
   });
-  const scoutReceipts = receipts.filter((receipt) => receipt.event.builderId !== receipt.recipientId);
+  const scoutReceipts = receipts
+    .filter((receipt) => receipt.recipientWallet && receipt.event.builderId !== receipt.recipientWallet.scoutId)
+    .map((receipt) => ({
+      scoutId: receipt.recipientWallet?.scoutId as string,
+      tokens: Number(formatUnits(BigInt(receipt.value), 18))
+    }));
   // create a map of userId to pointsEarned
-  const pointsEarnedByUserId = scoutReceipts.reduce<Record<string, number>>((acc, receipt) => {
-    acc[receipt.recipientId!] = (acc[receipt.recipientId!] || 0) + receipt.value;
+  const tokensEarnedByUserId = scoutReceipts.reduce<Record<string, number>>((acc, receipt) => {
+    acc[receipt.scoutId] = (acc[receipt.scoutId] || 0) + receipt.tokens;
     return acc;
   }, {});
   // create a list of users sorted by pointsEarned
-  const sortedUsers = Object.entries(pointsEarnedByUserId)
+  const sortedUsers = Object.entries(tokensEarnedByUserId)
     .sort((a, b) => b[1] - a[1])
     .slice(0, limit);
 
@@ -139,6 +153,6 @@ export async function getTopScoutsByWeek({ week, limit = 10 }: { week: string; l
 
   return sortedUsers.map((user) => ({
     ...users.find((u) => u.id === user[0]),
-    pointsEarned: pointsEarnedByUserId[user[0]]
+    tokensEarned: tokensEarnedByUserId[user[0]]
   }));
 }

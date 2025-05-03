@@ -5,13 +5,13 @@ import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Image from 'next/image';
 
 export function PublicBuilderStats({
-  allTimePoints,
-  seasonPoints,
+  allTimeTokens,
+  seasonTokens,
   totalScouts,
   totalNftsSold
 }: {
-  seasonPoints?: number;
-  allTimePoints?: number;
+  seasonTokens?: number;
+  allTimeTokens?: number;
   totalScouts?: number;
   totalNftsSold?: number;
 }) {

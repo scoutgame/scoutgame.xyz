@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getLastWeek } from '@packages/dates/utils';
-import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
+import { getDevelopersLeaderboard } from '@packages/scoutgame/builders/getDevelopersLeaderboard';
 import type { Last14DaysRank } from '@packages/scoutgame/builders/interfaces';
 import { DateTime } from 'luxon';
 
@@ -20,14 +20,14 @@ export async function updateBuildersCardActivity(date: DateTime) {
   });
   const yesterdayDate = DateTime.now().minus({ days: 1 }).toFormat('yyyy-MM-dd');
   const lastWeek = getLastWeek(date);
-  const buildersLeaderboard = await getBuildersLeaderboard({
+  const developersLeaderboard = await getDevelopersLeaderboard({
     // If monday get the last week's leaderboard since it contains sunday's data
     week: weekDay === 1 ? lastWeek : getCurrentWeek()
   });
 
   const buildersLeaderboardRecord: Record<string, { rank: number | null }> = {};
-  for (const { builder, rank } of buildersLeaderboard) {
-    buildersLeaderboardRecord[builder.id] = { rank };
+  for (const { developer, rank } of developersLeaderboard) {
+    buildersLeaderboardRecord[developer.id] = { rank };
   }
 
   const buildersRanksRecord: Record<string, (number | null)[]> = {};

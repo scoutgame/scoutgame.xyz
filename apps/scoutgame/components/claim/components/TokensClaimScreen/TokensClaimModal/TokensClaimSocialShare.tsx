@@ -8,7 +8,7 @@ type ShareMessageProps = {
   isBuilder: boolean;
   platform: 'x' | 'telegram' | 'warpcast';
   userPath: string;
-  builders: { farcasterHandle?: string; displayName: string }[];
+  developers: { farcasterHandle?: string; displayName: string }[];
   week: string;
 };
 
@@ -56,10 +56,10 @@ function getShareMessage({
   isBuilder,
   platform,
   userPath,
-  builders,
+  developers,
   week
 }: ShareMessageProps & { referralCode?: string }) {
-  const imageUrl = `${window.location.origin}/points-claim/${userPath}?week=${week}`;
+  const imageUrl = `${window.location.origin}/tokens-claim/${userPath}?week=${week}`;
   let shareMessage = isBuilder
     ? `I earned ${totalUnclaimedTokens} DEV Tokens this week as a Top Developer!`
     : `I earned ${totalUnclaimedTokens} DEV Tokens this week as a Top Scout!`;
@@ -69,13 +69,13 @@ function getShareMessage({
   } else if (isBuilder) {
     shareMessage += ` Discover my work and scout me to see what I'm building next!\nMy profile: https://scoutgame.xyz/u/${userPath}\n\n`;
   } else {
-    const buildersFormatted =
+    const developersFormatted =
       platform === 'warpcast'
-        ? builders
-            .map((builder) => (builder.farcasterHandle ? `@${builder.farcasterHandle}` : builder.displayName))
+        ? developers
+            .map((developer) => (developer.farcasterHandle ? `@${developer.farcasterHandle}` : developer.displayName))
             .join(', ')
-        : builders.map((builder) => builder.displayName).join(', ');
-    shareMessage += ` Big shoutout to my top Developers: ${buildersFormatted}. Who will be next?\nMy profile: https://scoutgame.xyz/u/${userPath}\n\n`;
+        : developers.map((developer) => developer.displayName).join(', ');
+    shareMessage += ` Big shoutout to my top Developers: ${developersFormatted}. Who will be next?\nMy profile: https://scoutgame.xyz/u/${userPath}\n\n`;
   }
   const urls = {
     x: `https://x.com/intent/tweet?text=${encodeURIComponent(`${shareMessage}\nJoin me! ${referralCode ? `https://scoutgame.xyz/login?ref=${referralCode}` : ''}`)}`,

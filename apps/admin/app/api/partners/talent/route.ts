@@ -1,6 +1,6 @@
 import type { Scout } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getBuildersLeaderboard } from '@packages/scoutgame/builders/getBuildersLeaderboard';
+import { getDevelopersLeaderboard } from '@packages/scoutgame/builders/getDevelopersLeaderboard';
 import { getTalentProfile } from '@packages/scoutgame/talent/getTalentProfile';
 
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     return new Response('Week parameter is required', { status: 400 });
   }
 
-  const topBuilders = await getBuildersLeaderboard({ week });
+  const topBuilders = await getDevelopersLeaderboard({ week });
 
   const buildersWithTalent: {
     wallet: string;
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
   for (const builder of topBuilders) {
     const fullBuilder = await prisma.scout.findUniqueOrThrow({
       where: {
-        id: builder.builder.id,
+        id: builder.developer.id,
         deletedAt: null
       },
       select: {

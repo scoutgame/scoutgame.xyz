@@ -1,10 +1,11 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { formatUnits } from 'viem';
 
-import { calculateRewardForScout } from '../points/divideTokensBetweenBuilderAndHolders';
-import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
 import { devTokenDecimals } from '../protocol/constants';
+import { calculateRewardForScout } from '../tokens/divideTokensBetweenDeveloperAndHolders';
+import { getTokensCountForWeekWithNormalisation } from '../tokens/getTokensCountForWeekWithNormalisation';
 
 import type { BuilderNftWithOwners } from './getAllSeasonNftsWithOwners';
 import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';
@@ -23,8 +24,8 @@ export async function refreshEstimatedPayouts({
 }): Promise<void> {
   const season = getCurrentSeasonStart(week);
 
-  const [{ normalisedBuilders }, data] = await Promise.all([
-    getPointsCountForWeekWithNormalisation({
+  const [{ normalisedDevelopers }, data] = await Promise.all([
+    getTokensCountForWeekWithNormalisation({
       week
     }),
     getAllSeasonNftsWithOwners({ season })
@@ -51,7 +52,7 @@ export async function refreshEstimatedPayouts({
     where: {
       season,
       builderId: {
-        notIn: normalisedBuilders.map((b) => b.builder.builder.id)
+        notIn: normalisedDevelopers.map((b) => b.developer.developer.id)
       }
     },
     data: {
@@ -60,10 +61,10 @@ export async function refreshEstimatedPayouts({
     }
   });
 
-  for (const { builder, normalisedPoints } of normalisedBuilders) {
-    if (!builderIdToRefresh || builderIdToRefresh === builder.builder.id) {
-      const defaultNft = seasonBuilderNfts[builder.builder.id];
-      const starterPackNft = seasonStarterPackNfts[builder.builder.id];
+  for (const { developer, normalisedTokens } of normalisedDevelopers) {
+    if (!builderIdToRefresh || builderIdToRefresh === developer.developer.id) {
+      const defaultNft = seasonBuilderNfts[developer.developer.id];
+      const starterPackNft = seasonStarterPackNfts[developer.developer.id];
 
       const supply = {
         starterPack: (starterPackNft?.nftOwners || []).reduce((acc, nft) => acc + nft.balance, 0),
@@ -74,44 +75,38 @@ export async function refreshEstimatedPayouts({
       supply.default += 1;
       supply.starterPack += 1;
 
-      const nextDefaultReward = calculateRewardForScout({
+      const expectedPayoutForNextNftPurchase = calculateRewardForScout({
         purchased: { default: 1 },
         supply,
-        scoutsRewardPool: normalisedPoints
+        scoutsRewardPool: normalisedTokens
       });
-      const expectedPayoutForNextNftPurchase = Math.floor(nextDefaultReward);
 
-      const nextStarterPackReward = calculateRewardForScout({
+      const expectedPayoutForNextStarterPackPurchase = calculateRewardForScout({
         purchased: { starterPack: 1 },
         supply,
-        scoutsRewardPool: normalisedPoints
+        scoutsRewardPool: normalisedTokens
       });
-      const expectedPayoutForNextStarterPackPurchase = Math.floor(nextStarterPackReward);
 
-      if (expectedPayoutForNextNftPurchase !== defaultNft.estimatedPayout) {
-        await prisma.builderNft.update({
-          where: {
-            id: defaultNft.id
-          },
-          data: {
-            estimatedPayout: expectedPayoutForNextNftPurchase,
-            estimatedPayoutDevToken: (
-              BigInt(expectedPayoutForNextNftPurchase) * BigInt(10 ** devTokenDecimals)
-            ).toString()
-          }
-        });
-      }
+      await prisma.builderNft.update({
+        where: {
+          id: defaultNft.id
+        },
+        data: {
+          estimatedPayout: Math.floor(Number(formatUnits(expectedPayoutForNextNftPurchase, devTokenDecimals))),
+          estimatedPayoutDevToken: expectedPayoutForNextNftPurchase.toString()
+        }
+      });
 
-      if (starterPackNft && expectedPayoutForNextStarterPackPurchase !== starterPackNft.estimatedPayout) {
+      if (starterPackNft) {
         await prisma.builderNft.update({
           where: {
             id: starterPackNft.id
           },
           data: {
-            estimatedPayout: expectedPayoutForNextStarterPackPurchase,
-            estimatedPayoutDevToken: (
-              BigInt(expectedPayoutForNextStarterPackPurchase) * BigInt(10 ** devTokenDecimals)
-            ).toString()
+            estimatedPayout: Math.floor(
+              Number(formatUnits(expectedPayoutForNextStarterPackPurchase, devTokenDecimals))
+            ),
+            estimatedPayoutDevToken: expectedPayoutForNextStarterPackPurchase.toString()
           }
         });
       }
