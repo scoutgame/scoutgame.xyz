@@ -17,8 +17,8 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
 
   const rank = 1;
   const weeklyAllocatedTokens = parseUnits('100000', devTokenDecimals);
-  const normalisationFactor = parseUnits('80', devTokenDecimals);
-  const normalisationScale = parseUnits('100', devTokenDecimals);
+  const normalisationFactor = BigInt(80);
+  const normalisationScale = BigInt(100);
 
   const userId1 = uuid();
   const userId2 = uuid();

@@ -51,7 +51,7 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
   }
 
   const normalisationScale = BigInt(100_000);
-  const normalisationFactor = (weeklyAllocatedTokens / totalEarnableTokens) * normalisationScale;
+  const normalisationFactor = (normalisationScale * weeklyAllocatedTokens) / totalEarnableTokens;
 
   return {
     totalTokens: totalEarnableTokens,
