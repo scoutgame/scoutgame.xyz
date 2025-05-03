@@ -1,12 +1,7 @@
 import type { BuilderEvent, NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import {
-  getCurrentSeasonStart,
-  getPreviousSeason,
-  getCurrentSeasonWeekNumber,
-  getValidSeasons
-} from '@packages/dates/utils';
+import { getCurrentSeasonStart, getPreviousSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import { formatUnits } from 'viem';
 
