@@ -2,9 +2,10 @@ import { stringUtils } from '@charmverse/core/utilities';
 import { jest } from '@jest/globals';
 import { mockBuilderNft, mockBuilder, mockScout } from '@packages/testing/database';
 import { randomWalletAddress } from '@packages/testing/generators';
+import { formatUnits } from 'viem';
 
 import type { WeeklyClaimsCalculated } from '../calculateWeeklyClaims';
-import { scoutProtocolChainId } from '../constants';
+import { devTokenDecimals, scoutProtocolChainId } from '../constants';
 
 jest.unstable_mockModule('@packages/scoutgame/tokens/getTokensCountForWeekWithNormalisation', () => ({
   getTokensCountForWeekWithNormalisation: jest.fn()
@@ -185,35 +186,35 @@ describe('calculateWeeklyClaims', () => {
       claims: expect.arrayContaining([
         {
           address: builder1Wallet,
-          amount: '15000000000000000000'
+          amount: '15'
         },
         {
           address: builder2Wallet,
-          amount: '12000000000000000000'
+          amount: '12'
         },
         {
           address: builder3Wallet,
-          amount: '11000000000000000000'
+          amount: '11'
         },
         {
           address: scout1Wallet,
-          amount: '7000000000000000000'
+          amount: '7'
         },
         {
           address: scout2Wallet,
-          amount: '5000000000000000000'
+          amount: '5'
         },
         {
           address: scout3Wallet,
-          amount: '7000000000000000000'
+          amount: '7'
         },
         {
           address: scout4Wallet,
-          amount: '7000000000000000000'
+          amount: '7'
         },
         {
           address: scout5Wallet,
-          amount: '7000000000000000000'
+          amount: '7'
         }
       ]),
       weeklyClaimId,
@@ -317,7 +318,7 @@ describe('calculateWeeklyClaims', () => {
 
     const totalTokensInClaims = weeklyClaimsData.claims.reduce((sum, claim) => sum + Number(claim.amount), 0);
     const totalTokensInReceipts = weeklyClaimsData.tokenReceipts.reduce(
-      (sum, receipt) => sum + Number(receipt.value),
+      (sum, receipt) => sum + Number(formatUnits(BigInt(receipt.value), devTokenDecimals)),
       0
     );
 

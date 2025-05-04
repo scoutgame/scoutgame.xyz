@@ -5,7 +5,6 @@ import { updateReferralUsers } from '@packages/users/referrals/updateReferralUse
 import type { Address } from 'viem';
 
 import { sendNotifications } from '../notifications/sendNotifications';
-import { getScoutTokenERC20Client } from '../protocol/clients/getScoutTokenERC20Client';
 import { devTokenDecimals } from '../protocol/constants';
 
 import { refreshBuilderNftPrice } from './refreshBuilderNftPrice';
@@ -53,10 +52,6 @@ export async function recordNftMint({
     }
   });
 
-  const currentBalanceInScoutToken = await getScoutTokenERC20Client().balanceOf({
-    args: { account: recipientAddress }
-  });
-
   const week = getWeekFromDate(sentAt);
 
   await prisma.builderEvent.create({
@@ -82,15 +77,6 @@ export async function recordNftMint({
           txLogIndex
         }
       }
-    }
-  });
-
-  await prisma.scout.update({
-    where: {
-      id: scoutId
-    },
-    data: {
-      currentBalanceDevToken: currentBalanceInScoutToken.toString()
     }
   });
 

@@ -283,7 +283,7 @@ export async function calculateWeeklyClaims({
   // Convert to final claims array
   const claims: ProvableClaim[] = Array.from(claimsByWallet.entries()).map(([address, amount]) => ({
     address: address as Address,
-    amount: (BigInt(amount) * BigInt(10 ** devTokenDecimals)).toString()
+    amount: amount.toString()
   }));
 
   const merkleProofs = generateMerkleTree(claims);
