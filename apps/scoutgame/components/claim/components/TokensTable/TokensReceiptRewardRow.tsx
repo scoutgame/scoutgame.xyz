@@ -8,17 +8,16 @@ import type {
   PartnerReward
 } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type {
-  BuilderPointsReceiptReward,
-  LeaderboardRankPointsReceiptReward,
-  PointsReceiptReward,
-  PreviousSeasonPointsReceiptsReward,
-  MatchupWinnerPointsReceiptReward,
-  SoldNftsPointsReceiptReward
-} from '@packages/scoutgame/points/getPointsReceiptsRewards';
+  DeveloperTokensReceiptReward,
+  LeaderboardRankTokensReceiptReward,
+  TokensReceiptReward,
+  MatchupWinnerTokensReceiptReward,
+  SoldNftsTokensReceiptReward
+} from '@packages/scoutgame/points/getTokensReceiptsRewards';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 
-import { PointsCell } from '../common/PointsCell';
+import { TokensCell } from '../common/TokensCell';
 
 function getOrdinal(n: number): string {
   const ordinal = new Intl.PluralRules('en', { type: 'ordinal' }).select(n);
@@ -26,17 +25,17 @@ function getOrdinal(n: number): string {
   return `${n}${suffix}`;
 }
 
-function BuilderRewardRow({ builderReward }: { builderReward: BuilderPointsReceiptReward }) {
+function DeveloperRewardRow({ developerReward }: { developerReward: DeveloperTokensReceiptReward }) {
   return (
     <TableRow>
       <TableCell align='left'>
         <Typography>Developer rewards</Typography>
       </TableCell>
       <TableCell align='center'>
-        <Typography>{builderReward.week}</Typography>
+        <Typography>{developerReward.week}</Typography>
       </TableCell>
       <TableCell align='right'>
-        <PointsCell points={builderReward.points} />
+        <TokensCell tokens={developerReward.points} />
       </TableCell>
     </TableRow>
   );
@@ -45,7 +44,7 @@ function BuilderRewardRow({ builderReward }: { builderReward: BuilderPointsRecei
 function LeaderboardRankRewardRow({
   leaderboardRankReward
 }: {
-  leaderboardRankReward: LeaderboardRankPointsReceiptReward;
+  leaderboardRankReward: LeaderboardRankTokensReceiptReward;
 }) {
   return (
     <TableRow>
@@ -56,13 +55,13 @@ function LeaderboardRankRewardRow({
         <Typography>{leaderboardRankReward.week}</Typography>
       </TableCell>
       <TableCell align='right'>
-        <PointsCell points={leaderboardRankReward.points} />
+        <TokensCell tokens={leaderboardRankReward.points} />
       </TableCell>
     </TableRow>
   );
 }
 
-function SoldNftsRewardRow({ soldNftsReward }: { soldNftsReward: SoldNftsPointsReceiptReward }) {
+function SoldNftsRewardRow({ soldNftsReward }: { soldNftsReward: SoldNftsTokensReceiptReward }) {
   return (
     <TableRow>
       <TableCell align='left'>
@@ -75,23 +74,7 @@ function SoldNftsRewardRow({ soldNftsReward }: { soldNftsReward: SoldNftsPointsR
         <Typography>{soldNftsReward.week}</Typography>
       </TableCell>
       <TableCell align='right'>
-        <PointsCell points={soldNftsReward.points} />
-      </TableCell>
-    </TableRow>
-  );
-}
-
-function PreviousSeasonRewardRow({ reward }: { reward: PreviousSeasonPointsReceiptsReward }) {
-  return (
-    <TableRow>
-      <TableCell align='left'>
-        <Typography>{reward.title}</Typography>
-      </TableCell>
-      <TableCell align='center'>
-        <Typography>-</Typography>
-      </TableCell>
-      <TableCell align='right'>
-        <PointsCell points={reward.points} />
+        <TokensCell tokens={soldNftsReward.points} />
       </TableCell>
     </TableRow>
   );
@@ -134,39 +117,8 @@ function OctantBaseContributionPartnerRewardRow({
       </TableCell>
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
-          <Typography>{partnerReward.points}</Typography>
+          <Typography>{partnerReward.tokens}</Typography>
           <Image alt='' src='/images/crypto/usdc.png' width={20} height={20} />
-        </Stack>
-      </TableCell>
-    </TableRow>
-  );
-}
-
-function NewScoutPartnerRewardRow({ partnerReward }: { partnerReward: OptimismNewScoutPartnerReward }) {
-  const blockExplorerUrl = getChainById(partnerReward.chainId)?.blockExplorerUrls[0];
-  return (
-    <TableRow>
-      <TableCell align='left'>
-        <Stack direction='row' alignItems='center' justifyContent='flex-start' gap={0.5}>
-          <Typography>New Scout {getOrdinal(partnerReward.position)}</Typography>
-          {partnerReward.txHash && blockExplorerUrl ? (
-            <Link
-              href={`${blockExplorerUrl}/tx/${partnerReward.txHash}`}
-              target='_blank'
-              sx={{ display: 'flex', alignItems: 'center' }}
-            >
-              <OpenInNewIcon sx={{ fontSize: 16 }} />
-            </Link>
-          ) : null}
-        </Stack>
-      </TableCell>
-      <TableCell align='center'>
-        <Typography>{partnerReward.week}</Typography>
-      </TableCell>
-      <TableCell align='right'>
-        <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
-          <Typography>{partnerReward.points}</Typography>
-          <Image alt='' src='/images/crypto/op.png' width={20} height={20} />
         </Stack>
       </TableCell>
     </TableRow>
@@ -199,7 +151,7 @@ function ReferralChampionPartnerRewardRow({ partnerReward }: { partnerReward: Op
       </TableCell>
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
-          <Typography>{partnerReward.points}</Typography>
+          <Typography>{partnerReward.tokens}</Typography>
           <Image alt='' src='/images/crypto/op.png' width={20} height={20} />
         </Stack>
       </TableCell>
@@ -207,7 +159,7 @@ function ReferralChampionPartnerRewardRow({ partnerReward }: { partnerReward: Op
   );
 }
 
-function MatchupWinnerRewardRow({ reward }: { reward: MatchupWinnerPointsReceiptReward }) {
+function MatchupWinnerRewardRow({ reward }: { reward: MatchupWinnerTokensReceiptReward }) {
   return (
     <TableRow>
       <TableCell align='left'>
@@ -220,7 +172,6 @@ function MatchupWinnerRewardRow({ reward }: { reward: MatchupWinnerPointsReceipt
       </TableCell>
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
-          <PointsCell points={reward.points} />
           <Typography sx={{ ml: 1 }}>{reward.opAmount}</Typography>
           <Image alt='' src='/images/crypto/op.png' width={20} height={20} />
         </Stack>
@@ -229,27 +180,27 @@ function MatchupWinnerRewardRow({ reward }: { reward: MatchupWinnerPointsReceipt
   );
 }
 
-export function PointsReceiptRewardRow({
-  pointsReceiptReward
+export function TokensReceiptRewardRow({
+  tokensReceiptReward
 }: {
-  pointsReceiptReward: PointsReceiptReward | PartnerReward;
+  tokensReceiptReward: TokensReceiptReward | PartnerReward;
 }) {
-  if (pointsReceiptReward.type === 'builder') {
-    return <BuilderRewardRow builderReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'leaderboard_rank') {
-    return <LeaderboardRankRewardRow leaderboardRankReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'sold_nfts') {
-    return <SoldNftsRewardRow soldNftsReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'previous_season') {
-    return <PreviousSeasonRewardRow reward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'optimism_new_scout') {
-    return <NewScoutPartnerRewardRow partnerReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'optimism_referral_champion') {
-    return <ReferralChampionPartnerRewardRow partnerReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'octant_base_contribution') {
-    return <OctantBaseContributionPartnerRewardRow partnerReward={pointsReceiptReward} />;
-  } else if (pointsReceiptReward.type === 'matchup_winner') {
-    return <MatchupWinnerRewardRow reward={pointsReceiptReward} />;
+  if (tokensReceiptReward.type === 'developer') {
+    return <DeveloperRewardRow developerReward={tokensReceiptReward} />;
+  } else if (tokensReceiptReward.type === 'leaderboard_rank') {
+    return <LeaderboardRankRewardRow leaderboardRankReward={tokensReceiptReward} />;
+  } else if (tokensReceiptReward.type === 'sold_nfts') {
+    return <SoldNftsRewardRow soldNftsReward={tokensReceiptReward} />;
+  } else if (tokensReceiptReward.type === 'matchup_winner') {
+    return <MatchupWinnerRewardRow reward={tokensReceiptReward} />;
+  } else if (tokensReceiptReward.type === 'optimism_referral_champion') {
+    return <ReferralChampionPartnerRewardRow partnerReward={tokensReceiptReward} />;
+  } else if (tokensReceiptReward.type === 'octant_base_contribution') {
+    return (
+      <OctantBaseContributionPartnerRewardRow
+        partnerReward={tokensReceiptReward as OctantBaseContributionPartnerReward}
+      />
+    );
   }
 
   return null;

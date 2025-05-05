@@ -4,13 +4,13 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { generateMerkleTree } from '@charmverse/core/protocol';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { getPointsCountForWeekWithNormalisation } from '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
 import { parseUnits, type Address } from 'viem';
 
 import { getNFTContractAddress } from '../builderNfts/constants';
 import { divideTokensBetweenDeveloperAndHolders } from '../points/divideTokensBetweenDeveloperAndHolders';
+import { getTokensCountForWeekWithNormalisation } from '../points/getTokensCountForWeekWithNormalisation';
 
 import { scoutProtocolChainId, devTokenDecimals } from './constants';
 import type { TokenOwnership } from './resolveTokenOwnership';
@@ -48,7 +48,7 @@ export async function calculateWeeklyClaims({
   tokenBalances: TokenOwnership;
 }): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyDevelopers, weeklyAllocatedTokens } =
-    await getPointsCountForWeekWithNormalisation({
+    await getTokensCountForWeekWithNormalisation({
       week
     });
 

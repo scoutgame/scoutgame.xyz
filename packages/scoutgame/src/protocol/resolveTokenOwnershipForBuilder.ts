@@ -4,7 +4,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
 import { validMintNftPurchaseEvent } from '../builderNfts/constants';
-import type { PartialNftPurchaseEvent } from '../points/getPointsCountForWeekWithNormalisation';
+import type { PartialNftPurchaseEvent } from '../points/getTokensCountForWeekWithNormalisation';
 import { mapPurchaseEventsToOwnership } from '../points/mapPurchaseEventsToOwnership';
 
 export async function getNftPurchaseEvents({

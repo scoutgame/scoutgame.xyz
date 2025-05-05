@@ -19,7 +19,7 @@ export type PartialNftPurchaseEvent = {
 
 const WEEKLY_TOKENS_ALLOCATION_PERCENTAGES = [5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10];
 
-export async function getPointsCountForWeekWithNormalisation({ week }: { week: string }): Promise<{
+export async function getTokensCountForWeekWithNormalisation({ week }: { week: string }): Promise<{
   totalTokens: number;
   normalisationFactor: number;
   normalisedDevelopers: { developer: LeaderboardDeveloper; normalisedTokens: number }[];

@@ -1,7 +1,7 @@
 import type { BuilderNftType } from '@charmverse/core/prisma';
 import type { Address } from 'viem';
 
-import type { PartialNftPurchaseEvent } from './getPointsCountForWeekWithNormalisation';
+import type { PartialNftPurchaseEvent } from './getTokensCountForWeekWithNormalisation';
 
 /**
  * scoutId -> nftType -> tokenId -> number of tokens

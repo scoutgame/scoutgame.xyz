@@ -1,16 +1,16 @@
 'use client';
 
 import { Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
-import type { BuilderReward } from '@packages/scoutgame/builders/getBuilderRewards';
+import type { DeveloperReward } from '@packages/scoutgame/builders/getDeveloperRewards';
 import { Avatar } from '@packages/scoutgame-ui/components/common/Avatar';
 import Link from 'next/link';
 
 import { useGlobalModal } from 'components/common/ModalProvider';
 
-import { PointsCell } from '../common/PointsCell';
 import { StyledTableBody, StyledTableHead } from '../common/StyledTable';
+import { TokensCell } from '../common/TokensCell';
 
-function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
+function DeveloperRewardsTableRow({ reward }: { reward: DeveloperReward }) {
   const { openModal } = useGlobalModal();
 
   return (
@@ -39,7 +39,7 @@ function BuilderRewardsTableRow({ reward }: { reward: BuilderReward }) {
       <TableCell align='center'>{reward.rank ? <Typography>{reward.rank}</Typography> : '-'}</TableCell>
 
       <TableCell align='right'>
-        <PointsCell points={reward.points} />
+        <TokensCell tokens={reward.tokens} />
       </TableCell>
     </TableRow>
   );
@@ -72,14 +72,14 @@ export function BuilderRewardsTable({
         }}
       >
         {builderRewards.map((reward) => (
-          <BuilderRewardsTableRow key={reward.path} reward={reward} />
+          <DeveloperRewardsTableRow key={reward.path} reward={reward} />
         ))}
         <TableRow>
           <TableCell colSpan={3}>
             <Typography>Total DEV Tokens</Typography>
           </TableCell>
           <TableCell align='right'>
-            <PointsCell points={totalPoints} />
+            <TokensCell tokens={totalPoints} />
           </TableCell>
         </TableRow>
       </StyledTableBody>

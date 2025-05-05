@@ -6,8 +6,8 @@ import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getCla
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { Suspense } from 'react';
 
-import { UnclaimedTokensTable } from './PointsTable/UnclaimedTokensTable';
 import { TokensClaimScreen } from './TokensClaimScreen/TokensClaimScreen';
+import { UnclaimedTokensTable } from './TokensTable/UnclaimedTokensTable';
 
 export async function TokensClaimContainer() {
   const session = await getSession();

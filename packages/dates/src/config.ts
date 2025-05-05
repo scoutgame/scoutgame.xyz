@@ -1,4 +1,3 @@
-import env from '@beam-australia/react-env';
 import type { Address } from 'viem';
 
 export type ISOWeek = string; // isoweek, e.g. '2024-W01'
@@ -72,10 +71,10 @@ export const seasons: SeasonConfig[] = [
   {
     start: '2025-W18', // April 28th 2025
     title: 'Season 1',
-    starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
-    standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
+    starterNftAddress: '0x9b11a12f267b21580ef911e404e96659d27eef84' as Address,
+    standardNftAddress: '0xa32f8737513454d6a938359614fdf47838a2b6d7' as Address,
     weeksPerSeason: 13,
-    allocatedTokens: 1_200_000
+    allocatedTokens: 2500
   }
 ] satisfies SeasonConfig[];
 

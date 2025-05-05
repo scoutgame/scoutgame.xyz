@@ -4,7 +4,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
-import { getPointsReceiptsRewards } from '@packages/scoutgame/points/getPointsReceiptsRewards';
+import { getTokensReceiptsRewards } from '@packages/scoutgame/points/getTokensReceiptsRewards';
 
 import { TokensTable } from './TokensTable';
 
@@ -17,7 +17,7 @@ export async function ClaimedTokensTable() {
 
   const [error, data] = await safeAwaitSSRData(
     Promise.all([
-      getPointsReceiptsRewards({
+      getTokensReceiptsRewards({
         userId: user.id,
         isClaimed: true
       }),
@@ -33,12 +33,12 @@ export async function ClaimedTokensTable() {
     return null;
   }
 
-  const [pointsReceiptRewards, partnerRewards] = data;
+  const [tokensReceiptRewards, partnerRewards] = data;
 
   return (
     <TokensTable
       emptyMessage='History yet to be made.'
-      pointsReceiptRewards={pointsReceiptRewards}
+      tokensReceiptRewards={tokensReceiptRewards}
       partnerRewards={partnerRewards}
       title={
         <Stack direction='row' alignItems='center' gap={0.5}>

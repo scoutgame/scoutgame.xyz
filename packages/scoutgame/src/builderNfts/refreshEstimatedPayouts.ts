@@ -3,7 +3,7 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 import { calculateRewardForScout } from '../points/divideTokensBetweenDeveloperAndHolders';
-import { getPointsCountForWeekWithNormalisation } from '../points/getPointsCountForWeekWithNormalisation';
+import { getTokensCountForWeekWithNormalisation } from '../points/getTokensCountForWeekWithNormalisation';
 import { devTokenDecimals } from '../protocol/constants';
 
 import type { BuilderNftWithOwners } from './getAllSeasonNftsWithOwners';
@@ -24,7 +24,7 @@ export async function refreshEstimatedPayouts({
   const season = getCurrentSeasonStart(week);
 
   const [{ normalisedDevelopers }, data] = await Promise.all([
-    getPointsCountForWeekWithNormalisation({
+    getTokensCountForWeekWithNormalisation({
       week
     }),
     getAllSeasonNftsWithOwners({ season })

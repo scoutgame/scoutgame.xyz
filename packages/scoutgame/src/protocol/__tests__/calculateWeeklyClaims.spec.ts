@@ -13,9 +13,7 @@ jest.unstable_mockModule('@packages/scoutgame/points/getPointsCountForWeekWithNo
 }));
 
 const { calculateWeeklyClaims } = await import('../calculateWeeklyClaims');
-const { getPointsCountForWeekWithNormalisation } = await import(
-  '@packages/scoutgame/points/getPointsCountForWeekWithNormalisation'
-);
+const { getPointsCountForWeekWithNormalisation } = await import('../../points/getTokensCountForWeekWithNormalisation');
 
 describe('calculateWeeklyClaims', () => {
   it('should generate the correct claims', async () => {

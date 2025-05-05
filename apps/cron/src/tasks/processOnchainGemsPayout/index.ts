@@ -16,10 +16,10 @@ import { log } from './logger';
 
 export { log };
 
-export async function processOnchainGemsPayout(
-  ctx: Context,
-  { season = getCurrentSeasonStart(), now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
-) {
+export async function processOnchainGemsPayout({
+  season = getCurrentSeasonStart(),
+  now = DateTime.utc()
+}: { season?: string; now?: DateTime } = {}) {
   const week = getLastWeek(now);
   const seasonConfig = getSeasonConfig(season);
 
@@ -56,15 +56,19 @@ export async function processOnchainGemsPayout(
     log.info(`Sent notifications for ${notificationsSent} developers`, { notificationsSent });
   }
 
-  await Promise.all([
-    deployMatchupRewards({ week }).catch((error) => {
-      log.error('Error deploying matchup rewards', { error, week, season });
-    }),
-    deployReferralChampionRewardsContract({ week }).catch((error) => {
-      log.error('Error deploying referral champion rewards contract', { error, week, season });
-    }),
-    deployOctantBasePartnerRewards({ week }).catch((error) => {
-      log.error('Error deploying octant & base partner rewards contract', { error, week, season });
-    })
-  ]);
+  // await Promise.all([
+  //   deployMatchupRewards({ week }).catch((error) => {
+  //     log.error('Error deploying matchup rewards', { error, week, season });
+  //   }),
+  //   deployReferralChampionRewardsContract({ week }).catch((error) => {
+  //     log.error('Error deploying referral champion rewards contract', { error, week, season });
+  //   }),
+  //   deployOctantBasePartnerRewards({ week }).catch((error) => {
+  //     log.error('Error deploying octant & base partner rewards contract', { error, week, season });
+  //   })
+  // ]);
 }
+
+processOnchainGemsPayout({
+  now: DateTime.now().plus({ week: 1 }).startOf('week')
+});

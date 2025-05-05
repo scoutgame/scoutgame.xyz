@@ -4,8 +4,8 @@ import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/L
 import { Suspense } from 'react';
 
 import { BuilderRewardsScreen } from './components/BuilderRewardsScreen/BuilderRewardsScreen';
-import { ClaimedTokensTable } from './components/PointsTable/ClaimedTokensTable';
 import { TokensClaimContainer } from './components/TokensClaimContainer';
+import { ClaimedTokensTable } from './components/TokensTable/ClaimedTokensTable';
 
 export type ClaimPageProps = {
   period: string;
