@@ -13,7 +13,13 @@ type MatchupRegistration = {
 export async function getRegistrations(week: string): Promise<MatchupRegistration[]> {
   const entries = await prisma.scoutMatchup.findMany({
     where: {
-      week
+      week,
+      OR: [
+        {
+          registrationTx: { status: 'success' }
+        },
+        { freeRegistration: true }
+      ]
     },
     orderBy: {
       createdAt: 'asc'
