@@ -44,7 +44,11 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     adminPrivateKey: process.env.REWARDS_WALLET_PRIVATE_KEY as `0x${string}`,
     recipients: recipients.map(({ address, opAmount }) => ({
       address,
-      amount: opAmount
+      amount: opAmount,
+      meta: {
+        week,
+        position: 'top_3'
+      }
     })),
     tokenAddress: optimismTokenAddress,
     tokenDecimals: optimismTokenDecimals,
@@ -66,7 +70,11 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     adminPrivateKey: process.env.REWARDS_WALLET_PRIVATE_KEY as `0x${string}`,
     recipients: recipients.map(({ address, devAmount }) => ({
       address,
-      amount: devAmount
+      amount: devAmount,
+      meta: {
+        week,
+        position: 'top_3'
+      }
     })),
     tokenAddress: devTokenContractAddress,
     tokenDecimals: devTokenDecimals,

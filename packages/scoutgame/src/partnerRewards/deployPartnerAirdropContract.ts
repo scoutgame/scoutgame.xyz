@@ -15,7 +15,7 @@ export async function deployPartnerAirdropContract({
 }: {
   partner: string;
   week: string;
-  recipients: { address: `0x${string}`; amount: bigint }[];
+  recipients: { address: `0x${string}`; amount: bigint; meta: any }[];
   tokenAddress: `0x${string}`;
   tokenDecimals: number;
   tokenSymbol: string;
@@ -66,13 +66,10 @@ export async function deployPartnerAirdropContract({
       blockNumber,
       rewardPayouts: {
         createMany: {
-          data: recipients.map(({ address, amount }) => ({
+          data: recipients.map(({ address, amount, meta }) => ({
             amount: amount.toString(),
             walletAddress: address,
-            meta: {
-              week,
-              position: 'top_3'
-            }
+            meta
           }))
         }
       }
