@@ -11,6 +11,7 @@ import { getProtocolWriteClient } from '@packages/scoutgame/protocol/clients/get
 import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/protocol/contracts/ScoutProtocolImplementation';
 import type { ClaimInput } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
+import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';
@@ -155,7 +156,10 @@ function TokensClaimScreenComponent({
     <Paper
       sx={{
         gap: 1,
-        padding: 4,
+        padding: {
+          xs: 2,
+          md: 4
+        },
         borderRadius: 2,
         display: 'flex',
         width: '100%',
@@ -187,10 +191,7 @@ function TokensClaimScreenComponent({
 
               <Stack
                 sx={{
-                  flexDirection: {
-                    xs: 'row',
-                    md: 'column'
-                  },
+                  flexDirection: 'column',
                   gap: 1,
                   justifyContent: 'space-between',
                   width: '100%',
@@ -203,7 +204,7 @@ function TokensClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {totalUnclaimedTokens}
+                      {ceilToPrecision(totalUnclaimedTokens, 4)}
                     </Typography>
                     <Image
                       width={35}
@@ -216,7 +217,7 @@ function TokensClaimScreenComponent({
                     <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
                   </Stack>
                 </Stack>
-                <Box width={{ xs: 'fit-content', md: '100%' }} my={1} display='flex' justifyContent='center'>
+                <Box width='100%' my={1} display='flex' justifyContent='center'>
                   {Object.entries(onchainClaims).map(([address, claims]) => (
                     <Stack
                       flexDirection='row'
@@ -226,27 +227,29 @@ function TokensClaimScreenComponent({
                       width='100%'
                       key={address}
                     >
-                      <Stack flexDirection='row' alignItems='center' gap={1}>
-                        <Image
-                          src='/images/dev-token-logo.png'
-                          width={18}
-                          height={18}
-                          alt='DEV token icon'
-                          priority={true}
-                        />
-                        <Typography>
-                          {ceilToPrecision(
-                            Number(
-                              formatUnits(
-                                claims.reduce((acc, claim) => acc + claim.amount, BigInt(0)),
-                                devTokenDecimals
-                              )
-                            ),
-                            4
-                          )}
-                        </Typography>
+                      <Stack flexDirection='column' gap={0.5}>
+                        <Stack flexDirection='row' alignItems='center' gap={1}>
+                          <Image
+                            src='/images/dev-token-logo.png'
+                            width={18}
+                            height={18}
+                            alt='DEV token icon'
+                            priority={true}
+                          />
+                          <Typography>
+                            {ceilToPrecision(
+                              Number(
+                                formatUnits(
+                                  claims.reduce((acc, claim) => acc + claim.amount, BigInt(0)),
+                                  devTokenDecimals
+                                )
+                              ),
+                              4
+                            )}
+                          </Typography>
+                        </Stack>
+                        <Typography>{shortenHex(address, 6)}</Typography>
                       </Stack>
-                      <Typography>{shortenHex(address, 6)}</Typography>
                       <Stack maxWidth={150}>
                         {connectedAddress !== address ? (
                           <WalletLogin key={address} text='Sign in' size='small' />
