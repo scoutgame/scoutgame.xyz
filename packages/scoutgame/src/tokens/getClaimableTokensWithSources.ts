@@ -4,7 +4,7 @@ import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
-import type { Address } from 'viem';
+import { formatUnits, type Address } from 'viem';
 
 import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
 import type { WeeklyClaimsTyped } from '../protocol/calculateWeeklyClaims';
@@ -16,6 +16,7 @@ export type ClaimInput = {
   week: ISOWeek;
   amount: bigint;
   proofs: string[];
+  address: Address;
 };
 
 export type ClaimData = {
@@ -33,14 +34,13 @@ export type UnclaimedTokensSource = {
   tokens: number;
   repos: string[];
   processingPayouts: boolean;
-  claimData: ClaimData;
+  claims: Record<Address, ClaimInput[]>;
 };
 
 export async function getClaimableTokensWithSources(userId: string): Promise<UnclaimedTokensSource> {
   const scoutWallets = await prisma.scoutWallet.findMany({
     where: {
-      scoutId: userId,
-      primary: true
+      scoutId: userId
     },
     select: {
       address: true
@@ -85,9 +85,15 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
-  const claimedWeeks = (await getTokensClaimedEvents({ address: scoutWallets[0].address as Address })).map(
-    (ev) => ev.args.week
-  );
+  const claimedWeeks = (
+    await Promise.all(
+      scoutWallets.map((wallet) =>
+        getTokensClaimedEvents({ address: wallet.address as Address }).then((events) =>
+          events.map((ev) => ev.args.week)
+        )
+      )
+    )
+  ).flat();
 
   const developerIdTokensRecord: Record<string, number> = {};
   for (const receipt of tokenReceipts) {
@@ -160,28 +166,45 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   })) as WeeklyClaimsTyped[];
 
-  const claimProofs: ClaimInput[] = weeklyClaims
-    .map((claim) => ({
-      week: claim.week,
-      amount:
-        BigInt(
-          claim.claims.leaves.find((leaf) => leaf.address.toLowerCase() === scoutWallets[0].address.toLowerCase())
-            ?.amount ?? '0'
-        ) ?? 0,
-      proofs: claim.proofsMap[scoutWallets[0].address.toLowerCase()] ?? []
-    }))
-    .filter((proof) => proof.amount > 0 && proof.proofs.length > 0 && !claimedWeeks.includes(proof.week));
-
   const isProcessing = await checkIsProcessingPayouts({ week: getLastWeek() });
+
+  const claims: Record<Address, ClaimInput[]> = {};
+
+  let totalTokens = 0;
+
+  for (const scoutWallet of scoutWallets) {
+    const filteredWalletClaims = weeklyClaims.filter(
+      (claim) => !claimedWeeks.includes(claim.week) && claim.proofsMap[scoutWallet.address.toLowerCase()]?.length > 0
+    );
+
+    const claimInputs: ClaimInput[] = [];
+
+    for (const claim of filteredWalletClaims) {
+      const claimAmount = BigInt(
+        claim.claims.leaves.find((leaf) => leaf.address.toLowerCase() === scoutWallet.address.toLowerCase())?.amount ??
+          '0'
+      );
+
+      totalTokens += Number(formatUnits(claimAmount, devTokenDecimals));
+
+      claimInputs.push({
+        week: claim.week,
+        address: scoutWallet.address as Address,
+        amount: claimAmount,
+        proofs: claim.proofsMap[scoutWallet.address.toLowerCase()] ?? []
+      });
+    }
+
+    if (claimInputs.length > 0) {
+      claims[scoutWallet.address as Address] = claimInputs;
+    }
+  }
 
   return {
     developers: developersWithFarcaster,
-    tokens: claimProofs.reduce((acc, proof) => acc + Number(proof.amount), 0),
+    tokens: totalTokens,
     repos: uniqueRepos.slice(0, 3),
-    claimData: {
-      address: scoutWallets[0].address as Address,
-      weeklyProofs: claimProofs
-    },
+    claims,
     processingPayouts: isProcessing
   };
 }

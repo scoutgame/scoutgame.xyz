@@ -162,7 +162,7 @@ export async function getTokensReceiptsRewards({
     .filter((tr) => tr.event.season === season && tr.recipientWallet?.scoutId === userId)
     .forEach((tr) => {
       currentSeasonReceipts.push({
-        value: Number(BigInt(tr.value) / BigInt(10 ** devTokenDecimals)),
+        value: Number(formatUnits(BigInt(tr.value), devTokenDecimals)),
         event: tr.event,
         recipientId: tr.recipientWallet!.scoutId!
       });

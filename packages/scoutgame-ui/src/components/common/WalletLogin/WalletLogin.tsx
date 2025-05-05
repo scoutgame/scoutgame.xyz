@@ -159,8 +159,8 @@ function WalletLoginButton({
             width: '100%'
           },
           minWidth: size === 'large' ? '250px' : 0,
-          px: size === 'large' ? 2.5 : 0,
-          py: size === 'large' ? 1.5 : 0,
+          px: size === 'large' ? 2.5 : 1,
+          py: size === 'large' ? 1.5 : 0.5,
           fontWeight: 600,
           ...sx
         }}

@@ -78,8 +78,16 @@ export async function calculateWeeklyClaims({
       },
       deletedAt: null
     },
-    include: {
-      wallets: true
+    select: {
+      id: true,
+      wallets: {
+        where: {
+          primary: true
+        },
+        select: {
+          address: true
+        }
+      }
     }
   });
 

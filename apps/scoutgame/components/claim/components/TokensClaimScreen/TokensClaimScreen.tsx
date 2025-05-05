@@ -8,16 +8,19 @@ import { getLastWeek } from '@packages/dates/utils';
 import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import { getProtocolWriteClient } from '@packages/scoutgame/protocol/clients/getProtocolWriteClient';
-import { scoutProtocolChainId, devTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/protocol/contracts/ScoutProtocolImplementation';
-import type { ClaimData } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
+import type { ClaimInput } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
+import { ceilToPrecision } from '@packages/utils/numbers';
+import { shortenHex } from '@packages/utils/strings';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import type { Address } from 'viem';
 import { formatUnits } from 'viem';
 import { base } from 'viem/chains';
 import { useWalletClient } from 'wagmi';
@@ -37,8 +40,9 @@ type TokensClaimScreenProps = {
     displayName: string;
   }[];
   repos: string[];
-  onchainClaimData?: ClaimData;
+  onchainClaims: Record<Address, ClaimInput[]>;
   processingPayouts: boolean;
+  totalUnclaimedTokens: number;
 };
 
 export function TokensClaimScreen(props: TokensClaimScreenProps) {
@@ -53,7 +57,8 @@ function TokensClaimScreenComponent({
   partnerRewards,
   developers,
   repos,
-  onchainClaimData,
+  totalUnclaimedTokens,
+  onchainClaims,
   processingPayouts
 }: TokensClaimScreenProps) {
   const [isExecuting, setIsExecuting] = useState(false);
@@ -74,15 +79,6 @@ function TokensClaimScreenComponent({
   const { data: walletClient } = useWalletClient();
 
   const bonusPartners = partnerRewards.map((reward) => reward.partner);
-
-  const totalUnclaimedTokens = onchainClaimData
-    ? Number(
-        formatUnits(
-          onchainClaimData.weeklyProofs.reduce((acc, claim) => acc + claim.amount, BigInt(0)),
-          devTokenDecimals
-        )
-      )
-    : 0;
 
   // use last week as claims can span multiple weeks
   const week = getLastWeek();
@@ -111,9 +107,11 @@ function TokensClaimScreenComponent({
         walletClient: walletClient as ReadWriteWalletClient
       });
 
+      const weeklyProofs = onchainClaims[walletClient.account.address.toLowerCase()];
+
       const tx = await protocolClient.multiClaim({
         args: {
-          claims: onchainClaimData?.weeklyProofs?.map((claim) => ({
+          claims: weeklyProofs?.map((claim) => ({
             week: claim.week,
             amount: claim.amount,
             proofs: claim.proofs
@@ -130,7 +128,7 @@ function TokensClaimScreenComponent({
 
       await handleOnchainClaim({
         wallet: walletClient.account.address.toLowerCase(),
-        claimsProofs: onchainClaimData!.weeklyProofs.map((proof) => ({
+        claimsProofs: weeklyProofs?.map((proof) => ({
           week: proof.week,
           amount: proof.amount.toString(),
           proofs: proof.proofs
@@ -218,14 +216,46 @@ function TokensClaimScreenComponent({
                     <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
                   </Stack>
                 </Stack>
-                <Box width={{ xs: 'fit-content', md: '100%' }} display='flex' justifyContent='center'>
-                  {onchainClaimData ? (
-                    connectedAddress !== onchainClaimData.address.toLowerCase() ? (
-                      <WalletLogin />
-                    ) : (
-                      <TokensClaimButton isExecuting={isExecuting} handleClaim={handleWalletClaim} />
-                    )
-                  ) : null}
+                <Box width={{ xs: 'fit-content', md: '100%' }} my={1} display='flex' justifyContent='center'>
+                  {Object.entries(onchainClaims).map(([address, claims]) => (
+                    <Stack
+                      flexDirection='row'
+                      justifyContent='space-between'
+                      alignItems='center'
+                      gap={1}
+                      width='100%'
+                      key={address}
+                    >
+                      <Stack flexDirection='row' alignItems='center' gap={1}>
+                        <Image
+                          src='/images/dev-token-logo.png'
+                          width={18}
+                          height={18}
+                          alt='DEV token icon'
+                          priority={true}
+                        />
+                        <Typography>
+                          {ceilToPrecision(
+                            Number(
+                              formatUnits(
+                                claims.reduce((acc, claim) => acc + claim.amount, BigInt(0)),
+                                devTokenDecimals
+                              )
+                            ),
+                            4
+                          )}
+                        </Typography>
+                      </Stack>
+                      <Typography>{shortenHex(address, 6)}</Typography>
+                      <Stack maxWidth={150}>
+                        {connectedAddress !== address ? (
+                          <WalletLogin key={address} text='Sign in' size='small' />
+                        ) : (
+                          <TokensClaimButton key={address} isExecuting={isExecuting} handleClaim={handleWalletClaim} />
+                        )}
+                      </Stack>
+                    </Stack>
+                  ))}
                 </Box>
               </Stack>
             </>

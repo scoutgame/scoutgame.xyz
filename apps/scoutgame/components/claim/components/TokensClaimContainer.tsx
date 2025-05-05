@@ -27,14 +27,15 @@ export async function TokensClaimContainer() {
   const [claimableTokens, unclaimedPartnerRewards] = data;
   const { tokens, developers, repos, processingPayouts } = claimableTokens;
 
-  const claimData = (claimableTokens as UnclaimedTokensSource).claimData;
+  const claims = (claimableTokens as UnclaimedTokensSource).claims;
 
   return (
     <>
       <TokensClaimScreen
         developers={developers}
+        totalUnclaimedTokens={tokens}
         repos={repos}
-        onchainClaimData={claimData}
+        onchainClaims={claims}
         partnerRewards={unclaimedPartnerRewards}
         processingPayouts={processingPayouts}
       />
