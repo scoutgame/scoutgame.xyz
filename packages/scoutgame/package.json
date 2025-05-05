@@ -5,7 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts"
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.ts",
+    "typecheck": "../../node_modules/typescript/bin/tsc --project ./tsconfig.json  --noEmit"
   },
   "exports": {
     "./*": "./src/*.ts",

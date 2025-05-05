@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { generateMerkleTree } from '@charmverse/core/protocol';
 import { getWalletClient } from '@packages/blockchain/getWalletClient';
 import { erc20Abi, type Address } from 'viem';
@@ -17,7 +18,7 @@ export async function createThirdwebAirdropContract({
   adminPrivateKey,
   tokenAddress,
   expirationTimestamp,
-  nullAddressAmount
+  nullAddressAmount = '1'
 }: {
   recipients: Recipient[];
   chainId: number;
@@ -48,9 +49,10 @@ export async function createThirdwebAirdropContract({
   }));
 
   if (normalizedRecipients.length === 1) {
-    if (!nullAddressAmount) {
-      throw new Error('There must be atleast 2 recipients, otherwise the merkle tree will not be valid');
-    }
+    log.debug('Only one recipient found, adding null address to ensure merkle tree is valid', {
+      recipient: normalizedRecipients[0],
+      nullAddressAmount
+    });
     // Add the null address to the recipients to ensure there is atleast 2 recipients, otherwise the merkle tree will not be valid
     normalizedRecipients.push({
       address: '0x0000000000000000000000000000000000000000',
@@ -98,6 +100,14 @@ export async function createThirdwebAirdropContract({
     args: [proxyAddress, totalAirdropAmount],
     chain: chain.viem,
     account: walletClient.account
+  });
+
+  log.debug('Approved tokens to thirdweb contract', {
+    chainId,
+    tokenAddress,
+    proxyAddress,
+    deployTxHash,
+    totalAirdropAmount
   });
 
   return { airdropContractAddress: proxyAddress, deployTxHash, merkleTree: fullMerkleTree, blockNumber };
