@@ -83,6 +83,9 @@ export const handleOnchainClaimAction = authActionClient
       }
     }
 
+    const pointsEarnedAsDeveloperNumber = Number(formatUnits(pointsEarnedAsDeveloper, devTokenDecimals));
+    const pointsEarnedAsScoutNumber = Number(formatUnits(pointsEarnedAsScout, devTokenDecimals));
+
     await prisma.userSeasonStats.update({
       where: {
         userId_season: {
@@ -92,10 +95,33 @@ export const handleOnchainClaimAction = authActionClient
       },
       data: {
         pointsEarnedAsBuilder: {
-          increment: Number(formatUnits(pointsEarnedAsDeveloper, devTokenDecimals))
+          increment: pointsEarnedAsDeveloperNumber
         },
         pointsEarnedAsScout: {
-          increment: Number(formatUnits(pointsEarnedAsScout, devTokenDecimals))
+          increment: pointsEarnedAsScoutNumber
+        }
+      }
+    });
+
+    await prisma.userAllTimeStats.upsert({
+      where: {
+        userId
+      },
+      create: {
+        pointsEarnedAsBuilder: pointsEarnedAsDeveloperNumber,
+        pointsEarnedAsScout: pointsEarnedAsScoutNumber,
+        user: {
+          connect: {
+            id: userId
+          }
+        }
+      },
+      update: {
+        pointsEarnedAsBuilder: {
+          increment: pointsEarnedAsDeveloperNumber
+        },
+        pointsEarnedAsScout: {
+          increment: pointsEarnedAsScoutNumber
         }
       }
     });
