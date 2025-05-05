@@ -19,13 +19,16 @@ export async function handlePendingMatchupTransaction({ userId, matchupId }: { u
     return;
   }
 
-  if (matchup.decentRegistrationTx?.status !== 'pending') {
-    log.info('Matchup is not pending. Skipping processing', { matchupId });
+  if (!matchup.decentRegistrationTx) {
+    log.warn('Matchup has no decent registration tx. Skip processing', { matchupId });
     return;
   }
 
-  if (!matchup.decentRegistrationTx) {
-    log.warn('Matchup has no decent registration tx. Skipping processing', { matchupId });
+  if (matchup.decentRegistrationTx?.status !== 'pending') {
+    log.info('Matchup is not pending. Skipping processing', {
+      matchupId,
+      status: matchup.decentRegistrationTx?.status
+    });
     return;
   }
 
