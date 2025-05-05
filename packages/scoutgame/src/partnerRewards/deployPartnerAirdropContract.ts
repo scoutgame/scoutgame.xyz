@@ -30,8 +30,11 @@ export async function deployPartnerAirdropContract({
   });
 
   if (existingContract) {
-    log.warn('Contract already exists, skipping deployment', {
-      contractAddress: existingContract.contractAddress
+    log.warn('Rewards airdrop already exists, skipping deployment', {
+      contractAddress: existingContract.contractAddress,
+      partner,
+      week,
+      txHash: existingContract.deployTxHash
     });
     return { txHash: existingContract.deployTxHash, contractAddress: existingContract.contractAddress };
   }

@@ -1,7 +1,6 @@
-import { prisma } from '@charmverse/core/prisma-client';
-import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
 import { BASE_USDC_ADDRESS } from '@packages/blockchain/constants';
 import { getCurrentSeason } from '@packages/dates/utils';
+import { deployPartnerAirdropContract } from '@packages/scoutgame/partnerRewards/deployPartnerAirdropContract';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
 import { parseUnits, type Address } from 'viem';
 import { base } from 'viem/chains';
@@ -9,7 +8,7 @@ import { base } from 'viem/chains';
 import { log } from './logger';
 
 const usdcTokenDecimals = 6;
-const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', usdcTokenDecimals).toString();
+const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('75', usdcTokenDecimals);
 
 export async function deployOctantBasePartnerRewards({ week }: { week: string }) {
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
@@ -36,54 +35,26 @@ export async function deployOctantBasePartnerRewards({ week }: { week: string })
     });
     return;
   }
-
-  const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
-    adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY as Address,
-    chainId: base.id,
-    // 30 days in seconds from now
-    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30),
-    tokenAddress: BASE_USDC_ADDRESS,
+  const result = await deployPartnerAirdropContract({
+    partner: 'octant_base_contribution',
+    week,
     recipients: recipients.map((recipient) => ({
       address: recipient.address,
-      amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT
+      amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT,
+      meta: {
+        prLink: recipient.prLink
+      }
     })),
-    nullAddressAmount: parseUnits('0.001', usdcTokenDecimals).toString()
+    tokenAddress: BASE_USDC_ADDRESS,
+    tokenSymbol: 'USDC',
+    tokenDecimals: usdcTokenDecimals,
+    chainId: base.id,
+    adminPrivateKey: process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY as Address
   });
 
   log.info('Octant & Base contribution rewards contract deployed', {
-    hash: deployTxHash,
-    contractAddress: airdropContractAddress,
+    ...result,
     week,
     season: currentSeason.start
-  });
-
-  await prisma.partnerRewardPayoutContract.create({
-    data: {
-      chainId: base.id,
-      contractAddress: airdropContractAddress,
-      season: currentSeason.start,
-      week,
-      tokenAddress: BASE_USDC_ADDRESS,
-      tokenSymbol: 'USDC',
-      tokenDecimals: usdcTokenDecimals,
-      partner: 'octant_base_contribution',
-      deployTxHash,
-      // TODO: Add ipfs cid
-      ipfsCid: '',
-      merkleTreeJson: merkleTree,
-      provider: 'thirdweb',
-      blockNumber,
-      rewardPayouts: {
-        createMany: {
-          data: recipients.map((recipient) => ({
-            amount: OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT,
-            walletAddress: recipient.address,
-            meta: {
-              prLink: recipient.prLink
-            }
-          }))
-        }
-      }
-    }
   });
 }
