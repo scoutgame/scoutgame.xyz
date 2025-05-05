@@ -78,7 +78,7 @@ function TokensClaimScreenComponent({
   const totalUnclaimedTokens = onchainClaimData
     ? Number(
         formatUnits(
-          BigInt(onchainClaimData.weeklyProofs.reduce((acc, claim) => acc + Number(claim.amount), 0)),
+          onchainClaimData.weeklyProofs.reduce((acc, claim) => acc + claim.amount, BigInt(0)),
           devTokenDecimals
         )
       )
@@ -115,7 +115,7 @@ function TokensClaimScreenComponent({
         args: {
           claims: onchainClaimData?.weeklyProofs?.map((claim) => ({
             week: claim.week,
-            amount: BigInt(claim.amount),
+            amount: claim.amount,
             proofs: claim.proofs
           }))
         }
@@ -130,11 +130,15 @@ function TokensClaimScreenComponent({
 
       await handleOnchainClaim({
         wallet: walletClient.account.address.toLowerCase(),
-        claimsProofs: onchainClaimData!.weeklyProofs,
+        claimsProofs: onchainClaimData!.weeklyProofs.map((proof) => ({
+          week: proof.week,
+          amount: proof.amount.toString(),
+          proofs: proof.proofs
+        })),
         claimTxHash: tx
       });
 
-      refreshUser();
+      await refreshUser();
     } catch (error) {
       log.error('Error claiming tokens', { error });
     } finally {

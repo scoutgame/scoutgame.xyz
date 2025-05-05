@@ -7,14 +7,14 @@ import { isTruthy } from '@packages/utils/types';
 import type { Address } from 'viem';
 
 import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
+import type { WeeklyClaimsTyped } from '../protocol/calculateWeeklyClaims';
 import { devTokenDecimals } from '../protocol/constants';
-import type { WeeklyClaimsTyped } from '../protocol/generateWeeklyClaims';
 
 import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
 
 export type ClaimInput = {
   week: ISOWeek;
-  amount: number;
+  amount: bigint;
   proofs: string[];
 };
 
@@ -164,7 +164,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     .map((claim) => ({
       week: claim.week,
       amount:
-        parseInt(
+        BigInt(
           claim.claims.leaves.find((leaf) => leaf.address.toLowerCase() === scoutWallets[0].address.toLowerCase())
             ?.amount ?? '0'
         ) ?? 0,

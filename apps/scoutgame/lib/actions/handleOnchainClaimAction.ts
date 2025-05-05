@@ -19,7 +19,7 @@ export const handleOnchainClaimAction = authActionClient
         .array(
           yup.object({
             week: yup.string().required(),
-            amount: yup.number().required(),
+            amount: yup.string().required(),
             proofs: yup.array(yup.string().required()).required()
           })
         )

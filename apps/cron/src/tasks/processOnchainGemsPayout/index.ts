@@ -28,13 +28,7 @@ export async function processOnchainGemsPayout(
     log.info('Gems Payout: It is not yet Sunday at 12:00 AM UTC, skipping');
     return;
   }
-  const contractAddress = getNFTContractAddress(season);
-
-  if (!contractAddress) {
-    log.warn('Gems Payout: No contract address found for season', { season });
-  }
-
-  if (contractAddress && !seasonConfig.draft) {
+  if (!seasonConfig.draft) {
     const tokenBalances = await resolveTokenOwnership({
       chainId: scoutProtocolChainId,
       week
