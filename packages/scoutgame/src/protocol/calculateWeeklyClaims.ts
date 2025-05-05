@@ -241,7 +241,7 @@ export async function calculateWeeklyClaims({
 
       const developerTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
         eventId: builderEventId,
-        value: parseUnits(tokensForDeveloper.toString(), devTokenDecimals).toString(),
+        value: tokensForDeveloper.toString(),
         recipientWalletAddress: developerWallet
       };
 
@@ -249,7 +249,7 @@ export async function calculateWeeklyClaims({
         (scoutClaim) =>
           ({
             eventId: builderEventId,
-            value: parseUnits(scoutClaim.erc20Tokens.toString(), devTokenDecimals).toString(),
+            value: scoutClaim.erc20Tokens.toString(),
             recipientWalletAddress: scoutClaim.wallet
           }) as Prisma.TokensReceiptCreateManyInput
       );

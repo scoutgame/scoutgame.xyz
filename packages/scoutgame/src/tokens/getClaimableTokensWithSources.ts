@@ -39,7 +39,11 @@ export type UnclaimedTokensSource = {
 export async function getClaimableTokensWithSources(userId: string): Promise<UnclaimedTokensSource> {
   const scoutWallets = await prisma.scoutWallet.findMany({
     where: {
-      scoutId: userId
+      scoutId: userId,
+      primary: true
+    },
+    select: {
+      address: true
     }
   });
 
@@ -52,7 +56,8 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     where: {
       recipientWalletAddress: {
         in: scoutWallets.map((wallet) => wallet.address)
-      }
+      },
+      claimedAt: null
     },
     select: {
       value: true,
