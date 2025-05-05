@@ -39,7 +39,13 @@ export async function getMyMatchupResults({
       createdBy_week: {
         createdBy: scoutId,
         week
-      }
+      },
+      OR: [
+        {
+          registrationTx: { status: 'success' }
+        },
+        { freeRegistration: true }
+      ]
     },
     select: {
       id: true,
