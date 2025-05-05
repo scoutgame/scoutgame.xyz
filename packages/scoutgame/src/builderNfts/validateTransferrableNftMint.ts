@@ -1,4 +1,5 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { waitForTransactionReceipt } from '@packages/blockchain/waitForTransactionReceipt';
 import { parseEventLogs } from 'viem';
 
 import { transferSingleAbi } from './accounting/getTransferSingleEvents';
@@ -18,9 +19,7 @@ export async function validateTransferrableNftMint({
   txHash: string;
   chainId: number;
 }): Promise<MintValidation | null> {
-  const onchainEvent = await getPublicClient(chainId).waitForTransactionReceipt({
-    hash: txHash as `0x${string}`
-  });
+  const onchainEvent = await waitForTransactionReceipt(getPublicClient(chainId), txHash as `0x${string}`);
 
   const transferSingleEvent = parseEventLogs({
     abi: [transferSingleAbi],

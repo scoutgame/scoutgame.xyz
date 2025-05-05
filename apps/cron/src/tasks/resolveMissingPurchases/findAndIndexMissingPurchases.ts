@@ -198,7 +198,7 @@ export async function findAndIndexMissingPurchases({
           })
           .then((block) => Number(block.timestamp) * 1000);
 
-        const scout = await prisma.scoutWallet.findUniqueOrThrow({
+        const wallet = await prisma.scoutWallet.findUniqueOrThrow({
           where: {
             address: singleEvent.args.to.toLowerCase() as `0x${string}`
           },
@@ -214,13 +214,14 @@ export async function findAndIndexMissingPurchases({
           recipientAddress: address.toLowerCase() as Address,
           txHash: missingTx.transactionHash,
           txLogIndex: missingTx.logIndex,
-          scoutId: scout.scoutId,
+          scoutId: wallet.scoutId,
           sentAt: new Date(_sentAt)
         });
 
         scoutgameMintsLogger.info('Resolved missing purchase', {
           missingTxHash: missingTx.transactionHash,
           matchingNftId: matchingNft?.id,
+          userId: wallet.scoutId,
           nftType,
           season
         });
