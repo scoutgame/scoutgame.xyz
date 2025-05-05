@@ -37,7 +37,14 @@ export async function getMatchupDetails(week: string, now = DateTime.utc()): Pro
   const matchups = await prisma.scoutMatchup.count({
     where: {
       week,
-      registrationTx: { status: 'success' }
+      OR: [
+        {
+          registrationTx: { status: 'success' }
+        },
+        {
+          freeRegistration: true
+        }
+      ]
     }
   });
   const startTime = getStartOfMatchup(week).getTime();
