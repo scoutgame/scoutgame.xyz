@@ -3,7 +3,10 @@ import type { Address, Hex, WalletClient } from 'viem';
 
 import type { Recipient } from './createThirdwebAirdropContract';
 
+// On Base: https://etherscan.io/address/0x0f2f02D8fE02E9C14A65A5A33073bD1ADD9aa53B#code
 export const THIRDWEB_AIRDROP_IMPLEMENTATION_ADDRESS = '0x0f2f02D8fE02E9C14A65A5A33073bD1ADD9aa53B';
+
+// On Base: https://etherscan.io/address/0x25548ba29a0071f30e4bdcd98ea72f79341b07a1#code
 export const THIRDWEB_AIRDROP_PROXY_FACTORY_ADDRESS = '0x25548ba29a0071f30e4bdcd98ea72f79341b07a1';
 
 export type ThirdwebFullMerkleTree = {
@@ -29,6 +32,7 @@ export const THIRDWEB_ERC20_AIRDROP_PROXY_ABI = [
   }
 ];
 
+// https://thirdweb.com/thirdweb.eth/AirdropERC20Claimable
 export const THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI = [
   {
     inputs: [
