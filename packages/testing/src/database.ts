@@ -97,7 +97,8 @@ export async function mockBuilder({
         : undefined
     },
     include: {
-      githubUsers: true
+      githubUsers: true,
+      wallets: true
     }
   });
 

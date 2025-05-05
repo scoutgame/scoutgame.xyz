@@ -42,14 +42,14 @@ function validateCalculations({
     const builderFromCalculation = levels[i];
     const matchingBuilderInput = builders.find((b) => b.id === builderFromCalculation.developerId);
 
-    expect(builderFromCalculation.averageGemsPerWeek).toBe(
-      Math.floor(builderFromCalculation.totalTokens / matchingBuilderInput!.activeWeeks.length)
+    expect(builderFromCalculation.averageTokensPerWeek).toBe(
+      builderFromCalculation.totalTokens / BigInt(matchingBuilderInput!.activeWeeks.length)
     );
   }
 
   // Verify ranking order follows average gems per week descending
   for (let i = 1; i < levels.length; i++) {
-    expect(levels[i - 1].averageGemsPerWeek).toBeGreaterThanOrEqual(levels[i].averageGemsPerWeek);
+    expect(levels[i - 1].averageTokensPerWeek).toBeGreaterThanOrEqual(levels[i].averageTokensPerWeek);
   }
 
   // Sample 3 random indexes to verify exact shape
@@ -59,8 +59,8 @@ function validateCalculations({
 
   expect(builder42).toMatchObject<DeveloperAggregateScore>({
     developerId: expect.any(String),
-    totalTokens: 4800,
-    averageGemsPerWeek: 2400,
+    totalTokens: BigInt(4800),
+    averageTokensPerWeek: BigInt(2400),
     centile: 80,
     level: 9,
     firstActiveWeek: '2025-W03',
@@ -68,8 +68,8 @@ function validateCalculations({
   });
   expect(builder87).toMatchObject<DeveloperAggregateScore>({
     developerId: expect.any(String),
-    totalTokens: 1600,
-    averageGemsPerWeek: 1600,
+    totalTokens: BigInt(1600),
+    averageTokensPerWeek: BigInt(1600),
     centile: 57,
     level: 6,
     firstActiveWeek: '2025-W04',
@@ -78,8 +78,8 @@ function validateCalculations({
 
   expect(builder156).toMatchObject<DeveloperAggregateScore>({
     developerId: expect.any(String),
-    totalTokens: 2000,
-    averageGemsPerWeek: 666,
+    totalTokens: BigInt(2000),
+    averageTokensPerWeek: BigInt(666),
     centile: 23,
     level: 3,
     firstActiveWeek: '2025-W02',
