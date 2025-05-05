@@ -100,6 +100,19 @@ async function deployAirdropContract({
   chainId: number;
   adminPrivateKey: `0x${string}`;
 }) {
+  const existingContract = await prisma.partnerRewardPayoutContract.findFirst({
+    where: {
+      partner,
+      week
+    }
+  });
+
+  if (existingContract) {
+    log.warn('Contract already exists, skipping deployment', {
+      contractAddress: existingContract.contractAddress
+    });
+    return { txHash: existingContract.deployTxHash, contractAddress: existingContract.contractAddress };
+  }
   // Deploy the thirdweb airdrop contract
   const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
     adminPrivateKey,
