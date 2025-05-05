@@ -164,17 +164,40 @@ export async function recordNftMint({
     season: builderNft.season
   });
 
-  await prisma.userSeasonStats.update({
-    where: {
-      userId_season: {
-        userId: builderNft.builderId,
-        season: builderNft.season
+  try {
+    await prisma.userSeasonStats.update({
+      where: {
+        userId_season: {
+          userId: builderNft.builderId,
+          season: builderNft.season
+        }
+      },
+      data: {
+        pointsEarnedAsBuilder: { increment: tokenValue * 0.2 }
       }
-    },
-    data: {
-      pointsEarnedAsBuilder: { increment: tokenValue * 0.2 }
-    }
-  });
+    });
+    await prisma.userAllTimeStats.upsert({
+      where: {
+        userId: builderNft.builderId
+      },
+      create: {
+        pointsEarnedAsBuilder: tokenValue * 0.2,
+        user: {
+          connect: {
+            id: builderNft.builderId
+          }
+        }
+      },
+      update: {
+        pointsEarnedAsBuilder: { increment: tokenValue * 0.2 }
+      }
+    });
+  } catch (error) {
+    log.error('Error updating developer stats after nft mint', {
+      error,
+      userId: builderNft.builderId
+    });
+  }
 
   return { balance };
 }
