@@ -114,6 +114,8 @@ export async function calculateDeveloperLevels({
         return sum + BigInt(receipt.value);
       }, BigInt(0));
 
+      const total = acc[developerId].totalTokens;
+
       acc[developerId].totalTokens += tokensEarned;
       acc[developerId].averageTokensPerWeek = acc[developerId].totalTokens / BigInt(acc[developerId].activeWeeks);
       return acc;

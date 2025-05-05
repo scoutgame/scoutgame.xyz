@@ -119,7 +119,7 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
       })
     )
   );
-  const scouts = _builders.slice(0, 10);
+  const scouts = _builders.slice(0, 1);
 
   for (let i = 0; i < builders.length; i++) {
     const builder = builders[i];
