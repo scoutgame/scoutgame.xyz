@@ -1,6 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getAllISOWeeksFromSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
+import { mockBuilder } from '@packages/testing/database';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
 export type GemPayoutInput = {
@@ -109,37 +110,16 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
   builders: DeterministicRandomBuilderGemsPayoutActivity[];
   season: ISOWeek;
 }) {
-  await prisma.scout.createMany({
-    data: builders.map((builder) => ({
-      id: builder.id,
-      displayName: `Builder ${builder.id}`,
-      path: `p-${builder.id}`,
-      referralCode: `r-${builder.id}`
-    }))
-  });
-
-  const newestNft = await prisma.builderNft.findFirst({
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
-  const seedStart = (newestNft?.createdAt || new Date()).getTime();
-
-  await prisma.builderNft.createMany({
-    data: builders.map((builder, index) => ({
-      builderId: builder.id,
-      // add variability
-      createdAt: new Date(seedStart + index * 1000000 * Math.random()),
-      chainId: 10,
-      contractAddress: `0x${season}-${Math.floor(Math.random() * 1000000)}`,
-      tokenId: index + 1,
-      currentPriceDevToken: String(20 * 10 ** 18),
-      currentPrice: BigInt(20 + index),
-      estimatedPayout: 20 + index,
-      imageUrl: `https://example.com/image-${index}.png`,
-      season
-    }))
-  });
+  const _builders = await Promise.all(
+    builders.map((builder) =>
+      mockBuilder({
+        id: builder.id,
+        createNft: true,
+        nftSeason: season
+      })
+    )
+  );
+  const scouts = _builders.slice(0, 1);
 
   for (let i = 0; i < builders.length; i++) {
     const builder = builders[i];
@@ -152,14 +132,12 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
           week: gemPayout.isoWeek,
           type: 'gems_payout',
           createdAt: getDateFromISOWeek(gemPayout.isoWeek).toJSDate(),
-          gemsPayoutEvent: {
-            create: {
-              createdAt: getDateFromISOWeek(gemPayout.isoWeek).plus({ days: 2 }).toJSDate(),
-              gems: gemPayout.value,
-              points: gemPayout.value,
-              season,
-              week: gemPayout.isoWeek,
-              builderId: builder.id
+          tokensReceipts: {
+            createMany: {
+              data: scouts.map((scout) => ({
+                value: BigInt(gemPayout.value).toString(),
+                recipientWalletAddress: scout.wallets[0].address
+              }))
             }
           },
           builder: {

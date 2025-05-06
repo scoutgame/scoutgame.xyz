@@ -4,12 +4,12 @@ import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getCurrentWeek } 
 
 export type DeveloperAggregateScore = {
   developerId: string;
-  totalTokens: number;
+  totalTokens: bigint;
   firstActiveWeek: ISOWeek;
   activeWeeks: number;
   level: number;
   centile: number;
-  averageGemsPerWeek: number;
+  averageTokensPerWeek: bigint;
 };
 
 export const decileTable = [
@@ -34,24 +34,19 @@ export async function calculateDeveloperLevels({
   week?: ISOWeek;
 } = {}): Promise<DeveloperAggregateScore[]> {
   // Fetch all developers with their gem payouts
-  const gemPayouts = await prisma.gemsPayoutEvent.findMany({
+  const payoutEvents = await prisma.builderEvent.findMany({
     where: {
-      points: {
-        gt: 0
-      },
-      builderEvent: {
-        season,
-        week: week
-          ? {
-              lte: week
-            }
-          : undefined,
-        type: 'gems_payout',
-        builder: {
-          builderNfts: {
-            some: {
-              season
-            }
+      type: 'gems_payout',
+      season,
+      week: week
+        ? {
+            lte: week
+          }
+        : undefined,
+      builder: {
+        builderNfts: {
+          some: {
+            season
           }
         }
       }
@@ -61,9 +56,13 @@ export async function calculateDeveloperLevels({
     },
     select: {
       createdAt: true,
-      points: true,
       week: true,
       builderId: true,
+      tokensReceipts: {
+        select: {
+          value: true
+        }
+      },
       builder: {
         select: {
           path: true
@@ -85,41 +84,47 @@ export async function calculateDeveloperLevels({
     weeksWindow = weeksWindow.filter((_week) => _week < currentWeek);
   }
 
-  const developerScores = gemPayouts.reduce(
-    (acc, gemsPayout) => {
-      const developerId = gemsPayout.builderId;
+  const developerScores = payoutEvents.reduce(
+    (acc, event) => {
+      const developerId = event.builderId;
 
       // Ignore empty gem payouts
-      if (!gemsPayout.points) {
+      if (event.tokensReceipts.length === 0) {
         return acc;
       }
 
       if (!acc[developerId]) {
         // Find index of first active week in all season weeks
-        const firstActiveWeekIndex = weeksWindow.indexOf(gemsPayout.week);
+        const firstActiveWeekIndex = weeksWindow.indexOf(event.week);
 
         // Get number of weeks builder has been active (from first week to end of season)
         const activeWeeks = weeksWindow.slice(firstActiveWeekIndex).length;
         acc[developerId] = {
           developerId,
-          totalTokens: 0,
-          firstActiveWeek: gemsPayout.week,
+          totalTokens: BigInt(0),
+          firstActiveWeek: event.week,
           activeWeeks,
           centile: 0,
           level: 0,
-          averageGemsPerWeek: 0
+          averageTokensPerWeek: BigInt(0)
         };
       }
 
-      acc[developerId].totalTokens += gemsPayout.points;
-      acc[developerId].averageGemsPerWeek = Math.floor(acc[developerId].totalTokens / acc[developerId].activeWeeks);
+      const tokensEarned = event.tokensReceipts.reduce((sum, receipt) => {
+        return sum + BigInt(receipt.value);
+      }, BigInt(0));
+
+      const total = acc[developerId].totalTokens;
+
+      acc[developerId].totalTokens += tokensEarned;
+      acc[developerId].averageTokensPerWeek = acc[developerId].totalTokens / BigInt(acc[developerId].activeWeeks);
       return acc;
     },
     {} as Record<string, DeveloperAggregateScore>
   );
 
-  const orderedDeveloperScores = Object.values(developerScores).sort(
-    (a, b) => b.averageGemsPerWeek - a.averageGemsPerWeek
+  const orderedDeveloperScores = Object.values(developerScores).sort((a, b) =>
+    Number(b.averageTokensPerWeek - a.averageTokensPerWeek)
   );
 
   const totalDevelopers = orderedDeveloperScores.length;
