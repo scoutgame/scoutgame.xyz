@@ -94,7 +94,6 @@ const indexOffset = 12344;
 
 describe('calculateDeveloperLevels', () => {
   beforeEach(() => {
-    jest.setTimeout(30000);
     jest.useFakeTimers();
 
     // Use 2025-W05 as the current season so we have 3 weeks of data from W-02 to W-04
@@ -138,7 +137,7 @@ describe('calculateDeveloperLevels', () => {
     const levels = await calculateDeveloperLevels({ season });
 
     validateCalculations({ builders, levels });
-  });
+  }, 30000);
 
   it('should exclude builders with 0 gems from the calculation', async () => {
     const { builders } = seedBuildersGemPayouts({ season, indexOffset });
@@ -163,7 +162,7 @@ describe('calculateDeveloperLevels', () => {
       builders,
       levels
     });
-  });
+  }, 30000);
 
   it('should ignore builders without NFTs in the current season', async () => {
     const { builders } = seedBuildersGemPayouts({ season, indexOffset });
@@ -216,5 +215,5 @@ describe('calculateDeveloperLevels', () => {
       builders,
       levels
     });
-  });
+  }, 30000);
 });
