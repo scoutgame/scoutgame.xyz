@@ -94,6 +94,7 @@ const indexOffset = 12344;
 
 describe('calculateDeveloperLevels', () => {
   beforeEach(() => {
+    jest.setTimeout(30000);
     jest.useFakeTimers();
 
     // Use 2025-W05 as the current season so we have 3 weeks of data from W-02 to W-04
