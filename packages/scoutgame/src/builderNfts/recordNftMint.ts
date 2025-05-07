@@ -88,6 +88,8 @@ export async function recordNftMint({
       }
     }
   });
+
+  // Do retries for the balance, NOTE this code may not be necessary, if we don't see any errors or warnings from it. Ideally it was fixed upstream
   const ogBalance = scoutNft?.balance || 0;
   let newBalance = BigInt(0);
   let tries = 10;
