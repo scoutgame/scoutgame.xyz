@@ -2,7 +2,6 @@
 
 import { BottomNavigationAction } from '@mui/material';
 import { isDraftSeason, isEndOfDraftWeek } from '@packages/dates/utils';
-import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
 import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
@@ -10,16 +9,13 @@ import { useGetClaimableTokens } from '@packages/scoutgame-ui/hooks/api/session'
 import { useIsFarcasterFrame } from '@packages/scoutgame-ui/hooks/useIsFarcasterFrame';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { getPlatform } from '@packages/utils/platform';
-import { DateTime } from 'luxon';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { ImGift as QuestsIcon } from 'react-icons/im';
 import { PiBinocularsLight as ScoutIcon } from 'react-icons/pi';
 
 import { SignInModalMessage } from 'components/common/ScoutButton/SignInModalMessage';
-import { useGetQuests } from 'hooks/api/quests';
 import { isAirdropLive } from 'lib/airdrop/checkAirdropDates';
 
 export function SiteNavigation({ topNav }: { topNav?: boolean }) {
@@ -29,16 +25,8 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
   const isAuthenticated = Boolean(user);
   const value = getActiveButton(pathname);
   const { data: claimableTokens = { tokens: 0, processingPayouts: false } } = useGetClaimableTokens();
-  const { data: dailyClaims = [] } = useGetQuests();
-  const todaysClaim = dailyClaims?.find((claim) => {
-    const currentWeekDay = DateTime.utc().weekday;
-    const isClaimToday = currentWeekDay === claim.day;
-    return isClaimToday;
-  });
   const isFarcasterFrame = useIsFarcasterFrame();
 
-  const enableMatchups = enableMatchupsFeatureFlag(user?.id);
-  const canClaim = todaysClaim ? !todaysClaim?.claimed : false;
   const [authPopup, setAuthPopup] = useState({
     open: false,
     path: 'scout'
