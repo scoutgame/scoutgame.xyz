@@ -71,7 +71,7 @@ export async function GET(request: Request) {
       displayName: developer.displayName,
       profileUrl: `https://scoutgame.xyz/u/${developer.path}`,
       level: developer.userSeasonStats[0].level,
-      gemsCollected: developer.userWeeklyStats.map((weeklyStat) => ({
+      gemsEarned: developer.userWeeklyStats.map((weeklyStat) => ({
         week: weeklyStat.week,
         count: weeklyStat.gemsCollected
       }))
