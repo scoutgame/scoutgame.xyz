@@ -9,7 +9,6 @@ import Link from 'next/link';
 const partnerInfos = [
   { logo: 'taiko.png', name: 'taiko', infoPath: 'taiko' },
   { logo: 'celo.png', name: 'celo', infoPath: 'celo' },
-  { logo: 'game7.png', name: 'game7', infoPath: 'game7' },
   { logo: 'octant.svg', name: 'octant', infoPath: 'octant', skipRoundedBorder: true }
 ];
 
