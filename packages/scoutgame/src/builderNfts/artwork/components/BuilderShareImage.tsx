@@ -36,7 +36,7 @@ export function BuilderShareImage({
 
   const random = randomInt(0, 3);
 
-  const { rank = 0, seasonPoints = 0, gemsCollected = 0 } = stats;
+  const { rank = 0, seasonTokens = 0, gemsCollected = 0 } = stats;
 
   const { totalScouts = 0, totalNftsSold = 0 } = builderScouts;
 
@@ -131,7 +131,7 @@ export function BuilderShareImage({
           >
             <h6 style={{ fontSize: '14px', color: '#69DDFF', margin: 0 }}>THIS SEASON</h6>
             <div style={{ margin: 0, alignItems: 'center', gap: 3, display: 'flex', flexDirection: 'row' }}>
-              <span>{seasonPoints}</span>
+              <span>{seasonTokens}</span>
               <img width={20} height={20} src={`${domain}/images/dev-token-logo.png`} alt='DEV Token' />
             </div>
             <p style={{ margin: 0 }}>{totalScouts} Scouts</p>

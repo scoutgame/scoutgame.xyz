@@ -16,7 +16,7 @@ export default async function Claim({
   }
   const searchParamsResolved = await searchParams;
 
-  const claimScreenUrl = `https://cdn.charmverse.io/points-claim/${user.id}/${searchParamsResolved.week || getLastWeek()}.png`;
+  const claimScreenUrl = `https://cdn.charmverse.io/tokens-claim/${user.id}/${searchParamsResolved.week || getLastWeek()}.png`;
 
   return (
     <>

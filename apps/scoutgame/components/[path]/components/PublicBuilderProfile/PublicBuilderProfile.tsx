@@ -25,7 +25,7 @@ export async function PublicBuilderProfile({
   const [
     defaultNft,
     starterPackNft,
-    { allTimePoints = 0, seasonPoints = 0, rank = 0, gemsCollected = 0 },
+    { allTimeTokens = 0, seasonTokens = 0, rank = 0, gemsCollected = 0 },
     builderActivities,
     { scouts = [], totalNftsSold = 0, totalScouts = 0 },
     { level, estimatedPayout, last14DaysRank, nftsSoldToLoggedInScout, starterNftSoldToLoggedInScout },
@@ -55,8 +55,8 @@ export async function PublicBuilderProfile({
       starterNftSoldToLoggedInScout={starterNftSoldToLoggedInScout}
       defaultNft={defaultNft}
       starterPackNft={starterPackNft}
-      allTimePoints={allTimePoints}
-      seasonPoints={seasonPoints}
+      allTimeTokens={allTimeTokens}
+      seasonTokens={seasonTokens}
       totalScouts={totalScouts}
       totalNftsSold={totalNftsSold}
       builderActivities={builderActivities}

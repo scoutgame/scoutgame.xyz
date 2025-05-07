@@ -59,7 +59,7 @@ function getShareMessage({
   developers,
   week
 }: ShareMessageProps & { referralCode?: string }) {
-  const imageUrl = `${window.location.origin}/points-claim/${userPath}?week=${week}`;
+  const imageUrl = `${window.location.origin}/tokens-claim/${userPath}?week=${week}`;
   let shareMessage = isBuilder
     ? `I earned ${totalUnclaimedTokens} DEV Tokens this week as a Top Developer!`
     : `I earned ${totalUnclaimedTokens} DEV Tokens this week as a Top Scout!`;

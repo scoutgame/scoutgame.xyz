@@ -2,24 +2,24 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import type { BuilderAggregateScore } from './calculateDeveloperLevels';
-import { calculateBuilderLevels } from './calculateDeveloperLevels';
+import type { DeveloperAggregateScore } from './calculateDeveloperLevels';
+import { calculateDeveloperLevels } from './calculateDeveloperLevels';
 
-export async function refreshBuilderLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek } = {}): Promise<
-  BuilderAggregateScore[]
+export async function refreshDeveloperLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek } = {}): Promise<
+  DeveloperAggregateScore[]
 > {
-  const levels = await calculateBuilderLevels({ season });
+  const levels = await calculateDeveloperLevels({ season });
 
   for (const level of levels) {
     await prisma.userSeasonStats.upsert({
       where: {
         userId_season: {
-          userId: level.builderId,
+          userId: level.developerId,
           season
         }
       },
       create: {
-        userId: level.builderId,
+        userId: level.developerId,
         season,
         level: level.level
       },

@@ -21,7 +21,6 @@ import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
-import { getNewScoutRewards } from '@packages/scoutgame/scouts/getNewScoutRewards';
 import { DateTime } from 'luxon';
 import { formatUnits, parseUnits } from 'viem';
 
@@ -104,20 +103,6 @@ export async function AirdropMetrics({
         week: currentWeek,
         wallets: referrals.length,
         walletAddresses: referrals.map((r) => r.address),
-        claimed: zero,
-        unclaimed: upcomingPayout,
-        total: upcomingPayout
-      });
-    }
-  } else if (partner === 'optimism_new_scout') {
-    const scouts = await getNewScoutRewards({ week: currentWeek });
-    if (scouts.length > 0) {
-      const upcomingPayout = scouts.reduce((sum, scout) => sum + toWei(scout.opAmount), BigInt(0));
-      airdrops.unshift({
-        isCurrentWeek: true,
-        week: currentWeek,
-        wallets: scouts.length,
-        walletAddresses: scouts.map((s) => s.address),
         claimed: zero,
         unclaimed: upcomingPayout,
         total: upcomingPayout

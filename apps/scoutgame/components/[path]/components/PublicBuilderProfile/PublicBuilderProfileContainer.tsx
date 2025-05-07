@@ -61,8 +61,8 @@ export function PublicBuilderProfileContainer({
   builder,
   defaultNft,
   starterPackNft,
-  allTimePoints,
-  seasonPoints,
+  allTimeTokens,
+  seasonTokens,
   totalScouts,
   scouts,
   totalNftsSold,
@@ -121,8 +121,8 @@ export function PublicBuilderProfileContainer({
                     }}
                   />
                   <PublicBuilderStats
-                    allTimePoints={allTimePoints}
-                    seasonPoints={seasonPoints}
+                    allTimeTokens={allTimeTokens}
+                    seasonTokens={seasonTokens}
                     totalScouts={totalScouts}
                     totalNftsSold={totalNftsSold}
                   />
@@ -183,8 +183,8 @@ export function PublicBuilderProfileContainer({
                     )}
                   </div>
                   <PublicBuilderStats
-                    seasonPoints={seasonPoints}
-                    allTimePoints={allTimePoints}
+                    seasonTokens={seasonTokens}
+                    allTimeTokens={allTimeTokens}
                     totalScouts={totalScouts}
                     totalNftsSold={totalNftsSold}
                   />

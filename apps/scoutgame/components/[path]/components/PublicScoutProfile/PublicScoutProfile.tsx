@@ -30,7 +30,7 @@ export async function PublicScoutProfile({
     return <ErrorSSRMessage />;
   }
 
-  const [scout, { allTimePoints, seasonPoints, nftsPurchased }, scoutedBuilders] = data;
+  const [scout, { allTimeTokens, seasonTokens, nftsPurchased }, scoutedBuilders] = data;
 
   return (
     <PublicScoutProfileContainer
@@ -38,8 +38,8 @@ export async function PublicScoutProfile({
         ...scout,
         githubLogin: scout.githubUsers[0]?.login
       }}
-      allTimePoints={allTimePoints}
-      seasonPoints={seasonPoints}
+      allTimeTokens={allTimeTokens}
+      seasonTokens={seasonTokens}
       nftsPurchased={nftsPurchased}
       scoutedBuilders={scoutedBuilders}
       scoutProjects={scoutProjects}

@@ -3,7 +3,7 @@ import type { Season } from '@packages/dates/config';
 import { getStartOfWeek, getCurrentWeek, getCurrentSeasonStart } from '@packages/dates/utils';
 import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refreshEstimatedPayouts';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
-import { refreshBuilderLevels } from '@packages/scoutgame/tokens/refreshBuilderLevels';
+import { refreshDeveloperLevels } from '@packages/scoutgame/tokens/refreshDeveloperLevels';
 import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
 import type Koa from 'koa';
 import { DateTime } from 'luxon';
@@ -93,7 +93,7 @@ async function updateStats({ week, season }: { week: string; season: Season }) {
       log.error('Error updating developers rank', { error, week });
     });
 
-  await refreshBuilderLevels({ season })
+  await refreshDeveloperLevels({ season })
     .then((levels) => {
       log.info(`Refreshed developer levels for season ${season}. Ranked ${levels.length} developers`);
     })
