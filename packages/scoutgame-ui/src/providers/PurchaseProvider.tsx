@@ -1,5 +1,6 @@
 'use client';
 
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { checkDecentTransactionAction } from '@packages/scoutgame/builderNfts/checkDecentTransactionAction';
 import { nftChain } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftMintAction } from '@packages/scoutgame/builderNfts/recordNftMintAction';
@@ -11,7 +12,7 @@ import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
-import { useSendTransaction, useWalletClient } from 'wagmi';
+import { useSendTransaction, useWalletClient, usePublicClient } from 'wagmi';
 
 import { useRefreshShareImage } from '../hooks/api/builders';
 
@@ -61,6 +62,9 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
   const { refreshUser } = useUser();
   const { sendTransactionAsync } = useSendTransaction();
   const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient({
+    chainId: nftChain.id
+  });
 
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
 
@@ -232,6 +236,10 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         throw new Error('Wallet client not found');
       }
 
+      if (!publicClient) {
+        throw new Error('Public client not found');
+      }
+
       // Refresh the congrats image without awaiting it since we don't want to slow down the process
       refreshShareImage({ builderId });
 
@@ -264,6 +272,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
           ? [fromAddress, builderTokenId, tokensToBuy, scoutId]
           : [fromAddress, builderTokenId, tokensToBuy]
       });
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       const outputPromise = recordNftMint({
         purchaseInfo: {
@@ -315,7 +324,7 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
         await refreshUser();
       }
     },
-    [walletClient, recordNftMint]
+    [walletClient, recordNftMint, publicClient, refreshUser, refreshShareImage]
   );
 
   const clearPurchaseSuccess = useCallback(() => {
