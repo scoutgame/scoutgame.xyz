@@ -20,7 +20,6 @@ export async function validateTransferrableNftMint({
   chainId: number;
 }): Promise<MintValidation | null> {
   const onchainEvent = await waitForTransactionReceipt(getPublicClient(chainId), txHash as `0x${string}`);
-
   const transferSingleEvent = parseEventLogs({
     abi: [transferSingleAbi],
     logs: onchainEvent.logs,
