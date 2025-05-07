@@ -21,7 +21,7 @@ export type MatchupDetails = {
 };
 
 // matchup begins at end of registration day
-function getStartOfMatchup(week: string) {
+export function getStartOfMatchup(week: string) {
   return getStartOfWeek(week).plus({ days: REGISTRATION_DAY_OF_WEEK }).toJSDate();
 }
 

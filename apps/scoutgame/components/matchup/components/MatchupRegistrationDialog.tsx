@@ -5,18 +5,15 @@ import type { EvmTransaction } from '@decent.xyz/box-common';
 import { Alert, Box, Button, Stack, Typography } from '@mui/material';
 import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
 import { MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
+import { getStartOfMatchup } from '@packages/matchup/getMatchupDetails';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DevTokenIcon } from '@packages/scoutgame-ui/components/common/Icons';
-import { useSmScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useMatchup } from '@packages/scoutgame-ui/providers/MatchupProvider';
-import { usePurchase } from '@packages/scoutgame-ui/providers/PurchaseProvider';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
-import { useConnectModal, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { parseUnits } from 'ethers/utils';
 import Image from 'next/image';
-import { useAction } from 'next-safe-action/hooks';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
@@ -24,8 +21,6 @@ import { useAccount } from 'wagmi';
 import type { ConnectedWalletDialogProps } from 'components/common/ConnectedWalletDialog';
 import { ConnectedWalletDialog } from 'components/common/ConnectedWalletDialog';
 import { useGlobalModal } from 'components/common/ModalProvider';
-import { getCurrencyContract } from 'components/common/NFTPurchaseDialog/components/ChainSelector/chains';
-import { BlockchainSelect } from 'components/common/NFTPurchaseDialog/components/ChainSelector/ChainSelector';
 import { ERC20ApproveButton } from 'components/common/NFTPurchaseDialog/components/ERC20Approve';
 import { DEV_PAYMENT_OPTION, PaymentTokenSelector, TOKEN_LOGO_RECORD } from 'components/common/PaymentTokenSelector';
 import type { SelectedPaymentOption } from 'components/common/PaymentTokenSelector';
@@ -34,9 +29,7 @@ import { useGetTokenBalances } from 'hooks/useGetTokenBalances';
 
 import { useTokenPayment } from './hooks/useTokenPayment';
 
-const MINIMUM_NFT_COUNT = 45;
-// import type { NFTPurchaseProps } from './components/NFTPurchaseForm';
-// import { NFTPurchaseForm } from './components/NFTPurchaseForm';
+const MINIMUM_NFT_COUNT = 5;
 
 function MatchupRegistrationForm({ week }: { week: string }) {
   const { refreshUser } = useUser();
@@ -130,6 +123,12 @@ function MatchupRegistrationForm({ week }: { week: string }) {
 
   const showNftCountAlert = !isLoadingNftCount && nftCountData && nftCountData.nftCount < MINIMUM_NFT_COUNT;
 
+  const showStartTimeAlert = useMemo(() => {
+    const startTime = getStartOfMatchup(week);
+    const threeHoursFromNow = new Date(Date.now() + 3 * 60 * 60 * 1000);
+    return startTime <= threeHoursFromNow;
+  }, [week]);
+
   return (
     <Box width='350px' maxWidth='100%' mx='auto'>
       <Box display='flex' alignItems='center' justifyContent='center' py={2} gap={1}>
@@ -142,6 +141,11 @@ function MatchupRegistrationForm({ week }: { week: string }) {
         <Alert severity='warning' sx={{ mb: 2 }}>
           You need to hold at least {MINIMUM_NFT_COUNT} different Developer Cards to build a team. You hold{' '}
           {nftCountData?.nftCount}. You may purchase additional Developer Cards after registration.
+        </Alert>
+      )}
+      {showStartTimeAlert && (
+        <Alert severity='warning' sx={{ mb: 2 }}>
+          Registration begins shortly. You will need to select and register your team before the matchup starts.
         </Alert>
       )}
       <Box display='flex' justifyContent='space-between' width='100%' mb={2}>
