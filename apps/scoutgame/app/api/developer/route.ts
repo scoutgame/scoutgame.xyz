@@ -62,7 +62,7 @@ export async function GET(request: Request) {
   });
 
   if (!developer) {
-    return NextResponse.json({ developer: null }, { status: 200 });
+    return NextResponse.json({ developer: null }, { status: 404 });
   }
 
   return NextResponse.json({
