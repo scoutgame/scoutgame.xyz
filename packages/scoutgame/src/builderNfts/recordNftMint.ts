@@ -80,12 +80,53 @@ export async function recordNftMint({
     }
   });
 
-  const balance = await refreshScoutNftBalance({
-    contractAddress: builderNft.contractAddress as Address,
-    nftType: builderNft.nftType,
-    tokenId: builderNft.tokenId,
-    wallet: recipientAddress.toLowerCase() as Address
+  const scoutNft = await prisma.scoutNft.findUnique({
+    where: {
+      builderNftId_walletAddress: {
+        builderNftId,
+        walletAddress: recipientAddress.toLowerCase() as Address
+      }
+    }
   });
+
+  // Do retries for the balance, NOTE this code may not be necessary, if we don't see any errors or warnings from it. Ideally it was fixed upstream
+  const ogBalance = scoutNft?.balance || 0;
+  let newBalance = BigInt(0);
+  let tries = 10;
+  while (Number(newBalance) < ogBalance + amount) {
+    newBalance = await refreshScoutNftBalance({
+      contractAddress: builderNft.contractAddress as Address,
+      nftType: builderNft.nftType,
+      tokenId: builderNft.tokenId,
+      wallet: recipientAddress.toLowerCase() as Address
+    });
+    tries -= 1;
+    if (tries <= 0) {
+      log.error('Nft balance never changed after purchase', {
+        builderNftId,
+        recipientAddress,
+        ogBalance,
+        amount,
+        newBalance,
+        userId: scoutId,
+        txHash,
+        tries
+      });
+      break;
+    }
+  }
+  if (tries < 9) {
+    log.warn('Had to retry refreshing scout nft balance', {
+      builderNftId,
+      recipientAddress,
+      ogBalance,
+      amount,
+      newBalance,
+      userId: scoutId,
+      txHash,
+      tries
+    });
+  }
 
   await refreshBuilderNftPrice({
     season: builderNft.season,
@@ -198,6 +239,4 @@ export async function recordNftMint({
       userId: builderNft.builderId
     });
   }
-
-  return { balance };
 }

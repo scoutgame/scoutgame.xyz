@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import type { BuilderNftType } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Address } from 'viem';
@@ -50,6 +51,13 @@ export async function refreshScoutNftBalance({
           tokenId: BigInt(tokenId)
         }
       }));
+
+  log.debug('Updating scout nft balance', {
+    walletAddress,
+    tokenId,
+    contractAddress,
+    balance: Number(balance)
+  });
 
   await prisma.scoutNft.upsert({
     where: {
