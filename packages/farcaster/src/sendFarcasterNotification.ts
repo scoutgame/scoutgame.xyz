@@ -8,7 +8,7 @@ const rateLimiter = RateLimit(25);
 
 type Variables = {
   weekly_claim: {
-    points: number;
+    tokens: number;
   };
   draft_transaction_failed: undefined;
   zero_weekly_claim: undefined;
@@ -40,8 +40,8 @@ type Variables = {
 const FarcasterNotificationTypesRecord = {
   weekly_claim: {
     title: 'Weekly Claim',
-    description: ({ points }: Variables['weekly_claim']) =>
-      `You earned ${points} DEV tokens this week! Click to Claim!`,
+    description: ({ tokens }: Variables['weekly_claim']) =>
+      `You earned ${tokens} DEV tokens this week! Click to Claim!`,
     targetUrl: () => `https://scoutgame.xyz/claim`
   },
   zero_weekly_claim: {

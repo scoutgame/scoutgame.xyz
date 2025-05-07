@@ -5,6 +5,7 @@ import { getCurrentSeasonStart, getCurrentSeasonWeekNumber } from '@packages/dat
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
 import { getClaimableTokens } from '@packages/scoutgame/tokens/getClaimableTokens';
+import { ceilToPrecision } from '@packages/utils/numbers';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
@@ -121,13 +122,14 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
   for (const scout of scouts) {
     try {
       const weeklyClaimableTokens = await getClaimableTokens({ userId: scout.id, week });
-      if (weeklyClaimableTokens) {
+      const claimableTokens = ceilToPrecision(weeklyClaimableTokens, 4);
+      if (claimableTokens) {
         await sendNotifications({
           userId: scout.id,
           email: {
             templateVariables: {
               name: scout.displayName,
-              points: weeklyClaimableTokens,
+              points: claimableTokens,
               partner_rewards: formatPartnerRewardPayout(
                 'You have also earned these partner rewards this week',
                 scout.wallets
@@ -136,12 +138,12 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
           },
           farcaster: {
             templateVariables: {
-              points: weeklyClaimableTokens
+              tokens: claimableTokens
             }
           },
           app: {
             templateVariables: {
-              points: weeklyClaimableTokens
+              tokens: claimableTokens
             }
           },
           notificationType: 'weekly_claim'
