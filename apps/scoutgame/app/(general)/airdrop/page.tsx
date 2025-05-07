@@ -156,10 +156,7 @@ export default function AirdropPage() {
               <Typography component='span' color='green'>
                 Use your DEV tokens to buy Developer Cards to play in the weekly competition.
               </Typography>{' '}
-              Identify the best talent early for the biggest rewards. <br />
-              <br />
-              Draft your team before Season 1 begins on April 28, 2025. Winning bids receive the Developer Cards, losing
-              bids are refunded.
+              Identify the best talent early for the biggest rewards.
             </Typography>
           </Paper>
           <Paper
