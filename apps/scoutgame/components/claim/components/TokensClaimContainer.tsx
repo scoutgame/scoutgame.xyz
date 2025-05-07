@@ -1,8 +1,8 @@
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getUnclaimedPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
-import type { UnclaimedTokensSource } from '@packages/scoutgame/points/getClaimableTokensWithSources';
-import { getClaimableTokensWithSources } from '@packages/scoutgame/points/getClaimableTokensWithSources';
+import type { UnclaimedTokensSource } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
+import { getClaimableTokensWithSources } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { Suspense } from 'react';
 
@@ -24,22 +24,21 @@ export async function TokensClaimContainer() {
     return null;
   }
 
-  const [claimablePoints, unclaimedPartnerRewards] = data;
-  const { points, developers, repos, processingPayouts } = claimablePoints;
+  const [claimableTokens, unclaimedPartnerRewards] = data;
+  const { tokens, developers, repos, processingPayouts } = claimableTokens;
 
-  const claimData = (claimablePoints as UnclaimedTokensSource).claimData;
+  const claimData = (claimableTokens as UnclaimedTokensSource).claimData;
 
   return (
     <>
       <TokensClaimScreen
-        totalUnclaimedPoints={points}
         developers={developers}
         repos={repos}
         onchainClaimData={claimData}
         partnerRewards={unclaimedPartnerRewards}
         processingPayouts={processingPayouts}
       />
-      {points === 0 && unclaimedPartnerRewards.length === 0 ? null : (
+      {tokens === 0 && unclaimedPartnerRewards.length === 0 ? null : (
         <Suspense fallback={<LoadingTable />}>
           <UnclaimedTokensTable />
         </Suspense>

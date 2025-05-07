@@ -45,14 +45,12 @@ function DeveloperRewardsTableRow({ reward }: { reward: DeveloperReward }) {
   );
 }
 
-export function BuilderRewardsTable({
-  week,
-  builderRewards,
-  totalPoints
+export function DeveloperRewardsTable({
+  developerRewards,
+  totalTokens
 }: {
-  week: string | null;
-  builderRewards: BuilderReward[];
-  totalPoints: number;
+  developerRewards: DeveloperReward[];
+  totalTokens: number;
 }) {
   return (
     <Table>
@@ -71,7 +69,7 @@ export function BuilderRewardsTable({
           }
         }}
       >
-        {builderRewards.map((reward) => (
+        {developerRewards.map((reward) => (
           <DeveloperRewardsTableRow key={reward.path} reward={reward} />
         ))}
         <TableRow>
@@ -79,7 +77,7 @@ export function BuilderRewardsTable({
             <Typography>Total DEV Tokens</Typography>
           </TableCell>
           <TableCell align='right'>
-            <TokensCell tokens={totalPoints} />
+            <TokensCell tokens={totalTokens} />
           </TableCell>
         </TableRow>
       </StyledTableBody>

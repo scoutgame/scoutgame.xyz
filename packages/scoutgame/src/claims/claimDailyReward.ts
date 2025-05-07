@@ -3,8 +3,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentWeek, getPreviousWeek } from '@packages/dates/utils';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 
-import { sendPointsForDailyClaim } from '../points/builderEvents/sendPointsForDailyClaim';
-import { sendPointsForDailyClaimStreak } from '../points/builderEvents/sendPointsForDailyClaimStreak';
+import { sendPointsForDailyClaim } from '../tokens/builderEvents/sendPointsForDailyClaim';
+import { sendPointsForDailyClaimStreak } from '../tokens/builderEvents/sendPointsForDailyClaimStreak';
 
 import { getRandomReward } from './getRandomReward';
 

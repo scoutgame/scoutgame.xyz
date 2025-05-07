@@ -4,7 +4,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
-import { getClaimablePoints } from '@packages/scoutgame/points/getClaimablePoints';
+import { getClaimableTokens } from '@packages/scoutgame/tokens/getClaimableTokens';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
@@ -120,14 +120,14 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
 
   for (const scout of scouts) {
     try {
-      const { points: weeklyClaimablePoints } = await getClaimablePoints({ userId: scout.id, week });
-      if (weeklyClaimablePoints) {
+      const weeklyClaimableTokens = await getClaimableTokens({ userId: scout.id, week });
+      if (weeklyClaimableTokens) {
         await sendNotifications({
           userId: scout.id,
           email: {
             templateVariables: {
               name: scout.displayName,
-              points: weeklyClaimablePoints,
+              points: weeklyClaimableTokens,
               partner_rewards: formatPartnerRewardPayout(
                 'You have also earned these partner rewards this week',
                 scout.wallets
@@ -136,12 +136,12 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
           },
           farcaster: {
             templateVariables: {
-              points: weeklyClaimablePoints
+              points: weeklyClaimableTokens
             }
           },
           app: {
             templateVariables: {
-              points: weeklyClaimablePoints
+              points: weeklyClaimableTokens
             }
           },
           notificationType: 'weekly_claim'

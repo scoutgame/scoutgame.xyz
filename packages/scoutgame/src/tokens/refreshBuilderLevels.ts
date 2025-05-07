@@ -2,8 +2,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import type { BuilderAggregateScore } from './calculateBuilderLevel';
-import { calculateBuilderLevels } from './calculateBuilderLevel';
+import type { BuilderAggregateScore } from './calculateDeveloperLevels';
+import { calculateBuilderLevels } from './calculateDeveloperLevels';
 
 export async function refreshBuilderLevels({ season = getCurrentSeasonStart() }: { season?: ISOWeek } = {}): Promise<
   BuilderAggregateScore[]

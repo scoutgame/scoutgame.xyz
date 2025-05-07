@@ -2,9 +2,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
-import { calculateRewardForScout } from '../points/divideTokensBetweenDeveloperAndHolders';
-import { getTokensCountForWeekWithNormalisation } from '../points/getTokensCountForWeekWithNormalisation';
 import { devTokenDecimals } from '../protocol/constants';
+import { calculateRewardForScout } from '../tokens/divideTokensBetweenDeveloperAndHolders';
+import { getTokensCountForWeekWithNormalisation } from '../tokens/getTokensCountForWeekWithNormalisation';
 
 import type { BuilderNftWithOwners } from './getAllSeasonNftsWithOwners';
 import { getAllSeasonNftsWithOwners } from './getAllSeasonNftsWithOwners';

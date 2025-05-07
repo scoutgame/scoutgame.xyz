@@ -1,25 +1,25 @@
 import { Paper, Typography, Box } from '@mui/material';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
-import { getSeasonBuilderRewards, getWeeklyBuilderRewards } from '@packages/scoutgame/builders/getBuilderRewards';
+import { getSeasonDeveloperRewards, getWeeklyDeveloperRewards } from '@packages/scoutgame/builders/getDeveloperRewards';
 import Image from 'next/image';
 
-import { BuilderRewardsTable } from './BuilderRewardsTable';
+import { DeveloperRewardsTable } from './DeveloperRewardsTable';
 
-export async function BuilderRewardsTableContainer({ week, season }: { week: string | null; season: string }) {
+export async function DeveloperRewardsTableContainer({ week, season }: { week: string | null; season: string }) {
   const user = await getUserFromSession();
   const isCurrentPeriod = season === getCurrentSeasonStart() || week === getCurrentWeek();
   if (!user) {
     return null;
   }
 
-  const builderRewards = week
-    ? await getWeeklyBuilderRewards({ week, userId: user.id })
-    : await getSeasonBuilderRewards({ season, userId: user.id });
+  const developerRewards = week
+    ? await getWeeklyDeveloperRewards({ week, userId: user.id })
+    : await getSeasonDeveloperRewards({ season, userId: user.id });
 
-  const totalPoints = builderRewards.reduce((acc, reward) => acc + reward.points, 0);
+  const totalTokens = developerRewards.reduce((acc, reward) => acc + reward.tokens, 0);
 
-  if (builderRewards.length === 0) {
+  if (developerRewards.length === 0) {
     return (
       <Paper
         sx={{
@@ -62,5 +62,5 @@ export async function BuilderRewardsTableContainer({ week, season }: { week: str
     );
   }
 
-  return <BuilderRewardsTable week={week} builderRewards={builderRewards} totalPoints={totalPoints} />;
+  return <DeveloperRewardsTable developerRewards={developerRewards} totalTokens={totalTokens} />;
 }

@@ -1,8 +1,9 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPreviousSeason, getCurrentSeasonStart } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
+import { formatUnits } from 'viem';
 
-export async function getClaimablePoints({
+export async function getClaimableTokens({
   userId,
   season = getCurrentSeasonStart(),
   week
@@ -10,18 +11,19 @@ export async function getClaimablePoints({
   userId: string;
   season?: string;
   week?: string;
-}): Promise<{
-  points: number;
-  pointsReceiptIds: string[];
-}> {
+}): Promise<number> {
   const previousSeason = getPreviousSeason(season);
   const claimableSeasons = [previousSeason, season].filter(isTruthy);
   if (claimableSeasons.length === 0) {
     throw new Error(`No seasons found to claim points: ${season}`);
   }
-  const pointsReceipts = await prisma.pointsReceipt.findMany({
+  const tokensReceipts = await prisma.tokensReceipt.findMany({
     where: {
-      recipientId: userId,
+      recipientWallet: {
+        scout: {
+          id: userId
+        }
+      },
       claimedAt: null,
       event: {
         week,
@@ -41,10 +43,10 @@ export async function getClaimablePoints({
     }
   });
 
-  const totalUnclaimedPoints = pointsReceipts.reduce((acc, receipt) => acc + receipt.value, 0);
+  const totalUnclaimedTokens = tokensReceipts.reduce(
+    (acc, receipt) => acc + Number(formatUnits(BigInt(receipt.value), 18)),
+    0
+  );
 
-  return {
-    points: totalUnclaimedPoints,
-    pointsReceiptIds: pointsReceipts.map((r) => r.id)
-  };
+  return totalUnclaimedTokens;
 }

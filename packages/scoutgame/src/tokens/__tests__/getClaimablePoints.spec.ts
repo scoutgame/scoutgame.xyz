@@ -2,10 +2,10 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { mockBuilder, mockGemPayoutEvent } from '@packages/testing/database';
 
 // import { claimPoints } from '../claimPoints';
-import { getClaimablePoints } from '../getClaimablePoints';
+import { getClaimableTokens } from '../getClaimableTokens';
 
-describe('getClaimablePoints', () => {
-  it('should get claimable points correctly', async () => {
+describe('getClaimableTokens', () => {
+  it('should get claimable tokens correctly', async () => {
     const builder = await mockBuilder({ currentBalance: 0 });
     await mockGemPayoutEvent({
       builderId: builder.id,
@@ -13,8 +13,8 @@ describe('getClaimablePoints', () => {
       amount: 10,
       season: getCurrentSeasonStart()
     });
-    const result = await getClaimablePoints({ userId: builder.id });
-    expect(result.points).toEqual(10);
+    const result = await getClaimableTokens({ userId: builder.id });
+    expect(result.tokens).toEqual(10);
   });
 
   xit('should skip points already claimed', async () => {
@@ -26,7 +26,7 @@ describe('getClaimablePoints', () => {
       season: getCurrentSeasonStart()
     });
     // await claimPoints({ userId: builder.id });
-    const result = await getClaimablePoints({ userId: builder.id });
-    expect(result.points).toEqual(0);
+    const result = await getClaimableTokens({ userId: builder.id });
+    expect(result.tokens).toEqual(0);
   });
 });

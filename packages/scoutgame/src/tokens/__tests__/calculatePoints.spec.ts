@@ -1,4 +1,4 @@
-import { calculateEarnableScoutPointsForRank } from '../calculatePoints';
+import { calculateEarnableScoutPointsForRank } from '../calculateTokens';
 
 describe('calculateEarnableScoutPointsForRank', () => {
   it('should return correct value for rank 1', () => {

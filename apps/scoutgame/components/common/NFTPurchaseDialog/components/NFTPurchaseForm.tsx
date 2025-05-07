@@ -22,7 +22,6 @@ import {
   scoutgameEthAddress
 } from '@packages/scoutgame/builderNfts/constants';
 import { scoutgameMintsLogger } from '@packages/scoutgame/loggers/mintsLogger';
-import { calculateRewardForScout } from '@packages/scoutgame/points/divideTokensBetweenDeveloperAndHolders';
 import { getNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getNFTClient';
 import { getStarterNFTReadonlyClient } from '@packages/scoutgame/protocol/clients/getStarterNFTClient';
 import {
@@ -30,6 +29,7 @@ import {
   devTokenDecimals,
   scoutProtocolChainId
 } from '@packages/scoutgame/protocol/constants';
+import { calculateRewardForScout } from '@packages/scoutgame/tokens/divideTokensBetweenDeveloperAndHolders';
 import { IconButton } from '@packages/scoutgame-ui/components/common/Button/IconButton';
 import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';

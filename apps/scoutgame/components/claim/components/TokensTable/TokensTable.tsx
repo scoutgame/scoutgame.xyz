@@ -3,7 +3,7 @@
 import { Paper, Stack, Table, TableCell, TableRow, Typography } from '@mui/material';
 import { getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import type { PartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
-import type { TokensReceiptReward } from '@packages/scoutgame/points/getTokensReceiptsRewards';
+import type { TokensReceiptReward } from '@packages/scoutgame/tokens/getTokensReceiptsRewards';
 import { useMemo, type ReactNode } from 'react';
 
 import { StyledTableBody, StyledTableHead } from '../common/StyledTable';
@@ -43,7 +43,7 @@ export function TokensTable({
           if (typeOrderA !== typeOrderB) {
             return typeOrderA - typeOrderB;
           }
-          return b.points - a.points;
+          return b.tokens - a.tokens;
         }
 
         return b.week - a.week;

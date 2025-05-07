@@ -1,5 +1,4 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { prettyPrint } from '@packages/utils/strings';
 import type { Address } from 'viem';
 import { getAddress, parseEventLogs } from 'viem';
 

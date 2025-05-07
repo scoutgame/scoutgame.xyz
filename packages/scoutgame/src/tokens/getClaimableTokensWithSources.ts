@@ -30,7 +30,7 @@ export type UnclaimedTokensSource = {
     farcasterHandle?: string;
     displayName: string;
   }[];
-  points: number;
+  tokens: number;
   repos: string[];
   processingPayouts: boolean;
   claimData: ClaimData;
@@ -84,22 +84,22 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     (ev) => ev.args.week
   );
 
-  const developerIdScoutPointsRecord: Record<string, number> = {};
+  const developerIdTokensRecord: Record<string, number> = {};
   for (const receipt of tokenReceipts) {
     if (receipt.event.type === 'gems_payout' && receipt.event.builderId !== userId) {
-      if (!developerIdScoutPointsRecord[receipt.event.builderId]) {
-        developerIdScoutPointsRecord[receipt.event.builderId] = Number(
+      if (!developerIdTokensRecord[receipt.event.builderId]) {
+        developerIdTokensRecord[receipt.event.builderId] = Number(
           BigInt(receipt.value) / BigInt(10 ** devTokenDecimals)
         );
       } else {
-        developerIdScoutPointsRecord[receipt.event.builderId] += Number(
+        developerIdTokensRecord[receipt.event.builderId] += Number(
           BigInt(receipt.value) / BigInt(10 ** devTokenDecimals)
         );
       }
     }
   }
 
-  const topDeveloperIds = Object.entries(developerIdScoutPointsRecord)
+  const topDeveloperIds = Object.entries(developerIdTokensRecord)
     .sort((developer1, developer2) => developer2[1] - developer1[1])
     .map(([developerId]) => developerId)
     .slice(0, 3);
@@ -171,7 +171,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   return {
     developers: developersWithFarcaster,
-    points: claimProofs.reduce((acc, proof) => acc + Number(proof.amount), 0),
+    tokens: claimProofs.reduce((acc, proof) => acc + Number(proof.amount), 0),
     repos: uniqueRepos.slice(0, 3),
     claimData: {
       address: scoutWallets[0].address as Address,

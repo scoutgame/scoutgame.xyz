@@ -6,7 +6,7 @@ import type { LeaderboardDeveloper } from '../builders/getDevelopersLeaderboard'
 import { getDevelopersLeaderboard } from '../builders/getDevelopersLeaderboard';
 import { weeklyRewardableBuilders } from '../protocol/constants';
 
-import { calculateEarnableScoutPointsForRank } from './calculatePoints';
+import { calculateEarnableTokensForRank } from './calculateTokens';
 
 export type PartialNftPurchaseEvent = {
   tokensPurchased: number;
@@ -34,7 +34,7 @@ export async function getTokensCountForWeekWithNormalisation({ week }: { week: s
 
   const tokensQuotas = leaderboard.map((developer) => ({
     developer,
-    earnableTokens: calculateEarnableScoutPointsForRank({ rank: developer.rank, weeklyAllocatedTokens })
+    earnableTokens: calculateEarnableTokensForRank({ rank: developer.rank, weeklyAllocatedTokens })
   }));
 
   const totalEarnableTokens = tokensQuotas.reduce((acc, val) => acc + val.earnableTokens, 0);

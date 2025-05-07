@@ -2,8 +2,8 @@ import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
-import { checkIsProcessingPayouts } from '@packages/scoutgame/points/checkIsProcessingPayouts';
-import { getTokensReceiptsRewards } from '@packages/scoutgame/points/getTokensReceiptsRewards';
+import { checkIsProcessingPayouts } from '@packages/scoutgame/tokens/checkIsProcessingPayouts';
+import { getTokensReceiptsRewards } from '@packages/scoutgame/tokens/getTokensReceiptsRewards';
 
 import { TokensTable } from './TokensTable';
 

@@ -4,7 +4,7 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
-import { getTokensReceiptsRewards } from '@packages/scoutgame/points/getTokensReceiptsRewards';
+import { getTokensReceiptsRewards } from '@packages/scoutgame/tokens/getTokensReceiptsRewards';
 
 import { TokensTable } from './TokensTable';
 

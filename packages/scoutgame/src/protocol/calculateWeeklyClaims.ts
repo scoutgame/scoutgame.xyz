@@ -8,9 +8,9 @@ import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
 import { parseUnits, type Address } from 'viem';
 
-import { getNFTContractAddress } from '../builderNfts/constants';
-import { divideTokensBetweenDeveloperAndHolders } from '../points/divideTokensBetweenDeveloperAndHolders';
-import { getTokensCountForWeekWithNormalisation } from '../points/getTokensCountForWeekWithNormalisation';
+import { getNFTContractAddress, getStarterNFTContractAddress } from '../builderNfts/constants';
+import { divideTokensBetweenDeveloperAndHolders } from '../tokens/divideTokensBetweenDeveloperAndHolders';
+import { getTokensCountForWeekWithNormalisation } from '../tokens/getTokensCountForWeekWithNormalisation';
 
 import { scoutProtocolChainId, devTokenDecimals } from './constants';
 import type { TokenOwnership } from './resolveTokenOwnership';
@@ -40,11 +40,9 @@ export type WeeklyClaimsCalculated = {
  */
 export async function calculateWeeklyClaims({
   week,
-  nftContractAddress,
   tokenBalances
 }: {
   week: string;
-  nftContractAddress?: Address;
   tokenBalances: TokenOwnership;
 }): Promise<WeeklyClaimsCalculated> {
   const { normalisationFactor, topWeeklyDevelopers, weeklyAllocatedTokens } =
@@ -53,7 +51,6 @@ export async function calculateWeeklyClaims({
     });
 
   const season = getCurrentSeasonStart(week);
-  nftContractAddress ||= getNFTContractAddress(season) as Address;
 
   const builderEvents: Prisma.BuilderEventCreateManyInput[] = [];
   const tokenReceipts: Prisma.TokensReceiptCreateManyInput[] = [];
@@ -61,7 +58,7 @@ export async function calculateWeeklyClaims({
 
   // Get unique list of wallet addresses from token balances
   const uniqueWallets = new Set<string>();
-  Object.values(tokenBalances).forEach((balanceMap) => {
+  [...Object.values(tokenBalances.standard), ...Object.values(tokenBalances.starter)].forEach((balanceMap) => {
     Object.keys(balanceMap).forEach((wallet) => {
       uniqueWallets.add(wallet.toLowerCase());
     });
@@ -114,9 +111,10 @@ export async function calculateWeeklyClaims({
   const builderNfts = await prisma.builderNft.findMany({
     where: {
       chainId: scoutProtocolChainId,
-      contractAddress: nftContractAddress
+      season
     },
     select: {
+      contractAddress: true,
       tokenId: true,
       builderId: true,
       builder: {
@@ -134,13 +132,22 @@ export async function calculateWeeklyClaims({
     }
   });
 
+  const starterContractAddress = getStarterNFTContractAddress(week);
+  const standardContractAddress = getNFTContractAddress(week);
+
   const allClaims = await Promise.all(
     topWeeklyDevelopers
       // We only want to issue claims for builders that have sold at least one NFT
-      .filter(
-        (developer) =>
-          !!tokenBalances[builderNfts.find((nft) => nft.builderId === developer.developer.id)!.tokenId.toString()]
-      )
+      .filter((developer) => {
+        const starterNft = builderNfts.find(
+          (nft) => nft.builderId === developer.developer.id && nft.contractAddress === starterContractAddress
+        );
+        const standardNft = builderNfts.find(
+          (nft) => nft.builderId === developer.developer.id && nft.contractAddress === standardContractAddress
+        );
+
+        return !!starterNft || !!standardNft;
+      })
       .sort((a, b) => a.rank - b.rank)
       .map(async (developer, index) => {
         const developerNft = builderNfts.find((nft) => nft.builderId === developer.developer.id);
@@ -158,18 +165,60 @@ export async function calculateWeeklyClaims({
         }
 
         // Edge case if the builder has no nfts sold
-        const owners = tokenBalances[developerNft.tokenId.toString()] || {};
+        const starterOwners = tokenBalances.starter[developerNft.tokenId.toString()] || {};
+        const standardOwners = tokenBalances.standard[developerNft.tokenId.toString()] || {};
 
-        const ownersByWallet = Object.entries(owners).map(([wallet, balance]) => ({
+        const ownersByWalletRecord: Record<Address, { totalNft: number; totalStarter: number }> = {};
+        const ownersByScoutIdRecord: Record<string, { totalNft: number; totalStarter: number }> = {};
+
+        for (const [wallet, balance] of Object.entries(starterOwners)) {
+          const walletAddress = wallet as Address;
+          ownersByWalletRecord[walletAddress] = {
+            totalNft: 0,
+            totalStarter: balance
+          };
+
+          const scoutId = walletToScoutId[walletAddress];
+          if (scoutId) {
+            ownersByScoutIdRecord[scoutId] = {
+              totalNft: 0,
+              totalStarter: balance
+            };
+          }
+        }
+
+        for (const [wallet, balance] of Object.entries(standardOwners)) {
+          const walletAddress = wallet as Address;
+          if (!ownersByWalletRecord[walletAddress]) {
+            ownersByWalletRecord[walletAddress] = {
+              totalNft: balance,
+              totalStarter: 0
+            };
+          } else {
+            ownersByWalletRecord[walletAddress].totalNft += Number(balance);
+          }
+
+          const scoutId = walletToScoutId[walletAddress];
+          if (!ownersByScoutIdRecord[scoutId]) {
+            ownersByScoutIdRecord[scoutId] = {
+              totalNft: balance,
+              totalStarter: 0
+            };
+          } else {
+            ownersByScoutIdRecord[scoutId].totalNft += Number(balance);
+          }
+        }
+
+        const ownersByWallet = Object.entries(ownersByWalletRecord).map(([wallet, balance]) => ({
           wallet: wallet as Address,
-          totalNft: balance,
-          totalStarter: 0
+          totalNft: balance.totalNft,
+          totalStarter: balance.totalStarter
         }));
 
-        const ownersByScoutId = Object.entries(owners).map(([scoutId, balance]) => ({
+        const ownersByScoutId = Object.entries(ownersByScoutIdRecord).map(([scoutId, balance]) => ({
           scoutId,
-          totalNft: Number(balance),
-          totalStarter: 0
+          totalNft: balance.totalNft,
+          totalStarter: balance.totalStarter
         }));
 
         const { tokensPerScoutByWallet, tokensForDeveloper } = divideTokensBetweenDeveloperAndHolders({
@@ -194,7 +243,7 @@ export async function calculateWeeklyClaims({
 
         const developerTokenReceiptInput: Prisma.TokensReceiptCreateManyInput = {
           eventId: builderEventId,
-          value: (BigInt(tokensForDeveloper) * BigInt(10 ** devTokenDecimals)).toString(),
+          value: parseUnits(tokensForDeveloper.toString(), devTokenDecimals).toString(),
           recipientWalletAddress: developerWallet
         };
 
@@ -202,7 +251,7 @@ export async function calculateWeeklyClaims({
           (scoutClaim) =>
             ({
               eventId: builderEventId,
-              value: parseUnits(scoutClaim.erc20Tokens.toString(), 18).toString(),
+              value: parseUnits(scoutClaim.erc20Tokens.toString(), devTokenDecimals).toString(),
               recipientWalletAddress: scoutClaim.wallet
             }) as Prisma.TokensReceiptCreateManyInput
         );

@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
-import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
+import { refreshBuilderLevels } from '../tokens/refreshBuilderLevels';
 
 async function script() {
   const levels = await refreshBuilderLevels();

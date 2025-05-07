@@ -2,7 +2,6 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link, Stack, TableCell, TableRow, Typography } from '@mui/material';
 import { getChainById } from '@packages/blockchain/chains';
 import type {
-  OptimismNewScoutPartnerReward,
   OptimismReferralChampionPartnerReward,
   OctantBaseContributionPartnerReward,
   PartnerReward
@@ -13,7 +12,7 @@ import type {
   TokensReceiptReward,
   MatchupWinnerTokensReceiptReward,
   SoldNftsTokensReceiptReward
-} from '@packages/scoutgame/points/getTokensReceiptsRewards';
+} from '@packages/scoutgame/tokens/getTokensReceiptsRewards';
 import { DateTime } from 'luxon';
 import Image from 'next/image';
 
@@ -35,7 +34,7 @@ function DeveloperRewardRow({ developerReward }: { developerReward: DeveloperTok
         <Typography>{developerReward.week}</Typography>
       </TableCell>
       <TableCell align='right'>
-        <TokensCell tokens={developerReward.points} />
+        <TokensCell tokens={developerReward.tokens} />
       </TableCell>
     </TableRow>
   );
@@ -55,7 +54,7 @@ function LeaderboardRankRewardRow({
         <Typography>{leaderboardRankReward.week}</Typography>
       </TableCell>
       <TableCell align='right'>
-        <TokensCell tokens={leaderboardRankReward.points} />
+        <TokensCell tokens={leaderboardRankReward.tokens} />
       </TableCell>
     </TableRow>
   );
@@ -74,7 +73,7 @@ function SoldNftsRewardRow({ soldNftsReward }: { soldNftsReward: SoldNftsTokensR
         <Typography>{soldNftsReward.week}</Typography>
       </TableCell>
       <TableCell align='right'>
-        <TokensCell tokens={soldNftsReward.points} />
+        <TokensCell tokens={soldNftsReward.tokens} />
       </TableCell>
     </TableRow>
   );

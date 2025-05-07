@@ -83,21 +83,22 @@ export async function deployMatchupRewards({ week }: { week: string }) {
   });
 
   // create builder event + pointsReciepts for each recipient
-  for (const recipient of recipients) {
-    await prisma.builderEvent.create({
-      data: {
-        week,
-        season: currentSeason.start,
-        type: 'matchup_winner',
-        pointsReceipts: {
-          create: {
-            value: recipient.pointsAmount,
-            recipientId: recipient.scoutId,
-            season: currentSeason.start
-          }
-        },
-        builderId: recipient.scoutId
-      }
-    });
-  }
+  // TODO: Create tokens receipt rather than points receipt for matchup rewards
+  // for (const recipient of recipients) {
+  //   await prisma.builderEvent.create({
+  //     data: {
+  //       week,
+  //       season: currentSeason.start,
+  //       type: 'matchup_winner',
+  //       pointsReceipts: {
+  //         create: {
+  //           value: recipient.pointsAmount,
+  //           recipientId: recipient.scoutId,
+  //           season: currentSeason.start
+  //         }
+  //       },
+  //       builderId: recipient.scoutId
+  //     }
+  //   });
+  // }
 }

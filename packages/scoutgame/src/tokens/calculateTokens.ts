@@ -1,6 +1,6 @@
 const decayRate = 0.03;
 
-export function calculateEarnableScoutPointsForRank({
+export function calculateEarnableTokensForRank({
   rank,
   weeklyAllocatedTokens
 }: {

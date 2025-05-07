@@ -10,8 +10,8 @@ import {
 import { randomWalletAddress } from '@packages/testing/generators';
 import { uuidFromNumber } from '@packages/utils/uuid';
 
-import type { BuilderAggregateScore } from '../calculateBuilderLevel';
-import { calculateBuilderLevels, decileTable } from '../calculateBuilderLevel';
+import type { BuilderAggregateScore } from '../calculateDeveloperLevels';
+import { calculateBuilderLevels, decileTable } from '../calculateDeveloperLevels';
 
 const season = '2025-W02';
 

@@ -3,13 +3,14 @@
 import { log } from '@charmverse/core/log';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { Box, Dialog, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getLastWeek } from '@packages/dates/utils';
 import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
 import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
-import type { ClaimData } from '@packages/scoutgame/points/getClaimableTokensWithSources';
 import { getProtocolWriteClient } from '@packages/scoutgame/protocol/clients/getProtocolWriteClient';
 import { scoutProtocolChainId, devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/protocol/contracts/ScoutProtocolImplementation';
+import type { ClaimData } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -18,10 +19,11 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { formatUnits } from 'viem';
+import { base } from 'viem/chains';
 import { useWalletClient } from 'wagmi';
 
 import { handleOnchainClaimAction } from 'lib/actions/handleOnchainClaimAction';
-import { revalidateClaimPointsAction } from 'lib/actions/revalidateClaimPointsAction';
+import { revalidateClaimTokensAction } from 'lib/actions/revalidateClaimTokensAction';
 
 import { BonusPartnersDisplay } from './BonusPartnersDisplay';
 import { PartnerRewardsClaimButton } from './PartnerRewardsClaimButton/PartnerRewardsClaimButton';
@@ -29,7 +31,6 @@ import { TokensClaimButton } from './TokensClaimButton';
 import { TokensClaimSocialShare } from './TokensClaimModal/TokensClaimSocialShare';
 
 type TokensClaimScreenProps = {
-  totalUnclaimedPoints: number;
   partnerRewards: UnclaimedPartnerReward[];
   developers: {
     farcasterHandle?: string;
@@ -49,26 +50,26 @@ export function TokensClaimScreen(props: TokensClaimScreenProps) {
 }
 
 function TokensClaimScreenComponent({
-  totalUnclaimedPoints,
   partnerRewards,
   developers,
   repos,
   onchainClaimData,
   processingPayouts
 }: TokensClaimScreenProps) {
+  const [isExecuting, setIsExecuting] = useState(false);
   const { executeAsync: handleOnchainClaim, result } = useAction(handleOnchainClaimAction, {
     onSuccess() {
-      toast.success('You claimed your points successfully');
+      toast.success('You claimed your tokens successfully');
     },
     onError(error) {
-      toast.error(error.error.serverError?.message || 'There was an error while claiming points');
+      toast.error(error.error.serverError?.message || 'There was an error while claiming tokens');
     }
   });
 
   const { refreshUser, user } = useUser();
   const [showModal, setShowModal] = useState(false);
 
-  const { executeAsync: revalidateClaimPoints } = useAction(revalidateClaimPointsAction);
+  const { executeAsync: revalidateClaimTokens } = useAction(revalidateClaimTokensAction);
 
   const { data: walletClient } = useWalletClient();
 
@@ -103,32 +104,47 @@ function TokensClaimScreenComponent({
       }
     }
 
-    const protocolClient = getProtocolWriteClient({
-      walletClient: walletClient as ReadWriteWalletClient
-    });
+    setIsExecuting(true);
 
-    const tx = await protocolClient.multiClaim({
-      args: {
-        claims: onchainClaimData?.weeklyProofs?.map((claim) => ({
-          week: claim.week,
-          amount: BigInt(claim.amount),
-          proofs: claim.proofs
-        }))
-      }
-    });
+    try {
+      const protocolClient = getProtocolWriteClient({
+        walletClient: walletClient as ReadWriteWalletClient
+      });
 
-    await handleOnchainClaim({
-      wallet: walletClient.account.address.toLowerCase(),
-      claimsProofs: onchainClaimData!.weeklyProofs,
-      claimTxHash: tx.transactionHash
-    });
+      const tx = await protocolClient.multiClaim({
+        args: {
+          claims: onchainClaimData?.weeklyProofs?.map((claim) => ({
+            week: claim.week,
+            amount: BigInt(claim.amount),
+            proofs: claim.proofs
+          }))
+        }
+      });
 
-    refreshUser();
+      const publicClient = getPublicClient(base.id);
+
+      await publicClient.waitForTransactionReceipt({
+        hash: tx as `0x${string}`,
+        retryCount: 10
+      });
+
+      await handleOnchainClaim({
+        wallet: walletClient.account.address.toLowerCase(),
+        claimsProofs: onchainClaimData!.weeklyProofs,
+        claimTxHash: tx
+      });
+
+      refreshUser();
+    } catch (error) {
+      log.error('Error claiming tokens', { error });
+    } finally {
+      setIsExecuting(false);
+    }
   }
 
   const handleCloseModal = async () => {
     setShowModal(false);
-    await revalidateClaimPoints();
+    await revalidateClaimTokens();
   };
 
   const connectedAddress = walletClient?.account.address.toLowerCase();
@@ -156,12 +172,12 @@ function TokensClaimScreenComponent({
           </Typography>
         </>
       )}
-      {(totalUnclaimedPoints || partnerRewards.length > 0) && !processingPayouts ? (
+      {(totalUnclaimedTokens || partnerRewards.length > 0) && !processingPayouts ? (
         <>
           <Typography variant='h5' textAlign='center' fontWeight={500} color='secondary'>
             Congratulations!
           </Typography>
-          {totalUnclaimedPoints ? (
+          {totalUnclaimedTokens ? (
             <>
               <Typography variant='h5' textAlign='center'>
                 You have earned DEV Tokens!
@@ -185,7 +201,7 @@ function TokensClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {(totalUnclaimedPoints / 10 ** devTokenDecimals).toLocaleString()}
+                      {totalUnclaimedTokens}
                     </Typography>
                     <Image
                       width={35}
@@ -241,7 +257,7 @@ function TokensClaimScreenComponent({
           ) : null}
         </>
       ) : null}
-      {!totalUnclaimedPoints && partnerRewards.length === 0 && !processingPayouts ? (
+      {!totalUnclaimedTokens && partnerRewards.length === 0 && !processingPayouts ? (
         <>
           <Typography textAlign='center' color='secondary' variant='h5'>
             Hey {user?.displayName},

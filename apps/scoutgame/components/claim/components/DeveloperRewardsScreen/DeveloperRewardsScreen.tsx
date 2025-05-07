@@ -16,9 +16,9 @@ import { TabsMenu } from '@packages/scoutgame-ui/components/common/Tabs/TabsMenu
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-import { BuilderRewardsTableContainer } from './BuilderRewardsTableContainer';
+import { DeveloperRewardsTableContainer } from './DeveloperRewardsTableContainer';
 
-export function BuilderRewardsScreen({ period, season }: { period: string; season: string }) {
+export function DeveloperRewardsScreen({ period, season }: { period: string; season: string }) {
   const currentSeason = getSeasonConfig(season);
   const isSeason = period === 'season';
   const lastSeason = getPreviousSeason(season);
@@ -68,7 +68,7 @@ export function BuilderRewardsScreen({ period, season }: { period: string; seaso
         </Link>
       </Stack>
       <Suspense fallback={<LoadingTable />}>
-        <BuilderRewardsTableContainer week={week} season={season} />
+        <DeveloperRewardsTableContainer week={week} season={season} />
       </Suspense>
     </Stack>
   );

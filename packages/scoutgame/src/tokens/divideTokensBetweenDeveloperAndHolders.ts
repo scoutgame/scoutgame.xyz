@@ -4,7 +4,7 @@ import type { Address } from 'viem';
 
 import type { TokenOwnershipForBuilder } from '../protocol/resolveTokenOwnershipForBuilder';
 
-import { calculateEarnableScoutPointsForRank as calculateEarnableScoutTokensForRank } from './calculatePoints';
+import { calculateEarnableTokensForRank } from './calculateTokens';
 
 // percent that goes to the developer
 export const defaultDeveloperPool = 20;
@@ -19,7 +19,7 @@ export type TokenDistribution = {
     starterPack: number;
     total: number;
   };
-  earnableScoutTokens: number;
+  earnableTokens: number;
   tokensPerScoutByWallet: {
     wallet: Address;
     nftTokens: number;
@@ -60,15 +60,15 @@ export function divideTokensBetweenDeveloperAndHolders({
   const nftSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalNft, 0);
   const starterPackSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
 
-  const earnableScoutTokens = Math.floor(
-    calculateEarnableScoutTokensForRank({ rank, weeklyAllocatedTokens }) * normalisationFactor
+  const earnableTokens = Math.floor(
+    calculateEarnableTokensForRank({ rank, weeklyAllocatedTokens }) * normalisationFactor
   );
 
   const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
     const scoutReward = calculateRewardForScout({
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
       supply: { default: nftSupply, starterPack: starterPackSupply },
-      scoutsRewardPool: earnableScoutTokens
+      scoutsRewardPool: earnableTokens
     });
     const scoutTokens = Math.floor(scoutReward);
     return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
@@ -78,14 +78,14 @@ export function divideTokensBetweenDeveloperAndHolders({
     const scoutReward = calculateRewardForScout({
       purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
       supply: { default: nftSupply, starterPack: starterPackSupply },
-      scoutsRewardPool: earnableScoutTokens
+      scoutsRewardPool: earnableTokens
     });
     const scoutTokens = Math.floor(scoutReward);
 
     return { scoutId: owner.scoutId, nftTokens: owner.totalNft, erc20Tokens: scoutTokens };
   });
 
-  const tokensForDeveloper = Math.floor((defaultDeveloperPool * earnableScoutTokens) / 100);
+  const tokensForDeveloper = Math.floor((defaultDeveloperPool * earnableTokens) / 100);
 
   return {
     nftSupply: {
@@ -93,7 +93,7 @@ export function divideTokensBetweenDeveloperAndHolders({
       starterPack: starterPackSupply,
       total: nftSupply + starterPackSupply
     },
-    earnableScoutTokens,
+    earnableTokens,
     tokensPerScoutByWallet,
     tokensPerScoutByScoutId,
     tokensForDeveloper

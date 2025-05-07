@@ -18,7 +18,7 @@ describe('refreshEstimatedPayouts', () => {
   it('should refresh the estimated payouts for a season, and zero out the payouts for builders who dont rank', async () => {
     const { refreshEstimatedPayouts } = await import('../refreshEstimatedPayouts');
     const { getPointsCountForWeekWithNormalisation } = await import(
-      '../../points/getTokensCountForWeekWithNormalisation'
+      '../../tokens/getTokensCountForWeekWithNormalisation'
     );
 
     const season = '2024-TEST78';

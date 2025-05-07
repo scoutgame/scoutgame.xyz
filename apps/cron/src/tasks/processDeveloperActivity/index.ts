@@ -3,7 +3,7 @@ import type { Season } from '@packages/dates/config';
 import { getStartOfWeek, getCurrentWeek, getCurrentSeasonStart } from '@packages/dates/utils';
 import { refreshEstimatedPayouts } from '@packages/scoutgame/builderNfts/refreshEstimatedPayouts';
 import { updateBuildersRank } from '@packages/scoutgame/builders/updateBuildersRank';
-import { refreshBuilderLevels } from '@packages/scoutgame/points/refreshBuilderLevels';
+import { refreshBuilderLevels } from '@packages/scoutgame/tokens/refreshBuilderLevels';
 import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
 import type Koa from 'koa';
 import { DateTime } from 'luxon';

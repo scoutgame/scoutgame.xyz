@@ -2,9 +2,9 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
 import { getAllISOWeeksFromSeasonStart, getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 
-export type BuilderAggregateScore = {
-  builderId: string;
-  totalPoints: number;
+export type DeveloperAggregateScore = {
+  developerId: string;
+  totalTokens: number;
   firstActiveWeek: ISOWeek;
   activeWeeks: number;
   level: number;
@@ -25,15 +25,15 @@ export const decileTable = [
   { cutoff: 0, level: 1 }
 ];
 
-// To determine the level of a developer, we look at their average points earned per week over the course of the season
-export async function calculateBuilderLevels({
+// To determine the level of a developer, we look at their average tokens earned per week over the course of the season
+export async function calculateDeveloperLevels({
   season = getCurrentSeasonStart(),
   week
 }: {
   season?: ISOWeek;
   week?: ISOWeek;
-} = {}): Promise<BuilderAggregateScore[]> {
-  // Fetch all builders with their gem payouts
+} = {}): Promise<DeveloperAggregateScore[]> {
+  // Fetch all developers with their gem payouts
   const gemPayouts = await prisma.gemsPayoutEvent.findMany({
     where: {
       points: {
@@ -85,24 +85,24 @@ export async function calculateBuilderLevels({
     weeksWindow = weeksWindow.filter((_week) => _week < currentWeek);
   }
 
-  const builderScores = gemPayouts.reduce(
+  const developerScores = gemPayouts.reduce(
     (acc, gemsPayout) => {
-      const builderId = gemsPayout.builderId;
+      const developerId = gemsPayout.builderId;
 
       // Ignore empty gem payouts
       if (!gemsPayout.points) {
         return acc;
       }
 
-      if (!acc[builderId]) {
+      if (!acc[developerId]) {
         // Find index of first active week in all season weeks
         const firstActiveWeekIndex = weeksWindow.indexOf(gemsPayout.week);
 
         // Get number of weeks builder has been active (from first week to end of season)
         const activeWeeks = weeksWindow.slice(firstActiveWeekIndex).length;
-        acc[builderId] = {
-          builderId,
-          totalPoints: 0,
+        acc[developerId] = {
+          developerId,
+          totalTokens: 0,
           firstActiveWeek: gemsPayout.week,
           activeWeeks,
           centile: 0,
@@ -111,31 +111,33 @@ export async function calculateBuilderLevels({
         };
       }
 
-      acc[builderId].totalPoints += gemsPayout.points;
-      acc[builderId].averageGemsPerWeek = Math.floor(acc[builderId].totalPoints / acc[builderId].activeWeeks);
+      acc[developerId].totalTokens += gemsPayout.points;
+      acc[developerId].averageGemsPerWeek = Math.floor(acc[developerId].totalTokens / acc[developerId].activeWeeks);
       return acc;
     },
-    {} as Record<string, BuilderAggregateScore>
+    {} as Record<string, DeveloperAggregateScore>
   );
 
-  const orderedBuilderScores = Object.values(builderScores).sort((a, b) => b.averageGemsPerWeek - a.averageGemsPerWeek);
+  const orderedDeveloperScores = Object.values(developerScores).sort(
+    (a, b) => b.averageGemsPerWeek - a.averageGemsPerWeek
+  );
 
-  const totalBuilders = orderedBuilderScores.length;
+  const totalDevelopers = orderedDeveloperScores.length;
 
-  const buildersWithCentilesAndLevels = orderedBuilderScores.map((builder, index) => {
+  const developersWithCentilesAndLevels = orderedDeveloperScores.map((developer, index) => {
     // Calculate centile (100 - percentage from top)
     // Using ceiling to ensure top score gets 100 and bottom gets 1
-    const centile = Math.ceil(100 - (index / (totalBuilders - 1)) * 99);
+    const centile = Math.ceil(100 - (index / (totalDevelopers - 1)) * 99);
 
     // Calculate level based on centile (10 = 90-100, 9 = 80-89, etc)
     const level = Math.min(10, Math.floor(centile / 10) + 1);
 
     return {
-      ...builder,
+      ...developer,
       centile,
       level
     };
   });
 
-  return buildersWithCentilesAndLevels;
+  return developersWithCentilesAndLevels;
 }
