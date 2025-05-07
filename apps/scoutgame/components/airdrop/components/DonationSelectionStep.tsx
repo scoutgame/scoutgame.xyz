@@ -136,8 +136,8 @@ export function DonationSelectionStep({
           }
           description={
             <>
-              Use your DEV tokens to Draft
-              <br /> hardworking developers and rake in the rewards!
+              Use your DEV tokens to purchase
+              <br /> Developer Cards and rake in the rewards!
             </>
           }
           leftIcon='/images/scout-icon.svg'

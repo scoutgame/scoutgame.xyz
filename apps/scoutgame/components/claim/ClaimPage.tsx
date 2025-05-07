@@ -3,6 +3,7 @@ import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loadi
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { Suspense } from 'react';
 
+import { AirdropClaimLink } from './components/AirdropClaimLink';
 import { DeveloperRewardsScreen } from './components/DeveloperRewardsScreen/DeveloperRewardsScreen';
 import { TokensClaimContainer } from './components/TokensClaimContainer';
 import { ClaimedTokensTable } from './components/TokensTable/ClaimedTokensTable';
@@ -23,6 +24,9 @@ export function ClaimPage({ period, season }: ClaimPageProps) {
       }}
     >
       <Stack flex={1} gap={4}>
+        <Suspense fallback={<LoadingComponent />}>
+          <AirdropClaimLink />
+        </Suspense>
         <Suspense fallback={<LoadingComponent />}>
           <TokensClaimContainer />
         </Suspense>
