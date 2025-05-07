@@ -24,6 +24,7 @@ import { useGlobalModal } from 'components/common/ModalProvider';
 import { ERC20ApproveButton } from 'components/common/NFTPurchaseDialog/components/ERC20Approve';
 import { DEV_PAYMENT_OPTION, PaymentTokenSelector, TOKEN_LOGO_RECORD } from 'components/common/PaymentTokenSelector';
 import type { SelectedPaymentOption } from 'components/common/PaymentTokenSelector';
+import { ReferenceTime } from 'components/common/ReferenceTime';
 import { useGetNftCount } from 'hooks/api/user';
 import { useGetTokenBalances } from 'hooks/useGetTokenBalances';
 
@@ -123,11 +124,11 @@ function MatchupRegistrationForm({ week }: { week: string }) {
 
   const showNftCountAlert = !isLoadingNftCount && nftCountData && nftCountData.nftCount < MINIMUM_NFT_COUNT;
 
+  const startTime = useMemo(() => getStartOfMatchup(week), [week]);
   const showStartTimeAlert = useMemo(() => {
-    const startTime = getStartOfMatchup(week);
     const threeHoursFromNow = new Date(Date.now() + 3 * 60 * 60 * 1000);
     return startTime <= threeHoursFromNow;
-  }, [week]);
+  }, [startTime]);
 
   return (
     <Box width='350px' maxWidth='100%' mx='auto'>
@@ -145,7 +146,7 @@ function MatchupRegistrationForm({ week }: { week: string }) {
       )}
       {showStartTimeAlert && (
         <Alert severity='warning' sx={{ mb: 2 }}>
-          Registration begins shortly. You will need to select and register your team before the matchup starts.
+          Select your team before registration closes in <ReferenceTime timestamp={startTime.getTime()} /> to compete!
         </Alert>
       )}
       <Box display='flex' justifyContent='space-between' width='100%' mb={2}>

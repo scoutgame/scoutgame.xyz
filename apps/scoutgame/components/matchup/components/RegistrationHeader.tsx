@@ -62,8 +62,8 @@ export function RegistrationHeader({
               color='secondary.main'
               sx={{ textAlign: { xs: 'center', md: 'left' } }}
             >
-              {registrationOpen && <ReferenceTime prefix='Begins in' unixTimestamp={startTime} />}
-              {!registrationOpen && registered && <ReferenceTime prefix='Ends in' unixTimestamp={endTime} />}
+              {registrationOpen && <ReferenceTime prefix='Begins in' timestamp={startTime} />}
+              {!registrationOpen && registered && <ReferenceTime prefix='Ends in' timestamp={endTime} />}
             </Typography>
           </Stack>
         </Stack>

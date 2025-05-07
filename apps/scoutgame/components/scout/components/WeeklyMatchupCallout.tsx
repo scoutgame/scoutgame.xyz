@@ -64,7 +64,7 @@ export async function WeeklyMatchupCallout() {
                   Choose your team and face-off with your fellow Scouts! Who will be this week's Champion Scout?
                 </Typography>
                 <Typography variant='body2' component='em' color='secondary'>
-                  <ReferenceTime prefix='Begins in' unixTimestamp={startTime} />
+                  <ReferenceTime prefix='Begins in' timestamp={startTime} />
                 </Typography>
               </>
             ) : (
