@@ -19,20 +19,17 @@ export type DeterministicRandomBuilderGemsPayoutActivity = {
 };
 
 export function seedBuildersGemPayouts({
-  season,
+  weeks,
   amount = 200,
   indexOffset = 0
 }: {
-  season: ISOWeek;
+  weeks: ISOWeek[];
   amount?: number;
   indexOffset?: number;
 }): {
   builders: DeterministicRandomBuilderGemsPayoutActivity[];
   weeks: ISOWeek[];
 } {
-  const allWeeks = getAllISOWeeksFromSeasonStart({ season });
-  const weeks = allWeeks.slice(0, -1);
-
   // Setup X builders (default 200) using a deterministic uuid per builder index
   // Create mock builders with random gem distributions
   const builders: DeterministicRandomBuilderGemsPayoutActivity[] = Array.from({ length: amount }, (_, index) => {
@@ -121,32 +118,31 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
   );
   const scouts = _builders.slice(0, 1);
 
-  for (let i = 0; i < builders.length; i++) {
-    const builder = builders[i];
-    for (let j = 0; j < builder.gemPayoutInputs.length; j++) {
-      const gemPayout = builder.gemPayoutInputs[j];
-
-      await prisma.builderEvent.create({
-        data: {
-          season,
-          week: gemPayout.isoWeek,
-          type: 'gems_payout',
-          createdAt: getDateFromISOWeek(gemPayout.isoWeek).toJSDate(),
-          tokensReceipts: {
-            createMany: {
-              data: scouts.map((scout) => ({
-                value: BigInt(gemPayout.value).toString(),
-                recipientWalletAddress: scout.wallets[0].address
-              }))
-            }
-          },
-          builder: {
-            connect: {
-              id: builder.id
+  await Promise.all(
+    builders.flatMap((builder, i) => {
+      return builder.gemPayoutInputs.map((gemPayout) => {
+        return prisma.builderEvent.create({
+          data: {
+            season,
+            week: gemPayout.isoWeek,
+            type: 'gems_payout',
+            createdAt: getDateFromISOWeek(gemPayout.isoWeek).toJSDate(),
+            tokensReceipts: {
+              createMany: {
+                data: scouts.map((scout) => ({
+                  value: BigInt(gemPayout.value).toString(),
+                  recipientWalletAddress: scout.wallets[0].address
+                }))
+              }
+            },
+            builder: {
+              connect: {
+                id: builder.id
+              }
             }
           }
-        }
+        });
       });
-    }
-  }
+    })
+  );
 }

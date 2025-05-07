@@ -267,6 +267,12 @@ const themeOptions: Parameters<typeof createTheme>[0] = {
           })
         },
         {
+          props: { variant: 'buy', disabled: true },
+          style: ({ theme }) => ({
+            borderColor: 'grey'
+          })
+        },
+        {
           props: { variant: 'buy-starter' },
           style: ({ theme }) => ({
             background: 'transparent',
