@@ -18,7 +18,7 @@ describe('refreshDeveloperLevels', () => {
     const season = '2024-W41';
 
     const { builders } = seedBuildersGemPayouts({
-      season,
+      weeks: ['2024-W41', '2024-W42', '2024-W43'],
       amount: 200
     });
 
@@ -51,7 +51,7 @@ describe('refreshDeveloperLevels', () => {
 
     // These numbers were obtained by checking the seed data results once, then ensuring they don't change
     expect(builder1.level).toBe(8);
-    expect(builder2.level).toBe(10);
-    expect(builder3.level).toBe(5);
+    expect(builder2.level).toBe(9);
+    expect(builder3.level).toBe(6);
   });
 });
