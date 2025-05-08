@@ -125,13 +125,13 @@ export async function AirdropMetrics({
     }
   } else if (partner === 'matchup_rewards') {
     const rewards = await getMatchupRewards(currentWeek);
-    if (rewards.length > 0) {
-      const upcomingPayout = rewards.reduce((sum, payout) => sum + payout.opAmount, BigInt(0));
+    if (rewards.tokenWinners.length > 0) {
+      const upcomingPayout = rewards.tokenWinners.reduce((sum, payout) => sum + payout.devAmount, BigInt(0));
       airdrops.unshift({
         isCurrentWeek: true,
         week: currentWeek,
-        wallets: rewards.length,
-        walletAddresses: rewards.map((r) => r.address),
+        wallets: rewards.tokenWinners.length,
+        walletAddresses: rewards.tokenWinners.map((r) => r.address),
         claimed: zero,
         unclaimed: upcomingPayout,
         total: upcomingPayout
@@ -139,13 +139,13 @@ export async function AirdropMetrics({
     }
   } else if (partner === 'matchup_pool_rewards') {
     const rewards = await getMatchupRewards(currentWeek);
-    if (rewards.length > 0) {
-      const upcomingPayout = rewards.reduce((sum, payout) => sum + payout.devAmount, BigInt(0));
+    if (rewards.tokenWinners.length > 0) {
+      const upcomingPayout = rewards.tokenWinners.reduce((sum, payout) => sum + payout.devAmount, BigInt(0));
       airdrops.unshift({
         isCurrentWeek: true,
         week: currentWeek,
-        wallets: rewards.length,
-        walletAddresses: rewards.map((r) => r.address),
+        wallets: rewards.tokenWinners.length,
+        walletAddresses: rewards.tokenWinners.map((r) => r.address),
         claimed: zero,
         unclaimed: upcomingPayout,
         total: upcomingPayout

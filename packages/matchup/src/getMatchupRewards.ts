@@ -128,5 +128,8 @@ export async function getMatchupRewards(week: string) {
     currentPosition += positionsInGroup;
   }
 
-  return recipients;
+  // 4th and 5th place winners get a free matchup. just take the next 2 entries
+  const freeMatchupWinners = leaderboard.slice(recipients.length, recipients.length + 2);
+
+  return { tokenWinners: recipients, freeMatchupWinners };
 }
