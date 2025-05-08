@@ -114,7 +114,7 @@ export async function recordNftMint({
       });
       break;
     }
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
   if (tries < 9) {
     log.warn('Had to retry refreshing scout nft balance', {
