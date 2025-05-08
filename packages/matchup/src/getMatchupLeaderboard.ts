@@ -43,13 +43,24 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
           id: true,
           displayName: true,
           avatar: true,
-          path: true
+          path: true,
+          wallets: {
+            select: {
+              scoutedNfts: {
+                select: {
+                  id: true,
+                  balance: true
+                }
+              }
+            }
+          }
         }
       },
       selections: {
         select: {
           developerNft: {
             select: {
+              id: true,
               builder: {
                 select: {
                   id: true,
@@ -75,6 +86,10 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
   const leaderboard = entries
     .map((entry) => {
       const developers = entry.selections
+        // filter out selections if the scout no longer holds the NFT
+        .filter((selection) =>
+          entry.scout.wallets.some((w) => w.scoutedNfts.some((nft) => nft.id === selection.developerNft.id))
+        )
         .map((selection) => ({
           id: selection.developerNft!.builder.id,
           displayName: selection.developerNft!.builder.displayName,
