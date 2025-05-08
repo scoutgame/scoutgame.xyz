@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     return new Response('Week parameter is required', { status: 400 });
   }
 
-  const rows = await getMatchupRewards(week);
-
+  const { tokenWinners, freeMatchupWinners } = await getMatchupRewards(week);
+  const rows = [...tokenWinners, ...freeMatchupWinners];
   return respondWithTSV(rows, `partners-export_matchup_${week}.tsv`);
 }
