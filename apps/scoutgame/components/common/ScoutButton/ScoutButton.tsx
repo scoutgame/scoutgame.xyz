@@ -60,7 +60,7 @@ export function ScoutButton({
 
   if (formattedPrice === maxDevTokenPrice) {
     return (
-      <Button disabled variant='buy' sx={soldOutButtonSx}>
+      <Button disabled variant='buy' fullWidth sx={soldOutButtonSx}>
         <Box px={1}>SOLD OUT</Box>
       </Button>
     );

@@ -14,6 +14,7 @@ import type { DeveloperAggregateScore } from '../calculateDeveloperLevels';
 import { calculateDeveloperLevels, decileTable } from '../calculateDeveloperLevels';
 
 const season = '2025-W02';
+const weeks = ['2025-W02', '2025-W03', '2025-W04', '2025-W05'];
 
 // Validate date based on deterministic output of 200 builders
 function validateCalculations({
@@ -40,10 +41,8 @@ function validateCalculations({
   // Verify average gems per week calculation
   for (let i = 0; i < levels.length; i++) {
     const builderFromCalculation = levels[i];
-    const matchingBuilderInput = builders.find((b) => b.id === builderFromCalculation.developerId);
-
     expect(builderFromCalculation.averageTokensPerWeek).toBe(
-      builderFromCalculation.totalTokens / BigInt(matchingBuilderInput!.activeWeeks.length)
+      builderFromCalculation.totalTokens / BigInt(builderFromCalculation.activeWeeks)
     );
   }
 
@@ -59,31 +58,31 @@ function validateCalculations({
 
   expect(builder42).toMatchObject<DeveloperAggregateScore>({
     developerId: expect.any(String),
-    totalTokens: BigInt(4800),
-    averageTokensPerWeek: BigInt(2400),
+    totalTokens: BigInt(3100),
+    averageTokensPerWeek: BigInt(3100),
     centile: 80,
     level: 9,
-    firstActiveWeek: '2025-W03',
-    activeWeeks: 2
+    firstActiveWeek: '2025-W05',
+    activeWeeks: 1
   });
   expect(builder87).toMatchObject<DeveloperAggregateScore>({
     developerId: expect.any(String),
-    totalTokens: BigInt(1600),
-    averageTokensPerWeek: BigInt(1600),
+    totalTokens: BigInt(3400),
+    averageTokensPerWeek: BigInt(1700),
     centile: 57,
     level: 6,
-    firstActiveWeek: '2025-W04',
-    activeWeeks: 1
+    firstActiveWeek: '2025-W03',
+    activeWeeks: 2
   });
 
   expect(builder156).toMatchObject<DeveloperAggregateScore>({
     developerId: expect.any(String),
-    totalTokens: BigInt(2000),
-    averageTokensPerWeek: BigInt(666),
+    totalTokens: BigInt(1500),
+    averageTokensPerWeek: BigInt(750),
     centile: 23,
     level: 3,
-    firstActiveWeek: '2025-W02',
-    activeWeeks: 3
+    firstActiveWeek: '2025-W03',
+    activeWeeks: 2
   });
 }
 
@@ -130,7 +129,7 @@ describe('calculateDeveloperLevels', () => {
   });
 
   it('should calculate builder levels correctly, splitting them into centiles converted to levels, and return builders from highest to lowest score', async () => {
-    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
+    const { builders } = seedBuildersGemPayouts({ weeks, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
@@ -140,7 +139,7 @@ describe('calculateDeveloperLevels', () => {
   }, 30000);
 
   it('should exclude builders with 0 gems from the calculation', async () => {
-    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
+    const { builders } = seedBuildersGemPayouts({ weeks, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
@@ -165,12 +164,12 @@ describe('calculateDeveloperLevels', () => {
   }, 30000);
 
   it('should ignore builders without NFTs in the current season', async () => {
-    const { builders } = seedBuildersGemPayouts({ season, indexOffset });
+    const { builders } = seedBuildersGemPayouts({ weeks, indexOffset });
 
     await writeSeededBuildersGemPayoutsToDatabase({ builders, season });
 
     const { builders: ignoredBuilders } = seedBuildersGemPayouts({
-      season: getPreviousSeason(season)!,
+      weeks: ['2025-W01']!,
       amount: 57,
       indexOffset: indexOffset * 2
     });
