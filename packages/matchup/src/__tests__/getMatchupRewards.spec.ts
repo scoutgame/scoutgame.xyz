@@ -36,6 +36,7 @@ const createMockMatchup = (
   createdBy,
   totalScore,
   decentRegistrationTxId: null,
+  freeRegistration: false,
   registrationTxId: null,
   submittedAt: new Date(),
   rank: 1,
@@ -62,7 +63,7 @@ describe('getMatchupRewards', () => {
 
   test('should return empty array if no participants', async () => {
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue([]);
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
     expect(rewards).toEqual([]);
     expect(getMatchupDetails).toHaveBeenCalledWith(mockWeek);
   });
@@ -76,7 +77,7 @@ describe('getMatchupRewards', () => {
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     expect(rewards).toHaveLength(3);
     expect(rewards).toEqual([
@@ -110,7 +111,7 @@ describe('getMatchupRewards', () => {
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     // 1st and 2nd place rewards (50% + 30% = 80%) split between 2 winners
     // 3rd place reward (20%) goes to scout3
@@ -147,7 +148,7 @@ describe('getMatchupRewards', () => {
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     // 1st place reward (50%) goes to scout1
     // 2nd and 3rd place rewards (30% + 20% = 50%) split between 2 winners (scout2, scout3)
@@ -185,7 +186,7 @@ describe('getMatchupRewards', () => {
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     // 1st place (50%), 2nd place (30%)
     // 3rd place reward (20%) split between 2 winners (scout3, scout4)
@@ -228,7 +229,7 @@ describe('getMatchupRewards', () => {
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     // 1st, 2nd, and 3rd place rewards (50% + 30% + 20% = 100%) split between 3 winners
     const expectedPointsSplit = BigInt(mockMatchupPool * 10 ** devTokenDecimals) / BigInt(3); // 333
@@ -259,7 +260,7 @@ describe('getMatchupRewards', () => {
     const participants = [createMockMatchup('scout1', 100, '0x1'), createMockMatchup('scout2', 90, '0x2')];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     expect(rewards).toHaveLength(2);
     expect(rewards).toEqual([
@@ -287,7 +288,7 @@ describe('getMatchupRewards', () => {
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     expect(rewards).toHaveLength(2);
     expect(rewards).toEqual([
@@ -318,7 +319,7 @@ describe('getMatchupRewards', () => {
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const rewards = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
 
     // 1st, 2nd, 3rd split (50 + 30 + 20 = 100%)
     const expectedPoints = Math.floor(largePool / 3).toString(); // floor(9999 / 3) = 3333
