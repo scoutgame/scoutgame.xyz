@@ -32,8 +32,8 @@ describe('deployMatchupRewards', () => {
 
   it('should save leaderboard, deploy contract, save payout data, and create builder events when recipients exist', async () => {
     const mockWeek = '2025-W03';
-    const builder = await mockBuilder({ createNft: true });
-    const scout = await mockScout({ builderId: builder.id });
+    const builder = await mockBuilder({ createNft: true, nftSeason: '2025-W02' });
+    const scout = await mockScout({ builderId: builder.id, season: '2025-W02' });
     await mockMatchup({
       createdBy: scout.id,
       week: mockWeek,

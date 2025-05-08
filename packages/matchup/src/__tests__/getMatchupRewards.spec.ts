@@ -39,6 +39,7 @@ const createMockMatchup = (
   freeRegistration: false,
   registrationTxId: null,
   submittedAt: new Date(),
+  freeRegistration: false,
   rank: 1,
   id: '1',
   week: '2024-01',
