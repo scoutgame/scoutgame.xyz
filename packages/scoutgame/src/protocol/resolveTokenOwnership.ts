@@ -1,6 +1,7 @@
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
 import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart, getSeasonConfig } from '@packages/dates/utils';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
 
@@ -16,15 +17,17 @@ export type TokenOwnership = {
 
 async function getTokenOwnershipForContract({
   contractAddress,
-  lastBlock
+  fromBlock = 27_250_000, // These from number correspond to the earliest activity ranges for our NFTs
+  toBlock
 }: {
   contractAddress: Address;
-  lastBlock: number;
+  fromBlock?: number;
+  toBlock: number;
 }): Promise<TokenOwnership[keyof TokenOwnership]> {
   const allEvents = await getTransferSingleWithBatchMerged({
     // These from number correspond to the earliest activity ranges for our NFTs
-    fromBlock: 27_250_000,
-    toBlock: lastBlock,
+    fromBlock,
+    toBlock,
     chainId: base.id,
     contractAddress
   });
@@ -69,18 +72,22 @@ export async function resolveTokenOwnership({
   week: ISOWeek;
   chainId: number;
 }): Promise<TokenOwnership> {
-  const lastBlock = await getLastBlockOfWeek({ week, chainId });
-  const standardNftContractAddress = getNFTContractAddress(week);
-  const starterNftContractAddress = getStarterNFTContractAddress(week);
+  const toBlock = await getLastBlockOfWeek({ week, chainId });
+  const season = getCurrentSeasonStart(week);
+  const seasonConfig = getSeasonConfig(season);
+  const standardNftContractAddress = getNFTContractAddress(season);
+  const starterNftContractAddress = getStarterNFTContractAddress(season);
 
   const standardTokenOwnership = await getTokenOwnershipForContract({
     contractAddress: standardNftContractAddress as Address,
-    lastBlock
+    fromBlock: seasonConfig.nftBlockNumber,
+    toBlock
   });
 
   const starterTokenOwnership = await getTokenOwnershipForContract({
     contractAddress: starterNftContractAddress as Address,
-    lastBlock
+    fromBlock: seasonConfig.nftBlockNumber,
+    toBlock
   });
 
   return {

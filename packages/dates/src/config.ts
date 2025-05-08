@@ -13,6 +13,7 @@ export type SeasonConfig = {
   preseason?: boolean;
   starterNftAddress: Address;
   standardNftAddress: Address;
+  nftBlockNumber?: number; // the first block number of the season for querying events
   weeksPerSeason: number;
   draft?: boolean;
   allocatedTokens: bigint;
@@ -57,6 +58,7 @@ export const seasons: SeasonConfig[] = [
     start: '2025-W02',
     starterNftAddress: '0xcbbdb9e378a4c33b1b202392b10e1be5e01a97f8',
     standardNftAddress: '0x6fbbd55274169d67f6fe9c868327003c90143440',
+    nftBlockNumber: 27_250_000,
     title: 'Pre Season 2',
     weeksPerSeason: 15, // extended season
     preseason: true,
@@ -78,6 +80,7 @@ export const seasons: SeasonConfig[] = [
     title: 'Season 1',
     starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
     standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
+    nftBlockNumber: 29_504_000,
     weeksPerSeason: 13,
     allocatedTokens: BigInt(1_200_000 * 10 ** devTokenDecimals)
   }
