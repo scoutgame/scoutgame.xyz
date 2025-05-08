@@ -119,9 +119,9 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
   const scouts = _builders.slice(0, 1);
 
   await Promise.all(
-    builders.flatMap((builder, i) => {
-      return builder.gemPayoutInputs.map((gemPayout) => {
-        return prisma.builderEvent.create({
+    builders.flatMap(async (builder, i) => {
+      for (const gemPayout of builder.gemPayoutInputs) {
+        await prisma.builderEvent.create({
           data: {
             season,
             week: gemPayout.isoWeek,
@@ -142,7 +142,7 @@ export async function writeSeededBuildersGemPayoutsToDatabase({
             }
           }
         });
-      });
+      }
     })
   );
 }
