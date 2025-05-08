@@ -11,7 +11,7 @@ jest.useFakeTimers();
 
 describe('refreshDeveloperLevels', () => {
   beforeEach(() => {
-    jest.setSystemTime(new Date('2025-01-25'));
+    jest.setSystemTime(new Date('2024-12-25'));
   });
 
   it('should refresh builder levels in the database', async () => {
