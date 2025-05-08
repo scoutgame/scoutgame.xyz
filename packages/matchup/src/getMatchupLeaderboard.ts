@@ -88,7 +88,9 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
       const developers = entry.selections
         // filter out selections if the scout no longer holds the NFT
         .filter((selection) =>
-          entry.scout.wallets.some((w) => w.scoutedNfts.some((nft) => nft.builderNftId === selection.developerNft.id))
+          entry.scout.wallets.some((w) =>
+            w.scoutedNfts.some((nft) => nft.balance > 0 && nft.builderNftId === selection.developerNft.id)
+          )
         )
         .map((selection) => ({
           id: selection.developerNft!.builder.id,
