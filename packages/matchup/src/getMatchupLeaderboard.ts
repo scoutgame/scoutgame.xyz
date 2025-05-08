@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 
 export type ScoutMatchupEntry = {
   scout: {
@@ -50,6 +51,11 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
                 select: {
                   builderNftId: true,
                   balance: true
+                },
+                where: {
+                  builderNft: {
+                    season: getCurrentSeasonStart(week)
+                  }
                 }
               }
             }
