@@ -5,6 +5,19 @@ import { seedBuildersGemPayouts } from '../deterministicBuildersGemPayoutsData';
 import type { DeterministicRandomBuilderGemsPayoutActivity } from '../deterministicBuildersGemPayoutsData';
 
 describe('seedBuildersGemPayouts', () => {
+  const season = '2025-W02';
+  const weeks = [
+    '2025-W02',
+    '2025-W03',
+    '2025-W04',
+    '2025-W05',
+    '2025-W06',
+    '2025-W07',
+    '2025-W08',
+    '2025-W09',
+    '2025-W10'
+  ];
+
   beforeEach(() => {
     jest.useFakeTimers();
   });
@@ -14,29 +27,12 @@ describe('seedBuildersGemPayouts', () => {
   });
 
   it('should generate builders with deterministic randomness, correct data and a default of 200 builders', () => {
-    const season = '2025-W02';
-
     const currentDate = new Date('2025-03-12T00:00:00Z');
 
     jest.setSystemTime(currentDate);
 
-    const { builders, weeks } = seedBuildersGemPayouts({ season });
+    const { builders } = seedBuildersGemPayouts({ weeks });
     expect(builders).toHaveLength(200);
-
-    // Make sure we have the correct set of weeks
-    expect(weeks).toEqual([
-      '2025-W02',
-      '2025-W03',
-      '2025-W04',
-      '2025-W05',
-      '2025-W06',
-      '2025-W07',
-      '2025-W08',
-      '2025-W09',
-      '2025-W10'
-      // Current week not included since gem payouts run up to previous week
-      // '2025-W11'
-    ]);
 
     // Verify total gems calculation for all builders
     builders.forEach((builder) => {
@@ -162,10 +158,9 @@ describe('seedBuildersGemPayouts', () => {
   });
 
   it('should generate a custom amount of builders', () => {
-    const season = '2025-W02';
     const amount = 100;
 
-    const { builders } = seedBuildersGemPayouts({ season, amount });
+    const { builders } = seedBuildersGemPayouts({ weeks, amount });
     expect(builders).toHaveLength(amount);
   });
 });

@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from 'react';
 
-export function ReferenceTimeComponent({ prefix, unixTimestamp }: { prefix?: string; unixTimestamp: number }) {
-  const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr(unixTimestamp));
+// timestamp is in milliseconds, like JS Date.now()
+export function ReferenceTimeComponent({ prefix, timestamp }: { prefix?: string; timestamp: number }) {
+  const [timeLeftStr, setTimeStr] = useState(getTimeLeftStr(timestamp));
   useEffect(() => {
     const timeout = setInterval(() => {
-      setTimeStr(getTimeLeftStr(unixTimestamp));
+      setTimeStr(getTimeLeftStr(timestamp));
     }, 1000);
 
     return () => clearInterval(timeout);
-  }, [setTimeStr, unixTimestamp]);
+  }, [setTimeStr, timestamp]);
 
   return (
     <span>
@@ -20,9 +21,9 @@ export function ReferenceTimeComponent({ prefix, unixTimestamp }: { prefix?: str
 }
 
 // return the absolute amount of time from the unixTimestamp
-function getTimeLeftStr(unixTimestamp: number) {
+function getTimeLeftStr(timestamp: number) {
   const now = new Date();
-  const timeLeft = Math.abs(unixTimestamp - now.getTime());
+  const timeLeft = Math.abs(timestamp - now.getTime());
 
   const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
   const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
