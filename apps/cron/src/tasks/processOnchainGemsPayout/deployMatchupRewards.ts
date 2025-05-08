@@ -1,5 +1,3 @@
-import { prisma } from '@charmverse/core/prisma-client';
-import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
 import { optimismTokenAddress, optimismTokenDecimals } from '@packages/blockchain/constants';
 import { getCurrentSeason } from '@packages/dates/utils';
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
@@ -11,9 +9,9 @@ import {
   devTokenSymbol,
   devTokenChain
 } from '@packages/scoutgame/protocol/constants';
-import { parseUnits } from 'viem';
 import { optimism } from 'viem/chains';
 
+import { createFreeMatchup } from './createFreeMatchup';
 import { log } from './logger';
 
 export async function deployMatchupRewards({ week }: { week: string }) {
@@ -27,9 +25,9 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     leaderboardLength: leaderboard.length
   });
 
-  const recipients = await getMatchupRewards(week);
+  const { tokenWinners, freeMatchupWinners } = await getMatchupRewards(week);
 
-  if (recipients.length === 0) {
+  if (tokenWinners.length === 0) {
     log.info('No valid recipients found for matchup rewards, skipping contract deployment', {
       week,
       season: currentSeason.start
@@ -42,7 +40,7 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     week,
     chainId: optimism.id,
     adminPrivateKey: process.env.REWARDS_WALLET_PRIVATE_KEY as `0x${string}`,
-    recipients: recipients.map(({ address, opAmount }) => ({
+    recipients: tokenWinners.map(({ address, opAmount }) => ({
       address,
       amount: opAmount,
       meta: {
@@ -60,7 +58,7 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     contractAddress,
     week,
     season: currentSeason.start,
-    recipientsCount: recipients.length
+    recipientsCount: tokenWinners.length
   });
 
   const { txHash: devAirdropHash, contractAddress: devAirdropContractAddress } = await deployPartnerAirdropContract({
@@ -68,7 +66,7 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     week,
     chainId: devTokenChain.id,
     adminPrivateKey: process.env.REWARDS_WALLET_PRIVATE_KEY as `0x${string}`,
-    recipients: recipients.map(({ address, devAmount }) => ({
+    recipients: tokenWinners.map(({ address, devAmount }) => ({
       address,
       amount: devAmount,
       meta: {
@@ -86,6 +84,17 @@ export async function deployMatchupRewards({ week }: { week: string }) {
     contractAddress: devAirdropContractAddress,
     week,
     season: currentSeason.start,
-    recipientsCount: recipients.length
+    recipientsCount: tokenWinners.length
   });
+
+  for (const winner of freeMatchupWinners) {
+    await createFreeMatchup({
+      scoutId: winner.createdBy,
+      week
+    });
+    log.info('Free matchup created', {
+      week,
+      userId: winner.createdBy
+    });
+  }
 }
