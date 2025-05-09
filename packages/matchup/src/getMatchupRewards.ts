@@ -54,10 +54,8 @@ export async function getMatchupRewards(week: string) {
         }
       }
     },
-    orderBy: {
-      totalScore: 'desc',
-      createdAt: 'asc'
-    }
+    orderBy: [{ totalScore: 'desc' }, { createdAt: 'asc' }],
+    take: 5
   });
   const matchupDetails = await getMatchupDetails(week);
 
