@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { optimismTokenDecimals } from '@packages/blockchain/constants';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
@@ -92,6 +93,8 @@ export async function getMatchupRewards(week: string) {
         devAmount: rewardDevTokens,
         opAmount: rewardOpTokens
       });
+    } else {
+      log.warn('Unexpected: received too many recipients for matchup rewards', { size: leaderboard.length });
     }
   }
 
