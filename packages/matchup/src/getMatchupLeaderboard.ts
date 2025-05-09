@@ -36,9 +36,10 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
       ]
     },
     orderBy: {
-      createdAt: 'desc'
+      createdAt: 'asc'
     },
     select: {
+      createdAt: true,
       scout: {
         select: {
           id: true,
@@ -111,6 +112,7 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
         .sort((a, b) => b.gemsCollected - a.gemsCollected);
       const totalGemsCollected = developers.reduce((acc, selection) => acc + selection.gemsCollected, 0);
       return {
+        createdAt: entry.createdAt,
         scout: {
           id: entry.scout.id,
           displayName: entry.scout.displayName,
@@ -122,16 +124,17 @@ export async function getMatchupLeaderboard(week: string, limit?: number): Promi
         developers
       };
     })
-    .sort((a, b) => b.totalGemsCollected - a.totalGemsCollected);
-
-  // two players can have the same rank if they have the same points
-  const rankings = Array.from(new Set(leaderboard.map((e) => e.totalGemsCollected))).sort((a, b) => b - a);
-  const rankMap = new Map(rankings.map((rank, index) => [rank, index + 1]));
+    .sort((a, b) => {
+      if (b.totalGemsCollected !== a.totalGemsCollected) {
+        return b.totalGemsCollected - a.totalGemsCollected;
+      }
+      // If gems collected are equal, sort by earliest createdAt
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    });
   return leaderboard
-    .map((entry) => ({
+    .map((entry, i) => ({
       ...entry,
-      rank: rankMap.get(entry.totalGemsCollected)!
+      rank: i + 1 // rankMap.get(entry.totalGemsCollected)!
     }))
-    .sort((a, b) => a.rank - b.rank)
     .slice(0, limit);
 }
