@@ -89,12 +89,12 @@ export async function deployMatchupRewards({ week }: { week: string }) {
 
   for (const winner of freeMatchupWinners) {
     await createFreeMatchup({
-      scoutId: winner.createdBy,
+      scoutId: winner.scoutId,
       week
     });
     log.info('Free matchup created', {
       week,
-      userId: winner.createdBy
+      userId: winner.scoutId
     });
   }
 }

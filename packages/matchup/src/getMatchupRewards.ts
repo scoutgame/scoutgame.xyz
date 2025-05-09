@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { optimismTokenDecimals } from '@packages/blockchain/constants';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
@@ -54,82 +55,48 @@ export async function getMatchupRewards(week: string) {
         }
       }
     },
-    orderBy: {
-      totalScore: 'desc'
-    }
+    orderBy: [{ totalScore: 'desc' }, { createdAt: 'asc' }],
+    take: 5
   });
   const matchupDetails = await getMatchupDetails(week);
 
-  // convert to wei
+  // convert pool to wei
   const matchupPool = parseUnits(matchupDetails.matchupPool.toString(), devTokenDecimals);
 
-  // Group entries by total gems collected to handle ties
-  const groupedByScore = leaderboard.reduce<Record<number, typeof leaderboard>>((acc, entry) => {
-    const gems = entry.totalScore;
-    if (!acc[gems]) {
-      acc[gems] = [];
-    }
-    acc[gems].push(entry);
-    return acc;
-  }, {});
-
-  // Sort by gems collected (descending)
-  const sortedScoreGroups = Object.keys(groupedByScore)
-    .map(Number)
-    .sort((a, b) => b - a);
-
-  // Prepare recipients for the airdrop
+  // Prepare recipients
   const recipients: MatchupRewardRecipient[] = [];
-
-  // Track the current position and remaining rewards
-  let currentPosition = 1;
+  const freeMatchupWinners: MatchupRewardRecipient[] = [];
 
   // Process each group of entries with the same gems collected
-  for (const score of sortedScoreGroups) {
-    const entries = groupedByScore[score];
-
-    // Skip if we've already processed the top 3 positions
-    if (currentPosition > 3) break;
-
-    // Calculate how many positions this group occupies
-    const positionsInGroup = Math.min(entries.length, 4 - currentPosition);
+  for (const entry of leaderboard) {
+    const position = leaderboard.indexOf(entry) + 1;
 
     // Calculate the reward for this group
-    let groupDevReward = BigInt(0);
-    let groupOpReward = BigInt(0);
-
-    // Sum up the rewards for all positions in this group
-    for (let i = 0; i < positionsInGroup; i++) {
-      const position = currentPosition + i;
-      if (position <= 3) {
-        groupDevReward +=
-          (matchupPool * BigInt(REWARD_PERCENTAGES[position as keyof typeof REWARD_PERCENTAGES])) / BigInt(100);
-        groupOpReward += parseUnits(OP_REWARDS[position as keyof typeof OP_REWARDS].toString(), optimismTokenDecimals);
-      }
-    }
-
-    // Split the reward equally among all entries in this group
-    const rewardPerEntry = groupDevReward / BigInt(entries.length);
-    const opRewardPerEntry = groupOpReward / BigInt(entries.length);
-
-    // Add each entry to the recipients list
-    for (const entry of entries) {
+    let rewardDevTokens = BigInt(0);
+    let rewardOpTokens = BigInt(0);
+    if (position <= 3) {
+      rewardDevTokens +=
+        (matchupPool * BigInt(REWARD_PERCENTAGES[position as keyof typeof REWARD_PERCENTAGES])) / BigInt(100);
+      rewardOpTokens += parseUnits(OP_REWARDS[position as keyof typeof OP_REWARDS].toString(), optimismTokenDecimals);
       if (entry.scout.wallets[0]?.address) {
         recipients.push({
           address: entry.scout.wallets[0].address as Address,
           scoutId: entry.createdBy,
-          devAmount: rewardPerEntry,
-          opAmount: opRewardPerEntry
+          devAmount: rewardDevTokens,
+          opAmount: rewardOpTokens
         });
       }
+    } else if (position === 4 || position === 5) {
+      freeMatchupWinners.push({
+        address: entry.scout.wallets[0].address as Address,
+        scoutId: entry.createdBy,
+        devAmount: rewardDevTokens,
+        opAmount: rewardOpTokens
+      });
+    } else {
+      log.warn('Unexpected: received too many recipients for matchup rewards', { size: leaderboard.length });
     }
-
-    // Update the current position
-    currentPosition += positionsInGroup;
   }
-
-  // 4th and 5th place winners get a free matchup. just take the next 2 entries
-  const freeMatchupWinners = leaderboard.slice(recipients.length, recipients.length + 2);
 
   return { tokenWinners: recipients, freeMatchupWinners };
 }
