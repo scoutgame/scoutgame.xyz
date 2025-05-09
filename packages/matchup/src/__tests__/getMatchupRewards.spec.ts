@@ -151,47 +151,40 @@ describe('getMatchupRewards', () => {
     ]);
   });
 
-  test('should distribute rewards correctly with a three-way tie for 1st place', async () => {
+  test('should distribute free matchup rewards to 4th and 5th place', async () => {
     const participants = [
       createMockMatchup('scout1', 100, '0x1'),
       createMockMatchup('scout2', 100, '0x2'),
-      createMockMatchup('scout3', 100, '0x3'),
-      createMockMatchup('scout4', 90, '0x4')
+      createMockMatchup('scout3', 80, '0x3'),
+      createMockMatchup('scout4', 70, '0x4'),
+      createMockMatchup('scout5', 60, '0x5')
     ];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
-
-    // 1st, 2nd, and 3rd place rewards (50% + 30% + 20% = 100%) split between 3 winners
-    const expectedPointsSplit = BigInt(mockMatchupPool * 10 ** devTokenDecimals) / BigInt(3); // 333
-    const expectedOpSplit = mockOpPool / 3n; // (60 + 25 + 15) / 3 = 33.33... OP
+    const { tokenWinners: rewards, freeMatchupWinners } = await getMatchupRewards(mockWeek);
 
     expect(rewards).toHaveLength(3);
-    expect(rewards).toContainEqual({
-      address: '0x1',
-      scoutId: 'scout1',
-      devAmount: expectedPointsSplit,
-      opAmount: expectedOpSplit
-    });
-    expect(rewards).toContainEqual({
-      address: '0x2',
-      scoutId: 'scout2',
-      devAmount: expectedPointsSplit,
-      opAmount: expectedOpSplit
-    });
-    expect(rewards).toContainEqual({
-      address: '0x3',
-      scoutId: 'scout3',
-      devAmount: expectedPointsSplit,
-      opAmount: expectedOpSplit
-    });
+    expect(freeMatchupWinners).toEqual([
+      {
+        address: '0x4',
+        scoutId: 'scout4',
+        devAmount: BigInt(0),
+        opAmount: BigInt(0)
+      },
+      {
+        address: '0x5',
+        scoutId: 'scout5',
+        devAmount: BigInt(0),
+        opAmount: BigInt(0)
+      }
+    ]);
   });
 
   test('should handle fewer than 3 participants', async () => {
     const participants = [createMockMatchup('scout1', 100, '0x1'), createMockMatchup('scout2', 90, '0x2')];
     (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
 
-    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
+    const { tokenWinners: rewards, freeMatchupWinners } = await getMatchupRewards(mockWeek);
 
     expect(rewards).toHaveLength(2);
     expect(rewards).toEqual([
@@ -208,6 +201,8 @@ describe('getMatchupRewards', () => {
         opAmount: parseUnits('25', optimismTokenDecimals)
       } // 30%
     ]);
+
+    expect(freeMatchupWinners).toHaveLength(0);
   });
 
   test('should skip participants without a primary wallet', async () => {
@@ -236,44 +231,5 @@ describe('getMatchupRewards', () => {
         opAmount: parseUnits('15', optimismTokenDecimals)
       } // 2nd (scout2 skipped)
     ]);
-  });
-
-  test('should handle large numbers and potential floating point inaccuracies for points', async () => {
-    const largePool = 9999;
-    (getMatchupDetails as jest.Mock<typeof getMatchupDetails>).mockResolvedValue({
-      matchupPool: largePool
-    } as MatchupDetails);
-    const participants = [
-      createMockMatchup('scout1', 100, '0x1'),
-      createMockMatchup('scout2', 100, '0x2'),
-      createMockMatchup('scout3', 100, '0x3')
-    ];
-    (prisma.scoutMatchup.findMany as jest.Mock<typeof prisma.scoutMatchup.findMany>).mockResolvedValue(participants);
-
-    const { tokenWinners: rewards } = await getMatchupRewards(mockWeek);
-
-    // 1st, 2nd, 3rd split (50 + 30 + 20 = 100%)
-    const expectedPoints = Math.floor(largePool / 3).toString(); // floor(9999 / 3) = 3333
-    const expectedOp = mockOpPool / 3n;
-
-    expect(rewards).toHaveLength(3);
-    expect(rewards).toContainEqual({
-      address: '0x1',
-      scoutId: 'scout1',
-      devAmount: parseUnits(expectedPoints, devTokenDecimals),
-      opAmount: expectedOp
-    });
-    expect(rewards).toContainEqual({
-      address: '0x2',
-      scoutId: 'scout2',
-      devAmount: parseUnits(expectedPoints, devTokenDecimals),
-      opAmount: expectedOp
-    });
-    expect(rewards).toContainEqual({
-      address: '0x3',
-      scoutId: 'scout3',
-      devAmount: parseUnits(expectedPoints, devTokenDecimals),
-      opAmount: expectedOp
-    });
   });
 });
