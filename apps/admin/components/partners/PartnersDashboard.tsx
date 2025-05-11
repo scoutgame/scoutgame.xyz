@@ -10,13 +10,6 @@ export function PartnersDashboard() {
         <PartnerCardContainer partner='celo' partnerName='Celo' hasGithubRepos />
         <PartnerCardContainer partner='gooddollar' partnerName='GoodDollar' hasGithubRepos />
         <PartnerCardContainer
-          partner='octant'
-          partnerName='Octant'
-          airdropPartner='octant_base_contribution'
-          airdropWalletAddress={process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_ADDRESS}
-          hasGithubRepos
-        />
-        <PartnerCardContainer
           partner='referrals'
           partnerName='Referral Rewards'
           airdropPartner='optimism_referral_champion'
@@ -40,6 +33,13 @@ export function PartnersDashboard() {
           Completed
         </Typography>
 
+        <PartnerCardContainer
+          partner='octant'
+          partnerName='Octant'
+          airdropPartner='octant_base_contribution'
+          airdropWalletAddress={process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_ADDRESS}
+          hasGithubRepos
+        />
         <PartnerCardContainer partner='game7' partnerName='Game7' hasGithubRepos />
         <PartnerCardContainer partner='op_supersim' partnerName='OP Supersim' hasGithubRepos />
         <PartnerCardContainer partner='moxie' partnerName='Moxie' />
