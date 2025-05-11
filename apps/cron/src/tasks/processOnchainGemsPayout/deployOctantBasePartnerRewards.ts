@@ -8,7 +8,7 @@ import { base } from 'viem/chains';
 import { log } from './logger';
 
 const usdcTokenDecimals = 6;
-const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('48', usdcTokenDecimals);
+const OCTANT_BASE_CONTRIBUTION_REWARD_AMOUNT = parseUnits('35', usdcTokenDecimals);
 
 export async function deployOctantBasePartnerRewards({ week }: { week: string }) {
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
