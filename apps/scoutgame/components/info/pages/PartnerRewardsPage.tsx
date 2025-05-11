@@ -66,7 +66,6 @@ function Document() {
           </Typography>
           <Stack gap={{ xs: 2, md: 3 }}>
             <PartnerReward name='Base' image='/images/crypto/base.svg' href='/info/partner-rewards/octant' />
-            <PartnerReward name='Octant' image='/images/crypto/octant.svg' href='/info/partner-rewards/octant' />
             <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
             <PartnerReward name='Celo' image='/images/crypto/celo.png' href='/info/partner-rewards/celo' />
             <PartnerReward
@@ -74,6 +73,7 @@ function Document() {
               image='/images/logos/good-dollar.png'
               href='/info/partner-rewards/good-dollar'
             />
+            <PartnerReward name='Octant' image='/images/crypto/octant.svg' status='completed' />
             <PartnerReward name='Game7' image='/images/crypto/game7.png' status='completed' />
             <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='completed' />
             <PartnerReward name='Lit Protocol' image='/images/crypto/lit.png' status='completed' />

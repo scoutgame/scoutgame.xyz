@@ -7,9 +7,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const partnerInfos = [
-  { logo: 'taiko.png', name: 'taiko', infoPath: 'taiko' },
-  { logo: 'celo.png', name: 'celo', infoPath: 'celo' },
-  { logo: 'octant.svg', name: 'octant', infoPath: 'octant', skipRoundedBorder: true }
+  { logo: 'taiko.png', name: 'taiko', infoPath: 'taiko', skipRoundedBorder: false },
+  { logo: 'celo.png', name: 'celo', infoPath: 'celo', skipRoundedBorder: false }
 ];
 
 export function PartnerRewardsCarousel() {
