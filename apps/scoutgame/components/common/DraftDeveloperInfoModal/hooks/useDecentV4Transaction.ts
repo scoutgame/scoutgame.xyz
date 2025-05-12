@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
 import { ActionType, SwapDirection } from '@decent.xyz/box-common';
 import type { UseBoxActionArgs } from '@decent.xyz/box-hooks';
-import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
 import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { decentApiKey } from '@packages/utils/constants';
 import { GET } from '@packages/utils/http';
@@ -17,6 +16,7 @@ export type DecentTransactionProps = {
   address: Address;
   sourceChainId: number;
   sourceToken: Address;
+  receiverAddress: string;
   amount: bigint;
   enabled: boolean;
 };
@@ -57,6 +57,7 @@ export function useDecentV4Transaction({
   amount,
   sourceChainId,
   sourceToken,
+  receiverAddress,
   enabled = true
 }: DecentTransactionProps) {
   const decentAPIParams: UseBoxActionArgs = {
@@ -70,7 +71,7 @@ export function useDecentV4Transaction({
     actionConfig: {
       amount,
       swapDirection: SwapDirection.EXACT_AMOUNT_OUT,
-      receiverAddress: DRAFT_BID_RECIPIENT_ADDRESS,
+      receiverAddress,
       chainId: sourceChainId
     }
   };
@@ -81,7 +82,7 @@ export function useDecentV4Transaction({
     data: decentTransactionInfo
   } = useSWR(
     // Skip Decent SDK call if using DEV tokens or no address
-    enabled && address ? `swap-token-${DRAFT_BID_RECIPIENT_ADDRESS}-${sourceChainId}-${sourceToken}` : null,
+    enabled && address ? `swap-token-${receiverAddress}-${sourceChainId}-${sourceToken}` : null,
     () =>
       prepareDecentV4Transaction({
         txConfig: decentAPIParams

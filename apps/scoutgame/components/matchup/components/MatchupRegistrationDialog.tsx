@@ -3,8 +3,7 @@
 import { log } from '@charmverse/core/log';
 import type { EvmTransaction } from '@decent.xyz/box-common';
 import { Alert, Box, Button, Stack, Typography } from '@mui/material';
-import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
-import { MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
+import { MATCHUP_WALLET_ADDRESS, MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
 import { getStartOfMatchup } from '@packages/matchup/getMatchupDetails';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
@@ -53,7 +52,7 @@ function MatchupRegistrationForm({ week }: { week: string }) {
     paymentOption: selectedPaymentOption,
     devTokenAmount: MATCHUP_REGISTRATION_FEE,
     hasTokenBalance: !!selectedTokenBalance,
-    toAddress: DRAFT_BID_RECIPIENT_ADDRESS
+    toAddress: MATCHUP_WALLET_ADDRESS!
   });
 
   const hasInsufficientBalance = Boolean(
@@ -80,7 +79,7 @@ function MatchupRegistrationForm({ week }: { week: string }) {
         await sendDirectTransaction({
           tokenAmount: parseUnits(sourceTokenAmount.toString(), devTokenDecimals),
           fromAddress: address,
-          toAddress: DRAFT_BID_RECIPIENT_ADDRESS,
+          toAddress: MATCHUP_WALLET_ADDRESS!,
           tokenAddress: selectedPaymentOption.address,
           matchupWeek: week
         });
