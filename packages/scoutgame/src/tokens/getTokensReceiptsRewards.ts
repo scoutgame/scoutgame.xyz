@@ -62,6 +62,7 @@ export async function getTokensReceiptsRewards({
 
   const matchupRewards = await prisma.partnerRewardPayout.findMany({
     where: {
+      deletedAt: null,
       payoutContract: {
         partner: 'matchup_rewards',
         season

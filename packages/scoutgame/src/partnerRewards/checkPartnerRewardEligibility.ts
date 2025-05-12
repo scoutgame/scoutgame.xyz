@@ -23,6 +23,7 @@ export async function checkPartnerRewardEligibility({
 
   const payout = await prisma.partnerRewardPayout.findFirstOrThrow({
     where: {
+      deletedAt: null,
       payoutContractId,
       wallet: {
         scout: {
