@@ -6,13 +6,12 @@ import { generateMerkleTree } from '@charmverse/core/protocol';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { findOrCreateWalletUser } from '@packages/users/findOrCreateWalletUser';
 import { v4 as uuid } from 'uuid';
-import { parseUnits, type Address } from 'viem';
+import { type Address } from 'viem';
 
-import { getNFTContractAddress, getStarterNFTContractAddress } from '../builderNfts/constants';
 import { divideTokensBetweenDeveloperAndHolders } from '../tokens/divideTokensBetweenDeveloperAndHolders';
 import { getTokensCountForWeekWithNormalisation } from '../tokens/getTokensCountForWeekWithNormalisation';
 
-import { scoutProtocolChainId, devTokenDecimals } from './constants';
+import { scoutProtocolChainId } from './constants';
 import type { TokenOwnership } from './resolveTokenOwnership';
 
 type ClaimsBody = {
@@ -81,9 +80,6 @@ export async function calculateWeeklyClaims({
     select: {
       id: true,
       wallets: {
-        where: {
-          primary: true
-        },
         select: {
           address: true
         }
@@ -128,9 +124,6 @@ export async function calculateWeeklyClaims({
       builder: {
         select: {
           wallets: {
-            where: {
-              primary: true
-            },
             select: {
               address: true
             }

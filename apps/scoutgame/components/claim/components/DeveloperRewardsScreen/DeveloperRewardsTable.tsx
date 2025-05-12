@@ -70,7 +70,7 @@ export function DeveloperRewardsTable({
         }}
       >
         {developerRewards.map((reward) => (
-          <DeveloperRewardsTableRow key={reward.path} reward={reward} />
+          <DeveloperRewardsTableRow key={`${reward.path}-${reward.rank}`} reward={reward} />
         ))}
         <TableRow>
           <TableCell colSpan={3}>
