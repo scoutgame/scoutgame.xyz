@@ -124,6 +124,9 @@ export async function calculateWeeklyClaims({
       builder: {
         select: {
           wallets: {
+            where: {
+              primary: true
+            },
             select: {
               address: true
             }
