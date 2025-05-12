@@ -52,10 +52,11 @@ export async function AirdropMetrics({
           amount: true,
           walletAddress: true,
           claimedAt: true
-        },
-        where: {
-          deletedAt: null
         }
+        // include 'deleted' claims
+        // where: {
+        //   deletedAt: null
+        // }
       }
     }
   });
