@@ -217,7 +217,7 @@ function TokensClaimScreenComponent({
                     <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
                   </Stack>
                 </Stack>
-                <Box width='100%' my={1} display='flex' justifyContent='center'>
+                <Box width='100%' my={1} display='flex' justifyContent='center' flexDirection='column' gap={2.5}>
                   {Object.entries(onchainClaims).map(([address, claims]) => (
                     <Stack
                       flexDirection='row'
