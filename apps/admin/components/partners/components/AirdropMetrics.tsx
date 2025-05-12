@@ -113,7 +113,7 @@ export async function AirdropMetrics({
       });
     }
   } else if (partner === 'octant_base_contribution') {
-    const builderEvents = await getBuilderEventsForPartnerRewards({ week: currentWeek, bonusPartner: 'octant' });
+    const builderEvents = await getBuilderEventsForPartnerRewards({ week: currentWeek, bonusPartner: 'octant' as any });
     if (builderEvents.length > 0) {
       const upcomingPayout = builderEvents.reduce((sum, event) => sum + toWei(75), BigInt(0));
       const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));
