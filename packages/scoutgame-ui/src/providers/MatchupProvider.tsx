@@ -70,8 +70,8 @@ export function MatchupProvider({ children }: { children: ReactNode }) {
 
         toast.promise(checkResultPromise, {
           loading: 'Transaction is being settled...',
-          success: () => `Transaction ${res?.data?.decentTxHash || ''} was successful`,
-          error: (data) => `Transaction failed: ${data?.serverError?.message || 'Something went wrong'}`
+          success: () => `Matchup payment ${res?.data?.decentTxHash || ''} was successful`,
+          error: (data) => `Matchup payment failed: ${data?.serverError?.message || 'Something went wrong'}`
         });
 
         const checkResult = await checkResultPromise;
@@ -84,7 +84,6 @@ export function MatchupProvider({ children }: { children: ReactNode }) {
           log.info(`Matchup transaction completed`, {
             checkResult
           });
-          toast.success('Matchup offer submitted successfully');
         }
       } else {
         log.warn(`Matchup transaction saved but no transaction id returned`, {

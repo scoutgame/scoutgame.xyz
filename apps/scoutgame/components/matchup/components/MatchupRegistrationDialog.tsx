@@ -98,14 +98,9 @@ function MatchupRegistrationForm({ week }: { week: string }) {
           }
         });
       }
-      toast.success('Successfully registered for matchup');
     } catch (error) {
       log.error('Error registering for matchup', { error });
-      if ((error as Error).message.includes('rejected')) {
-        toast.error('Transaction rejected');
-      } else {
-        throw error;
-      }
+      throw error;
     } finally {
       setIsConfirmingTx(false);
     }
