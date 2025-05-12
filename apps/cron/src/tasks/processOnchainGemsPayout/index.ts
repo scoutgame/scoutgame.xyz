@@ -10,7 +10,6 @@ import { DateTime } from 'luxon';
 import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
 
 import { deployMatchupRewards } from './deployMatchupRewards';
-import { deployOctantBasePartnerRewards } from './deployOctantBasePartnerRewards';
 import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { log } from './logger';
 
@@ -55,9 +54,6 @@ export async function processOnchainGemsPayout(
     }),
     deployReferralChampionRewardsContract({ week }).catch((error) => {
       log.error('Error deploying referral champion rewards contract', { error, week, season });
-    }),
-    deployOctantBasePartnerRewards({ week }).catch((error) => {
-      log.error('Error deploying octant & base partner rewards contract', { error, week, season });
     })
   ]);
 }

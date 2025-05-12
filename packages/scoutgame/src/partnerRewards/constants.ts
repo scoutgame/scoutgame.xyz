@@ -25,10 +25,10 @@ export const bonusPartnersRecord = {
     name: 'OP Supersim',
     icon: 'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png'
   },
-  octant: {
-    name: 'Octant',
-    icon: 'http://scoutgame.xyz/images/logos/octant.png'
-  },
+  // octant: {
+  //   name: 'Octant',
+  //   icon: 'http://scoutgame.xyz/images/logos/octant.png'
+  // },
   gooddollar: {
     name: 'GoodDollar',
     icon: 'https://scoutgame.xyz/images/logos/good-dollar.png'
