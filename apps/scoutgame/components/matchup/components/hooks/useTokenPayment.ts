@@ -33,6 +33,7 @@ export function useTokenPayment({
   } = useDecentV4Transaction({
     address: address!,
     sourceChainId: paymentOption.chainId,
+    receiverAddress: toAddress,
     sourceToken: paymentOption.address,
     enabled: !!(paymentOption.currency !== 'DEV' && hasTokenBalance),
     amount: parseUnits(devTokenAmount.toString(), devTokenDecimals)

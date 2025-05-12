@@ -5,11 +5,10 @@ import { log } from '@charmverse/core/log';
 import type { EvmTransaction } from '@decent.xyz/box-common';
 import { BoxHooksContextProvider } from '@decent.xyz/box-hooks';
 import { Button, Stack, TextField, Typography } from '@mui/material';
-import { MIN_DEV_BID } from '@packages/blockchain/constants';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUserWalletAddress } from '@packages/scoutgame-ui/hooks/api/session';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
-import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
+import { DRAFT_BID_RECIPIENT_ADDRESS, MIN_DEV_BID, useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
@@ -81,6 +80,7 @@ function DraftDeveloperBidFormComponent({
 
   const { decentSdkError, isLoadingDecentSdk, decentTransactionInfo } = useDecentV4Transaction({
     address,
+    receiverAddress: DRAFT_BID_RECIPIENT_ADDRESS,
     sourceChainId: selectedPaymentOption.chainId,
     sourceToken: selectedPaymentOption.address,
     enabled: !!(selectedPaymentOption.currency !== 'DEV' && selectedTokenBalance),

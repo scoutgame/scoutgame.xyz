@@ -13,20 +13,20 @@ export function PartnersDashboard() {
           partner='referrals'
           partnerName='Referral Rewards'
           airdropPartner='optimism_referral_champion'
-          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
+          airdropWalletAddress={process.env.REACT_APP_REWARDS_WALLET_ADDRESS}
         />
         <PartnerCardContainer partner='talent' partnerName='Talent Protocol' />
         <PartnerCardContainer
           partner='matchup'
           partnerName='Matchup OP Rewards'
           airdropPartner='matchup_rewards'
-          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
+          airdropWalletAddress={process.env.REACT_APP_REWARDS_WALLET_ADDRESS}
         />
         <PartnerCardContainer
           partner='matchup_pool'
           partnerName='Matchup Pool Rewards'
           airdropPartner='matchup_pool_rewards'
-          airdropWalletAddress={process.env.REWARDS_WALLET_ADDRESS}
+          airdropWalletAddress={process.env.REACT_APP_REWARDS_WALLET_ADDRESS}
         />
 
         <Typography variant='h4' align='center'>

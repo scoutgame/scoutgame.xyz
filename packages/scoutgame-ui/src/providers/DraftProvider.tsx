@@ -1,6 +1,5 @@
 'use client';
 
-import { DRAFT_BID_RECIPIENT_ADDRESS } from '@packages/blockchain/constants';
 import { checkDraftTransactionAction } from '@packages/scoutgame/drafts/checkDraftTransactionAction';
 import { saveDraftTransactionAction } from '@packages/scoutgame/drafts/saveDraftTransactionAction';
 import { scoutgameDraftsLogger } from '@packages/scoutgame/loggers/mintsLogger';
@@ -13,6 +12,9 @@ import type { Address } from 'viem';
 import { erc20Abi } from 'viem';
 import { base } from 'viem/chains';
 import { useSendTransaction, useWalletClient } from 'wagmi';
+
+export const MIN_DEV_BID = 100;
+export const DRAFT_BID_RECIPIENT_ADDRESS = '0xc5F05D788BC3e5Bc4897FFc54D17d6B17f4E5700';
 
 type DraftTransactionInput = {
   txData: {

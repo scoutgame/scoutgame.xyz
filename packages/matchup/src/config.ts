@@ -1,5 +1,7 @@
+import env from '@beam-australia/react-env';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { whiteListedUserIds, isProdEnv } from '@packages/utils/constants';
+
 // Fee in DEV that scouts pay to register for a matchup
 export const MATCHUP_REGISTRATION_FEE = 250;
 // Portion of registration fee (80%) that goes into the prize pool for winners
@@ -12,6 +14,8 @@ export const REGISTRATION_DAY_OF_WEEK = 1; // day of the week to register for th
 export const MAX_SELECTIONS = 5;
 // Maximum total credits a player can spend when selecting scouts for their team
 export const MAX_CREDITS = 35;
+
+export const MATCHUP_WALLET_ADDRESS = env('REWARDS_WALLET_ADDRESS') || process.env.REACT_APP_REWARDS_WALLET_ADDRESS;
 
 export const enableMatchupsFeatureFlag = (userId?: string) =>
   !isProdEnv || (userId && whiteListedUserIds.includes(userId)) || getCurrentWeek() >= '2025-W15';
