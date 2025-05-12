@@ -175,10 +175,6 @@ async function calculateUpcomingPayout({
       const referralPayout = referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
       const matchupPayout = toWei(MATCHUP_OP_PRIZE);
       return referralPayout + matchupPayout;
-    } else if (partner === 'octant_base_contribution') {
-      const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'octant' });
-      const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));
-      return toWei(75) * BigInt(uniqueWallets.size);
     }
 
     return BigInt(0);
