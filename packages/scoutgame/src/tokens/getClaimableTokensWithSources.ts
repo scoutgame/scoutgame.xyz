@@ -6,7 +6,7 @@ import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById'
 import { isTruthy } from '@packages/utils/types';
 import { formatUnits, type Address } from 'viem';
 
-import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
+import { getTokensClaimedEventsPaginated } from '../builderNfts/accounting/getTokensClaimedEvents';
 import type { WeeklyClaimsTyped } from '../protocol/calculateWeeklyClaims';
 import { devTokenDecimals } from '../protocol/constants';
 
@@ -90,7 +90,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
   const claimedWeeks = (
     await Promise.all(
       walletAddresses.map((wallet) =>
-        getTokensClaimedEvents({ address: wallet }).then((events) => ({
+        getTokensClaimedEventsPaginated({ userAddress: wallet }).then((events) => ({
           address: wallet,
           weeks: events.map((ev) => ev.args.week)
         }))
