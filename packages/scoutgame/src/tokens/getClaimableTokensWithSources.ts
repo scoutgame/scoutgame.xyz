@@ -47,6 +47,8 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
+  const walletAddresses = scoutWallets.map((wallet) => wallet.address.toLowerCase() as Address);
+
   if (!scoutWallets.length) {
     log.error('Scout wallet not found', { userId });
     throw new Error('Scout wallet not found');
@@ -87,13 +89,20 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const claimedWeeks = (
     await Promise.all(
-      scoutWallets.map((wallet) =>
-        getTokensClaimedEvents({ address: wallet.address as Address }).then((events) =>
-          events.map((ev) => ev.args.week)
-        )
+      walletAddresses.map((wallet) =>
+        getTokensClaimedEvents({ address: wallet }).then((events) => ({
+          address: wallet,
+          weeks: events.map((ev) => ev.args.week)
+        }))
       )
     )
-  ).flat();
+  ).reduce(
+    (acc, { address, weeks }) => {
+      acc[address] = weeks;
+      return acc;
+    },
+    {} as Record<string, string[]>
+  );
 
   const developerIdTokensRecord: Record<string, number> = {};
   for (const receipt of tokenReceipts) {
@@ -172,31 +181,28 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   let totalTokens = 0;
 
-  for (const scoutWallet of scoutWallets) {
+  for (const walletAddress of walletAddresses) {
     const filteredWalletClaims = weeklyClaims.filter(
-      (claim) => !claimedWeeks.includes(claim.week) && claim.proofsMap[scoutWallet.address.toLowerCase()]?.length > 0
+      (claim) => !claimedWeeks[walletAddress]?.includes(claim.week) && claim.proofsMap[walletAddress]?.length > 0
     );
 
     const claimInputs: ClaimInput[] = [];
 
     for (const claim of filteredWalletClaims) {
-      const claimAmount = BigInt(
-        claim.claims.leaves.find((leaf) => leaf.address.toLowerCase() === scoutWallet.address.toLowerCase())?.amount ??
-          '0'
-      );
+      const claimAmount = BigInt(claim.claims.leaves.find((leaf) => leaf.address === walletAddress)?.amount ?? '0');
 
       totalTokens += Number(formatUnits(claimAmount, devTokenDecimals));
 
       claimInputs.push({
         week: claim.week,
-        address: scoutWallet.address as Address,
+        address: walletAddress,
         amount: claimAmount,
-        proofs: claim.proofsMap[scoutWallet.address.toLowerCase()] ?? []
+        proofs: claim.proofsMap[walletAddress] ?? []
       });
     }
 
     if (claimInputs.length > 0) {
-      claims[scoutWallet.address as Address] = claimInputs;
+      claims[walletAddress] = claimInputs;
     }
   }
 

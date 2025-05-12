@@ -240,7 +240,7 @@ function TokensClaimScreenComponent({
                             {ceilToPrecision(
                               Number(
                                 formatUnits(
-                                  claims.reduce((acc, claim) => acc + claim.amount, BigInt(0)),
+                                  claims.reduce((acc, claim) => acc + BigInt(claim.amount), BigInt(0)),
                                   devTokenDecimals
                                 )
                               ),
