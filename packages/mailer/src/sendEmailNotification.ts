@@ -94,6 +94,7 @@ type Variables = {
     error_message: string;
     wallet_address: string;
   };
+  matchup_reminder: { time_left: string };
 };
 
 export const NotificationTypesRecord = {
@@ -157,6 +158,10 @@ export const NotificationTypesRecord = {
   airdrop_live: {
     template: 'Airdrop live',
     subject: `Scout Game's Airdrop is Live!`
+  },
+  matchup_reminder: {
+    template: 'Matchup reminder',
+    subject: 'Time is running out to submit your Matchup!'
   }
 };
 
@@ -168,9 +173,9 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
   notificationType,
   userId,
   overrideUserSendingPreference,
-  senderAddress
+  senderAddress = 'The Scout Game <updates@mail.scoutgame.xyz>'
 }: {
-  senderAddress: string;
+  senderAddress?: string;
   userId: string;
   client?: Interfaces.IMailgunClient | null;
   templateVariables: Variables[T];
@@ -250,7 +255,7 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
     to: recipientAddress,
     subject,
     template: template.template,
-    't:variables': templateVariables
+    't:variables': JSON.stringify(templateVariables)
   });
 
   return message !== null;

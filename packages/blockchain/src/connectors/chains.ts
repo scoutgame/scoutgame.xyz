@@ -171,7 +171,7 @@ export const RPC: Record<string, IChainDetails> = {
     chainId: base.id,
     viem: base,
     chainName: 'Base',
-    alchemyUrl: 'https://base-mainnet.g.alchemy.com',
+    // alchemyUrl: 'https://base-mainnet.g.alchemy.com',
     rpcUrls: ['https://mainnet.base.org'],
     gnosisUrl: 'https://safe-transaction-base.safe.global',
     blockExplorerUrls: ['https://basescan.org'],
