@@ -52,6 +52,9 @@ export async function AirdropMetrics({
           amount: true,
           walletAddress: true,
           claimedAt: true
+        },
+        where: {
+          deletedAt: null
         }
       }
     }
@@ -226,10 +229,12 @@ export async function AirdropMetrics({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {airdrops.map((airdrop) => {
+                {airdrops.map((airdrop, i) => {
                   return (
                     <TableRow
-                      key={airdrop.week}
+                      // add a key to the row to avoid react warning
+                      // eslint-disable-next-line
+                      key={airdrop.week + i}
                       sx={
                         airdrop.isCurrentWeek
                           ? {

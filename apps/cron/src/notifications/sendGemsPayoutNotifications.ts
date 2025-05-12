@@ -71,6 +71,7 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
         where: {
           partnerRewardPayouts: {
             some: {
+              deletedAt: null,
               payoutContract: {
                 week
               }
@@ -80,6 +81,7 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
         select: {
           partnerRewardPayouts: {
             where: {
+              deletedAt: null,
               payoutContract: {
                 week
               }
