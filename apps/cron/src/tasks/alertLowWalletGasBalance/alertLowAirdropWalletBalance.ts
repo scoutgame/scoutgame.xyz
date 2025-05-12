@@ -16,11 +16,11 @@ const PARTNERS = [
   {
     id: 'optimism_referral_champion',
     privateKeyEnvVar: 'REWARDS_WALLET_PRIVATE_KEY'
-  },
-  {
-    id: 'octant_base_contribution',
-    privateKeyEnvVar: 'OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY'
   }
+  // {
+  //   id: 'octant_base_contribution',
+  //   privateKeyEnvVar: 'OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY'
+  // }
 ];
 
 export async function alertLowAirdropWalletBalance() {

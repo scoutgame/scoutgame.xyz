@@ -51,14 +51,12 @@ describe('alertLowAirdropWalletBalance', () => {
 
     // Set up mock private keys
     process.env.REWARDS_WALLET_PRIVATE_KEY = '0xreferral_champion_private_key';
-    process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY = '0xoctant_private_key';
 
     // Mock privateKeyToAccount
     (privateKeyToAccount as jest.Mock).mockImplementation((privateKey: unknown) => {
       const addressMap = {
         '0xreferral_champion_private_key': '0xreferral_champion_address',
-        '0xnew_scout_private_key': '0xnew_scout_address',
-        '0xoctant_private_key': '0xoctant_address'
+        '0xnew_scout_private_key': '0xnew_scout_address'
       };
 
       return {
@@ -117,6 +115,6 @@ describe('alertLowAirdropWalletBalance', () => {
     await alertLowAirdropWalletBalance();
 
     // Verify that sendDiscordAlert was called for the first partner (low balance)
-    expect(sendDiscordAlert).toHaveBeenCalledTimes(2);
+    expect(sendDiscordAlert).toHaveBeenCalledTimes(1);
   });
 });
