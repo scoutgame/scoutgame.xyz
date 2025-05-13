@@ -163,6 +163,27 @@ export async function getThirdwebERC20AirdropExpirationTimestamp({
   return expirationTimestamp as bigint;
 }
 
+export async function getSupplyClaimedByWallet({
+  airdropContractAddress,
+  walletAddress,
+  chainId
+}: {
+  airdropContractAddress: Address;
+  walletAddress: Address;
+  chainId: number;
+}): Promise<bigint> {
+  const publicClient = getPublicClient(chainId);
+
+  const supply = await publicClient.readContract({
+    address: airdropContractAddress,
+    abi: THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI,
+    functionName: 'supplyClaimedByWallet',
+    args: [walletAddress]
+  });
+
+  return supply as bigint;
+}
+
 // Function to verify claim eligibility
 export async function verifyThirdwebERC20AirdropClaimEligibility({
   airdropContractAddress,
