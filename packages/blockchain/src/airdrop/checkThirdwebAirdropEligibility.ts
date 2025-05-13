@@ -4,10 +4,7 @@ import type { Address } from 'viem';
 import { getPublicClient } from '../getPublicClient';
 
 import type { ThirdwebFullMerkleTree } from './thirdwebERC20AirdropContract';
-import {
-  getThirdwebERC20AirdropExpirationTimestamp,
-  THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI
-} from './thirdwebERC20AirdropContract';
+import { getThirdwebERC20AirdropExpirationTimestamp, getSupplyClaimedByWallet } from './thirdwebERC20AirdropContract';
 
 const MAX_BLOCK_RANGE = 100000;
 
@@ -73,30 +70,14 @@ export async function checkThirdwebAirdropEligibility({
   const iterations = Math.max(1, Math.ceil(blocksToProcess / MAX_BLOCK_RANGE));
   let isClaimed = false;
 
-  for (let i = 0; i < iterations; i++) {
-    const currentBlock = Number(blockNumber) + i * MAX_BLOCK_RANGE;
-    const endBlock = Math.min(currentBlock + MAX_BLOCK_RANGE - 1, latestBlock);
-    const events = await publicClient.getLogs({
-      address: contractAddress,
-      event: {
-        type: 'event',
-        name: 'TokensClaimed',
-        inputs: [
-          { type: 'address', name: 'claimer', indexed: true },
-          { type: 'address', name: 'receiver', indexed: true },
-          { type: 'uint256', name: 'quantityClaimed', indexed: false }
-        ]
-      },
-      args: {
-        receiver: recipientAddress
-      },
-      fromBlock: BigInt(currentBlock),
-      toBlock: BigInt(endBlock)
-    });
-    if (events.length > 0) {
-      isClaimed = true;
-      break;
-    }
+  const supplyClaimedByWallet = await getSupplyClaimedByWallet({
+    airdropContractAddress: contractAddress,
+    walletAddress: recipientAddress,
+    chainId
+  });
+
+  if (supplyClaimedByWallet > 0) {
+    isClaimed = true;
   }
 
   return {

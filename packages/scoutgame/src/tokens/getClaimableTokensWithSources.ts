@@ -1,7 +1,15 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
+import {
+  getCurrentSeasonStart,
+  getCurrentWeek,
+  getLastWeek,
+  getWeekStartEndFormatted,
+  getDateFromISOWeek,
+  getPreviousSeason,
+  getAllISOWeeksFromSeasonStartUntilSeasonEnd
+} from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 import { formatUnits, type Address } from 'viem';
@@ -88,8 +96,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
   });
 
   const protocolClient = getProtocolReadonlyClient();
-  const weeks = ['2025-W18', '2025-W19'];
-
+  const { weeks } = getWeeksToDisplay();
   const claimedWeeks = (
     await Promise.all(
       walletAddresses.flatMap((wallet) =>
@@ -219,4 +226,17 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     claims,
     processingPayouts: isProcessing
   };
+}
+
+export function getWeeksToDisplay() {
+  const currentWeek = getCurrentWeek();
+  const currentSeason = getCurrentSeasonStart();
+  // include last season
+  const seasons = [getPreviousSeason(currentSeason), currentSeason].filter(isTruthy);
+  const weeks = seasons
+    .flatMap((season) => getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }))
+    .filter((week) => week <= currentWeek)
+    .sort()
+    .reverse();
+  return { weeks, seasons };
 }

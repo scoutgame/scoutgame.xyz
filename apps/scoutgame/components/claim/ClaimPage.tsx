@@ -24,9 +24,9 @@ export function ClaimPage({ period, season }: ClaimPageProps) {
       }}
     >
       <Stack flex={1} gap={4}>
-        {/* <Suspense fallback={<LoadingComponent />}>
+        <Suspense fallback={<LoadingComponent />}>
           <AirdropClaimLink />
-        </Suspense> */}
+        </Suspense>
         <Suspense fallback={<LoadingComponent />}>
           <TokensClaimContainer />
         </Suspense>
