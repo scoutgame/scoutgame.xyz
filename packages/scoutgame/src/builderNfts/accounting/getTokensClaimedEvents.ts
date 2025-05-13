@@ -8,7 +8,7 @@ import { scoutProtocolAddress, protocolStartBlock, scoutProtocolChainId } from '
 import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
 // copied this rate from ankr provider
-const rateLimiter = RateLimit(1, { uniformDistribution: true });
+const rateLimiter = RateLimit(10, { uniformDistribution: true });
 
 const tokensClaimedAbi = {
   anonymous: false,
@@ -73,7 +73,7 @@ function getTokensClaimedEvents({
 }
 
 // Paginate requests with a maximum range of 100,000 blocks
-const MAX_BLOCK_RANGE = 500;
+const MAX_BLOCK_RANGE = 100000;
 
 export async function getTokensClaimedEventsPaginated({
   userAddress,
@@ -95,7 +95,6 @@ export async function getTokensClaimedEventsPaginated({
   const iterations = Math.max(1, Math.ceil(blocksToProcess / MAX_BLOCK_RANGE));
   // console.log('iterations', iterations, blocksToProcess);
   let results: TokensClaimedEvent[] = [];
-
   for (let i = 0; i < iterations; i++) {
     const currentBlock = Number(startBlock) + i * MAX_BLOCK_RANGE;
     const endBlock = Math.min(currentBlock + MAX_BLOCK_RANGE - 1, Number(latestBlock));
