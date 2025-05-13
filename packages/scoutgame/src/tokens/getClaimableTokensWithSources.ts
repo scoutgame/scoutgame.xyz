@@ -95,8 +95,15 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
+  const weeklyClaims = (await prisma.weeklyClaims.findMany({
+    where: {
+      season: getCurrentSeasonStart()
+    }
+  })) as WeeklyClaimsTyped[];
+
+  const weeks = weeklyClaims.map((claim) => claim.week);
+
   const protocolClient = getProtocolReadonlyClient();
-  const { weeks } = getWeeksToDisplay();
   const claimedWeeks = (
     await Promise.all(
       walletAddresses.flatMap((wallet) =>
@@ -182,12 +189,6 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
 
   const uniqueRepos = Array.from(new Set(repos.map((repo) => `${repo.repo.owner}/${repo.repo.name}`)));
 
-  const weeklyClaims = (await prisma.weeklyClaims.findMany({
-    where: {
-      season: getCurrentSeasonStart()
-    }
-  })) as WeeklyClaimsTyped[];
-
   const isProcessing = await checkIsProcessingPayouts({ week: getLastWeek() });
 
   const claims: Record<Address, ClaimInput[]> = {};
@@ -226,17 +227,4 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     claims,
     processingPayouts: isProcessing
   };
-}
-
-export function getWeeksToDisplay() {
-  const currentWeek = getCurrentWeek();
-  const currentSeason = getCurrentSeasonStart();
-  // include last season
-  const seasons = [getPreviousSeason(currentSeason), currentSeason].filter(isTruthy);
-  const weeks = seasons
-    .flatMap((season) => getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season }))
-    .filter((week) => week <= currentWeek)
-    .sort()
-    .reverse();
-  return { weeks, seasons };
 }
