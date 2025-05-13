@@ -174,12 +174,14 @@ export async function getSupplyClaimedByWallet({
 }): Promise<bigint> {
   const publicClient = getPublicClient(chainId);
 
-  return publicClient.readContract({
+  const supply = await publicClient.readContract({
     address: airdropContractAddress,
     abi: THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI,
     functionName: 'supplyClaimedByWallet',
     args: [walletAddress]
   });
+
+  return supply as bigint;
 }
 
 // Function to verify claim eligibility
@@ -190,6 +192,13 @@ export async function verifyThirdwebERC20AirdropClaimEligibility({
   proofs,
   proofMaxQuantityForWallet,
   chainId
+}: {
+  airdropContractAddress: Address;
+  claimer: string;
+  quantity: bigint;
+  proofs: Hex[];
+  proofMaxQuantityForWallet: bigint;
+  chainId: number;
 }): Promise<boolean> {
   const publicClient = getPublicClient(chainId);
 
