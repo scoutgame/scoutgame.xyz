@@ -94,7 +94,11 @@ type Variables = {
     error_message: string;
     wallet_address: string;
   };
-  matchup_reminder: { time_left: string };
+  matchup_reminder: {
+    time_left: string;
+    // include week so we can check if it was already sent for the week
+    week: string;
+  };
 };
 
 export const NotificationTypesRecord = {

@@ -3,11 +3,17 @@ import { prettyPrint } from '@packages/utils/strings';
 import { DateTime } from 'luxon';
 import { getCurrentWeek } from '@packages/dates/utils';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getStartOfMatchup } from '@packages/matchup/getMatchupDetails';
+import { getRelativeTime } from '@packages/utils/dates';
 import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
-console.log(new Date().toISOString());
+console.log(DateTime.fromJSDate(new Date(Date.now() + 122 * 60 * 60 * 1000)).toRelative());
 async function query() {
-  const timeLeft = getTimeLeftStr(DateTime.utc(2025, 5, 13).toMillis());
+  // const timeLeft = getTimeLeftStr(DateTime.utc(2025, 5, 13).toMillis());
+
+  console.log(new Date().toISOString());
+  const timeLeft = getRelativeTime(getStartOfMatchup(getCurrentWeek()));
   console.log('Time left:', timeLeft);
+  return;
 
   // const scout = await prisma.scout.findFirstOrThrow({
   //   where: {
@@ -39,15 +45,3 @@ async function query() {
   }
 }
 query();
-
-// return the absolute amount of time from the unixTimestamp
-function getTimeLeftStr(timestamp: number) {
-  const now = new Date();
-  const timeLeft = Math.abs(timestamp - now.getTime());
-
-  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-
-  return `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m` : ''}`;
-}

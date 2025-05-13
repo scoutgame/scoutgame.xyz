@@ -14,6 +14,7 @@ import { processOnchainGemsPayout, log as processOnchainGemsPayoutLog } from './
 import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
 import { refreshShareImagesTask } from './tasks/refreshShareImages';
 import { resolveMissingPurchasesTask } from './tasks/resolveMissingPurchases';
+import { sendMatchupReminders, log as sendMatchupRemindersLog } from './tasks/sendMatchupReminders';
 import { syncExternalUserProfilesTask } from './tasks/syncExternalUserProfiles/syncExternalUserProfilesTask';
 import { updateAllBuildersCardActivities } from './tasks/updateBuildersCardActivity';
 import { updateTalentMoxieProfiles } from './tasks/updateTalentMoxieProfiles';
@@ -81,6 +82,8 @@ addTask('/process-builder-onchain-activity', processBuilderOnchainActivity);
 addTask('/process-onchain-gems-payout', processOnchainGemsPayout, processOnchainGemsPayoutLog);
 
 addTask('/process-dune-analytics', processDuneAnalytics);
+
+addTask('/send-matchup-reminders', sendMatchupReminders, sendMatchupRemindersLog);
 
 // Standard health check used by Beanstalk
 router.get('/api/health', middleware.healthCheck);
