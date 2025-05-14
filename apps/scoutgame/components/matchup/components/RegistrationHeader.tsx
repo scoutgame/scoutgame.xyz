@@ -49,10 +49,7 @@ export function RegistrationHeader({
                 <RegistrationButton registered={registered} week={week} />
               ) : (
                 <Typography variant='body2' color='secondary' component='span'>
-                  Registration closed.{' '}
-                  <MUILink component={Link} href='/matchup/register' sx={{ color: 'secondary.main' }}>
-                    <em>Register for next week →</em>
-                  </MUILink>
+                  Registration closed.
                 </Typography>
               )}
             </Box>
