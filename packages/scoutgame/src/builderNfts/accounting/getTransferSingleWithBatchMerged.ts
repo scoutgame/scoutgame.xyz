@@ -67,7 +67,7 @@ function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSin
 }
 
 // Paginate requests with a maximum range of 100,000 blocks
-const MAX_BLOCK_RANGE = 100000;
+const MAX_BLOCK_RANGE = 90_000;
 
 export async function getTransferSingleWithBatchMerged({
   fromBlock,
@@ -85,11 +85,9 @@ export async function getTransferSingleWithBatchMerged({
   // Ensure we process at least one block when fromBlock equals toBlock
   const blocksToProcess = Number(latestBlock) - Number(startBlock) + 1;
   const iterations = Math.max(1, Math.ceil(blocksToProcess / MAX_BLOCK_RANGE));
-
   for (let i = 0; i < iterations; i++) {
     const currentBlock = Number(startBlock) + i * MAX_BLOCK_RANGE;
     const endBlock = Math.min(currentBlock + MAX_BLOCK_RANGE - 1, Number(latestBlock));
-
     const [pageSingleEvents, pageBatchEvents] = await Promise.all([
       getTransferSingleEvents({
         fromBlock: BigInt(currentBlock),

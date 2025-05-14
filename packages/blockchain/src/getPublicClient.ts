@@ -33,10 +33,10 @@ export const getPublicClient = (chainId: number) => {
     } catch (error) {
       log.error('Error getting alchemy provider url', { error, chainId });
     }
-  } else {
+  } else if (chainDetails.ankrUrl) {
     const ankrApiId = env('ANKR_API_ID') || process.env.REACT_APP_ANKR_API_ID;
     if (ankrApiId) {
-      providerUrl = `${providerUrl}/${ankrApiId}`;
+      providerUrl = `${chainDetails.ankrUrl}/${ankrApiId}`;
     } else {
       log.error('No ankr api id found using default rpc url', { chainId });
     }
