@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 // ref: https://wagmi.sh/core/chains
-import { arrayUtils } from '@charmverse/core/utilities';
+import { uniqueValues } from '@packages/utils/array';
+import { isDevEnv } from '@packages/utils/constants';
 import { defineChain } from 'viem';
 import type { Chain } from 'viem/chains';
 import {
@@ -20,14 +21,14 @@ import {
   optimismSepolia,
   polygon,
   polygonZkEvm,
-  polygonMumbai,
   polygonAmoy,
   sepolia,
   zkSync,
   zora,
   taikoHekla,
   taiko,
-  zksyncSepoliaTestnet
+  zksyncSepoliaTestnet,
+  cyber
 } from 'viem/chains';
 
 export interface IChainDetails {
@@ -43,6 +44,7 @@ export interface IChainDetails {
   rpcUrls: readonly string[];
   blockExplorerUrls: readonly string[];
   alchemyUrl?: string;
+  ankrUrl?: string;
   // See Safe docs for official URLs https://docs.safe.global/safe-core-api/supported-networks
   gnosisUrl?: string;
   iconUrl: string;
@@ -112,6 +114,7 @@ export const RPC: Record<string, IChainDetails> = {
   ETHEREUM: {
     ...EVM_DEFAULT,
     chainId: mainnet.id,
+    ankrUrl: 'https://rpc.ankr.com/eth',
     viem: { ...mainnet, rpcUrls: { default: { http: ['https://rpc.ankr.com/eth'] } } },
     chainName: mainnet.name,
     alchemyUrl: 'https://eth-mainnet.g.alchemy.com',
@@ -143,9 +146,8 @@ export const RPC: Record<string, IChainDetails> = {
     chainId: optimism.id,
     viem: optimism,
     chainName: 'Optimism',
-    // Disable Alchemy for now as it's causing issues with data syncing
-    // alchemyUrl: 'https://opt-mainnet.g.alchemy.com',
-    rpcUrls: ['https://rpc.ankr.com/optimism'],
+    alchemyUrl: 'https://opt-mainnet.g.alchemy.com',
+    rpcUrls: ['https://mainnet.optimism.io'],
     gnosisUrl: 'https://safe-transaction-optimism.safe.global',
     blockExplorerUrls: ['https://optimistic.etherscan.io'],
     iconUrl: '/images/cryptoLogos/optimism.svg',
@@ -159,7 +161,7 @@ export const RPC: Record<string, IChainDetails> = {
     viem: optimismSepolia,
     chainName: 'Optimism - Sepolia',
     alchemyUrl: 'https://opt-sepolia.g.alchemy.com',
-    rpcUrls: optimismSepolia.rpcUrls.default.http,
+    rpcUrls: ['https://opt-sepolia.g.alchemy.com/v2/vTjY0u9L7uoxZQ5GtOw4yKwn7WJelMXp'],
     blockExplorerUrls: [optimismSepolia.blockExplorers.default.url],
     iconUrl: '/images/cryptoLogos/optimism.svg',
     shortName: 'oeth-sepolia',
@@ -172,6 +174,7 @@ export const RPC: Record<string, IChainDetails> = {
     viem: base,
     chainName: 'Base',
     // alchemyUrl: 'https://base-mainnet.g.alchemy.com',
+    ankrUrl: 'https://rpc.ankr.com/base',
     rpcUrls: ['https://mainnet.base.org'],
     gnosisUrl: 'https://safe-transaction-base.safe.global',
     blockExplorerUrls: ['https://basescan.org'],
@@ -202,25 +205,24 @@ export const RPC: Record<string, IChainDetails> = {
     rpcUrls: zora.rpcUrls.default.http,
     blockExplorerUrls: [zora.blockExplorers.default.url],
     iconUrl: '/images/cryptoLogos/zora-logo.svg',
-    shortName: 'zora'
+    shortName: 'zora',
+    hypersubNetwork: true
   },
   POLYGON: {
     chainId: polygon.id,
     viem: polygon,
-    chainName: 'Polygon',
+    chainName: polygon.name,
     nativeCurrency: {
-      name: 'Polygon',
-      symbol: 'MATIC',
-      decimals: 18,
+      ...polygon.nativeCurrency,
       address: '0x0000000000000000000000000000000000000000',
       logoURI: 'https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745'
     },
     alchemyUrl: 'https://polygon-mainnet.g.alchemy.com',
-    rpcUrls: ['https://polygon-rpc.com'],
-    blockExplorerUrls: ['https://polygonscan.com'],
+    rpcUrls: polygon.rpcUrls.default.http,
+    blockExplorerUrls: [polygon.blockExplorers.default.url],
     gnosisUrl: 'https://safe-transaction-polygon.safe.global',
     iconUrl: '/images/cryptoLogos/polygon-matic-logo.svg',
-    shortName: 'matic',
+    shortName: 'pol',
     unlockNetwork: true
   },
   POLYGON_ZKEVM: {
@@ -228,9 +230,7 @@ export const RPC: Record<string, IChainDetails> = {
     viem: polygonZkEvm,
     chainName: polygonZkEvm.name,
     nativeCurrency: {
-      name: polygonZkEvm.nativeCurrency.name,
-      symbol: polygonZkEvm.nativeCurrency.symbol,
-      decimals: polygonZkEvm.nativeCurrency.decimals,
+      ...polygonZkEvm.nativeCurrency,
       address: '0x0000000000000000000000000000000000000000',
       logoURI: 'https://assets.coingecko.com/asset_platforms/images/122/small/polygonzkevm.jpg'
     },
@@ -241,42 +241,21 @@ export const RPC: Record<string, IChainDetails> = {
     shortName: 'polygon-zkevm',
     unlockNetwork: true
   },
-  MUMBAI: {
-    chainId: polygonMumbai.id,
-    viem: polygonMumbai,
-    chainName: 'Polygon - Mumbai',
-    nativeCurrency: {
-      name: 'Polygon',
-      symbol: 'MATIC',
-      decimals: 18,
-      address: '0x0000000000000000000000000000000000000000',
-      logoURI: 'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png?1624446912'
-    },
-    alchemyUrl: 'https://polygon-mumbai.g.alchemy.com',
-    rpcUrls: ['https://rpc-mumbai.maticvigil.com', 'https://polygon-mumbai-bor.publicnode.com'],
-    blockExplorerUrls: ['https://mumbai.polygonscan.com'],
-    iconUrl: '/images/cryptoLogos/polygon-matic-logo.svg',
-    testnet: true,
-    shortName: 'maticmum',
-    unlockNetwork: true
-  },
   AMOY: {
     chainId: polygonAmoy.id,
     viem: polygonAmoy,
     chainName: 'Polygon - Amoy',
     nativeCurrency: {
-      name: 'Polygon',
-      symbol: 'MATIC',
-      decimals: 18,
+      ...polygonAmoy.nativeCurrency,
       address: '0x0000000000000000000000000000000000000000',
       logoURI: 'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png?1624446912'
     },
     alchemyUrl: 'https://polygon-amoy.g.alchemy.com',
     rpcUrls: polygonAmoy.rpcUrls.default.http,
-    blockExplorerUrls: ['https://amoy.polygonscan.com/'],
+    blockExplorerUrls: [polygonAmoy.blockExplorers.default.url],
     iconUrl: '/images/cryptoLogos/polygon-matic-logo.svg',
     testnet: true,
-    shortName: 'maticamoy'
+    shortName: 'polamoy'
   },
   ARBITRUM: {
     ...EVM_DEFAULT,
@@ -504,7 +483,7 @@ export const RPC: Record<string, IChainDetails> = {
     blockExplorerUrls: [zkSync.blockExplorers.default.url],
     gnosisUrl: 'https://safe-transaction-zksync.safe.global',
     iconUrl: '/images/cryptoLogos/zksync-era-logo.svg',
-    shortName: zkSync.name,
+    shortName: zkSync.network,
     unlockNetwork: true
   },
   ZKSYNC_DEV: {
@@ -516,17 +495,27 @@ export const RPC: Record<string, IChainDetails> = {
     blockExplorerUrls: [zksyncSepoliaTestnet.blockExplorers.default.url],
     iconUrl: '/images/cryptoLogos/zksync-era-logo.svg',
     testnet: true,
-    shortName: zksyncSepoliaTestnet.name
+    shortName: zksyncSepoliaTestnet.network
+  },
+  CYBER: {
+    ...EVM_DEFAULT,
+    chainId: cyber.id,
+    viem: cyber,
+    chainName: cyber.name,
+    rpcUrls: cyber.rpcUrls.default.http,
+    blockExplorerUrls: [cyber.blockExplorers.default.url],
+    iconUrl: '/images/cryptoLogos/cyber.png',
+    shortName: cyber.name.toLowerCase()
   }
 } as const;
 
-export const daoChains: IChainDetails['shortName'][] = ['eth', 'arb1', 'oeth', 'matic', 'gno'];
+export const daoChains: IChainDetails['shortName'][] = ['eth', 'arb1', 'oeth', 'pol', 'gno'];
 
 export const hatsProtocolChains: IChainDetails['shortName'][] = [
   'eth',
   'arb1',
   'oeth',
-  'matic',
+  'pol',
   'gno',
   'sep',
   'celo',
@@ -538,7 +527,7 @@ export const builderDaoChains: IChainDetails['shortName'][] = ['eth', 'base', 'o
 export type Blockchain = keyof typeof RPC;
 
 export function getChainList(options: { enableTestnets?: boolean } = {}) {
-  const enableTestNets = options.enableTestnets;
+  const enableTestNets = isDevEnv || options.enableTestnets;
   return (
     Object.values(RPC)
       // filter out testnets in prod, except for Sepolia
@@ -556,7 +545,7 @@ export function getChainShortname(chainId: string | number): string {
 
 export type CryptoCurrency = (typeof RPC)[Blockchain]['nativeCurrency']['symbol'];
 
-export const CryptoCurrencies = arrayUtils.uniqueValues<CryptoCurrency>(
+export const CryptoCurrencies = uniqueValues<CryptoCurrency>(
   allChains.map((chain) => {
     return chain.nativeCurrency.symbol as CryptoCurrency;
   })

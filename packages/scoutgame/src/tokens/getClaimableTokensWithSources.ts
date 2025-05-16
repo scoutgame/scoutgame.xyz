@@ -1,13 +1,21 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek, getLastWeek } from '@packages/dates/utils';
+import {
+  getCurrentSeasonStart,
+  getCurrentWeek,
+  getLastWeek,
+  getWeekStartEndFormatted,
+  getDateFromISOWeek,
+  getPreviousSeason,
+  getAllISOWeeksFromSeasonStartUntilSeasonEnd
+} from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 import { formatUnits, type Address } from 'viem';
 
-import { getTokensClaimedEvents } from '../builderNfts/accounting/getTokensClaimedEvents';
 import type { WeeklyClaimsTyped } from '../protocol/calculateWeeklyClaims';
+import { getProtocolReadonlyClient } from '../protocol/clients/getProtocolReadonlyClient';
 import { devTokenDecimals } from '../protocol/constants';
 
 import { checkIsProcessingPayouts } from './checkIsProcessingPayouts';
@@ -87,18 +95,30 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
+  const weeklyClaims = (await prisma.weeklyClaims.findMany({
+    where: {
+      season: getCurrentSeasonStart()
+    }
+  })) as WeeklyClaimsTyped[];
+
+  const weeks = weeklyClaims.map((claim) => claim.week);
+
+  const protocolClient = getProtocolReadonlyClient();
   const claimedWeeks = (
     await Promise.all(
-      walletAddresses.map((wallet) =>
-        getTokensClaimedEvents({ address: wallet }).then((events) => ({
-          address: wallet,
-          weeks: events.map((ev) => ev.args.week)
-        }))
+      walletAddresses.flatMap((wallet) =>
+        weeks.map((week) =>
+          protocolClient.hasClaimed({ args: { account: wallet, week } }).then((hasClaimed) => ({
+            wallet,
+            week,
+            hasClaimed
+          }))
+        )
       )
     )
   ).reduce(
-    (acc, { address, weeks }) => {
-      acc[address] = weeks;
+    (acc, { wallet, week, hasClaimed }) => {
+      acc[wallet] = hasClaimed ? [...(acc[wallet] || []), week] : acc[wallet] || [];
       return acc;
     },
     {} as Record<string, string[]>
@@ -168,12 +188,6 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
   });
 
   const uniqueRepos = Array.from(new Set(repos.map((repo) => `${repo.repo.owner}/${repo.repo.name}`)));
-
-  const weeklyClaims = (await prisma.weeklyClaims.findMany({
-    where: {
-      season: getCurrentSeasonStart()
-    }
-  })) as WeeklyClaimsTyped[];
 
   const isProcessing = await checkIsProcessingPayouts({ week: getLastWeek() });
 

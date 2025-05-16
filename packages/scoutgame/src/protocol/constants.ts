@@ -15,7 +15,7 @@ export const devTokenDecimals = 18;
 export const devTokenSymbol = 'DEV';
 export const devTokenChain = base;
 
-export const protocolStartBlock = 19_000_000;
+export const protocolStartBlock = 29_000_000;
 
 // Selecting the top 100 builders
 export const weeklyRewardableBuilders = 100;
