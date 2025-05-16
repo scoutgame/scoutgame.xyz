@@ -60,3 +60,8 @@ cron:
     url: '/process-dune-analytics'
     # once a day at midnight
     schedule: '0 0 * * *'
+
+  - name: 'send-matchup-reminders'
+    url: '/send-matchup-reminders'
+    # every 30 minutes
+    schedule: '0 */30 * * *'
