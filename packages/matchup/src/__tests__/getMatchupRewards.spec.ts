@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { optimismTokenDecimals } from '@packages/blockchain/constants';
+import { getNextWeek } from '@packages/dates/utils';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import type { Scout, ScoutMatchup, ScoutWallet } from '@prisma/client';
 import { parseUnits } from 'viem';
@@ -145,8 +146,7 @@ describe('getMatchupRewards', () => {
       {
         address: '0x4',
         scoutId: 'scout4',
-        devAmount: BigInt(0),
-        opAmount: BigInt(0)
+        week: getNextWeek(mockWeek)
       }
     ]);
   });
@@ -168,14 +168,12 @@ describe('getMatchupRewards', () => {
       {
         address: '0x4',
         scoutId: 'scout4',
-        devAmount: BigInt(0),
-        opAmount: BigInt(0)
+        week: getNextWeek(mockWeek)
       },
       {
         address: '0x5',
         scoutId: 'scout5',
-        devAmount: BigInt(0),
-        opAmount: BigInt(0)
+        week: getNextWeek(mockWeek)
       }
     ]);
   });
