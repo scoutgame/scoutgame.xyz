@@ -90,10 +90,10 @@ export async function deployMatchupRewards({ week }: { week: string }) {
   for (const winner of freeMatchupWinners) {
     await createFreeMatchup({
       scoutId: winner.scoutId,
-      week
+      week: winner.week
     });
     log.info('Free matchup created', {
-      week,
+      week: winner.week,
       userId: winner.scoutId
     });
   }

@@ -58,15 +58,43 @@ describe('getMatchupDetails', () => {
     });
   });
 
+  it('should ignore free registrations in the pool size', async () => {
+    const now = DateTime.fromObject(
+      { year: 2025, month: 2, day: 6, weekday: REGISTRATION_DAY_OF_WEEK },
+      { zone: 'utc' }
+    );
+    const currentWeek = getWeekFromDate(now.toJSDate());
+
+    // Create some mock scouts
+    const scout1 = await mockScout({ displayName: 'Scout 1' });
+    const scout2 = await mockScout({ displayName: 'Scout 2' });
+    const scout3 = await mockScout({ displayName: 'Scout 3' });
+
+    // Create matchups for these scouts
+    await Promise.all([
+      mockMatchup({ createdBy: scout1.id, week: currentWeek }),
+      mockMatchup({ createdBy: scout2.id, week: currentWeek, freeRegistration: true }),
+      mockMatchup({ createdBy: scout3.id, week: currentWeek })
+    ]);
+
+    const details = await getMatchupDetails(currentWeek, now);
+
+    expect(details).toEqual(
+      expect.objectContaining({
+        matchupPool: 2 * MATCHUP_REGISTRATION_POOL // 2 paid matchups
+      })
+    );
+  });
+
   it('should return correct details for next week', async () => {
-    const now = DateTime.fromObject({ year: 2025, month: 2, day: 6 }, { zone: 'utc' });
+    const now = DateTime.fromObject({ year: 2025, month: 3, day: 6 }, { zone: 'utc' });
     const nextWeek = getNextWeek(getWeekFromDate(now.toJSDate()));
 
     const details = await getMatchupDetails(nextWeek, now);
 
     expect(details).toEqual({
       week: nextWeek,
-      weekNumber: 6,
+      weekNumber: 10,
       matchupPool: 0, // No matchups
       opPrize: MATCHUP_OP_PRIZE,
       startTime: now.startOf('week').plus({ weeks: 1, days: REGISTRATION_DAY_OF_WEEK }).toJSDate().getTime(),
@@ -78,7 +106,7 @@ describe('getMatchupDetails', () => {
   it('should return registrationOpen as false when not on registration day', async () => {
     const currentWeek = '2024-W40';
     const now = DateTime.fromObject(
-      { year: 2023, month: 3, day: 7, weekday: REGISTRATION_DAY_OF_WEEK + 1 },
+      { year: 2023, month: 4, day: 7, weekday: REGISTRATION_DAY_OF_WEEK + 1 },
       { zone: 'utc' }
     );
 

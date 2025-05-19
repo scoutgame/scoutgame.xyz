@@ -1,6 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { optimismTokenDecimals } from '@packages/blockchain/constants';
+import { getNextWeek } from '@packages/dates/utils';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { parseUnits } from 'viem';
 import type { Address } from 'viem';
@@ -22,6 +23,7 @@ const OP_REWARDS = {
 } as const;
 
 type MatchupRewardRecipient = { address: Address; scoutId: string; devAmount: bigint; opAmount: bigint };
+type FreeMatchupRecipient = { address: Address; scoutId: string; week: string };
 
 export async function getMatchupRewards(week: string) {
   const leaderboard = await prisma.scoutMatchup.findMany({
@@ -65,7 +67,7 @@ export async function getMatchupRewards(week: string) {
 
   // Prepare recipients
   const recipients: MatchupRewardRecipient[] = [];
-  const freeMatchupWinners: MatchupRewardRecipient[] = [];
+  const freeMatchupWinners: FreeMatchupRecipient[] = [];
 
   // Process each group of entries with the same gems collected
   for (const entry of leaderboard) {
@@ -90,8 +92,7 @@ export async function getMatchupRewards(week: string) {
       freeMatchupWinners.push({
         address: entry.scout.wallets[0].address as Address,
         scoutId: entry.createdBy,
-        devAmount: rewardDevTokens,
-        opAmount: rewardOpTokens
+        week: getNextWeek(week)
       });
     } else {
       log.warn('Unexpected: received too many recipients for matchup rewards', { size: leaderboard.length });

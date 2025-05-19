@@ -1063,12 +1063,14 @@ export async function mockMatchup({
   createdBy,
   submittedAt,
   selectedNfts = [],
-  week = getCurrentWeek()
+  week = getCurrentWeek(),
+  freeRegistration = false
 }: {
   createdBy: string;
   submittedAt?: Date;
   selectedNfts?: string[];
   week?: string;
+  freeRegistration?: boolean;
 }) {
   const matchup = await prisma.scoutMatchup.create({
     data: {
@@ -1079,13 +1081,16 @@ export async function mockMatchup({
       },
       week,
       submittedAt,
-      registrationTx: {
-        create: {
-          hash: `0x${Math.random().toString(16).substring(2)}`,
-          chainId: 8453,
-          status: 'success' as const
-        }
-      },
+      freeRegistration,
+      registrationTx: freeRegistration
+        ? undefined
+        : {
+            create: {
+              hash: `0x${Math.random().toString(16).substring(2)}`,
+              chainId: 8453,
+              status: 'success' as const
+            }
+          },
       selections: {
         createMany: {
           data: selectedNfts.map((developerNftId) => ({
