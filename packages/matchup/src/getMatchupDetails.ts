@@ -34,17 +34,11 @@ export function getCurrentMatchupDetails() {
 }
 
 export async function getMatchupDetails(week: string, now = DateTime.utc()): Promise<MatchupDetails> {
-  const matchups = await prisma.scoutMatchup.count({
+  const paidMatchups = await prisma.scoutMatchup.count({
     where: {
       week,
-      OR: [
-        {
-          registrationTx: { status: 'success' }
-        },
-        {
-          freeRegistration: true
-        }
-      ]
+      // NOTE: do not include free matchups in the pool size
+      registrationTx: { status: 'success' }
     }
   });
   const startTime = getStartOfMatchup(week).getTime();
@@ -55,7 +49,7 @@ export async function getMatchupDetails(week: string, now = DateTime.utc()): Pro
   return {
     week,
     weekNumber,
-    matchupPool: matchups * MATCHUP_REGISTRATION_POOL,
+    matchupPool: paidMatchups * MATCHUP_REGISTRATION_POOL,
     opPrize: MATCHUP_OP_PRIZE,
     startTime,
     endTime,
