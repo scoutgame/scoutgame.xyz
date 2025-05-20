@@ -3,18 +3,18 @@ import { InfoCard } from '@packages/scoutgame-ui/components/common/DocumentPageC
 
 import { InfoPageContainer } from '../components/InfoPageContainer';
 
-export function DiviiPage() {
+export function DivviPage() {
   return (
-    <InfoPageContainer data-test='partner-divii-page' image='/images/info/rewards-partner-divii.png' title='Divii'>
+    <InfoPageContainer data-test='partner-divvi-page' image='/images/info/rewards-partner-divvi.png' title='Divvi'>
       <InfoCard>
         <Typography variant='h6' color='secondary' fontWeight={600} mt={3} gutterBottom>
-          🌍 About Divii
+          🌍 About Divvi
         </Typography>
         <Typography paragraph>
-          Divii is an onchain rewards protocol that lets back-end protocols launch "pay-for-impact" campaigns. Each
+          Divvi is an onchain rewards protocol that lets back-end protocols launch "pay-for-impact" campaigns. Each
           campaign tracks onchain KPIs such as TVL, transaction count, or net-new active users, then{' '}
           <strong>automatically divvies incentives</strong> to the builders whose apps create that impact. Protocols set
-          the KPI. Divii handles attribution, accounting, and reward distribution.
+          the KPI. Divvi handles attribution, accounting, and reward distribution.
         </Typography>
         <Typography paragraph>
           Unlike one-off grants or retroactive funding, rewards flow <strong>continuously</strong> as value is created.
@@ -91,7 +91,7 @@ export function DiviiPage() {
             <TableRow>
               <TableCell>Transactions generated</TableCell>
               <TableCell>Counted on-chain per network</TableCell>
-              <TableCell>Weekly DEV distribution via Divii, proportional to share of total impact</TableCell>
+              <TableCell>Weekly DEV distribution via Divvi, proportional to share of total impact</TableCell>
             </TableRow>
           </TableBody>
         </Table>
