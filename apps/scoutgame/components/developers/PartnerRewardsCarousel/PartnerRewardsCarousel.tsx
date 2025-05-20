@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const partnerInfos = [
-  { logo: 'divii.png', name: 'divii', infoPath: 'divii', skipRoundedBorder: false },
+  { logo: 'divvi.png', name: 'divvi', infoPath: 'divvi', skipRoundedBorder: false },
   { logo: 'taiko.png', name: 'taiko', infoPath: 'taiko', skipRoundedBorder: false },
   { logo: 'celo.png', name: 'celo', infoPath: 'celo', skipRoundedBorder: false }
 ];
