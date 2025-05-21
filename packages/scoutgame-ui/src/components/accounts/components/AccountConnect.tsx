@@ -44,57 +44,51 @@ export function AccountConnect({
           'Your Points and Developers will be transferred into your developer account'
         )}
       </Typography>
-      {connectedUser.starterPackNftCount + user.starterPackNftCount > 3 ? (
-        <Alert color='error' sx={{ mb: 2 }}>
-          You have more than 3 starter cards across your accounts thus you can not merge your accounts.
-        </Alert>
-      ) : (
-        <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {connectedUser.builderStatus === null && user.builderStatus === null ? (
-            <Stack gap={2}>
-              <ProfileCard
-                onClick={() => setSelectedProfile('current')}
-                user={user}
-                isSelected={selectedProfile === 'current'}
-                disabled={isMergingUserAccount}
-              />
+      <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {connectedUser.builderStatus === null && user.builderStatus === null ? (
+          <Stack gap={2}>
+            <ProfileCard
+              onClick={() => setSelectedProfile('current')}
+              user={user}
+              isSelected={selectedProfile === 'current'}
+              disabled={isMergingUserAccount}
+            />
 
-              <ProfileCard
-                onClick={() => setSelectedProfile('new')}
-                user={connectedUser}
-                isSelected={selectedProfile === 'new'}
-                disabled={isMergingUserAccount}
-              />
-            </Stack>
-          ) : isMergeDisabled ? (
-            <Alert color='error' icon={<CloseIcon />}>
-              Can not merge two developer accounts. Please select a different account to merge.
-            </Alert>
-          ) : (
-            <ProfileCard user={connectedUser} />
-          )}
-
-          <Stack alignItems='flex-end'>
-            <Button
-              variant='contained'
-              loading={isMergingUserAccount}
-              disabled={isMergingUserAccount || isMergeDisabled}
-              onClick={mergeUserAccount}
-            >
-              {isMergingUserAccount
-                ? 'Merging...'
-                : connectedUser.builderStatus !== null || selectedProfile === 'new'
-                  ? 'Merge and Logout'
-                  : 'Merge'}
-            </Button>
+            <ProfileCard
+              onClick={() => setSelectedProfile('new')}
+              user={connectedUser}
+              isSelected={selectedProfile === 'new'}
+              disabled={isMergingUserAccount}
+            />
           </Stack>
-          {accountMergeError && (
-            <Typography variant='body2' textAlign='center' sx={{ mt: 2 }} color='error'>
-              {accountMergeError}
-            </Typography>
-          )}
+        ) : isMergeDisabled ? (
+          <Alert color='error' icon={<CloseIcon />}>
+            Can not merge two developer accounts. Please select a different account to merge.
+          </Alert>
+        ) : (
+          <ProfileCard user={connectedUser} />
+        )}
+
+        <Stack alignItems='flex-end'>
+          <Button
+            variant='contained'
+            loading={isMergingUserAccount}
+            disabled={isMergingUserAccount || isMergeDisabled}
+            onClick={mergeUserAccount}
+          >
+            {isMergingUserAccount
+              ? 'Merging...'
+              : connectedUser.builderStatus !== null || selectedProfile === 'new'
+                ? 'Merge and Logout'
+                : 'Merge'}
+          </Button>
         </Stack>
-      )}
+        {accountMergeError && (
+          <Typography variant='body2' textAlign='center' sx={{ mt: 2 }} color='error'>
+            {accountMergeError}
+          </Typography>
+        )}
+      </Stack>
     </Dialog>
   );
 }

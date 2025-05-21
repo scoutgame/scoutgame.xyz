@@ -15,7 +15,6 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   wallets: { address: string; primary: boolean }[];
   avatar: string;
   builderStatus: BuilderStatus | null;
-  starterPackNftCount: number;
   email: string;
   sendTransactionEmails: boolean;
   sendMarketing: boolean;

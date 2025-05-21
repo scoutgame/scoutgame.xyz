@@ -4,7 +4,6 @@ import type { UserProfileData } from '@packages/scoutgame-ui/components/common/P
 
 export type UserProfile = UserProfileData & {
   builderStatus: BuilderStatus | null;
-  starterPackNftCount: number;
 };
 
 export async function getUserProfile({
@@ -75,9 +74,6 @@ export async function getUserProfile({
     talentProfile: user.talentProfile,
     id: user.id,
     path: user.path,
-    builderStatus: user.builderStatus,
-    starterPackNftCount: new Set(
-      user.wallets.flatMap((wallet) => wallet.scoutedNfts.map((nft) => nft.builderNft.builderId))
-    ).size
+    builderStatus: user.builderStatus
   };
 }

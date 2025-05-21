@@ -82,10 +82,7 @@ export function useAccountConnect<AuthData>({
     popupState.close();
   }, []);
 
-  const isMergeDisabled =
-    (connectedUser?.builderStatus !== null && user.builderStatus !== null) ||
-    (connectedUser?.starterPackNftCount ?? 0 + user.starterPackNftCount) > 3 ||
-    isLoggingOut;
+  const isMergeDisabled = (connectedUser?.builderStatus !== null && user.builderStatus !== null) || isLoggingOut;
 
   return {
     isMergeDisabled,
