@@ -30,18 +30,7 @@ export default async function Accounts() {
         wallets: {
           select: {
             address: true,
-            primary: true,
-            scoutedNfts: {
-              where: {
-                builderNft: {
-                  season: getCurrentSeasonStart(),
-                  nftType: 'starter_pack'
-                }
-              },
-              select: {
-                id: true
-              }
-            }
+            primary: true
           }
         }
       }
@@ -71,9 +60,6 @@ export default async function Accounts() {
           primary: wallet.primary
         })),
         avatar: user.avatar as string,
-        starterPackNftCount: currentUserAccountsMetadata.wallets
-          .flatMap((wallet) => wallet.scoutedNfts.length)
-          .reduce((acc, curr) => acc + curr, 0),
         verifiedEmail
       }}
     />
