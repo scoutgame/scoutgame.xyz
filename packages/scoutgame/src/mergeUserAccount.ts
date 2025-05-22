@@ -64,14 +64,7 @@ export const mergeUserAccount = async ({
         telegramName: true,
         deletedAt: true,
         builderStatus: true,
-        bio: true,
-        wallets: {
-          select: {
-            scoutedNfts: {
-              take: 1
-            }
-          }
-        }
+        bio: true
       }
     }),
     prisma.scout.findUniqueOrThrow({
@@ -93,22 +86,12 @@ export const mergeUserAccount = async ({
         path: true,
         wallets: {
           select: {
-            address: true,
-            scoutedNfts: {
-              take: 1
-            }
+            address: true
           }
         }
       }
     })
   ]);
-
-  const retainedUserHasNfts = retainedUser.wallets.some((wallet) => wallet.scoutedNfts.length > 0);
-  const mergedUserHasNfts = mergedUser.wallets.some((wallet) => wallet.scoutedNfts.length > 0);
-
-  if (retainedUserHasNfts && mergedUserHasNfts) {
-    throw new Error('Can not merge two accounts with NFTs');
-  }
 
   if (retainedUser.builderStatus !== null && mergedUser.builderStatus !== null) {
     log.error('Can not merge two builder accounts', {
@@ -274,17 +257,24 @@ export const mergeUserAccount = async ({
           }
         });
 
-        await tx.userSeasonStats.update({
+        const stats = {
+          nftsSold: nftsSold.reduce((acc, nft) => acc + nft.balance, 0),
+          nftsPurchased: nftsOwned.reduce((acc, nft) => acc + nft.balance, 0),
+          nftOwners: arrayUtils.uniqueValues(nftsSold.map((nft) => nft.walletAddress)).length
+        };
+
+        await tx.userSeasonStats.upsert({
           where: {
             userId_season: {
               userId: retainedUserId,
               season: getCurrentSeasonStart()
             }
           },
-          data: {
-            nftsSold: nftsSold.reduce((acc, nft) => acc + nft.balance, 0),
-            nftsPurchased: nftsOwned.reduce((acc, nft) => acc + nft.balance, 0),
-            nftOwners: arrayUtils.uniqueValues(nftsSold.map((nft) => nft.walletAddress)).length
+          update: stats,
+          create: {
+            ...stats,
+            userId: retainedUserId,
+            season: getCurrentSeasonStart()
           }
         });
       },
