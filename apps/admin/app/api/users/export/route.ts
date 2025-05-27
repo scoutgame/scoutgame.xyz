@@ -49,8 +49,7 @@ export async function GET() {
 
   const users = await prisma.scout.findMany({
     where: {
-      deletedAt: null,
-      id: 'f4e7cc3d-be93-420a-b49b-401dddd380e9'
+      deletedAt: null
     },
     select: {
       id: true,
