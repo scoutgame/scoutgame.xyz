@@ -272,7 +272,6 @@ export function PurchaseProvider({ children }: { children: ReactNode }) {
           ? [fromAddress, builderTokenId, tokensToBuy, scoutId]
           : [fromAddress, builderTokenId, tokensToBuy]
       });
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       const outputPromise = recordNftMint({
         purchaseInfo: {
