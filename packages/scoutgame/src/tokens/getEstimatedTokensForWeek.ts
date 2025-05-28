@@ -27,7 +27,7 @@ export async function getEstimatedTokensForWeek({ week }: { week: string }) {
       owners: tokenOwnership
     });
     developerTokensPerScout.forEach(({ scoutId, erc20Tokens }) => {
-      __tokensPerScout[scoutId] = (__tokensPerScout[scoutId] || BigInt(0)) + Math.floor(erc20Tokens);
+      __tokensPerScout[scoutId] = (__tokensPerScout[scoutId] || BigInt(0)) + erc20Tokens;
     });
     return __tokensPerScout;
   }, {});
