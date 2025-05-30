@@ -7,6 +7,14 @@ import { getPublicClient } from './getPublicClient';
 // Paginate requests with a maximum range of 100,000 blocks
 const MAX_BLOCK_RANGE = 90_000;
 
+type LogEvent = {
+  eventName: string;
+  args: { operator: Address; from: Address; to: Address; id: bigint; value: bigint };
+  transactionHash: `0x${string}`;
+  logIndex: number;
+  blockNumber: bigint;
+};
+
 // paginate through the result of client.getLogs
 export async function getContractLogs<T>({
   fromBlock,
@@ -39,6 +47,19 @@ export async function getContractLogs<T>({
       firstBlockNumber: fromBlock
     }
   });
+  const dbLogs = await prisma.blockchainLog.findMany({
+    where: {
+      contractId: contractCacheRecord.id
+    },
+    orderBy: {
+      blockNumber: 'asc'
+    }
+  });
+  const formattedDbLogs: LogEvent[] = dbLogs.map((log) => ({
+    ...log,
+    transactionHash: log.txHash as `0x${string}`,
+    args: log.args as any
+  }));
   const startBlock = contractCacheRecord.lastBlockNumber ? contractCacheRecord.lastBlockNumber + BigInt(1) : fromBlock;
   const latestBlock = toBlock || Number(await client.getBlockNumber());
 
@@ -93,5 +114,5 @@ export async function getContractLogs<T>({
     events = [...events, ...nextEvents];
   }
 
-  return events as T[];
+  return [...formattedDbLogs, ...events] as T[];
 }
