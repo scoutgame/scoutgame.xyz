@@ -1,11 +1,9 @@
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getContractLogs } from '@packages/blockchain/getContractLogs';
 import type { Address } from 'viem';
-import { parseEventLogs } from 'viem';
 
 import { nftChain } from '../constants';
 
 import type { BlockRange } from './convertBlockRange';
-import { convertBlockRange } from './convertBlockRange';
 import { type TransferSingleEvent, getTransferSingleEvents } from './getTransferSingleEvents';
 
 type TransferBatchEvent = {
@@ -34,20 +32,20 @@ function getTransferBatchEvents({
   toBlock,
   contractAddress,
   chainId = nftChain.id
-}: BlockRange & { contractAddress: Address; chainId?: number }): Promise<TransferBatchEvent[]> {
-  return getPublicClient(chainId)
-    .getLogs({
-      ...convertBlockRange({ fromBlock, toBlock }),
-      address: contractAddress,
-      event: transferBatchAbi
-    })
-    .then((logs) =>
-      parseEventLogs({
-        abi: [transferBatchAbi],
-        logs,
-        eventName: 'TransferBatch'
-      })
-    ) as Promise<TransferBatchEvent[]>;
+}: {
+  fromBlock: bigint;
+  toBlock?: bigint;
+  contractAddress: Address;
+  chainId?: number;
+}): Promise<TransferBatchEvent[]> {
+  return getContractLogs({
+    fromBlock: BigInt(fromBlock),
+    toBlock: toBlock ? BigInt(toBlock) : undefined,
+    chainId,
+    contractAddress,
+    eventAbi: transferBatchAbi,
+    eventName: 'TransferBatch'
+  });
 }
 
 function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSingleEvent[] {
@@ -66,50 +64,33 @@ function convertBatchToSingleEvents(batchEvent: TransferBatchEvent): TransferSin
   }));
 }
 
-// Paginate requests with a maximum range of 100,000 blocks
-const MAX_BLOCK_RANGE = 90_000;
-
 export async function getTransferSingleWithBatchMerged({
   fromBlock,
   toBlock,
   contractAddress,
   chainId = nftChain.id
-}: BlockRange & { contractAddress: Address; chainId?: number }): Promise<TransferSingleEvent[]> {
-  const publicClient = getPublicClient(chainId);
-  const latestBlock = toBlock || Number(await publicClient.getBlockNumber());
-  const startBlock = fromBlock || 0;
+}: BlockRange & {
+  fromBlock: number | bigint;
+  toBlock?: number | bigint;
+  contractAddress: Address;
+  chainId?: number;
+}): Promise<TransferSingleEvent[]> {
+  const [singleEvents, batchEvents] = await Promise.all([
+    getTransferSingleEvents({
+      fromBlock: BigInt(fromBlock),
+      toBlock: toBlock ? BigInt(toBlock) : undefined,
+      contractAddress,
+      chainId
+    }),
+    getTransferBatchEvents({
+      fromBlock: BigInt(fromBlock),
+      toBlock: toBlock ? BigInt(toBlock) : undefined,
+      contractAddress,
+      chainId
+    })
+  ]);
 
-  let singleEvents: TransferSingleEvent[] = [];
-  let batchEvents: TransferBatchEvent[] = [];
+  const convertedBatchEvents = batchEvents.flatMap((event) => convertBatchToSingleEvents(event));
 
-  // Ensure we process at least one block when fromBlock equals toBlock
-  const blocksToProcess = Number(latestBlock) - Number(startBlock) + 1;
-  const iterations = Math.max(1, Math.ceil(blocksToProcess / MAX_BLOCK_RANGE));
-  for (let i = 0; i < iterations; i++) {
-    const currentBlock = Number(startBlock) + i * MAX_BLOCK_RANGE;
-    const endBlock = Math.min(currentBlock + MAX_BLOCK_RANGE - 1, Number(latestBlock));
-    const [pageSingleEvents, pageBatchEvents] = await Promise.all([
-      getTransferSingleEvents({
-        fromBlock: BigInt(currentBlock),
-        toBlock: BigInt(endBlock),
-        contractAddress,
-        chainId
-      }),
-      getTransferBatchEvents({
-        fromBlock: BigInt(currentBlock),
-        toBlock: BigInt(endBlock),
-        contractAddress,
-        chainId
-      })
-    ]);
-
-    singleEvents = [...singleEvents, ...pageSingleEvents];
-    batchEvents = [...batchEvents, ...pageBatchEvents];
-  }
-
-  const convertedBatchEvents = await Promise.all(batchEvents.map((event) => convertBatchToSingleEvents(event)));
-
-  return [...singleEvents, ...convertedBatchEvents.flat()].sort(
-    (a, b) => Number(a.blockNumber) - Number(b.blockNumber)
-  );
+  return [...singleEvents, ...convertedBatchEvents].sort((a, b) => Number(a.blockNumber) - Number(b.blockNumber));
 }

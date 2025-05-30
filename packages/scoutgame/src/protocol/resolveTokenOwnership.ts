@@ -17,7 +17,7 @@ export type TokenOwnership = {
 
 async function getTokenOwnershipForContract({
   contractAddress,
-  fromBlock = 27_250_000, // These from number correspond to the earliest activity ranges for our NFTs
+  fromBlock = 27_250_000,
   toBlock
 }: {
   contractAddress: Address;
@@ -25,7 +25,6 @@ async function getTokenOwnershipForContract({
   toBlock: number;
 }): Promise<TokenOwnership[keyof TokenOwnership]> {
   const allEvents = await getTransferSingleWithBatchMerged({
-    // These from number correspond to the earliest activity ranges for our NFTs
     fromBlock,
     toBlock,
     chainId: base.id,

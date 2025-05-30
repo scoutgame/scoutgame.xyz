@@ -1,6 +1,5 @@
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import { getContractLogs } from '@packages/blockchain/getContractLogs';
 import type { Address } from 'viem';
-import { parseEventLogs } from 'viem';
 
 import type { BlockRange } from './convertBlockRange';
 import { convertBlockRange } from './convertBlockRange';
@@ -31,18 +30,18 @@ export function getTransferSingleEvents({
   toBlock,
   contractAddress,
   chainId
-}: BlockRange & { contractAddress: Address; chainId: number }): Promise<TransferSingleEvent[]> {
-  return getPublicClient(chainId)
-    .getLogs({
-      ...convertBlockRange({ fromBlock, toBlock }),
-      address: contractAddress,
-      event: transferSingleAbi
-    })
-    .then((logs) =>
-      parseEventLogs({
-        abi: [transferSingleAbi],
-        logs,
-        eventName: 'TransferSingle'
-      })
-    );
+}: {
+  fromBlock: bigint;
+  toBlock?: bigint;
+  contractAddress: Address;
+  chainId: number;
+}): Promise<TransferSingleEvent[]> {
+  return getContractLogs({
+    fromBlock,
+    toBlock,
+    chainId,
+    contractAddress,
+    eventAbi: transferSingleAbi,
+    eventName: 'TransferSingle'
+  }) as Promise<TransferSingleEvent[]>;
 }

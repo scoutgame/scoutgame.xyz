@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { log } from '@charmverse/core/log';
 import { NFTPurchaseEvent, prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
