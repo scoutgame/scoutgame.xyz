@@ -1,9 +1,8 @@
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { NULL_EVM_ADDRESS } from '@packages/blockchain/constants';
-import { getLastBlockOfWeek } from '@packages/blockchain/getLastBlockOfWeek';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getPreviousWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getPreviousWeek, getSeasonConfig } from '@packages/dates/utils';
 import type { TransferSingleEvent } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleEvents';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { nftChain, getNFTContractAddressForNftType } from '@packages/scoutgame/builderNfts/constants';
@@ -24,19 +23,20 @@ export async function findAndIndexMissingPurchases({
   nftType: BuilderNftType;
   season?: ISOWeek;
 }) {
-  const weekBeforeSeason = getPreviousWeek(season);
-
-  const startBlockNumber = await getLastBlockOfWeek({ week: weekBeforeSeason, chainId: nftChain.id });
-
-  const contractAddress = getNFTContractAddressForNftType({ nftType, season });
+  const seasonConfig = getSeasonConfig(season);
+  const contractAddress = nftType === 'starter_pack' ? seasonConfig.starterNftAddress : seasonConfig.standardNftAddress;
 
   if (!contractAddress) {
-    scoutgameMintsLogger.warn('No contract address found for nft type', { nftType, season });
+    scoutgameMintsLogger.error('No contract address found for nft type', { nftType, season });
+    return;
+  }
+  if (!seasonConfig.nftBlockNumber) {
+    scoutgameMintsLogger.error('No nft block number found for season', { season });
     return;
   }
 
   const transferSingleEvents = await getTransferSingleWithBatchMerged({
-    fromBlock: startBlockNumber,
+    fromBlock: BigInt(seasonConfig.nftBlockNumber),
     contractAddress,
     chainId: nftChain.id
   });

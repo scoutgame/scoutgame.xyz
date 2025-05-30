@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { ISOWeek } from '@packages/dates/config';
+import { getFromBlockForContract } from '@packages/dates/utils';
 import type { Address } from 'viem';
 
 import type { BuilderScoutedEvent } from './accounting/getBuilderScoutedEvents';
@@ -20,31 +20,17 @@ type SimplifiedGroupedEvent = {
   builderScoutedEvent: BuilderScoutedEvent['args'];
 };
 
-async function getOnchainEvents(query: {
-  fromBlock?: number;
-  toBlock?: number;
-  contractAddress: Address;
-  chainId: number;
-}) {
+async function getOnchainEvents(query: { contractAddress: Address; chainId: number }) {
+  const fromBlock = getFromBlockForContract(query.contractAddress);
   const [builderEventLogs, transferSingleEventLogs] = await Promise.all([
-    getBuilderScoutedEvents(query),
-    getTransferSingleEvents(query)
+    getBuilderScoutedEvents({ ...query, fromBlock }),
+    getTransferSingleEvents({ ...query, fromBlock })
   ]);
 
   return groupEventsByTransactionHash([...builderEventLogs, ...transferSingleEventLogs]);
 }
 
-export async function getOnchainPurchaseEvents({
-  scoutId,
-  fromBlock,
-  toBlock,
-  season
-}: {
-  scoutId: string;
-  season: ISOWeek;
-  fromBlock?: number;
-  toBlock?: number;
-}) {
+export async function getOnchainPurchaseEvents({ scoutId, season }: { scoutId: string; season: ISOWeek }) {
   const contractAddress = getNFTContractAddress(season);
   const starterPackContractAddress = getStarterNFTContractAddress(season);
   if (!contractAddress || !starterPackContractAddress) {
@@ -54,36 +40,21 @@ export async function getOnchainPurchaseEvents({
 
   const [groupedNftEvents, groupedStarterPackEvents] = await Promise.all([
     getOnchainEvents({
-      fromBlock,
-      toBlock,
       contractAddress,
       chainId: nftChain.id
     }),
     getOnchainEvents({
-      fromBlock,
-      toBlock,
       contractAddress: starterPackContractAddress,
       chainId: nftChain.id
     })
   ]);
-
-  const fromBlockTimestamp = fromBlock
-    ? await getPublicClient(nftChain.id)
-        .getBlock({ blockNumber: BigInt(fromBlock), includeTransactions: false })
-        .then((block) => new Date(Number(block.timestamp) * 1000))
-    : undefined;
 
   const nftPurchases = await prisma.nFTPurchaseEvent.findMany({
     where: {
       ...validMintNftPurchaseEvent,
       scoutWallet: {
         scoutId
-      },
-      createdAt: fromBlockTimestamp
-        ? {
-            gte: fromBlockTimestamp
-          }
-        : undefined
+      }
     },
     select: {
       txHash: true,
@@ -95,8 +66,7 @@ export async function getOnchainPurchaseEvents({
 
   const pendingTransactions = await prisma.pendingNftTransaction.findMany({
     where: {
-      userId: scoutId,
-      createdAt: fromBlockTimestamp ? { gte: fromBlockTimestamp } : undefined
+      userId: scoutId
     },
     select: {
       id: true,

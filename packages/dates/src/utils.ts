@@ -249,3 +249,16 @@ export function getSeasonFromDate(date: Date) {
 export function getValidSeasons(): SeasonConfig[] {
   return seasons.filter((s) => !s.draft && !s.preseason);
 }
+
+export function getFromBlockForContract(contractAddress: `0x${string}`) {
+  const seasonConfig = seasons.find(
+    (s) => s.standardNftAddress === contractAddress || s.starterNftAddress === contractAddress
+  );
+  if (!seasonConfig) {
+    throw new Error(`Season config not found for contract address: ${contractAddress}`);
+  }
+  if (!seasonConfig.nftBlockNumber) {
+    throw new Error(`NFT block number not found for season: ${seasonConfig.start}`);
+  }
+  return BigInt(seasonConfig.nftBlockNumber);
+}

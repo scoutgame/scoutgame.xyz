@@ -24,7 +24,6 @@ async function getTokensByOwner({
   const walletLowerCase = wallet.toLowerCase();
 
   const allEvents = await getTransferSingleWithBatchMerged({
-    // These from number correspond to the earliest activity ranges for our NFTs
     fromBlock,
     toBlock,
     chainId: base.id,
