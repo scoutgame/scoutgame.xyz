@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { AbiEvent, Address, ParseEventLogsReturnType } from 'viem';
 import { parseEventLogs } from 'viem';
@@ -5,7 +6,7 @@ import { parseEventLogs } from 'viem';
 import { getPublicClient } from './getPublicClient';
 
 // Paginate requests with a maximum range of 100,000 blocks
-const MAX_BLOCK_RANGE = 50_000;
+const MAX_BLOCK_RANGE = 20_000;
 
 type LogEvent = {
   eventName: string;
@@ -40,7 +41,7 @@ export async function getContractLogs<T>({
       contractAddress_chainId_eventName: {
         chainId,
         contractAddress,
-        eventName: eventName.toLowerCase()
+        eventName
       }
     },
     update: {},
@@ -60,10 +61,10 @@ export async function getContractLogs<T>({
       blockNumber: 'asc'
     }
   });
-  const formattedDbLogs: LogEvent[] = dbLogs.map((log) => ({
-    ...log,
-    transactionHash: log.txHash as `0x${string}`,
-    args: log.args as any
+  const formattedDbLogs: LogEvent[] = dbLogs.map((l) => ({
+    ...l,
+    transactionHash: l.txHash as `0x${string}`,
+    args: l.args as any
   }));
   const startBlock = contractCacheRecord.lastBlockNumber ? contractCacheRecord.lastBlockNumber + BigInt(1) : fromBlock;
   const latestBlock = toBlock || Number(await client.getBlockNumber());
@@ -76,20 +77,27 @@ export async function getContractLogs<T>({
   for (let i = 0; i < iterations; i++) {
     const currentBlock = Number(startBlock) + i * batchSize;
     const endBlock = Math.min(currentBlock + batchSize - 1, Number(latestBlock));
-    const nextEvents = await client
-      .getLogs({
-        fromBlock: BigInt(currentBlock),
-        toBlock: BigInt(endBlock),
-        address: contractAddress,
-        event: eventAbi
-      })
-      .then((logs) =>
-        parseEventLogs({
+    const nextEvents = await (async () => {
+      async function getLogs() {
+        const logs = await client.getLogs({
+          fromBlock: BigInt(currentBlock),
+          toBlock: BigInt(endBlock),
+          address: contractAddress,
+          event: eventAbi
+        });
+        return parseEventLogs({
           abi: [eventAbi],
           logs,
           eventName
-        })
-      );
+        });
+      }
+      try {
+        return await getLogs();
+      } catch (error) {
+        log.warn(`Retrying request for logs ${currentBlock}-${endBlock}:`, error);
+        return getLogs();
+      }
+    })();
     if (nextEvents.length > 0) {
       await Promise.all(
         nextEvents.map((event) =>
@@ -114,7 +122,6 @@ export async function getContractLogs<T>({
         )
       );
     }
-
     await prisma.blockchainLogsContract.update({
       where: {
         id: contractCacheRecord.id
