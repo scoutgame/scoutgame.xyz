@@ -1,9 +1,6 @@
 import { getContractLogs } from '@packages/blockchain/getContractLogs';
 import type { Address } from 'viem';
 
-import type { BlockRange } from './convertBlockRange';
-import { convertBlockRange } from './convertBlockRange';
-
 export const transferSingleAbi = {
   anonymous: false,
   inputs: [

@@ -1,4 +1,3 @@
-import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { AbiEvent, Address, ParseEventLogsReturnType } from 'viem';
 import { parseEventLogs } from 'viem';
@@ -66,19 +65,18 @@ export async function getContractLogs<T>({
         })
       );
 
-    const newLatestBlock = nextEvents[nextEvents.length - 1].blockNumber;
-
-    await prisma.blockchainLog.createMany({
-      data: nextEvents.map((event) => ({
-        contractId: contractCacheRecord.id,
-        chainId,
-        eventName,
-        args: event.args as any,
-        blockNumber: event.blockNumber,
-        txHash: event.transactionHash,
-        logIndex: event.logIndex
-      }))
-    });
+    if (nextEvents.length > 0) {
+      await prisma.blockchainLog.createMany({
+        data: nextEvents.map((event) => ({
+          contractId: contractCacheRecord.id,
+          args: event.args as any,
+          blockNumber: event.blockNumber,
+          eventName,
+          txHash: event.transactionHash,
+          logIndex: event.logIndex
+        }))
+      });
+    }
 
     await prisma.blockchainLogsContract.update({
       where: {
@@ -88,7 +86,7 @@ export async function getContractLogs<T>({
         }
       },
       data: {
-        lastBlockNumber: newLatestBlock
+        lastBlockNumber: endBlock
       }
     });
 

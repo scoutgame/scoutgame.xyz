@@ -251,7 +251,9 @@ export function getValidSeasons(): SeasonConfig[] {
 }
 
 export function getFromBlockForContract(contractAddress: `0x${string}`) {
-  const seasonConfig = seasons.find((s) => s.standardNftAddress === contractAddress);
+  const seasonConfig = seasons.find(
+    (s) => s.standardNftAddress === contractAddress || s.starterNftAddress === contractAddress
+  );
   if (!seasonConfig) {
     throw new Error(`Season config not found for contract address: ${contractAddress}`);
   }

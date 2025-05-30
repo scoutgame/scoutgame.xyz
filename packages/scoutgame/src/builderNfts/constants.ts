@@ -9,7 +9,7 @@ import { base } from 'viem/chains';
 export const getArtworkFolderPath = (season: string, isStarterNft?: boolean) =>
   isStarterNft ? getStarterNFTContractAddress(season) || 'dev_starter' : getNFTContractAddress(season) || 'dev';
 
-export const nftChain: Chain = base;
+export const nftChain = base;
 
 // the "51st" dev token would cost 5100, which is impossible so we can use this as a proxy for "no price"
 export const maxDevTokenPrice = 5100;

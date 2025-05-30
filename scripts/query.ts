@@ -6,42 +6,21 @@ import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { getStartOfMatchup } from '@packages/matchup/getMatchupDetails';
 import { getRelativeTime } from '@packages/utils/dates';
 import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
-console.log(DateTime.fromJSDate(new Date(Date.now() + 122 * 60 * 60 * 1000)).toRelative());
+
+import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
+import { Address } from 'viem';
+
 async function query() {
-  // const timeLeft = getTimeLeftStr(DateTime.utc(2025, 5, 13).toMillis());
-
-  console.log(new Date().toISOString());
-  const timeLeft = getRelativeTime(getStartOfMatchup(getCurrentWeek()));
-  console.log('Time left:', timeLeft);
-  return;
-
-  // const scout = await prisma.scout.findFirstOrThrow({
-  //   where: {
-  //     email: 'mattwad+135@gmail.com'
-  //   }
-  // });
-
-  const matchups = await prisma.scoutMatchup.findMany({
-    where: {
-      week: '2025-W20',
-      submittedAt: null
-    },
-    include: {
-      scout: true,
-      selections: true
-    }
+  await prisma.blockchainLog.deleteMany({
+    // where: {
+    //   contractId: 1
+    // }
   });
-  prettyPrint(matchups);
-  for (const matchup of matchups) {
-    if (matchup.selections.length === 0) {
-      await sendEmailNotification({
-        userId: matchup.scout.id,
-        notificationType: 'matchup_reminder',
-        templateVariables: {
-          time_left: timeLeft
-        }
-      });
-    }
-  }
+  const logs = await getTransferSingleWithBatchMerged({
+    chainId: 8453,
+    contractAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
+    fromBlock: 29_504_000
+  });
+  console.log(logs.slice(0, 3));
 }
 query();
