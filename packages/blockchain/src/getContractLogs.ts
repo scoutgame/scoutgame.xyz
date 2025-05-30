@@ -49,7 +49,8 @@ export async function getContractLogs<T>({
   });
   const dbLogs = await prisma.blockchainLog.findMany({
     where: {
-      contractId: contractCacheRecord.id
+      contractId: contractCacheRecord.id,
+      eventName
     },
     orderBy: {
       blockNumber: 'asc'
@@ -87,16 +88,28 @@ export async function getContractLogs<T>({
       );
 
     if (nextEvents.length > 0) {
-      await prisma.blockchainLog.createMany({
-        data: nextEvents.map((event) => ({
-          contractId: contractCacheRecord.id,
-          args: event.args as any,
-          blockNumber: event.blockNumber,
-          eventName,
-          txHash: event.transactionHash,
-          logIndex: event.logIndex
-        }))
-      });
+      await Promise.all(
+        nextEvents.map((event) =>
+          prisma.blockchainLog.upsert({
+            where: {
+              contractId_blockNumber_logIndex: {
+                contractId: contractCacheRecord.id,
+                blockNumber: event.blockNumber,
+                logIndex: event.logIndex
+              }
+            },
+            create: {
+              contractId: contractCacheRecord.id,
+              args: event.args as any,
+              blockNumber: event.blockNumber,
+              eventName,
+              txHash: event.transactionHash,
+              logIndex: event.logIndex
+            },
+            update: {}
+          })
+        )
+      );
     }
 
     await prisma.blockchainLogsContract.update({
