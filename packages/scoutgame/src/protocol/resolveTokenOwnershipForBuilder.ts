@@ -7,6 +7,19 @@ import { validMintNftPurchaseEvent } from '../builderNfts/constants';
 import type { PartialNftPurchaseEvent } from '../tokens/getTokensCountForWeekWithNormalisation';
 import { mapPurchaseEventsToOwnership } from '../tokens/mapPurchaseEventsToOwnership';
 
+export type TokenOwnershipForBuilder = {
+  byScoutId: {
+    scoutId: string;
+    totalNft: number;
+    totalStarter: number;
+  }[];
+  byWallet: {
+    wallet: Address;
+    totalNft: number;
+    totalStarter: number;
+  }[];
+};
+
 export async function getNftPurchaseEvents({
   week,
   builderId,
@@ -68,19 +81,6 @@ export async function getNftPurchaseEvents({
       )
     );
 }
-
-export type TokenOwnershipForBuilder = {
-  byScoutId: {
-    scoutId: string;
-    totalNft: number;
-    totalStarter: number;
-  }[];
-  byWallet: {
-    wallet: Address;
-    totalNft: number;
-    totalStarter: number;
-  }[];
-};
 
 export async function resolveTokenOwnershipForBuilder({
   week,
