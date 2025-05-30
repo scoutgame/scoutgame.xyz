@@ -40,18 +40,6 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
       normalisationFactor,
       normalisationScale,
       owners: {
-        byWallet: [
-          {
-            totalNft: 10,
-            totalStarter: 0,
-            wallet: userAddress1
-          },
-          {
-            totalNft: 5,
-            totalStarter: 2,
-            wallet: userAddress2
-          }
-        ],
         byScoutId: [
           {
             totalNft: 10,
@@ -75,10 +63,6 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
           total: 17
         },
         earnableTokens: parseUnits('2400', devTokenDecimals),
-        tokensPerScoutByWallet: expect.arrayContaining<TokenDistribution['tokensPerScoutByWallet'][number]>([
-          { wallet: userAddress1, nftTokens: 10, erc20Tokens: BigInt('1119999999999999928320') },
-          { wallet: userAddress2, nftTokens: 5, erc20Tokens: BigInt('799999999999999964160') }
-        ]),
         tokensPerScoutByScoutId: expect.arrayContaining<TokenDistribution['tokensPerScoutByScoutId'][number]>([
           { scoutId: userId1, nftTokens: 10, erc20Tokens: BigInt('1119999999999999928320') },
           { scoutId: userId2, nftTokens: 5, erc20Tokens: BigInt('799999999999999964160') }
@@ -87,7 +71,7 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
       })
     );
 
-    const totalTokensDistributed = result.tokensPerScoutByWallet.reduce(
+    const totalTokensDistributed = result.tokensPerScoutByScoutId.reduce(
       (acc, scout) => acc + scout.erc20Tokens,
       BigInt(0)
     );
@@ -102,8 +86,7 @@ describe('divideTokensBetweenDeveloperAndHolders', () => {
         normalisationFactor,
         normalisationScale,
         owners: {
-          byScoutId: [],
-          byWallet: []
+          byScoutId: []
         }
       })
     ).toThrow('Invalid rank provided. Must be a number greater than 0');

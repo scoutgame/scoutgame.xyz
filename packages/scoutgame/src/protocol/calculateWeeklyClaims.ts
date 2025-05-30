@@ -210,7 +210,7 @@ export async function calculateWeeklyClaims({
         normalisationScale,
         rank: index + 1,
         weeklyAllocatedTokens,
-        owners: { byWallet: [], byScoutId: ownersByScoutId }
+        owners: { byScoutId: ownersByScoutId }
       });
 
       const builderEventId = uuid();

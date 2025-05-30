@@ -55,27 +55,18 @@ export function divideTokensBetweenDeveloperAndHolders({
   weeklyAllocatedTokens: bigint;
   normalisationFactor: bigint;
   normalisationScale: bigint;
-  owners: TokenOwnershipForBuilder;
+  owners: Pick<TokenOwnershipForBuilder, 'byScoutId'>;
 }): TokenDistribution {
   if (rank < 1 || typeof rank !== 'number') {
     throw new InvalidInputError('Invalid rank provided. Must be a number greater than 0');
   }
 
   // Calculate the total number of NFTs purchased by each scout
-  const nftSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalNft, 0);
-  const starterSupply = owners.byWallet.reduce((acc, owner) => acc + owner.totalStarter, 0);
+  const nftSupply = owners.byScoutId.reduce((acc, owner) => acc + owner.totalNft, 0);
+  const starterSupply = owners.byScoutId.reduce((acc, owner) => acc + owner.totalStarter, 0);
 
   const earnableTokens =
     (calculateEarnableTokensForRank({ rank, weeklyAllocatedTokens }) * normalisationFactor) / normalisationScale;
-
-  const tokensPerScoutByWallet = owners.byWallet.map((owner) => {
-    const scoutReward = calculateRewardForScout({
-      purchased: { default: owner.totalNft, starterPack: owner.totalStarter },
-      supply: { default: nftSupply, starterPack: starterSupply },
-      scoutsRewardPool: earnableTokens
-    });
-    return { wallet: owner.wallet, nftTokens: owner.totalNft, erc20Tokens: scoutReward };
-  });
 
   const tokensPerScoutByScoutId = owners.byScoutId.map((owner) => {
     const scoutReward = calculateRewardForScout({
@@ -96,7 +87,6 @@ export function divideTokensBetweenDeveloperAndHolders({
       total: nftSupply + starterSupply
     },
     earnableTokens,
-    tokensPerScoutByWallet,
     tokensPerScoutByScoutId,
     tokensForDeveloper
   };
