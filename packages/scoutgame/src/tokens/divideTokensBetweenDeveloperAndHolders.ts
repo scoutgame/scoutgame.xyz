@@ -23,11 +23,6 @@ export type TokenDistribution = {
     total: number;
   };
   earnableTokens: bigint;
-  tokensPerScoutByWallet: {
-    wallet: Address;
-    nftTokens: number;
-    erc20Tokens: bigint;
-  }[];
   tokensPerScoutByScoutId: {
     scoutId: string;
     nftTokens: number;
