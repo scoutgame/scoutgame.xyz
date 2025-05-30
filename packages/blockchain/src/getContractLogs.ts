@@ -39,7 +39,7 @@ export async function getContractLogs<T>({
       firstBlockNumber: fromBlock
     }
   });
-  const startBlock = contractCacheRecord.lastBlockNumber || fromBlock;
+  const startBlock = contractCacheRecord.lastBlockNumber ? contractCacheRecord.lastBlockNumber + BigInt(1) : fromBlock;
   const latestBlock = toBlock || Number(await client.getBlockNumber());
 
   let events: ParseEventLogsReturnType<AbiEvent[], string, true, string> = [];
