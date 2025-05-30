@@ -75,21 +75,18 @@ export async function getTransferSingleWithBatchMerged({
   contractAddress: Address;
   chainId?: number;
 }): Promise<TransferSingleEvent[]> {
-  const [singleEvents, batchEvents] = await Promise.all([
-    getTransferSingleEvents({
-      fromBlock: BigInt(fromBlock),
-      toBlock: toBlock ? BigInt(toBlock) : undefined,
-      contractAddress,
-      chainId
-    }),
-    getTransferBatchEvents({
-      fromBlock: BigInt(fromBlock),
-      toBlock: toBlock ? BigInt(toBlock) : undefined,
-      contractAddress,
-      chainId
-    })
-  ]);
-
+  const singleEvents = await getTransferSingleEvents({
+    fromBlock: BigInt(fromBlock),
+    toBlock: toBlock ? BigInt(toBlock) : undefined,
+    contractAddress,
+    chainId
+  });
+  const batchEvents = await getTransferBatchEvents({
+    fromBlock: BigInt(fromBlock),
+    toBlock: toBlock ? BigInt(toBlock) : undefined,
+    contractAddress,
+    chainId
+  });
   const convertedBatchEvents = batchEvents.flatMap((event) => convertBatchToSingleEvents(event));
 
   return [...singleEvents, ...convertedBatchEvents].sort((a, b) => Number(a.blockNumber) - Number(b.blockNumber));

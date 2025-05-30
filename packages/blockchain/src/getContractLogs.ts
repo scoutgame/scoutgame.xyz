@@ -1,3 +1,4 @@
+import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { AbiEvent, Address, ParseEventLogsReturnType } from 'viem';
 import { parseEventLogs } from 'viem';
@@ -5,7 +6,7 @@ import { parseEventLogs } from 'viem';
 import { getPublicClient } from './getPublicClient';
 
 // Paginate requests with a maximum range of 100,000 blocks
-const MAX_BLOCK_RANGE = 90_000;
+const MAX_BLOCK_RANGE = 20_000;
 
 type LogEvent = {
   eventName: string;
@@ -19,6 +20,7 @@ type LogEvent = {
 export async function getContractLogs<T>({
   fromBlock,
   toBlock,
+  batchSize = MAX_BLOCK_RANGE,
   contractAddress,
   chainId,
   eventAbi,
@@ -26,6 +28,7 @@ export async function getContractLogs<T>({
 }: {
   fromBlock: bigint;
   toBlock?: bigint;
+  batchSize?: number;
   contractAddress: Address;
   chainId: number;
   eventAbi: AbiEvent;
@@ -35,15 +38,17 @@ export async function getContractLogs<T>({
   const client = getPublicClient(chainId);
   const contractCacheRecord = await prisma.blockchainLogsContract.upsert({
     where: {
-      contractAddress_chainId: {
+      contractAddress_chainId_eventName: {
         chainId,
-        contractAddress
+        contractAddress,
+        eventName
       }
     },
     update: {},
     create: {
       chainId,
       contractAddress,
+      eventName,
       firstBlockNumber: fromBlock
     }
   });
@@ -56,10 +61,10 @@ export async function getContractLogs<T>({
       blockNumber: 'asc'
     }
   });
-  const formattedDbLogs: LogEvent[] = dbLogs.map((log) => ({
-    ...log,
-    transactionHash: log.txHash as `0x${string}`,
-    args: log.args as any
+  const formattedDbLogs: LogEvent[] = dbLogs.map((l) => ({
+    ...l,
+    transactionHash: l.txHash as `0x${string}`,
+    args: l.args as any
   }));
   const startBlock = contractCacheRecord.lastBlockNumber ? contractCacheRecord.lastBlockNumber + BigInt(1) : fromBlock;
   const latestBlock = toBlock || Number(await client.getBlockNumber());
@@ -68,25 +73,31 @@ export async function getContractLogs<T>({
 
   // Ensure we process at least one block when fromBlock equals toBlock
   const blocksToProcess = Number(latestBlock) - Number(startBlock) + 1;
-  const iterations = Math.max(1, Math.ceil(blocksToProcess / MAX_BLOCK_RANGE));
+  const iterations = Math.max(1, Math.ceil(blocksToProcess / batchSize));
   for (let i = 0; i < iterations; i++) {
-    const currentBlock = Number(startBlock) + i * MAX_BLOCK_RANGE;
-    const endBlock = Math.min(currentBlock + MAX_BLOCK_RANGE - 1, Number(latestBlock));
-    const nextEvents = await client
-      .getLogs({
-        fromBlock: BigInt(currentBlock),
-        toBlock: BigInt(endBlock),
-        address: contractAddress,
-        event: eventAbi
-      })
-      .then((logs) =>
-        parseEventLogs({
+    const currentBlock = Number(startBlock) + i * batchSize;
+    const endBlock = Math.min(currentBlock + batchSize - 1, Number(latestBlock));
+    const nextEvents = await (async () => {
+      async function getLogs() {
+        const logs = await client.getLogs({
+          fromBlock: BigInt(currentBlock),
+          toBlock: BigInt(endBlock),
+          address: contractAddress,
+          event: eventAbi
+        });
+        return parseEventLogs({
           abi: [eventAbi],
           logs,
           eventName
-        })
-      );
-
+        });
+      }
+      try {
+        return await getLogs();
+      } catch (error) {
+        log.warn(`Retrying request for logs ${currentBlock}-${endBlock}:`, error);
+        return getLogs();
+      }
+    })();
     if (nextEvents.length > 0) {
       await Promise.all(
         nextEvents.map((event) =>
@@ -111,13 +122,9 @@ export async function getContractLogs<T>({
         )
       );
     }
-
     await prisma.blockchainLogsContract.update({
       where: {
-        contractAddress_chainId: {
-          contractAddress,
-          chainId
-        }
+        id: contractCacheRecord.id
       },
       data: {
         lastBlockNumber: endBlock
