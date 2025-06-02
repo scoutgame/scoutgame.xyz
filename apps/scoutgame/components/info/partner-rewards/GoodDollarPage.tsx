@@ -19,23 +19,23 @@ export function GoodDollarPage() {
 const tiers = [
   {
     name: 'Common',
-    reward: '$50'
+    reward: '1000 $G'
   },
   {
     name: 'Rare',
-    reward: '$150'
+    reward: '3000 $G'
   },
   {
     name: 'Epic',
-    reward: '$250'
+    reward: '5000 $G'
   },
   {
     name: 'Mythic',
-    reward: '$350'
+    reward: '7000 $G'
   },
   {
     name: 'Legendary',
-    reward: '$450'
+    reward: '9000 $G'
   }
 ];
 
@@ -86,29 +86,14 @@ function Document() {
           <Typography>Your PR must be reviewed and merged by the GoodDollar team.</Typography>
         </ListItem>
       </List>
-      <Typography>
-        Applying for the QF Round can be done{' '}
-        <Link href='https://explorer.gitcoin.co/#/round/42220/29' target='_blank' rel='noreferrer'>
-          here
-        </Link>
-        !
-      </Typography>
       <Typography mt={1}>
-        GoodDollar will also reach out via email or through telegram/discord to eligible contributors, guiding them on
-        how to register for the QF round.
-      </Typography>
-      <Typography mt={1}>
-        At the end of the QF round, participants receive their guaranteed rewards, additional donations, and matching
-        funds.
+        Every Monday at UTC midnight the G$ Rewards you earned will be available via the Scout Game Claim page.
       </Typography>
 
       <Typography variant='h6' color='secondary' mt={2}>
         🎯 Rewards Eligibility and Process
       </Typography>
-      <Typography fontWeight='bold'>Guaranteed Rewards:</Typography>
-      <Typography>
-        (The rewards will be distributed in G$ s based on the token price at the time of distribution.)
-      </Typography>
+
       <Table>
         <TableHead>
           <TableRow>
@@ -125,23 +110,6 @@ function Document() {
           ))}
         </TableBody>
       </Table>
-      <Typography mt={1}>
-        All developers with merged PRs will receive guaranteed rewards donated directly to their project during the
-        upcoming Gitcoin Grants Quadratic Funding (QF) round.
-      </Typography>
-      <Typography fontWeight='bold' mt={1}>
-        Additional QF Benefits:
-      </Typography>
-      <List>
-        <ListItem>
-          <Typography>Participants may earn extra donations from the broader community.</Typography>
-        </ListItem>
-        <ListItem>
-          <Typography>
-            Contributions from the GoodDollar community will unlock additional matching funds, amplifying rewards.
-          </Typography>
-        </ListItem>
-      </List>
 
       <Typography variant='h6' color='secondary' mt={2}>
         Eligible GoodDollar Repositories:
@@ -161,23 +129,6 @@ function Document() {
           </ListItem>
         ))}
       </List>
-
-      <Typography variant='h6' color='secondary' mt={2}>
-        📅 Important Dates
-      </Typography>
-      <Typography fontWeight='bold'>Next Gitcoin QF Round (GG23)</Typography>
-      <Typography fontWeight='bold' mt={1}>
-        Applications Open:
-      </Typography>
-      <Typography>March 17th - April 1st</Typography>
-      <Typography fontWeight='bold' mt={1}>
-        Extended Applications open:
-      </Typography>
-      <Typography>April 2nd - April 7th</Typography>
-      <Typography fontWeight='bold' mt={1}>
-        Donations and Matching Round:
-      </Typography>
-      <Typography>April 2nd - April 16th</Typography>
 
       <Typography variant='h6' color='secondary' mt={2}>
         📌 Get Started Today
@@ -224,7 +175,7 @@ function Document() {
           </Link>
         </ListItem>
         <ListItem>
-          <Link href='https://t.me/GoodDollarX' target='_blank' rel='noreferrer'>
+          <Link href='https://t.me/gooddollar' target='_blank' rel='noreferrer'>
             GoodDollar Telegram
           </Link>
         </ListItem>
@@ -236,12 +187,7 @@ function Document() {
       </List>
 
       <Typography mt={1}>Join us and contribute to building the future of financial freedom!</Typography>
-      <Typography mt={1}>
-        Read more about GoodDollar's Gitcoin Grants{' '}
-        <Link href='https://ubi.gd/KickoffQFRound' target='_blank' rel='noreferrer'>
-          here
-        </Link>
-      </Typography>
+
       <Typography>
         GoodDollar docs:{' '}
         <Link href='https://docs.gooddollar.org' target='_blank' rel='noreferrer'>
