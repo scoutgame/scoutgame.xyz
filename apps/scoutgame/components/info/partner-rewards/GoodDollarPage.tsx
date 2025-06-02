@@ -74,7 +74,6 @@ function Document() {
       <Typography variant='h6' color='secondary' mt={2}>
         ✅ How to Participate
       </Typography>
-      <Typography fontWeight='bold'>Submit Your Contribution:</Typography>
       <List>
         <ListItem>
           <Typography>Pick a ticket on the issues board labeled 'ScoutGame'</Typography>
