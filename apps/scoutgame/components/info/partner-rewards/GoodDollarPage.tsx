@@ -19,23 +19,23 @@ export function GoodDollarPage() {
 const tiers = [
   {
     name: 'Common',
-    reward: '1000 $G'
+    reward: '$50 | 500,000 G$'
   },
   {
     name: 'Rare',
-    reward: '3000 $G'
+    reward: '$150 | 1,500,000 G$'
   },
   {
     name: 'Epic',
-    reward: '5000 $G'
+    reward: '$250 | 2,500,000 G$'
   },
   {
     name: 'Mythic',
-    reward: '7000 $G'
+    reward: '$350 | 3,500,000 G$'
   },
   {
     name: 'Legendary',
-    reward: '9000 $G'
+    reward: '$450 | 4,500,000 G$'
   }
 ];
 
