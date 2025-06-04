@@ -17,7 +17,7 @@ import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
 import { gemsValues } from './config';
-import { getLinkedIssues } from './github/getLinkedIssues';
+import { getLinkedIssue } from './github/getLinkedIssue';
 import { getRecentMergedPullRequestsByUser } from './github/getRecentMergedPullRequestsByUser';
 import { log } from './logger';
 
@@ -151,24 +151,23 @@ export async function recordMergedPullRequest({
     // Add linked issues processing
     try {
       const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
-      const linkedIssues = await getLinkedIssues({
+      const linkedIssue = await getLinkedIssue({
         owner,
         repo: repoName,
         pullNumber: pullRequest.number
       });
 
-      // Create GithubIssue records for each linked issue
-      await tx.githubIssue.createMany({
-        data: linkedIssues
-          .filter((issue) => issue.tags.length)
-          .map((issue) => ({
+      if (linkedIssue) {
+        await tx.githubIssue.create({
+          data: {
             pullRequestId: pullRequest.number.toString(),
             githubEventId: event.id,
-            repoId: issue.repository.id,
-            issueNumber: issue.number,
-            tags: issue.tags
-          }))
-      });
+            repoId: pullRequest.repository.id,
+            issueNumber: linkedIssue.number,
+            tags: linkedIssue.tags
+          }
+        });
+      }
     } catch (error) {
       log.error('Error processing linked issues', {
         error,
