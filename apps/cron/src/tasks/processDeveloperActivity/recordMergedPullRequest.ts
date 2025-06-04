@@ -149,31 +149,34 @@ export async function recordMergedPullRequest({
     });
 
     // Add linked issues processing
-    try {
-      const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
-      const linkedIssue = await getLinkedIssue({
-        owner,
-        repo: repoName,
-        pullNumber: pullRequest.number
-      });
 
-      if (linkedIssue) {
-        await tx.githubIssue.create({
-          data: {
-            pullRequestId: pullRequest.number.toString(),
-            githubEventId: event.id,
-            repoId: pullRequest.repository.id,
-            issueNumber: linkedIssue.number,
-            tags: linkedIssue.tags
-          }
+    if (pullRequest.repository.owner.login.toLowerCase() === 'gooddollar') {
+      try {
+        const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
+        const linkedIssue = await getLinkedIssue({
+          owner,
+          repo: repoName,
+          pullNumber: pullRequest.number
+        });
+
+        if (linkedIssue) {
+          await tx.githubIssue.create({
+            data: {
+              pullRequestId: pullRequest.number.toString(),
+              githubEventId: event.id,
+              repoId: pullRequest.repository.id,
+              issueNumber: linkedIssue.number,
+              tags: linkedIssue.tags
+            }
+          });
+        }
+      } catch (error) {
+        log.error('Error processing linked issues', {
+          error,
+          pullRequestNumber: pullRequest.number,
+          repository: pullRequest.repository.nameWithOwner
         });
       }
-    } catch (error) {
-      log.error('Error processing linked issues', {
-        error,
-        pullRequestNumber: pullRequest.number,
-        repository: pullRequest.repository.nameWithOwner
-      });
     }
 
     if (githubUser.builderId) {
@@ -193,15 +196,6 @@ export async function recordMergedPullRequest({
       const streakEvent = previousGitEvents.find((e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak');
       const streakEventDate = streakEvent?.completedAt?.toISOString().split('T')[0];
       const daysWithPr = new Set(
-        previousGitEvents
-          .filter((e) => e.builderEvent)
-          .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
-          .filter(isTruthy)
-          // We only grab events from the last 7 days, so what looked like a streak may change over time
-          // To address this, we filter out events that happened before a previous streak event
-          .filter((dateStr) => !streakEventDate || dateStr > streakEventDate)
-      );
-      const daysWithPrFromThisRepo = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
           .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
