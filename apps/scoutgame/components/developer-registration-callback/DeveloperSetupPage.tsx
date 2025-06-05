@@ -73,7 +73,7 @@ export function DeveloperSetupPage({
         {error && (
           <Typography variant='body2' component='em' sx={{ mt: 2 }} color='error'>
             Something went wrong. Please try again or talk to{' '}
-            <Link href='https://warpcast.com/ccarella' target='_blank'>
+            <Link href='https://farcaster.xyz/ccarella' target='_blank'>
               @ccarella
             </Link>
             .

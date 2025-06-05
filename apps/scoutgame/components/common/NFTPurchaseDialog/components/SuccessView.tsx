@@ -14,7 +14,7 @@ export function SuccessView({
 
   const { user } = useUser();
 
-  const handleShare = (platform: 'x' | 'telegram' | 'warpcast') => {
+  const handleShare = (platform: 'x' | 'telegram' | 'farcaster') => {
     const shareUrl = getShareMessage({
       builderName: builder.displayName,
       builderPath: builder.path,
@@ -73,8 +73,8 @@ export function SuccessView({
           <IconButton onClick={() => handleShare('telegram')}>
             <Image src='/images/logos/telegram.png' alt='Telegram' width={size} height={size} />
           </IconButton>
-          <IconButton onClick={() => handleShare('warpcast')}>
-            <Image src='/images/logos/warpcast.png' alt='Warpcast' width={size} height={size} />
+          <IconButton onClick={() => handleShare('farcaster')}>
+            <Image src='/images/logos/farcaster.png' alt='Farcaster' width={size} height={size} />
           </IconButton>
         </Stack>
       </Stack>
@@ -90,7 +90,7 @@ function getShareMessage({
 }: {
   builderName: string;
   builderPath: string;
-  platform: 'x' | 'telegram' | 'warpcast';
+  platform: 'x' | 'telegram' | 'farcaster';
   referralCode?: string;
 }) {
   const embedUrl = `${window.location.origin}/u/${builderPath}`;
@@ -99,7 +99,7 @@ function getShareMessage({
   const urls = {
     x: `https://x.com/intent/tweet?text=${encodeURIComponent(`${shareMessage}\nI'm playing @scoutgamexyz. Join me! ${referralCode ? `https://scoutgame.xyz/login?ref=${referralCode}` : ''}`)}`,
     telegram: `https://t.me/share/url?url=${encodeURIComponent(embedUrl)}&text=${encodeURIComponent(shareMessage)}`,
-    warpcast: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareMessage)}&embeds[]=${encodeURIComponent(
+    farcaster: `https://farcaster.xyz/~/compose?text=${encodeURIComponent(shareMessage)}&embeds[]=${encodeURIComponent(
       embedUrl
     )}`
   };

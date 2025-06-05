@@ -7,16 +7,16 @@ import { Suspense } from 'react';
 
 import { useTrackEvent } from '../../../hooks/useTrackEvent';
 
-import { WarpcastLoginButton } from './WarpcastLoginButton';
+import { FarcasterLoginButton } from './FarcasterLoginButton';
 
-export function WarpcastLogin() {
+export function FarcasterLogin() {
   const trackEvent = useTrackEvent();
   const authConfig = getAuthConfig();
 
   return (
     <AuthKitProvider config={authConfig}>
       <Suspense>
-        <WarpcastLoginButton />
+        <FarcasterLoginButton />
       </Suspense>
       <Link
         href='https://www.farcaster.xyz/'
