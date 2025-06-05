@@ -7,6 +7,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { usePopupState } from 'material-ui-popup-state/hooks';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
@@ -14,10 +15,9 @@ import { useCallback } from 'react';
 import { loginAction } from 'lib/session/loginWithFarcasterAction';
 
 import { FarcasterLoginModal } from './FarcasterModal';
-import { WarpcastIcon } from './WarpcastIcon';
 
-export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
-  const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-login' });
+export function FarcasterLoginButton({ children, ...props }: ButtonProps) {
+  const popupState = usePopupState({ variant: 'popover', popupId: 'farcaster-login' });
   const router = useRouter();
 
   const { executeAsync: revalidatePath, isExecuting: isRevalidatingPath } = useAction(revalidatePathAction);
@@ -92,7 +92,7 @@ export function WarpcastLoginButton({ children, ...props }: ButtonProps) {
             md: 2
           }
         }}
-        startIcon={<WarpcastIcon />}
+        startIcon={<Image src='/images/logos/farcaster.png' alt='farcaster' width={20} height={20} />}
         {...props}
       >
         {children || 'Sign in with Warpcast'}

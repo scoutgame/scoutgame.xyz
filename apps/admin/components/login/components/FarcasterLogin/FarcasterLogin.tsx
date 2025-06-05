@@ -3,12 +3,12 @@
 import { AuthKitProvider } from '@farcaster/auth-kit';
 import { authConfig } from '@packages/farcaster/config';
 
-import { WarpcastLoginButton } from './WarpcastLoginButton';
+import { FarcasterLoginButton } from './FarcasterLoginButton';
 
-export function WarpcastLogin() {
+export function FarcasterLogin() {
   return (
     <AuthKitProvider config={authConfig}>
-      <WarpcastLoginButton />
+      <FarcasterLoginButton />
     </AuthKitProvider>
   );
 }

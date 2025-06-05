@@ -99,7 +99,7 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
                 {user.scout.farcasterName && (
                   <Typography>
                     <span style={{ fontWeight: 'bold' }}>Farcaster:</span>{' '}
-                    <Link href={`https://warpcast.com/${user.scout.farcasterName}`} target='_blank'>
+                    <Link href={`https://farcaster.xyz/${user.scout.farcasterName}`} target='_blank'>
                       {user.scout.farcasterName}
                     </Link>
                   </Typography>
@@ -141,7 +141,7 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
                 <Typography variant='h6'>Waitlist entry found</Typography>
                 <Typography>
                   <span style={{ fontWeight: 'bold' }}>Farcaster:</span>{' '}
-                  <Link href={`https://warpcast.com/${user.waitlistUser.username}`} target='_blank'>
+                  <Link href={`https://farcaster.xyz/${user.waitlistUser.username}`} target='_blank'>
                     {user.waitlistUser.username}
                   </Link>
                 </Typography>
@@ -179,7 +179,7 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
                 <Typography variant='h6'>Farcaster profile found</Typography>
                 <Typography>
                   Username:{' '}
-                  <Link href={`https://warpcast.com/${user.farcasterUser.username}`} target='_blank'>
+                  <Link href={`https://farcaster.xyz/${user.farcasterUser.username}`} target='_blank'>
                     {user.farcasterUser.username}
                   </Link>
                 </Typography>

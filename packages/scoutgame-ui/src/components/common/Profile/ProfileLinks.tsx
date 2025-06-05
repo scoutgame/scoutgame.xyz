@@ -19,16 +19,16 @@ export function ProfileLinks({
     <>
       {farcasterName ? (
         <IconButton
-          href={`https://warpcast.com/${farcasterName}`}
+          href={`https://farcaster.xyz/${farcasterName}`}
           target='_blank'
           rel='noopener noreferrer'
           sx={{ px: 0 }}
         >
           <Image
-            src='/images/profile/icons/warpcast-circle-icon.svg'
+            src='/images/logos/farcaster.png'
             width={isDesktop ? '24' : '18'}
             height={isDesktop ? '24' : '18'}
-            alt='warpcast icon'
+            alt='farcaster icon'
           />
         </IconButton>
       ) : null}

@@ -131,7 +131,7 @@ export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: 
               <img src='/images/logos/x.png' alt='x' width={shareImageSize} height={shareImageSize} />
             </IconButton>
             <IconButton
-              href={`https://warpcast.com/~/compose?text=${encodedText}&embeds[]=${encodedUrl}`}
+              href={`https://farcaster.xyz/~/compose?text=${encodedText}&embeds[]=${encodedUrl}`}
               LinkComponent={Link}
               target='_blank'
               sx={{
@@ -139,7 +139,7 @@ export function InviteButtons({ stats, friends }: { stats?: ReactNode; friends: 
                 borderRadius: '10px'
               }}
             >
-              <img src='/images/logos/warpcast.png' alt='warpcast' width={shareImageSize} height={shareImageSize} />
+              <img src='/images/logos/farcaster.png' alt='farcaster' width={shareImageSize} height={shareImageSize} />
             </IconButton>
           </Stack>
           <Hidden mdUp>

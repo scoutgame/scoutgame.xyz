@@ -140,8 +140,8 @@ export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
             {user.farcasterName && (
               <Stack direction='row'>
                 <Typography sx={{ width: '120px' }}>Farcaster:</Typography>
-                <Link href={`https://warpcast.com/${user.farcasterName}`} target='_blank'>
-                  https://warpcast.com/{user.farcasterName}
+                <Link href={`https://farcaster.xyz/${user.farcasterName}`} target='_blank'>
+                  https://farcaster.xyz/{user.farcasterName}
                 </Link>
               </Stack>
             )}

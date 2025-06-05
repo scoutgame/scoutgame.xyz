@@ -160,7 +160,7 @@ export async function sendFarcasterNotification<T extends keyof typeof Farcaster
 
   await rateLimiter();
 
-  const response = await fetch('https://api.warpcast.com/v1/frame-notifications', {
+  const response = await fetch('https://api.farcaster.xyz/v1/frame-notifications', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
