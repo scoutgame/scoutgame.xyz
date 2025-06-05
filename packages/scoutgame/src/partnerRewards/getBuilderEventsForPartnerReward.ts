@@ -30,6 +30,7 @@ export async function getBuilderEventsForPartnerRewards({
       completedAt: true,
       issues: {
         select: {
+          issueNumber: true,
           tags: true
         }
       },
