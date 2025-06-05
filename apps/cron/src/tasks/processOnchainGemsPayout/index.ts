@@ -1,5 +1,4 @@
 import { getCurrentSeasonStart, getLastWeek, getSeasonConfig } from '@packages/dates/utils';
-import { getNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeeklyClaims';
@@ -9,6 +8,7 @@ import { DateTime } from 'luxon';
 
 import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
 
+import { deployGooddollarPartnerRewards } from './deployGooddollarPartnerRewards';
 import { deployMatchupRewards } from './deployMatchupRewards';
 import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { log } from './logger';
@@ -54,6 +54,9 @@ export async function processOnchainGemsPayout(
     }),
     deployReferralChampionRewardsContract({ week }).catch((error) => {
       log.error('Error deploying referral champion rewards contract', { error, week, season });
+    }),
+    deployGooddollarPartnerRewards({ week }).catch((error) => {
+      log.error('Error deploying gooddollar partner rewards contract', { error, week, season });
     })
   ]);
 }

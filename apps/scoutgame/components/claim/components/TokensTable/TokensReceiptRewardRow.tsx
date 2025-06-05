@@ -4,7 +4,8 @@ import { getChainById } from '@packages/blockchain/chains';
 import type {
   OptimismReferralChampionPartnerReward,
   OctantBaseContributionPartnerReward,
-  PartnerReward
+  PartnerReward,
+  GooddollarContributionPartnerReward
 } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import type {
   DeveloperTokensReceiptReward,
@@ -124,6 +125,51 @@ function OctantBaseContributionPartnerRewardRow({
   );
 }
 
+function GooddollarContributionPartnerRewardRow({
+  partnerReward
+}: {
+  partnerReward: GooddollarContributionPartnerReward;
+}) {
+  const blockExplorerUrl = getChainById(partnerReward.chainId)?.blockExplorerUrls[0];
+  const OrgOrUser = partnerReward.prLink.split('/').at(-4);
+  const repoName = partnerReward.prLink.split('/').at(-3);
+  const prNumber = partnerReward.prLink.split('/').at(-1);
+
+  return (
+    <TableRow>
+      <TableCell align='left'>
+        <Stack direction='row' alignItems='center' justifyContent='flex-start' gap={0.5}>
+          <Typography>
+            Gooddollar Contribution
+            <br />
+            <Link href={partnerReward.prLink} target='_blank'>
+              {OrgOrUser}/{repoName}#{prNumber}
+            </Link>
+          </Typography>
+          {partnerReward.txHash && blockExplorerUrl ? (
+            <Link
+              href={`${blockExplorerUrl}/tx/${partnerReward.txHash}`}
+              target='_blank'
+              sx={{ display: 'flex', alignItems: 'center' }}
+            >
+              <OpenInNewIcon sx={{ fontSize: 16 }} />
+            </Link>
+          ) : null}
+        </Stack>
+      </TableCell>
+      <TableCell align='center'>
+        <Typography>{partnerReward.week}</Typography>
+      </TableCell>
+      <TableCell align='right'>
+        <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
+          <Typography>{partnerReward.tokens}</Typography>
+          <Image alt='' src='/images/logos/good-dollar.png' width={20} height={20} />
+        </Stack>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 function ReferralChampionPartnerRewardRow({ partnerReward }: { partnerReward: OptimismReferralChampionPartnerReward }) {
   const blockExplorerUrl = getChainById(partnerReward.chainId)?.blockExplorerUrls[0];
   return (
@@ -198,6 +244,12 @@ export function TokensReceiptRewardRow({
     return (
       <OctantBaseContributionPartnerRewardRow
         partnerReward={tokensReceiptReward as OctantBaseContributionPartnerReward}
+      />
+    );
+  } else if (tokensReceiptReward.type === 'gooddollar_contribution') {
+    return (
+      <GooddollarContributionPartnerRewardRow
+        partnerReward={tokensReceiptReward as GooddollarContributionPartnerReward}
       />
     );
   }

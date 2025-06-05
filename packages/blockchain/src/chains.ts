@@ -389,6 +389,7 @@ export const RPC: Record<string, IChainDetails> = {
     gnosisUrl: 'https://safe-transaction-celo.safe.global',
     rpcUrls: ['https://forno.celo.org'],
     blockExplorerUrls: ['https://explorer.celo.org'],
+    ankrUrl: 'https://rpc.ankr.com/celo',
     iconUrl: '/images/cryptoLogos/celo-celo-logo.svg',
     shortName: 'celo',
     unlockNetwork: true

@@ -16,7 +16,8 @@ const rewardTypes = [
   'developer',
   'matchup_winner',
   'optimism_referral_champion',
-  'octant_base_contribution'
+  'octant_base_contribution',
+  'gooddollar_contribution'
 ];
 
 export function TokensTable({

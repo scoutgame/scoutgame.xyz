@@ -11,8 +11,6 @@ import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
-import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
-import type { QuestType } from '@packages/scoutgame/quests/questRecords';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 
@@ -150,7 +148,7 @@ export async function recordMergedPullRequest({
 
     // Add linked issues processing
 
-    if (pullRequest.repository.owner.login.toLowerCase() === 'gooddollar') {
+    if (repo.bonusPartner === 'gooddollar') {
       try {
         const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
         const linkedIssue = await getLinkedIssue({
@@ -304,62 +302,38 @@ export async function recordMergedPullRequest({
           });
 
           try {
-            const questTypes: QuestType[] = [];
-            if (activityType === 'gems_third_pr_in_streak') {
-              questTypes.push('score-streak');
-            }
-            // First PR is the first contribution to a repo
-            else if (activityType === 'gems_first_pr') {
-              questTypes.push('score-first-pr');
-              questTypes.push('first-repo-contribution');
-            }
-
-            if (repo.bonusPartner === 'celo') {
-              questTypes.push('contribute-celo-repo');
-            } else if (repo.bonusPartner === 'octant') {
-              questTypes.push('contribute-octant-repo');
-            }
-
-            if (questTypes.length) {
-              await completeQuests(githubUser.builderId, questTypes);
-            }
-
-            try {
-              await sendNotifications({
-                userId: githubUser.builderId,
-                notificationType: 'merged_pr_gems',
-                email: {
-                  templateVariables: {
-                    builder_name: githubUser.displayName as string,
-                    pr_title: pullRequest.title,
-                    pr_link: pullRequest.url,
-                    gems_value: gemValue,
-                    partner_rewards:
-                      repo.bonusPartner === 'octant'
-                        ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">75</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/octant">Octant</a></p>`
-                        : repo.bonusPartner === 'gooddollar'
-                          ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">75</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/good-dollar">GoodDollar</a></p>`
-                          : ''
-                  }
-                },
-                farcaster: {
-                  templateVariables: {
-                    gems: gemValue,
-                    partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
-                  }
-                },
-                app: {
-                  templateVariables: {
-                    gems: gemValue,
-                    partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
-                  }
+            await sendNotifications({
+              userId: githubUser.builderId,
+              notificationType: 'merged_pr_gems',
+              email: {
+                templateVariables: {
+                  builder_name: githubUser.displayName as string,
+                  pr_title: pullRequest.title,
+                  pr_link: pullRequest.url,
+                  gems_value: gemValue,
+                  partner_rewards:
+                    repo.bonusPartner === 'octant'
+                      ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">75</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/octant">Octant</a></p>`
+                      : repo.bonusPartner === 'gooddollar'
+                        ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">75</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/good-dollar">GoodDollar</a></p>`
+                        : ''
                 }
-              });
-            } catch (error) {
-              log.error('Error sending merged PR gems email to builder', { error, userId: githubUser.builderId });
-            }
+              },
+              farcaster: {
+                templateVariables: {
+                  gems: gemValue,
+                  partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
+                }
+              },
+              app: {
+                templateVariables: {
+                  gems: gemValue,
+                  partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
+                }
+              }
+            });
           } catch (error) {
-            log.error('Error completing quest for merged PR', { error, userId: githubUser.builderId, activityType });
+            log.error('Error sending merged PR gems email to builder', { error, userId: githubUser.builderId });
           }
 
           return { builderEvent, githubEvent: event };

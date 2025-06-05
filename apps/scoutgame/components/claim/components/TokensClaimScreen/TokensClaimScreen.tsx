@@ -11,7 +11,6 @@ import { getProtocolWriteClient } from '@packages/scoutgame/protocol/clients/get
 import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/protocol/contracts/ScoutProtocolImplementation';
 import type { ClaimInput } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
-import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';

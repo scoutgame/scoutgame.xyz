@@ -29,7 +29,15 @@ export type OctantBaseContributionPartnerReward = PartnerRewardBase<{
   prLink: string;
 }>;
 
-export type PartnerReward = OptimismReferralChampionPartnerReward | OctantBaseContributionPartnerReward;
+export type GooddollarContributionPartnerReward = PartnerRewardBase<{
+  type: 'gooddollar_contribution';
+  prLink: string;
+}>;
+
+export type PartnerReward =
+  | OptimismReferralChampionPartnerReward
+  | OctantBaseContributionPartnerReward
+  | GooddollarContributionPartnerReward;
 
 export type UnclaimedPartnerReward = {
   id: string;
@@ -183,6 +191,12 @@ export async function getPartnerRewards({
       });
     } else if (payout.payoutContract.partner === 'matchup_winner') {
       // note, this appear in the list returned by getPointsReceiptsRewards
+    } else if (payout.payoutContract.partner === 'gooddollar_contribution') {
+      partnerRewards.push({
+        ...partnerReward,
+        type: 'gooddollar_contribution' as const,
+        prLink: (payout.meta as unknown as { prLink: string }).prLink
+      });
     }
   });
 

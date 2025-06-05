@@ -1,6 +1,8 @@
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address, Hex, WalletClient } from 'viem';
 
+import { getChainById } from '../chains';
+
 import type { Recipient } from './createThirdwebAirdropContract';
 
 // On Base: https://etherscan.io/address/0x0f2f02D8fE02E9C14A65A5A33073bD1ADD9aa53B#code
@@ -239,7 +241,8 @@ export async function claimThirdwebERC20AirdropToken({
     abi: THIRDWEB_ERC20_AIRDROP_IMPLEMENTATION_ABI,
     functionName: 'claim',
     args: [receiver, quantity, proofs, proofMaxQuantityForWallet || quantity],
-    account: walletClient.account
+    account: walletClient.account,
+    chain: getChainById(chainId)?.viem
   });
 
   const claimTx = await walletClient.writeContract(simulationResult.request);
