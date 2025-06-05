@@ -10,7 +10,7 @@ import { log } from './logger';
 const gooddollarTokenDecimals = 18;
 
 const goodDollarGithubTagsRewardRecord = {
-  'Scouts Game - Common': parseUnits('0.5', gooddollarTokenDecimals),
+  'Scouts Game - Common': parseUnits('500000', gooddollarTokenDecimals),
   'Scouts Game - Rare': parseUnits('1500000', gooddollarTokenDecimals),
   'Scouts Game - Epic': parseUnits('2500000', gooddollarTokenDecimals),
   'Scouts Game - Mythic': parseUnits('3500000', gooddollarTokenDecimals),
