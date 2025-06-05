@@ -82,6 +82,9 @@ function Document() {
           <Typography>Open a Pull Request (PR) to address an existing issue or improvement.</Typography>
         </ListItem>
         <ListItem>
+          <Typography>Link to the issue you solved in the PR or as a comment.</Typography>
+        </ListItem>
+        <ListItem>
           <Typography>Your PR must be reviewed and merged by the GoodDollar team.</Typography>
         </ListItem>
       </List>
