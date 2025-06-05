@@ -29,7 +29,7 @@ export async function deployGooddollarPartnerRewards({ week }: { week: string })
   const recipients = builderEvents
     .map((event) => {
       const address = event.githubUser.builder!.wallets[0]?.address;
-      const githubTags = (event.issues[0]?.tags ?? []) as string[];
+      const githubTags = event.issues[0]?.tags ?? [];
       return {
         address: address ? address.toLowerCase() : null,
         prLink: event.url,

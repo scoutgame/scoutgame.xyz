@@ -160,7 +160,7 @@ export async function recordMergedPullRequest({
         if (linkedIssue) {
           await tx.githubIssue.create({
             data: {
-              pullRequestId: pullRequest.number.toString(),
+              pullRequestNumber: pullRequest.number,
               githubEventId: event.id,
               repoId: pullRequest.repository.id,
               issueNumber: linkedIssue.number,
