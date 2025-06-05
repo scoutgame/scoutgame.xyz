@@ -11,12 +11,13 @@ import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
-import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
-import type { QuestType } from '@packages/scoutgame/quests/questRecords';
+import { getGooddollarPartnerRewardAmount } from '@packages/scoutgame/partnerRewards/getGooddollarPartnerRewardAmount';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
+import { formatUnits } from 'viem';
 
 import { gemsValues } from './config';
+import { getLinkedIssue } from './github/getLinkedIssue';
 import { getRecentMergedPullRequestsByUser } from './github/getRecentMergedPullRequestsByUser';
 import { log } from './logger';
 
@@ -146,6 +147,41 @@ export async function recordMergedPullRequest({
         completedAt: pullRequest.mergedAt
       }
     });
+
+    // Add linked issues processing
+
+    let issueTags: string[] | null = null;
+
+    if (repo.bonusPartner === 'gooddollar') {
+      try {
+        const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
+        const linkedIssue = await getLinkedIssue({
+          owner,
+          repo: repoName,
+          pullNumber: pullRequest.number
+        });
+
+        if (linkedIssue) {
+          await tx.githubIssue.create({
+            data: {
+              pullRequestNumber: pullRequest.number,
+              githubEventId: event.id,
+              repoId: pullRequest.repository.id,
+              issueNumber: linkedIssue.number,
+              tags: linkedIssue.tags
+            }
+          });
+          issueTags = linkedIssue.tags;
+        }
+      } catch (error) {
+        log.error('Error processing linked issues', {
+          error,
+          pullRequestNumber: pullRequest.number,
+          repository: pullRequest.repository.nameWithOwner
+        });
+      }
+    }
+
     if (githubUser.builderId) {
       const builder = await tx.scout.findUniqueOrThrow({
         where: {
@@ -163,15 +199,6 @@ export async function recordMergedPullRequest({
       const streakEvent = previousGitEvents.find((e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak');
       const streakEventDate = streakEvent?.completedAt?.toISOString().split('T')[0];
       const daysWithPr = new Set(
-        previousGitEvents
-          .filter((e) => e.builderEvent)
-          .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
-          .filter(isTruthy)
-          // We only grab events from the last 7 days, so what looked like a streak may change over time
-          // To address this, we filter out events that happened before a previous streak event
-          .filter((dateStr) => !streakEventDate || dateStr > streakEventDate)
-      );
-      const daysWithPrFromThisRepo = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
           .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
@@ -279,61 +306,50 @@ export async function recordMergedPullRequest({
             }
           });
 
+          let rewardAmount = '';
+          let rewardToken = '';
+
+          if (repo.bonusPartner === 'gooddollar') {
+            rewardAmount = formatUnits(getGooddollarPartnerRewardAmount(issueTags), 18);
+            rewardToken = 'G$';
+          } else if (repo.bonusPartner === 'octant') {
+            rewardAmount = '75';
+            rewardToken = 'USDC';
+          }
+
           try {
-            const questTypes: QuestType[] = [];
-            if (activityType === 'gems_third_pr_in_streak') {
-              questTypes.push('score-streak');
-            }
-            // First PR is the first contribution to a repo
-            else if (activityType === 'gems_first_pr') {
-              questTypes.push('score-first-pr');
-              questTypes.push('first-repo-contribution');
-            }
-
-            if (repo.bonusPartner === 'celo') {
-              questTypes.push('contribute-celo-repo');
-            } else if (repo.bonusPartner === 'octant') {
-              questTypes.push('contribute-octant-repo');
-            }
-
-            if (questTypes.length) {
-              await completeQuests(githubUser.builderId, questTypes);
-            }
-
-            try {
-              await sendNotifications({
-                userId: githubUser.builderId,
-                notificationType: 'merged_pr_gems',
-                email: {
-                  templateVariables: {
-                    builder_name: githubUser.displayName as string,
-                    pr_title: pullRequest.title,
-                    pr_link: pullRequest.url,
-                    gems_value: gemValue,
-                    partner_rewards:
-                      repo.bonusPartner === 'octant'
-                        ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">75</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/octant">Octant</a></p>`
+            await sendNotifications({
+              userId: githubUser.builderId,
+              notificationType: 'merged_pr_gems',
+              email: {
+                templateVariables: {
+                  builder_name: githubUser.displayName as string,
+                  pr_title: pullRequest.title,
+                  pr_link: pullRequest.url,
+                  gems_value: gemValue,
+                  partner_rewards:
+                    repo.bonusPartner === 'octant'
+                      ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">${rewardAmount}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/octant">Octant</a></p>`
+                      : repo.bonusPartner === 'gooddollar'
+                        ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">${rewardAmount}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/logos/good-dollar.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/good-dollar">GoodDollar</a></p>`
                         : ''
-                  }
-                },
-                farcaster: {
-                  templateVariables: {
-                    gems: gemValue,
-                    partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
-                  }
-                },
-                app: {
-                  templateVariables: {
-                    gems: gemValue,
-                    partnerRewards: repo.bonusPartner === 'octant' ? '75 USDC' : undefined
-                  }
                 }
-              });
-            } catch (error) {
-              log.error('Error sending merged PR gems email to builder', { error, userId: githubUser.builderId });
-            }
+              },
+              farcaster: {
+                templateVariables: {
+                  gems: gemValue,
+                  partnerRewards: repo.bonusPartner === 'octant' ? `${rewardAmount} ${rewardToken}` : undefined
+                }
+              },
+              app: {
+                templateVariables: {
+                  gems: gemValue,
+                  partnerRewards: repo.bonusPartner === 'octant' ? `${rewardAmount} ${rewardToken}` : undefined
+                }
+              }
+            });
           } catch (error) {
-            log.error('Error completing quest for merged PR', { error, userId: githubUser.builderId, activityType });
+            log.error('Error sending merged PR gems email to builder', { error, userId: githubUser.builderId });
           }
 
           return { builderEvent, githubEvent: event };

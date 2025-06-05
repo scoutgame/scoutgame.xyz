@@ -60,6 +60,13 @@ export const partnerRewardRecord: Record<
     chain: 'Base',
     sendNotification: true
   },
+  gooddollar_contribution: {
+    label: 'GoodDollar Contribution',
+    icon: '/images/logos/good-dollar.png',
+    partnerLink: 'https://scoutgame.xyz/info/partner-rewards/good-dollar',
+    chain: 'Celo',
+    sendNotification: true
+  },
   matchup_rewards: {
     label: 'Matchup Rewards',
     icon: '/images/crypto/op.png',

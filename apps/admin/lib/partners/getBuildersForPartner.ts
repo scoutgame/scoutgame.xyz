@@ -10,6 +10,11 @@ export async function getBuildersForPartner({ week, bonusPartner }: { week: stri
     Email: event.githubUser.builder!.email,
     Repo: `${event.repo.owner}/${event.repo.name}`,
     Date: event.completedAt?.toDateString(),
-    Link: event.url
+    Link: event.url,
+    ...(event.issues.length
+      ? {
+          Issue: `https://github.com/${event.repo.owner}/${event.repo.name}/issues/${event.issues[0].issueNumber}`
+        }
+      : {})
   }));
 }

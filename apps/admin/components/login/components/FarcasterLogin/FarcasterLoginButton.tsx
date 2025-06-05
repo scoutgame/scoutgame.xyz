@@ -95,7 +95,7 @@ export function FarcasterLoginButton({ children, ...props }: ButtonProps) {
         startIcon={<Image src='/images/logos/farcaster.png' alt='farcaster' width={20} height={20} />}
         {...props}
       >
-        {children || 'Sign in with Warpcast'}
+        {children || 'Sign in with Farcaster'}
       </Button>
       {hasErrored && (
         <Typography variant='body2' sx={{ mt: 2 }} color='error'>

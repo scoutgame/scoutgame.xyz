@@ -1,4 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
+import { getCurrentWeek, getLastWeek, getPreviousWeek } from '@packages/dates/utils';
 import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 
 export async function getBuilderEventsForPartnerRewards({
@@ -27,6 +28,12 @@ export async function getBuilderEventsForPartnerRewards({
     },
     select: {
       completedAt: true,
+      issues: {
+        select: {
+          issueNumber: true,
+          tags: true
+        }
+      },
       githubUser: {
         select: {
           builder: {

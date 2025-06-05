@@ -75,7 +75,7 @@ export async function deployThirdwebAirdropContract({
   let proxyAddress: Address | null = null;
   let blockNumber = BigInt(0);
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 25; i++) {
     try {
       const receipt = await publicClient.getTransactionReceipt({
         hash: deployTxHash
