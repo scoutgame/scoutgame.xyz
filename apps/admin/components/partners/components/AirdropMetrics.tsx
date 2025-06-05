@@ -12,14 +12,14 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  IconButton,
   TableContainer,
   Tooltip
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber, getLastWeek } from '@packages/dates/utils';
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
+import { getGooddollarPartnerRewardAmount } from '@packages/scoutgame/partnerRewards/getGooddollarPartnerRewardAmount';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { formatUnits, parseUnits } from 'viem';
 
@@ -27,10 +27,18 @@ import { WalletAddress } from 'components/common/WalletAddress';
 
 export async function AirdropMetrics({
   partner,
-  walletAddress
+  walletAddress,
+  chainId,
+  tokenAddress,
+  tokenSymbol,
+  tokenDecimals
 }: {
   partner: string;
   walletAddress: string | undefined;
+  chainId: number;
+  tokenAddress: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
 }) {
   const currentWeek = getCurrentWeek();
   const airdropsData = await prisma.partnerRewardPayoutContract.findMany({
@@ -57,10 +65,6 @@ export async function AirdropMetrics({
   });
 
   const zero = BigInt(0);
-  const chainId = airdropsData[0]?.chainId;
-  const tokenAddress = airdropsData[0]?.tokenAddress;
-  const tokenDecimals = airdropsData[0]?.tokenDecimals;
-  const tokenSymbol = airdropsData[0]?.tokenSymbol;
 
   const toEth = (v: bigint) => {
     const num = Number(formatUnits(v, tokenDecimals));
@@ -113,7 +117,12 @@ export async function AirdropMetrics({
       bonusPartner: partner as any
     });
     if (builderEvents.length > 0) {
-      const upcomingPayout = builderEvents.reduce((sum, event) => sum + toWei(75), BigInt(0));
+      const upcomingPayout = builderEvents.reduce(
+        (sum, event) =>
+          sum +
+          (partner === 'gooddollar_contribution' ? getGooddollarPartnerRewardAmount(event.issues[0]?.tags) : toWei(75)),
+        BigInt(0)
+      );
       const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));
       airdrops.unshift({
         isCurrentWeek: true,
@@ -160,7 +169,6 @@ export async function AirdropMetrics({
   let walletBalance = BigInt(0);
   if (walletAddress && tokenAddress && chainId) {
     const publicClient = getPublicClient(chainId);
-
     try {
       const balance = await publicClient.readContract({
         address: tokenAddress as `0x${string}`,
