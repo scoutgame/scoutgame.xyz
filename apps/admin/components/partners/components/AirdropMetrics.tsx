@@ -21,7 +21,6 @@ import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
-import { DateTime } from 'luxon';
 import { formatUnits, parseUnits } from 'viem';
 
 import { WalletAddress } from 'components/common/WalletAddress';
@@ -53,10 +52,6 @@ export async function AirdropMetrics({
           walletAddress: true,
           claimedAt: true
         }
-        // include 'deleted' claims
-        // where: {
-        //   deletedAt: null
-        // }
       }
     }
   });
@@ -112,8 +107,11 @@ export async function AirdropMetrics({
         total: upcomingPayout
       });
     }
-  } else if (partner === 'octant_base_contribution') {
-    const builderEvents = await getBuilderEventsForPartnerRewards({ week: currentWeek, bonusPartner: 'octant' as any });
+  } else if (partner === 'octant_base_contribution' || partner === 'gooddollar_contribution') {
+    const builderEvents = await getBuilderEventsForPartnerRewards({
+      week: getCurrentWeek(),
+      bonusPartner: partner as any
+    });
     if (builderEvents.length > 0) {
       const upcomingPayout = builderEvents.reduce((sum, event) => sum + toWei(75), BigInt(0));
       const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));

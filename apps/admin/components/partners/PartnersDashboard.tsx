@@ -8,7 +8,13 @@ export function PartnersDashboard() {
     <Container maxWidth='md'>
       <Stack spacing={3} justifyContent='center' mb={3}>
         <PartnerCardContainer partner='celo' partnerName='Celo' hasGithubRepos />
-        <PartnerCardContainer partner='gooddollar' partnerName='GoodDollar' hasGithubRepos />
+        <PartnerCardContainer
+          partner='gooddollar'
+          partnerName='GoodDollar'
+          hasGithubRepos
+          airdropPartner='gooddollar_contribution'
+          airdropWalletAddress={process.env.REACT_APP_REWARDS_WALLET_ADDRESS}
+        />
         <PartnerCardContainer
           partner='referrals'
           partnerName='Referral Rewards'
