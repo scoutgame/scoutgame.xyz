@@ -28,6 +28,11 @@ export async function getBuilderEventsForPartnerRewards({
     },
     select: {
       completedAt: true,
+      issues: {
+        select: {
+          tags: true
+        }
+      },
       githubUser: {
         select: {
           builder: {
