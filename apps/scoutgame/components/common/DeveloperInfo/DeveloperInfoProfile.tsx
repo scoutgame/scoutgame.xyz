@@ -205,7 +205,7 @@ export function DeveloperInfoProfile({
           ) : null}
           {farcasterUsername ? (
             <IconButton
-              href={`https://warpcast.com/${farcasterUsername}`}
+              href={`https://farcaster.xyz/${farcasterUsername}`}
               target='_blank'
               rel='noopener noreferrer'
               sx={{
@@ -217,10 +217,10 @@ export function DeveloperInfoProfile({
             >
               <Stack direction='row' gap={1} alignItems='center'>
                 <Image
-                  src='/images/profile/icons/warpcast-circle-icon.svg'
+                  src='/images/logos/farcaster.png'
                   width={isDesktop ? '18' : '14'}
                   height={isDesktop ? '18' : '14'}
-                  alt='warpcast icon'
+                  alt='farcaster icon'
                 />
                 <Typography
                   sx={{

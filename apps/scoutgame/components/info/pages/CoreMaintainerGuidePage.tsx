@@ -137,7 +137,7 @@ function Document() {
         your program. Make sure to tag Scout Game so that we can amplify your posts!
       </Typography>
       <Typography>
-        Farcaster: <Link href='https://warpcast.com/scoutgamexyz'>@scoutgamexyz</Link>
+        Farcaster: <Link href='https://farcaster.xyz/scoutgamexyz'>@scoutgamexyz</Link>
       </Typography>
       <Typography>
         Twitter: <Link href='https://x.com/scoutgamexyz'>@scoutgamexyz</Link>

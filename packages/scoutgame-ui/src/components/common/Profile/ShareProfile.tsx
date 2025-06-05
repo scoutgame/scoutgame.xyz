@@ -61,16 +61,16 @@ export function ShareProfile({ userPath }: { userPath: string }) {
         onClose={handleCloseShareMenu}
         onClick={handleCloseShareMenu}
       >
-        <Link href={`https://warpcast.com/~/compose?text=${encodeURIComponent(shareMessage)}`} target='_blank'>
+        <Link href={`https://farcaster.xyz/~/compose?text=${encodeURIComponent(shareMessage)}`} target='_blank'>
           <MenuItem onClick={handleCloseShareMenu}>
             <Image
-              src='/images/profile/icons/warpcast-circle-icon.svg'
+              src='/images/logos/farcaster.png'
               width={20}
               height={20}
-              alt='warpcast icon'
+              alt='farcaster icon'
               style={{ marginRight: 8 }}
             />
-            <Typography variant='body2'>Warpcast</Typography>
+            <Typography variant='body2'>Farcaster</Typography>
           </MenuItem>
         </Link>
         <Link

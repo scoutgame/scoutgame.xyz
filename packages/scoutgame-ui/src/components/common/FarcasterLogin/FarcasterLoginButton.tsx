@@ -8,19 +8,19 @@ import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterCo
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithFarcasterAction } from '@packages/scoutgame/session/loginWithFarcasterAction';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
-import { FarcasterLoginModal } from '@packages/scoutgame-ui/components/common/Warpcast/FarcasterModal';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
 import { useLoginSuccessHandler } from '../../../hooks/useLoginSuccessHandler';
 
-import { WarpcastIcon } from './WarpcastIcon';
+import { FarcasterLoginModal } from './FarcasterLoginModal';
 
-export function WarpcastLoginButton() {
-  const popupState = usePopupState({ variant: 'popover', popupId: 'warpcast-login' });
+export function FarcasterLoginButton() {
+  const popupState = usePopupState({ variant: 'popover', popupId: 'farcaster-login' });
   const router = useRouter();
   const { refreshUser } = useUser();
   const { isAuthenticated } = useProfile();
@@ -128,9 +128,9 @@ export function WarpcastLoginButton() {
         <Stack direction='row' alignItems='center' gap={1} justifyContent='flex-start' width='100%'>
           {/** 24px is the size of the wallet button icon */}
           <Box height='24px' width='24px' display='flex' alignItems='center' justifyContent='center'>
-            <WarpcastIcon size='20px' />
+            <Image src='/images/logos/farcaster.png' alt='farcaster' width={20} height={20} />
           </Box>
-          Sign in with Warpcast
+          Sign in with Farcaster
         </Stack>
       </Button>
       {errorMessage && (

@@ -19,7 +19,7 @@ export async function sendDirectCast({
     throw new Error('Message length must be less than 1024 characters');
   }
   return PUT<{ result: { messageId: string; conversationId?: string } }>(
-    'https://api.warpcast.com/fc/message',
+    'https://api.farcaster.xyz/fc/message',
     {
       recipientFid: recipientFid?.toString(),
       message,

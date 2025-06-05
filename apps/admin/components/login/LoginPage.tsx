@@ -1,8 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import Image from 'next/image';
 
+import { FarcasterLogin } from './components/FarcasterLogin/FarcasterLogin';
 import { SinglePageLayout } from './components/SinglePageLayout';
-import { WarpcastLogin } from './components/WarpcastLogin/WarpcastLogin';
 
 export function LoginPage() {
   return (
@@ -21,7 +21,7 @@ export function LoginPage() {
       />
       <Typography variant='h5'>Admin Access</Typography>
       <Box display='flex' flexDirection='column' width='100%'>
-        <WarpcastLogin />
+        <FarcasterLogin />
       </Box>
     </SinglePageLayout>
   );

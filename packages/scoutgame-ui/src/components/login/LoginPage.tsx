@@ -7,9 +7,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 
+import { FarcasterLogin } from '../common/FarcasterLogin/FarcasterLogin';
 import { SinglePageLayout } from '../common/Layout';
 import { WalletLogin } from '../common/WalletLogin/WalletLogin';
-import { WarpcastLogin } from '../common/WarpcastLogin/WarpcastLogin';
 
 export function LoginPage() {
   const { trigger: triggerReload } = useGetUserTrigger();
@@ -53,7 +53,7 @@ export function LoginPage() {
       </Typography>
       <Box display='flex' flexDirection='column' gap={2} width='100%'>
         <WalletLogin />
-        <WarpcastLogin />
+        <FarcasterLogin />
       </Box>
     </SinglePageLayout>
   );

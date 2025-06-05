@@ -43,7 +43,7 @@ export function InfoPageFooter() {
               <MuiLink href='https://t.me/scoutgameportal' target='_blank'>
                 <TelegramIcon sx={{ color: 'text.primary' }} />
               </MuiLink>
-              <MuiLink href='https://warpcast.com/scoutgamexyz' target='_blank'>
+              <MuiLink href='https://farcaster.xyz/scoutgamexyz' target='_blank'>
                 <SvgIcon sx={{ width: 22, height: 22, color: 'text.primary' }}>
                   <svg
                     width='19'

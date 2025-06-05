@@ -12,7 +12,7 @@ import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
-import { FarcasterLoginModal } from '../../../common/Warpcast/FarcasterModal';
+import { FarcasterLoginModal } from '../../../common/FarcasterLogin/FarcasterLoginModal';
 import type { UserWithAccountsDetails } from '../../AccountsPage';
 import { useAccountConnect } from '../../hooks/useAccountConnect';
 import { AccountConnect } from '../AccountConnect';
