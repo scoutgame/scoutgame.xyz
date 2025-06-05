@@ -1,10 +1,11 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { getCurrentWeek } from '@packages/dates/utils';
+import { getCurrentWeek, getLastWeek, getPreviousWeek } from '@packages/dates/utils';
 import { sendDiscordAlert } from '@packages/discord/sendDiscordAlert';
 import { MATCHUP_OP_PRIZE } from '@packages/matchup/config';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
+import { getGooddollarPartnerRewardAmount } from '@packages/scoutgame/partnerRewards/getGooddollarPartnerRewardAmount';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { formatUnits, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -19,7 +20,7 @@ const PARTNERS = [
   },
   {
     id: 'gooddollar_contribution',
-    privateKeyEnvVar: 'GOODDOLLAR_CONTRIBUTION_REWARD_ADMIN_PRIVATE_KEY'
+    privateKeyEnvVar: 'REWARDS_WALLET_PRIVATE_KEY'
   }
   // {
   //   id: 'octant_base_contribution',
@@ -30,7 +31,7 @@ const PARTNERS = [
 export async function alertLowAirdropWalletBalance() {
   log.info('Starting alertLowAirdropWalletBalance task');
 
-  const currentWeek = getCurrentWeek();
+  const currentWeek = getPreviousWeek(getLastWeek());
 
   for (const partner of PARTNERS) {
     try {
@@ -179,6 +180,13 @@ async function calculateUpcomingPayout({
       const referralPayout = referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
       const matchupPayout = toWei(MATCHUP_OP_PRIZE);
       return referralPayout + matchupPayout;
+    } else if (partner === 'gooddollar_contribution') {
+      const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'gooddollar' });
+      const gooddollarPayout = builderEvents.reduce(
+        (sum, event) => sum + getGooddollarPartnerRewardAmount(event.issues.map((issue) => issue.tags).flat()),
+        BigInt(0)
+      );
+      return gooddollarPayout;
     }
 
     return BigInt(0);
