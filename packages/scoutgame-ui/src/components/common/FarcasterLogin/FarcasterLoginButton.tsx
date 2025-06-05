@@ -8,7 +8,6 @@ import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterCo
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { loginWithFarcasterAction } from '@packages/scoutgame/session/loginWithFarcasterAction';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
-import { FarcasterLoginModal } from '@packages/scoutgame-ui/components/common/Warpcast/FarcasterModal';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { bindPopover, usePopupState } from 'material-ui-popup-state/hooks';
 import Image from 'next/image';
@@ -17,6 +16,8 @@ import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
 import { useLoginSuccessHandler } from '../../../hooks/useLoginSuccessHandler';
+
+import { FarcasterLoginModal } from './FarcasterLoginModal';
 
 export function FarcasterLoginButton() {
   const popupState = usePopupState({ variant: 'popover', popupId: 'farcaster-login' });
