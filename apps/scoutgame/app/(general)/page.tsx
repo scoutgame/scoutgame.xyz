@@ -1,22 +1,20 @@
-import { isDraftSeason } from '@packages/dates/utils';
 import type { Metadata } from 'next';
 
-import { LandingPage } from '../../components/home/LandingPage';
 import { SeasonOneLandingPage } from '../../components/home/SeasonOneLandingPage';
 
-const frame = {
+export const frame = {
   version: 'next',
+  name: 'Scout Game',
   imageUrl: `https://scoutgame.xyz/images/farcaster/fc_frame.png`,
-  button: {
-    title: 'Scout',
-    action: {
-      type: 'launch_frame',
-      name: 'Scout Game',
-      url: `https://scoutgame.xyz`,
-      splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
-      splashBackgroundColor: '#000'
-    }
-  }
+  homeUrl: `https://scoutgame.xyz`,
+  iconUrl: 'https://scoutgame.xyz/images/farcaster/fc_icon.png',
+  description: 'Fantasy sports with onchain developers',
+  ogTitle: 'Scout Game',
+  ogDescription: 'Fantasy sports with onchain developers',
+  ogImage: 'https://scoutgame.xyz/images/farcaster/fc_splash.png',
+  buttonTitle: 'Scout',
+  splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
+  splashBackgroundColor: '#000'
 };
 
 export const metadata: Metadata = {
