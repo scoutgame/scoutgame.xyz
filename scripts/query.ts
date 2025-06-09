@@ -10,17 +10,5 @@ import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { getTransferSingleWithBatchMerged } from '@packages/scoutgame/builderNfts/accounting/getTransferSingleWithBatchMerged';
 import { Address } from 'viem';
 
-async function query() {
-  await prisma.blockchainLog.deleteMany({
-    // where: {
-    //   contractId: 1
-    // }
-  });
-  const logs = await getTransferSingleWithBatchMerged({
-    chainId: 8453,
-    contractAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
-    fromBlock: 29_504_000
-  });
-  console.log(logs.slice(0, 3));
-}
+async function query() {}
 query();
