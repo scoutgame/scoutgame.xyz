@@ -50,7 +50,6 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [builderFilter, setBuilderFilter] = useState<BuilderStatus | undefined>(undefined);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const debouncedFilterString = useDebouncedValue(filterString);
   const {
@@ -157,6 +156,15 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
               <TableCell>Email</TableCell>
               <TableCell align='center'>
                 <TableSortLabel
+                  active={sortField === 'strikeCount'}
+                  direction={sortField === 'strikeCount' ? sortOrder : 'asc'}
+                  onClick={() => handleSort('strikeCount')}
+                >
+                  Strikes
+                </TableSortLabel>
+              </TableCell>
+              <TableCell align='center'>
+                <TableSortLabel
                   active={sortField === 'nftsPurchased'}
                   direction={sortField === 'nftsPurchased' ? sortOrder : 'asc'}
                   onClick={() => handleSort('nftsPurchased')}
@@ -170,7 +178,7 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
                   direction={sortField === 'currentBalance' ? sortOrder : 'asc'}
                   onClick={() => handleSort('currentBalance')}
                 >
-                  Points Balance
+                  Tokens Balance
                 </TableSortLabel>
               </TableCell>
               <TableCell>
@@ -208,6 +216,14 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
                   </Link>
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
+                <TableCell align='center'>
+                  <Typography
+                    color={user.strikeCount > 0 ? 'error' : 'inherit'}
+                    fontWeight={user.strikeCount > 0 ? 'bold' : 'normal'}
+                  >
+                    {user.strikeCount}
+                  </Typography>
+                </TableCell>
                 <TableCell align='center'>{user.nftsPurchased}</TableCell>
                 <TableCell align='center'>{user.currentBalance}</TableCell>
                 <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>

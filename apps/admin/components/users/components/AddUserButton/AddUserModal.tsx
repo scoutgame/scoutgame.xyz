@@ -94,7 +94,7 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
                   </Link>
                 </Typography>
                 <Typography>
-                  <span style={{ fontWeight: 'bold' }}>Points Balance:</span> {user.scout.currentBalance}
+                  <span style={{ fontWeight: 'bold' }}>Tokens Balance:</span> {user.scout.currentBalance}
                 </Typography>
                 {user.scout.farcasterName && (
                   <Typography>

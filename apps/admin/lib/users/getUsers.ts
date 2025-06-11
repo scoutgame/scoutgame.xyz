@@ -16,9 +16,15 @@ export type ScoutGameUser = Pick<
   | 'currentBalance'
   | 'email'
   | 'farcasterId'
-> & { githubLogin: string | null; nftsPurchased: number; wallets: string[] };
+> & { githubLogin: string | null; nftsPurchased: number; wallets: string[]; strikeCount: number };
 
-export type SortField = 'displayName' | 'builderStatus' | 'currentBalance' | 'nftsPurchased' | 'createdAt';
+export type SortField =
+  | 'displayName'
+  | 'builderStatus'
+  | 'currentBalance'
+  | 'nftsPurchased'
+  | 'createdAt'
+  | 'strikeCount';
 export type SortOrder = 'asc' | 'desc';
 
 export async function getUsers({
@@ -39,7 +45,7 @@ export async function getUsers({
   const userFid = getNumberFromString(searchString);
   const isScoutId = validate(searchString || '');
   const users = await prisma.scout.findMany({
-    take: sortField === 'nftsPurchased' ? 1000 : 500, // return more for nft sort since we sort in the frontend
+    take: sortField === 'nftsPurchased' ? 1000 : 500,
     orderBy:
       !userFid && typeof searchString === 'string'
         ? {
@@ -103,6 +109,14 @@ export async function getUsers({
           : { builderStatus },
     include: {
       githubUsers: true,
+      strikes: {
+        where: {
+          deletedAt: null
+        },
+        select: {
+          id: true
+        }
+      },
       userSeasonStats: {
         where: {
           season: getCurrentSeasonStart()
@@ -112,12 +126,25 @@ export async function getUsers({
     }
   });
 
-  return users.map(({ githubUsers, userSeasonStats, wallets, ...user }) => ({
+  let processedUsers = users.map(({ githubUsers, userSeasonStats, wallets, strikes, ...user }) => ({
     ...user,
     githubLogin: githubUsers[0]?.login || null,
     nftsPurchased: userSeasonStats[0]?.nftsPurchased || 0,
-    wallets: wallets.map((wallet) => wallet.address)
+    wallets: wallets.map((wallet) => wallet.address),
+    strikeCount: strikes.length
   }));
+
+  // Handle strike count sorting in memory since we already have filtered strikes
+  if (sortField === 'strikeCount') {
+    processedUsers = processedUsers.sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.strikeCount - b.strikeCount;
+      }
+      return b.strikeCount - a.strikeCount;
+    });
+  }
+
+  return processedUsers;
 }
 
 export function getNumberFromString(searchString?: string) {
