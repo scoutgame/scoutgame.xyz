@@ -27,7 +27,6 @@ export const saveOnboardingDetailsAction = authActionClient
     await prisma.scout.update({
       where: { id: userId },
       data: {
-        sendMarketing: parsedInput.sendMarketing,
         agreedToTermsAt: new Date(),
         onboardedAt: new Date(),
         avatar: parsedInput.avatar,

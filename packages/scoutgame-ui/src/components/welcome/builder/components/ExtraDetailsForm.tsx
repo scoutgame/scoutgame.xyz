@@ -50,7 +50,6 @@ export function ExtraDetailsForm({ user }: { user: SessionUser }) {
     defaultValues: {
       bio: user.bio ?? DEFAULT_BIO,
       agreedToTOS: false,
-      sendMarketing: true,
       avatar: user.avatar ?? undefined,
       displayName: user.displayName
     }
@@ -96,19 +95,6 @@ export function ExtraDetailsForm({ user }: { user: SessionUser }) {
               isLoading={isExecuting}
               control={control}
               hideShareProfile
-            />
-            <Controller
-              control={control}
-              name='sendMarketing'
-              render={({ field: { onChange, value } }) => (
-                <FormControlLabel
-                  control={<Checkbox data-test='onboarding-notify-grants' onChange={onChange} checked={!!value} />}
-                  label={
-                    <Typography variant='body2'>Notify me of new opportunities (grants, accelerators, etc)</Typography>
-                  }
-                  sx={{ fontSize: 12 }}
-                />
-              )}
             />
             <Controller
               control={control}
