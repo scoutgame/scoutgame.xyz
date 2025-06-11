@@ -56,7 +56,8 @@ export function useInitFarcasterData() {
           const { signature, message } = await sdk.actions.signIn({
             nonce: Math.random().toString(36).substring(2, 10),
             // 1 hour expiration time
-            expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+            expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+            acceptAuthAddress: true
           });
 
           // Auto login user if they have a wallet connected
