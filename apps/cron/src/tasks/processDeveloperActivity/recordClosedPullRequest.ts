@@ -170,70 +170,92 @@ export async function recordClosedPullRequest({
 
     log.info('Recorded a closed PR', { userId: builder.id, url: pullRequest.url, strikes: currentStrikesCount });
 
-    if (shouldBeBanned && builder.builderStatus !== 'banned') {
-      await prisma.scout.update({
-        where: {
-          id: builder.id
-        },
-        data: {
-          builderStatus: 'banned'
-        }
-      });
-
-      await attestDeveloperStatusEvent({
-        builderId: builder.id,
-        event: {
-          type: 'banned',
-          description: `${builder.displayName} banned for season ${getCurrentSeasonStart()}`,
-          season: getCurrentSeasonStart()
-        }
-      });
-
-      const events = builder.strikes
-        .map((strike) => strike.githubEvent)
-        .filter(isTruthy)
-        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      try {
-        await sendNotifications({
-          userId: builder.id,
-          notificationType: 'builder_suspended',
-          email: {
-            templateVariables: {
-              builder_name: builder.displayName,
-              repo_1_title: events[0].repo.name,
-              pr_1_link: events[0].url,
-              pr_1_title: events[0].title,
-              repo_2_title: events[1].repo.name,
-              pr_2_link: events[1].url,
-              pr_2_title: events[1].title,
-              repo_3_title: events[2].repo.name,
-              pr_3_link: events[2].url,
-              pr_3_title: events[2].title
-            }
+    if (builder.builderStatus !== 'banned') {
+      if (shouldBeBanned) {
+        await prisma.scout.update({
+          where: {
+            id: builder.id
           },
-          farcaster: {
-            templateVariables: undefined
-          },
-          app: {
-            templateVariables: undefined
+          data: {
+            builderStatus: 'banned'
           }
         });
 
+        await attestDeveloperStatusEvent({
+          builderId: builder.id,
+          event: {
+            type: 'banned',
+            description: `${builder.displayName} banned for season ${getCurrentSeasonStart()}`,
+            season: getCurrentSeasonStart()
+          }
+        });
+
+        const events = builder.strikes
+          .map((strike) => strike.githubEvent)
+          .filter(isTruthy)
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        try {
+          await sendNotifications({
+            userId: builder.id,
+            notificationType: 'builder_suspended',
+            email: {
+              templateVariables: {
+                builder_name: builder.displayName,
+                repo_1_title: events[0].repo.name,
+                pr_1_link: events[0].url,
+                pr_1_title: events[0].title,
+                repo_2_title: events[1].repo.name,
+                pr_2_link: events[1].url,
+                pr_2_title: events[1].title,
+                repo_3_title: events[2].repo.name,
+                pr_3_link: events[2].url,
+                pr_3_title: events[2].title
+              }
+            },
+            farcaster: {
+              templateVariables: undefined
+            },
+            app: {
+              templateVariables: undefined
+            }
+          });
+
+          await sendDiscordEvent({
+            title: '🚨 Builder Suspended',
+            description: `Builder ${builder.displayName} has been suspended`,
+            fields: [
+              {
+                name: 'Profile',
+                value: `https://scoutgame.xyz/u/${builder.path}`
+              },
+              {
+                name: 'Pull Request',
+                value: `[${pullRequest.title}](${pullRequest.url})`
+              },
+              { name: 'Strikes', value: currentStrikesCount.toString() }
+            ]
+          });
+
+          log.info('Banned builder', { userId: builder.id, strikes: currentStrikesCount });
+        } catch (error) {
+          log.error('Error sending email to banned builder', { error, userId: builder.id });
+        }
+      } else {
         await sendDiscordEvent({
-          title: '🚨 Builder Suspended',
-          description: `Builder ${builder.displayName} has been suspended`,
+          title: '🚨 Builder Strike',
+          description: `Builder ${builder.displayName} has gotten a strike`,
           fields: [
             {
               name: 'Profile',
               value: `https://scoutgame.xyz/u/${builder.path}`
             },
+            {
+              name: 'Pull Request',
+              value: `[${pullRequest.title}](${pullRequest.url})`
+            },
             { name: 'Strikes', value: currentStrikesCount.toString() }
           ]
         });
-
-        log.info('Banned builder', { userId: builder.id, strikes: currentStrikesCount });
-      } catch (error) {
-        log.error('Error sending email to banned builder', { error, userId: builder.id });
       }
     }
   }
