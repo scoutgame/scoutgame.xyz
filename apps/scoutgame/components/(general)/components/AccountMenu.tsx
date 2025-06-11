@@ -2,6 +2,7 @@
 
 import { log } from '@charmverse/core/log';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { Box, Menu, MenuItem, Typography, Stack, CircularProgress } from '@mui/material';
 import { isDraftSeason } from '@packages/dates/utils';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
@@ -137,6 +138,9 @@ export function AccountMenu({ user }: { user: SessionUser }) {
             Projects
           </MenuItem>
         ) : null}
+        <MenuItem component={Link} href='https://scoutgame.substack.com/' target='_blank'>
+          Newsletter <LaunchIcon sx={{ fontSize: '14px', ml: 0.5 }} />
+        </MenuItem>
         {platform === 'webapp' && !isFarcasterFrame && (
           <MenuItem onClick={() => logoutUser()} data-test='sign-out-button'>
             Sign Out

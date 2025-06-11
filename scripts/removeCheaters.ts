@@ -1,8 +1,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { prettyPrint } from '@packages/utils/strings';
-import { registerScout } from '@packages/beehiiv/registerScout';
 import { writeFile } from 'fs/promises';
-import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
+// import { sendPointsForMiscEvent } from '@packages/scoutgame/points/builderEvents/sendPointsForMiscEvent';
 import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 
