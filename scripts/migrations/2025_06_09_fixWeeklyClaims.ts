@@ -97,10 +97,10 @@ async function fixUserStats(userAddress: string) {
         }
       }
     }
-  })
+  });
 
   let pointsEarnedAsDeveloper = BigInt(0);
-    let pointsEarnedAsScout = BigInt(0);
+  let pointsEarnedAsScout = BigInt(0);
 
   for (const receipt of tokenReceipts) {
     if (receipt.event.type === 'gems_payout') {
@@ -149,39 +149,49 @@ async function fixWeeklyClaims() {
     }
   });
 
-  const weeklyClaims = (weeklyClaim.claims as { leaves: { amount: string; address: string; }[]; }).leaves;
-  const finalReceipts: { amount: string; address: string; }[] = [];
+  const weeklyClaims = (weeklyClaim.claims as { leaves: { amount: string; address: string }[] }).leaves;
+  const finalReceipts: { amount: string; address: string }[] = [];
 
   for (const weeklyClaim of weeklyClaims) {
-    const previousClaim = previousWeeklyClaims.find((c) => c.address.toLowerCase() === weeklyClaim.address.toLowerCase());
+    const previousClaim = previousWeeklyClaims.find(
+      (c) => c.address.toLowerCase() === weeklyClaim.address.toLowerCase()
+    );
 
     if (previousClaim) {
-      const difference = Number(formatUnits(BigInt(weeklyClaim.amount), 18)) - Number(formatUnits(BigInt(previousClaim.amount), 18));
+      const difference = BigInt(weeklyClaim.amount) - BigInt(previousClaim.amount);
 
       if (previousClaim.claimed && difference > 0) {
         finalReceipts.push({
-          amount: difference.toString(),
+          amount: formatUnits(difference, 18),
           address: weeklyClaim.address
         });
-      } else if (!previousClaim.claimed) {
-        finalReceipts.push({
-          amount: Number(formatUnits(BigInt(weeklyClaim.amount), 18)).toString(),
-          address: weeklyClaim.address
-        });
-      }
 
-      await prisma.tokensReceipt.updateMany({
-        where: {
-          event: {
-            week: '2025-W23'
+        const receipts = await prisma.tokensReceipt.updateMany({
+          where: {
+            recipientWalletAddress: weeklyClaim.address,
+            event: {
+              week: '2025-W23',
+              type: 'gems_payout'
+            }
+          },
+          data: {
+            claimedAt: new Date(),
+            value: difference.toString()
           }
-        },
-        data: {
-          claimedAt: new Date()
-        }
-      })
+        });
 
-      await fixUserStats(weeklyClaim.address);
+        if (receipts.count > 1) {
+          console.error(`WARNING: Updated ${receipts.count} receipts for wallet ${weeklyClaim.address}`);
+        }
+
+        await fixUserStats(weeklyClaim.address);
+      }
+      //  else if (!previousClaim.claimed) {
+      //   finalReceipts.push({
+      //     amount: Number(formatUnits(BigInt(weeklyClaim.amount), 18)).toString(),
+      //     address: weeklyClaim.address
+      //   });
+      // }
     }
   }
 
