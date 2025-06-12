@@ -87,12 +87,12 @@ export async function createUserClaimScreen({ userId, week }: { userId: string; 
     await page.waitForSelector('.scoutgame-claim-screen', { visible: true });
     await page.waitForNetworkIdle();
 
-    const screenshot = await page.screenshot();
+    const screenshot = Buffer.from(await page.screenshot());
 
     await uploadFileToS3({
       pathInS3: `tokens-claim/${userId}/${week}.png`,
       bucket: process.env.S3_UPLOAD_BUCKET,
-      content: screenshot as Buffer,
+      content: screenshot,
       contentType: 'image/png'
     });
 

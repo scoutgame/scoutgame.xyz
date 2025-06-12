@@ -158,5 +158,10 @@
   "overrides": {
     "react": "^19.1.0",
     "next": "^15.3.1"
+  },
+  "resolutions": {
+    "viem": "2.31.0",
+    "@farcaster/auth-client/viem": "2.31.0",
+    "@walletconnect/utils/viem": "2.31.0"
   }
 }

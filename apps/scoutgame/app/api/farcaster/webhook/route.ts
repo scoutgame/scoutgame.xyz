@@ -43,8 +43,8 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Decode header and payload from base64url
-    const headerJson = Buffer.from(body.header, 'base64url').toString('utf-8');
-    const payloadJson = Buffer.from(body.payload, 'base64url').toString('utf-8');
+    const headerJson = Buffer.from(body.header.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
+    const payloadJson = Buffer.from(body.payload.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
 
     const header = JSON.parse(headerJson) as FarcasterHeader;
     const payload = JSON.parse(payloadJson) as WebhookPayload;

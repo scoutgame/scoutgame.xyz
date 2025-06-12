@@ -93,7 +93,7 @@ function stringToBytes(str: string): `0x${string}` {
   fullData.write(stringLength.toString(16).padStart(64, '0'), 32, 'hex');
 
   // Write string data
-  stringBytes.copy(fullData, 64);
+  fullData.set(stringBytes, 64);
 
   return `0x${fullData.toString('hex')}`;
 }

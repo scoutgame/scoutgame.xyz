@@ -46,7 +46,7 @@ export function validateInitData(
 ) {
   const data = typeof value === 'string' ? parseInitData(value) : value;
   const dataCheckString = createDataCheckString(data);
-  const hash = crypto.createHmac('sha256', secretKeyBuffer).update(dataCheckString).digest('hex');
+  const hash = crypto.createHmac('sha256', secretKeyBuffer.toString('utf-8')).update(dataCheckString).digest('hex');
 
   if (!data.auth_date) {
     throw new DataNotFoundError('Telegram auth_date is not found');
