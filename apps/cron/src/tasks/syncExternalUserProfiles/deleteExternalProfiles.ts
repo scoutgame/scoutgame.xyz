@@ -1,5 +1,4 @@
 import { log } from '@charmverse/core/log';
-import { deleteSubscriptionByEmail as deleteBeehiivSubscription } from '@packages/beehiiv/deleteSubscriptionByEmail';
 import { deleteContact as deleteLoopsContact } from '@packages/loops/client';
 import { deleteMixpanelProfiles } from '@packages/mixpanel/deleteUserProfiles';
 
@@ -12,8 +11,7 @@ export async function deleteExternalProfiles(users: { id: string; email: string 
   if (deletedRecentlyWithEmail.length > 0) {
     for (const user of deletedRecentlyWithEmail) {
       await deleteLoopsContact({ email: user.email! });
-      await deleteBeehiivSubscription({ email: user.email! });
     }
-    log.info(`Deleted ${deletedRecentlyWithEmail.length} profiles from Loops.so and Beehiiv`);
+    log.info(`Deleted ${deletedRecentlyWithEmail.length} profiles from Loops.so`);
   }
 }

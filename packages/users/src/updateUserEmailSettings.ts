@@ -2,7 +2,6 @@
 
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { registerScout as registerBeehiiv } from '@packages/beehiiv/registerScout';
 import { registerScout as registerLoops } from '@packages/loops/registerScout';
 import { getPlatform } from '@packages/utils/platform';
 import { isValidEmail } from '@packages/utils/strings';
@@ -46,9 +45,8 @@ export async function updateUserEmailSettings({
   if (original.email !== updatedUser.email || original.sendMarketing !== updatedUser.sendMarketing) {
     try {
       await registerLoops({ ...updatedUser, oldEmail: original.email }, getPlatform());
-      await registerBeehiiv({ ...updatedUser, oldEmail: original.email });
     } catch (error) {
-      log.error('Error updating contact with Loop or Beehiiv', { error, userId });
+      log.error('Error updating contact with Loop', { error, userId });
     }
     const isVerified = original.emailVerifications.some((v) => v.email === email && v.completedAt);
     if (!isVerified) {

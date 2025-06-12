@@ -5,13 +5,8 @@ jest.unstable_mockModule('@packages/loops/registerScout', () => ({
   registerScout: jest.fn()
 }));
 
-jest.unstable_mockModule('@packages/beehiiv/registerScout', () => ({
-  registerScout: jest.fn()
-}));
-
 const { updateUserEmailSettings } = await import('../updateUserEmailSettings');
 const { registerScout: registerLoops } = await import('@packages/loops/registerScout');
-const { registerScout: registerBeehiiv } = await import('@packages/beehiiv/registerScout');
 
 describe('updateUserEmailSettings', () => {
   afterEach(() => {
@@ -50,13 +45,6 @@ describe('updateUserEmailSettings', () => {
         email: mockNewEmail
       }),
       expect.any(String)
-    );
-
-    // Verify Beehiv was called
-    expect(registerBeehiiv).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: mockNewEmail
-      })
     );
   });
 
