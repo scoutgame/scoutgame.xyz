@@ -57,7 +57,8 @@ export async function getUsers({
       { displayName: { search: `*${searchString}:*`, mode: 'insensitive' } },
       { farcasterName: { search: `*${searchString}:*`, mode: 'insensitive' } },
       { githubUsers: { some: { login: { search: `*${searchString}:*`, mode: 'insensitive' } } } },
-      { email: { startsWith: searchString, mode: 'insensitive' } }
+      { email: { startsWith: searchString, mode: 'insensitive' } },
+      { wallets: { some: { address: { search: `*${searchString}:*`, mode: 'insensitive' } } } }
     ];
   } else if (builderStatus) {
     userWhereClause.builderStatus = builderStatus;
