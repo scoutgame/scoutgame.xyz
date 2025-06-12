@@ -1,4 +1,4 @@
-import type { BuilderStatus, Scout } from '@charmverse/core/prisma-client';
+import type { BuilderStatus, Prisma, Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { validate } from 'uuid';
@@ -44,8 +44,33 @@ export async function getUsers({
   // assume farcaster id if search string is a number
   const userFid = getNumberFromString(searchString);
   const isScoutId = validate(searchString || '');
+
+  const userWhereClause: Prisma.ScoutWhereInput = {};
+
+  if (userFid) {
+    userWhereClause.farcasterId = userFid;
+  } else if (isScoutId) {
+    userWhereClause.id = searchString;
+  } else if (typeof searchString === 'string') {
+    userWhereClause.OR = [
+      { path: { search: `*${searchString}:*`, mode: 'insensitive' } },
+      { displayName: { search: `*${searchString}:*`, mode: 'insensitive' } },
+      { farcasterName: { search: `*${searchString}:*`, mode: 'insensitive' } },
+      { githubUsers: { some: { login: { search: `*${searchString}:*`, mode: 'insensitive' } } } },
+      { email: { startsWith: searchString, mode: 'insensitive' } }
+    ];
+  } else if (builderStatus) {
+    userWhereClause.builderStatus = builderStatus;
+  }
+
+  if (sortField === 'strikeCount') {
+    userWhereClause.builderStatus = {
+      in: ['approved', 'rejected']
+    };
+  }
+
   const users = await prisma.scout.findMany({
-    take: sortField === 'nftsPurchased' ? 1000 : 500,
+    take: sortField === 'nftsPurchased' ? 1000 : sortField === 'strikeCount' ? undefined : 500,
     orderBy:
       !userFid && typeof searchString === 'string'
         ? {
@@ -60,53 +85,10 @@ export async function getUsers({
               /*  TODO - sort by nfts purchased */
               createdAt: sortOrder || 'desc'
             }
-          : sortField
+          : sortField && sortField !== 'strikeCount'
             ? { [sortField]: sortOrder || 'asc' }
             : { createdAt: sortOrder || 'desc' },
-    where: userFid
-      ? { farcasterId: userFid }
-      : isScoutId
-        ? { id: searchString }
-        : typeof searchString === 'string'
-          ? {
-              OR: [
-                {
-                  path: {
-                    search: `*${searchString}:*`,
-                    mode: 'insensitive'
-                  }
-                },
-                {
-                  displayName: {
-                    search: `*${searchString}:*`,
-                    mode: 'insensitive'
-                  }
-                },
-                {
-                  farcasterName: {
-                    search: `*${searchString}:*`,
-                    mode: 'insensitive'
-                  }
-                },
-                {
-                  githubUsers: {
-                    some: {
-                      login: {
-                        search: `*${searchString}:*`,
-                        mode: 'insensitive'
-                      }
-                    }
-                  }
-                },
-                {
-                  email: {
-                    startsWith: searchString,
-                    mode: 'insensitive'
-                  }
-                }
-              ]
-            }
-          : { builderStatus },
+    where: userWhereClause,
     include: {
       githubUsers: true,
       strikes: {
@@ -144,7 +126,7 @@ export async function getUsers({
     });
   }
 
-  return processedUsers;
+  return processedUsers.slice(0, 500);
 }
 
 export function getNumberFromString(searchString?: string) {
