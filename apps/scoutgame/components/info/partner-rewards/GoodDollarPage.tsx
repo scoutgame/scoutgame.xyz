@@ -197,7 +197,37 @@ function Document() {
         </Link>
       </Typography>
 
-      <Typography variant='h6' color='secondary' mt={2}>
+      <Typography variant='h6' color='secondary' mt={4}>
+        📌 Please Note
+      </Typography>
+      <Typography>
+        G$ reward amounts are calculated using a base price of $0.0001. However, the market value of G$ may fluctuate,
+        and we cannot guarantee its value at the time rewards are distributed.
+      </Typography>
+      <Typography mt={2}>
+        Through our GoodReserves mint/burn mechanism, there is always liquidity at:
+        <br />
+        👉{' '}
+        <Link href='https://gooddapp.org/#/swap/celoReserve' target='_blank' rel='noreferrer'>
+          https://gooddapp.org/#/swap/celoReserve
+        </Link>
+      </Typography>
+      <Typography mt={2}>
+        Additional liquidity might also be available on dexes via:
+        <br />
+        👉{' '}
+        <Link href='https://app.uniswap.org/swap' target='_blank' rel='noreferrer'>
+          https://app.uniswap.org/swap
+        </Link>
+        <br />
+        👉{' '}
+        <Link href='https://app.ubeswap.org/swap' target='_blank' rel='noreferrer'>
+          https://app.ubeswap.org/swap
+        </Link>
+      </Typography>
+      <Typography mt={2}>G$ Token Address: 0x62B8B11039FcfE5aB0C56E502b1C372A3d2a9c7A</Typography>
+
+      <Typography variant='h6' color='secondary' mt={4}>
         Let's build a better, fairer economy together 🌐💙
       </Typography>
     </InfoCard>
