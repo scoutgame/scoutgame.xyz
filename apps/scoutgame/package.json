@@ -16,7 +16,8 @@
   "dependencies": {
     "@airstack/node": "^0.0.7",
     "@datadog/browser-logs": "^5.33.0",
-    "@decent.xyz/box-hooks": "^5.0.19",
+    "@decent.xyz/box-common": "^5.0.54",
+    "@decent.xyz/box-hooks": "^5.0.54",
     "@farcaster/auth-client": "^0.3.0",
     "@farcaster/auth-kit": "^0.6.0",
     "@hookform/resolvers": "^3.6.0",

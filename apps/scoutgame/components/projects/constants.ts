@@ -1,6 +1,6 @@
 import type { ScoutProjectMemberRole } from '@charmverse/core/prisma-client';
 import { isProdEnv } from '@packages/utils/constants';
-import { base, baseSepolia, mainnet, optimism, optimismSepolia } from 'viem/chains';
+import { base, baseSepolia, celo, mainnet, optimism, optimismSepolia } from 'viem/chains';
 
 export const chainRecords: Record<
   number,
@@ -20,6 +20,11 @@ export const chainRecords: Record<
     chainId: base.id,
     image: '/images/crypto/base.svg',
     name: 'Base'
+  },
+  [celo.id]: {
+    chainId: celo.id,
+    image: '/images/crypto/celo.png',
+    name: 'Celo'
   },
   [optimism.id]: {
     chainId: optimism.id,

@@ -1,11 +1,8 @@
-import { log } from '@charmverse/core/log';
-import type { BoxActionRequest, BoxActionResponse } from '@decent.xyz/box-common';
+import type { BoxActionRequest } from '@decent.xyz/box-common';
 import { ActionType } from '@decent.xyz/box-common';
+import { useBoxAction } from '@decent.xyz/box-hooks';
 import { devTokenContractAddress, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
-import { decentApiKey } from '@packages/utils/constants';
-import { GET } from '@packages/utils/http';
 import { bigIntToString } from '@packages/utils/numbers';
-import useSWR from 'swr';
 import type { Address } from 'viem';
 
 export type DecentTransactionProps = {
@@ -23,42 +20,6 @@ export type DecentTransactionProps = {
 const transferableNftMintSignature = 'function mint(address account, uint256 tokenId, uint256 amount)';
 const transferableStarterNftMintSignature =
   'function mint(address account, uint256 tokenId, uint256 amount, string memory scoutId)';
-
-export function _appendDecentQueryParams(path: string, data: any) {
-  const queryString = Object.keys(data)
-    .filter((key) => !!data[key])
-    .map((key) => {
-      const value = data[key];
-      return Array.isArray(value)
-        ? `${value.map((v: string) => `${key}=${v}`).join('&')}`
-        : typeof value === 'object'
-          ? `${key}=${JSON.stringify(value, (_key, val) => (typeof val === 'bigint' ? `${val.toString()}n` : val))}`
-          : `${key}=${encodeURIComponent(value)}`;
-    })
-    .join('&');
-  return `${path}${queryString ? `?${queryString}` : ''}`;
-}
-
-export async function prepareDecentTransaction({
-  txConfig
-}: {
-  txConfig: BoxActionRequest;
-}): Promise<BoxActionResponse> {
-  const basePath = 'https://box-v3-2-0.api.decent.xyz/api/getBoxAction';
-
-  const response = await GET<BoxActionResponse>(
-    _appendDecentQueryParams(basePath, { arguments: txConfig }),
-    undefined,
-    {
-      headers: {
-        'x-api-key': decentApiKey
-      },
-      credentials: 'omit'
-    }
-  );
-
-  return response;
-}
 
 export function useDecentTransaction({
   address,
@@ -93,33 +54,28 @@ export function useDecentTransaction({
         : [address, bigIntToString(builderTokenId), bigIntToString(tokensToPurchase)]
     }
   };
+
   const {
-    error: decentSdkError,
+    actionResponse: decentTransactionInfo,
     isLoading: isLoadingDecentSdk,
-    data: decentTransactionInfo
-  } = useSWR(
-    address && paymentAmountOut
-      ? `buy-token-${contractAddress}-${builderTokenId}-${tokensToPurchase}-${sourceChainId}-${sourceToken}-${scoutId}-${paymentAmountOut}`
-      : null,
-    () =>
-      prepareDecentTransaction({
-        txConfig: decentAPIParams
-      }).catch((result) => {
-        log.error(`There was an error communicating with Decent API`, { error: result, decentAPIParams });
-        const message = (result as any).error.message;
-        if (message) {
-          throw new Error(message);
-        }
-        throw result;
-      }),
-    {
-      shouldRetryOnError: (error) => {
-        log.info(`Retrying decent tx`, { decentAPIParams, error });
-        return true;
-      },
-      errorRetryInterval: 1000
-    }
-  );
+    error: decentSdkError
+  } = useBoxAction({
+    actionConfig: decentAPIParams.actionConfig,
+    actionType: ActionType.NftMint,
+    dstChainId: scoutProtocolChainId,
+    srcChainId: sourceChainId,
+    srcToken: sourceToken,
+    dstToken: devTokenContractAddress,
+    sender: address,
+    slippage: 1,
+    enable:
+      !!address &&
+      !!paymentAmountOut &&
+      !!sourceChainId &&
+      !!sourceToken &&
+      !!devTokenContractAddress &&
+      !!scoutProtocolChainId
+  });
 
   return {
     decentSdkError,

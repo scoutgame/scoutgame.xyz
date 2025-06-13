@@ -9,8 +9,6 @@ import useSWR from 'swr';
 import type { Address } from 'viem';
 import { base } from 'viem/chains';
 
-import { _appendDecentQueryParams } from '../../NFTPurchaseDialog/hooks/useDecentTransaction';
-
 // This should be replaced with the actual treasury/escrow contract address that will hold the bids
 export type DecentTransactionProps = {
   address: Address;
@@ -30,6 +28,21 @@ type ErrorResponse = {
   };
   success: boolean;
 };
+
+function _appendDecentQueryParams(path: string, data: any) {
+  const queryString = Object.keys(data)
+    .filter((key) => !!data[key])
+    .map((key) => {
+      const value = data[key];
+      return Array.isArray(value)
+        ? `${value.map((v: string) => `${key}=${v}`).join('&')}`
+        : typeof value === 'object'
+          ? `${key}=${JSON.stringify(value, (_key, val) => (typeof val === 'bigint' ? `${val.toString()}n` : val))}`
+          : `${key}=${encodeURIComponent(value)}`;
+    })
+    .join('&');
+  return `${path}${queryString ? `?${queryString}` : ''}`;
+}
 
 async function prepareDecentV4Transaction({
   txConfig
