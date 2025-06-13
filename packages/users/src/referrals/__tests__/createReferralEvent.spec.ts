@@ -26,7 +26,7 @@ describe('createReferralUsers', () => {
 
     const referralCode = 'INVALIDCODE';
 
-    await expect(createReferralEvent(referralCode, scout.id)).rejects.toThrow('No Scout found');
+    await expect(createReferralEvent(referralCode, scout.id)).rejects.toThrow('No record was found');
   });
 
   it('should not create a referral bonus event if the referrer has been banned', async () => {
