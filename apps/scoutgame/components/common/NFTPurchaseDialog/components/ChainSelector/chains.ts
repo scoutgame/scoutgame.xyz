@@ -7,7 +7,7 @@ import {
   arbitrumSepolia,
   base,
   baseSepolia,
-  mainnet,
+  celo,
   optimism,
   optimismSepolia,
   sepolia,
@@ -15,7 +15,14 @@ import {
   zoraSepolia
 } from 'viem/chains';
 
-export type ChainOption = { name: string; id: number; icon: string; chain: Chain; usdcAddress: string };
+export type ChainOption = {
+  name: string;
+  id: number;
+  icon: string;
+  chain: Chain;
+  usdcAddress: string;
+  celoAddress?: string;
+};
 
 export const chainOptionsMainnet: ChainOption[] = [
   {
@@ -39,15 +46,15 @@ export const chainOptionsMainnet: ChainOption[] = [
     chain: arbitrum,
     usdcAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
   },
-  { name: 'Zora', id: zora.id, icon: '/images/crypto/zora64.png', chain: zora, usdcAddress: '' }
-  // no liquidity for USDC on mainnet
-  // {
-  //   name: 'Mainnet',
-  //   id: mainnet.id,
-  //   icon: '/images/crypto/ethereum-eth-logo.png',
-  //   chain: mainnet,
-  //   usdcAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-  // }
+  { name: 'Zora', id: zora.id, icon: '/images/crypto/zora64.png', chain: zora, usdcAddress: '' },
+  {
+    name: 'Celo',
+    id: celo.id,
+    icon: '/images/crypto/celo.png',
+    chain: celo,
+    usdcAddress: '0xcebA9300f2b948710d2653dD7B07f33A8B32118C',
+    celoAddress: '0x471EcE3750Da237f93B8E339c536989b8978a438'
+  }
 ];
 
 export const chainOptionsTestnet: ChainOption[] = [
@@ -82,7 +89,7 @@ export const chainOptionsTestnet: ChainOption[] = [
   }
 ];
 
-export type AvailableCurrency = 'ETH' | 'USDC' | 'DEV';
+export type AvailableCurrency = 'ETH' | 'USDC' | 'DEV' | 'CELO';
 
 export type ChainWithCurrency = ChainOption & { currency: AvailableCurrency };
 
@@ -97,6 +104,10 @@ export function getCurrencyContract({ currency, chainId }: SelectedPaymentOption
     return devTokenContractAddress;
   }
 
+  if (currency === 'CELO') {
+    return (getChainOptions().find((chain) => chain.id === chainId)?.celoAddress || '') as Address;
+  }
+
   return (getChainOptions().find((chain) => chain.id === chainId)?.usdcAddress || '') as Address;
 }
 
@@ -106,6 +117,7 @@ export function getChainOptions(opts: { useTestnets?: boolean } = { useTestnets:
   const usdcChains = options.filter((chain) => chain.usdcAddress).sort((a, b) => a.id - b.id);
   // Sort all chains by Chain ID for ETH
   const ethChains = options.sort((a, b) => a.id - b.id);
+  const celoChains = options.filter((chain) => chain.celoAddress).sort((a, b) => a.id - b.id);
 
   // Create separate entries for USDC and ETH for each chain
   const usdcOptions = usdcChains.map((chain) => ({
@@ -116,9 +128,13 @@ export function getChainOptions(opts: { useTestnets?: boolean } = { useTestnets:
     ...chain,
     currency: 'ETH' as AvailableCurrency
   }));
+  const celoOptions = celoChains.map((chain) => ({
+    ...chain,
+    currency: 'CELO' as AvailableCurrency
+  }));
 
   // Concatenate USDC options first, followed by ETH options
-  return [...usdcOptions, ...ethOptions];
+  return [...usdcOptions, ...ethOptions, ...celoOptions];
 
   // Revert this change once USDC mints work
   // return ethOptions;

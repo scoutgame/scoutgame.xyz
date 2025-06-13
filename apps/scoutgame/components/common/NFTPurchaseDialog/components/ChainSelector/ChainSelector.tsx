@@ -12,7 +12,7 @@ import { ChainComponent } from './ChainComponent';
 import type { ChainWithCurrency } from './chains';
 import { getChainOptions } from './chains';
 
-export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'DEV' };
+export type SelectedPaymentOption = { chainId: number; currency: 'ETH' | 'USDC' | 'DEV' | 'CELO' };
 
 function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
   return a.chainId === b.chainId && a.currency === b.currency;
@@ -90,13 +90,15 @@ function SelectField(
             t.chainId === _chain.id &&
             (_chain.currency === 'ETH'
               ? t.address === NULL_EVM_ADDRESS
-              : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase() ||
-                t.address?.toLowerCase() === devTokenContractAddress.toLowerCase())
+              : _chain.currency === 'CELO'
+                ? t.address?.toLowerCase() === _chain.celoAddress?.toLowerCase()
+                : t.address?.toLowerCase() === _chain.usdcAddress.toLowerCase() ||
+                  t.address?.toLowerCase() === devTokenContractAddress.toLowerCase())
         );
         let _balance = Number(_tokenBalanceInfo?.balance);
 
         if (_balance) {
-          if (_chain.currency === 'ETH' || _chain.currency === 'DEV') {
+          if (_chain.currency === 'ETH' || _chain.currency === 'DEV' || _chain.currency === 'CELO') {
             _balance /= 1e18;
           } else {
             _balance /= 1e6;

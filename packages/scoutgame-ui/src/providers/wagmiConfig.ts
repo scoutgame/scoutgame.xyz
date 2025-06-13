@@ -24,7 +24,8 @@ import {
   zora,
   zoraSepolia,
   base,
-  baseSepolia
+  baseSepolia,
+  celo
 } from 'wagmi/chains';
 
 export function getConfig(options?: { projectId?: string }) {
@@ -40,7 +41,8 @@ export function getConfig(options?: { projectId?: string }) {
     arbitrum,
     arbitrumSepolia,
     zora,
-    zoraSepolia
+    zoraSepolia,
+    celo
   ] as [Chain, ...Chain[]];
 
   const transports = wagmiChains.reduce<Record<string, Transport>>((acc, chain) => {

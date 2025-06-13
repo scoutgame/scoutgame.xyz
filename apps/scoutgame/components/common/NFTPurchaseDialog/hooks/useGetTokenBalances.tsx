@@ -26,10 +26,16 @@ export function useGetTokenBalances({ address }: { address: Address }) {
     selectTokens: arrayUtils.uniqueValues(
       chainOptionsMainnet
         .map((opt) => {
+          const tokenAddresses = [NULL_EVM_ADDRESS];
           if (opt.usdcAddress) {
-            return [NULL_EVM_ADDRESS, opt.usdcAddress];
+            tokenAddresses.push(opt.usdcAddress);
           }
-          return [NULL_EVM_ADDRESS];
+
+          if (opt.celoAddress) {
+            tokenAddresses.push(opt.celoAddress);
+          }
+
+          return tokenAddresses;
         })
         .flat()
     )
