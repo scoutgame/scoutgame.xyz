@@ -8,11 +8,11 @@ import Image from 'next/image';
 import type { ReactNode, Ref } from 'react';
 import { forwardRef } from 'react';
 import type { Address } from 'viem';
-import { base, optimism } from 'viem/chains';
+import { base, celo, optimism } from 'viem/chains';
 
 import { ChainComponent } from 'components/common/NFTPurchaseDialog/components/ChainSelector/ChainComponent';
 
-export type AvailableCurrency = 'ETH' | 'USDC' | 'DEV';
+export type AvailableCurrency = 'ETH' | 'USDC' | 'DEV' | 'CELO';
 
 const chainConfig = {
   [base.id]: {
@@ -22,6 +22,10 @@ const chainConfig = {
   [optimism.id]: {
     icon: '/images/crypto/op.png',
     name: 'Optimism'
+  },
+  [celo.id]: {
+    icon: '/images/crypto/celo.png',
+    name: 'Celo'
   }
 };
 
@@ -39,7 +43,8 @@ function isSameOption(a: SelectedPaymentOption, b: SelectedPaymentOption) {
 export const TOKEN_LOGO_RECORD = {
   ETH: '/images/crypto/ethereum-eth-logo.png',
   USDC: '/images/crypto/usdc.png',
-  DEV: '/images/crypto/dev-token-logo.png'
+  DEV: '/images/crypto/dev-token-logo.png',
+  CELO: '/images/crypto/celo.png'
 };
 
 export type PaymentOption = {

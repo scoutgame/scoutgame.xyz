@@ -77,7 +77,7 @@ export function NFTPurchaseForm(props: NFTPurchaseProps) {
   }
 
   return (
-    <BoxHooksContextProvider apiKey={apiKey || '1234'}>
+    <BoxHooksContextProvider apiKey={apiKey}>
       <NFTPurchaseFormContent {...props} />
     </BoxHooksContextProvider>
   );
@@ -226,7 +226,7 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
   const { allowance, refreshAllowance } = useGetERC20Allowance({
     chainId: selectedPaymentOption.chainId,
     erc20Address:
-      selectedPaymentOption.currency === 'USDC'
+      selectedPaymentOption.currency === 'USDC' || selectedPaymentOption.currency === 'CELO'
         ? selectedChainCurrency
         : selectedPaymentOption.currency === 'DEV'
           ? devTokenContractAddress
@@ -340,7 +340,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
 
   const displayedBalance = !balanceInfo
     ? undefined
-    : selectedPaymentOption.currency === 'ETH' || selectedPaymentOption.currency === 'DEV'
+    : selectedPaymentOption.currency === 'ETH' ||
+        selectedPaymentOption.currency === 'DEV' ||
+        selectedPaymentOption.currency === 'CELO'
       ? (Number(balanceInfo.balance || 0) / 1e18).toFixed(4)
       : (Number(balanceInfo.balance || 0) / 1e6).toFixed(2);
 
@@ -368,16 +370,6 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
     selectedPaymentOption.currency !== 'ETH' &&
     typeof allowance === 'bigint' &&
     allowance < (typeof amountToPay === 'bigint' ? amountToPay : BigInt(0));
-
-  // if (approvalRequired) {
-  //   log.info('Approval required for NFT purchase', {
-  //     selectedPaymentOption,
-  //     allowance,
-  //     amountToPay,
-  //     account: address,
-  //     spender
-  //   });
-  // }
 
   if (purchaseSuccess) {
     return <SuccessView builder={builder} />;
@@ -568,7 +560,9 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
       )}
       {decentSdkError ? (
         <Typography variant='caption' color='error' align='center'>
-          {decentSdkError.message || 'There was an error communicating with Decent API'}
+          {typeof decentSdkError === 'object' && 'message' in decentSdkError
+            ? (decentSdkError as { message: string }).message
+            : 'There was an error communicating with Decent API'}
         </Typography>
       ) : null}
       {addressError && (

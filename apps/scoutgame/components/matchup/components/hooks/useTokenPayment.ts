@@ -1,12 +1,8 @@
 import { log } from '@charmverse/core/log';
-import type { EvmTransaction } from '@decent.xyz/box-common';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
-import { useDraft } from '@packages/scoutgame-ui/providers/DraftProvider';
 import { ceilToPrecision } from '@packages/utils/numbers';
-import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
-import type { Address } from 'viem';
-import { parseUnits, formatUnits } from 'viem';
+import { useEffect } from 'react';
+import { formatUnits, parseUnits } from 'viem';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { useDecentV4Transaction } from 'components/common/DraftDeveloperInfoModal/hooks/useDecentV4Transaction';
@@ -39,14 +35,8 @@ export function useTokenPayment({
     amount: parseUnits(devTokenAmount.toString(), devTokenDecimals)
   });
 
-  const tokenPaymentValue =
-    decentTransactionInfo && 'tokenPayment' in decentTransactionInfo
-      ? BigInt((decentTransactionInfo.tokenPayment?.amount?.toString() ?? '0').replace('n', ''))
-      : BigInt(0);
-
-  const exchangeRate = devTokenAmount
-    ? Number(formatUnits(tokenPaymentValue, paymentOption.decimals)) / devTokenAmount
-    : 0;
+  const exchangeRate =
+    decentTransactionInfo && 'tokenPayment' in decentTransactionInfo ? decentTransactionInfo.exchangeRate : null;
 
   const sourceTokenAmount =
     paymentOption.currency === 'DEV'
@@ -59,7 +49,10 @@ export function useTokenPayment({
 
   const { allowance, refreshAllowance } = useGetERC20Allowance({
     chainId: paymentOption.chainId,
-    erc20Address: paymentOption.currency === 'USDC' || paymentOption.currency === 'DEV' ? selectedChainCurrency : null,
+    erc20Address:
+      paymentOption.currency === 'USDC' || paymentOption.currency === 'DEV' || paymentOption.currency === 'CELO'
+        ? selectedChainCurrency
+        : null,
     owner: address,
     spender: decentTransactionInfo && 'tx' in decentTransactionInfo ? decentTransactionInfo.tx.to : null
   });

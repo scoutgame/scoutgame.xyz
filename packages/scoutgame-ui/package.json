@@ -17,8 +17,6 @@
     "./actions/*": "./src/actions/*.ts"
   },
   "dependencies": {
-    "@decent.xyz/box-common": "^5.0.19",
-    "@decent.xyz/box-ui": "^5.0.18",
     "@farcaster/auth-kit": "^0.6.0",
     "@farcaster/frame-sdk": "^0.0.28",
     "@farcaster/frame-wagmi-connector": "^0.0.16",
