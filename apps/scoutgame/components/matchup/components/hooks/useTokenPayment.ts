@@ -35,14 +35,8 @@ export function useTokenPayment({
     amount: parseUnits(devTokenAmount.toString(), devTokenDecimals)
   });
 
-  const tokenPaymentValue =
-    decentTransactionInfo && 'tokenPayment' in decentTransactionInfo
-      ? BigInt((decentTransactionInfo.tokenPayment?.amount?.toString() ?? '0').replace('n', ''))
-      : BigInt(0);
-
-  const exchangeRate = devTokenAmount
-    ? Number(formatUnits(tokenPaymentValue, paymentOption.decimals)) / devTokenAmount
-    : 0;
+  const exchangeRate =
+    decentTransactionInfo && 'tokenPayment' in decentTransactionInfo ? decentTransactionInfo.exchangeRate : null;
 
   const sourceTokenAmount =
     paymentOption.currency === 'DEV'
