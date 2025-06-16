@@ -52,14 +52,13 @@ export function ERC20ApproveButton({
         log.warn('Error switching chain for approve spend', { chainId, error });
       }
     }
-    if (!amountToApprove) {
+    if (!amountToApprove || !amount) {
       throw new Error('Amount to approve is required');
     }
     try {
-      await triggerApproveSpender({ amount: amountToApprove });
+      await triggerApproveSpender({ amount: currency === 'DEV' ? amount : amountToApprove });
       onSuccess();
     } catch (error) {
-      onSuccess();
       log.error('Error approving spend', { error });
     }
   }
@@ -76,7 +75,13 @@ export function ERC20ApproveButton({
         disabled={isApprovingSpender}
         data-test='approve-spending-nft-purchase-button'
       >
-        {isApprovingSpender ? 'Approving...' : `Approve ${displayAmount} ${currency}`}
+        {isApprovingSpender
+          ? 'Approving...'
+          : `Approve ${
+              amount === BigInt('115792089237316195423570985008687907853269984665640564039457584007913129639935')
+                ? 'Unlimited'
+                : displayAmount
+            } ${currency}`}
       </Button>
       {!hideWarning && (
         <Typography sx={{ mb: 1 }} variant='caption'>
