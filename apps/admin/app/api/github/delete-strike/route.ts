@@ -18,6 +18,24 @@ export async function DELETE(request: NextRequest) {
     }
   });
 
+  const totalActiveStrikes = await prisma.builderStrike.count({
+    where: {
+      builderId: strike.builderId,
+      deletedAt: null
+    }
+  });
+
+  if (totalActiveStrikes < 3) {
+    await prisma.scout.update({
+      where: {
+        id: strike.builderId
+      },
+      data: {
+        builderStatus: 'approved'
+      }
+    });
+  }
+
   log.info('Builder strike marked as deleted', { builderId: strike.builderId, strikeId });
 
   return Response.json({ success: true });
