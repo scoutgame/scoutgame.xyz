@@ -1,6 +1,6 @@
 'use client';
 
-import { DeleteOutline, Refresh as RefreshIcon } from '@mui/icons-material';
+import { DeleteOutline } from '@mui/icons-material';
 import {
   Avatar,
   Container,
@@ -13,32 +13,46 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button
 } from '@mui/material';
-import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 
 import { useDeleteGithubUserStrike } from 'hooks/api/github';
 import { revalidateNewsPathAction } from 'lib/actions/revalidateNewsPathAction';
 import type { NewsItem } from 'lib/news/getNews';
-import { setBuilderStatusAction } from 'lib/users/updateUserAction';
 
 export function NewsDashboard({ news: initialNews }: { news: NewsItem[] }) {
   const [news, setNews] = useState<NewsItem[]>(initialNews);
+  const [strikeToDelete, setStrikeToDelete] = useState<{
+    id: string;
+    strikeCount: number;
+    builderStatus: string;
+  } | null>(null);
 
   const { trigger: deleteGithubUserStrike } = useDeleteGithubUserStrike();
-  const { execute: setBuilderStatus } = useAction(setBuilderStatusAction);
 
   const handleClearStrike = async (strikeId: string) => {
     await deleteGithubUserStrike({ strikeId });
     setNews((prev) => prev.filter((item) => item.id !== strikeId));
     revalidateNewsPathAction();
+    setStrikeToDelete(null);
   };
 
-  const handleReinstateBuilder = async (builderId: string) => {
-    await setBuilderStatus({ userId: builderId, status: 'approved' });
-    setNews((prev) => prev.filter((item) => item.builder.id !== builderId));
-    revalidateNewsPathAction();
+  const handleDeleteClick = (item: NewsItem) => {
+    if (item.builder.builderStatus === 'banned' && item.strikeCount <= 3) {
+      setStrikeToDelete({
+        id: item.id,
+        strikeCount: item.strikeCount,
+        builderStatus: item.builder.builderStatus
+      });
+    } else {
+      handleClearStrike(item.id);
+    }
   };
 
   return (
@@ -64,7 +78,9 @@ export function NewsDashboard({ news: initialNews }: { news: NewsItem[] }) {
                     sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
                   >
                     <Avatar src={item.builder.avatar || undefined} sx={{ width: 36, height: 36 }} />
-                    {item.builder.displayName}
+                    <Typography color={item.builder.builderStatus === 'banned' ? 'error' : 'inherit'}>
+                      {item.builder.displayName}
+                    </Typography>
                   </Link>
                 </TableCell>
                 <TableCell align='center'>{new Date(item.createdAt).toLocaleString()}</TableCell>
@@ -100,16 +116,8 @@ export function NewsDashboard({ news: initialNews }: { news: NewsItem[] }) {
                         cursor: 'pointer'
                       }}
                       fontSize='small'
-                      onClick={() => handleClearStrike(item.id)}
+                      onClick={() => handleDeleteClick(item)}
                     />
-                    {item.builder.builderStatus === 'banned' && (
-                      <RefreshIcon
-                        color='success'
-                        sx={{ cursor: 'pointer' }}
-                        fontSize='small'
-                        onClick={() => handleReinstateBuilder(item.builder.id)}
-                      />
-                    )}
                   </Stack>
                 </TableCell>
               </TableRow>
@@ -117,6 +125,29 @@ export function NewsDashboard({ news: initialNews }: { news: NewsItem[] }) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Dialog open={!!strikeToDelete} onClose={() => setStrikeToDelete(null)} maxWidth='sm' fullWidth>
+        <DialogTitle>Warning: Builder Will Be Unbanned</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Removing this strike will reduce the total strikes to{' '}
+            {strikeToDelete?.strikeCount ? strikeToDelete.strikeCount - 1 : 0}, which will automatically unban this
+            builder and change their status to 'approved'. Are you sure you want to proceed?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setStrikeToDelete(null)} color='inherit'>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => strikeToDelete && handleClearStrike(strikeToDelete.id)}
+            color='error'
+            variant='contained'
+          >
+            Remove Strike & Unban
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
