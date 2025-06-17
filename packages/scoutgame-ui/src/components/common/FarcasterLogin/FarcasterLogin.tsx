@@ -15,9 +15,7 @@ export function FarcasterLogin() {
 
   return (
     <AuthKitProvider config={authConfig}>
-      <Suspense>
-        <FarcasterLoginButton />
-      </Suspense>
+      <FarcasterLoginButton />
       <Link
         href='https://www.farcaster.xyz/'
         target='_blank'
