@@ -93,6 +93,7 @@
     "dd-trace": "^5.33.0",
     "ethers": "^6.13.5",
     "iron-session": "^8.0.4",
+    "jose": "^6.0.11",
     "lodash": "^4.17.21",
     "luxon": "^3.5.0",
     "material-ui-popup-state": "^5.3.5",
