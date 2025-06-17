@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaGithubAlt } from 'react-icons/fa';
 import { HiOutlineUsers } from 'react-icons/hi2';
-import { MdOutlineHandshake, MdDocumentScanner } from 'react-icons/md';
+import { MdDocumentScanner, MdOutlineHandshake, MdOutlineNotes } from 'react-icons/md';
 import { SiFarcaster } from 'react-icons/si';
 
 import { brandColor } from 'theme/colors';
@@ -42,6 +42,13 @@ export function SiteNavigation({ topNav, isAuthenticated = false }: { topNav?: b
   const value = getActiveButton(pathname);
   return (
     <StyledBottomNavigation showLabels value={value} data-test='site-navigation' topNav={topNav}>
+      <BottomNavigationAction
+        label='News'
+        href='/news'
+        value='news'
+        icon={<MdOutlineNotes size='24px' />}
+        LinkComponent={Link}
+      />
       <BottomNavigationAction
         label='Users'
         href='/users'

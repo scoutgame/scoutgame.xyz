@@ -1,21 +1,20 @@
 'use client';
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
+import { Add as AddIcon, Clear as ClearIcon } from '@mui/icons-material';
 import {
-  MoreHoriz as MoreHorizIcon,
-  ArrowDropDown as ArrowDropDownIcon,
-  Add as AddIcon,
-  Clear as ClearIcon,
-  FilterList as FilterListIcon
-} from '@mui/icons-material';
-import {
-  Button,
+  Avatar,
+  Box,
   CircularProgress,
   Container,
+  FormControl,
+  IconButton,
   InputAdornment,
+  InputLabel,
   Link,
-  Avatar,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   Table,
   TableBody,
@@ -23,24 +22,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
-  Box,
-  IconButton,
-  Typography,
   TableSortLabel,
-  Select,
-  MenuItem,
-  ListItemText,
-  FormControl,
-  InputLabel
+  TextField,
+  Typography
 } from '@mui/material';
 import { capitalize } from '@packages/utils/strings';
-import React, { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { FileDownloadButton } from 'components/common/FileDownloadButton';
 import { useSearchUsers } from 'hooks/api/users';
 import { useDebouncedValue } from 'hooks/useDebouncedValue';
-import type { SortField, SortOrder, ScoutGameUser } from 'lib/users/getUsers';
+import type { ScoutGameUser, SortField, SortOrder } from 'lib/users/getUsers';
 
 import { AddUserButton } from './components/AddUserButton/AddUserButton';
 import { UserActionButton } from './components/UserActions/UserActionButton';
@@ -50,7 +42,6 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [builderFilter, setBuilderFilter] = useState<BuilderStatus | undefined>(undefined);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const debouncedFilterString = useDebouncedValue(filterString);
   const {
@@ -170,7 +161,7 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
                   direction={sortField === 'currentBalance' ? sortOrder : 'asc'}
                   onClick={() => handleSort('currentBalance')}
                 >
-                  Points Balance
+                  Tokens Balance
                 </TableSortLabel>
               </TableCell>
               <TableCell>
@@ -189,6 +180,15 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
                   onClick={() => handleSort('builderStatus')}
                 >
                   Developer Status
+                </TableSortLabel>
+              </TableCell>
+              <TableCell align='center'>
+                <TableSortLabel
+                  active={sortField === 'strikeCount'}
+                  direction={sortField === 'strikeCount' ? sortOrder : 'asc'}
+                  onClick={() => handleSort('strikeCount')}
+                >
+                  Strikes
                 </TableSortLabel>
               </TableCell>
               <TableCell>{/** Actions */}</TableCell>
@@ -217,6 +217,14 @@ export function UsersDashboard({ users }: { users: ScoutGameUser[] }) {
                   {user?.builderStatus === 'banned' && <Typography color='error'>Suspended</Typography>}
                   {user?.builderStatus === 'applied' && <Typography color='warning'>Applied</Typography>}
                   {!user?.builderStatus && <Typography color='secondary'>&ndash;</Typography>}
+                </TableCell>
+                <TableCell align='center'>
+                  <Typography
+                    color={user.strikeCount > 0 ? 'error' : 'inherit'}
+                    fontWeight={user.strikeCount > 0 ? 'bold' : 'normal'}
+                  >
+                    {user.strikeCount}
+                  </Typography>
                 </TableCell>
                 <TableCell align='center'>
                   <UserActionButton user={user} onChange={refreshUsers} />

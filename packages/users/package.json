@@ -9,7 +9,6 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "@packages/beehiiv": "^0.0.0",
     "@packages/blockchain": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
     "@packages/loops": "^0.0.0",

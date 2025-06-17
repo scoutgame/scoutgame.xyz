@@ -20,7 +20,7 @@ cron:
     # Every 5 minutes
     schedule: '*/5 * * * *'
 
-  # Sync external user profiles (Loops, Beehiiv, etc.)
+  # Sync external user profiles (Loops, etc.)
   - name: 'sync-external-user-profiles'
     url: '/sync-external-user-profiles'
     # Run once an hour

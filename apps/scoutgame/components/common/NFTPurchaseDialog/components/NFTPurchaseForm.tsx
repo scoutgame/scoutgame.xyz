@@ -612,11 +612,32 @@ export function NFTPurchaseFormContent({ builder }: NFTPurchaseProps) {
           spender={spender}
           chainId={selectedPaymentOption.chainId}
           erc20Address={getCurrencyContract(selectedPaymentOption) as Address}
-          amount={amountToPay}
-          onSuccess={() => refreshAllowance()}
+          amount={
+            selectedPaymentOption.currency === 'DEV'
+              ? BigInt('115792089237316195423570985008687907853269984665640564039457584007913129639935')
+              : amountToPay
+          }
+          onSuccess={async () => {
+            try {
+              // Ensure we're on the right chain before proceeding
+              if (chainId !== selectedPaymentOption.chainId) {
+                await switchChainAsync({ chainId: selectedPaymentOption.chainId });
+              }
+              refreshAllowance();
+              // Wait a bit before triggering purchase to ensure approval is processed
+              if (selectedPaymentOption.currency === 'DEV') {
+                setTimeout(() => {
+                  handlePurchase();
+                }, 1000);
+              }
+            } catch (error) {
+              log.warn('Error during post-approval steps', { error });
+            }
+          }}
           decimals={selectedPaymentOption.currency === 'USDC' ? 6 : devTokenDecimals}
           currency={selectedPaymentOption.currency}
           actionType='mint'
+          hideWarning
         />
       )}
     </Stack>

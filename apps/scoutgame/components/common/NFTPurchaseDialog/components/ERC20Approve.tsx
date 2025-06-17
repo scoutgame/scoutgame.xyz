@@ -8,6 +8,9 @@ import { useSwitchChain, useWalletClient } from 'wagmi';
 import { useUpdateERC20Allowance } from '../hooks/useUpdateERC20Allowance';
 
 import type { AvailableCurrency } from './ChainSelector/chains';
+
+const MAX_UINT256 = BigInt('115792089237316195423570985008687907853269984665640564039457584007913129639935');
+
 // Component for approving ERC20 tokens
 type ERC20ApproveButtonProps = {
   onSuccess: () => void;
@@ -35,11 +38,12 @@ export function ERC20ApproveButton({
   color = 'primary',
   hideWarning = false
 }: ERC20ApproveButtonProps) {
-  const amountToApprove = amount ? amount + amount / BigInt(50) : undefined;
-
   const { data: walletClient } = useWalletClient();
-
   const { switchChainAsync } = useSwitchChain();
+
+  // Calculate approval amount once, at the top
+  const isUnlimitedApproval = amount === MAX_UINT256;
+  const amountToApprove = isUnlimitedApproval ? amount : amount ? amount + amount / BigInt(50) : undefined;
 
   const { triggerApproveSpender, isApprovingSpender } = useUpdateERC20Allowance({ chainId, erc20Address, spender });
 
@@ -52,19 +56,18 @@ export function ERC20ApproveButton({
         log.warn('Error switching chain for approve spend', { chainId, error });
       }
     }
-    if (!amountToApprove) {
+    if (!amountToApprove || !amount) {
       throw new Error('Amount to approve is required');
     }
     try {
       await triggerApproveSpender({ amount: amountToApprove });
       onSuccess();
     } catch (error) {
-      onSuccess();
       log.error('Error approving spend', { error });
     }
   }
 
-  const displayAmount = (Number(amountToApprove || 0) / 10 ** decimals).toFixed(2);
+  const displayAmount = isUnlimitedApproval ? 'Unlimited' : (Number(amountToApprove || 0) / 10 ** decimals).toFixed(2);
 
   return (
     <Stack>
