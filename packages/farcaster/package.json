@@ -13,7 +13,6 @@
   "dependencies": {
     "@airstack/frames": "^1.2.0",
     "@farcaster/auth-client": "^0.7.0",
-    "@farcaster/auth-kit": "^0.8.1",
     "@packages/blockchain": "^0.0.0",
     "@packages/utils": "^1.0.0"
   }

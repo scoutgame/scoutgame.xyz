@@ -18,7 +18,6 @@
     "@datadog/browser-logs": "^5.33.0",
     "@decent.xyz/box-hooks": "^5.0.19",
     "@farcaster/auth-client": "^0.7.0",
-    "@farcaster/auth-kit": "^0.8.1",
     "@hookform/resolvers": "^3.6.0",
     "@packages/dates": "^0.0.0",
     "@packages/dune": "^0.0.0",
