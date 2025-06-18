@@ -31,12 +31,6 @@ runs:
       with:
         node-version: 18.19
 
-    - name: Install system dependencies
-      shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libvips-dev
-
     - name: Create .env.test.local file
       shell: bash
       run: cp .env.test.local.example .env.test.local
@@ -61,12 +55,6 @@ runs:
         npm ci --no-audit --no-fund --force ${{ format('--include-workspace-root -w apps/{0}', inputs.app_name) }} \
         || npm ci --no-audit --no-fund --force ${{ format('--include-workspace-root -w apps/{0}', inputs.app_name) }} \
         || npm ci --no-audit --no-fund --force ${{ format('--include-workspace-root -w apps/{0}', inputs.app_name) }}
-
-    - name: Rebuild native modules
-      shell: bash
-      run: |
-        npm rebuild @swc/core --update-binary
-        npm rebuild sharp
 
     # If installing specific version of core via npmjs
     - name: Upgrade Core package to version ${{ inputs.core_pkg_version }}
