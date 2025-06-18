@@ -11,7 +11,6 @@
     "typecheck": "../../node_modules/typescript/bin/tsc --project ./tsconfig.json  --noEmit"
   },
   "dependencies": {
-    "@farcaster/auth-kit": "^0.6.0",
     "@packages/blockchain": "^0.0.0",
     "@packages/dates": "^0.0.0",
     "@packages/farcaster": "^0.0.0",

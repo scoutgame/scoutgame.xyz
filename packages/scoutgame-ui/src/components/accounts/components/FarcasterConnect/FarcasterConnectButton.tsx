@@ -2,17 +2,16 @@
 
 import { log } from '@charmverse/core/log';
 import type { AuthClientError, StatusAPIResponse } from '@farcaster/auth-kit';
-import { Button, Paper, Stack, Typography } from '@mui/material';
+import { SignInButton } from '@farcaster/auth-kit';
+import { Paper, Stack, Typography } from '@mui/material';
 import type { AuthSchema } from '@packages/farcaster/config';
-import { useFarcasterConnection } from '@packages/farcaster/hooks/useFarcasterConnection';
 import { connectFarcasterAccountAction } from '@packages/scoutgame/farcaster/connectFarcasterAccountAction';
 import { mergeUserFarcasterAccountAction } from '@packages/scoutgame/farcaster/mergeUserFarcasterAccountAction';
-import { bindPopover } from 'material-ui-popup-state/hooks';
 import Image from 'next/image';
 import { useAction } from 'next-safe-action/hooks';
 import { useCallback } from 'react';
 
-import { FarcasterLoginModal } from '../../../common/FarcasterLogin/FarcasterLoginModal';
+import '@farcaster/auth-kit/styles.css';
 import type { UserWithAccountsDetails } from '../../AccountsPage';
 import { useAccountConnect } from '../../hooks/useAccountConnect';
 import { AccountConnect } from '../AccountConnect';
@@ -64,25 +63,15 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
     popupState.close();
   }, []);
 
-  const onSuccessCallback = useCallback(async (res: StatusAPIResponse) => {
-    if (res.message && res.signature) {
-      setAuthData({ message: res.message, signature: res.signature, nonce: res.nonce });
-      await connectFarcasterAccount({ message: res.message, signature: res.signature, nonce: res.nonce });
+  const onSuccessCallback = useCallback(async ({ message, signature, nonce }: StatusAPIResponse) => {
+    if (message && signature) {
+      setAuthData({ message, signature, nonce });
+      await connectFarcasterAccount({ message, signature, nonce });
     } else {
       setConnectionError('Did not receive message or signature from Farcaster');
-      log.error('Did not receive message or signature from Farcaster', res);
+      log.error('Did not receive message or signature from Farcaster', { message, signature });
     }
   }, []);
-
-  const onClick = useCallback(() => {
-    popupState.open();
-  }, []);
-
-  const { signIn, url } = useFarcasterConnection({
-    onSuccess: onSuccessCallback,
-    onError: onErrorCallback,
-    onClick
-  });
 
   const isConnecting = isConnectingFarcasterAccount || isRevalidatingPath || isMergingUserAccount;
 
@@ -97,15 +86,14 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
         {user.farcasterName ? (
           <Typography variant='body1'>{user.farcasterName}</Typography>
         ) : (
-          <Button
-            disabled={isConnecting}
-            loading={isConnecting}
-            sx={{ width: 'fit-content' }}
-            onClick={signIn}
-            variant='contained'
-          >
-            {isConnecting ? 'Connecting...' : 'Connect'}
-          </Button>
+          <SignInButton
+            nonce={Math.random().toString(36).substring(2, 10)}
+            onSuccess={onSuccessCallback}
+            onError={onErrorCallback}
+            timeout={300000}
+            interval={1500}
+            hideSignOut
+          />
         )}
 
         {connectionError && (
@@ -113,7 +101,6 @@ export function FarcasterConnectButton({ user }: { user: UserWithAccountsDetails
             {connectionError}
           </Typography>
         )}
-        <FarcasterLoginModal {...bindPopover(popupState)} url={url} />
       </Stack>
       {connectedUser && (
         <AccountConnect

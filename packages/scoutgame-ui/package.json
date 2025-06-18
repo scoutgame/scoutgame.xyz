@@ -19,8 +19,7 @@
   "dependencies": {
     "@decent.xyz/box-common": "^5.0.19",
     "@decent.xyz/box-ui": "^5.0.18",
-    "@farcaster/auth-kit": "^0.6.0",
-    "@farcaster/frame-sdk": "^0.0.28",
+    "@farcaster/frame-sdk": "^0.0.63",
     "@farcaster/frame-wagmi-connector": "^0.0.16",
     "@hookform/resolvers": "^3.9.1",
     "@packages/blockchain": "^0.0.0",

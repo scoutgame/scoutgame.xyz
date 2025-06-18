@@ -1,15 +1,15 @@
-name: 'Install dependencies'
-description: ''
+name: "Install dependencies"
+description: ""
 
 inputs:
   core_pkg_version:
     description: "Optional. Defaults to what's in package.json. Valid options are latest and custom version"
     required: false
   commit_core_pkg_upgrade:
-    description: 'Whether commit the update to core package back to branch'
+    description: "Whether commit the update to core package back to branch"
     required: false
   app_name:
-    description: ''
+    description: ""
     required: true
   use_github_core_branch:
     description: |
@@ -22,10 +22,10 @@ outputs:
     description: |
       Returns new commit hash after committing core version bump.
       If no new commits because core has already been bumped, return the existing github sha'Returns new commit hash after committing core version bump'
-    value: '${{ steps.commit_core_bump.outputs.commit_hash || github.sha }}'
+    value: "${{ steps.commit_core_bump.outputs.commit_hash || github.sha }}"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - uses: actions/setup-node@v4
       with:
@@ -69,9 +69,9 @@ runs:
       id: commit_core_bump
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_options: '--no-verify'
-        file_pattern: 'package*.json'
-        commit_message: 'Github action: automated Core pk upgrade to ${{ inputs.core_pkg_version }}'
+        commit_options: "--no-verify"
+        file_pattern: "package*.json"
+        commit_message: "Github action: automated Core pk upgrade to ${{ inputs.core_pkg_version }}"
 
     - name: Print the last commit
       if: inputs.core_pkg_version && inputs.commit_core_pkg_upgrade

@@ -1,4 +1,4 @@
-import { createAppClient, verifySignInMessage, viemConnector } from '@farcaster/auth-client';
+import { createAppClient, viemConnector } from '@farcaster/auth-client';
 
 import { authConfig } from './config';
 import type { AuthSchema } from './config';
@@ -14,11 +14,12 @@ export async function verifyFarcasterUser({ nonce, message, signature }: AuthSch
     success,
     fid,
     error: farcasterSignatureError
-  } = await verifySignInMessage(appClient, {
+  } = await appClient.verifySignInMessage({
     nonce,
     message,
     signature,
-    domain: authConfig.domain
+    domain: authConfig.domain,
+    acceptAuthAddress: true
   });
 
   if (farcasterSignatureError) {
