@@ -93,13 +93,52 @@ export async function purchaseNftListing({
     throw new Error('NFT transfer event not found');
   }
 
-  const updatedListing = await prisma.developerNftListing.update({
-    where: { id: listingId },
-    data: {
-      completedAt: new Date(),
-      buyerWallet,
-      hash: txHash
-    }
+  const updatedListing = await prisma.$transaction(async (tx) => {
+    const nftListing = await tx.developerNftListing.update({
+      where: { id: listingId },
+      data: {
+        completedAt: new Date(),
+        buyerWallet,
+        hash: txHash
+      }
+    });
+
+    const builderNftId = listing.builderNftId;
+
+    await tx.scoutNft.upsert({
+      where: {
+        builderNftId_walletAddress: {
+          builderNftId,
+          walletAddress: buyerWallet
+        }
+      },
+      update: {
+        balance: {
+          increment: 1
+        }
+      },
+      create: {
+        balance: 1,
+        walletAddress: buyerWallet,
+        builderNftId
+      }
+    });
+
+    await tx.scoutNft.update({
+      where: {
+        builderNftId_walletAddress: {
+          builderNftId,
+          walletAddress: listing.sellerWallet
+        }
+      },
+      data: {
+        balance: {
+          decrement: 1
+        }
+      }
+    });
+
+    return nftListing;
   });
 
   const contractAddress = listing.builderNft.contractAddress as Address;
