@@ -1,10 +1,9 @@
 'use server';
 
-import { prisma } from '@charmverse/core/prisma-client';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
-import { isAddress } from 'viem';
 import * as yup from 'yup';
 
+import { enableMatchupsFeatureFlag } from './config';
 import { registerForMatchup, isValidRegistrationWeek } from './registerForMatchup';
 
 const registerForMatchupSchema = yup.object({
@@ -31,6 +30,9 @@ const registerForMatchupSchema = yup.object({
 export const registerForMatchupAction = authActionClient
   .schema(registerForMatchupSchema)
   .action(async ({ parsedInput, ctx }) => {
+    if (!enableMatchupsFeatureFlag()) {
+      throw new Error('Matchup is disabled');
+    }
     const result = await registerForMatchup({
       scoutId: ctx.session.scoutId,
       week: parsedInput.week,

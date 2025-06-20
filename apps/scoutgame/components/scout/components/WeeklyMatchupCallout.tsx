@@ -3,7 +3,6 @@ import { Box, Paper, Card, CardActionArea, Typography } from '@mui/material';
 import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { getCurrentMatchupDetails } from '@packages/matchup/getMatchupDetails';
 import { getMatchupLeaderboard } from '@packages/matchup/getMatchupLeaderboard';
-import { getSession } from '@packages/nextjs/session/getSession';
 import { GemsIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
 import Image from 'next/image';
@@ -11,8 +10,7 @@ import Image from 'next/image';
 import { ReferenceTime } from 'components/common/ReferenceTime';
 
 export async function WeeklyMatchupCallout() {
-  const session = await getSession();
-  const enabled = enableMatchupsFeatureFlag(session?.scoutId);
+  const enabled = enableMatchupsFeatureFlag();
   if (!enabled) {
     return null;
   }
