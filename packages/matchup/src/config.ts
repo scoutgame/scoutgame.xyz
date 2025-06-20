@@ -1,6 +1,5 @@
 import env from '@beam-australia/react-env';
 import { getCurrentWeek } from '@packages/dates/utils';
-import { whiteListedUserIds, isProdEnv } from '@packages/utils/constants';
 
 // Fee in DEV that scouts pay to register for a matchup
 export const MATCHUP_REGISTRATION_FEE = 250;
@@ -17,5 +16,4 @@ export const MAX_CREDITS = 35;
 
 export const MATCHUP_WALLET_ADDRESS = env('REWARDS_WALLET_ADDRESS') || process.env.REACT_APP_REWARDS_WALLET_ADDRESS;
 
-export const enableMatchupsFeatureFlag = (userId?: string) =>
-  !isProdEnv || (userId && whiteListedUserIds.includes(userId)) || getCurrentWeek() >= '2025-W15';
+export const enableMatchupsFeatureFlag = () => getCurrentWeek() <= '2025-W25';

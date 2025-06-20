@@ -2,6 +2,7 @@
 
 import { BottomNavigationAction } from '@mui/material';
 import { isDraftSeason, isEndOfDraftWeek } from '@packages/dates/utils';
+import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
 import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
@@ -89,13 +90,15 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           icon={<ScoutIcon size='24px' />}
           LinkComponent={Link}
         />
-        <BottomNavigationAction
-          label='Match Up'
-          href='/matchup'
-          value='matchup'
-          icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
-          LinkComponent={Link}
-        />
+        {enableMatchupsFeatureFlag() && (
+          <BottomNavigationAction
+            label='Match Up'
+            href='/matchup'
+            value='matchup'
+            icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
+            LinkComponent={Link}
+          />
+        )}
         <BottomNavigationAction
           label='Developers'
           href='/developers'
