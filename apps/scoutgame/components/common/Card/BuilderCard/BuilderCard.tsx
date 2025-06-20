@@ -16,6 +16,15 @@ import { BuilderCardStats } from './BuilderCardStats';
 
 type RequiredBuilderInfoFields = 'displayName' | 'builderStatus' | 'id' | 'path';
 
+const whitelistedUsers = [
+  // ccarella.eth
+  'b6cb2938-91dd-4274-8d85-aa2e00eb97e2',
+  // mattcasey
+  '00c4af4f-b0f8-41e8-b27d-29996d694034',
+  // safwan
+  'f534b485-b7d5-47c3-92d8-02d107158558'
+];
+
 export function BuilderCard<T extends { builder: any } = { builder: any }>({
   builder,
   showPurchaseButton = false,
@@ -105,20 +114,19 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
           <BuilderCardStats {...builder} isStarterCard={type === 'starter_pack'} size={size} />
         )}
       </BuilderCardNftDisplay>
-      {
-        ActionSlotComponent ? (
-          <ActionSlotComponent builder={builder} {...(actionSlotProps as any)} />
-        ) : !showListButton ? (
-          lowestNonUserListing ? (
-            <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
-              <NFTListingPurchaseButton builder={builder} listing={lowestNonUserListing} />
-            </Stack>
-          ) : typeof builder.price !== 'undefined' && showPurchaseButton ? (
-            <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
-              <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} type={type} />
-            </Stack>
-          ) : null
-        ) : null /* (
+      {ActionSlotComponent ? (
+        <ActionSlotComponent builder={builder} {...(actionSlotProps as any)} />
+      ) : !showListButton ? (
+        lowestNonUserListing ? (
+          <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
+            <NFTListingPurchaseButton builder={builder} listing={lowestNonUserListing} />
+          </Stack>
+        ) : typeof builder.price !== 'undefined' && showPurchaseButton ? (
+          <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
+            <ScoutButton builder={builder} markStarterCardPurchased={markStarterCardPurchased} type={type} />
+          </Stack>
+        ) : null
+      ) : user && whitelistedUsers.includes(user.id) ? (
         type !== 'starter_pack' &&
         (!userListings.length ? (
           <Stack px={{ xs: 1, md: 0 }} pt={{ xs: 1, md: 2 }} pb={{ xs: 1, md: 0 }}>
@@ -127,8 +135,7 @@ export function BuilderCard<T extends { builder: any } = { builder: any }>({
         ) : (
           <NFTListingEditButton listing={userListings[0]} />
         ))
-      ) */
-      }
+      ) : null}
     </Card>
   );
 }
