@@ -3,7 +3,7 @@
 import { log } from '@charmverse/core/log';
 import type { EvmTransaction } from '@decent.xyz/box-common';
 import { Alert, Box, Button, Stack, Typography } from '@mui/material';
-import { MATCHUP_WALLET_ADDRESS, MATCHUP_REGISTRATION_FEE } from '@packages/matchup/config';
+import { MATCHUP_WALLET_ADDRESS, MATCHUP_REGISTRATION_FEE, enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { getStartOfMatchup } from '@packages/matchup/getMatchupDetails';
 import { revalidatePathAction } from '@packages/nextjs/actions/revalidatePathAction';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
@@ -220,6 +220,10 @@ function MatchupRegistrationForm({ week }: { week: string }) {
 }
 
 export function MatchupRegistrationDialog({ week, open, onClose }: ConnectedWalletDialogProps & { week: string }) {
+  const enabled = enableMatchupsFeatureFlag();
+  if (!enabled) {
+    return null;
+  }
   return (
     <ConnectedWalletDialog open={open} onClose={onClose} hideCloseButton>
       <MatchupRegistrationForm week={week} />
