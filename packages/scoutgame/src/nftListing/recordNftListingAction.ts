@@ -1,5 +1,6 @@
 'use server';
 
+import { prisma } from '@charmverse/core/prisma-client';
 import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';

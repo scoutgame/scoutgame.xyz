@@ -5,6 +5,8 @@ import { isAddress } from 'viem';
 
 import { devTokenDecimals } from '../protocol/constants';
 
+import { updateCurrentNftListingPrice } from './updateCurrentNftListingPrice';
+
 export async function recordNftListing({
   builderNftId,
   sellerWallet: _sellerWallet,
@@ -45,17 +47,30 @@ export async function recordNftListing({
     }
   });
 
-  // Create the listing in our database
+  const builderNft = await prisma.builderNft.findUniqueOrThrow({
+    where: {
+      id: builderNftId
+    },
+    select: {
+      currentListingPrice: true
+    }
+  });
+
+  const priceDevToken = BigInt(price * 10 ** devTokenDecimals);
   const listing = await prisma.developerNftListing.create({
     data: {
       builderNftId,
       sellerWallet,
-      priceDevToken: BigInt(price * 10 ** devTokenDecimals).toString(),
+      priceDevToken: priceDevToken.toString(),
       amount,
       signature: order.signature,
       order: order as unknown as Prisma.InputJsonValue
     }
   });
+
+  await updateCurrentNftListingPrice({ builderNftId });
+
+  // Create the listing in our database
 
   return listing;
 }
