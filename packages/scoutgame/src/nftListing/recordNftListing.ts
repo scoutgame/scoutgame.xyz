@@ -47,15 +47,6 @@ export async function recordNftListing({
     }
   });
 
-  const builderNft = await prisma.builderNft.findUniqueOrThrow({
-    where: {
-      id: builderNftId
-    },
-    select: {
-      currentListingPrice: true
-    }
-  });
-
   const priceDevToken = BigInt(price * 10 ** devTokenDecimals);
   const listing = await prisma.developerNftListing.create({
     data: {
@@ -69,8 +60,6 @@ export async function recordNftListing({
   });
 
   await updateCurrentNftListingPrice({ builderNftId });
-
-  // Create the listing in our database
 
   return listing;
 }

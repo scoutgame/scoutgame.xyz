@@ -6,7 +6,7 @@ export async function updateCurrentNftListingPrice({ builderNftId }: { builderNf
       id: builderNftId
     },
     select: {
-      currentListingPrice: true,
+      currentPrice: true,
       listings: {
         where: {
           completedAt: null // Only consider active listings
@@ -18,28 +18,27 @@ export async function updateCurrentNftListingPrice({ builderNftId }: { builderNf
     }
   });
 
-  let lowestListingPrice: bigint | null = null;
+  // Convert all valid prices to BigInt and find the minimum
+  const listingPrices = builderNft.listings
+    .map((listing) => listing.priceDevToken)
+    .filter((price): price is string => price !== null)
+    .map((price) => BigInt(price));
 
-  if (builderNft.currentListingPrice) {
-    lowestListingPrice = BigInt(builderNft.currentListingPrice);
+  // Include current price if it exists
+  if (builderNft.currentPrice) {
+    listingPrices.push(builderNft.currentPrice);
   }
 
-  // Find the lowest price among active listings
-  for (const listing of builderNft.listings) {
-    if (!listing.priceDevToken) continue;
-
-    const listingPrice = BigInt(listing.priceDevToken);
-    if (!lowestListingPrice || listingPrice < lowestListingPrice) {
-      lowestListingPrice = listingPrice;
-    }
-  }
+  // Find the minimum price, or null if no prices exist
+  const lowestListingPrice =
+    listingPrices.length > 0 ? listingPrices.reduce((min, price) => (price < min ? price : min)) : null;
 
   await prisma.builderNft.update({
     where: {
       id: builderNftId
     },
     data: {
-      currentListingPrice: lowestListingPrice
+      currentPrice: lowestListingPrice
     }
   });
 }
