@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 
-import ddPlugin from 'dd-trace/esbuild';
 import * as esbuild from 'esbuild';
 
 esbuild
@@ -11,11 +10,7 @@ esbuild
     outdir: './dist',
     tsconfig: './tsconfig.json',
     // packages: 'external',
-    external: [
-      // esbuild cannot bundle native modules
-      '@datadog/native-metrics',
-      '@charmverse/core'
-    ],
+    external: ['@charmverse/core'],
     plugins: [ddPlugin],
     platform: 'node',
     sourcemap: true,
