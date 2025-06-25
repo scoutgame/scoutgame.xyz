@@ -1,15 +1,18 @@
 import type { StackProps } from '@mui/material';
 import { Stack, Typography } from '@mui/material';
+import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import Image from 'next/image';
 
 import { SidebarInfoDrawer } from './SidebarInfoDrawer';
 
-export function InfoPageContainer({
+export async function InfoPageContainer({
   children,
   title,
   image,
   ...props
 }: { title?: string; image?: string } & StackProps) {
+  const scoutPartnersInfo = await getScoutPartnersInfo();
+
   return (
     <Stack maxWidth='854px' width='100%' mx='auto' gap={{ xs: 2, md: 4 }}>
       {image && (
@@ -39,7 +42,7 @@ export function InfoPageContainer({
             {title}
           </Typography>
         )}
-        <SidebarInfoDrawer />
+        <SidebarInfoDrawer partners={scoutPartnersInfo} />
       </Stack>
       {children}
     </Stack>

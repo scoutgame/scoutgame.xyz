@@ -121,7 +121,7 @@ describe('recordMergedPullRequest', () => {
     const builder = await mockBuilder();
 
     const repo = await mockRepo({
-      bonusPartner: 'test-partner',
+      scoutPartnerId: 'test-partner',
       name: 'Test-Repo',
       defaultBranch: 'main'
     });
@@ -144,7 +144,7 @@ describe('recordMergedPullRequest', () => {
         type: 'merged_pull_request'
       }
     });
-    expect(builderEvent).toEqual(expect.objectContaining({ bonusPartner: 'test-partner' }));
+    expect(builderEvent).toEqual(expect.objectContaining({ scoutPartnerId: 'test-partner' }));
   });
 
   it('should only give 2 points for a PR with no review', async () => {

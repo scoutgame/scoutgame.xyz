@@ -17,16 +17,9 @@ export async function importReposByUser(githubLogin: string, partner?: string) {
       id: true,
       owner: true,
       name: true,
-      bonusPartner: true
+      scoutPartnerId: true
     }
   });
-  // if (reposInDBByOwner.length > 0) {
-  //   console.log(
-  //     'found existing repos for owner',
-  //     githubLogin,
-  //     reposInDBByOwner.map((r) => r.name)
-  //   );
-  // }
   const reposInDBById = await prisma.githubRepo.findMany({
     where: {
       id: {
@@ -59,7 +52,7 @@ export async function importReposByUser(githubLogin: string, partner?: string) {
       where: {
         id: { in: repos.map((r) => r.id) }
       },
-      data: { bonusPartner: partner }
+      data: { scoutPartnerId: partner }
     });
     log.info(`Updated ${result.count} repos with partner ${partner}`);
   }

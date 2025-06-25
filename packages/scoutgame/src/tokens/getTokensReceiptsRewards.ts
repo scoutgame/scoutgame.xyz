@@ -18,7 +18,7 @@ type TokensReceiptRewardBase<T> = T & {
 export type DeveloperTokensReceiptReward = TokensReceiptRewardBase<{
   type: 'developer';
   week: number;
-  bonusPartners: string[];
+  scoutPartners: string[];
 }>;
 
 export type SoldNftsTokensReceiptReward = TokensReceiptRewardBase<{
@@ -102,7 +102,7 @@ export async function getTokensReceiptsRewards({
           week: true,
           season: true,
           type: true,
-          bonusPartner: true,
+          scoutPartnerId: true,
           builderId: true,
           nftPurchaseEvent: {
             select: {
@@ -141,7 +141,7 @@ export async function getTokensReceiptsRewards({
     weeklyRankRecord[stat.week] = stat.rank;
   }
 
-  const bonusPartners: Set<string> = new Set();
+  const scoutPartners: Set<string> = new Set();
 
   const tokensBySeason: Record<Season, number> = {};
 
@@ -153,7 +153,7 @@ export async function getTokensReceiptsRewards({
 
   const currentSeasonReceipts: {
     value: number;
-    event: Pick<BuilderEvent, 'week' | 'season' | 'type' | 'bonusPartner' | 'builderId'> & {
+    event: Pick<BuilderEvent, 'week' | 'season' | 'type' | 'scoutPartnerId' | 'builderId'> & {
       nftPurchaseEvent?: Pick<NFTPurchaseEvent, 'tokensPurchased'> | null;
     };
     recipientId: string;
@@ -195,14 +195,14 @@ export async function getTokensReceiptsRewards({
             week: weekNumber,
             type: 'developer',
             season: receipt.event.season as Season,
-            bonusPartners: []
+            scoutPartners: []
           };
         }
         developerRewards[week].tokens += tokens;
-        const bonusPartner = receipt.event.bonusPartner;
-        if (bonusPartner) {
-          developerRewards[week].bonusPartners.push(bonusPartner);
-          bonusPartners.add(bonusPartner);
+        const scoutPartner = receipt.event.scoutPartnerId;
+        if (scoutPartner) {
+          developerRewards[week].scoutPartners.push(scoutPartner);
+          scoutPartners.add(scoutPartner);
         }
       } else if (weeklyRank) {
         // points received as a builder

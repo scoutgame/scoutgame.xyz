@@ -24,7 +24,7 @@ type MergedPullRequestActivity = {
   gems: number;
   repo: string;
   url: string;
-  bonusPartner: BonusPartner | null;
+  scoutPartnerId: string | null;
 };
 
 export type OnchainAchievementActivity = {
@@ -72,7 +72,7 @@ export async function getDeveloperActivities({
       builder: {
         select: BasicUserInfoSelect
       },
-      bonusPartner: true,
+      scoutPartnerId: true,
       id: true,
       createdAt: true,
       type: true,
@@ -140,7 +140,7 @@ export async function getDeveloperActivities({
           gems: event.gemsReceipt.value,
           repo: `${event.githubEvent.repo.owner}/${event.githubEvent.repo.name}`,
           url: event.githubEvent.url,
-          bonusPartner: event.bonusPartner as BonusPartner | null
+          scoutPartnerId: event.scoutPartnerId
         } as BuilderActivity<MergedPullRequestActivity>;
       } else if (event.type === 'onchain_achievement' && event.onchainAchievement) {
         return {

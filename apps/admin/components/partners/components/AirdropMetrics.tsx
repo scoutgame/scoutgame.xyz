@@ -114,7 +114,7 @@ export async function AirdropMetrics({
   } else if (partner === 'octant_base_contribution' || partner === 'gooddollar_contribution') {
     const builderEvents = await getBuilderEventsForPartnerRewards({
       week: getCurrentWeek(),
-      bonusPartner: partner as any
+      scoutPartnerId: partner
     });
     if (builderEvents.length > 0) {
       const upcomingPayout = builderEvents.reduce(

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   const rows = await getBuildersForPartner({
     week,
-    bonusPartner: 'gooddollar' as any
+    scoutPartnerId: 'gooddollar'
   });
 
   return respondWithTSV(rows, `partners-export_gooddollar_${week}.tsv`);

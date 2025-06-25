@@ -9,7 +9,7 @@ import { celo } from 'viem/chains';
 import { log } from './logger';
 
 export async function deployGooddollarPartnerRewards({ week }: { week: string }) {
-  const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'gooddollar' });
+  const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId: 'gooddollar' });
   const currentSeason = getCurrentSeason(week);
   const recipients = builderEvents
     .map((event) => {

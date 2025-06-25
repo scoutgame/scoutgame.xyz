@@ -32,7 +32,7 @@ import type { Repo } from 'lib/repos/getRepos';
 import { HeaderActions } from './components/HeaderActions';
 import { RepoActionButton } from './components/RepoActions/RepoActionButton';
 
-type SortField = 'commits' | 'prs' | 'closedPrs' | 'contributors' | 'owner' | 'createdAt' | 'bonusPartner';
+type SortField = 'commits' | 'prs' | 'closedPrs' | 'contributors' | 'owner' | 'createdAt' | 'scoutPartnerId';
 type SortOrder = 'asc' | 'desc';
 
 export function ReposDashboard({ repos }: { repos: Repo[] }) {
@@ -155,11 +155,11 @@ export function ReposDashboard({ repos }: { repos: Repo[] }) {
               </TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={sortField === 'bonusPartner'}
-                  direction={sortField === 'bonusPartner' ? sortOrder : 'asc'}
-                  onClick={() => handleSort('bonusPartner')}
+                  active={sortField === 'scoutPartnerId'}
+                  direction={sortField === 'scoutPartnerId' ? sortOrder : 'asc'}
+                  onClick={() => handleSort('scoutPartnerId')}
                 >
-                  Bonus Partner
+                  Scout Partner
                 </TableSortLabel>
               </TableCell>
               <TableCell align='center'>{/** Actions */}</TableCell>
@@ -183,7 +183,7 @@ export function ReposDashboard({ repos }: { repos: Repo[] }) {
                 <TableCell>{repo.closedPrs}</TableCell>
                 <TableCell>{repo.contributors}</TableCell>
                 <TableCell>
-                  {repo.bonusPartner ? <BonusPartnersDisplay bonusPartner={repo.bonusPartner as BonusPartner} /> : ''}
+                  {repo.scoutPartnerId ? <BonusPartnersDisplay bonusPartner={repo.scoutPartnerId} /> : ''}
                 </TableCell>
                 <TableCell align='center'>
                   <RepoActionButton

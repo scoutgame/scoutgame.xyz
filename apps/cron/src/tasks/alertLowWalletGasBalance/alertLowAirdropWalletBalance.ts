@@ -181,7 +181,7 @@ async function calculateUpcomingPayout({
       const matchupPayout = toWei(MATCHUP_OP_PRIZE);
       return referralPayout + matchupPayout;
     } else if (partner === 'gooddollar_contribution') {
-      const builderEvents = await getBuilderEventsForPartnerRewards({ week, bonusPartner: 'gooddollar' });
+      const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId: 'gooddollar' });
       const gooddollarPayout = builderEvents.reduce(
         (sum, event) => sum + getGooddollarPartnerRewardAmount(event.issues.map((issue) => issue.tags).flat()),
         BigInt(0)
