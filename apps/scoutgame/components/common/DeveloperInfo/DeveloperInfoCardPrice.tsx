@@ -1,6 +1,7 @@
 import { BuilderNftType } from '@charmverse/core/prisma-client';
 import { Stack, Typography } from '@mui/material';
 import type { DeveloperInfo } from '@packages/scoutgame/builders/getDeveloperInfo';
+import type { NftListing } from '@packages/scoutgame/builders/interfaces';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import Image from 'next/image';
@@ -19,7 +20,8 @@ function DeveloperCardPricingSection({
   nftImageUrl,
   congratsImageUrl,
   cardPrice,
-  path
+  path,
+  listing
 }: {
   cardType: BuilderNftType;
   estimatedPayout: number;
@@ -33,6 +35,7 @@ function DeveloperCardPricingSection({
   congratsImageUrl: string | null;
   cardPrice: bigint;
   path: string;
+  listing: NftListing | null;
 }) {
   const isDesktop = useMdScreen();
   const color = cardType === BuilderNftType.starter_pack ? 'green.main' : 'secondary.main';
@@ -114,6 +117,7 @@ function DeveloperCardPricingSection({
               congratsImageUrl
             }}
             type={cardType}
+            listing={listing}
           />
         </Stack>
       </Stack>
@@ -143,6 +147,7 @@ export function DeveloperInfoCardPrice({ developer, onClose }: { developer: Deve
         cardsSold={developer.starterCard.cardsSold}
         cardsSoldToScout={developer.starterCard.cardsSoldToScout}
         onClose={onClose}
+        listing={developer.userListing}
       />
 
       <DeveloperCardPricingSection
@@ -158,6 +163,7 @@ export function DeveloperInfoCardPrice({ developer, onClose }: { developer: Deve
         cardsSold={developer.regularCard.cardsSold}
         cardsSoldToScout={developer.regularCard.cardsSoldToScout}
         onClose={onClose}
+        listing={developer.userListing}
       />
     </Stack>
   );

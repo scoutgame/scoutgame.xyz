@@ -4,6 +4,7 @@ import type { BuilderStatus } from '@charmverse/core/prisma';
 import type { SxProps } from '@mui/material';
 import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { maxDevTokenPrice } from '@packages/scoutgame/builderNfts/constants';
+import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { DynamicLoadingContext } from '@packages/scoutgame-ui/components/common/Loading/DynamicLoading';
 import { useTrackEvent } from '@packages/scoutgame-ui/hooks/useTrackEvent';
@@ -22,13 +23,15 @@ export function ScoutButton({
   markStarterCardPurchased = false,
   isStarterCard = false,
   type = 'default',
-  soldOutButtonSx
+  soldOutButtonSx,
+  listing
 }: {
   soldOutButtonSx?: SxProps;
   builder: Omit<NFTPurchaseProps['builder'], 'nftType'> & { builderStatus: BuilderStatus | null };
   markStarterCardPurchased?: boolean;
   isStarterCard?: boolean;
   type?: 'default' | 'starter_pack';
+  listing?: BuilderInfo['listings'][number] | null;
 }) {
   const trackEvent = useTrackEvent();
   const [dialogLoadingStatus, setDialogLoadingStatus] = useState<boolean>(false);
@@ -42,7 +45,9 @@ export function ScoutButton({
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     trackEvent('click_scout_button', { builderPath: builder.path, price: formattedPrice });
-    if (isAuthenticated) {
+    if (listing) {
+      openModal('nftListingPurchase', { builder, listing });
+    } else if (isAuthenticated) {
       openModal('nftPurchase', { ...builder, nftType: type });
     } else {
       openModal('signIn', { path: pathname });
