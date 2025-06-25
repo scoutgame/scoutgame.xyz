@@ -2,6 +2,7 @@ import type { ScoutPartnerStatus } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 
 export type ScoutPartnerInfo = {
+  id: string;
   href: string;
   text: string;
   image: string;
@@ -9,13 +10,13 @@ export type ScoutPartnerInfo = {
 };
 
 export async function getScoutPartnersInfo({
-  allStatus = false
+  status
 }: {
-  allStatus?: boolean;
+  status?: ScoutPartnerStatus;
 } = {}): Promise<ScoutPartnerInfo[]> {
   const scoutPartners = await prisma.scoutPartner.findMany({
     where: {
-      status: allStatus ? undefined : 'active'
+      status
     },
     select: {
       id: true,
@@ -37,6 +38,7 @@ export async function getScoutPartnersInfo({
     href: `/info/partner-rewards/${partner.id}`,
     text: partner.name,
     image: partner.icon,
-    status: partner.status
+    status: partner.status,
+    id: partner.id
   }));
 }

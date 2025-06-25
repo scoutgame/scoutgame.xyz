@@ -8,6 +8,7 @@ import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { getDeveloperActivities } from '@packages/scoutgame/builders/getDeveloperActivities';
 import { appealUrl } from '@packages/scoutgame/constants';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
+import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import { JoinGithubButton } from '@packages/scoutgame-ui/components/common/JoinGithubButton';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import Image from 'next/image';
@@ -21,7 +22,13 @@ import { DeveloperStats } from './DeveloperStats';
 import { DeveloperWeeklyStats } from './DeveloperWeeklyStats';
 
 export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }) {
-  const [builderNft, builderStats, builderActivities = [], { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {}] =
+  const [
+    builderNft,
+    builderStats,
+    builderActivities = [],
+    { scouts = [], totalNftsSold = 0, totalScouts = 0 } = {},
+    scoutPartners = []
+  ] =
     builder.builderStatus === 'approved'
       ? await Promise.all([
           prisma.builderNft.findUnique({
@@ -40,7 +47,8 @@ export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }
           }),
           getBuilderStats(builder.id),
           getDeveloperActivities({ builderId: builder.id, limit: 200 }),
-          getBuilderScouts(builder.id)
+          getBuilderScouts(builder.id),
+          getScoutPartnersInfo()
         ])
       : [];
 
@@ -124,7 +132,7 @@ export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }
         </Stack>
         <Box maxHeight={{ md: '400px' }} overflow='auto'>
           {builderActivities.length > 0 ? (
-            <DeveloperActivitiesList activities={builderActivities} />
+            <DeveloperActivitiesList activities={builderActivities} scoutPartners={scoutPartners} />
           ) : (
             <Typography>No activity yet. Start contributing or scouting to build your profile!</Typography>
           )}

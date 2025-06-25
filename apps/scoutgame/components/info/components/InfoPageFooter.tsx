@@ -6,7 +6,7 @@ import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScout
 import Image from 'next/image';
 
 export async function InfoPageFooter() {
-  const scoutPartnersInfo = await getScoutPartnersInfo();
+  const scoutPartnersInfo = await getScoutPartnersInfo({ status: 'active' });
 
   return (
     <Stack

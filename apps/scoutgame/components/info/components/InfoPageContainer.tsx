@@ -11,7 +11,7 @@ export async function InfoPageContainer({
   image,
   ...props
 }: { title?: string; image?: string } & StackProps) {
-  const scoutPartnersInfo = await getScoutPartnersInfo();
+  const scoutPartnersInfo = await getScoutPartnersInfo({ status: 'active' });
 
   return (
     <Stack maxWidth='854px' width='100%' mx='auto' gap={{ xs: 2, md: 4 }}>

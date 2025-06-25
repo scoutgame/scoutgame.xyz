@@ -10,7 +10,7 @@ export default async function Layout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const scoutPartnersInfo = await getScoutPartnersInfo();
+  const scoutPartnersInfo = await getScoutPartnersInfo({ status: 'active' });
 
   return (
     <>

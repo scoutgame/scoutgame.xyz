@@ -7,6 +7,7 @@ import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { getDeveloperActivities } from '@packages/scoutgame/builders/getDeveloperActivities';
 import { getDeveloperNftListings } from '@packages/scoutgame/nftListing/getNftListings';
 import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
+import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 
 import type { BuilderProfileProps } from './PublicBuilderProfileContainer';
 import { PublicBuilderProfileContainer } from './PublicBuilderProfileContainer';
@@ -29,7 +30,8 @@ export async function PublicBuilderProfile({
     builderActivities,
     { scouts = [], totalNftsSold = 0, totalScouts = 0 },
     { level, estimatedPayout, last14DaysRank, nftsSoldToLoggedInScout, starterNftSoldToLoggedInScout },
-    nftListings
+    nftListings,
+    scoutPartners
   ] = await Promise.all([
     getBuilderNft(builderId),
     getBuilderNft(builderId, 'starter_pack'),
@@ -37,7 +39,8 @@ export async function PublicBuilderProfile({
     getDeveloperActivities({ builderId, limit: 200 }),
     getBuilderScouts(builderId),
     getBuilderCardStats({ builderId, loggedInScoutId: loggedInUserId }),
-    getDeveloperNftListings(builderId)
+    getDeveloperNftListings(builderId),
+    getScoutPartnersInfo()
   ]);
 
   return (
@@ -63,6 +66,7 @@ export async function PublicBuilderProfile({
       gemsCollected={gemsCollected}
       rank={rank}
       scoutProjects={scoutProjects}
+      scoutPartners={scoutPartners}
     />
   );
 }

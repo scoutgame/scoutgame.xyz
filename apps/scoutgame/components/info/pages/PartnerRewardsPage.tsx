@@ -54,7 +54,7 @@ function PartnerReward({
 }
 
 async function Document() {
-  const scoutPartnersInfo = await getScoutPartnersInfo({ allStatus: true });
+  const scoutPartnersInfo = await getScoutPartnersInfo();
 
   return (
     <InfoCard title='Scout Game Partners'>

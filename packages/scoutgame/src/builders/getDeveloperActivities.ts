@@ -3,9 +3,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
 
-import { validMintNftPurchaseEvent } from '../builderNfts/constants';
-import type { BonusPartner } from '../partnerRewards/constants';
-
 export type BuilderActivityType = 'nft_purchase' | 'merged_pull_request';
 
 const builderEventTypes = ['merged_pull_request', 'daily_commit', 'onchain_achievement'] as const;
@@ -16,6 +13,7 @@ type NftPurchaseActivity = {
     path: string;
     displayName: string;
   };
+  scoutPartnerId: null;
 };
 
 type MergedPullRequestActivity = {
@@ -35,6 +33,7 @@ export type OnchainAchievementActivity = {
   };
   gems: number;
   tier: OnchainAchievementTier;
+  scoutPartnerId: null;
 };
 
 type AnyActivity = NftPurchaseActivity | MergedPullRequestActivity | OnchainAchievementActivity;
@@ -154,7 +153,8 @@ export async function getDeveloperActivities({
             path: event.onchainAchievement.project.path
           },
           tier: event.onchainAchievement.tier,
-          gems: event.gemsReceipt?.value || 0
+          gems: event.gemsReceipt?.value || 0,
+          scoutPartnerId: event.scoutPartnerId
         } as BuilderActivity<OnchainAchievementActivity>;
       } else {
         return null;

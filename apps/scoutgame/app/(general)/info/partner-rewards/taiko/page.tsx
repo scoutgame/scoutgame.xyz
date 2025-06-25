@@ -373,7 +373,7 @@ export default async function Taiko() {
       })
     : null;
 
-  const scoutPartnersInfo = await getScoutPartnersInfo();
+  const scoutPartnersInfo = await getScoutPartnersInfo({ status: 'active' });
 
   const registerUrl = !user
     ? `${builderLoginUrl}&utm_source=partner&utm_campaign=taiko`
