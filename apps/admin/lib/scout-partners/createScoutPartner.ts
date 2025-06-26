@@ -17,7 +17,8 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
   const partner = await prisma.scoutPartner.create({
     data: {
       id,
-      ...params
+      ...params,
+      bannerImage: params.bannerImage || '' // Provide default empty string
     }
   });
 
@@ -27,10 +28,12 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
       url: params.icon,
       pathInS3: `user-content/${partner.id}/icon.png`
     }),
-    uploadUrlToS3({
-      url: params.bannerImage,
-      pathInS3: `user-content/${partner.id}/developerPageBanner.png`
-    }),
+    params.bannerImage
+      ? uploadUrlToS3({
+          url: params.bannerImage,
+          pathInS3: `user-content/${partner.id}/developerPageBanner.png`
+        })
+      : Promise.resolve(null),
     uploadUrlToS3({
       url: params.infoPageImage,
       pathInS3: `user-content/${partner.id}/infoPageBanner.png`
@@ -48,8 +51,8 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
     where: { id: partner.id },
     data: {
       icon: iconUrl.url,
-      bannerImage: bannerUrl.url,
       infoPageImage: infoPageUrl.url,
+      ...(bannerUrl && { bannerImage: bannerUrl.url }),
       ...(tokenImageUrl && { tokenImage: tokenImageUrl.url })
     }
   });

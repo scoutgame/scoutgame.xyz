@@ -291,7 +291,6 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
         <Controller
           name='bannerImage'
           control={control}
-          rules={{ required: 'Banner image is required' }}
           render={({ field: { value } }) => (
             <ImageUploadField
               label='Banner Image'
@@ -301,7 +300,6 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
               onFileChange={bannerUpload.onFileChange}
               error={errors.bannerImage?.message}
               imageSize={{ width: 300, height: 200 }}
-              required
             />
           )}
         />

@@ -9,7 +9,7 @@ export const issueTagAmountSchema = yup.object({
 export const createScoutPartnerSchema = yup.object({
   name: yup.string().required('Name is required'),
   icon: yup.string().required('Icon is required'),
-  bannerImage: yup.string().required('Banner image is required'),
+  bannerImage: yup.string(),
   infoPageImage: yup.string().required('Info page image is required'),
   status: yup.string<ScoutPartnerStatus>().oneOf(['active', 'paused', 'completed']).required('Status is required'),
   tokenAmountPerPullRequest: yup.number().when('$isTokenEnabled', {
