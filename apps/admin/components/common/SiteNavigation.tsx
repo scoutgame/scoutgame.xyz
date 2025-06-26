@@ -43,6 +43,13 @@ export function SiteNavigation({ topNav, isAuthenticated = false }: { topNav?: b
   return (
     <StyledBottomNavigation showLabels value={value} data-test='site-navigation' topNav={topNav}>
       <BottomNavigationAction
+        label='Scout Partners'
+        href='/scout-partners'
+        value='scout-partners'
+        icon={<MdOutlineHandshake size='24px' />}
+        LinkComponent={Link}
+      />
+      <BottomNavigationAction
         label='News'
         href='/news'
         value='news'
