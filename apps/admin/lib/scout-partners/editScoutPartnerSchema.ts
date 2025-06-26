@@ -9,7 +9,7 @@ export const editScoutPartnerSchema = yup.object().shape({
     .of(
       yup.object().shape({
         tag: yup.string().required('Tag is required'),
-        amount: yup.number().required('Amount is required').min(0, 'Amount must be positive')
+        amount: yup.number().required('Amount is required').positive()
       })
     )
     .required()

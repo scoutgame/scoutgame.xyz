@@ -3,8 +3,6 @@
 import { log } from '@charmverse/core/log';
 import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma-client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Stack,
   TextField,
@@ -14,16 +12,16 @@ import {
   Button,
   Select,
   MenuItem,
-  InputLabel,
-  IconButton,
-  Box
+  InputLabel
 } from '@mui/material';
 import { useState } from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import { useEditScoutPartner } from 'hooks/api/scout-partners';
 import type { EditScoutPartnerPayload } from 'lib/scout-partners/editScoutPartnerSchema';
 import { editScoutPartnerSchema } from 'lib/scout-partners/editScoutPartnerSchema';
+
+import { IssueTagAmountFields } from './IssueTagAmountFields';
 
 type Props = {
   partner: ScoutPartner;
@@ -53,11 +51,6 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
     },
     resolver: yupResolver(editScoutPartnerSchema),
     mode: 'onChange'
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'issueTagTokenAmounts'
   });
 
   const onSubmit = handleSubmit(async (data: EditScoutPartnerPayload) => {
@@ -112,56 +105,7 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
               )}
             />
 
-            <Stack spacing={2}>
-              <Stack direction='row' justifyContent='space-between' alignItems='center'>
-                <Typography variant='subtitle1'>Issue Tag Token Amounts</Typography>
-                <Button
-                  startIcon={<AddCircleOutlineIcon />}
-                  onClick={() => append({ tag: '', amount: 0 })}
-                  variant='outlined'
-                  size='small'
-                >
-                  Add Tag
-                </Button>
-              </Stack>
-
-              {fields.map((arrayField, index) => (
-                <Box key={arrayField.id} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                  <Controller
-                    name={`issueTagTokenAmounts.${index}.tag`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        sx={{ flex: 1 }}
-                        label='Tag'
-                        error={!!errors.issueTagTokenAmounts?.[index]?.tag}
-                        helperText={errors.issueTagTokenAmounts?.[index]?.tag?.message}
-                        size='small'
-                      />
-                    )}
-                  />
-                  <Controller
-                    name={`issueTagTokenAmounts.${index}.amount`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        type='number'
-                        sx={{ flex: 1 }}
-                        label='Amount'
-                        error={!!errors.issueTagTokenAmounts?.[index]?.amount}
-                        helperText={errors.issueTagTokenAmounts?.[index]?.amount?.message}
-                        size='small'
-                      />
-                    )}
-                  />
-                  <IconButton onClick={() => remove(index)} size='small' color='error'>
-                    <DeleteIcon fontSize='small' />
-                  </IconButton>
-                </Box>
-              ))}
-            </Stack>
+            <IssueTagAmountFields control={control} errors={errors} />
           </>
         )}
 

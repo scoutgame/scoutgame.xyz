@@ -1,6 +1,11 @@
 import type { ScoutPartnerStatus } from '@charmverse/core/prisma';
 import * as yup from 'yup';
 
+export const issueTagAmountSchema = yup.object({
+  tag: yup.string().required('Tag is required'),
+  amount: yup.number().required('Amount is required').positive()
+});
+
 export const createScoutPartnerSchema = yup.object({
   name: yup.string().required('Name is required'),
   icon: yup.string().required('Icon is required'),
@@ -36,7 +41,15 @@ export const createScoutPartnerSchema = yup.object({
     is: true,
     then: (schema) => schema.required('Token image is required'),
     otherwise: (schema) => schema.optional()
-  })
+  }),
+  issueTagTokenAmounts: yup
+    .array()
+    .of(issueTagAmountSchema)
+    .when('$isTokenEnabled', {
+      is: true,
+      then: (schema) => schema.default([]),
+      otherwise: (schema) => schema.optional()
+    })
 });
 
 export type CreateScoutPartnerPayload = yup.InferType<typeof createScoutPartnerSchema>;

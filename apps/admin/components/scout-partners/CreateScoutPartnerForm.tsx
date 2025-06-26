@@ -32,6 +32,7 @@ import type { CreateScoutPartnerPayload } from 'lib/scout-partners/createScoutPa
 import { createScoutPartnerSchema } from 'lib/scout-partners/createScoutPartnerSchema';
 
 import { ChainSelector } from './ChainSelector';
+import { IssueTagAmountFields } from './IssueTagAmountFields';
 
 type Props = {
   onClose: () => void;
@@ -157,7 +158,8 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
       tokenAmountPerPullRequest: 0,
       tokenDecimals: 0,
       tokenImage: '',
-      tokenSymbol: ''
+      tokenSymbol: '',
+      issueTagTokenAmounts: []
     },
     resolver: yupResolver(createScoutPartnerSchema),
     mode: 'onChange',
@@ -416,6 +418,8 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
                 />
               )}
             />
+
+            <IssueTagAmountFields control={control} errors={errors} />
           </>
         )}
 
