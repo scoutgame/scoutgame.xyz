@@ -24,6 +24,12 @@ export function ScoutPartnersDashboard({ initialPartners }: { initialPartners: S
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [partners, setPartners] = useState(initialPartners);
 
+  const handlePartnerUpdate = (updatedPartner: ScoutPartner) => {
+    setPartners((prevPartners) =>
+      prevPartners.map((partner) => (partner.id === updatedPartner.id ? updatedPartner : partner))
+    );
+  };
+
   return (
     <Container maxWidth='xl'>
       <Stack direction='row' spacing={2} justifyContent='space-between' alignItems='center' mb={2}>
@@ -33,7 +39,7 @@ export function ScoutPartnersDashboard({ initialPartners }: { initialPartners: S
         </Button>
       </Stack>
 
-      <ScoutPartnersTable partners={partners} isLoading={false} />
+      <ScoutPartnersTable partners={partners} isLoading={false} onPartnerUpdate={handlePartnerUpdate} />
 
       <Modal open={showCreateForm} onClose={() => setShowCreateForm(false)}>
         <Box sx={modalStyle}>
