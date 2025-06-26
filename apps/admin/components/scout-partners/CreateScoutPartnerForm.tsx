@@ -1,7 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import type { ScoutPartner } from '@charmverse/core/prisma-client';
+import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma-client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {
@@ -14,7 +14,10 @@ import {
   Button,
   Switch,
   FormControlLabel,
-  CircularProgress
+  CircularProgress,
+  MenuItem,
+  Select,
+  InputLabel
 } from '@mui/material';
 import { uploadToS3 } from '@packages/aws/uploadToS3Browser';
 import { useFilePicker } from '@packages/scoutgame-ui/hooks/useFilePicker';
@@ -33,6 +36,7 @@ type FormData = {
   icon: string;
   bannerImage: string;
   infoPageImage: string;
+  status: ScoutPartnerStatus;
   tokenAmountPerPullRequest?: number;
   tokenAddress?: string;
   tokenChain?: number;
@@ -131,6 +135,12 @@ function ImageUploadField({
   );
 }
 
+const statusOptions: { value: ScoutPartnerStatus; label: string }[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'paused', label: 'Paused' },
+  { value: 'completed', label: 'Completed' }
+];
+
 export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
   const { trigger: createScoutPartner } = useCreateScoutPartner();
   const { trigger: getUploadToken } = useGetScoutPartnerUploadToken();
@@ -152,7 +162,8 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
       name: '',
       icon: '',
       bannerImage: '',
-      infoPageImage: ''
+      infoPageImage: '',
+      status: 'active'
     },
     resolver: yupResolver(createScoutPartnerSchema),
     mode: 'onChange',
@@ -238,6 +249,24 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
               error={!!errors.name}
               helperText={errors.name?.message}
             />
+          )}
+        />
+
+        <Controller
+          name='status'
+          control={control}
+          render={({ field }) => (
+            <FormControl fullWidth>
+              <InputLabel id='status-label'>Status</InputLabel>
+              <Select {...field} labelId='status-label' label='Status' error={!!errors.status}>
+                {statusOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errors.status && <FormHelperText error>{errors.status.message}</FormHelperText>}
+            </FormControl>
           )}
         />
 

@@ -1,4 +1,4 @@
-import type { ScoutPartner } from '@charmverse/core/prisma';
+import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 
 export type CreateScoutPartnerPayload = {
@@ -6,6 +6,7 @@ export type CreateScoutPartnerPayload = {
   icon: string;
   bannerImage: string;
   infoPageImage: string;
+  status: ScoutPartnerStatus;
   tokenAmountPerPullRequest?: number;
   tokenAddress?: string;
   tokenChain?: number;

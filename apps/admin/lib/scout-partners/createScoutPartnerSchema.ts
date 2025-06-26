@@ -1,3 +1,4 @@
+import type { ScoutPartnerStatus } from '@charmverse/core/prisma';
 import * as yup from 'yup';
 
 export const createScoutPartnerSchema = yup.object({
@@ -5,6 +6,7 @@ export const createScoutPartnerSchema = yup.object({
   icon: yup.string().required('Icon is required'),
   bannerImage: yup.string().required('Banner image is required'),
   infoPageImage: yup.string().required('Info page image is required'),
+  status: yup.string<ScoutPartnerStatus>().oneOf(['active', 'paused', 'completed']).required('Status is required'),
   tokenAmountPerPullRequest: yup.number().when('$isTokenEnabled', {
     is: true,
     then: (schema) => schema.required('Token amount per PR is required'),
