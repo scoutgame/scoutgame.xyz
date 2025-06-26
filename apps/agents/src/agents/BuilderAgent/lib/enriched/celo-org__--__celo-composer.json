@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Celo Network",
-    "DApp Development",
-    "Smart Contracts"
-  ],
-  "summary": "This GitHub repository serves as a comprehensive toolkit for developers aiming to build decentralized applications (DApps) on the Celo blockchain. It simplifies the development process by offering a streamlined setup that integrates both frontend and smart contract development. The toolkit features a command-line interface (CLI) that automates the creation of new projects, enabling developers to select from various templates and configurations, including options for smart contract development with Hardhat. It also supports the synchronization of smart contract ABIs (Application Binary Interfaces) with the frontend application, ensuring smooth interaction between the DApp's user interface and its smart contracts. Additionally, the repository provides a React-based frontend setup with Web3 integration, allowing developers to efficiently build user interfaces that interact with the blockchain. This toolkit is particularly beneficial for developers looking to leverage the Celo network for creating scalable, secure, and user-friendly DApps, offering a robust foundation for project development, testing, and deployment.",
-  "repo": "https://github.com/celo-org/celo-composer"
-}

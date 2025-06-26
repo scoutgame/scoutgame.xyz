@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum Development",
-    "Smart Contracts",
-    "Developer Tools"
-  ],
-  "summary": "The GitHub repository, known as 'Ape', is a comprehensive framework tailored for Ethereum development. It offers a suite of tools and plugins aimed at simplifying the development, testing, and deployment of smart contracts. The framework supports a wide range of functionalities essential for Ethereum development, including contract compilation, account management, network interaction, and transaction handling. Additionally, it provides utilities for debugging and logging, enhancing the development and maintenance of Ethereum-based applications. Designed with modularity and extensibility in mind, 'Ape' allows developers to integrate additional plugins and tools, catering to their specific needs. This framework is a powerful toolkit for blockchain developers, focusing on streamlining the development workflow and boosting productivity in the Ethereum ecosystem.",
-  "repo": "https://github.com/ApeWorX/ape"
-}

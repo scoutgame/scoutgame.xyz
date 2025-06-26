@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Universal Basic Income",
-    "Decentralized Finance (DeFi)",
-    "Digital Wallet"
-  ],
-  "summary": "The GoodDollar DApp is a decentralized application aimed at distributing a universal basic income (UBI) globally, with the goal of reducing wealth inequality. It utilizes the GoodDollar protocol and the G$ digital coin to facilitate this distribution. The application is designed with a focus on inclusivity, security, and user privacy, offering features such as user authentication, face recognition for identity verification, and a digital wallet for managing G$ coins. It supports both web and native mobile platforms, ensuring accessibility for a wide range of users. The project is open-source and encourages community contributions, reflecting its commitment to creating a more equitable financial system. By leveraging decentralized technologies, the GoodDollar DApp aims to empower users worldwide, providing a secure and transparent platform for the distribution and management of digital currency.",
-  "repo": "https://github.com/GoodDollar/GoodDAPP"
-}

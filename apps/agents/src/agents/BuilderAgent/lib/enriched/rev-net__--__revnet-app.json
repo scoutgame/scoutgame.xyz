@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "decentralized finance (DeFi)",
-    "crowdfunding",
-    "tokenization"
-  ],
-  "summary": "This GitHub repository hosts a project designed to facilitate the creation and management of tokenized revenue networks (revnets) for projects, leveraging the Juicebox protocol for decentralized funding. It integrates with wagmi and ConnectKit for wallet connectivity, utilizes Next.js for server-side rendering, and employs Tailwind CSS for styling. The platform enables users to design and deploy revnets, which are automated funding mechanisms that evolve through various stages, defining token issuance, revenue distribution among stakeholders, and cash-out rules. Supporting multiple blockchain networks, including Sepolia, Optimism Sepolia, Base Sepolia, and Arbitrum Sepolia, the project offers cross-chain functionality. It provides a user-friendly interface for creating revnets, managing token issuance, and distributing revenue, catering to startups, decentralized organizations, and communities seeking a transparent and efficient method for funding and revenue sharing. Additionally, the project includes features for IPFS file uploads, ENS name resolution, and detailed analytics for funding projects, making it a comprehensive tool for creators, developers, communities, investors, and customers aiming to establish decentralized global organizations and brands.",
-  "repo": "https://github.com/rev-net/revnet-app"
-}

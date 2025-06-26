@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "DAO Management",
-    "Decentralized Governance",
-    "Smart Contracts"
-  ],
-  "summary": "DAOhaus v3 is a platform tailored for the creation and management of Moloch DAOs (Decentralized Autonomous Organizations), emphasizing decentralized governance and community participation. It offers a comprehensive suite of tools and applications that simplify the process of summoning DAOs, managing their governance, and interacting with them through user-friendly interfaces. Built with a monorepo structure, DAOhaus v3 enhances development efficiency and modularity, featuring applications like the Admin App and Summoner App for user interaction, alongside a variety of libraries for utilities, data handling, and UI components. These libraries facilitate a broad spectrum of functionalities, from data retrieval and contract management to the creation of reusable UI components. DAOhaus v3 is designed to be accessible to developers, providing extensive documentation and fostering a community-driven approach to contributions. The platform's primary goal is to make decentralized governance more accessible and efficient, enabling users to easily create, manage, and participate in DAOs.",
-  "repo": "https://github.com/HausDAO/monorepo"
-}

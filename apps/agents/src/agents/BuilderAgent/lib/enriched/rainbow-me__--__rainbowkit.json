@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "wallet connection",
-    "dapp development",
-    "React library"
-  ],
-  "summary": "RainbowKit is a React library aimed at simplifying the integration of wallet connection features into decentralized applications (dapps). It provides developers with out-of-the-box wallet management capabilities, supporting a wide range of wallets and chains to ensure versatility. Built on top of wagmi and viem, RainbowKit is designed for easy customization, offering features such as customizable themes, dark mode, and custom wallet lists to enhance the user experience. The library is equipped with a quick start guide, comprehensive documentation, and examples to facilitate developers in adding web3 features to their applications. RainbowKit's focus on simplifying wallet connection and management makes it a valuable tool for developers looking to improve the accessibility and functionality of their dapps.",
-  "repo": "https://github.com/rainbow-me/rainbowkit"
-}

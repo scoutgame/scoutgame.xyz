@@ -1,7 +1,0 @@
-{
-  "topics": [
-    "Decentralized Social Networks"
-  ],
-  "summary": "The Farcaster Protocol serves as a foundational framework for creating decentralized social applications, aiming to revolutionize social networking by prioritizing user sovereignty over digital identities and interactions. It offers a detailed set of technical specifications to guide developers in building applications that operate on a decentralized network, ensuring enhanced privacy, security, and user control over data. The protocol is community-driven, encouraging contributions from developers of all skill levels to improve documentation, propose changes, and collaborate on the protocol's evolution. Farcaster's vision is to create a new era of social media where users are free from the control of centralized entities, leveraging the benefits of decentralization to empower users and foster a more open and secure online environment.",
-  "repo": "https://github.com/farcasterxyz/protocol"
-}

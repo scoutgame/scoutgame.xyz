@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Incentive Distribution",
-    "Data Querying"
-  ],
-  "summary": "This GitHub repository offers a comprehensive suite of tools aimed at enhancing the analysis and management of incentive distributions within decentralized ecosystems. By leveraging Google BigQuery for executing complex queries, it enables users to delve into blockchain data, focusing on the allocation and impact of incentives. The repository is equipped with scripts that facilitate detailed analysis, including the ability to run queries with and without owner mapping, thereby providing insights into how incentives are distributed across various entities. Integration with The Graph further enriches its capabilities, allowing for a deeper understanding of safe handler owners and their associated incentives. Designed for developers, analysts, and researchers, this toolset is pivotal for those seeking to understand the nuances of incentive distribution and its effects on user engagement and network participation. The emphasis on precise control over incentive distributions ensures that rewards are allocated fairly and efficiently, making it an essential resource for projects aiming to optimize their incentive strategies.",
-  "repo": "https://github.com/hai-on-op/distribution-scripts"
-}

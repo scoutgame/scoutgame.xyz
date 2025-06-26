@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "MEV-Boost",
-    "Validator"
-  ],
-  "summary": "This GitHub repository is dedicated to enhancing Ethereum validator operations, with a particular focus on MEV (Miner Extractable Value) and block building. It introduces a system that allows Ethereum validators to safely engage with MEV-Boost and community-built commitment protocols, aiming to increase block rewards through efficient and secure operations. The project includes a suite of tools and services such as a signing service for secure transaction signing, a PBS (Proposer-Builder Separation) service for managing block proposals and building, and a metrics service for monitoring and analytics. Built with Rust for performance and safety, the project emphasizes easy deployment and scalability through Docker containerization. It also provides extensive documentation and licensing information, showcasing a commitment to open-source principles and community collaboration. The system facilitates the interaction between Ethereum validators and MEV builders, ensuring the integrity and security of the blockchain through cryptographic signatures and validations, and includes functionalities for handling validator registrations and managing block submissions.",
-  "repo": "https://github.com/Commit-Boost/commit-boost-client"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "developer tools",
-    "API integration",
-    "decentralized applications"
-  ],
-  "summary": "This GitHub repository is dedicated to the Mixin Network's developer resources, offering a comprehensive suite of tools and documentation for building decentralized applications (dApps). It includes detailed guides on creating applications within the Mixin ecosystem, obtaining access tokens for Mixin Messenger users, and utilizing the Mixin Network API. The repository provides SDKs for a variety of programming languages such as Golang, Node.js, Kotlin/Java, Python, Ruby, PHP, and C#, enabling seamless integration of Mixin Network functionalities into projects. Additionally, it features a dashboard for application management, wallet transactions, and interaction with the network's advanced features like multi-signature accounts and encrypted messaging. The project places a strong emphasis on security, privacy, and user-friendly development practices, aiming to empower developers to create innovative and secure blockchain-based applications. Community engagement resources, including links to Mixin's social media, forums, and news updates, are also provided to support developers in their journey.",
-  "repo": "https://github.com/MixinNetwork/developers.mixin.one"
-}

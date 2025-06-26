@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "social_media",
-    "fantasy_sports"
-  ],
-  "summary": "The GitHub repository features a demo application for Farcaster Frames v2, illustrating the fusion of social media with fantasy sports. Developed with NextJS, TypeScript, and React, the application utilizes the Farcaster Frame SDK to enhance user interaction within the Farcaster social network. It offers a fantasy football league experience, enabling users to monitor their rankings, engage with player statistics, and share their achievements on Warpcast, a Farcaster client. Additionally, the app provides live match summaries, player scouting, and a banter bot, creating a dynamic platform for football enthusiasts to connect and engage with the sport and each other. This application exemplifies the innovative integration of social media and fantasy sports, offering users a unique and interactive way to enjoy their favorite sport.",
-  "repo": "https://github.com/footy-fc/FC-Footy"
-}

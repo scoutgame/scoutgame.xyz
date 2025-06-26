@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Access Control",
-    "Lit Protocol",
-    "React-based Web Application"
-  ],
-  "summary": "This GitHub repository features a React-based web application tailored for debugging and validating Access Control Conditions (ACCs) specifically designed for the Lit Protocol. The application offers a straightforward interface enabling developers to input their ACCs in JSON format. It then assesses these conditions against established schemas to verify their validity or to pinpoint errors requiring correction. This tool is particularly beneficial for developers utilizing the Lit Protocol, as it aids in ensuring that access control conditions are properly structured and will operate as expected within the protocol's framework. The application incorporates the '@websaam/lit-accs-validator' package for validation purposes and employs 'dirty-json' to handle potentially flawed JSON inputs, enhancing its resilience against typical input mistakes. Although the repository is noted as unmaintained, it remains a significant asset for those seeking to comprehend and implement access control conditions effectively.",
-  "repo": "https://github.com/LIT-Protocol/lit-accs-debugger-app"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Finance (DeFi)",
-    "Cryptocurrency Exchange",
-    "Stablecoins"
-  ],
-  "summary": "The Mento Web App is a decentralized application (DApp) that enables the exchange of Celo's native currencies through the Mento on-chain exchange mechanism. Designed with a focus on user experience, it utilizes a modern tech stack including Next.JS, React, Redux, Tailwind, Wagmi, and RainbowKit to offer a seamless interface for swapping between different stablecoins and cryptocurrencies on the Celo blockchain. Key features include wallet connectivity, real-time price charts, and slippage tolerance settings, catering to users engaged in decentralized finance (DeFi) activities. The app supports automatic deployments via Vercel's GitHub integration, ensuring that updates are efficiently pushed to production. As an open-source project licensed under Apache 2.0, it encourages community contributions, making it a valuable tool for transparent and decentralized financial transactions within the DeFi ecosystem.",
-  "repo": "https://github.com/mento-protocol/mento-web"
-}

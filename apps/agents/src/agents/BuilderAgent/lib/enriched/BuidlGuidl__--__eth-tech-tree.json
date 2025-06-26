@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Smart Contracts",
-    "Developer Tools"
-  ],
-  "summary": "This GitHub repository features a CLI (Command Line Interface) tool aimed at aiding developers in learning and advancing their skills in blockchain development, with a particular focus on Ethereum smart contracts. The tool offers a structured approach to navigating through a series of challenges, enabling users to set up development environments, deploy smart contracts on the Ethereum testnet, and submit their solutions for verification. It integrates with a backend API to fetch challenges, track user progress, and display a leaderboard that ranks users based on their efficiency and progress in completing challenges. Designed to be user-friendly, the CLI guides developers through each step of the blockchain development process, from writing and testing smart contracts to analyzing gas usage for optimization. This makes it a valuable resource for developers at all levels seeking to deepen their understanding and proficiency in Ethereum smart contract development.",
-  "repo": "https://github.com/BuidlGuidl/eth-tech-tree"
-}

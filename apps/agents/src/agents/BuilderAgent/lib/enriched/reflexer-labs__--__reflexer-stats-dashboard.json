@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "DeFi",
-    "Cryptocurrency",
-    "Blockchain Analytics"
-  ],
-  "summary": "This GitHub repository features a Next.js project that acts as a comprehensive dashboard for the Reflexer protocol, a decentralized finance (DeFi) platform. The dashboard is designed to offer users in-depth insights into collateralized debt positions (CDPs), referred to as 'Safes' within the Reflexer ecosystem. It provides a detailed overview of global statistics, including the total number of Safes, active Safes, ETH collateral, minted RAI debt, collateral ratios, and RAI redemption prices and rates. Additionally, users can delve into individual Safes to access specific information such as collateral, debt, liquidation price, and loan-to-value (LTV) ratio. The project utilizes Apollo Client for efficient data fetching from a subgraph, ensuring real-time data accuracy, and employs Chakra UI for a responsive and intuitive user interface. This dashboard is an indispensable tool for Reflexer protocol users, enabling them to closely monitor their positions and assess the protocol's overall financial health, thereby serving as a critical resource in the DeFi landscape.",
-  "repo": "https://github.com/reflexer-labs/reflexer-stats-dashboard"
-}

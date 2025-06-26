@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "zero-knowledge proofs",
-    "domain-specific languages",
-    "cryptography"
-  ],
-  "summary": "Noir is a Domain Specific Language (DSL) in early development, designed for creating zero-knowledge proofs (ZKPs) using SNARK proving systems. It aims to offer a safe and developer-friendly environment for writing programs or circuits that can generate proofs of execution, applicable in various cryptographic scenarios. Noir is versatile, supporting any ACIR (Abstract Circuit Intermediate Representation) compatible proving system, which allows for a wide range of cryptographic applications. The language is focused on improving safety and the developer experience, actively seeking feedback during its alpha phase to refine these aspects. As an open-source project under a dual MIT/APACHE license, Noir encourages community contributions. The ecosystem includes a standard library with cryptographic primitives and utilities, facilitating the development of secure and efficient zero-knowledge applications. Tools provided within the Noir ecosystem, such as a package manager (Nargo), a formatter (Nargo_fmt), and a Language Server Protocol (LSP) implementation, enhance the development process by offering functionalities for compiling Noir programs, managing dependencies, and interacting with the Noir ecosystem.",
-  "repo": "https://github.com/noir-lang/noir"
-}

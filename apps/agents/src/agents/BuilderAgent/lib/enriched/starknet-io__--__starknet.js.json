@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "smart contracts",
-    "starknet",
-    "cryptography"
-  ],
-  "summary": "The GitHub repository hosts a JavaScript/TypeScript library, Starknet.js, designed for developers to interact with StarkNet, a Layer 2 scaling solution for Ethereum that operates as a decentralized, permissionless ZK-Rollup. This library facilitates the deployment and interaction with smart contracts, account management, and transaction execution on the StarkNet network. It supports a wide range of functionalities including contract deployment through the Universal Deployer Contract (UDC), transaction signing, fee estimation, and cryptographic operations such as hashing and signing. Additionally, it offers integration with hardware wallets like Ledger, enhancing security for users. Starknet.js is tailored for the development of decentralized applications (dApps) on StarkNet, providing a comprehensive API that covers contract interaction, transaction management, and cryptographic utilities. The library is built with a focus on security, efficiency, and ease of use, making it an indispensable tool for developers aiming to build scalable and efficient dApps on the StarkNet ecosystem, leveraging the advantages of zero-knowledge proofs for improved privacy and scalability.",
-  "repo": "https://github.com/starknet-io/starknet.js"
-}

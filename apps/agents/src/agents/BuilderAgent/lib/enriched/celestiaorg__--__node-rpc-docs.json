@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "API Documentation",
-    "Developer Tools"
-  ],
-  "summary": "The GitHub repository serves as a comprehensive resource for developers aiming to interact with Celestia's Data Availability Nodes through its Node API. It provides detailed documentation, including method descriptions, parameters, and examples, to facilitate the integration of Celestia's blockchain services into various applications. The platform features an interactive API playground, allowing developers to test API methods directly within the documentation, and supports versioning to access historical API versions. Built with a focus on enhancing developer experience, the site offers a responsive and user-friendly interface, making it easier for developers to navigate through the API's capabilities and integrate Celestia's decentralized network into their projects.",
-  "repo": "https://github.com/celestiaorg/node-rpc-docs"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Smart Contracts",
-    "Decentralized Finance (DeFi)",
-    "Ethereum"
-  ],
-  "summary": "The 'Safe Deployments' GitHub repository is a vital resource for developers working within the Ethereum ecosystem, focusing on the Safe smart contract system. It offers a detailed collection of deployments, including contract addresses, ABI files, and deployment specifics across various networks and versions. This repository is particularly beneficial for those developing decentralized applications (dApps) that interact with Safe contracts, such as multi-signature wallets and DeFi platforms. It supports a range of deployment types, including those optimized for Layer 2 solutions like ZKsync, ensuring broad compatibility and efficiency. Additionally, the repository provides a JavaScript library to facilitate the integration of Safe contracts into projects, streamlining the development process. This makes it an indispensable tool for developers aiming to utilize the Safe ecosystem's security and flexibility in their blockchain-based applications.",
-  "repo": "https://github.com/safe-global/safe-deployments"
-}

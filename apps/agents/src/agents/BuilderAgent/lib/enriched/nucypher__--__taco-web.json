@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "access control",
-    "encryption",
-    "decentralized applications (dApps)"
-  ],
-  "summary": "The `taco-web` repository is a TypeScript library aimed at enhancing web applications with sophisticated access control mechanisms, particularly beneficial for decentralized applications (dApps). It specializes in enabling developers to implement and manage access control policies for encrypted data, facilitating secure and conditional data sharing. This library is adept at handling various access conditions, including ownership of specific NFTs or ERC20 tokens, and is designed to integrate smoothly with web3 providers for blockchain network interactions. `taco-web` stands out for its emphasis on privacy and security, making it a go-to choice for developers who need to enforce fine-grained access control over encrypted data in their dApps. The repository is well-supported with extensive documentation, tutorials, and demo applications, providing a solid foundation for developers to incorporate access control features into their projects effectively. Additionally, the project is actively developed and encourages community contributions, ensuring its evolution and relevance in the rapidly changing landscape of decentralized applications.",
-  "repo": "https://github.com/nucypher/taco-web"
-}

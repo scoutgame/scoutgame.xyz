@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Smart Contract Development",
-    "Ethereum",
-    "IDE"
-  ],
-  "summary": "The Remix Project is a comprehensive suite of tools designed for Ethereum smart contract development, with the Remix IDE at its core. This open-source Integrated Development Environment supports the entire lifecycle of smart contract creation, including writing, testing, deployment, and debugging. It is designed to be accessible to developers of all skill levels, offering a rich set of plugins with intuitive graphical user interfaces to enhance productivity. The Remix IDE is available in two versions: a web-based version for online access and a desktop version for offline use. Beyond the IDE, the project includes the Remix Plugin Engine and Remix Libraries, which provide essential low-level tools for developing native plugins and supporting functionalities like static analysis, debugging, and transaction simulation. The Remix Project is committed to a fast development cycle, extensive plugin support, and ease of use, making it a vital resource for Ethereum developers. It encourages community contributions to further enhance its features and capabilities.",
-  "repo": "https://github.com/ethereum/remix-project"
-}
