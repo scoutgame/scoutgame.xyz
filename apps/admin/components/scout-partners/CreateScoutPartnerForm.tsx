@@ -26,10 +26,11 @@ import { replaceS3Domain } from '@packages/utils/url';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { mutate } from 'swr';
 
 import { useCreateScoutPartner, useGetScoutPartnerUploadToken } from 'hooks/api/scout-partners';
 import { createScoutPartnerSchema } from 'lib/scout-partners/createScoutPartnerSchema';
+
+import { ChainSelector } from './ChainSelector';
 
 type FormData = {
   name: string;
@@ -156,14 +157,15 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
     control,
     handleSubmit,
     setValue,
-    formState: { errors, isValid }
+    formState: { errors, isValid, isSubmitting }
   } = useForm<FormData>({
     defaultValues: {
       name: '',
       icon: '',
       bannerImage: '',
       infoPageImage: '',
-      status: 'active'
+      status: 'active',
+      tokenChain: 0
     },
     resolver: yupResolver(createScoutPartnerSchema),
     mode: 'onChange',
@@ -332,21 +334,6 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
         {isTokenEnabled && (
           <>
             <Controller
-              name='tokenAmountPerPullRequest'
-              control={control}
-              rules={{ required: isTokenEnabled ? 'Token amount is required' : false }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type='number'
-                  label='Token Amount per PR'
-                  error={!!errors.tokenAmountPerPullRequest}
-                  helperText={errors.tokenAmountPerPullRequest?.message}
-                />
-              )}
-            />
-
-            <Controller
               name='tokenAddress'
               control={control}
               rules={{ required: isTokenEnabled ? 'Token address is required' : false }}
@@ -365,12 +352,26 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
               control={control}
               rules={{ required: isTokenEnabled ? 'Token chain is required' : false }}
               render={({ field }) => (
+                <ChainSelector
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={!!errors.tokenChain}
+                  helperText={errors.tokenChain?.message}
+                />
+              )}
+            />
+
+            <Controller
+              name='tokenAmountPerPullRequest'
+              control={control}
+              rules={{ required: isTokenEnabled ? 'Token amount per PR is required' : false }}
+              render={({ field }) => (
                 <TextField
                   {...field}
                   type='number'
-                  label='Token Chain'
-                  error={!!errors.tokenChain}
-                  helperText={errors.tokenChain?.message}
+                  label='Token Amount per PR'
+                  error={!!errors.tokenAmountPerPullRequest}
+                  helperText={errors.tokenAmountPerPullRequest?.message}
                 />
               )}
             />
@@ -435,7 +436,8 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
               isIconUploading ||
               isBannerUploading ||
               isInfoPageUploading ||
-              (isTokenEnabled && isTokenImageUploading)
+              (isTokenEnabled && isTokenImageUploading) ||
+              isSubmitting
             }
           >
             Create Partner
