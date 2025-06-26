@@ -1,12 +1,11 @@
-import { Stack, Container, Typography } from '@mui/material';
+import { Container, Stack, Typography } from '@mui/material';
 import { BASE_USDC_ADDRESS, GOODDOLLAR_TOKEN_ADDRESS, optimismTokenAddress } from '@packages/blockchain/constants';
-import { devTokenChain, devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
-import React from 'react';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { base, celo, optimism } from 'viem/chains';
 
 import { PartnerCardContainer } from './components/PartnerCardContainer';
 
-export function PartnersDashboard() {
+export function AirdropsDashboard() {
   return (
     <Container maxWidth='md'>
       <Stack spacing={3} justifyContent='center' mb={3}>
