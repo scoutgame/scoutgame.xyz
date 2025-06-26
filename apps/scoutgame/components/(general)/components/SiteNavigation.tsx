@@ -2,7 +2,6 @@
 
 import { BottomNavigationAction } from '@mui/material';
 import { isDraftSeason, isEndOfDraftWeek } from '@packages/dates/utils';
-import { enableMatchupsFeatureFlag } from '@packages/matchup/config';
 import { StyledBottomNavigation } from '@packages/scoutgame-ui/components/common/BottomNavigation';
 import { BuilderIcon } from '@packages/scoutgame-ui/components/common/Icons/BuilderIcon';
 import { ClaimIcon } from '@packages/scoutgame-ui/components/common/Icons/ClaimIcon';
@@ -90,15 +89,6 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
           icon={<ScoutIcon size='24px' />}
           LinkComponent={Link}
         />
-        {enableMatchupsFeatureFlag() && (
-          <BottomNavigationAction
-            label='Match Up'
-            href='/matchup'
-            value='matchup'
-            icon={<Image src='/images/matchup/vs_icon.svg' alt='' width={24} height={24} />}
-            LinkComponent={Link}
-          />
-        )}
         <BottomNavigationAction
           label='Developers'
           href='/developers'
@@ -150,16 +140,10 @@ export function SiteNavigation({ topNav }: { topNav?: boolean }) {
 function getActiveButton(pathname: string) {
   if (pathname.startsWith('/scout') || pathname.startsWith('/u/')) {
     return 'scout';
-  } else if (pathname.startsWith('/matchup')) {
-    return 'matchup';
   } else if (pathname.startsWith('/claim')) {
     return 'claim';
   } else if (pathname.startsWith('/developers')) {
     return 'developers';
-  } else if (pathname.startsWith('/quests')) {
-    return 'quests';
-  } else if (pathname.startsWith('/draft')) {
-    return 'draft';
   } else if (pathname.startsWith('/airdrop')) {
     return 'airdrop';
   }
