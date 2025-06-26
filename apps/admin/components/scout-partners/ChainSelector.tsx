@@ -2,7 +2,7 @@ import { FormControl, FormHelperText, InputLabel, MenuItem, Select, Stack } from
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 
-const chainOptions = [
+export const chainOptions = [
   {
     id: 1,
     name: 'Ethereum',

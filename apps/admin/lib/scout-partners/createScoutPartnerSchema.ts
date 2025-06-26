@@ -38,3 +38,5 @@ export const createScoutPartnerSchema = yup.object({
     otherwise: (schema) => schema.optional()
   })
 });
+
+export type CreateScoutPartnerPayload = yup.InferType<typeof createScoutPartnerSchema>;

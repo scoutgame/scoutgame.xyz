@@ -3,6 +3,8 @@
 import { log } from '@charmverse/core/log';
 import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma-client';
 import { yupResolver } from '@hookform/resolvers/yup';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Stack,
   TextField,
@@ -12,19 +14,16 @@ import {
   Button,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  IconButton,
+  Box
 } from '@mui/material';
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import * as yup from 'yup';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 
-import { useUpdateScoutPartner } from 'hooks/api/scout-partners';
-
-type FormData = {
-  tokenAmountPerPullRequest?: number;
-  status: ScoutPartnerStatus;
-  tokenSymbol?: string;
-};
+import { useEditScoutPartner } from 'hooks/api/scout-partners';
+import type { EditScoutPartnerPayload } from 'lib/scout-partners/editScoutPartnerSchema';
+import { editScoutPartnerSchema } from 'lib/scout-partners/editScoutPartnerSchema';
 
 type Props = {
   partner: ScoutPartner;
@@ -38,34 +37,33 @@ const statusOptions: { value: ScoutPartnerStatus; label: string }[] = [
   { value: 'completed', label: 'Completed' }
 ];
 
-const editScoutPartnerSchema = yup.object({
-  status: yup.string<ScoutPartnerStatus>().oneOf(['active', 'paused', 'completed']).required('Status is required'),
-  tokenAmountPerPullRequest: yup.number().optional(),
-  tokenSymbol: yup.string().optional()
-});
-
 export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
-  const { trigger: updateScoutPartner } = useUpdateScoutPartner(partner.id);
+  const { trigger: editScoutPartner } = useEditScoutPartner(partner.id);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid }
-  } = useForm<FormData>({
+    formState: { errors, isValid, isDirty }
+  } = useForm<EditScoutPartnerPayload>({
     defaultValues: {
       status: partner.status,
       tokenAmountPerPullRequest: partner.tokenAmountPerPullRequest ?? undefined,
-      tokenSymbol: partner.tokenSymbol ?? undefined
+      issueTagTokenAmounts: (partner.issueTagTokenAmounts as { tag: string; amount: number }[]) ?? []
     },
     resolver: yupResolver(editScoutPartnerSchema),
     mode: 'onChange'
   });
 
-  const onSubmit = async (data: FormData) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'issueTagTokenAmounts'
+  });
+
+  const onSubmit = handleSubmit(async (data: EditScoutPartnerPayload) => {
     try {
       setIsSubmitting(true);
-      const updatedPartner = await updateScoutPartner(data);
+      const updatedPartner = await editScoutPartner(data);
       onSuccess(updatedPartner);
       onClose();
     } catch (error) {
@@ -73,10 +71,10 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={onSubmit}>
       <Stack spacing={3}>
         <Typography variant='h6'>Edit Scout Partner</Typography>
 
@@ -114,18 +112,56 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
               )}
             />
 
-            <Controller
-              name='tokenSymbol'
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label='Token Symbol'
-                  error={!!errors.tokenSymbol}
-                  helperText={errors.tokenSymbol?.message}
-                />
-              )}
-            />
+            <Stack spacing={2}>
+              <Stack direction='row' justifyContent='space-between' alignItems='center'>
+                <Typography variant='subtitle1'>Issue Tag Token Amounts</Typography>
+                <Button
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={() => append({ tag: '', amount: 0 })}
+                  variant='outlined'
+                  size='small'
+                >
+                  Add Tag
+                </Button>
+              </Stack>
+
+              {fields.map((arrayField, index) => (
+                <Box key={arrayField.id} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <Controller
+                    name={`issueTagTokenAmounts.${index}.tag`}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        sx={{ flex: 1 }}
+                        label='Tag'
+                        error={!!errors.issueTagTokenAmounts?.[index]?.tag}
+                        helperText={errors.issueTagTokenAmounts?.[index]?.tag?.message}
+                        size='small'
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`issueTagTokenAmounts.${index}.amount`}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type='number'
+                        sx={{ flex: 1 }}
+                        label='Amount'
+                        error={!!errors.issueTagTokenAmounts?.[index]?.amount}
+                        helperText={errors.issueTagTokenAmounts?.[index]?.amount?.message}
+                        size='small'
+                      />
+                    )}
+                  />
+                  <IconButton onClick={() => remove(index)} size='small' color='error'>
+                    <DeleteIcon fontSize='small' />
+                  </IconButton>
+                </Box>
+              ))}
+            </Stack>
           </>
         )}
 
@@ -133,7 +169,7 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
           <Button variant='outlined' onClick={onClose}>
             Cancel
           </Button>
-          <Button type='submit' variant='contained' color='primary' disabled={!isValid || isSubmitting}>
+          <Button type='submit' variant='contained' color='primary' disabled={!isValid || isSubmitting || !isDirty}>
             Update Partner
           </Button>
         </Stack>

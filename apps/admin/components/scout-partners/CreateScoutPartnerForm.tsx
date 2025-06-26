@@ -28,23 +28,10 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useCreateScoutPartner, useGetScoutPartnerUploadToken } from 'hooks/api/scout-partners';
+import type { CreateScoutPartnerPayload } from 'lib/scout-partners/createScoutPartnerSchema';
 import { createScoutPartnerSchema } from 'lib/scout-partners/createScoutPartnerSchema';
 
 import { ChainSelector } from './ChainSelector';
-
-type FormData = {
-  name: string;
-  icon: string;
-  bannerImage: string;
-  infoPageImage: string;
-  status: ScoutPartnerStatus;
-  tokenAmountPerPullRequest?: number;
-  tokenAddress?: string;
-  tokenChain?: number;
-  tokenSymbol?: string;
-  tokenDecimals?: number;
-  tokenImage?: string;
-};
 
 type Props = {
   onClose: () => void;
@@ -157,15 +144,20 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
     control,
     handleSubmit,
     setValue,
-    formState: { errors, isValid, isSubmitting }
-  } = useForm<FormData>({
+    formState: { errors, isValid, isSubmitting, isDirty }
+  } = useForm<CreateScoutPartnerPayload>({
     defaultValues: {
       name: '',
       icon: '',
       bannerImage: '',
       infoPageImage: '',
       status: 'active',
-      tokenChain: 0
+      tokenChain: 0,
+      tokenAddress: '',
+      tokenAmountPerPullRequest: 0,
+      tokenDecimals: 0,
+      tokenImage: '',
+      tokenSymbol: ''
     },
     resolver: yupResolver(createScoutPartnerSchema),
     mode: 'onChange',
@@ -176,7 +168,11 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
     return getUploadToken({ filename: encodeFilename(file.name) });
   }
 
-  async function handleFileUpload(file: File, fieldName: keyof FormData, setUploading: (value: boolean) => void) {
+  async function handleFileUpload(
+    file: File,
+    fieldName: keyof CreateScoutPartnerPayload,
+    setUploading: (value: boolean) => void
+  ) {
     if (file.size > DEFAULT_MAX_FILE_SIZE_MB * 1024 ** 2) {
       log.error(`File size must be less than ${DEFAULT_MAX_FILE_SIZE_MB}MB`);
       return;
@@ -206,7 +202,7 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
     tokenImageUpload: { ...tokenImageUploadProps, isUploading: isTokenImageUploading }
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: CreateScoutPartnerPayload) => {
     try {
       const payload = isTokenEnabled
         ? data
@@ -432,12 +428,7 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
             variant='contained'
             color='primary'
             disabled={
-              !isValid ||
-              isIconUploading ||
-              isBannerUploading ||
-              isInfoPageUploading ||
-              (isTokenEnabled && isTokenImageUploading) ||
-              isSubmitting
+              !isValid || isIconUploading || isBannerUploading || isInfoPageUploading || isSubmitting || !isDirty
             }
           >
             Create Partner

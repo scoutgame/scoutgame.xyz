@@ -20,9 +20,11 @@ import {
   IconButton,
   Modal
 } from '@mui/material';
+import { getChainById } from '@packages/blockchain/chains';
 import Image from 'next/image';
 import React, { useState, useMemo } from 'react';
 
+import { chainOptions } from './ChainSelector';
 import { EditScoutPartnerForm } from './EditScoutPartnerForm';
 
 type SortField = 'id' | 'name' | 'tokenAmountPerPullRequest' | 'tokenSymbol' | 'tokenChain' | 'status';
@@ -58,6 +60,25 @@ type Props = {
   isLoading: boolean;
   onPartnerUpdate: (partner: ScoutPartner) => void;
 };
+
+// Add this component for centered image display
+function CenteredImage({ src, alt, width, height }: { src: string; alt: string; width: number; height: number }) {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        width,
+        height,
+        margin: '0 auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <Image src={src} alt={alt} width={width} height={height} style={{ objectFit: 'contain' }} />
+    </Box>
+  );
+}
 
 export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Props) {
   const [sortField, setSortField] = useState<SortField>('name');
@@ -132,8 +153,8 @@ export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Pro
                 </TableSortLabel>
               </TableCell>
               <TableCell>Icon</TableCell>
-              <TableCell>Banner</TableCell>
-              <TableCell>Info Page</TableCell>
+              <TableCell>Developer Page Banner</TableCell>
+              <TableCell>Info Page Banner</TableCell>
               <TableCell>
                 <TableSortLabel
                   active={sortField === 'tokenAmountPerPullRequest'}
@@ -167,60 +188,80 @@ export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Pro
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedPartners.map((partner) => (
-              <TableRow key={partner.id}>
-                <TableCell>{partner.name}</TableCell>
-                <TableCell>
-                  <Chip
-                    variant='outlined'
-                    label={statusLabels[partner.status]}
-                    color={statusColors[partner.status]}
-                    size='small'
-                  />
-                </TableCell>
-                <TableCell>
-                  <Link href={partner.icon} target='_blank'>
-                    <Image src={partner.icon} alt={`${partner.name} icon`} width={30} height={30} />
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Link href={partner.bannerImage} target='_blank'>
-                    <Image src={partner.bannerImage} alt={`${partner.name} banner`} width={60} height={30} />
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Link href={partner.infoPageImage} target='_blank'>
-                    <Image src={partner.infoPageImage} alt={`${partner.name} info page`} width={60} height={30} />
-                  </Link>
-                </TableCell>
-                <TableCell>{partner.tokenAmountPerPullRequest || '-'}</TableCell>
-                <TableCell>{partner.tokenChain || '-'}</TableCell>
-                <TableCell>
-                  {partner.tokenAddress ? (
-                    <Link href={`https://etherscan.io/address/${partner.tokenAddress}`} target='_blank'>
-                      {partner.tokenAddress.slice(0, 6)}...{partner.tokenAddress.slice(-4)}
+            {sortedPartners.map((partner) => {
+              const chain = partner.tokenChain ? getChainById(Number(partner.tokenChain)) : undefined;
+              const chainOption = chain ? chainOptions.find((c) => c.id === Number(partner.tokenChain)) : undefined;
+              return (
+                <TableRow key={partner.id}>
+                  <TableCell>{partner.name}</TableCell>
+                  <TableCell>
+                    <Chip
+                      variant='outlined'
+                      label={statusLabels[partner.status]}
+                      color={statusColors[partner.status]}
+                      size='small'
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Link href={partner.icon} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
+                      <CenteredImage src={partner.icon} alt={`${partner.name} icon`} width={30} height={30} />
                     </Link>
-                  ) : (
-                    '-'
-                  )}
-                </TableCell>
-                <TableCell>{partner.tokenSymbol || '-'}</TableCell>
-                <TableCell>
-                  {partner.tokenImage ? (
-                    <Link href={partner.tokenImage} target='_blank'>
-                      <Image src={partner.tokenImage} alt={`${partner.name} token`} width={20} height={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Link href={partner.bannerImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
+                      <CenteredImage src={partner.bannerImage} alt={`${partner.name} banner`} width={60} height={30} />
                     </Link>
-                  ) : (
-                    '-'
-                  )}
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => setEditingPartner(partner)} size='small'>
-                    <EditIcon fontSize='small' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>
+                    <Link href={partner.infoPageImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
+                      <CenteredImage
+                        src={partner.infoPageImage}
+                        alt={`${partner.name} info page`}
+                        width={60}
+                        height={30}
+                      />
+                    </Link>
+                  </TableCell>
+                  <TableCell>{partner.tokenAmountPerPullRequest || '-'}</TableCell>
+                  <TableCell>
+                    {chain ? (
+                      <Stack direction='row' spacing={1} alignItems='center'>
+                        {chainOption?.icon && (
+                          <CenteredImage src={chainOption.icon} alt={chain.chainName} width={20} height={20} />
+                        )}
+                        <Typography variant='body2'>{chain.chainName}</Typography>
+                      </Stack>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {partner.tokenAddress && chain ? (
+                      <Link href={`${chain.blockExplorerUrls[0]}/address/${partner.tokenAddress}`} target='_blank'>
+                        {partner.tokenAddress.slice(0, 6)}...{partner.tokenAddress.slice(-4)}
+                      </Link>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell>{partner.tokenSymbol || '-'}</TableCell>
+                  <TableCell>
+                    {partner.tokenImage ? (
+                      <Link href={partner.tokenImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
+                        <CenteredImage src={partner.tokenImage} alt={`${partner.name} token`} width={20} height={20} />
+                      </Link>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => setEditingPartner(partner)} size='small'>
+                      <EditIcon fontSize='small' />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
