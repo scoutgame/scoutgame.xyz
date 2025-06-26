@@ -4,6 +4,7 @@ import { BottomNavigation, BottomNavigationAction, styled } from '@mui/material'
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaGithubAlt } from 'react-icons/fa';
+import { FaParachuteBox } from 'react-icons/fa6';
 import { HiOutlineUsers } from 'react-icons/hi2';
 import { MdDocumentScanner, MdOutlineHandshake, MdOutlineNotes } from 'react-icons/md';
 import { SiFarcaster } from 'react-icons/si';
@@ -43,9 +44,9 @@ export function SiteNavigation({ topNav, isAuthenticated = false }: { topNav?: b
   return (
     <StyledBottomNavigation showLabels value={value} data-test='site-navigation' topNav={topNav}>
       <BottomNavigationAction
-        label='Scout Partners'
-        href='/scout-partners'
-        value='scout-partners'
+        label='Partners'
+        href='/partners'
+        value='partners'
         icon={<MdOutlineHandshake size='24px' />}
         LinkComponent={Link}
       />
@@ -85,10 +86,10 @@ export function SiteNavigation({ topNav, isAuthenticated = false }: { topNav?: b
         LinkComponent={Link}
       />
       <BottomNavigationAction
-        label='Partners'
-        href='/partners'
-        value='partners'
-        icon={<MdOutlineHandshake size='24px' />}
+        label='Airdrops'
+        href='/airdrops'
+        value='airdrops'
+        icon={<FaParachuteBox size='24px' />}
         LinkComponent={Link}
       />
     </StyledBottomNavigation>
