@@ -13,7 +13,8 @@ import {
   Link,
   TableSortLabel,
   CircularProgress,
-  Box
+  Box,
+  Typography
 } from '@mui/material';
 import Image from 'next/image';
 import React, { useState, useMemo } from 'react';
@@ -54,7 +55,18 @@ export function ScoutPartnersTable({ partners, isLoading }: { partners?: ScoutPa
   }
 
   if (!partners?.length) {
-    return null;
+    return (
+      <Paper sx={{ p: 3, textAlign: 'center', backgroundColor: 'background.paper' }}>
+        <Stack spacing={2} alignItems='center'>
+          <Typography variant='h6' color='textSecondary'>
+            No Scout Partners Found
+          </Typography>
+          <Typography variant='body2' color='textSecondary'>
+            Create your first scout partner by clicking the "Create Partner" button above.
+          </Typography>
+        </Stack>
+      </Paper>
+    );
   }
 
   return (

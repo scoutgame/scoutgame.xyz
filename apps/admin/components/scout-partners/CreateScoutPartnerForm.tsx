@@ -1,6 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {
   Stack,
   TextField,
@@ -11,14 +12,15 @@ import {
   Button,
   Alert,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  CircularProgress
 } from '@mui/material';
-import { uploadToS3 } from '@packages/aws/uploadToS3Browser';
 import { useS3UploadInput } from '@packages/scoutgame-ui/hooks/useS3UploadInput';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { useCreateScoutPartner, useS3Upload } from 'hooks/api/scout-partners';
+import { useCreateScoutPartner } from 'hooks/api/scout-partners';
 
 type FormData = {
   id: string;
@@ -38,9 +40,74 @@ type Props = {
   onClose: () => void;
 };
 
+type ImageUploadFieldProps = {
+  label: string;
+  value?: string;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  isUploading: boolean;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  imageSize?: { width: number; height: number };
+};
+
+function ImageUploadField({
+  label,
+  value,
+  inputRef,
+  isUploading,
+  onFileChange,
+  error,
+  imageSize = { width: 60, height: 60 }
+}: ImageUploadFieldProps) {
+  return (
+    <FormControl error={!!error} sx={{ width: 'fit-content' }}>
+      <Typography variant='subtitle2' gutterBottom>
+        {label}
+      </Typography>
+      <Box sx={{ position: 'relative' }}>
+        <input
+          type='file'
+          accept='image/*'
+          ref={inputRef}
+          onChange={onFileChange}
+          style={{
+            display: 'none'
+          }}
+          disabled={isUploading}
+        />
+        {value ? (
+          <Box sx={{ position: 'relative', cursor: 'pointer' }} onClick={() => inputRef.current?.click()}>
+            <Image
+              src={value}
+              alt={label}
+              width={imageSize.width}
+              height={imageSize.height}
+              style={{ objectFit: 'cover', borderRadius: 4 }}
+            />
+          </Box>
+        ) : (
+          <Button
+            variant='outlined'
+            onClick={() => inputRef.current?.click()}
+            disabled={isUploading}
+            startIcon={isUploading ? <CircularProgress size={16} /> : <AddCircleOutlineIcon />}
+            sx={{
+              minWidth: imageSize.width,
+              height: imageSize.height,
+              borderColor: error ? 'error.main' : undefined
+            }}
+          >
+            Upload
+          </Button>
+        )}
+      </Box>
+      {error && <FormHelperText error>{error}</FormHelperText>}
+    </FormControl>
+  );
+}
+
 export function CreateScoutPartnerForm({ onClose }: Props) {
   const { trigger: createScoutPartner } = useCreateScoutPartner();
-  const { getUploadToken } = useS3Upload();
   const [isTokenEnabled, setIsTokenEnabled] = useState(false);
 
   const {
@@ -59,25 +126,24 @@ export function CreateScoutPartnerForm({ onClose }: Props) {
     }
   });
 
-  const iconUpload = useS3UploadInput({
-    onFileUpload: ({ url }) => setValue('icon', url),
-    onError: (error) => log.error('Error uploading file', { error })
-  });
-
-  const bannerUpload = useS3UploadInput({
-    onFileUpload: ({ url }) => setValue('bannerImage', url),
-    onError: (error) => log.error('Error uploading file', { error })
-  });
-
-  const infoPageUpload = useS3UploadInput({
-    onFileUpload: ({ url }) => setValue('infoPageImage', url),
-    onError: (error) => log.error('Error uploading file', { error })
-  });
-
-  const tokenImageUpload = useS3UploadInput({
-    onFileUpload: ({ url }) => setValue('tokenImage', url),
-    onError: (error) => log.error('Error uploading file', { error })
-  });
+  const { iconUpload, bannerUpload, infoPageUpload, tokenImageUpload } = {
+    iconUpload: useS3UploadInput({
+      onFileUpload: ({ url }) => setValue('icon', url),
+      onError: (error) => log.error('Error uploading file', { error })
+    }),
+    bannerUpload: useS3UploadInput({
+      onFileUpload: ({ url }) => setValue('bannerImage', url),
+      onError: (error) => log.error('Error uploading file', { error })
+    }),
+    infoPageUpload: useS3UploadInput({
+      onFileUpload: ({ url }) => setValue('infoPageImage', url),
+      onError: (error) => log.error('Error uploading file', { error })
+    }),
+    tokenImageUpload: useS3UploadInput({
+      onFileUpload: ({ url }) => setValue('tokenImage', url),
+      onError: (error) => log.error('Error uploading file', { error })
+    })
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -128,68 +194,56 @@ export function CreateScoutPartnerForm({ onClose }: Props) {
           )}
         />
 
-        <FormControl>
-          <Typography variant='subtitle2' gutterBottom>
-            Icon Image
-          </Typography>
-          <Box>
-            <Button variant='outlined' component='label' {...iconUpload}>
-              Upload Icon
-            </Button>
-          </Box>
-          <Controller
-            name='icon'
-            control={control}
-            rules={{ required: 'Icon is required' }}
-            render={({ field: { value } }) => (
-              <FormHelperText error={!!errors.icon}>
-                {errors.icon?.message || (value && `Uploaded: ${value}`)}
-              </FormHelperText>
-            )}
-          />
-        </FormControl>
+        <Controller
+          name='icon'
+          control={control}
+          rules={{ required: 'Icon is required' }}
+          render={({ field: { value } }) => (
+            <ImageUploadField
+              label='Icon'
+              value={value}
+              inputRef={iconUpload.inputRef}
+              isUploading={iconUpload.isUploading}
+              onFileChange={iconUpload.onFileChange}
+              error={errors.icon?.message}
+              imageSize={{ width: 48, height: 48 }}
+            />
+          )}
+        />
 
-        <FormControl>
-          <Typography variant='subtitle2' gutterBottom>
-            Banner Image
-          </Typography>
-          <Box>
-            <Button variant='outlined' component='label' {...bannerUpload}>
-              Upload Banner
-            </Button>
-          </Box>
-          <Controller
-            name='bannerImage'
-            control={control}
-            rules={{ required: 'Banner image is required' }}
-            render={({ field: { value } }) => (
-              <FormHelperText error={!!errors.bannerImage}>
-                {errors.bannerImage?.message || (value && `Uploaded: ${value}`)}
-              </FormHelperText>
-            )}
-          />
-        </FormControl>
+        <Controller
+          name='bannerImage'
+          control={control}
+          rules={{ required: 'Banner image is required' }}
+          render={({ field: { value } }) => (
+            <ImageUploadField
+              label='Banner Image'
+              value={value}
+              inputRef={bannerUpload.inputRef}
+              isUploading={bannerUpload.isUploading}
+              onFileChange={bannerUpload.onFileChange}
+              error={errors.bannerImage?.message}
+              imageSize={{ width: 300, height: 48 }}
+            />
+          )}
+        />
 
-        <FormControl>
-          <Typography variant='subtitle2' gutterBottom>
-            Info Page Image
-          </Typography>
-          <Box>
-            <Button variant='outlined' component='label' {...infoPageUpload}>
-              Upload Info Page Image
-            </Button>
-          </Box>
-          <Controller
-            name='infoPageImage'
-            control={control}
-            rules={{ required: 'Info page image is required' }}
-            render={({ field: { value } }) => (
-              <FormHelperText error={!!errors.infoPageImage}>
-                {errors.infoPageImage?.message || (value && `Uploaded: ${value}`)}
-              </FormHelperText>
-            )}
-          />
-        </FormControl>
+        <Controller
+          name='infoPageImage'
+          control={control}
+          rules={{ required: 'Info page image is required' }}
+          render={({ field: { value } }) => (
+            <ImageUploadField
+              label='Info Page Image'
+              value={value}
+              inputRef={infoPageUpload.inputRef}
+              isUploading={infoPageUpload.isUploading}
+              onFileChange={infoPageUpload.onFileChange}
+              error={errors.infoPageImage?.message}
+              imageSize={{ width: 300, height: 48 }}
+            />
+          )}
+        />
 
         <FormControlLabel
           control={<Switch checked={isTokenEnabled} onChange={(e) => setIsTokenEnabled(e.target.checked)} />}
@@ -271,27 +325,29 @@ export function CreateScoutPartnerForm({ onClose }: Props) {
               )}
             />
 
-            <FormControl>
-              <Typography variant='subtitle2' gutterBottom>
-                Token Image
-              </Typography>
-              <Box>
-                <Button variant='outlined' component='label' {...tokenImageUpload}>
-                  Upload Token Image
-                </Button>
-              </Box>
-              <Controller
-                name='tokenImage'
-                control={control}
-                render={({ field: { value } }) => <FormHelperText>{value && `Uploaded: ${value}`}</FormHelperText>}
-              />
-            </FormControl>
+            <Controller
+              name='tokenImage'
+              control={control}
+              render={({ field: { value } }) => (
+                <ImageUploadField
+                  label='Token Image'
+                  value={value}
+                  inputRef={tokenImageUpload.inputRef}
+                  isUploading={tokenImageUpload.isUploading}
+                  onFileChange={tokenImageUpload.onFileChange}
+                  error={errors.tokenImage?.message}
+                  imageSize={{ width: 48, height: 48 }}
+                />
+              )}
+            />
           </>
         )}
 
         <Stack direction='row' spacing={2} justifyContent='flex-end'>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type='submit' variant='contained'>
+          <Button variant='outlined' onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type='submit' variant='contained' color='primary'>
             Create Partner
           </Button>
         </Stack>
