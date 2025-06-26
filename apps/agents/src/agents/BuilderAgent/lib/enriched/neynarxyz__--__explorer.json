@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Social Media",
-    "Decentralized Networks",
-    "Blockchain Analytics"
-  ],
-  "summary": "The Explorer is a web application focused on tracking and visualizing the spread of events, such as user actions or posts (casts), across the Farcaster network. Farcaster, a decentralized social network, prioritizes user control and data ownership, operating on blockchain technology to ensure a censorship-resistant environment. The Explorer serves as a crucial tool for both developers and users aiming to comprehend the dynamics of information dissemination within the network, where events can take up to 4 hours to propagate fully across all hubs. It offers a user-friendly interface that allows for the search of specific users or casts, providing insights into their propagation status across various network hubs. Enhanced by the Neynar API, the application delivers detailed information on casts and users, including their interactions and network responses. As part of Neynar's suite of developer tools, The Explorer aims to bolster the Farcaster ecosystem by offering valuable analytics and insights into network activity, thereby aiding in the optimization of content distribution strategies.",
-  "repo": "https://github.com/neynarxyz/explorer"
-}

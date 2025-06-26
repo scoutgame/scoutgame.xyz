@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "social media automation",
-    "web scraping",
-    "Twitter API"
-  ],
-  "summary": "The GitHub repository presents a versatile tool designed for automating interactions on Twitter without relying on the official Twitter API. This tool is capable of performing a wide array of actions including sending tweets, retweeting, liking tweets, following users, and fetching tweets and user profiles. It also supports advanced functionalities such as creating polls, handling media uploads, and integrating with Grok for real-time Twitter data analysis. Designed to operate in both browser and server environments, it offers flexibility in deployment. The tool is particularly beneficial for developers and researchers aiming to automate social media interactions or collect data from Twitter for analysis. Additionally, it includes features for managing direct messages, fetching trends, and interacting with Twitter Spaces, making it a comprehensive solution for Twitter automation and data collection.",
-  "repo": "https://github.com/elizaOS/agent-twitter-client"
-}

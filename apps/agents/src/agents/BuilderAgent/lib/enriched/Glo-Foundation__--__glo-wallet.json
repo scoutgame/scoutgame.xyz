@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "stablecoin",
-    "charity",
-    "wallet"
-  ],
-  "summary": "The Glo Wallet is a decentralized application designed to simplify the process of buying and using the Glo Dollar, a stablecoin aimed at funding public goods and charities. It serves as an accessible entry point for individuals new to cryptocurrency, offering a straightforward interface for purchasing Glo Dollars and utilizing them in real-world transactions. The wallet integrates with the Sequence wallet for seamless authentication and is developed on the wagmi framework, focusing on core functionalities essential for beginners. These include the ability to buy Glo Dollars, view transactions, and understand the impact of their holdings. The Glo Wallet emphasizes community activation through specific call-to-actions, encouraging users to participate in activities that support the growth of the Glo Dollar Movement. Designed with simplicity and accessibility in mind, the wallet aims to reduce entry barriers for newcomers to cryptocurrency, ensuring it remains user-friendly while providing the necessary tools for effective engagement with the Glo Dollar ecosystem.",
-  "repo": "https://github.com/Glo-Foundation/glo-wallet"
-}

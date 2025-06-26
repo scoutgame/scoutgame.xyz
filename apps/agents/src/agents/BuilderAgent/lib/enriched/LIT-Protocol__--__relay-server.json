@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "authentication",
-    "decentralized identity",
-    "smart contracts"
-  ],
-  "summary": "The Relay Server, developed by the Lit Protocol team, acts as a central hub to facilitate and subsidize interactions with Lit Protocol's smart contracts on the Chronicle Vesuvius chain. It provides a comprehensive solution for integrating WebAuthn authentication into applications, supporting a variety of authentication methods including Google, Discord, and Ethereum wallet accounts. This enables the minting of Programmable Key Pairs (PKPs), a form of decentralized identity that empowers users to manage their digital identities and assets across platforms without central authority reliance. The server also allows for the storage of encryption conditions on the blockchain, facilitating secure and decentralized access control to encrypted data. Designed for easy integration into existing applications, the Relay Server enhances user experience by offering a seamless and secure authentication process, making it an essential component for decentralized applications that require robust and flexible access control mechanisms.",
-  "repo": "https://github.com/LIT-Protocol/relay-server"
-}

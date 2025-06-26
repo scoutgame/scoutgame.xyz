@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "ethereum",
-    "developer tools"
-  ],
-  "summary": "The 'create-eth Extensions' GitHub repository is a curated collection of extensions for the Scaffold-ETH project, aimed at enhancing Ethereum blockchain development. It provides a straightforward command-line interface for developers to integrate additional features and tools into their blockchain applications, simplifying the extension of Scaffold-ETH projects. The repository not only facilitates the installation of these extensions but also promotes community involvement by enabling developers to create and share their own extensions. This collaborative approach fosters a rich ecosystem of tools and functionalities, accelerating the development process and enriching the Ethereum development community with diverse solutions. It stands as a valuable resource for Ethereum developers seeking to streamline their development efforts and leverage the collective expertise of the community.",
-  "repo": "https://github.com/scaffold-eth/create-eth-extensions"
-}

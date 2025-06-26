@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "decentralized_networks",
-    "secrets_management",
-    "access_control"
-  ],
-  "summary": "The GitHub repository hosts the NuCypher project, a decentralized network that provides cryptographic services for secrets management and dynamic access control. Utilizing the Threshold network's decentralized nodes, it offers accessible, intuitive, and extensible runtimes and interfaces. The project enables end-to-end encrypted data sharing and communication without the need for a centralized authority, ensuring that service cannot be unilaterally denied or private user data decrypted by a single entity. This makes it particularly suitable for developers seeking decentralized access control solutions. NuCypher is community-driven, encouraging contributions and offering a comprehensive guide for getting involved. Security is a paramount concern, with a dedicated process for vulnerability disclosure and mitigation. The repository also includes a code of conduct, contributing guidelines, and licensing information, underscoring its commitment to fostering an open and welcoming environment for contributors. The project aims to empower privacy in decentralized systems through threshold access control applications, making it a significant tool for developers in the decentralized space.",
-  "repo": "https://github.com/nucypher/nucypher"
-}

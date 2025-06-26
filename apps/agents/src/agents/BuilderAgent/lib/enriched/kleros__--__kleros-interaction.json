@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Arbitration",
-    "Smart Contracts",
-    "Dispute Resolution"
-  ],
-  "summary": "The Kleros Interaction Smart Contracts repository offers a comprehensive suite of smart contracts aimed at facilitating decentralized arbitration and dispute resolution on the Ethereum blockchain. These contracts enable interaction with the Kleros decentralized court system, allowing for the resolution of disputes in a manner that is transparent, efficient, and fair. Key features include the ability to create arbitrable contracts, submit evidence, pay arbitration fees, and execute rulings. The repository supports a broad spectrum of applications, ranging from simple escrow services to complex multi-party disputes, by leveraging blockchain technology to ensure processes are trustless and immutable. Additionally, it includes standard proposals for interoperability between decentralized applications (dApps) and various arbitration logic implementations, such as centralized and appealable arbitrators, catering to specific use cases like token transactions and rental agreements. This makes the Kleros Interaction Smart Contracts a versatile tool for developers seeking to integrate decentralized arbitration into their applications, promoting a standardized approach to arbitration within the ecosystem.",
-  "repo": "https://github.com/kleros/kleros-interaction"
-}

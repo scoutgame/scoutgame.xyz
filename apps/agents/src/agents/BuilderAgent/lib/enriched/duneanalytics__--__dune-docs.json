@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "data visualization",
-    "crypto data analysis"
-  ],
-  "summary": "Dune is a web-based platform that simplifies the analysis of public blockchain data across various chains, enabling users to query, aggregate, and visualize data for tokens, wallets, and protocols. It supports the creation of insightful dashboards and facilitates easy sharing of findings with the community, data export, and integration into other applications. The platform features a web app for dashboard creation and interaction, a data catalog for dataset access, an API for automated data extraction, and a query engine for executing advanced SQL queries. Additionally, Dune offers alerts for notifications on specific data conditions and extensive learning resources, including YouTube tutorials, to enhance users' skills in crypto data analysis. By focusing on making blockchain data accessible and understandable, Dune empowers users to transform raw data into actionable insights, fostering a deeper understanding of the ecosystem.",
-  "repo": "https://github.com/duneanalytics/dune-docs"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Node Implementation",
-    "Rust"
-  ],
-  "summary": "Reth is a high-performance, modular, and user-friendly implementation of the Ethereum protocol, designed to enhance Ethereum's client diversity and antifragility. Built in Rust, it leverages the language's safety and performance features to offer a fast, efficient, and compatible solution for connecting to the Ethereum network. Reth supports full node functionality, enabling users to send and receive transactions, interact with smart contracts, and access blockchain data. It is highly configurable, supporting various syncing modes and hardware configurations, making it suitable for both professional node operators and hobbyists. The project emphasizes modularity, performance, and support for multiple EVM chains beyond Ethereum, such as Optimism, Polygon, and BNB Smart Chain. Reth is open-source, licensed under Apache/MIT, encouraging community contributions and innovation, and is production-ready for mission-critical environments.",
-  "repo": "https://github.com/paradigmxyz/reth"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "network simulation",
-    "Avalanche",
-    "decentralized applications"
-  ],
-  "summary": "The GitHub repository hosts the Avalanche Network Runner, a specialized tool for simulating and managing local Avalanche blockchain networks. This utility is designed to facilitate the development and testing of decentralized applications (dApps) by providing a controlled environment. It offers comprehensive functionalities for starting, stopping, and configuring Avalanche nodes, alongside creating and managing blockchains and subnets. Developers can leverage this tool to deploy smart contracts and interact with the Avalanche network through a gRPC API, enhancing the efficiency of development workflows. Additionally, the repository includes features for managing cryptographic keys, configuring network parameters, and handling blockchain transactions. The Avalanche Network Runner is an indispensable resource for developers aiming to rigorously test their applications in a simulated environment before transitioning to the mainnet or testnet, ensuring a smoother deployment process.",
-  "repo": "https://github.com/ava-labs/avalanche-network-runner"
-}

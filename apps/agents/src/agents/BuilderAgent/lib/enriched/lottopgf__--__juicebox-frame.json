@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Crowdfunding",
-    "Decentralized Finance (DeFi)",
-    "Smart Contracts"
-  ],
-  "summary": "The Juicebox Frame repository serves as a comprehensive platform for decentralized crowdfunding and project financing, primarily operating on the Ethereum blockchain. It utilizes smart contracts to efficiently manage various aspects of project funding, including setting funding goals, handling contributions, and distributing tokens or rewards to backers. The platform is designed to offer a user-friendly interface, enabling contributors to easily participate in projects, access detailed project information, and monitor their contributions and rewards. Key features include the management of payments in ETH, integration with IPFS for decentralized storage, and the ability to launch and manage funding cycles. Juicebox Frame emphasizes transparency, security, and community-driven funding, making it a pivotal tool for creators and communities aiming to finance projects in a decentralized manner. Its robust framework supports the launch of funding cycles, management of project tokens, distribution of reserved tokens, and handling of project metadata, thereby facilitating a seamless and secure crowdfunding experience.",
-  "repo": "https://github.com/lottopgf/juicebox-frame"
-}

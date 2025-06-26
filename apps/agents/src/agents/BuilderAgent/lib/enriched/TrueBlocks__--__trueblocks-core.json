@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "data indexing",
-    "Ethereum"
-  ],
-  "summary": "TrueBlocks is a specialized tool aimed at enhancing access to blockchain data, particularly for Ethereum and other EVM-compatible chains. It stands out by offering a local, efficient method for indexing and querying blockchain data, which includes transactional histories, smart contract logs, and ERC-20 token holdings. Central to its functionality is the Unchained Index, a unique feature that indexes address appearances to facilitate rapid access to transactional data. TrueBlocks is equipped with advanced command-line options tailored for data scientists and analysts, enabling them to perform a variety of tasks such as extracting smart contract logs, viewing ERC-20 holdings, and generating reconciled 'bank statements' and accounting exports for any token, including ETH. Additionally, it provides tools for searching account histories and running an API server for data access, making it a comprehensive solution for blockchain data analysis and exploration. Designed to operate entirely locally, TrueBlocks ensures user privacy and minimizes dependency on external services.",
-  "repo": "https://github.com/TrueBlocks/trueblocks-core"
-}

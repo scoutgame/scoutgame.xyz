@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Identity Verification",
-    "Smart Contracts",
-    "Zero-Knowledge Proofs"
-  ],
-  "summary": "The GitHub repository offers a comprehensive template for integrating World ID, a decentralized identity verification system, into on-chain applications. This system utilizes zero-knowledge proofs to ensure that users can verify their identity without disclosing personal information, thereby maintaining privacy and security. The repository includes a smart contract designed for on-chain verification, which ensures that each user can only perform a specific action once, effectively preventing fraud and abuse. Additionally, it provides a local development setup guide and a web interface for interacting with the contract, facilitating a smooth development process. This template is particularly aimed at developers who wish to incorporate World ID's identity verification capabilities into their applications, enabling features such as unique user verification, token issuance, or NFT minting, all while upholding user privacy and security. The setup process involves deploying the contract to a local testnet, configuring environment variables, and running a local web server for development, making it a valuable resource for developers looking to enhance their applications with privacy-preserving identity verification.",
-  "repo": "https://github.com/worldcoin/world-id-onchain-template"
-}

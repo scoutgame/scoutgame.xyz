@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Celo",
-    "Faucet",
-    "Decentralized Finance (DeFi)"
-  ],
-  "summary": "This GitHub repository hosts a Celo blockchain faucet application, designed to distribute testnet tokens to users for development and testing purposes. The application enables users to request CELO and stable tokens (cUSD, cEUR, cREAL) on the Celo testnet through a web interface, where they can input their wallet address and select the desired tokens. The backend, built with Firebase, processes these requests by interacting with the Celo blockchain to transfer tokens. To ensure the system's integrity and prevent abuse, it incorporates mechanisms such as limiting token distribution to addresses with large balances and requiring authentication for larger requests. Additionally, the application features a scheduled task to replenish the faucet's funds by converting excess stable tokens to CELO, ensuring continuous operation. The project is open-source, licensed under the Apache License 2.0, and aims to support the Celo ecosystem by providing developers and users with the necessary tokens to interact with the blockchain without the need for purchase.",
-  "repo": "https://github.com/celo-org/faucet"
-}

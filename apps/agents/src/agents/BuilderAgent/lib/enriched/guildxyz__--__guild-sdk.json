@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Community Management",
-    "Membership Protocols",
-    "Token-Gated Access"
-  ],
-  "summary": "The Guild SDK for TypeScript is a comprehensive library designed to interact with the Guild API, aimed at simplifying the management of communities and automating token-gated access in applications. Guild.xyz functions as a membership layer protocol, enhancing community management and ensuring seamless interoperability across different platforms. This SDK facilitates the creation, management, and interaction with guilds (communities), roles, and rewards, including the capability to restrict access to platforms such as Discord and Telegram based on token ownership or other specified criteria. It encompasses a broad spectrum of functionalities, from user authentication and profile management to the establishment of intricate role and reward systems within guilds. Designed with a modular architecture, the SDK allows for straightforward integration and customization to meet the unique requirements of each project. By focusing on streamlining the management of communities and enabling token-gated access, the Guild SDK emerges as an indispensable tool for developers aiming to build or improve decentralized applications with community-centric features.",
-  "repo": "https://github.com/guildxyz/guild-sdk"
-}

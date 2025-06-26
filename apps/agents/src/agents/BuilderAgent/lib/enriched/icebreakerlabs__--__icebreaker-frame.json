@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "social-networking",
-    "identity-verification",
-    "decentralized-applications"
-  ],
-  "summary": "The Icebreaker Frame repository hosts a project designed to facilitate the discovery and display of Icebreaker-contextual details about users on the Farcaster platform. This tool serves as a bridge for users to gain insights into each other's professional backgrounds, skills, and verified credentials, enhancing networking opportunities within the ecosystem. By integrating with Farcaster, it leverages decentralized identity and social networking features to provide a seamless user experience. Users can look up profiles by Farcaster username or ID to access detailed information such as job titles, bios, locations, networking statuses, primary skills, and verified credentials or channels. The project encourages community contributions, offering guidelines for forking the repository, making improvements, and submitting pull requests. Licensed under the MIT License, it promotes open-source collaboration and innovation, aiming to build more connected and informed communities by fostering meaningful interactions through the use of decentralized technologies.",
-  "repo": "https://github.com/icebreakerlabs/icebreaker-frame"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Lightning Network",
-    "Liquidity Management",
-    "Decentralized Finance (DeFi)"
-  ],
-  "summary": "Lightning Terminal (LiT) is a comprehensive browser-based interface tailored for enhancing channel liquidity management on the Lightning Network. It offers a suite of functionalities aimed at optimizing user participation in the network. Key features include the visualization of channel balances, execution of submarine swaps through the Lightning Loop service, and the classification of channels based on the node's operating mode. Additionally, LiT integrates loopd, poold, and faraday daemons into a single binary for streamlined operations. A notable aspect of LiT is its provision of a preview release of the Pool UI, enabling users to earn satoshis by opening channels for those in need of inbound liquidity. This product is designed for users seeking to maximize their engagement with the Lightning Network, offering tools for effective liquidity management, opportunities to earn through liquidity provision, and the ability to perform swaps for channel rebalancing.",
-  "repo": "https://github.com/lightninglabs/lightning-terminal"
-}

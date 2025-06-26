@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "DAO Management",
-    "Project Management",
-    "Escrow Services"
-  ],
-  "summary": "The Dungeon Master v2 Monorepo is a comprehensive platform designed to enhance the management and execution of projects within Decentralized Autonomous Organizations (DAOs). It serves as a project management and escrow service tool, specifically tailored for the needs of DAOs and their unique operational challenges. The platform enables efficient organization, tracking, and execution of projects, referred to as 'Raids', by offering features such as project proposals, member management, and detailed project tracking through milestones and updates. A standout feature is its escrow services for project funding, which leverages Web3 technologies to ensure secure, transparent, and trust-based transactions. This is particularly beneficial for managing financial aspects of projects, ensuring that funds are released in accordance with project milestones. Additionally, the platform fosters member engagement by allowing users to signal interest in projects and manage roles and responsibilities effectively. Built with a modern tech stack, including nx for monorepo management, Hasura for GraphQL API, and Docker for containerization, the Dungeon Master v2 Monorepo provides a scalable and efficient solution for DAO project management, emphasizing transparency, trust, and community engagement.",
-  "repo": "https://github.com/raid-guild/dungeon-master-v2"
-}

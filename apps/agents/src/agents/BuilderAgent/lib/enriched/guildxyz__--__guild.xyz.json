@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "membership_management",
-    "decentralized_applications",
-    "community_engagement"
-  ],
-  "summary": "Guild.xyz is an open-source interface designed for platformless membership management, enabling communities to manage memberships and roles without being tied to a specific platform. It provides a decentralized approach to membership management, allowing for the creation, management, and verification of roles and memberships across various platforms. The product integrates with multiple tools and services to facilitate secure and transparent membership operations, supporting functionalities such as role-based access control and reward distribution. Guild.xyz aims to empower communities by offering the necessary tools for decentralized and efficient membership management, fostering a more inclusive and accessible digital ecosystem.",
-  "repo": "https://github.com/guildxyz/guild.xyz"
-}

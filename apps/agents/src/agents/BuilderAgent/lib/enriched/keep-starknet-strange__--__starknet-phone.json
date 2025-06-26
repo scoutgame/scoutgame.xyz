@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Mobile Development",
-    "Cryptography",
-    "Smart Contracts"
-  ],
-  "summary": "The Starknet Phone project is an innovative initiative focused on integrating blockchain technology with mobile devices, specifically within the Starknet ecosystem. It aims to develop a mobile application that utilizes Starknet's blockchain for secure transactions and smart contract interactions. The project includes a wallet SDK for Android, enabling developers to create applications that can interact with the Starknet blockchain, manage accounts, and execute smart contracts. Additionally, it features a light client app designed for efficient blockchain interaction on Android, incorporating Rust modules for enhanced performance and security. The initiative also involves the creation of smart contracts in Cairo, Starknet's native programming language, to support account management and transactions. By focusing on security, scalability, and user privacy, the Starknet Phone project seeks to make blockchain technology more accessible and user-friendly, facilitating the development of decentralized applications (dApps) directly from users' smartphones.",
-  "repo": "https://github.com/keep-starknet-strange/starknet-phone"
-}

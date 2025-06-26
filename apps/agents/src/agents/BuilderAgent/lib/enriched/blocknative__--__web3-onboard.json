@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "wallet-connect",
-    "web3-authentication",
-    "dapp-integration"
-  ],
-  "summary": "This GitHub repository offers a comprehensive library designed to facilitate the integration of various blockchain wallets and authentication methods into decentralized applications (dApps). It supports a broad spectrum of wallets, including MetaMask, Coinbase Wallet, and WalletConnect, among others, through a unified interface. This library simplifies the process of connecting to different wallets, handling transactions, and managing user accounts across multiple blockchain networks. Additionally, it provides utilities for signing messages, sending transactions, and interacting with smart contracts, thereby streamlining the development and deployment of dApps with enhanced wallet connectivity and user management capabilities. The repository also features a demo application that illustrates the integration of these wallets into a web application, showcasing essential functionalities such as wallet connection, transaction signing, and user session management. Designed with modularity in mind, it allows developers to effortlessly add or remove wallet support as required, making it a versatile tool for building robust dApps.",
-  "repo": "https://github.com/blocknative/web3-onboard"
-}

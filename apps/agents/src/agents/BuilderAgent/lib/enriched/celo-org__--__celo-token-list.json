@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Token Validation",
-    "Celo Ecosystem"
-  ],
-  "summary": "This GitHub repository is dedicated to the validation of token lists within the Celo ecosystem, a platform designed to make financial tools accessible to anyone with a mobile phone. The primary function of the repository is to provide a script that validates JSON token lists against a predefined schema. This ensures that the lists adhere to the necessary structure and content standards, which is vital for maintaining the integrity and reliability of token information within the ecosystem. Such validation facilitates seamless interactions and transactions, enhancing the overall security and user experience. The validation process employs the Ajv (Another JSON Schema Validator) library, known for its speed and efficiency in validating JSON schemas in JavaScript. Additionally, the repository features a pre-commit hook that automatically executes tests prior to any commit, ensuring that all modifications meet the project's quality standards. This tool is particularly beneficial for developers in the Celo ecosystem, offering a means to verify that token lists are accurately formatted and compliant with the ecosystem's requirements, thereby supporting the smooth integration and operation of decentralized applications (dApps).",
-  "repo": "https://github.com/celo-org/celo-token-list"
-}

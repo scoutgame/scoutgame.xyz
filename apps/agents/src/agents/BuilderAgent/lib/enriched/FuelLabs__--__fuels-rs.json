@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "smart contracts",
-    "rust",
-    "sdk"
-  ],
-  "summary": "The fuels-rs repository is a Rust SDK tailored for the Fuel blockchain, a platform optimized for high-performance smart contracts. This SDK equips developers with a robust set of tools for compiling, deploying, and testing Sway contracts, which are smart contracts specifically designed for the Fuel blockchain. It facilitates the launch of local Fuel networks, the creation and signing of transactions, and the generation of type-safe Rust bindings for contract methods, among other functionalities. Aimed at streamlining the development and deployment of decentralized applications (dApps) on the Fuel blockchain, the SDK supports a wide range of operations including contract interaction, transaction building, and the use of local test wallets. With ongoing development, future enhancements such as wallet integration and event querying/monitoring are anticipated. Drawing inspiration from the Ethers.js ecosystem, it offers a familiar environment for developers transitioning from Ethereum development, making it an invaluable resource for building efficient and scalable dApps on the Fuel blockchain.",
-  "repo": "https://github.com/FuelLabs/fuels-rs"
-}

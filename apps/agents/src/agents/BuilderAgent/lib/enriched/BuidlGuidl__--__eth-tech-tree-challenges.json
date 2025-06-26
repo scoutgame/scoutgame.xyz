@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Open Source",
-    "Software Development",
-    "Decentralized Applications"
-  ],
-  "summary": "The GitHub repository focuses on an open-source software project named BuidlGuidl, licensed under the MIT License, which underscores a commitment to fostering collaboration and innovation in the software development community. This project is designed to be freely accessible, modifiable, and distributable, enabling developers and creators to utilize, enhance, and share the software without facing restrictive barriers. The MIT License facilitates the integration of the software into both personal and commercial projects, promoting a wide range of applications from individual learning tools to components of larger systems. By providing a legal framework that supports open collaboration, the project aims to contribute to the growth of a more inclusive and innovative digital ecosystem, particularly within the realms of decentralized applications. The license ensures that the software is provided 'as is', without any warranties, and that the authors or copyright holders are not liable for any claims, damages, or other liabilities arising from the use of the software. This setup is ideal for developers and organizations looking to contribute to or utilize the BuidlGuidl project in their own decentralized application projects, fostering innovation and collaboration in the decentralized technology sectors.",
-  "repo": "https://github.com/BuidlGuidl/eth-tech-tree-challenges"
-}

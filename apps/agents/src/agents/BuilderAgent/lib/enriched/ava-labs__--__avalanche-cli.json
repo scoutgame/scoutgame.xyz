@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "avalanche",
-    "smart contracts",
-    "validator management"
-  ],
-  "summary": "This GitHub repository hosts a command-line interface (CLI) tool tailored for developers engaging with the Avalanche blockchain. The tool is designed to streamline the creation, deployment, and management of blockchains and smart contracts on the Avalanche network. It offers a range of functionalities including the deployment of smart contracts, such as ERC20 tokens, and the management of validators and blockchain configurations. The CLI tool is built to support Avalanche's distinctive features, including its consensus mechanism and subnet architecture, providing a robust platform for developers to build and manage decentralized applications (dApps). With its focus on simplifying blockchain development and management, the tool is an essential resource for developers aiming to leverage the Avalanche network for their projects.",
-  "repo": "https://github.com/ava-labs/avalanche-cli"
-}

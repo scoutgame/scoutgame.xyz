@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Decentralized Applications (DApps)",
-    "Frontend Frameworks"
-  ],
-  "summary": "This GitHub repository is a comprehensive guide and boilerplate for integrating the Lit Protocol with popular JavaScript frameworks such as React, Next.js, Vue.js, and Preact. The Lit Protocol is a decentralized network designed to facilitate the creation and management of decentralized applications (DApps) with a strong emphasis on privacy, security, and access control for digital assets. The repository offers detailed instructions, code examples, and setup guides for developers to incorporate Lit Protocol's functionalities into their applications. It covers the instantiation of the LitNodeClient, a crucial component for interacting with the Lit network, and demonstrates how to utilize Lit's access control features across different frameworks. This resource is particularly valuable for developers aiming to build DApps with advanced access control mechanisms, leveraging the decentralized nature of the Lit Protocol to enhance application security and privacy.",
-  "repo": "https://github.com/LIT-Protocol/lit-configuration-guides"
-}
