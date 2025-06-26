@@ -1,12 +1,9 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
-import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import type { TalentProfile } from '@packages/users/getUserByPath';
 import type { BuilderUserInfo } from '@packages/users/interfaces';
 import { Suspense } from 'react';
-
-import { ProjectsTab } from '../projects/components/ProjectsTab';
 
 import { DeveloperProfile } from './components/DeveloperProfile/DeveloperProfile';
 import { ProfileStatsContainer as ProfileStats } from './components/ProfileStats/ProfileStatsContainer';
@@ -25,10 +22,9 @@ export type UserWithProfiles = SessionUser & {
 type ProfilePageProps = {
   user: UserWithProfiles;
   tab: ProfileTab;
-  scoutProjects?: ScoutProjectMinimal[];
 };
 
-export function ProfilePage({ user, tab, scoutProjects }: ProfilePageProps) {
+export function ProfilePage({ user, tab }: ProfilePageProps) {
   return (
     <Box
       sx={{
@@ -74,9 +70,6 @@ export function ProfilePage({ user, tab, scoutProjects }: ProfilePageProps) {
               </Suspense>
             </Box>
           </Stack>
-          <Box my={1}>
-            {scoutProjects && scoutProjects.length ? <ProjectsTab scoutProjects={scoutProjects} /> : null}
-          </Box>
         </Paper>
       </Stack>
       <Suspense fallback={tab === 'scout' ? <ScoutProfileLoading /> : <LoadingComponent isLoading />}>
