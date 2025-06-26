@@ -7,7 +7,6 @@ import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScout
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getDeveloperActivities';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
-import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { BackButton } from '@packages/scoutgame-ui/components/common/Button/BackButton';
 import { UserProfile } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
@@ -18,7 +17,6 @@ import { ScoutsGallery } from 'components/common/Gallery/ScoutsGallery';
 import { ScoutButton } from 'components/common/ScoutButton/ScoutButton';
 import { DeveloperActivitiesList } from 'components/profile/components/DeveloperProfile/DeveloperActivitiesList';
 import { DeveloperWeeklyStats } from 'components/profile/components/DeveloperProfile/DeveloperWeeklyStats';
-import { ProjectsTab } from 'components/projects/components/ProjectsTab';
 
 import { PublicBuilderStats } from './PublicBuilderStats';
 
@@ -36,7 +34,6 @@ export type BuilderProfileProps = {
     currentPrice: bigint | null;
   } | null;
   builderActivities: BuilderActivity[];
-  scoutProjects?: ScoutProjectMinimal[];
   starterNftSoldToLoggedInScout: boolean;
 } & BuilderStats &
   BuilderScouts;
@@ -69,7 +66,6 @@ export function PublicBuilderProfileContainer({
   builderActivities,
   gemsCollected,
   rank,
-  scoutProjects,
   starterNftSoldToLoggedInScout
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
@@ -130,11 +126,6 @@ export function PublicBuilderProfileContainer({
               </Stack>
             </Stack>
           </Paper>
-        ) : null}
-        {!isDesktop && scoutProjects && scoutProjects.length ? (
-          <Box my={1}>
-            <ProjectsTab scoutProjects={scoutProjects} />
-          </Box>
         ) : null}
 
         <Stack
