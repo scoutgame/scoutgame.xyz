@@ -6,8 +6,16 @@ import { createScoutPartner } from 'lib/scout-partners/createScoutPartner';
 
 export async function GET() {
   try {
-    const scoutPartners = await prisma.scoutPartner.findMany();
-    return NextResponse.json(scoutPartners);
+    const scoutPartners = await prisma.scoutPartner.findMany({
+      orderBy: {
+        name: 'asc'
+      }
+    });
+    log.info('Fetched scout partners', { count: scoutPartners.length, partners: scoutPartners });
+    const response = NextResponse.json(scoutPartners);
+    // Prevent caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     log.error('Error fetching scout partners', { error });
     return NextResponse.json({ error: 'Failed to fetch scout partners' }, { status: 500 });

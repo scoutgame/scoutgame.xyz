@@ -1,9 +1,8 @@
 'use client';
 
+import type { ScoutPartner } from '@charmverse/core/prisma';
 import { Container, Typography, Stack, Button, Modal, Box } from '@mui/material';
 import { useState } from 'react';
-
-import { useScoutPartners } from 'hooks/api/scout-partners';
 
 import { CreateScoutPartnerForm } from './CreateScoutPartnerForm';
 import { ScoutPartnersTable } from './ScoutPartnersTable';
@@ -21,9 +20,9 @@ const modalStyle = {
   overflow: 'auto'
 };
 
-export function ScoutPartnersDashboard() {
+export function ScoutPartnersDashboard({ initialPartners }: { initialPartners: ScoutPartner[] }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const { data: partners, isLoading } = useScoutPartners();
+  const [partners, setPartners] = useState(initialPartners);
 
   return (
     <Container maxWidth='xl'>
@@ -34,11 +33,17 @@ export function ScoutPartnersDashboard() {
         </Button>
       </Stack>
 
-      <ScoutPartnersTable partners={partners} isLoading={isLoading} />
+      <ScoutPartnersTable partners={partners} isLoading={false} />
 
       <Modal open={showCreateForm} onClose={() => setShowCreateForm(false)}>
         <Box sx={modalStyle}>
-          <CreateScoutPartnerForm onClose={() => setShowCreateForm(false)} />
+          <CreateScoutPartnerForm
+            onClose={() => setShowCreateForm(false)}
+            onSuccess={(newPartner) => {
+              setPartners([...partners, newPartner]);
+              setShowCreateForm(false);
+            }}
+          />
         </Box>
       </Modal>
     </Container>

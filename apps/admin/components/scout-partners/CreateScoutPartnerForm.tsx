@@ -1,6 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
+import type { ScoutPartner } from '@charmverse/core/prisma-client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {
@@ -11,7 +12,6 @@ import {
   FormHelperText,
   Box,
   Button,
-  Alert,
   Switch,
   FormControlLabel,
   CircularProgress
@@ -23,12 +23,12 @@ import { replaceS3Domain } from '@packages/utils/url';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { mutate } from 'swr';
 
 import { useCreateScoutPartner, useGetScoutPartnerUploadToken } from 'hooks/api/scout-partners';
 import { createScoutPartnerSchema } from 'lib/scout-partners/createScoutPartnerSchema';
 
 type FormData = {
-  id: string;
   name: string;
   icon: string;
   bannerImage: string;
@@ -43,6 +43,7 @@ type FormData = {
 
 type Props = {
   onClose: () => void;
+  onSuccess: (partner: ScoutPartner) => void;
 };
 
 type ImageUploadFieldProps = {
@@ -130,7 +131,7 @@ function ImageUploadField({
   );
 }
 
-export function CreateScoutPartnerForm({ onClose }: Props) {
+export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
   const { trigger: createScoutPartner } = useCreateScoutPartner();
   const { trigger: getUploadToken } = useGetScoutPartnerUploadToken();
   const [isTokenEnabled, setIsTokenEnabled] = useState(false);
@@ -148,7 +149,6 @@ export function CreateScoutPartnerForm({ onClose }: Props) {
     formState: { errors, isValid }
   } = useForm<FormData>({
     defaultValues: {
-      id: '',
       name: '',
       icon: '',
       bannerImage: '',
@@ -207,7 +207,8 @@ export function CreateScoutPartnerForm({ onClose }: Props) {
             tokenImage: undefined
           };
 
-      await createScoutPartner(payload);
+      const newPartner = await createScoutPartner(payload);
+      onSuccess(newPartner);
       onClose();
     } catch (error) {
       log.error('Error creating scout partner', { error });
@@ -218,27 +219,6 @@ export function CreateScoutPartnerForm({ onClose }: Props) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
         <Typography variant='h6'>Create Scout Partner</Typography>
-
-        <Controller
-          name='id'
-          control={control}
-          rules={{ required: 'ID is required' }}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label={
-                <Box component='span'>
-                  ID
-                  <Box component='span' sx={{ color: 'error.main', ml: 0.5 }}>
-                    *
-                  </Box>
-                </Box>
-              }
-              error={!!errors.id}
-              helperText={errors.id?.message || 'Unique identifier for the partner'}
-            />
-          )}
-        />
 
         <Controller
           name='name'

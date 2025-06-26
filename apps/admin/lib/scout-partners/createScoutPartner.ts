@@ -1,8 +1,7 @@
 import type { ScoutPartner } from '@charmverse/core/prisma';
 import { prisma } from '@charmverse/core/prisma-client';
 
-export type CreateScoutPartnerParams = {
-  id: string;
+export type CreateScoutPartnerPayload = {
   name: string;
   icon: string;
   bannerImage: string;
@@ -15,8 +14,12 @@ export type CreateScoutPartnerParams = {
   tokenImage?: string;
 };
 
-export async function createScoutPartner(params: CreateScoutPartnerParams): Promise<ScoutPartner> {
+export async function createScoutPartner(params: CreateScoutPartnerPayload): Promise<ScoutPartner> {
+  const id = params.name.toLowerCase().replace(/[^a-z0-9]/g, '');
   return prisma.scoutPartner.create({
-    data: params
+    data: {
+      id,
+      ...params
+    }
   });
 }

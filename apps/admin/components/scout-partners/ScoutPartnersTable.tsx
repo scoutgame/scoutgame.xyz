@@ -1,6 +1,6 @@
 'use client';
 
-import type { ScoutPartner } from '@charmverse/core/prisma';
+import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma';
 import {
   Stack,
   Paper,
@@ -14,13 +14,26 @@ import {
   TableSortLabel,
   CircularProgress,
   Box,
-  Typography
+  Typography,
+  Chip
 } from '@mui/material';
 import Image from 'next/image';
 import React, { useState, useMemo } from 'react';
 
-type SortField = 'id' | 'name' | 'tokenAmountPerPullRequest' | 'tokenSymbol' | 'tokenChain';
+type SortField = 'id' | 'name' | 'tokenAmountPerPullRequest' | 'tokenSymbol' | 'tokenChain' | 'status';
 type SortOrder = 'asc' | 'desc';
+
+const statusColors: Record<ScoutPartnerStatus, 'success' | 'warning' | 'error'> = {
+  active: 'success',
+  paused: 'warning',
+  completed: 'error'
+};
+
+const statusLabels: Record<ScoutPartnerStatus, string> = {
+  active: 'Active',
+  paused: 'Paused',
+  completed: 'Completed'
+};
 
 export function ScoutPartnersTable({ partners, isLoading }: { partners?: ScoutPartner[]; isLoading: boolean }) {
   const [sortField, setSortField] = useState<SortField>('name');
@@ -76,20 +89,20 @@ export function ScoutPartnersTable({ partners, isLoading }: { partners?: ScoutPa
           <TableRow>
             <TableCell>
               <TableSortLabel
-                active={sortField === 'id'}
-                direction={sortField === 'id' ? sortOrder : 'asc'}
-                onClick={() => handleSort('id')}
-              >
-                ID
-              </TableSortLabel>
-            </TableCell>
-            <TableCell>
-              <TableSortLabel
                 active={sortField === 'name'}
                 direction={sortField === 'name' ? sortOrder : 'asc'}
                 onClick={() => handleSort('name')}
               >
                 Name
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortField === 'status'}
+                direction={sortField === 'status' ? sortOrder : 'asc'}
+                onClick={() => handleSort('status')}
+              >
+                Status
               </TableSortLabel>
             </TableCell>
             <TableCell>Icon</TableCell>
@@ -129,8 +142,15 @@ export function ScoutPartnersTable({ partners, isLoading }: { partners?: ScoutPa
         <TableBody>
           {sortedPartners.map((partner) => (
             <TableRow key={partner.id}>
-              <TableCell>{partner.id}</TableCell>
               <TableCell>{partner.name}</TableCell>
+              <TableCell>
+                <Chip
+                  variant='outlined'
+                  label={statusLabels[partner.status]}
+                  color={statusColors[partner.status]}
+                  size='small'
+                />
+              </TableCell>
               <TableCell>
                 <Link href={partner.icon} target='_blank'>
                   <Image src={partner.icon} alt={`${partner.name} icon`} width={30} height={30} />

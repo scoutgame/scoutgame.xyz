@@ -1,7 +1,6 @@
 import * as yup from 'yup';
 
 export const createScoutPartnerSchema = yup.object({
-  id: yup.string().required('ID is required'),
   name: yup.string().required('Name is required'),
   icon: yup.string().required('Icon is required'),
   bannerImage: yup.string().required('Banner image is required'),
