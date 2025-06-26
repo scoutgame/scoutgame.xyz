@@ -184,7 +184,11 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
 
     try {
       const { url } = await uploadToS3(handleRequestUploadToken, file, {});
-      setValue(fieldName, replaceS3Domain(url));
+      setValue(fieldName, replaceS3Domain(url), {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true
+      });
     } catch (error) {
       log.error('Error uploading file', { error });
     } finally {

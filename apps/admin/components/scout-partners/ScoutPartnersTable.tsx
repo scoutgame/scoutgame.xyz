@@ -207,10 +207,19 @@ export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Pro
                       <CenteredImage src={partner.icon} alt={`${partner.name} icon`} width={30} height={30} />
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    <Link href={partner.bannerImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
-                      <CenteredImage src={partner.bannerImage} alt={`${partner.name} banner`} width={60} height={30} />
-                    </Link>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    {partner.bannerImage ? (
+                      <Link href={partner.bannerImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
+                        <CenteredImage
+                          src={partner.bannerImage}
+                          alt={`${partner.name} banner`}
+                          width={60}
+                          height={30}
+                        />
+                      </Link>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>
                     <Link href={partner.infoPageImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
