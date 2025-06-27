@@ -10,6 +10,7 @@ import type { UnclaimedPartnerReward } from '@packages/scoutgame/partnerRewards/
 import { getProtocolWriteClient } from '@packages/scoutgame/protocol/clients/getProtocolWriteClient';
 import { devTokenDecimals, scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import type { ReadWriteWalletClient } from '@packages/scoutgame/protocol/contracts/ScoutProtocolImplementation';
+import type { ScoutPartnerInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import type { ClaimInput } from '@packages/scoutgame/tokens/getClaimableTokensWithSources';
 import { WalletLogin } from '@packages/scoutgame-ui/components/common/WalletLogin/WalletLogin';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
@@ -43,6 +44,7 @@ type TokensClaimScreenProps = {
   onchainClaims: Record<Address, ClaimInput[]>;
   processingPayouts: boolean;
   totalUnclaimedTokens: number;
+  scoutPartners: ScoutPartnerInfo[];
 };
 
 export function TokensClaimScreen(props: TokensClaimScreenProps) {
@@ -59,7 +61,8 @@ function TokensClaimScreenComponent({
   repos,
   totalUnclaimedTokens,
   onchainClaims,
-  processingPayouts
+  processingPayouts,
+  scoutPartners
 }: TokensClaimScreenProps) {
   const [isExecuting, setIsExecuting] = useState(false);
   const { executeAsync: handleOnchainClaim, result } = useAction(handleOnchainClaimAction, {
@@ -213,7 +216,7 @@ function TokensClaimScreenComponent({
                       alt='DEV Token'
                     />{' '}
                     {bonusPartners.length > 0 ? '+ ' : ''}
-                    <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} />
+                    <BonusPartnersDisplay bonusPartners={bonusPartners} size={35} scoutPartners={scoutPartners} />
                   </Stack>
                 </Stack>
                 <Box width='100%' my={1} display='flex' justifyContent='center' flexDirection='column' gap={2.5}>

@@ -26,22 +26,22 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
   const [iconUrl, bannerUrl, infoPageUrl, tokenImageUrl] = await Promise.all([
     uploadUrlToS3({
       url: params.icon,
-      pathInS3: `user-content/${partner.id}/icon.png`
+      pathInS3: `user-content/scout-partners/${partner.id}/icon.png`
     }),
     params.bannerImage
       ? uploadUrlToS3({
           url: params.bannerImage,
-          pathInS3: `user-content/${partner.id}/developerPageBanner.png`
+          pathInS3: `user-content/scout-partners/${partner.id}/developerPageBanner.png`
         })
       : Promise.resolve(null),
     uploadUrlToS3({
       url: params.infoPageImage,
-      pathInS3: `user-content/${partner.id}/infoPageBanner.png`
+      pathInS3: `user-content/scout-partners/${partner.id}/infoPageBanner.png`
     }),
     params.tokenImage
       ? uploadUrlToS3({
           url: params.tokenImage,
-          pathInS3: `user-content/${partner.id}/tokenIcon.png`
+          pathInS3: `user-content/scout-partners/${partner.id}/tokenIcon.png`
         })
       : Promise.resolve(null)
   ]);

@@ -25,12 +25,12 @@ export type OptimismReferralChampionPartnerReward = PartnerRewardBase<{
 }>;
 
 export type OctantBaseContributionPartnerReward = PartnerRewardBase<{
-  type: 'octant_base_contribution';
+  type: 'octant';
   prLink: string;
 }>;
 
 export type GooddollarContributionPartnerReward = PartnerRewardBase<{
-  type: 'gooddollar_contribution';
+  type: 'gooddollar';
   prLink: string;
 }>;
 
@@ -180,21 +180,21 @@ export async function getPartnerRewards({
       const week = (payout.meta as unknown as { week: string }).week;
       partnerRewards.push({
         ...partnerReward,
-        type: 'optimism_referral_champion' as const,
+        type: 'optimism_referral_champion',
         date: week ? getDateFromISOWeek(week).toJSDate() : null
       });
-    } else if (payout.payoutContract.partner === 'octant_base_contribution') {
+    } else if (payout.payoutContract.partner === 'octant') {
       partnerRewards.push({
         ...partnerReward,
-        type: 'octant_base_contribution' as const,
+        type: 'octant',
         prLink: (payout.meta as unknown as { prLink: string }).prLink
       });
     } else if (payout.payoutContract.partner === 'matchup_winner') {
       // note, this appear in the list returned by getPointsReceiptsRewards
-    } else if (payout.payoutContract.partner === 'gooddollar_contribution') {
+    } else if (payout.payoutContract.partner === 'gooddollar') {
       partnerRewards.push({
         ...partnerReward,
-        type: 'gooddollar_contribution' as const,
+        type: 'gooddollar',
         prLink: (payout.meta as unknown as { prLink: string }).prLink
       });
     }

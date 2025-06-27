@@ -8,8 +8,7 @@ import type { CSSProperties } from 'react';
 import type { BuilderScouts } from '../../../builders/getBuilderScouts';
 import type { BuilderStats } from '../../../builders/getBuilderStats';
 import type { BuilderActivity } from '../../../builders/getDeveloperActivities';
-import { bonusPartnersRecord } from '../../../partnerRewards/constants';
-import type { BonusPartner } from '../../../partnerRewards/constants';
+import type { ScoutPartnerInfo } from '../../../scoutPartners/getScoutPartnersInfo';
 
 export function BuilderShareImage({
   nftImageUrl,
@@ -17,7 +16,8 @@ export function BuilderShareImage({
   builderScouts,
   stats,
   builderPrice,
-  size = 550
+  size = 550,
+  scoutPartners
 }: {
   nftImageUrl: string;
   activities: BuilderActivity[];
@@ -25,6 +25,7 @@ export function BuilderShareImage({
   stats: BuilderStats;
   builderPrice: string;
   size?: number;
+  scoutPartners: ScoutPartnerInfo[];
 }) {
   const domain = baseUrl || process.env.IMAGE_HOSTING_DOMAIN;
   const overlays = [
@@ -176,69 +177,65 @@ export function BuilderShareImage({
         </div>
         {activities
           .filter((_, i) => i < 3)
-          .map((activity) => (
-            <div
-              key={activity.id}
-              style={{
-                ...box,
-                flexDirection: 'column',
-                alignItems: 'stretch',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                width: '100%',
-                minHeight: '60px'
-              }}
-            >
+          .map((activity) => {
+            const scoutPartner = scoutPartners.find((partner) => partner.id === activity.scoutPartnerId);
+            return (
               <div
+                key={activity.id}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
+                  ...box,
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '100%'
+                  flexWrap: 'wrap',
+                  width: '100%',
+                  minHeight: '60px'
                 }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <p style={{ margin: 0 }}>{getActivityLabel(activity)}</p>
-                  <p style={{ margin: 0 }}>{getActivityDetail(activity)}</p>
-                </div>
                 <div
                   style={{
-                    margin: 0,
-                    gap: 3,
                     display: 'flex',
-                    alignItems: 'center',
                     flexDirection: 'row',
-                    height: '30px'
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%'
                   }}
                 >
-                  {activity.type === 'github_event' ? (
-                    <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start', gap: 3 }}>
-                      <span>+{activity.gems}</span>
-                      <img
-                        style={{ margin: 0 }}
-                        width={15}
-                        height={15}
-                        src={`${domain}/images/icons/gem.svg`}
-                        alt='gem'
-                      />
-                    </div>
-                  ) : null}
-                  {activity.type === 'github_event' &&
-                  activity.bonusPartner &&
-                  bonusPartnersRecord[activity.bonusPartner as BonusPartner] ? (
-                    <img
-                      width={20}
-                      height={20}
-                      src={bonusPartnersRecord[activity.bonusPartner as BonusPartner].icon}
-                      alt='Bonus Partner'
-                    />
-                  ) : null}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <p style={{ margin: 0 }}>{getActivityLabel(activity)}</p>
+                    <p style={{ margin: 0 }}>{getActivityDetail(activity)}</p>
+                  </div>
+                  <div
+                    style={{
+                      margin: 0,
+                      gap: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      height: '30px'
+                    }}
+                  >
+                    {activity.type === 'github_event' ? (
+                      <div style={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start', gap: 3 }}>
+                        <span>+{activity.gems}</span>
+                        <img
+                          style={{ margin: 0 }}
+                          width={15}
+                          height={15}
+                          src={`${domain}/images/icons/gem.svg`}
+                          alt='gem'
+                        />
+                      </div>
+                    ) : null}
+                    {activity.type === 'github_event' && scoutPartner ? (
+                      <img width={20} height={20} src={scoutPartner.image} alt={scoutPartner.text} />
+                    ) : null}
+                  </div>
+                  <p style={{ textAlign: 'right', margin: 0 }}>{getRelativeTime(activity.createdAt)}</p>
                 </div>
-                <p style={{ textAlign: 'right', margin: 0 }}>{getRelativeTime(activity.createdAt)}</p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         {activities.length === 0 ? (
           <div
             style={{

@@ -1,4 +1,3 @@
-import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 import { LoadingComponent } from '@packages/scoutgame-ui/components/common/Loading/LoadingComponent';
 import React, { Suspense } from 'react';
 
@@ -41,7 +40,7 @@ export function PartnerCardContainer({
               tokenDecimals={tokenDecimals}
             />
           )}
-          {hasGithubRepos && <GithubMetrics partner={partner as BonusPartner} />}
+          {hasGithubRepos && <GithubMetrics partner={partner} />}
         </Suspense>
       )}
     </PartnerCard>

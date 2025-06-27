@@ -1,6 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { jest } from '@jest/globals';
-import { getWeekStartEnd } from '@packages/dates/utils';
 import { mockBuilder, mockBuilderNft, mockRepo, mockScout } from '@packages/testing/database';
 import { randomLargeInt } from '@packages/testing/generators';
 import { DateTime } from 'luxon';
@@ -118,10 +117,23 @@ describe('recordMergedPullRequest', () => {
   });
 
   it('should register a partner bonus', async () => {
+    const scoutPartnerId = v4();
+
+    // Create the scout partner first
+    await prisma.scoutPartner.create({
+      data: {
+        id: scoutPartnerId,
+        name: 'Test Partner',
+        icon: 'test-icon.png',
+        bannerImage: 'test-banner.png',
+        infoPageImage: 'test-info.png'
+      }
+    });
+
     const builder = await mockBuilder();
 
     const repo = await mockRepo({
-      bonusPartner: 'test-partner',
+      scoutPartnerId,
       name: 'Test-Repo',
       defaultBranch: 'main'
     });
@@ -144,7 +156,7 @@ describe('recordMergedPullRequest', () => {
         type: 'merged_pull_request'
       }
     });
-    expect(builderEvent).toEqual(expect.objectContaining({ bonusPartner: 'test-partner' }));
+    expect(builderEvent).toEqual(expect.objectContaining({ scoutPartnerId }));
   });
 
   it('should only give 2 points for a PR with no review', async () => {

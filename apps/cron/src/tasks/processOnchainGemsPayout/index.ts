@@ -8,9 +8,8 @@ import { DateTime } from 'luxon';
 
 import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
 
-import { deployGooddollarPartnerRewards } from './deployGooddollarPartnerRewards';
-import { deployMatchupRewards } from './deployMatchupRewards';
 import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
+import { deployScoutPartnerRewards } from './deployScoutPartnerRewards';
 import { log } from './logger';
 
 export { log };
@@ -49,14 +48,9 @@ export async function processOnchainGemsPayout(
   }
 
   await Promise.all([
-    deployMatchupRewards({ week }).catch((error) => {
-      log.error('Error deploying matchup rewards', { error, week, season });
-    }),
     deployReferralChampionRewardsContract({ week }).catch((error) => {
       log.error('Error deploying referral champion rewards contract', { error, week, season });
     }),
-    deployGooddollarPartnerRewards({ week }).catch((error) => {
-      log.error('Error deploying gooddollar partner rewards contract', { error, week, season });
-    })
+    deployScoutPartnerRewards({ week })
   ]);
 }

@@ -4,8 +4,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getDeveloperActivities';
-import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
-import { bonusPartnersRecord } from '@packages/scoutgame/partnerRewards/constants';
+import type { ScoutPartnerInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { GemsIcon, TransactionIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { secondaryTextColorDarkMode } from '@packages/scoutgame-ui/theme/colors';
@@ -20,17 +19,25 @@ import { BuilderActivityGems } from '../../../profile/components/DeveloperProfil
 import { CommonTableRow } from './CommonTableRow';
 import { DeveloperCell } from './DeveloperCell';
 
-export function BuilderActivityAction({ activity }: { activity: BuilderActivity }) {
+export function BuilderActivityAction({
+  activity,
+  scoutPartners
+}: {
+  activity: BuilderActivity;
+  scoutPartners: ScoutPartnerInfo[];
+}) {
+  const scoutPartner = scoutPartners.find((partner) => partner.id === activity.scoutPartnerId);
+
   return (
     <Stack component='span' spacing={0.5} width='100%'>
       <Stack direction='row' spacing={0.5} alignItems='center'>
         {activity.type === 'github_event' ? (
-          activity.bonusPartner && bonusPartnersRecord[activity.bonusPartner as BonusPartner] ? (
+          activity.scoutPartnerId && scoutPartner ? (
             <Image
               width={15}
               height={15}
-              src={bonusPartnersRecord[activity.bonusPartner as BonusPartner].icon}
-              alt='Bonus Partner'
+              src={scoutPartner.image}
+              alt={scoutPartner.text}
               style={{ marginRight: '2px' }}
             />
           ) : (
@@ -122,7 +129,13 @@ export function BuilderActivityAction({ activity }: { activity: BuilderActivity 
   );
 }
 
-export function ActivityTable({ activities }: { activities: BuilderActivity[] }) {
+export function ActivityTable({
+  activities,
+  scoutPartners
+}: {
+  activities: BuilderActivity[];
+  scoutPartners: ScoutPartnerInfo[];
+}) {
   return (
     <Table
       aria-label='Leaderboard table'
@@ -184,7 +197,7 @@ export function ActivityTable({ activities }: { activities: BuilderActivity[] })
                 }}
               >
                 <Stack direction='row' gap={0.5} alignItems='flex-start' justifyContent='space-between'>
-                  <BuilderActivityAction activity={activity} />
+                  <BuilderActivityAction activity={activity} scoutPartners={scoutPartners} />
                 </Stack>
               </TableCell>
               <TableCell align='right' sx={{ maxWidth: 75, display: 'flex' }}>

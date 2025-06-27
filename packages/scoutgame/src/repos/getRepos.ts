@@ -11,7 +11,7 @@ export type Repo = {
   prs: number;
   closedPrs: number;
   contributors: number;
-  bonusPartner: string | null;
+  scoutPartnerId: string | null;
 };
 
 export async function getRepos({
@@ -88,6 +88,6 @@ function mapRepo(repos: (GithubRepo & { events: GithubEvent[] })[]): Repo[] {
     prs: repo.events.filter((event) => event.type === 'merged_pull_request').length,
     closedPrs: repo.events.filter((event) => event.type === 'closed_pull_request').length,
     contributors: new Set(repo.events.map((event) => event.createdBy)).size,
-    bonusPartner: repo.bonusPartner
+    scoutPartnerId: repo.scoutPartnerId
   }));
 }

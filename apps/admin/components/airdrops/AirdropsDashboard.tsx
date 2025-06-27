@@ -14,7 +14,7 @@ export function AirdropsDashboard() {
           partner='gooddollar'
           partnerName='GoodDollar'
           hasGithubRepos
-          airdropPartner='gooddollar_contribution'
+          airdropPartner='gooddollar'
           airdropWalletAddress={process.env.REACT_APP_REWARDS_WALLET_ADDRESS}
           chainId={celo.id}
           tokenAddress={GOODDOLLAR_TOKEN_ADDRESS}
@@ -60,7 +60,7 @@ export function AirdropsDashboard() {
         <PartnerCardContainer
           partner='octant'
           partnerName='Octant'
-          airdropPartner='octant_base_contribution'
+          airdropPartner='octant'
           airdropWalletAddress={process.env.OCTANT_BASE_CONTRIBUTION_REWARD_ADMIN_ADDRESS}
           hasGithubRepos
           chainId={base.id}
