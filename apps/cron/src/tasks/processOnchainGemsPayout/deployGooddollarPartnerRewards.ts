@@ -39,7 +39,7 @@ export async function deployGooddollarPartnerRewards({ week }: { week: string })
     return;
   }
   const result = await deployPartnerAirdropContract({
-    partner: 'gooddollar_contribution',
+    partner: 'gooddollar',
     week,
     recipients: recipients.map((recipient) => ({
       address: recipient.address,

@@ -59,7 +59,7 @@ export function PartnerRewardsCarousel({ scoutPartners }: { scoutPartners: Scout
         pagination={{
           clickable: true,
           renderBullet: (index, className) =>
-            `<img src="${scoutPartners[index].icon}" class="${className} skip-rounded-border"/>`
+            `<img src="${scoutPartners[index].icon}" style="border-radius: 50%" class="${className} skip-rounded-border"/>`
         }}
         slotProps={{ boxProps: { width: { xs: '100%', md: '95%' } } }}
       >

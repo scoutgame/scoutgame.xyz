@@ -240,13 +240,13 @@ export function TokensReceiptRewardRow({
     return <MatchupWinnerRewardRow reward={tokensReceiptReward} />;
   } else if (tokensReceiptReward.type === 'optimism_referral_champion') {
     return <ReferralChampionPartnerRewardRow partnerReward={tokensReceiptReward} />;
-  } else if (tokensReceiptReward.type === 'octant_base_contribution') {
+  } else if (tokensReceiptReward.type === 'octant') {
     return (
       <OctantBaseContributionPartnerRewardRow
         partnerReward={tokensReceiptReward as OctantBaseContributionPartnerReward}
       />
     );
-  } else if (tokensReceiptReward.type === 'gooddollar_contribution') {
+  } else if (tokensReceiptReward.type === 'gooddollar') {
     return (
       <GooddollarContributionPartnerRewardRow
         partnerReward={tokensReceiptReward as GooddollarContributionPartnerReward}

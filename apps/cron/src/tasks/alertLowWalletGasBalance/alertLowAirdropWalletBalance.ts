@@ -1,7 +1,7 @@
 import { getLogger } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { getCurrentWeek, getLastWeek, getPreviousWeek } from '@packages/dates/utils';
+import { getLastWeek, getPreviousWeek } from '@packages/dates/utils';
 import { sendDiscordAlert } from '@packages/discord/sendDiscordAlert';
 import { MATCHUP_OP_PRIZE } from '@packages/matchup/config';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
@@ -19,7 +19,7 @@ const PARTNERS = [
     privateKeyEnvVar: 'REWARDS_WALLET_PRIVATE_KEY'
   },
   {
-    id: 'gooddollar_contribution',
+    id: 'gooddollar',
     privateKeyEnvVar: 'REWARDS_WALLET_PRIVATE_KEY'
   }
   // {
@@ -180,7 +180,7 @@ async function calculateUpcomingPayout({
       const referralPayout = referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
       const matchupPayout = toWei(MATCHUP_OP_PRIZE);
       return referralPayout + matchupPayout;
-    } else if (partner === 'gooddollar_contribution') {
+    } else if (partner === 'gooddollar') {
       const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId: 'gooddollar' });
       const gooddollarPayout = builderEvents.reduce(
         (sum, event) => sum + getGooddollarPartnerRewardAmount(event.issues.map((issue) => issue.tags).flat()),

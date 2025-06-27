@@ -111,7 +111,7 @@ export async function AirdropMetrics({
         total: upcomingPayout
       });
     }
-  } else if (partner === 'octant_base_contribution' || partner === 'gooddollar_contribution') {
+  } else if (partner === 'octant' || partner === 'gooddollar') {
     const builderEvents = await getBuilderEventsForPartnerRewards({
       week: getCurrentWeek(),
       scoutPartnerId: partner
@@ -119,8 +119,7 @@ export async function AirdropMetrics({
     if (builderEvents.length > 0) {
       const upcomingPayout = builderEvents.reduce(
         (sum, event) =>
-          sum +
-          (partner === 'gooddollar_contribution' ? getGooddollarPartnerRewardAmount(event.issues[0]?.tags) : toWei(75)),
+          sum + (partner === 'gooddollar' ? getGooddollarPartnerRewardAmount(event.issues[0]?.tags) : toWei(75)),
         BigInt(0)
       );
       const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));
