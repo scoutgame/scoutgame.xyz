@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { compilerOptions } from './tsconfig.json';
 
 export default {
-  globalTeardown: resolve(__dirname, '../../jest.teardown-init.js'),
+  globalTeardown: resolve(__dirname, '../../jest.teardown-init.mjs'),
 
   transform: {
     '^.+\\.(t|j)sx?$': [

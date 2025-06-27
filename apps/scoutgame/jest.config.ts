@@ -5,7 +5,7 @@ import { compilerOptions } from './tsconfig.json';
 export default {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['./jest.setup.ts'],
-  globalTeardown: resolve(__dirname, '../../jest.teardown-init.js'),
+  globalTeardown: resolve(__dirname, '../../jest.teardown-init.mjs'),
 
   transform: {
     '^.+\\.(t|j)sx?$': [
