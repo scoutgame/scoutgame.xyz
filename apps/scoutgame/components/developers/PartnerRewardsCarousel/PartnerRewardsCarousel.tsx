@@ -1,18 +1,13 @@
 'use client';
 
+import type { ScoutPartner } from '@charmverse/core/prisma';
 import { Box } from '@mui/material';
 import { Carousel } from '@packages/scoutgame-ui/components/common/Carousel/Carousel';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const partnerInfos = [
-  { logo: 'divvi.png', name: 'divvi', infoPath: 'divvi', skipRoundedBorder: false },
-  { logo: 'taiko.png', name: 'taiko', infoPath: 'taiko', skipRoundedBorder: false },
-  { logo: 'celo.png', name: 'celo', infoPath: 'celo', skipRoundedBorder: false }
-];
-
-export function PartnerRewardsCarousel() {
+export function PartnerRewardsCarousel({ scoutPartners }: { scoutPartners: ScoutPartner[] }) {
   const isDesktop = useMdScreen();
 
   return (
@@ -64,14 +59,14 @@ export function PartnerRewardsCarousel() {
         pagination={{
           clickable: true,
           renderBullet: (index, className) =>
-            `<img src="/images/crypto/${partnerInfos[index].logo}" class="${className}${partnerInfos[index].skipRoundedBorder ? ' skip-rounded-border' : ''}"/>`
+            `<img src="${scoutPartners[index].icon}" class="${className} skip-rounded-border"/>`
         }}
         slotProps={{ boxProps: { width: { xs: '100%', md: '95%' } } }}
       >
-        {partnerInfos.map((partner) => (
-          <Link href={`/info/partner-rewards/${partner.infoPath}`} key={partner.name}>
+        {scoutPartners.map((partner) => (
+          <Link href={`/info/partner-rewards/${partner.id}`} key={partner.name}>
             <Image
-              src={`/images/promos/${partner.name}-promo-slide.png`}
+              src={partner.bannerImage}
               alt={partner.name}
               width={isDesktop ? 750 : 250}
               height={isDesktop ? 250 : 115}
