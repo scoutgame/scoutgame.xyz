@@ -4,6 +4,9 @@ jest.unstable_mockModule('@charmverse/core/prisma-client', () => ({
   prisma: {
     partnerRewardPayoutContract: {
       findFirst: jest.fn()
+    },
+    scoutPartner: {
+      findUniqueOrThrow: jest.fn()
     }
   }
 }));
@@ -82,6 +85,17 @@ describe('alertLowAirdropWalletBalance', () => {
         });
       });
 
+    // @ts-ignore
+    (prisma.scoutPartner.findUniqueOrThrow as jest.Mock<typeof prisma.scoutPartner.findUniqueOrThrow>)
+      // @ts-ignore
+      .mockResolvedValue({
+        id: 'gooddollar',
+        name: 'GoodDollar',
+        bannerImage: 'https://scoutgame.xyz/images/logos/good-dollar.png',
+        icon: 'https://scoutgame.xyz/images/logos/good-dollar.png',
+        infoPageImage: 'https://scoutgame.xyz/images/logos/good-dollar.png'
+      });
+
     // Mock getPublicClient
     const mockReadContract = jest.fn();
     (getPublicClient as jest.Mock<typeof getPublicClient>).mockReturnValue({
@@ -93,8 +107,6 @@ describe('alertLowAirdropWalletBalance', () => {
       const walletAddress = args[0];
       if (walletAddress === '0xreferral_champion_address') {
         return BigInt(50 * 1e18); // 50 OP
-      } else if (walletAddress === '0xnew_scout_address') {
-        return BigInt(200 * 1e18); // 200 OP
       } else {
         return BigInt(100 * 1e18); // 100 OP
       }
