@@ -56,7 +56,7 @@ EOL
 cat > "packages/$package_name/jest.config.ts" << EOL
 export default {
   // Teardown function after all tests run
-  // globalTeardown: '<rootDir>/jest.teardown-init.js',
+  // globalTeardown: '<rootDir>/jest.teardown-init.mjs',
   transform: {
     '^.+\\.(t|j)sx?$': '@swc/jest'
   },

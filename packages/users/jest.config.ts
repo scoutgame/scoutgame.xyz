@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 
 export default {
-  globalTeardown: resolve(__dirname, '../../jest.teardown-init.js'),
+  globalTeardown: resolve(__dirname, '../../jest.teardown-init.mjs'),
 
   transform: {
     '^.+\\.(t|j)sx?$': '@swc/jest'
