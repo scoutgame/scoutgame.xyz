@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Layer 2 Scaling",
-    "Optimistic Rollups",
-    "Ethereum Improvement"
-  ],
-  "summary": "The Optimism Monorepo serves as a pivotal resource for enhancing the Ethereum ecosystem by implementing Optimistic Rollups, a Layer 2 scaling solution aimed at improving transaction speed and reducing costs. This comprehensive collection of tools and services facilitates the deployment and management of smart contracts and rollup chains, enabling faster and more efficient transactions by processing them off-chain before posting the data back to the Ethereum main chain. It supports the development of decentralized applications (dApps) by providing a scalable and efficient infrastructure, thereby aiming to enhance the user experience and accessibility of Ethereum-based applications. Additionally, the repository aids in the operation of nodes that support Optimistic Rollups and offers tools for developers to build, test, and integrate dApps, ensuring compatibility and efficiency with various Ethereum improvement proposals (EIPs). The Optimism Monorepo is essential for developers seeking to leverage Layer 2 solutions for Ethereum's scalability and performance enhancements.",
-  "repo": "https://github.com/celo-org/optimism"
-}

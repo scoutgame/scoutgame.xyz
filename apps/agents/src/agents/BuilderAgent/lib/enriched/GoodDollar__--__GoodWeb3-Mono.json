@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Finance (DeFi)",
-    "Universal Basic Income (UBI)",
-    "Cryptocurrency Wallets"
-  ],
-  "summary": "The GoodDollar Mono-Repo serves as a comprehensive library aimed at integrating GoodDollar's core functionalities into various applications, with a focus on Universal Basic Income (UBI) and decentralized finance (DeFi). It provides an SDK package that equips developers with the necessary tools to build applications capable of interacting with the GoodDollar ecosystem. This includes features for user authentication, wallet management, UBI distribution, and smart contract interactions. The repository supports wallet integration, token swaps, staking, and claiming UBI, facilitating the development of applications that leverage the GoodDollar protocol. Additionally, it offers utilities for testing and development, such as local testing with yalc and dependency management. GoodDollar's initiative is centered around creating a more inclusive financial system by distributing digital currency (G$) globally, thereby promoting financial inclusion and aiming to reduce inequality.",
-  "repo": "https://github.com/GoodDollar/GoodWeb3-Mono"
-}

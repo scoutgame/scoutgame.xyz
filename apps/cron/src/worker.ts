@@ -6,9 +6,7 @@ import { DateTime } from 'luxon';
 import * as middleware from './middleware';
 import { alertLowWalletGasBalance } from './tasks/alertLowWalletGasBalance';
 import { approveDevelopers, log as approveDevelopersLog } from './tasks/approveDevelopers';
-import { processBuilderOnchainActivity } from './tasks/processBuilderOnchainActivity';
 import { processAllDeveloperActivity, log as processAllDeveloperActivityLog } from './tasks/processDeveloperActivity';
-import { processDuneAnalytics } from './tasks/processDuneAnalytics';
 import { processNftMints } from './tasks/processNftMints';
 import { processOnchainGemsPayout, log as processOnchainGemsPayoutLog } from './tasks/processOnchainGemsPayout';
 import { sendNotifications } from './tasks/pushNotifications/sendNotifications';
@@ -77,11 +75,7 @@ addTask('/refresh-nft-share-images', refreshShareImagesTask);
 
 addTask('/update-talent-moxie-profiles', updateTalentMoxieProfiles);
 
-addTask('/process-builder-onchain-activity', processBuilderOnchainActivity);
-
 addTask('/process-onchain-gems-payout', processOnchainGemsPayout, processOnchainGemsPayoutLog);
-
-addTask('/process-dune-analytics', processDuneAnalytics);
 
 addTask('/send-matchup-reminders', sendMatchupReminders, sendMatchupRemindersLog);
 

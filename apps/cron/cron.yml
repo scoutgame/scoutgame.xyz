@@ -51,16 +51,6 @@ cron:
     # Every 12 hours
     schedule: '0 */12 * * *'
 
-  - name: 'process-builder-onchain-activity'
-    url: '/process-builder-onchain-activity'
-    # every hour
-    schedule: '0 * * * *'
-
-  - name: 'process-dune-analytics'
-    url: '/process-dune-analytics'
-    # once a day at midnight
-    schedule: '0 0 * * *'
-
   - name: 'send-matchup-reminders'
     url: '/send-matchup-reminders'
     # every 30 minutes

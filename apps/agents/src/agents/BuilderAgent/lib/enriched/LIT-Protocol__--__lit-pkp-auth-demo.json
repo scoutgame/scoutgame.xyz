@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Identity",
-    "Programmable Wallets",
-    "Cryptocurrency Wallets"
-  ],
-  "summary": "This GitHub repository features a web application that utilizes Lit's programmable Multi-Party Computation (MPC) wallets, designed to enhance user experience in managing digital assets and identities on the blockchain. The application supports a variety of authentication methods, including social accounts (Google, Discord), one-time passwords (OTP), passkeys, Ethereum wallets, and WebAuthn, facilitated by the Lit JS SDK. This approach eliminates the need for traditional seed phrases, offering a more secure and user-friendly interface for wallet management. By integrating these flexible authentication mechanisms, the project aims to simplify the process of engaging with decentralized applications (dApps) and services, making blockchain technology more accessible to a broader audience without requiring extensive technical knowledge. The application serves as a practical example of how decentralized finance (DeFi) applications can be seamlessly integrated with mainstream web services, promoting the adoption of decentralized technologies.",
-  "repo": "https://github.com/LIT-Protocol/lit-pkp-auth-demo"
-}

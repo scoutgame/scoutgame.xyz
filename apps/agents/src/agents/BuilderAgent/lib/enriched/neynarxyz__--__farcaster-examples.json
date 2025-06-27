@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Farcaster",
-    "Social Media",
-    "Decentralized Applications"
-  ],
-  "summary": "The 'farcaster-examples' GitHub repository is a comprehensive collection of mini-apps and tools designed to interact with Farcaster, a decentralized social media platform. These applications utilize the Neynar API to offer a range of functionalities, including archiving user posts, automating social interactions, cross-posting content between Farcaster and X (formerly Twitter), and creating interactive frames for enhanced user engagement. The repository features a variety of projects, from basic bots that automate daily greetings to more sophisticated applications that facilitate cross-platform social media management. It serves as a practical guide for developers interested in integrating decentralized social media features into their applications, highlighting the potential of Farcaster's decentralized ecosystem. By providing examples of how to build applications that leverage Farcaster's unique capabilities, the repository aims to inspire the development of more open, user-controlled social media experiences.",
-  "repo": "https://github.com/neynarxyz/farcaster-examples"
-}

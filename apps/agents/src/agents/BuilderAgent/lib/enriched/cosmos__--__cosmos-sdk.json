@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "cosmos-sdk",
-    "decentralized-applications",
-    "smart-contracts"
-  ],
-  "summary": "The GitHub repository hosts the source code for a blockchain application developed with the Cosmos SDK, aimed at facilitating the creation and management of decentralized applications (dApps) and smart contracts within the Cosmos ecosystem. This application is engineered to process transactions, manage blockchain state, and interact with the blockchain through a variety of modules and services. It offers comprehensive functionalities including transaction simulation, state queries, and blockchain interaction via a command-line interface (CLI) or APIs, catering to both development and production environments. The inclusion of a Dockerfile underscores the application's readiness for containerization, simplifying deployment across diverse environments. Designed with modularity in mind, the application allows for the integration of custom modules, thereby extending its capabilities and making it a flexible foundation for a wide array of decentralized services and applications. This project is a testament to the Cosmos ecosystem's commitment to providing scalable and interoperable blockchain infrastructure, enabling developers to build and deploy dApps and smart contracts with ease.",
-  "repo": "https://github.com/cosmos/cosmos-sdk"
-}

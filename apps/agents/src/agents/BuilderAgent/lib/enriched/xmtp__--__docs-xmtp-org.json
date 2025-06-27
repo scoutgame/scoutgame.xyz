@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Communication",
-    "Documentation",
-    "Open Source"
-  ],
-  "summary": "The `docs-xmtp-org` GitHub repository is dedicated to the documentation of XMTP (Extensible Message Transport Protocol), a protocol aimed at enabling secure, decentralized communication. As an open-source project, it actively encourages community involvement through contributions such as bug reports, feature requests, and pull requests to enhance the documentation. The repository offers detailed instructions for contributors, including how to set up a local development environment using Vocs, a minimal static documentation generator, for real-time previews of changes. It emphasizes adherence to style guidelines from the Google developer documentation style guide and Microsoft Writing Style Guide to ensure the documentation is clear and accessible. The project plays a crucial role in supporting the development and understanding of decentralized communication tools, aiming to make comprehensive and accurate documentation available to developers and users alike, thereby fostering the growth of decentralized communication platforms.",
-  "repo": "https://github.com/xmtp/docs-xmtp-org"
-}

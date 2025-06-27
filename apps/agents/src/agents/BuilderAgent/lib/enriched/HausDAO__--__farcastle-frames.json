@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Autonomous Organizations (DAOs)",
-    "Blockchain Governance",
-    "Blockchain Voting Systems"
-  ],
-  "summary": "This GitHub repository hosts a web application designed to facilitate interaction with Decentralized Autonomous Organizations (DAOs) on the blockchain. It offers a user-friendly interface for managing DAO operations, including viewing DAO details, submitting and voting on proposals, and executing transactions. The application utilizes smart contracts to ensure secure and transparent governance processes, enabling users to actively participate in decision-making and fund management within their DAOs. By integrating modern web technologies and blockchain, the project aims to simplify the complexity of DAO governance, making it accessible for both technical and non-technical participants. The focus is on enhancing the governance experience, emphasizing user experience, security, and the decentralization ethos, thereby providing a comprehensive toolset for DAO members to engage effectively with their organizations.",
-  "repo": "https://github.com/HausDAO/farcastle-frames"
-}

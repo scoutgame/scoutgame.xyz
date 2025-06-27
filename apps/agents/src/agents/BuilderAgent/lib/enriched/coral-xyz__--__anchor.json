@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "smart_contracts",
-    "solana",
-    "anchor_framework"
-  ],
-  "summary": "The GitHub repository hosts the source code for the Anchor framework, a toolkit aimed at simplifying the development of Solana blockchain applications. Anchor provides a Rust-based embedded domain-specific language (eDSL) for writing secure and high-level Solana programs, alongside an Interface Description Language (IDL) for defining program interfaces. It also includes tools for generating TypeScript clients from IDL, facilitating the development of client-side applications. The framework comes with a command-line interface (CLI) that aids in project management, enabling developers to efficiently create, test, and deploy Solana programs. Key features of Anchor include account management, instruction processing, and cross-program invocation (CPI), which collectively streamline the development of complex decentralized applications (dApps) on the Solana blockchain. By abstracting away much of the boilerplate code and providing a structured approach to Solana program development, Anchor significantly reduces the barrier to entry for developers looking to build on Solana.",
-  "repo": "https://github.com/coral-xyz/anchor"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Open Source Funding",
-    "DAO Funding",
-    "OSS Ecosystem"
-  ],
-  "summary": "This GitHub repository functions as a detailed registry and toolkit aimed at tracking and managing funding data for open source software (OSS) projects. It establishes a structured approach to collect, validate, and transform funding data into a standardized schema, accessible in multiple formats including CSV, JSON, and Google Sheets. Designed to bolster the OSS ecosystem, it provides a public resource for researchers, developers, foundations, and other stakeholders to analyze funding trends and opportunities. Key features include the ability to add new funding data, create funder profiles, and ensure data compliance with the DAOIP-5 metadata standard. It also offers tools for data format conversion and project name validation against an existing OSS project database. The initiative seeks to improve the transparency and accessibility of funding information, thereby aiding in informed decision-making and support for open source projects.",
-  "repo": "https://github.com/opensource-observer/oss-funding"
-}

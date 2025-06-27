@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Smart Contracts",
-    "Decentralized Applications (DApps)",
-    "Ethereum"
-  ],
-  "summary": "This GitHub repository offers a Web3 starter kit aimed at speeding up the development of decentralized applications (DApps) by providing a versatile and minimalist template. It features a monorepo structure that includes packages for API, clients, and contracts, facilitating end-to-end testing in a local environment. The kit is designed to support a range of functionalities, such as autonomous worlds and tokenbound accounts, through its various branches. It employs modern development tools and libraries, including React for the user interface, Vite for building client UIs, OpenZeppelin for secure smart contracts, and Foundry for compiling and deploying smart contracts. The repository is open to contributions, inviting the community to enhance the kit with new features. It serves as an excellent foundation for developers embarking on Web3 projects, offering a streamlined approach to building, testing, and deploying DApps, with a particular emphasis on Ethereum-based smart contracts.",
-  "repo": "https://github.com/greenpill-dev-guild/green-goods"
-}

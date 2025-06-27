@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "NFT",
-    "ERC1155",
-    "Smart Contracts"
-  ],
-  "summary": "This GitHub repository offers a detailed collection of smart contracts and tools tailored for the creation, management, and interaction with NFTs on the Ethereum blockchain, specifically using the ERC1155 standard. Central to the repository is the 'BuilderNFT' contract, which facilitates the minting, transferring, and burning of NFTs, alongside the registration of unique builder tokens linked to specific UUIDs. The system is equipped with a range of features for operational and administrative tasks, including setting base URIs for token metadata, managing token supply, and processing payments in ERC20 tokens like USDC. Beyond these, the repository also encompasses contracts for additional functionalities such as attestation services, token vesting, and access control, providing a comprehensive framework for developing NFT-based applications. Aimed at developers and organizations, this project focuses on leveraging blockchain technology for efficient digital asset management and trading, with a particular emphasis on NFTs and the ERC1155 standard.",
-  "repo": "https://github.com/charmverse/stargate-protocol"
-}

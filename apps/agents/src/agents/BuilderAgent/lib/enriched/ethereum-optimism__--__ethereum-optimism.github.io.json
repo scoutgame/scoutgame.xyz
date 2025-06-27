@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Token Management",
-    "Decentralized Finance (DeFi)",
-    "Layer 2 Scaling Solutions"
-  ],
-  "summary": "The Superchain Token List repository acts as a centralized and authoritative source for token information across various Superchains, including OP Mainnet and Base. It plays a crucial role in managing and verifying tokens to ensure accurate representation and accessibility for services such as the Optimism bridge UI. The repository differentiates between the permissionless deployment of tokens and the curated list, highlighting that inclusion in the list does not signify endorsement of the token's quality or investment soundness. A structured review process, involving both automated checks and manual reviews, is in place to maintain the integrity and accuracy of token information. This process includes verifying token existence on specified chains and compliance with specific criteria, such as Etherscan verification for L1 tokens. Additionally, the repository accommodates non-standard and non-bridgable tokens, offering flexibility for various token types. It also provides tools for validating token information against on-chain data and external sources like CoinGecko, ensuring the token list remains a reliable resource. This tool is indispensable for developers and users engaged in decentralized finance (DeFi) and utilizing Layer 2 scaling solutions for Ethereum, facilitating a more efficient and secure ecosystem.",
-  "repo": "https://github.com/ethereum-optimism/ethereum-optimism.github.io"
-}

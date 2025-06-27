@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Social Media",
-    "Decentralized Applications"
-  ],
-  "summary": "This GitHub repository features a Next.js project that integrates with the Farcaster protocol, specifically designed for the Warpcast client. It focuses on enhancing user engagement and content creation through a rewards system. Utilizing modern web development tools like `shadcn` for UI components and `@tanstack/react-query` for efficient data fetching, the project offers a seamless user experience. It includes a custom Farcaster API client for smooth interaction with the Farcaster network. The application showcases a leaderboard that ranks users based on their activity and rewards them accordingly, alongside a weekly summary feature for tracking performance and rewards over time. Additionally, it provides detailed information on earning rewards and the various reward tiers available, aiming to incentivize content creation and engagement on decentralized social media platforms. The project is containerized with Docker, ensuring easy deployment and scalability. This initiative represents a significant step towards fostering a vibrant community of content creators and engaged users within the decentralized social media landscape.",
-  "repo": "https://github.com/warpcast/scores-frame"
-}

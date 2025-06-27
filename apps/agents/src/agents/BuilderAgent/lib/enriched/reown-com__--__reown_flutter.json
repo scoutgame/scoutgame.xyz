@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "wallet_connect",
-    "flutter",
-    "dapp"
-  ],
-  "summary": "Reown - Flutter is a comprehensive implementation of the WalletConnect protocol tailored for Flutter applications, aimed at enabling secure and seamless interactions between numerous wallets and applications. It offers a suite of SDKs, including Core SDK, Sign SDK, WalletKit, and AppKit, each designed for specific functionalities such as core protocol operations, transaction signing, wallet management, and application integration. This project allows developers to create decentralized applications (dApps) that can securely connect with wallets, manage blockchain transactions, and interact with smart contracts. By focusing on intuitive and secure user experiences, Reown - Flutter facilitates digital ownership and bridges the gap between various blockchain applications and wallets. With support for multiple blockchain networks, it serves as a crucial tool for developers aiming to build accessible and user-friendly blockchain applications, emphasizing security and user experience in the process.",
-  "repo": "https://github.com/reown-com/reown_flutter"
-}

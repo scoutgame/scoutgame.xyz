@@ -2,13 +2,10 @@ import 'server-only';
 
 import type { BuilderStatus } from '@charmverse/core/prisma';
 import { Box, Stack, Paper } from '@mui/material';
-import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { BackButton } from '@packages/scoutgame-ui/components/common/Button/BackButton';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { UserProfile } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 import type { BasicUserInfo } from '@packages/users/interfaces';
-
-import { ProjectsTab } from 'components/projects/components/ProjectsTab';
 
 import { PublicBuilderProfile } from './components/PublicBuilderProfile/PublicBuilderProfile';
 import { PublicScoutProfile } from './components/PublicScoutProfile/PublicScoutProfile';
@@ -19,13 +16,11 @@ type UserProfile = BasicUserInfo & { displayName: string; builderStatus: Builder
 export function PublicProfilePage({
   loggedInUserId,
   user,
-  tab,
-  scoutProjects
+  tab
 }: {
   loggedInUserId?: string;
   user: UserProfile;
   tab: string;
-  scoutProjects?: ScoutProjectMinimal[];
 }) {
   return (
     <Box gap={2} display='flex' flexDirection='column' margin='auto'>
@@ -40,11 +35,6 @@ export function PublicProfilePage({
             </Box>
           </Stack>
         </Paper>
-        {scoutProjects && scoutProjects.length ? (
-          <Box my={1}>
-            <ProjectsTab scoutProjects={scoutProjects} />
-          </Box>
-        ) : null}
       </Hidden>
       <Box position='sticky' top={0} zIndex={1} bgcolor='background.default'>
         <PublicProfileTabsMenu
@@ -54,9 +44,9 @@ export function PublicProfilePage({
         />
       </Box>
       {tab === 'builder' ? (
-        <PublicBuilderProfile loggedInUserId={loggedInUserId} builder={user} scoutProjects={scoutProjects} />
+        <PublicBuilderProfile loggedInUserId={loggedInUserId} builder={user} />
       ) : (
-        <PublicScoutProfile loggedInUserId={loggedInUserId} publicUser={user} scoutProjects={scoutProjects} />
+        <PublicScoutProfile loggedInUserId={loggedInUserId} publicUser={user} />
       )}
     </Box>
   );

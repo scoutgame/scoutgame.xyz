@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Identity",
-    "Soulbound Tokens",
-    "Educational Credentials"
-  ],
-  "summary": "The GitHub repository introduces a decentralized application aimed at revolutionizing the management and issuance of educational credentials through the innovative use of Soulbound NFTs (Non-Fungible Tokens). These NFTs are designed to be non-transferable, ensuring that once issued, they remain permanently linked to the recipient, thus providing a secure and immutable record of educational achievements. The system is built around a series of smart contracts, including the CrediChainCore contract for credential issuance and revocation, the IdentityManager contract for secure user authentication using World ID, and the SoulBoundNFT contract for the creation and management of the NFTs. This approach not only enhances the security and trustworthiness of digital credentials but also streamlines the verification process for educational institutions and employers alike. By leveraging decentralized identity verification, the application ensures privacy and security, making it a forward-thinking solution for the digital representation of educational credentials.",
-  "repo": "https://github.com/CrediChain/contracts"
-}

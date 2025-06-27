@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "developer tools",
-    "blockchain gaming",
-    "game development"
-  ],
-  "summary": "The GitHub repository is dedicated to Paima Engine, a developer tool aimed at simplifying the creation of blockchain-based and web3 games. It offers extensive documentation, including guides for installation, local development setup, and building the documentation site. The repository is designed to support developers in leveraging Paima Engine's capabilities, with a particular focus on smart contract development for blockchain games. It provides a variety of resources such as game templates, a custom CSS file for documentation styling, and links to the main Paima Engine codebase. The goal of Paima Engine is to make blockchain game development more accessible by offering a streamlined development environment and comprehensive documentation, thereby enabling developers to create engaging and interactive games on the blockchain with ease.",
-  "repo": "https://github.com/PaimaStudios/paima-engine-docs"
-}

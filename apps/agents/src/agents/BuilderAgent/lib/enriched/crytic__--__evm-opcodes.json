@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Open Source",
-    "Software Licensing"
-  ],
-  "summary": "The provided GitHub code represents the Apache License Version 2.0, a pivotal legal document in the open-source community rather than a functional software product. This license outlines the terms under which software and other works can be used, modified, and distributed, fostering a collaborative environment for software development. It grants users extensive freedoms, including the rights to freely use, modify, and share the licensed work, contingent upon adherence to its terms. These terms mandate proper attribution to the original authors, inclusion of the license with any distributed work, and clear indication of any modifications made. Additionally, the license includes a disclaimer of warranty and a limitation of liability, safeguarding the original authors from legal claims. A distinctive feature of the Apache License is its patent grant, offering users protection against patent claims related to the licensed work. By establishing a clear legal framework, the Apache License plays a crucial role in the open-source ecosystem, enabling the sharing and collaborative improvement of software while balancing the rights of creators with the freedoms of users.",
-  "repo": "https://github.com/crytic/evm-opcodes"
-}

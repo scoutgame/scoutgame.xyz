@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "cryptocurrency",
-    "smart-contracts",
-    "decentralized-finance"
-  ],
-  "summary": "The GitHub repository serves as a comprehensive toolkit designed for developers to interact with the Celo blockchain, a platform aimed at enhancing financial accessibility through mobile technology. It encompasses a broad spectrum of functionalities, from basic blockchain interactions and smart contract management to more advanced decentralized finance (DeFi) operations and wallet management. Key features include the ability to create and manage accounts, execute transactions, interact with smart contracts, and handle Celo's native and stable tokens. Additionally, the toolkit offers utilities for cryptographic operations, such as key generation, encryption, and transaction signing, ensuring secure and efficient management of digital assets. The repository is structured to be modular, allowing developers to selectively use components based on their project requirements, and supports both local and hardware wallet integrations for enhanced security. This makes it an invaluable resource for developers looking to build applications on the Celo blockchain that can securely send, receive, and manage digital assets.",
-  "repo": "https://github.com/celo-org/developer-tooling"
-}

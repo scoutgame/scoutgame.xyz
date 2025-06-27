@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Retroactive Public Goods Funding",
-    "Decentralized Governance"
-  ],
-  "summary": "EasyRetroPGF is a platform designed to streamline the Retroactive Public Goods Funding (RPGF) process, enabling projects that have contributed to the public good to apply for funding. It facilitates a democratic and transparent voting system where badgeholders can vote on projects, ensuring that impactful initiatives receive recognition and financial support. The platform supports a variety of networks, including Ethereum, Optimism, Base, Arbitrum One, and Linea, and utilizes the Ethereum Attestation Service (EAS) for secure on-chain data storage. Key features include project submission, badgeholder voting, vote tallying, and the distribution of funds to approved projects. EasyRetroPGF is built to enhance the efficiency and fairness of the RPGF process, making it easier for projects within supported ecosystems to secure the funding they need to continue their valuable work.",
-  "repo": "https://github.com/gitcoinco/easy-retro-pgf-filecoin"
-}

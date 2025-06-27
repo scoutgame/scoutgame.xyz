@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum Staking",
-    "Distributed Validator Technology",
-    "Decentralized Finance (DeFi)"
-  ],
-  "summary": "The SSV Node repository is a comprehensive solution aimed at enhancing the security and scalability of Ethereum staking through the use of distributed validator technology (DVT). It employs a Multi-Party Computation (MPC) threshold scheme with a consensus layer based on Istanbul BFT (iBFT), ensuring a robust and fault-tolerant system. This technology enables a decentralized network of staking operators to efficiently manage validators. The repository provides a suite of tools and documentation for node operators and developers, including installation guides, development resources, API documentation, and contribution guidelines. Key functionalities supported by SSV Node include validator key sharing, slashing protection, and integration with Ethereum's beacon chain, all designed to bolster the security and decentralization of Ethereum's proof-of-stake mechanism. The project is under active development, with a roadmap that outlines future enhancements to network and discovery, validator management, and monitoring tools. SSV Node plays a crucial role in advancing the Ethereum ecosystem by improving the decentralization and security of staking operations, thereby supporting the broader objectives of decentralized finance (DeFi).",
-  "repo": "https://github.com/ssvlabs/ssv"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Finance (DeFi)",
-    "Ethereum",
-    "Token Exchange"
-  ],
-  "summary": "The GoodProtocol Interface serves as an open-source frontend for the GoodProtocol, a decentralized exchange protocol specifically designed for Ethereum tokens. This interface allows users to engage in various activities such as swapping tokens, staking, claiming rewards, and managing their investment portfolios directly through their web browsers. It is crafted to be intuitive and user-friendly, supporting a wide range of Ethereum-based tokens and offering functionalities like wallet integration, access to transaction history, and real-time price updates. A key aspect of the GoodProtocol Interface is its commitment to decentralization and resistance to censorship, achieved by not hosting its own frontend but instead depending on frontends provided by the community. This initiative is a component of the broader GoodDollar ecosystem, which seeks to leverage blockchain technology to foster a more inclusive and accessible financial landscape. The development of the interface is driven by community contributions, with the project encouraging participation through pull requests to its master branch. Built using contemporary web technologies such as React and TypeScript, the interface seamlessly integrates with Ethereum for blockchain interactions, embodying the principles of decentralization and community empowerment.",
-  "repo": "https://github.com/GoodDollar/GoodProtocolUI"
-}

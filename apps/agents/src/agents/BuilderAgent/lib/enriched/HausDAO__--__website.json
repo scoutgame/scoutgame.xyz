@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Autonomous Organizations (DAOs)",
-    "Community Building",
-    "Open Source"
-  ],
-  "summary": "The DAOHaus GitHub repository serves as a comprehensive platform and toolkit aimed at simplifying the creation, management, and governance of Decentralized Autonomous Organizations (DAOs). It utilizes advanced web technologies, including the Vite-powered React framework, to ensure a smooth and efficient user experience. The platform is designed to support a variety of functionalities essential for DAO operations, such as voting, proposal making, and member management, all within a decentralized framework. DAOHaus places a strong emphasis on community-driven governance, offering tools and resources that empower communities to coordinate and govern according to their values and missions. Additionally, it encourages the development of custom DAO applications and the integration of DAO tools, promoting open standards and composability. With its focus on public goods and community ownership, DAOHaus aims to facilitate effective governance and coordination among decentralized communities.",
-  "repo": "https://github.com/HausDAO/website"
-}

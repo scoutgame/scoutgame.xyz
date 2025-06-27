@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "smart contracts",
-    "decentralized applications",
-    "LIT Protocol"
-  ],
-  "summary": "This GitHub repository is dedicated to supporting the development and management of smart contracts for the LIT Protocol, a blockchain-based platform. It offers a comprehensive suite of tools and scripts designed to fetch, update, and manage contract ABIs (Application Binary Interfaces) and addresses across various environments, including development and production. The repository facilitates the integration of LIT Protocol's smart contracts into decentralized applications (DApps) by providing mechanisms to access the latest contract versions during development or stable versions for production. It includes features for triggering builds, managing dependencies, and generating exports tailored to different environments, thereby streamlining the development process. Additionally, the repository outlines a structured branching and development strategy to efficiently manage updates and changes to the contracts, ensuring they can be seamlessly integrated into ongoing projects. This tool is invaluable for developers looking to leverage the LIT Protocol's capabilities in their DApps, offering flexibility, up-to-date access to contract data, and a streamlined workflow for contract management.",
-  "repo": "https://github.com/LIT-Protocol/lit-contracts"
-}

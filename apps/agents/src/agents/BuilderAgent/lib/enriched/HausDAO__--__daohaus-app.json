@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "DAO Management",
-    "No-Code Platform",
-    "Decentralized Autonomous Organizations"
-  ],
-  "summary": "DAOhaus is a no-code platform designed to simplify the creation and management of Moloch DAOs, such as MetaCartel, Raid Guild, and The LAO. It provides an intuitive user interface that allows users to summon and manage decentralized autonomous organizations without the need for coding knowledge. This accessibility broadens participation in decentralized governance and coordination, making it easier for communities to make collective decisions. DAOhaus supports essential DAO functionalities, including proposal submissions, voting, and treasury management. The platform encourages community involvement by enabling users to report bugs, request features, and contribute to its development. Operating under the GNU General Public License, DAOhaus remains free and open-source software, ensuring it is accessible to all users interested in decentralized governance structures.",
-  "repo": "https://github.com/HausDAO/daohaus-app"
-}

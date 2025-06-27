@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "social media",
-    "surveys",
-    "community engagement"
-  ],
-  "summary": "Ponder Surveys is an open-source NodeJS bot designed to enhance community engagement on Farcaster, a social media platform. It automates the posting of surveys, leveraging Farcaster Frames, Neynar, Supabase, and Thirdweb to facilitate both quantitative and qualitative feedback collection. The bot schedules surveys, manages data storage, and automates replies, making it a valuable tool for community managers and researchers. It's part of the broader Ponder ecosystem, aiming to foster interactive and engaging community discussions by making surveys more accessible and engaging. This tool is particularly valuable for communities looking to gather feedback, conduct research, or engage their members in meaningful conversations.",
-  "repo": "https://github.com/ponder-surveys/farcaster-survey-bot"
-}

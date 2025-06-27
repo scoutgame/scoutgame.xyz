@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Portal Network",
-    "Go Language"
-  ],
-  "summary": "Shisui is an Ethereum portal client developed in Go, aimed at facilitating interaction with the Ethereum blockchain. Built upon the go-ethereum (Geth) codebase, it seeks to offer a lightweight and efficient solution for accessing Ethereum's portal network. Currently in active development and not yet suitable for production, Shisui supports source builds using Go and C compilers, as well as Docker deployments. It provides a range of configuration options for network settings, data storage, and logging, emphasizing minimal hardware requirements to ensure broad accessibility. Inspired by the character Uchiha Shisui from the anime Naruto, known for his speed, the project metaphorically aims for efficiency and swiftness in processing Ethereum transactions and data. Shisui is part of the Ethereum ecosystem's efforts to enhance decentralized applications (DApps) and services by delivering a reliable and efficient Ethereum client.",
-  "repo": "https://github.com/optimism-java/shisui"
-}

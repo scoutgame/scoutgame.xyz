@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Developer Tools",
-    "Documentation",
-    "Documentation Tools"
-  ],
-  "summary": "The GitHub repository focuses on a project that utilizes Vocs, a tool aimed at simplifying the creation, management, and deployment of documentation for developers. Vocs is designed to make the documentation process more efficient and user-friendly, offering features like easy setup, customizable themes, and streamlined content management. This tool is particularly beneficial for developers and technical writers who seek to produce high-quality documentation with ease, allowing them to concentrate more on their core development tasks rather than the complexities of documentation management. The project emphasizes enhancing the documentation experience by providing a platform that is both accessible and adaptable, ensuring that documentation can be easily maintained and updated as projects evolve. This approach is crucial for fostering a better understanding and adoption of projects, making Vocs an essential tool for developers aiming to improve their documentation practices.",
-  "repo": "https://github.com/HausDAO/farcastle"
-}

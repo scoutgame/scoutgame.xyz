@@ -2,11 +2,13 @@
 
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
+import type { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import { getCurrentSeasonStart, getCurrentWeek } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 
 import { devTokenDecimals } from '../protocol/constants';
 
+import type { NftListing } from './interfaces';
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
 type DeveloperCardInfo = {
@@ -46,6 +48,7 @@ export type DeveloperInfo = {
   scoutedBy: number;
   githubActivities: DeveloperGithubActivity[];
   last14DaysRank: (number | null)[];
+  userListing: NftListing | null;
 };
 
 export async function getDeveloperInfo({
@@ -123,6 +126,7 @@ export async function getDeveloperInfo({
           imageUrl: true,
           congratsImageUrl: true,
           nftType: true,
+          contractAddress: true,
           nftOwners: {
             where: {
               scoutWallet: {
@@ -138,6 +142,22 @@ export async function getDeveloperInfo({
                   scoutId: true
                 }
               }
+            }
+          },
+          listings: {
+            orderBy: {
+              price: 'asc'
+            },
+            where: {
+              completedAt: null
+            },
+            select: {
+              id: true,
+              createdAt: true,
+              price: true,
+              priceDevToken: true,
+              amount: true,
+              order: true
             }
           }
         }
@@ -226,6 +246,21 @@ export async function getDeveloperInfo({
     .filter((nftOwner) => nftOwner.scoutWallet.scoutId === scoutId)
     .reduce((acc, nftOwner) => acc + nftOwner.balance, 0);
 
+  const userListing =
+    developer.builderNfts
+      .flatMap((nft) =>
+        nft.listings.map((listing) => ({
+          id: listing.id,
+          createdAt: listing.createdAt,
+          price: BigInt(listing.priceDevToken || 0),
+          contractAddress: nft.contractAddress as `0x${string}`,
+          scoutId: nft.nftOwners[0].scoutWallet.scoutId,
+          order: listing.order as OrderWithCounter
+        }))
+      )
+      // Sort in ascending order by price (lowest price first)
+      .sort((a, b) => (a.price < b.price ? -1 : a.price > b.price ? 1 : 0))[0] || null;
+
   return {
     id: developer.id,
     path: developer.path,
@@ -262,11 +297,12 @@ export async function getDeveloperInfo({
     },
     regularCard: {
       estimatedPayout: Number(BigInt(regularCard.estimatedPayoutDevToken || 0) / BigInt(10 ** devTokenDecimals)),
-      price: BigInt(regularCard.currentPriceDevToken || 0),
+      price: userListing?.price ? BigInt(userListing.price) : BigInt(regularCard.currentPriceDevToken || 0),
       cardsSold: regularCardsSold,
       cardsSoldToScout: regularCardsSoldToScout,
       nftImageUrl: regularCard.imageUrl,
       congratsImageUrl: regularCard.congratsImageUrl || null
-    }
+    },
+    userListing
   };
 }

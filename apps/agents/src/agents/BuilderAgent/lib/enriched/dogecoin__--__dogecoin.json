@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "cryptocurrency",
-    "dogecoin",
-    "bitcoin"
-  ],
-  "summary": "This GitHub repository hosts the source code for Dogecoin Core, a digital currency that originated as a humorous take on cryptocurrency but has since evolved into a significant and community-driven project. Built as a fork of Bitcoin Core, Dogecoin Core has been tailored to accommodate Dogecoin's distinctive characteristics, such as its inflationary supply model and quicker block generation times. The repository provides the essential software for operating a Dogecoin node, engaging with the Dogecoin network, and creating applications utilizing Dogecoin. It encompasses functionalities for wallet management, processing transactions, validating the blockchain, and facilitating peer-to-peer networking. Additionally, it introduces advanced capabilities like Auxiliary Proof of Work (AuxPoW) for merged mining, enabling Dogecoin to be mined in conjunction with other cryptocurrencies sharing the same mining algorithm. This project supports a wide range of users, from individuals to businesses aiming to incorporate Dogecoin into their services, emphasizing security, efficiency, and scalability.",
-  "repo": "https://github.com/dogecoin/dogecoin"
-}

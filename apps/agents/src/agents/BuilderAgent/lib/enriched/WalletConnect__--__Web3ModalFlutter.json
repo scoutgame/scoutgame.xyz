@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "walletconnect",
-    "flutter",
-    "dapp"
-  ],
-  "summary": "The GitHub repository hosts WalletConnect's official AppKit SDK for Flutter, aimed at simplifying the development of decentralized applications (dApps). This SDK offers a comprehensive suite of features that enable developers to integrate wallet connectivity, messaging, and payments into their Flutter applications. It supports a seamless integration process, facilitating the creation of powerful web3 experiences. The repository is equipped with documentation, example applications, and commands to run the example app, making it easier for developers to get started. Despite being marked as no longer maintained, it serves as a foundational tool for building dApps with Flutter, leveraging the WalletConnect protocol for secure and efficient blockchain interactions. Key functionalities include wallet connection management, network switching, and support for various blockchain networks, enabling users to connect their wallets and interact with dApps securely and efficiently.",
-  "repo": "https://github.com/WalletConnect/Web3ModalFlutter"
-}

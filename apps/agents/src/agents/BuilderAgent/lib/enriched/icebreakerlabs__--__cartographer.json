@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Identity",
-    "Social Media Integration",
-    "Cryptographic Verification"
-  ],
-  "summary": "The Cartographer repository is a suite of tools aimed at enhancing the practical use of cryptographically verifiable data, particularly in the realms of decentralized identity and social media. It features two primary applications: a mini-app and a recbot, both built with Next.js. The mini-app enables users to input an Icebreaker credential name to retrieve a list of Farcaster casts from users holding that credential, thereby linking social media activity with verifiable credentials. The recbot monitors Farcaster for specific activities and automatically issues witnessable credentials to Icebreaker, streamlining the creation of a verifiable digital identity based on social media interactions. These tools collectively facilitate a more integrated and accessible approach to decentralized identity verification, allowing users to easily prove their identity and credentials in a secure manner.",
-  "repo": "https://github.com/icebreakerlabs/cartographer"
-}

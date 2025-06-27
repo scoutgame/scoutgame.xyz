@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Documentation",
-    "Developer Tools"
-  ],
-  "summary": "The GitHub repository is dedicated to the documentation of Reown, a platform offering tools and services for developers. Built with Docusaurus, a modern static website generator, the documentation site is designed to be comprehensive and user-friendly. It covers a wide range of topics essential for developers, including detailed guides, API references, and tutorials on cloud services, multi-chain RPC references, wallet integration, and smart contract interactions. The repository provides specific guides for AppKit and WalletKit, likely SDKs or frameworks for building decentralized applications (dApps) and wallets. It also includes components and utilities for customizing the documentation site, such as tabs for platform-specific content and admonitions for highlighting important information. The documentation is structured to support developers across various platforms and frameworks, ensuring a seamless user experience through regular updates and the use of redirects to prevent broken links. This repository is an essential resource for developers aiming to integrate Reown's services into their applications, offering insights into advanced features and facilitating the development of blockchain-based applications.",
-  "repo": "https://github.com/reown-com/reown-docs"
-}

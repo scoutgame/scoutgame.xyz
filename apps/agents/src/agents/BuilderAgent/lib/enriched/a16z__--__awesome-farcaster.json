@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Finance (DeFi)",
-    "Smart Contracts",
-    "Cryptocurrency Wallets"
-  ],
-  "summary": "This GitHub repository hosts a decentralized finance (DeFi) application designed to facilitate peer-to-peer financial transactions without traditional intermediaries. It leverages smart contracts to automate and secure transactions, ensuring they are executed only when predefined conditions are met, thereby minimizing fraud risks. The application includes a cryptocurrency wallet interface, enabling users to securely manage their digital assets, such as storing, sending, and receiving cryptocurrencies directly within the app. It supports a variety of financial services, including lending, borrowing, and earning interest on cryptocurrency holdings, all within a decentralized framework. The project aims to democratize financial services, making them accessible to a global audience, particularly those in underserved or unbanked regions. By promoting financial inclusion and empowering users with full control over their financial transactions, this DeFi application represents a significant step towards a more open and accessible financial system.",
-  "repo": "https://github.com/a16z/awesome-farcaster"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "ethereum",
-    "smart contracts",
-    "off-chain computation"
-  ],
-  "summary": "This GitHub repository hosts a comprehensive SDK tailored for off-chain computation and interaction with Ethereum-based smart contracts. It offers a robust framework for developers to build, deploy, and manage jobs that engage with the Ethereum blockchain, encompassing transaction handling, event listening, and smart contract interactions. The SDK is equipped with functionalities like job management, transaction batching, and event subscription, facilitating the development of decentralized applications (dApps) that necessitate off-chain computation. Additionally, it provides tools for efficient batch processing of smart contract calls through multicall operations, enhancing scalability and efficiency. The repository also emphasizes maintainability and scalability by including logging, telemetry, and configuration management tools. This SDK is an invaluable resource for developers aiming to integrate complex off-chain logic with Ethereum smart contracts, offering a solid foundation for creating scalable and efficient dApps.",
-  "repo": "https://github.com/berachain/offchain-sdk"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "gaming",
-    "character development",
-    "NFTs"
-  ],
-  "summary": "CharacterSheets is a platform designed for users to create, develop, and evolve their characters through engaging in various activities and challenges. As participants act as mercenaries, they can earn experience points (XP), overcome challenges, and enhance their characters' abilities and attributes. The platform emphasizes a community-driven ecosystem where users can customize their characters, track their progress, and contribute to the community. It uniquely integrates gaming with blockchain technology to securely record and immortalize character progress and achievements on-chain. CharacterSheets offers a distinctive experience by allowing users to create a visual and interactive chronicle of their journey, showcasing their characters and the items they've collected. Built using Next.js, the platform provides a decentralized and transparent environment for users to manage their characters and display their achievements, blending the worlds of gaming and blockchain in an innovative way.",
-  "repo": "https://github.com/raid-guild/character-sheets-frontend"
-}

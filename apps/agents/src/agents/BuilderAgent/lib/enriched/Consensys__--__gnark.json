@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Zero Knowledge Proofs",
-    "Cryptography",
-    "Privacy"
-  ],
-  "summary": "The GitHub repository hosts a sophisticated Zero Knowledge Proof (ZKP) system, known as gnark, which facilitates the creation, verification, and management of ZKP circuits using advanced schemes like Groth16 and PLONK. It supports a variety of elliptic curves, including BN254, BLS12-377, BLS12-381, BW6-761, BLS24-315, BW6-633, and BLS24-317, ensuring adaptability across different cryptographic needs. The system is equipped with high-level APIs that allow developers to design complex, privacy-preserving applications efficiently. It encompasses a full suite of tools for circuit compilation, witness generation, proof generation, and verification, aimed at enabling secure and verifiable computations without exposing the underlying data. This makes it an invaluable resource for developers looking to implement privacy-centric solutions in their applications.",
-  "repo": "https://github.com/Consensys/gnark"
-}

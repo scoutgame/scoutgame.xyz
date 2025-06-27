@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Execution Client"
-  ],
-  "summary": "Nethermind is a high-performance Ethereum execution client developed on the .NET framework, aimed at bolstering the Ethereum ecosystem's diversity and resilience. It supports a variety of networks such as Ethereum, Gnosis, Optimism, Base, Taiko, Linea, and Energy Web, showcasing its versatility. Renowned for its modular architecture and plugin system, Nethermind offers extensive extensibility and features tailored for emerging chains. It excels in efficiently syncing and processing tip-of-chain transactions, contributing significantly to the Ethereum network's robustness. Installation is facilitated through standalone releases, package managers for Linux, Windows, and macOS, as well as Docker containers, ensuring broad accessibility. Nethermind is committed to fostering a vibrant community, emphasizing security, open-source development, and adherence to a code of conduct. Comprehensive documentation is provided to support users and developers, encouraging community contributions and facilitating the building from source. Nethermind's role in the Ethereum ecosystem is pivotal, providing a robust and efficient execution layer essential for decentralized applications.",
-  "repo": "https://github.com/NethermindEth/nethermind"
-}

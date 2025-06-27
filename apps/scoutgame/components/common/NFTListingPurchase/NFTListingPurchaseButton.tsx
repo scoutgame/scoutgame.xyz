@@ -16,7 +16,6 @@ export function NFTListingPurchaseButton({
 }: Pick<NFTListingPurchaseFormProps, 'builder' | 'listing'>) {
   const trackEvent = useTrackEvent();
   const pathname = usePathname();
-  const [authPopup, setAuthPopup] = useState<boolean>(false);
   const [dialogLoadingStatus, setDialogLoadingStatus] = useState<boolean>(false);
   const { user } = useUser();
   const { openModal } = useGlobalModal();

@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "access control",
-    "smart contracts"
-  ],
-  "summary": "This GitHub repository hosts a tool and package designed for validating Access Control Conditions (ACCs) across various blockchain networks, including Ethereum, Solana, and Cosmos. The primary focus is on ensuring that smart contracts and blockchain interactions adhere to predefined schemas and conditions, supporting functionalities from basic balance checks to complex contract interactions. It provides a framework for developers to validate conditions against predefined schemas, ensuring ACCs meet necessary criteria such as correct data types, required fields, and specific values. The repository includes a set of test cases and schemas for different blockchain conditions, making it a valuable resource for developers working on decentralized applications (dApps) that require precise access control mechanisms. Although marked as outdated and no longer maintained, the repository offers insights into the complexities of blockchain validation and access control, serving as a reference for similar projects and directing users to an updated version, indicating the ongoing relevance and evolution of such tools in the blockchain ecosystem.",
-  "repo": "https://github.com/LIT-Protocol/lit-accs-validator-sdk"
-}

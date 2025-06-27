@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Applications (dApps)",
-    "Ethereum Development",
-    "Smart Contracts"
-  ],
-  "summary": "Scaffold-ETH 2 is an open-source toolkit aimed at simplifying the development of decentralized applications (dApps) on the Ethereum blockchain. It equips developers with a robust set of tools and features for creating, deploying, and interacting with smart contracts, alongside building user interfaces for their dApps. Key functionalities include contract hot reload, custom React hooks for smart contract interactions, a suite of common components, a burner wallet for testing, and seamless integration with various wallet providers. Leveraging modern web technologies such as NextJS, RainbowKit, Foundry/Hardhat, Wagmi, Viem, and Typescript, Scaffold-ETH 2 is designed to enhance the efficiency and accessibility of Ethereum development. It supports a local Ethereum network for testing, provides a quickstart guide for new projects, and fosters community contributions to continuously improve its offerings. The toolkit's focus is on streamlining the dApp development process, enabling developers to efficiently bring their decentralized applications to life.",
-  "repo": "https://github.com/scaffold-eth/scaffold-eth-2"
-}

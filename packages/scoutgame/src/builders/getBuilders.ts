@@ -215,9 +215,14 @@ export async function getBuilders({
           deletedAt: null
         }
       },
-      orderBy: {
-        currentPrice: order
-      },
+      orderBy: [
+        {
+          currentListingPrice: order
+        },
+        {
+          currentPrice: order
+        }
+      ],
       take: limit,
       select: {
         estimatedPayout: true,

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "smart-contracts",
-    "ethereum",
-    "decentralized-applications"
-  ],
-  "summary": "This GitHub repository offers a comprehensive suite of tools for developing and deploying Ethereum-based decentralized applications (dApps). It features a collection of smart contracts, including ECDSA Account Factory, Plugin Manager, and Sponsor Paymaster, which are crucial for account creation, plugin management, and payment functionalities within dApps. Designed with modularity, security, and efficiency in mind, these Solidity-based contracts cater to the demands of contemporary blockchain applications. The repository also provides Dockerfiles and Makefiles for containerized development and testing environments, alongside deployment scripts compatible with multiple Ethereum networks. This facilitates a streamlined development and deployment process across various environments. Aimed at developers, the repository serves as a vital resource for building scalable, secure, and user-friendly dApps, emphasizing account abstraction, plugin management, and paymaster services to enable sophisticated transaction logic and gas fee sponsorship.",
-  "repo": "https://github.com/circlefin/buidl-wallet-contracts"
-}

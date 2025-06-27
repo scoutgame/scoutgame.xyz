@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "DAO Governance",
-    "Decentralized Organizations",
-    "Project Management"
-  ],
-  "summary": "The RaidGuild Handbook repository is a comprehensive knowledge base designed for the RaidGuild community, a decentralized organization focused on facilitating and managing Web3 projects. It offers detailed documentation on guild operations, project practices, DAO governance, and community standards, aiming to assist both new and existing members in understanding and navigating the guild's unique systems and contributing effectively. The handbook covers essential topics such as setting up escrows, handling raid payments, DAO participation, and contributing to the decentralized organization. Built using Docusaurus 2, the repository facilitates easy updates and maintenance, encouraging collaborative contributions from the community. It emphasizes clear, accessible language, accuracy, and consistency, ensuring it remains a valuable resource for all members. The handbook also outlines best practices for contributing, ensuring updates align with the guild's mission and benefit the community. Designed to be approachable for readers at all levels of familiarity with RaidGuild and Web3 concepts, the RaidGuild Handbook is an essential tool for anyone looking to engage with or learn about decentralized organizations and project management within the Web3 ecosystem.",
-  "repo": "https://github.com/raid-guild/handbook"
-}
