@@ -97,9 +97,21 @@ describe('recordCommit', () => {
 
   it('should register a partner bonus', async () => {
     const builder = await mockBuilder();
+    const scoutPartnerId = v4();
+
+    // Create the scout partner first
+    await prisma.scoutPartner.create({
+      data: {
+        id: scoutPartnerId,
+        name: 'Test Partner',
+        icon: 'test-icon.png',
+        bannerImage: 'test-banner.png',
+        infoPageImage: 'test-info.png'
+      }
+    });
 
     const repo = await mockRepo({
-      scoutPartnerId: 'test-partner',
+      scoutPartnerId,
       name: 'Test-Repo',
       defaultBranch: 'main'
     });
@@ -119,7 +131,7 @@ describe('recordCommit', () => {
         type: 'daily_commit'
       }
     });
-    expect(builderEvent).toEqual(expect.objectContaining({ scoutPartnerId: 'test-partner' }));
+    expect(builderEvent).toEqual(expect.objectContaining({ scoutPartnerId }));
   });
 
   it('should create builder events and gems receipts for a regular merged pull request', async () => {
