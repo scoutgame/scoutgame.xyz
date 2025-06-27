@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Smart Contracts",
-    "Diamond Proxy Contracts"
-  ],
-  "summary": "Inspector Facet is a command-line tool specifically designed for inspecting and analyzing EIP-2535 Diamond proxy contracts on the Ethereum blockchain. It utilizes facet ABIs from popular development frameworks such as Brownie, Foundry, and Hardhat to map selectors provided by a Diamond proxy to human-readable information about the facets and their functions. This capability is invaluable for developers and auditors aiming to comprehend the current state and historical changes of Diamond contracts, including the functions they expose. Inspector Facet offers both human-readable and JSON outputs, enhancing its versatility for direct use and integration into CI/CD pipelines. Moreover, it facilitates the creation of an audit log documenting all Diamond-related operations, offering a comprehensive overview of the contract's evolution. This tool is essential for ensuring transparency, aiding in debugging, and optimizing smart contracts by providing a detailed timeline of changes.",
-  "repo": "https://github.com/moonstream-to/inspector-facet"
-}

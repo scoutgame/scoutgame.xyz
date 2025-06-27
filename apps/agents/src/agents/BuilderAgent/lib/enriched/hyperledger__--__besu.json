@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Smart Contracts",
-    "Privacy"
-  ],
-  "summary": "The Hyperledger Besu Ethereum Client is a Java-based, MainNet compatible Ethereum client tailored for enterprise applications. It facilitates operations on both public and private Ethereum networks, emphasizing privacy, permissioning, and scalability. As a component of the Hyperledger project under the Linux Foundation, Besu champions open-source collaboration and delivers enterprise-grade solutions. It provides a suite of tools for developing smart contracts and executing privacy-focused transactions, alongside seamless integration with the broader Ethereum ecosystem. The repository features privacy contracts and management interfaces designed for the flexible administration of privacy groups, enabling secure and private transactions within Ethereum networks. Hyperledger Besu is ideal for developers and enterprises aiming to develop or engage with Ethereum-based applications, with a strong emphasis on privacy, security, and scalability.",
-  "repo": "https://github.com/hyperledger/besu"
-}

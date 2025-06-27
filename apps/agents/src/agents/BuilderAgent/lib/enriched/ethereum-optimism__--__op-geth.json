@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Smart Contracts",
-    "Decentralized Applications"
-  ],
-  "summary": "The Go Ethereum (Geth) repository is the official Go implementation of the Ethereum protocol, serving as a crucial gateway for interacting with the Ethereum network. It enables users to run full, archive, and light nodes, facilitating a wide range of operations such as account management, transaction processing, and the deployment and interaction with smart contracts. Geth is equipped with a JavaScript console for direct network interaction, allowing for the creation of accounts, fund transfers, and contract management. Additionally, it offers a suite of developer tools, including a source code generator for Ethereum contract definitions and a developer utility version of the Ethereum Virtual Machine (EVM) for debugging purposes. Designed with modularity in mind, Geth supports various consensus algorithms and is extensible through plugins, making it a foundational component for the development and operation of decentralized applications and services on the Ethereum blockchain.",
-  "repo": "https://github.com/ethereum-optimism/op-geth"
-}

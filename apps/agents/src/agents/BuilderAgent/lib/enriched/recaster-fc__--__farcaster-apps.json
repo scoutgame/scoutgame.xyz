@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "social media",
-    "AI tools",
-    "blockchain gaming"
-  ],
-  "summary": "This GitHub repository contains the source code for a suite of Farcaster composer actions aimed at enhancing the social media experience on the Farcaster platform. It features a 'Cast AI Editor' that utilizes AI to help users craft more engaging and effective social media posts through AI-driven suggestions and edits. Additionally, the repository includes a demo of the 'Farcaster Notcoin' game, a blockchain-based game adapted from a Telegram mini-app clone, where users can earn points by interacting with the platform. This project showcases the integration of blockchain gaming into social media, offering users a unique blend of interactive gaming and content creation tools. The focus is on leveraging AI and blockchain technology to create a more engaging and interactive user experience, bridging the gap between social media and gaming.",
-  "repo": "https://github.com/recaster-fc/farcaster-apps"
-}

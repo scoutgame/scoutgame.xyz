@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "cryptography",
-    "zero-knowledge proofs",
-    "privacy-preserving technologies"
-  ],
-  "summary": "The Jellyfish cryptographic library is a comprehensive suite designed for cryptographic operations, with a particular emphasis on zero-knowledge proofs and privacy-preserving technologies. It offers a wide array of cryptographic primitives such as pseudorandom functions (PRF), collision-resistant hash functions (CRHF), commitment schemes, encryption schemes (ElGamal), signature schemes (BLS/Schnorr), verifiable random functions (VRF), authenticated encryption with associated data (AEAD), Merkle trees, polynomial commitment schemes (PCS), and verifiable information dispersal (VID). This library is tailored to support applications requiring secure and private transactions, identity verification, and data integrity checks. It stands out for its modularity and extensibility, enabling developers to selectively integrate specific cryptographic functionalities into their applications. Additionally, the library's support for WebAssembly (WASM) targets enhances its versatility across different deployment scenarios, making it a robust tool for developers aiming to incorporate advanced cryptographic protocols into their projects.",
-  "repo": "https://github.com/EspressoSystems/jellyfish"
-}

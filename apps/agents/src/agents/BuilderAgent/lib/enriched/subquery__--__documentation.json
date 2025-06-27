@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Applications",
-    "Blockchain Data Indexing",
-    "Developer Tools"
-  ],
-  "summary": "SubQuery serves as a decentralized data aggregation, indexing, and querying layer that facilitates the connection between Layer-1 blockchains and decentralized applications (dApps). By converting blockchain data into a queryable format, it eliminates the necessity for developers to create custom backend solutions for data processing, allowing them to concentrate on dApp development. The initiative is dedicated to making blockchain data more accessible and usable, thereby promoting a decentralized and efficient ecosystem for dApp creation. SubQuery is community-driven, with an emphasis on encouraging contributions to its documentation and codebase, and is committed to ensuring an inclusive and respectful environment for all contributors. Looking ahead, SubQuery plans to further decentralize and tokenize its ecosystem, positioning itself as a key player in the evolution of accessible and actionable blockchain data for developers and users.",
-  "repo": "https://github.com/subquery/documentation"
-}

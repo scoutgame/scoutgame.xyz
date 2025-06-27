@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Retroactive Public Goods Funding",
-    "Decentralized Governance"
-  ],
-  "summary": "EasyRetroPGF is a platform designed to facilitate Retroactive Public Goods Funding (RPGF) through a decentralized and transparent voting mechanism. It enables communities to fund projects that have contributed to the public good retrospectively. The platform supports multiple blockchain networks, allowing a wide range of projects and voters to participate. Key functionalities include project submission and approval, voter registration, voting on projects, and the distribution of funds based on voting outcomes. Additionally, it features the creation of funding rounds, on-chain attestations for project approvals, and a user-friendly interface for managing ballots and viewing results. EasyRetroPGF leverages blockchain technology to ensure the integrity and transparency of the voting process, aiming to democratize the funding of public goods by enabling a community-driven approach to resource allocation.",
-  "repo": "https://github.com/gitcoinco/easy-retro-pgf"
-}

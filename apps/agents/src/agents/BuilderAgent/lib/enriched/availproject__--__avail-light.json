@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "data availability",
-    "peer-to-peer networking",
-    "light client"
-  ],
-  "summary": "This GitHub repository hosts the source code for a light client tailored for the Avail blockchain, emphasizing data availability and verification. The client facilitates interaction with the Avail network by fetching block data and headers, and verifying data integrity. It employs peer-to-peer networking for efficient data retrieval and distribution, utilizing the Kademlia DHT for optimized data lookup. Designed for lightweight and efficient operation, it's ideal for resource-constrained environments. The client supports network health monitoring, peer connection status, and includes a Dockerfile for containerized deployment, showcasing its production readiness. It's built to ensure reliable data availability and verification, crucial for decentralized applications and blockchain networks.",
-  "repo": "https://github.com/availproject/avail-light"
-}

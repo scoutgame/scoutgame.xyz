@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Smart Contracts",
-    "Decentralized Applications"
-  ],
-  "summary": "The taiko-geth repository is a specialized fork of the go-ethereum (Geth) project, designed to support the Taiko protocol, a layer 2 scaling solution for Ethereum. This adaptation includes modifications and additional features to facilitate Taiko's unique consensus mechanism and transaction processing, aiming to enhance transaction speed and reduce costs while preserving Ethereum's foundational security and decentralization. The repository enables Ethereum nodes to interact with the Taiko network, incorporating custom transaction validation, block processing, and consensus rules tailored to Taiko's requirements. It also offers a comprehensive suite of tools for developers, including a Golang implementation of the Ethereum protocol for running full Ethereum nodes, developing decentralized applications (DApps), and deploying and interacting with smart contracts. Additionally, it supports Ethereum's JSON-RPC API and provides utilities for network interaction, making it a versatile resource for developers aiming to leverage Ethereum's smart contract capabilities with improved scalability on the Taiko network.",
-  "repo": "https://github.com/taikoxyz/taiko-geth"
-}

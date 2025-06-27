@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "social_network",
-    "decentralized_communication",
-    "peer-to-peer networking"
-  ],
-  "summary": "The Hubble Monorepo is a comprehensive implementation of a Farcaster Hub, aimed at facilitating decentralized communication and social networking. It encompasses Hubble, a Farcaster Hub implementation, along with various packages that enable interaction with Hubble, such as shuttle for streaming events to Postgres, hub-nodejs for Node.js client interactions, and hub-web for browser-based interactions. Structured as a monorepo, it leverages Typescript and Rust for performance-intensive tasks, utilizing Yarn and TurboRepo for task orchestration and build processes. The project supports a wide range of functionalities including message handling, user data management, and on-chain event processing, striving to offer a robust platform for decentralized applications. Emphasizing community involvement, it provides guidelines for setting up development environments, proposing changes, and contributing to the codebase, all aimed at fostering a decentralized social network environment.",
-  "repo": "https://github.com/farcasterxyz/hub-monorepo"
-}

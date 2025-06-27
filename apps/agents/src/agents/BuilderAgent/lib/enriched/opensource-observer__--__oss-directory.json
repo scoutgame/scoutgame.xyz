@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "open source",
-    "developer tools",
-    "data management"
-  ],
-  "summary": "The OSS Directory is a meticulously curated repository that aggregates open source software (OSS) projects along with their associated artifacts such as git repositories, npm packages, and smart contracts. Designed to serve as the definitive source for projects and collections featured on Open Source Observer, it aims to aid researchers, developers, and foundations in exploring and understanding the OSS ecosystem. The directory is structured into individual projects and thematic collections, with each project file detailing relevant artifacts and each collection file grouping projects by shared significance. It is a community-driven initiative that encourages contributions, ensuring the repository remains a freely accessible and distributable public good. To facilitate integration and analysis, the OSS Directory offers libraries for JavaScript and Python, allowing users to incorporate its data into their own tools or conduct custom analyses. A notable feature is its support for onchain attestations, which link GitHub repositories to their blockchain addresses, thereby bolstering transparency and verifiability within the OSS community. The project places a strong emphasis on data integrity, providing tools for schema validation, data contribution, and transformation to maintain the directory's reliability and utility for the OSS ecosystem.",
-  "repo": "https://github.com/opensource-observer/oss-directory"
-}

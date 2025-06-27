@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Smart Contracts",
-    "Decentralized Applications"
-  ],
-  "summary": "The Helios-ts library serves as a comprehensive tool for developers aiming to build decentralized applications (dApps) on Ethereum and Optimism (OpStack) blockchains. It provides an EIP-1193 compliant Ethereum provider, facilitating a wide range of Ethereum JSON-RPC methods for tasks such as querying blockchain data, sending transactions, and interacting with smart contracts. This library is designed to offer flexibility and ease of use, enabling developers to configure execution and consensus RPC endpoints, select networks, and manage checkpoint caching preferences according to their application's needs. Helios-ts stands out for its ability to support complex dApp development, from simple wallet interactions to intricate smart contract deployments, making it a versatile choice for leveraging the capabilities of Ethereum and Optimism blockchains in web3 projects.",
-  "repo": "https://github.com/a16z/helios"
-}

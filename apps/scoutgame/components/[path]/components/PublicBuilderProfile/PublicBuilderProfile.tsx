@@ -6,7 +6,6 @@ import { getBuilderScouts } from '@packages/scoutgame/builders/getBuilderScouts'
 import { getBuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import { getDeveloperActivities } from '@packages/scoutgame/builders/getDeveloperActivities';
 import { getDeveloperNftListings } from '@packages/scoutgame/nftListing/getNftListings';
-import type { ScoutProjectMinimal } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 
 import type { BuilderProfileProps } from './PublicBuilderProfileContainer';
@@ -14,12 +13,10 @@ import { PublicBuilderProfileContainer } from './PublicBuilderProfileContainer';
 
 export async function PublicBuilderProfile({
   builder,
-  loggedInUserId,
-  scoutProjects
+  loggedInUserId
 }: {
   builder: Omit<BuilderProfileProps['builder'], 'nftsSoldToLoggedInScout' | 'starterNftSoldToLoggedInScout'>;
   loggedInUserId?: string;
-  scoutProjects?: ScoutProjectMinimal[];
 }) {
   const builderId = builder.id;
 
@@ -65,7 +62,6 @@ export async function PublicBuilderProfile({
       builderActivities={builderActivities}
       gemsCollected={gemsCollected}
       rank={rank}
-      scoutProjects={scoutProjects}
       scoutPartners={scoutPartners}
     />
   );

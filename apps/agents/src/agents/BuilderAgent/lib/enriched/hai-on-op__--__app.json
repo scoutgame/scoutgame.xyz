@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "DeFi",
-    "Crypto Lending",
-    "Stablecoins"
-  ],
-  "summary": "The HAI App is a decentralized finance (DeFi) platform designed to enable users to leverage their crypto assets by using them as collateral to generate HAI, a stablecoin. This innovative approach allows users to access liquidity without the need to sell their assets, thereby maintaining their exposure to potential market gains. The platform supports a variety of crypto assets for collateral and incorporates several features aimed at enhancing user engagement and financial flexibility. These include auctions for the potential purchase or sale of assets at discounts, participation in DAO incentive campaigns for rewards, and comprehensive vault management for borrowing and lending activities. Built on the Ethereum blockchain, the HAI App utilizes smart contracts to ensure secure, transparent, and efficient operations, including collateral management, debt issuance, and auction processes. With a strong emphasis on security and user experience, the HAI App seeks to offer a user-friendly interface that simplifies the complexities of DeFi mechanisms, making it accessible to both newcomers and seasoned participants in the cryptocurrency space. The platform's goal is to provide a holistic DeFi solution that maximizes the utility of users' crypto assets while safeguarding their investment's potential for growth.",
-  "repo": "https://github.com/hai-on-op/app"
-}

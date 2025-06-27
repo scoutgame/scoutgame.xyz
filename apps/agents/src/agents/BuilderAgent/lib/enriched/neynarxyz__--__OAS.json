@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "API Development",
-    "Developer Tools"
-  ],
-  "summary": "The GitHub repository is dedicated to hosting the OpenAPI Specification (OAS) for Neynar's APIs, offering a standardized approach to describe RESTful APIs. This initiative significantly aids developers in understanding and programmatically interacting with Neynar's services. It encompasses a variety of tools and guidelines aimed at validating and generating client code from the OAS, ensuring the API specifications are not only compliant with best practices but also easily consumable by developers. Among the key functionalities provided are Spectral for linting and validating OpenAPI specifications, Swagger CLI for additional validation, and OpenAPI Generator for client code generation across various programming languages, with TypeScript being the starting point. Additionally, the repository features a contribution guide that details best practices and common pitfalls for writing OAS v3.1.0, thereby ensuring the consistency and quality of API documentation. This project serves as an essential resource for developers, particularly those looking to integrate Neynar's APIs into their applications, by offering a comprehensive suite of tools and documentation to streamline the development process.",
-  "repo": "https://github.com/neynarxyz/OAS"
-}

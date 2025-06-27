@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Ethereum",
-    "Testing Tools"
-  ],
-  "summary": "Eth-tester is a Python library specifically designed for testing Ethereum applications. It offers a comprehensive suite of tools that simulate Ethereum blockchain environments, enabling developers to rigorously test smart contracts and decentralized applications (DApps) without the necessity of a live blockchain. Among its key features are the capabilities to create and manage Ethereum accounts, send transactions, mine blocks, deploy contracts, query account balances, and simulate various blockchain states. Eth-tester is designed to support a wide range of Ethereum network upgrades and transaction types, including legacy, access list, and dynamic fee transactions. Its compatibility with the Web3.py library enhances its utility, making it an indispensable tool for Ethereum developers aiming to ensure their applications are robust and error-free prior to mainnet deployment. This library is particularly beneficial for developers seeking a reliable and efficient way to test Ethereum applications in a controlled environment, thereby minimizing risks and ensuring a smoother deployment process.",
-  "repo": "https://github.com/ethereum/eth-tester"
-}

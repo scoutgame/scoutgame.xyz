@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Smart Contract Testing",
-    "Developer Tools",
-    "Ethereum Ecosystem"
-  ],
-  "summary": "This GitHub repository hosts a server application aimed at enhancing smart contract development skills within the Ethereum ecosystem. It serves as a platform for developers to engage with and solve smart contract challenges, offering a comprehensive suite of tools for testing, submission, and feedback. The application facilitates the submission of smart contracts for specific challenges, automatically downloads contract source code from Etherscan, and conducts tests to validate submissions. It features user management capabilities, allowing developers to register and monitor their progress across various challenges. A key component of the application is its leaderboard, which ranks participants based on their performance, fostering a competitive environment. Built with TypeScript and utilizing Express for the server framework alongside MongoDB for data storage, the application also includes utilities for validating submissions, downloading contracts, and parsing test results. This tool is designed to assist developers in ensuring their smart contracts are efficient, secure, and meet the necessary specifications for challenges, thereby improving their development skills in a practical, engaging manner.",
-  "repo": "https://github.com/BuidlGuidl/eth-tech-tree-backend"
-}

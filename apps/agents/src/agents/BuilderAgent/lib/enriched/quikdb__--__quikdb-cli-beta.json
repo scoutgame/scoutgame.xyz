@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "database management",
-    "decentralized applications (dApps)",
-    "cli-tool"
-  ],
-  "summary": "The GitHub repository features QuikDB CLI Beta, a command-line interface tool designed to streamline the deployment and management of decentralized databases on the Internet Computer. This tool is specifically tailored for developers, offering a simplified process for setting up databases, managing schemas, and interacting with databases through a series of commands. QuikDB CLI Beta integrates seamlessly with the Internet Computer's dfx toolchain, enabling users to authenticate principals, deploy databases both locally and to the production network, and manage database operations such as creating schemas, inserting records, and querying data. By providing a streamlined workflow for deploying and interacting with databases on the Internet Computer, QuikDB CLI Beta aims to enhance the development process for decentralized applications, focusing on efficient database management and interaction.",
-  "repo": "https://github.com/quikdb/quikdb-cli-beta"
-}

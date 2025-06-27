@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Decentralized Social Media",
-    "Farcaster Protocol",
-    "Open Source"
-  ],
-  "summary": "HeroCast is an open-source client tailored for the Farcaster protocol, designed to decentralize internet power by enabling professionals and teams to efficiently manage and interact with content on-chain. It stands as a pivotal tool for the Farcaster network, a decentralized social media platform, facilitating account management, content creation, sharing, and community engagement. HeroCast champions the cause of decentralization, encouraging community contributions to its codebase for enhanced customization and personalization. The platform integrates seamlessly with Web3 technologies, offering a suite of functionalities including content publishing, analytics, and secure, transparent social media interactions. By focusing on privacy, security, and user control over data, HeroCast provides a comprehensive solution for leveraging decentralized social media platforms, making it an essential tool for users aiming to navigate the evolving landscape of on-chain social interactions.",
-  "repo": "https://github.com/hero-org/herocast"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "DeFi",
-    "Liquidity Mining",
-    "Incentive Distribution"
-  ],
-  "summary": "This GitHub repository is dedicated to the distribution of FLX tokens as incentives to participants across various DeFi protocols, including liquidity providers on Uniswap, borrowers on platforms such as Aave and Fuse, and users of Idle Finance. The incentive distribution is meticulously calculated based on specific criteria, including the amount of liquidity provided or RAI borrowed, and the duration of participation. The repository houses scripts and comprehensive documentation aimed at automating the reward calculation process, leveraging on-chain data to ensure fairness and transparency. These scripts are designed to generate the necessary data for reward distribution, with detailed instructions provided for their execution and the compilation of results into a final distribution list. This initiative plays a pivotal role in the Reflexer ecosystem, driving participation and liquidity provision, which are essential for the stability and expansion of decentralized finance platforms.",
-  "repo": "https://github.com/reflexer-labs/geb-distros"
-}

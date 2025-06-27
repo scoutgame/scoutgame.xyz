@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "cryptocurrency",
-    "decentralized ecosystems",
-    "open source"
-  ],
-  "summary": "The Crypto Ecosystems repository, developed by Electric Capital, is a detailed taxonomy designed to organize and share data on open-source cryptocurrency and decentralized ecosystems. It utilizes TOML configuration files to link these ecosystems to GitHub organizations and repositories, aiming to create a dynamic and auditable database that is accessible to both humans and machines. The project encourages community involvement, allowing contributors to add new ecosystems, sub-ecosystems, or repositories through pull requests or a submission form. This collaborative approach ensures the taxonomy remains current with the fast-paced evolution of the crypto landscape. Additionally, the repository offers tools for validating and sorting ecosystem data, making it an invaluable resource for developers, researchers, and enthusiasts interested in exploring the crypto space. The initiative underscores the importance of community contributions in maintaining and expanding the taxonomy, highlighting its role as a comprehensive resource for understanding the interconnected nature of cryptocurrency and decentralized ecosystems.",
-  "repo": "https://github.com/electric-capital/crypto-ecosystems"
-}

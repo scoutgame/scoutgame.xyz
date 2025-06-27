@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getCachedUserFromSession as getUserFromSession } from '@packages/nextjs/session/getUserFromSession';
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import { getUserScoutProjectsInfo } from '@packages/scoutgame/projects/getUserScoutProjects';
 import { PageContainer } from '@packages/scoutgame-ui/components/layout/PageContainer';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -64,8 +63,6 @@ export default async function Profile({
     })
   );
 
-  const [, scoutProjects] = await safeAwaitSSRData(getUserScoutProjectsInfo({ userId: user.id }));
-
   return (
     <PageContainer>
       <ProfilePage
@@ -74,7 +71,6 @@ export default async function Profile({
           githubLogin: userExternalProfiles?.githubUsers?.[0]?.login,
           talentProfile: userExternalProfiles?.talentProfile ?? undefined
         }}
-        scoutProjects={scoutProjects}
         tab={tab}
       />
     </PageContainer>

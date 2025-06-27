@@ -1,8 +1,0 @@
-{
-  "topics": [
-    "Incentive Distribution",
-    "Data Querying"
-  ],
-  "summary": "This GitHub repository offers a comprehensive suite of tools for analyzing and managing incentive distributions within the blockchain ecosystem. It utilizes Google BigQuery for executing complex queries on blockchain data, enabling users to extract detailed insights into how incentives are allocated across different entities. The repository includes scripts for running queries, with and without owner mapping, allowing for nuanced analysis of incentive mechanisms. A notable feature is the integration with The Graph, a decentralized protocol for indexing and querying blockchain data, which enhances the toolset's capability to analyze smart contract interactions, particularly focusing on safe handlers and their owners. Designed for developers, analysts, and researchers, this toolset provides a streamlined approach to data handling and processing, ensuring scalability and efficiency in managing large datasets typical in blockchain environments. It is particularly useful for projects and organizations that require detailed analytics for incentive schemes, offering insights into the dynamics of incentive mechanisms and their impact on user behavior and network participation.",
-  "repo": "https://github.com/reflexer-labs/geb-bigquery-scripts"
-}

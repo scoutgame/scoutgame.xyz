@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "Education",
-    "Identity Verification",
-    "NFTs"
-  ],
-  "summary": "CrediChain is an innovative platform that transforms the verification and management of educational credentials through the use of blockchain technology. It employs soulbound NFTs to issue and verify credentials, ensuring they are secure, immutable, and easily verifiable. This system allows educational institutions to issue credentials as NFTs to students, which can then be used for verification purposes and to access exclusive discounts and offers from participating institutions. CrediChain integrates advanced identity verification mechanisms, such as World ID, to ensure that only verified users can issue or receive credentials. The platform aims to create a transparent, secure, and user-friendly environment for credential verification and discount management, facilitating a closer connection between educational institutions and students. By streamlining these processes, CrediChain enhances the accessibility of educational resources for students and enables institutions to offer more targeted discounts.",
-  "repo": "https://github.com/CrediChain/frontend"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "identity",
-    "interoperability",
-    "networking"
-  ],
-  "summary": "The Icebreaker's Alloy project, as detailed in the GitHub repository, is dedicated to advancing interoperable identity and networking solutions. It enables users to propose new account types and credentials by modifying specific configuration files and submitting pull requests. This innovative platform supports a variety of channels, including Twitter, GitHub, and ENS, and integrates credentials available on the Ethereum Attestation Service (EAS). By fostering a community-driven approach, the project aims to enhance the management and connectivity of digital identities across diverse platforms. The open-source nature of the project encourages contributions to broaden its capabilities and integrate with additional services, thereby improving the interoperability and utility of digital identities in the digital ecosystem.",
-  "repo": "https://github.com/icebreakerlabs/alloy"
-}

@@ -1,9 +1,0 @@
-{
-  "topics": [
-    "zkVM",
-    "Zero-Knowledge Proofs",
-    "Cryptography"
-  ],
-  "summary": "The Nexus zkVM is an innovative, open-source, and highly-parallelized zero-knowledge virtual machine that excels in executing and proving computations on a massive scale, with the capability to prove a trillion CPU cycles per second when provided with adequate computational resources. It employs cutting-edge cryptographic techniques, such as folding schemes including Nova, SuperNova, and HyperNova, to efficiently generate and verify proofs of computation without disclosing the underlying data. Designed with modularity and extensibility in mind, the zkVM is built using Rust and supports RISC-V, making it highly accessible for developers aiming to create and validate the correctness of their programs in a privacy-preserving manner. This technology is pivotal for developing secure, scalable, and privacy-focused applications, particularly in areas requiring the verification of transactions, smart contracts, and other computations in a trustless environment.",
-  "repo": "https://github.com/nexus-xyz/nexus-zkvm"
-}

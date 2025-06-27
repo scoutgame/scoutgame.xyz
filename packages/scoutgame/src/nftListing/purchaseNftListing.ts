@@ -9,6 +9,8 @@ import { recordNftTransfer } from '../builderNfts/recordNftTransfer';
 import { sendAppNotification } from '../notifications/sendAppNotification';
 import { devTokenDecimals, scoutProtocolChain } from '../protocol/constants';
 
+import { updateCurrentNftListingPrice } from './updateCurrentNftListingPrice';
+
 export async function purchaseNftListing({
   listingId,
   buyerWallet: _buyerWallet,
@@ -178,6 +180,8 @@ export async function purchaseNftListing({
       listingId
     });
   }
+
+  await updateCurrentNftListingPrice({ builderNftId: listing.builderNftId });
 
   return {
     listing: updatedListing
