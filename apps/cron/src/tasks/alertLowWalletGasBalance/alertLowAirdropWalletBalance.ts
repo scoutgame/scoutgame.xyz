@@ -5,8 +5,8 @@ import { getLastWeek, getPreviousWeek } from '@packages/dates/utils';
 import { sendDiscordAlert } from '@packages/discord/sendDiscordAlert';
 import { MATCHUP_OP_PRIZE } from '@packages/matchup/config';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
-import { getGooddollarPartnerRewardAmount } from '@packages/scoutgame/partnerRewards/getGooddollarPartnerRewardAmount';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
+import { getPartnerRewardAmount } from '@packages/scoutgame/scoutPartners/getPartnerRewardAmount';
 import { formatUnits, parseUnits } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
@@ -175,18 +175,25 @@ async function calculateUpcomingPayout({
       return parseUnits(v.toString(), tokenDecimals);
     };
 
+    const scoutPartner = await prisma.scoutPartner.findUniqueOrThrow({
+      where: {
+        id: partner
+      }
+    });
+
     if (partner === 'optimism_referral_champion') {
       const referrals = await getReferralsToReward({ week });
       const referralPayout = referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
       const matchupPayout = toWei(MATCHUP_OP_PRIZE);
       return referralPayout + matchupPayout;
-    } else if (partner === 'gooddollar') {
-      const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId: 'gooddollar' });
-      const gooddollarPayout = builderEvents.reduce(
-        (sum, event) => sum + getGooddollarPartnerRewardAmount(event.issues.map((issue) => issue.tags).flat()),
+    } else if (scoutPartner) {
+      const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId: partner });
+      const scoutPartnerPayout = builderEvents.reduce(
+        (sum, event) =>
+          sum + getPartnerRewardAmount({ scoutPartner, tags: event.issues.map((issue) => issue.tags).flat() }),
         BigInt(0)
       );
-      return gooddollarPayout;
+      return scoutPartnerPayout;
     }
 
     return BigInt(0);

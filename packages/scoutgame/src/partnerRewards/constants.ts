@@ -16,20 +16,6 @@ export const partnerRewardRecord: Record<
     chain: 'Optimism',
     sendNotification: true
   },
-  octant_base_contribution: {
-    label: 'Octant Base Contribution',
-    icon: '/images/crypto/usdc.png',
-    partnerLink: 'https://scoutgame.xyz/info/partner-rewards/octant',
-    chain: 'Base',
-    sendNotification: true
-  },
-  gooddollar_contribution: {
-    label: 'GoodDollar Contribution',
-    icon: '/images/logos/good-dollar.png',
-    partnerLink: 'https://scoutgame.xyz/info/partner-rewards/good-dollar',
-    chain: 'Celo',
-    sendNotification: true
-  },
   matchup_rewards: {
     label: 'Matchup Rewards',
     icon: '/images/crypto/op.png',
