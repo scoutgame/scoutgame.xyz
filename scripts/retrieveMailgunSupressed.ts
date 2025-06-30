@@ -27,15 +27,13 @@ async function removeSettings() {
       id: true,
       deletedAt: true,
       email: true,
-      sendMarketing: true,
       sendTransactionEmails: true
     }
   });
   console.log('All users:', users.length);
   console.log('deleted', users.filter((u) => u.deletedAt).length);
-  console.log('sendMarketing = true', users.filter((u) => !u.deletedAt && u.sendMarketing).length);
   console.log('sendTransactionEmails = true', users.filter((u) => !u.deletedAt && u.sendTransactionEmails).length);
-  const toUpdate = users.filter((u) => !u.deletedAt && (u.sendTransactionEmails || u.sendMarketing));
+  const toUpdate = users.filter((u) => !u.deletedAt && u.sendTransactionEmails);
   console.log('remove settings:', toUpdate.length);
 
   console.log(
@@ -46,7 +44,7 @@ async function removeSettings() {
           in: toUpdate.map((u) => u.id)
         }
       },
-      data: { sendMarketing: false, sendTransactionEmails: false }
+      data: { sendTransactionEmails: false }
     })
   );
 }

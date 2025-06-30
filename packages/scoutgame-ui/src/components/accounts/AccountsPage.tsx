@@ -17,7 +17,6 @@ export type UserWithAccountsDetails = Omit<SessionUser, 'avatar'> & {
   builderStatus: BuilderStatus | null;
   email: string;
   sendTransactionEmails: boolean;
-  sendMarketing: boolean;
   verifiedEmail: boolean;
   sendFarcasterNotification: boolean;
 };

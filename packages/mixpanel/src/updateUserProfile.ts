@@ -11,7 +11,6 @@ export type MixPanelUserProfile = {
   onboarded: boolean;
   deleted: boolean;
   'Agreed To TOS': boolean;
-  'Enable Marketing': boolean;
   'Builder Status': BuilderStatus | null;
   referrals: number;
   'Verified Email': boolean;

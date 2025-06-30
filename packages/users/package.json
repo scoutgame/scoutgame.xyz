@@ -11,7 +11,6 @@
   "dependencies": {
     "@packages/blockchain": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
-    "@packages/loops": "^0.0.0",
     "@packages/mailer": "^0.0.0",
     "@packages/nextjs": "^0.0.0",
     "@packages/utils": "^1.0.0",

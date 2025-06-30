@@ -60,7 +60,6 @@ async function getUsers({ offset = 0 }: { offset?: number } = {}): Promise<
       deleted: !!user.deletedAt,
       onboarded: !!user.onboardedAt,
       'Agreed To TOS': !!user.agreedToTermsAt,
-      'Enable Marketing': user.sendMarketing,
       'Builder Status': user.builderStatus,
       createdAt: user.createdAt,
       onboardedAt: user.agreedToTermsAt,

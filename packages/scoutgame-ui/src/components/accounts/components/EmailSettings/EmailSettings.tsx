@@ -32,8 +32,7 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
     resolver: yupResolver(updateUserEmailSettingsSchema),
     mode: 'onChange',
     defaultValues: {
-      email: user.email,
-      sendMarketing: user.sendMarketing
+      email: user.email
     }
   });
   const { execute: sendVerificationEmail, isExecuting: isSending } = useAction(sendVerificationEmailAction, {
@@ -116,18 +115,6 @@ export function EmailSettings({ user: { verifiedEmail, ...user } }: { user: User
             </Stack>
           </Stack>
 
-          <Stack gap={{ xs: 1, md: 0 }}>
-            <Controller
-              control={control}
-              name='sendMarketing'
-              render={({ field }) => (
-                <FormControlLabel
-                  control={<Checkbox checked={field.value} {...field} sx={{ alignSelf: 'flex-start' }} />}
-                  label='Notify me of new opportunities (grants, accelerators, etc)'
-                />
-              )}
-            />
-          </Stack>
           <Button
             variant='contained'
             color='primary'

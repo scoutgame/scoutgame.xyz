@@ -25,7 +25,6 @@ export default async function Accounts() {
         email: true,
         sendTransactionEmails: true,
         sendFarcasterNotification: true,
-        sendMarketing: true,
         emailVerifications: true,
         wallets: {
           select: {
@@ -52,7 +51,6 @@ export default async function Accounts() {
         email: currentUserAccountsMetadata.email as string,
         sendFarcasterNotification: currentUserAccountsMetadata.sendFarcasterNotification,
         sendTransactionEmails: currentUserAccountsMetadata.sendTransactionEmails,
-        sendMarketing: currentUserAccountsMetadata.sendMarketing,
         telegramId: currentUserAccountsMetadata.telegramId,
         telegramName: currentUserAccountsMetadata.telegramName || null,
         wallets: currentUserAccountsMetadata.wallets.map((wallet) => ({

@@ -56,12 +56,10 @@ test.describe('Onboarding flow', () => {
       select: {
         id: true,
         email: true,
-        agreedToTermsAt: true,
-        sendMarketing: true
+        agreedToTermsAt: true
       }
     });
 
-    expect(user.sendMarketing).toBe(true);
     expect(user.agreedToTermsAt).not.toBeNull();
     expect(user.email).toBe(email);
 
