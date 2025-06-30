@@ -19,7 +19,6 @@
     "@packages/discord": "^0.0.0",
     "@packages/farcaster": "^0.0.0",
     "@packages/github": "^0.0.0",
-    "@packages/loops": "^0.0.0",
     "@packages/mailer": "^0.0.0",
     "@packages/mixpanel": "^0.0.0",
     "@packages/nextjs": "^0.0.0",

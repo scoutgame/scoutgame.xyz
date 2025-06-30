@@ -211,7 +211,6 @@ export async function sendEmailNotification<T extends keyof typeof NotificationT
       deletedAt: null
     },
     select: {
-      sendMarketing: true,
       sendTransactionEmails: true,
       email: true,
       displayName: true,
