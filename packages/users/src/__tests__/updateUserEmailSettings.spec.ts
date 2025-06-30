@@ -15,16 +15,14 @@ describe('updateUserEmailSettings', () => {
         referralCode: `test${Math.random()}`,
         path: `test${Math.random()}`,
         // test-related
-        email: null,
-        sendMarketing: false
+        email: null
       }
     });
     const mockNewEmail = 'newemail@example.com';
 
     await updateUserEmailSettings({
       userId: scout.id,
-      email: mockNewEmail,
-      sendMarketing: true
+      email: mockNewEmail
     });
 
     // Verify scout was updated in database
@@ -32,15 +30,13 @@ describe('updateUserEmailSettings', () => {
       where: { id: scout.id }
     });
     expect(updatedScout.email).toBe(mockNewEmail);
-    expect(updatedScout.sendMarketing).toBe(true);
   });
 
   it('should throw an error if the email is invalid', async () => {
     await expect(
       updateUserEmailSettings({
         userId: '1',
-        email: 'invalid-email',
-        sendMarketing: true
+        email: 'invalid-email'
       })
     ).rejects.toThrow('Email is invalid');
   });

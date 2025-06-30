@@ -7,15 +7,7 @@ import { isValidEmail } from '@packages/utils/strings';
 
 import { sendVerificationEmail } from './verifyEmail';
 
-export async function updateUserEmailSettings({
-  userId,
-  email,
-  sendMarketing
-}: {
-  userId: string;
-  email: string;
-  sendMarketing: boolean;
-}) {
+export async function updateUserEmailSettings({ userId, email }: { userId: string; email: string }) {
   if (typeof email !== 'string') {
     throw new Error('Email is required');
   }
@@ -36,12 +28,11 @@ export async function updateUserEmailSettings({
   const updatedUser = await prisma.scout.update({
     where: { id: userId },
     data: {
-      email,
-      sendMarketing
+      email
     }
   });
 
-  if (original.email !== updatedUser.email || original.sendMarketing !== updatedUser.sendMarketing) {
+  if (original.email !== updatedUser.email) {
     const isVerified = original.emailVerifications.some((v) => v.email === email && v.completedAt);
     if (!isVerified) {
       await sendVerificationEmail({ userId });
