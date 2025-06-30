@@ -12,7 +12,7 @@ export async function updateUserEmailSettings({ userId, email }: { userId: strin
     throw new Error('Email is invalid');
   }
 
-  email = email.trim(); // just in case
+  email = email?.trim(); // just in case
 
   const original = await prisma.scout.findUniqueOrThrow({
     where: {
@@ -25,7 +25,7 @@ export async function updateUserEmailSettings({ userId, email }: { userId: strin
   const updatedUser = await prisma.scout.update({
     where: { id: userId },
     data: {
-      email
+      email: email || null
     }
   });
 
