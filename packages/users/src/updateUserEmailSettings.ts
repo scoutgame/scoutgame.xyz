@@ -7,11 +7,8 @@ import { isValidEmail } from '@packages/utils/strings';
 
 import { sendVerificationEmail } from './verifyEmail';
 
-export async function updateUserEmailSettings({ userId, email }: { userId: string; email: string }) {
-  if (typeof email !== 'string') {
-    throw new Error('Email is required');
-  }
-  if (!isValidEmail(email)) {
+export async function updateUserEmailSettings({ userId, email }: { userId: string; email?: string }) {
+  if (email && !isValidEmail(email)) {
     throw new Error('Email is invalid');
   }
 
@@ -32,7 +29,7 @@ export async function updateUserEmailSettings({ userId, email }: { userId: strin
     }
   });
 
-  if (original.email !== updatedUser.email) {
+  if (updatedUser.email && original.email !== updatedUser.email) {
     const isVerified = original.emailVerifications.some((v) => v.email === email && v.completedAt);
     if (!isVerified) {
       await sendVerificationEmail({ userId });
