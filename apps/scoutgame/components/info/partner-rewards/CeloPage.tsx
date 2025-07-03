@@ -42,9 +42,12 @@ const qualifiedProjects = [
   'https://github.com/celo-org/svelte-template',
   'https://github.com/celo-org/celo-composer-react-native',
   'https://github.com/celo-org/celo-composer-flutter',
-  'https://github.com/celo-org/celo-farcaster-frames'
+  'https://github.com/celo-org/composer-kit-mcp',
+  'https://docs.celo.org/build/mcp/celo-mcp'
 ];
+
 const previousProjects = [
+  'https://github.com/celo-org/celo-farcaster-frames',
   'https://github.com/divvi-xyz/hooks',
   'https://github.com/GoodDollar/GoodWeb3-Mono',
   'https://github.com/GoodDollar/GoodCollective',
