@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { builderLoginUrl } from '@packages/scoutgame/constants';
+import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import { Hidden } from '@packages/scoutgame-ui/components/common/Hidden';
 import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
 import type { Metadata } from 'next';
@@ -372,6 +373,8 @@ export default async function Taiko() {
       })
     : null;
 
+  const scoutPartnersInfo = await getScoutPartnersInfo({ status: 'active' });
+
   const registerUrl = !user
     ? `${builderLoginUrl}&utm_source=partner&utm_campaign=taiko`
     : user.githubUsers.length === 0
@@ -391,7 +394,7 @@ export default async function Taiko() {
         <Typography variant='h4' textAlign='center' color='secondary'>
           Taiko Partner Rewards
         </Typography>
-        <SidebarInfoDrawer />
+        <SidebarInfoDrawer partners={scoutPartnersInfo} />
       </Stack>
       <Stack
         height='100%'

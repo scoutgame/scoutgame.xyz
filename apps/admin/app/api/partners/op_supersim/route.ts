@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   const rows = await getBuildersForPartner({
     week,
-    bonusPartner: 'op_supersim'
+    scoutPartnerId: 'op_supersim'
   });
 
   return respondWithTSV(rows, `partners-export_supersim_${week}.tsv`);

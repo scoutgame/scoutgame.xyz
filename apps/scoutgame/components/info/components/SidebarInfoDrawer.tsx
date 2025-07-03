@@ -4,9 +4,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Drawer, IconButton } from '@mui/material';
 import { useState } from 'react';
 
+import type { ScoutPartnerInfo } from './SidebarInfo';
 import { SidebarInfo } from './SidebarInfo';
 
-export function SidebarInfoDrawer() {
+export function SidebarInfoDrawer({ partners }: Readonly<{ partners: ScoutPartnerInfo[] }>) {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -30,7 +31,7 @@ export function SidebarInfoDrawer() {
           keepMounted: true
         }}
       >
-        <SidebarInfo handleClose={handleClose} />
+        <SidebarInfo handleClose={handleClose} partners={partners} />
       </Drawer>
     </>
   );

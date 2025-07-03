@@ -14,7 +14,6 @@ import {
   Typography
 } from '@mui/material';
 import { getWeekFromDate } from '@packages/dates/utils';
-import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
 
 import { WeekValue } from './AirdropMetrics';
 import { getWeeksToDisplay } from './getWeeksToDisplay';
@@ -27,16 +26,16 @@ type WeeklyStat = {
   builders: Set<string>;
 };
 
-export async function GithubMetrics({ partner }: { partner: BonusPartner }) {
+export async function GithubMetrics({ partner }: { partner: string }) {
   const [repos, builderEvents] = await Promise.all([
     prisma.githubRepo.count({
       where: {
-        bonusPartner: partner
+        scoutPartnerId: partner
       }
     }),
     prisma.builderEvent.findMany({
       where: {
-        bonusPartner: partner,
+        scoutPartnerId: partner,
         type: 'merged_pull_request',
         season: {
           in: seasons

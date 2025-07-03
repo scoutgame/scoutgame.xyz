@@ -1,8 +1,7 @@
 import { Paper, Stack, Typography } from '@mui/material';
 import { getActivityLabel } from '@packages/scoutgame/builders/getActivityLabel';
 import type { BuilderActivity, OnchainAchievementActivity } from '@packages/scoutgame/builders/getDeveloperActivities';
-import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
-import { bonusPartnersRecord } from '@packages/scoutgame/partnerRewards/constants';
+import type { ScoutPartnerInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import { GemsIcon, TransactionIcon } from '@packages/scoutgame-ui/components/common/Icons';
 import { getRelativeTime } from '@packages/utils/dates';
 import Image from 'next/image';
@@ -59,22 +58,31 @@ export function BuilderActivityGems({
   );
 }
 
-function ActivityBonusPartner({ activity, showEmpty = false }: { activity: BuilderActivity; showEmpty?: boolean }) {
-  return activity.type === 'github_event' &&
-    activity.bonusPartner &&
-    bonusPartnersRecord[activity.bonusPartner as BonusPartner] ? (
-    <Image
-      width={20}
-      height={20}
-      src={bonusPartnersRecord[activity.bonusPartner as BonusPartner].icon}
-      alt='Bonus Partner'
-    />
-  ) : showEmpty ? (
-    '-'
-  ) : null;
+function ActivityBonusPartner({
+  activity,
+  showEmpty = false,
+  scoutPartners
+}: {
+  activity: BuilderActivity;
+  showEmpty?: boolean;
+  scoutPartners: ScoutPartnerInfo[];
+}) {
+  const scoutPartner = scoutPartners.find((partner) => partner.id === activity.scoutPartnerId);
+
+  if (!activity.scoutPartnerId || !scoutPartner || activity.type !== 'github_event') {
+    return showEmpty ? '-' : null;
+  }
+
+  return <Image width={20} height={20} src={scoutPartner.image} alt={scoutPartner.text} />;
 }
 
-export function DeveloperActivitiesList({ activities }: { activities: BuilderActivity[] }) {
+export function DeveloperActivitiesList({
+  activities,
+  scoutPartners
+}: {
+  activities: BuilderActivity[];
+  scoutPartners: ScoutPartnerInfo[];
+}) {
   return (
     <Stack gap={0.5}>
       {activities.map((activity) => {
@@ -110,7 +118,7 @@ export function DeveloperActivitiesList({ activities }: { activities: BuilderAct
                   <ActivityLabel activity={activity} />
                 </Stack>
                 <BuilderActivityGems activity={activity} />
-                <ActivityBonusPartner activity={activity} />
+                <ActivityBonusPartner activity={activity} scoutPartners={scoutPartners} />
                 <Typography width={75} textAlign='right' variant='body2'>
                   {getRelativeTime(activity.createdAt)}
                 </Typography>
