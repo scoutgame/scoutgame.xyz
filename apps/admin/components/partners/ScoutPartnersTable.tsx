@@ -221,15 +221,19 @@ export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Pro
                       '-'
                     )}
                   </TableCell>
-                  <TableCell>
-                    <Link href={partner.infoPageImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
-                      <CenteredImage
-                        src={partner.infoPageImage}
-                        alt={`${partner.name} info page`}
-                        width={60}
-                        height={30}
-                      />
-                    </Link>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    {partner.infoPageImage ? (
+                      <Link href={partner.infoPageImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
+                        <CenteredImage
+                          src={partner.infoPageImage}
+                          alt={`${partner.name} info page`}
+                          width={60}
+                          height={30}
+                        />
+                      </Link>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>{partner.tokenAmountPerPullRequest || '-'}</TableCell>
                   <TableCell>
@@ -254,7 +258,7 @@ export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Pro
                     )}
                   </TableCell>
                   <TableCell>{partner.tokenSymbol || '-'}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
                     {partner.tokenImage ? (
                       <Link href={partner.tokenImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
                         <CenteredImage src={partner.tokenImage} alt={`${partner.name} token`} width={20} height={20} />

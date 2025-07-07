@@ -18,7 +18,8 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
     data: {
       id,
       ...params,
-      bannerImage: params.bannerImage || '' // Provide default empty string
+      infoPageImage: params.infoPageImage || '',
+      bannerImage: params.bannerImage || ''
     }
   });
 
@@ -34,10 +35,12 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
           pathInS3: `user-content/scout-partners/${partner.id}/developerPageBanner.png`
         })
       : Promise.resolve(null),
-    uploadUrlToS3({
-      url: params.infoPageImage,
-      pathInS3: `user-content/scout-partners/${partner.id}/infoPageBanner.png`
-    }),
+    params.infoPageImage
+      ? uploadUrlToS3({
+          url: params.infoPageImage,
+          pathInS3: `user-content/scout-partners/${partner.id}/infoPageBanner.png`
+        })
+      : Promise.resolve(null),
     params.tokenImage
       ? uploadUrlToS3({
           url: params.tokenImage,
@@ -51,7 +54,7 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
     where: { id: partner.id },
     data: {
       icon: iconUrl.url,
-      infoPageImage: infoPageUrl.url,
+      infoPageImage: infoPageUrl?.url || '',
       ...(bannerUrl && { bannerImage: bannerUrl.url }),
       ...(tokenImageUrl && { tokenImage: tokenImageUrl.url })
     }

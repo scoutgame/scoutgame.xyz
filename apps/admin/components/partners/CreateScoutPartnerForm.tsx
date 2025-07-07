@@ -321,7 +321,6 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
               onFileChange={infoPageUpload.onFileChange}
               error={errors.infoPageImage?.message}
               imageSize={{ width: 300, height: 200 }}
-              required
             />
           )}
         />

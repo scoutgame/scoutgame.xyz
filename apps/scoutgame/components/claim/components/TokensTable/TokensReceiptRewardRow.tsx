@@ -163,7 +163,7 @@ function GooddollarContributionPartnerRewardRow({
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
           <Typography>{partnerReward.tokens}</Typography>
-          <Image alt='' src='/images/logos/good-dollar.png' width={20} height={20} />
+          <Image alt='' src='/images/logos/gooddollar.png' width={20} height={20} />
         </Stack>
       </TableCell>
     </TableRow>

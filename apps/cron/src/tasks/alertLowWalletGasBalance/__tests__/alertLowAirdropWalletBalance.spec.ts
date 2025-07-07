@@ -91,9 +91,9 @@ describe('alertLowAirdropWalletBalance', () => {
       .mockResolvedValue({
         id: 'gooddollar',
         name: 'GoodDollar',
-        bannerImage: 'https://scoutgame.xyz/images/logos/good-dollar.png',
-        icon: 'https://scoutgame.xyz/images/logos/good-dollar.png',
-        infoPageImage: 'https://scoutgame.xyz/images/logos/good-dollar.png'
+        bannerImage: 'https://scoutgame.xyz/images/logos/gooddollar.png',
+        icon: 'https://scoutgame.xyz/images/logos/gooddollar.png',
+        infoPageImage: 'https://scoutgame.xyz/images/logos/gooddollar.png'
       });
 
     // Mock getPublicClient

@@ -10,7 +10,7 @@ export const createScoutPartnerSchema = yup.object({
   name: yup.string().required('Name is required'),
   icon: yup.string().required('Icon is required'),
   bannerImage: yup.string(),
-  infoPageImage: yup.string().required('Info page image is required'),
+  infoPageImage: yup.string(),
   status: yup.string<ScoutPartnerStatus>().oneOf(['active', 'paused', 'completed']).required('Status is required'),
   tokenAmountPerPullRequest: yup.number().when('$isTokenEnabled', {
     is: true,
