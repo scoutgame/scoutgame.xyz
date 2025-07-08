@@ -1,4 +1,5 @@
 export const partners = [
+  { href: '/info/partner-rewards/arbitrum', text: 'Arbitrum' },
   { href: '/info/partner-rewards/divvi', text: 'Divvi' },
   // { href: '/info/partner-rewards/octant', text: 'Base + Octant' },
   { href: '/info/partner-rewards/taiko', text: 'Taiko' },
