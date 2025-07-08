@@ -10,7 +10,7 @@ import { getScoutPartners } from 'lib/scout-partners/getScoutPartners';
 export async function GET() {
   try {
     const scoutPartners = await getScoutPartners();
-    const response = NextResponse.json(scoutPartners as ScoutPartnerWithRepos[]);
+    const response = NextResponse.json(scoutPartners);
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     return response;
   } catch (error) {
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const scoutPartner = await createScoutPartner(body);
 
     // Fetch the created partner with repos
-    const createdPartner = await prisma.scoutPartner.findUnique({
+    const createdPartner: ScoutPartnerWithRepos | null = await prisma.scoutPartner.findUnique({
       where: { id: scoutPartner.id },
       include: {
         repos: {
@@ -58,7 +58,7 @@ export async function PUT(request: Request) {
     await editScoutPartner(id, body);
 
     // Fetch the updated partner with repos
-    const updatedPartner = await prisma.scoutPartner.findUnique({
+    const updatedPartner: ScoutPartnerWithRepos | null = await prisma.scoutPartner.findUnique({
       where: { id },
       include: {
         repos: {

@@ -1,7 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma-client';
+import type { ScoutPartnerStatus } from '@charmverse/core/prisma-client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {
@@ -30,6 +30,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useCreateScoutPartner, useGetScoutPartnerUploadToken } from 'hooks/api/scout-partners';
 import type { CreateScoutPartnerPayload } from 'lib/scout-partners/createScoutPartnerSchema';
 import { createScoutPartnerSchema } from 'lib/scout-partners/createScoutPartnerSchema';
+import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
 import { ChainSelector } from './ChainSelector';
 import { IssueTagAmountFields } from './IssueTagAmountFields';
@@ -37,7 +38,7 @@ import { RepoSelector } from './RepoSelector';
 
 type Props = {
   onClose: () => void;
-  onSuccess: (partner: ScoutPartner) => void;
+  onSuccess: (partner: ScoutPartnerWithRepos) => void;
 };
 
 type ImageUploadFieldProps = {
