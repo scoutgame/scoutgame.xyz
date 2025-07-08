@@ -16,7 +16,7 @@ import {
   FormHelperText
 } from '@mui/material';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useSearchReposByOwnerFromGithub } from 'hooks/api/github';
 
@@ -29,12 +29,38 @@ type Props = {
   error?: string;
   label?: string;
   required?: boolean;
+  initialRepos?: { id: number; owner: string; name: string }[];
 };
 
-export function RepoSelector({ value, onChange, partnerId, error, label = 'Repositories', required }: Props) {
+export function RepoSelector({
+  value,
+  onChange,
+  partnerId,
+  error,
+  label = 'Repositories',
+  required,
+  initialRepos
+}: Props) {
   const [searchInput, setSearchInput] = useState('');
   const [repoLookup, setRepoLookup] = useState<Record<number, { fullName: string; url: string }>>({});
   const debouncedSearchInput = useDebouncedValue(searchInput);
+
+  // Initialize lookup with existing repos
+  useEffect(() => {
+    if (initialRepos && initialRepos.length > 0) {
+      const lookup = initialRepos.reduce(
+        (acc, repo) => {
+          acc[repo.id] = {
+            fullName: `${repo.owner}/${repo.name}`,
+            url: `https://github.com/${repo.owner}/${repo.name}`
+          };
+          return acc;
+        },
+        {} as Record<number, { fullName: string; url: string }>
+      );
+      setRepoLookup(lookup);
+    }
+  }, [initialRepos]);
 
   const {
     data: searchResults,
@@ -105,12 +131,30 @@ export function RepoSelector({ value, onChange, partnerId, error, label = 'Repos
                 <Chip
                   key={repoId}
                   label={repo.fullName}
-                  onDelete={() => handleRemoveRepo(repoId)}
-                  component={Link}
-                  href={repo.url}
-                  target='_blank'
-                  clickable
-                  sx={{ maxWidth: 250 }}
+                  onDelete={(e) => {
+                    e.stopPropagation();
+                    handleRemoveRepo(repoId);
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(repo.url, '_blank');
+                  }}
+                  sx={{
+                    maxWidth: 250,
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: 'action.hover',
+                      '& .MuiChip-deleteIcon': {
+                        color: 'error.main'
+                      }
+                    },
+                    '& .MuiChip-deleteIcon': {
+                      transition: 'color 0.2s ease-in-out',
+                      '&:hover': {
+                        color: 'error.dark'
+                      }
+                    }
+                  }}
                 />
               );
             })
