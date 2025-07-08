@@ -24,7 +24,7 @@ export function getPartnerRewardAmount({
 
   let rewardAmount = parseUnits('0', scoutPartner.tokenDecimals);
   const matchingTagTokenAmount = issueTagTokenAmounts.find((issueTagTokenAmount) =>
-    tags?.includes(issueTagTokenAmount.tag)
+    tags.includes(issueTagTokenAmount.tag)
   );
   if (matchingTagTokenAmount) {
     rewardAmount = parseUnits(matchingTagTokenAmount.amount.toString(), scoutPartner.tokenDecimals);

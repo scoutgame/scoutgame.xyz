@@ -32,7 +32,10 @@ type Props = {
 export async function DevelopersPage({ week, tab, builderSort, builderOrder, user }: Props) {
   const scoutPartners = await prisma.scoutPartner.findMany({
     where: {
-      status: 'active'
+      status: 'active',
+      bannerImage: {
+        not: ''
+      }
     }
   });
 

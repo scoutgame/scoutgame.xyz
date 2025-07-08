@@ -347,13 +347,13 @@ export async function recordMergedPullRequest({
               farcaster: {
                 templateVariables: {
                   gems: gemValue,
-                  partnerRewards: repo.scoutPartnerId === 'octant' ? `${rewardAmount} ${rewardToken}` : undefined
+                  partnerRewards: rewardAmount && rewardToken ? `${rewardAmount} ${rewardToken}` : undefined
                 }
               },
               app: {
                 templateVariables: {
                   gems: gemValue,
-                  partnerRewards: repo.scoutPartnerId === 'octant' ? `${rewardAmount} ${rewardToken}` : undefined
+                  partnerRewards: rewardAmount && rewardToken ? `${rewardAmount} ${rewardToken}` : undefined
                 }
               }
             });

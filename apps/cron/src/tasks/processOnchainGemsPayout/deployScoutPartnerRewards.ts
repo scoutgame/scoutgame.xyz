@@ -95,6 +95,10 @@ export async function deployScoutPartnerRewards({ week }: { week: string }) {
         week,
         scoutPartner
       });
+      log.info(`${scoutPartner.name} rewards contract deployed`, {
+        week,
+        season: getCurrentSeason(week).start
+      });
     } catch (error) {
       log.error(`Error deploying ${scoutPartner.name} rewards contract`, {
         error,
