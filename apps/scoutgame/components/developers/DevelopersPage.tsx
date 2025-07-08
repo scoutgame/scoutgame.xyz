@@ -1,5 +1,7 @@
 import 'server-only';
 
+import type { ScoutPartner } from '@charmverse/core/prisma-client';
+import { prisma } from '@charmverse/core/prisma-client';
 import { Grid, Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
@@ -28,6 +30,15 @@ type Props = {
 };
 
 export async function DevelopersPage({ week, tab, builderSort, builderOrder, user }: Props) {
+  const scoutPartners = await prisma.scoutPartner.findMany({
+    where: {
+      status: 'active',
+      bannerImage: {
+        not: ''
+      }
+    }
+  });
+
   return (
     <>
       <Suspense>
@@ -44,7 +55,7 @@ export async function DevelopersPage({ week, tab, builderSort, builderOrder, use
         data-test='builders-page'
       >
         <Grid size={{ xs: 12, md: 8 }} sx={{ height: '100%', overflowX: 'hidden', px: 1, gap: 2 }}>
-          <PartnerRewards />
+          <PartnerRewards scoutPartners={scoutPartners} />
           <MainContent
             week={week}
             tab={tab}
@@ -141,7 +152,7 @@ export async function SidebarContent({ user, week }: Pick<Props, 'user' | 'week'
 }
 
 /* Builder and Scout, Mobile and Desktop */
-export function PartnerRewards() {
+export function PartnerRewards({ scoutPartners }: { scoutPartners: ScoutPartner[] }) {
   return (
     <Stack
       sx={{
@@ -154,7 +165,7 @@ export function PartnerRewards() {
       <Typography variant='h5' color='secondary' textAlign='center' my={{ xs: 0.5, md: 1 }}>
         Partner Rewards
       </Typography>
-      <PartnerRewardsCarousel />
+      <PartnerRewardsCarousel scoutPartners={scoutPartners} />
     </Stack>
   );
 }

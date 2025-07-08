@@ -19,8 +19,7 @@ import {
   IconButton,
   TableSortLabel
 } from '@mui/material';
-import type { BonusPartner } from '@packages/scoutgame/partnerRewards/constants';
-import { bonusPartnersRecord } from '@packages/scoutgame/partnerRewards/constants';
+import type { ScoutPartnerInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import Image from 'next/image';
 import React, { useState, useMemo } from 'react';
 
@@ -32,10 +31,10 @@ import type { Repo } from 'lib/repos/getRepos';
 import { HeaderActions } from './components/HeaderActions';
 import { RepoActionButton } from './components/RepoActions/RepoActionButton';
 
-type SortField = 'commits' | 'prs' | 'closedPrs' | 'contributors' | 'owner' | 'createdAt' | 'bonusPartner';
+type SortField = 'commits' | 'prs' | 'closedPrs' | 'contributors' | 'owner' | 'createdAt' | 'scoutPartnerId';
 type SortOrder = 'asc' | 'desc';
 
-export function ReposDashboard({ repos }: { repos: Repo[] }) {
+export function ReposDashboard({ repos, scoutPartners }: { repos: Repo[]; scoutPartners: ScoutPartnerInfo[] }) {
   const [filterString, setFilter] = useState('');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
@@ -155,46 +154,47 @@ export function ReposDashboard({ repos }: { repos: Repo[] }) {
               </TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={sortField === 'bonusPartner'}
-                  direction={sortField === 'bonusPartner' ? sortOrder : 'asc'}
-                  onClick={() => handleSort('bonusPartner')}
+                  active={sortField === 'scoutPartnerId'}
+                  direction={sortField === 'scoutPartnerId' ? sortOrder : 'asc'}
+                  onClick={() => handleSort('scoutPartnerId')}
                 >
-                  Bonus Partner
+                  Scout Partner
                 </TableSortLabel>
               </TableCell>
               <TableCell align='center'>{/** Actions */}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAndSortedRepos.map((repo) => (
-              <TableRow key={repo.id}>
-                <TableCell>
-                  <Link href={`https://github.com/${repo.owner}`} target='_blank'>
-                    {repo.owner}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Link href={`https://github.com/${repo.owner}/${repo.name}`} target='_blank'>
-                    {repo.name}
-                  </Link>
-                </TableCell>
-                <TableCell>{repo.commits}</TableCell>
-                <TableCell>{repo.prs}</TableCell>
-                <TableCell>{repo.closedPrs}</TableCell>
-                <TableCell>{repo.contributors}</TableCell>
-                <TableCell>
-                  {repo.bonusPartner ? <BonusPartnersDisplay bonusPartner={repo.bonusPartner as BonusPartner} /> : ''}
-                </TableCell>
-                <TableCell align='center'>
-                  <RepoActionButton
-                    repo={repo}
-                    onChange={() => {
-                      refreshData();
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
+            {filteredAndSortedRepos.map((repo) => {
+              const scoutPartner = scoutPartners.find((partner) => partner.id === repo.scoutPartnerId);
+              return (
+                <TableRow key={repo.id}>
+                  <TableCell>
+                    <Link href={`https://github.com/${repo.owner}`} target='_blank'>
+                      {repo.owner}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link href={`https://github.com/${repo.owner}/${repo.name}`} target='_blank'>
+                      {repo.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{repo.commits}</TableCell>
+                  <TableCell>{repo.prs}</TableCell>
+                  <TableCell>{repo.closedPrs}</TableCell>
+                  <TableCell>{repo.contributors}</TableCell>
+                  <TableCell>{scoutPartner ? <ScoutPartnersDisplay scoutPartner={scoutPartner} /> : ''}</TableCell>
+                  <TableCell align='center'>
+                    <RepoActionButton
+                      repo={repo}
+                      onChange={() => {
+                        refreshData();
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -202,16 +202,11 @@ export function ReposDashboard({ repos }: { repos: Repo[] }) {
   );
 }
 
-function BonusPartnersDisplay({ bonusPartner, size = 20 }: { bonusPartner: string; size?: number }) {
-  const info = bonusPartnersRecord[bonusPartner as BonusPartner];
-  if (!info) {
-    log.warn(`No bonus partner info found for ${bonusPartner}`);
-    return bonusPartner;
-  }
+function ScoutPartnersDisplay({ scoutPartner, size = 20 }: { scoutPartner: ScoutPartnerInfo; size?: number }) {
   return (
     <Stack flexDirection='row' gap={1} alignItems='center'>
-      <Image width={size} height={size} src={info.icon} alt='' />
-      {info.name}
+      <Image width={size} height={size} src={scoutPartner.image} alt={scoutPartner.text} />
+      {scoutPartner.text}
     </Stack>
   );
 }

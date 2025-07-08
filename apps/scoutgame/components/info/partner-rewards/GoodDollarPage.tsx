@@ -7,8 +7,8 @@ import { InfoPageContainer } from '../components/InfoPageContainer';
 export function GoodDollarPage() {
   return (
     <InfoPageContainer
-      data-test='partner-page-good-dollar'
-      image='/images/info/rewards-partner-good-dollar.png'
+      data-test='partner-page-gooddollar'
+      image='/images/info/rewards-partner-gooddollar.png'
       title='GoodDollar'
     >
       <Document />
@@ -37,13 +37,6 @@ const tiers = [
     name: 'Legendary',
     reward: '$450 | 4,500,000 G$'
   }
-];
-
-const qualifiedProjects = [
-  'https://github.com/GoodDollar/GoodWeb3-Mono',
-  'https://github.com/GoodDollar/GoodSdks',
-  'https://github.com/GoodDollar/GoodCollective',
-  'https://github.com/GoodDollar/GoodProtocolUI'
 ];
 
 function Document() {

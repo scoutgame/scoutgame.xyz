@@ -23,8 +23,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/info/partner-rewards/taiko', request.url));
   }
 
-  if (path === '/good-dollar') {
-    return NextResponse.redirect(new URL('/info/partner-rewards/good-dollar', request.url));
+  if (path === '/gooddollar') {
+    return NextResponse.redirect(new URL('/info/partner-rewards/gooddollar', request.url));
   }
 
   if (path === '/quests') {

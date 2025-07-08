@@ -2,11 +2,12 @@ import TelegramIcon from '@mui/icons-material/Telegram';
 import XIcon from '@mui/icons-material/X';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import { Stack, Link as MuiLink, SvgIcon, Typography, Container } from '@mui/material';
+import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import Image from 'next/image';
 
-import { partners } from '../partnerConfig';
+export async function InfoPageFooter() {
+  const scoutPartnersInfo = await getScoutPartnersInfo({ status: 'active' });
 
-export function InfoPageFooter() {
   return (
     <Stack
       sx={{
@@ -116,7 +117,7 @@ export function InfoPageFooter() {
           >
             Partners
           </Typography>
-          {partners.map((partner) => (
+          {scoutPartnersInfo.map((partner) => (
             <MuiLink key={partner.href} href={partner.href}>
               <Typography>{partner.text}</Typography>
             </MuiLink>

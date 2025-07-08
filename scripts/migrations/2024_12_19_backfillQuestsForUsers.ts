@@ -61,7 +61,7 @@ async function backfillQuestsForBuilders() {
               type: true,
               repo: {
                 select: {
-                  bonusPartner: true
+                  scoutPartnerId: true
                 }
               }
             }

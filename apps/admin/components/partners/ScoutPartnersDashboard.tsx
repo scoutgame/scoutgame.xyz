@@ -1,8 +1,9 @@
 'use client';
 
-import type { ScoutPartner } from '@charmverse/core/prisma';
 import { Container, Typography, Stack, Button, Modal, Box } from '@mui/material';
 import { useState } from 'react';
+
+import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
 import { CreateScoutPartnerForm } from './CreateScoutPartnerForm';
 import { ScoutPartnersTable } from './ScoutPartnersTable';
@@ -20,11 +21,11 @@ const modalStyle = {
   overflow: 'auto'
 };
 
-export function ScoutPartnersDashboard({ initialPartners }: { initialPartners: ScoutPartner[] }) {
+export function ScoutPartnersDashboard({ initialPartners }: { initialPartners: ScoutPartnerWithRepos[] }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [partners, setPartners] = useState(initialPartners);
 
-  const handlePartnerUpdate = (updatedPartner: ScoutPartner) => {
+  const handlePartnerUpdate = (updatedPartner: ScoutPartnerWithRepos) => {
     setPartners((prevPartners) =>
       prevPartners.map((partner) => (partner.id === updatedPartner.id ? updatedPartner : partner))
     );

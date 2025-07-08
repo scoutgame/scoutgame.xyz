@@ -1,10 +1,12 @@
 // Must be there otherwise React is not defined error is thrown
+import { prisma } from '@charmverse/core/prisma-client';
 import * as React from 'react';
 import sharp from 'sharp';
 
 import type { BuilderScouts } from '../../builders/getBuilderScouts';
 import type { BuilderStats } from '../../builders/getBuilderStats';
 import type { BuilderActivity } from '../../builders/getDeveloperActivities';
+import { getScoutPartnersInfo } from '../../scoutPartners/getScoutPartnersInfo';
 
 import { BuilderShareImage } from './components/BuilderShareImage';
 
@@ -43,6 +45,8 @@ export async function generateShareImage({
     }
   });
 
+  const scoutPartners = await getScoutPartnersInfo();
+
   const response = await fetch(userImage);
   const arrayBuffer = await response.arrayBuffer();
   const avatarBuffer = await sharp(Buffer.from(arrayBuffer)).resize(150, 200).png().toBuffer();
@@ -58,6 +62,7 @@ export async function generateShareImage({
         nftImageUrl={`data:image/png;base64,${avatarBuffer.toString('base64')}`}
         size={size}
         builderPrice={builderPrice}
+        scoutPartners={scoutPartners}
       />
     ),
     {

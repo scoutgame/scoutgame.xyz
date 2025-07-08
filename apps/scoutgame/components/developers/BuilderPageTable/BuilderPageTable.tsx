@@ -4,6 +4,7 @@ import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
 import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { getDeveloperActivities } from '@packages/scoutgame/builders/getDeveloperActivities';
 import { getLeaderboard } from '@packages/scoutgame/builders/getLeaderboard';
+import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 
 import { ScoutPageTable } from '../../scout/components/ScoutPageTable/ScoutPageTable';
 
@@ -24,8 +25,11 @@ export async function BuilderPageTable({
   userId?: string;
 }) {
   if (tab === 'activity') {
-    const [, activities = []] = await safeAwaitSSRData(getDeveloperActivities({ limit: 100 }));
-    return <ActivityTable activities={activities} />;
+    const [[, activities = []], [, scoutPartners = []]] = await Promise.all([
+      safeAwaitSSRData(getDeveloperActivities({ limit: 100 })),
+      safeAwaitSSRData(getScoutPartnersInfo())
+    ]);
+    return <ActivityTable activities={activities} scoutPartners={scoutPartners} />;
   }
 
   if (tab === 'leaderboard') {

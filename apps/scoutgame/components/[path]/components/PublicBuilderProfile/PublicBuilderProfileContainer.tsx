@@ -7,6 +7,7 @@ import type { BuilderScouts } from '@packages/scoutgame/builders/getBuilderScout
 import type { BuilderStats } from '@packages/scoutgame/builders/getBuilderStats';
 import type { BuilderActivity } from '@packages/scoutgame/builders/getDeveloperActivities';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
+import type { ScoutPartnerInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import { BackButton } from '@packages/scoutgame-ui/components/common/Button/BackButton';
 import { UserProfile } from '@packages/scoutgame-ui/components/common/Profile/UserProfile';
 import { useMdScreen } from '@packages/scoutgame-ui/hooks/useMediaScreens';
@@ -35,6 +36,7 @@ export type BuilderProfileProps = {
   } | null;
   builderActivities: BuilderActivity[];
   starterNftSoldToLoggedInScout: boolean;
+  scoutPartners: ScoutPartnerInfo[];
 } & BuilderStats &
   BuilderScouts;
 
@@ -66,7 +68,8 @@ export function PublicBuilderProfileContainer({
   builderActivities,
   gemsCollected,
   rank,
-  starterNftSoldToLoggedInScout
+  starterNftSoldToLoggedInScout,
+  scoutPartners
 }: BuilderProfileProps) {
   const isDesktop = useMdScreen();
   return (
@@ -204,7 +207,7 @@ export function PublicBuilderProfileContainer({
               <Typography color='secondary'>Recent Activity</Typography>
               <Box maxHeight={{ md: '400px' }} overflow='auto'>
                 {builderActivities.length > 0 ? (
-                  <DeveloperActivitiesList activities={builderActivities} />
+                  <DeveloperActivitiesList activities={builderActivities} scoutPartners={scoutPartners} />
                 ) : (
                   <Typography>No recent activity by this developer.</Typography>
                 )}

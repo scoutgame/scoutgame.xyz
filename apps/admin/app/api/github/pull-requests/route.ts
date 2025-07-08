@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   }
   const events = await prisma.builderEvent.findMany({
     where: {
-      bonusPartner: partner,
+      scoutPartnerId: partner,
       type: 'merged_pull_request'
     },
     select: {
