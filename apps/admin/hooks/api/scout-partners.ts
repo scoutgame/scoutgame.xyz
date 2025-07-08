@@ -1,5 +1,6 @@
 import type { ScoutPartner } from '@charmverse/core/prisma';
 import { usePOST, usePUT } from '@packages/scoutgame-ui/hooks/helpers';
+import type { ScoutPartnerWithRepos } from 'app/api/scout-partners/route';
 import useSWR from 'swr';
 
 import type { CreateScoutPartnerPayload } from 'lib/scout-partners/createScoutPartnerSchema';
@@ -22,7 +23,7 @@ export function useCreateScoutPartner() {
 }
 
 export function useEditScoutPartner(id: string) {
-  return usePUT<EditScoutPartnerPayload, ScoutPartner>(`/api/scout-partners/${id}`);
+  return usePUT<EditScoutPartnerPayload, ScoutPartnerWithRepos>(`/api/scout-partners/${id}`);
 }
 
 export function useGetScoutPartnerUploadToken() {

@@ -1,6 +1,6 @@
 'use client';
 
-import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma';
+import type { GithubRepo, ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Stack,
@@ -21,6 +21,7 @@ import {
   Modal
 } from '@mui/material';
 import { getChainById } from '@packages/blockchain/chains';
+import type { ScoutPartnerWithRepos } from 'app/api/scout-partners/route';
 import Image from 'next/image';
 import React, { useState, useMemo } from 'react';
 
@@ -56,9 +57,9 @@ const statusLabels: Record<ScoutPartnerStatus, string> = {
 };
 
 type Props = {
-  partners?: ScoutPartner[];
+  partners?: ScoutPartnerWithRepos[];
   isLoading: boolean;
-  onPartnerUpdate: (partner: ScoutPartner) => void;
+  onPartnerUpdate: (partner: ScoutPartnerWithRepos) => void;
 };
 
 // Add this component for centered image display
@@ -83,7 +84,7 @@ function CenteredImage({ src, alt, width, height }: { src: string; alt: string; 
 export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Props) {
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-  const [editingPartner, setEditingPartner] = useState<ScoutPartner | null>(null);
+  const [editingPartner, setEditingPartner] = useState<ScoutPartnerWithRepos | null>(null);
 
   const sortedPartners = useMemo(() => {
     if (!partners) return [];

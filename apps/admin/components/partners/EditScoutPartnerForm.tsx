@@ -1,7 +1,7 @@
 'use client';
 
 import { log } from '@charmverse/core/log';
-import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma-client';
+import type { ScoutPartnerStatus } from '@charmverse/core/prisma-client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Stack,
@@ -14,6 +14,7 @@ import {
   MenuItem,
   InputLabel
 } from '@mui/material';
+import type { ScoutPartnerWithRepos } from 'app/api/scout-partners/route';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -22,11 +23,12 @@ import type { EditScoutPartnerPayload } from 'lib/scout-partners/editScoutPartne
 import { editScoutPartnerSchema } from 'lib/scout-partners/editScoutPartnerSchema';
 
 import { IssueTagAmountFields } from './IssueTagAmountFields';
+import { RepoSelector } from './RepoSelector';
 
 type Props = {
-  partner: ScoutPartner;
+  partner: ScoutPartnerWithRepos;
   onClose: () => void;
-  onSuccess: (partner: ScoutPartner) => void;
+  onSuccess: (partner: ScoutPartnerWithRepos) => void;
 };
 
 const statusOptions: { value: ScoutPartnerStatus; label: string }[] = [
@@ -42,28 +44,32 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isValid, isDirty }
   } = useForm<EditScoutPartnerPayload>({
     defaultValues: {
       status: partner.status,
       tokenAmountPerPullRequest: partner.tokenAmountPerPullRequest ?? undefined,
-      issueTagTokenAmounts: (partner.issueTagTokenAmounts as { tag: string; amount: number }[]) ?? []
+      issueTagTokenAmounts: (partner.issueTagTokenAmounts as { tag: string; amount: number }[]) ?? [],
+      repoIds: partner.repos?.map((repo) => repo.id) ?? []
     },
     resolver: yupResolver(editScoutPartnerSchema),
     mode: 'onChange'
   });
 
-  const onSubmit = handleSubmit(async (data: EditScoutPartnerPayload) => {
-    try {
-      setIsSubmitting(true);
-      const updatedPartner = await editScoutPartner(data);
-      onSuccess(updatedPartner);
-      onClose();
-    } catch (error) {
-      log.error('Error updating scout partner', { error });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = handleSubmit((data: EditScoutPartnerPayload) => {
+    setIsSubmitting(true);
+    editScoutPartner(data)
+      .then((res) => {
+        onSuccess(res);
+        onClose();
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      })
+      .catch((error) => {
+        log.error('Error updating scout partner', { error });
+      });
   });
 
   return (
@@ -86,6 +92,20 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
               </Select>
               {errors.status && <FormHelperText error>{errors.status.message}</FormHelperText>}
             </FormControl>
+          )}
+        />
+
+        <Controller
+          name='repoIds'
+          control={control}
+          render={({ field }) => (
+            <RepoSelector
+              value={field.value}
+              onChange={field.onChange}
+              partnerId={partner.id}
+              error={errors.repoIds?.message}
+              label='Repositories'
+            />
           )}
         />
 

@@ -13,7 +13,8 @@ export const editScoutPartnerSchema = yup.object().shape({
       })
     )
     .required()
-    .default([])
+    .default([]),
+  repoIds: yup.array().of(yup.number().required()).default([])
 });
 
 export type EditScoutPartnerPayload = yup.InferType<typeof editScoutPartnerSchema>;

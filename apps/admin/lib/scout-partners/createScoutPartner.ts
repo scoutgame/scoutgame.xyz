@@ -23,6 +23,14 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
     }
   });
 
+  // Associate repos with the partner
+  if (params.repoIds && params.repoIds.length > 0) {
+    await prisma.githubRepo.updateMany({
+      where: { id: { in: params.repoIds } },
+      data: { scoutPartnerId: partner.id }
+    });
+  }
+
   // Upload images with proper paths
   const [iconUrl, bannerUrl, infoPageUrl, tokenImageUrl] = await Promise.all([
     uploadUrlToS3({

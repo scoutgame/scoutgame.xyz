@@ -33,6 +33,7 @@ import { createScoutPartnerSchema } from 'lib/scout-partners/createScoutPartnerS
 
 import { ChainSelector } from './ChainSelector';
 import { IssueTagAmountFields } from './IssueTagAmountFields';
+import { RepoSelector } from './RepoSelector';
 
 type Props = {
   onClose: () => void;
@@ -145,6 +146,7 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isValid, isSubmitting, isDirty }
   } = useForm<CreateScoutPartnerPayload>({
     defaultValues: {
@@ -159,7 +161,8 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
       tokenDecimals: 0,
       tokenImage: '',
       tokenSymbol: '',
-      issueTagTokenAmounts: []
+      issueTagTokenAmounts: [],
+      repoIds: []
     },
     resolver: yupResolver(createScoutPartnerSchema),
     mode: 'onChange',
@@ -321,6 +324,19 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
               onFileChange={infoPageUpload.onFileChange}
               error={errors.infoPageImage?.message}
               imageSize={{ width: 300, height: 200 }}
+            />
+          )}
+        />
+
+        <Controller
+          name='repoIds'
+          control={control}
+          render={({ field }) => (
+            <RepoSelector
+              value={field.value}
+              onChange={field.onChange}
+              error={errors.repoIds?.message}
+              label='Repositories'
             />
           )}
         />

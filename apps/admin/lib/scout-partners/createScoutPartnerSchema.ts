@@ -49,7 +49,8 @@ export const createScoutPartnerSchema = yup.object({
       is: true,
       then: (schema) => schema.default([]),
       otherwise: (schema) => schema.optional()
-    })
+    }),
+  repoIds: yup.array().of(yup.number().required()).default([])
 });
 
 export type CreateScoutPartnerPayload = yup.InferType<typeof createScoutPartnerSchema>;
