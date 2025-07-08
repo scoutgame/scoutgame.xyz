@@ -1,6 +1,6 @@
 'use client';
 
-import type { GithubRepo, ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma';
+import type { ScoutPartnerStatus } from '@charmverse/core/prisma';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Stack,
