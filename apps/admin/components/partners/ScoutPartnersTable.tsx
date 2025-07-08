@@ -21,9 +21,10 @@ import {
   Modal
 } from '@mui/material';
 import { getChainById } from '@packages/blockchain/chains';
-import type { ScoutPartnerWithRepos } from 'app/api/scout-partners/route';
 import Image from 'next/image';
 import React, { useState, useMemo } from 'react';
+
+import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
 import { chainOptions } from './ChainSelector';
 import { EditScoutPartnerForm } from './EditScoutPartnerForm';

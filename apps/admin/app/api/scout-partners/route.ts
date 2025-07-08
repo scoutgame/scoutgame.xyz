@@ -1,31 +1,16 @@
 import { log } from '@charmverse/core/log';
-import type { ScoutPartner } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { NextResponse } from 'next/server';
 
 import { createScoutPartner } from 'lib/scout-partners/createScoutPartner';
-
-export type ScoutPartnerWithRepos = ScoutPartner & { repos: { id: number; owner: string; name: string }[] };
+import { editScoutPartner } from 'lib/scout-partners/editScoutPartner';
+import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
+import { getScoutPartners } from 'lib/scout-partners/getScoutPartners';
 
 export async function GET() {
   try {
-    const scoutPartners: ScoutPartnerWithRepos[] = await prisma.scoutPartner.findMany({
-      orderBy: {
-        name: 'asc'
-      },
-      include: {
-        repos: {
-          select: {
-            id: true,
-            owner: true,
-            name: true
-          }
-        }
-      }
-    });
-    log.info('Fetched scout partners', { count: scoutPartners.length, partners: scoutPartners });
+    const scoutPartners = await getScoutPartners();
     const response = NextResponse.json(scoutPartners as ScoutPartnerWithRepos[]);
-    // Prevent caching
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     return response;
   } catch (error) {
@@ -57,5 +42,42 @@ export async function POST(request: Request) {
   } catch (error) {
     log.error('Error creating scout partner', { error });
     return NextResponse.json({ error: 'Failed to create scout partner' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const body = await request.json();
+
+    if (!id) {
+      return NextResponse.json({ error: 'Partner ID is required as query parameter' }, { status: 400 });
+    }
+
+    await editScoutPartner(id, body);
+
+    // Fetch the updated partner with repos
+    const updatedPartner = await prisma.scoutPartner.findUnique({
+      where: { id },
+      include: {
+        repos: {
+          select: {
+            id: true,
+            owner: true,
+            name: true
+          }
+        }
+      }
+    });
+
+    if (!updatedPartner) {
+      return NextResponse.json({ error: 'Scout partner not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedPartner);
+  } catch (error) {
+    log.error('Error updating scout partner', { error });
+    return NextResponse.json({ error: 'Failed to update scout partner' }, { status: 500 });
   }
 }

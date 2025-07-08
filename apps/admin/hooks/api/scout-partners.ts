@@ -23,7 +23,7 @@ export function useCreateScoutPartner() {
 }
 
 export function useEditScoutPartner(id: string) {
-  return usePUT<EditScoutPartnerPayload, ScoutPartnerWithRepos>(`/api/scout-partners/${id}`);
+  return usePUT<EditScoutPartnerPayload, ScoutPartnerWithRepos>(`/api/scout-partners?id=${id}`);
 }
 
 export function useGetScoutPartnerUploadToken() {

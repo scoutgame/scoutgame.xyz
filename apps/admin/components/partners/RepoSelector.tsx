@@ -16,31 +16,21 @@ import {
   FormHelperText
 } from '@mui/material';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
+import type { GetReposResult } from 'app/api/github/get-repos/route';
 import { useState, useEffect } from 'react';
 
-import { useSearchReposByOwnerFromGithub } from 'hooks/api/github';
-
-import type { RepoSearchResult } from '../../app/api/github/search-repos/route';
+import { useGetGithubReposFromDatabase } from 'hooks/api/github';
 
 type Props = {
   value: number[];
   onChange: (repoIds: number[]) => void;
-  partnerId?: string;
   error?: string;
   label?: string;
   required?: boolean;
   initialRepos?: { id: number; owner: string; name: string }[];
 };
 
-export function RepoSelector({
-  value,
-  onChange,
-  partnerId,
-  error,
-  label = 'Repositories',
-  required,
-  initialRepos
-}: Props) {
+export function RepoSelector({ value, onChange, error, label = 'Repositories', required, initialRepos }: Props) {
   const [searchInput, setSearchInput] = useState('');
   const [repoLookup, setRepoLookup] = useState<Record<number, { fullName: string; url: string }>>({});
   const debouncedSearchInput = useDebouncedValue(searchInput);
@@ -67,11 +57,11 @@ export function RepoSelector({
     error: searchError,
     isValidating,
     isLoading
-  } = useSearchReposByOwnerFromGithub(debouncedSearchInput, partnerId);
+  } = useGetGithubReposFromDatabase(debouncedSearchInput, false);
 
   const availableRepos = searchResults?.filter((repo) => !value.includes(repo.id)) || [];
 
-  const handleAddRepo = (repo: RepoSearchResult) => {
+  const handleAddRepo = (repo: GetReposResult) => {
     // Add to lookup for display purposes
     setRepoLookup((prev) => ({
       ...prev,
@@ -198,7 +188,7 @@ export function RepoSelector({
           <Typography variant='body2' color='textSecondary' gutterBottom>
             {availableRepos.length === 0
               ? 'No new repositories found'
-              : `Found ${availableRepos.length} new repository${availableRepos.length === 1 ? '' : 'ies'}`}
+              : `Found ${availableRepos.length} new repositor${availableRepos.length === 1 ? 'y' : 'ies'}`}
           </Typography>
           <Stack spacing={1} sx={{ maxHeight: 200, overflow: 'auto' }}>
             {availableRepos.map((repo) => (

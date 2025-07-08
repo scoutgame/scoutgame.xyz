@@ -14,13 +14,13 @@ import {
   MenuItem,
   InputLabel
 } from '@mui/material';
-import type { ScoutPartnerWithRepos } from 'app/api/scout-partners/route';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEditScoutPartner } from 'hooks/api/scout-partners';
 import type { EditScoutPartnerPayload } from 'lib/scout-partners/editScoutPartnerSchema';
 import { editScoutPartnerSchema } from 'lib/scout-partners/editScoutPartnerSchema';
+import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
 import { IssueTagAmountFields } from './IssueTagAmountFields';
 import { RepoSelector } from './RepoSelector';
@@ -102,9 +102,9 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
             <RepoSelector
               value={field.value}
               onChange={field.onChange}
-              partnerId={partner.id}
               error={errors.repoIds?.message}
               label='Repositories'
+              initialRepos={partner.repos}
             />
           )}
         />
