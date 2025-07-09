@@ -8,8 +8,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
-import { partners } from '../partnerConfig';
-
 const links = [
   { href: '/info', text: 'All about Scout Game' },
   { href: '/info/about-scoutgame', text: 'What is Scout Game?' },
@@ -23,7 +21,19 @@ const links = [
   { href: '/info/repositories', text: 'Repositories' },
   { href: '/info/spam-policy', text: 'Spam Policy' }
 ];
-export function SidebarInfo({ handleClose }: Readonly<{ handleClose?: () => void }>) {
+
+export type ScoutPartnerInfo = {
+  href: string;
+  text: string;
+};
+
+export function SidebarInfo({
+  handleClose,
+  partners
+}: Readonly<{
+  handleClose?: () => void;
+  partners: ScoutPartnerInfo[];
+}>) {
   const pathname = usePathname();
   const [open, setOpen] = useState(pathname.startsWith('/info/partner-rewards'));
 

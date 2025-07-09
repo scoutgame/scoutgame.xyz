@@ -1,6 +1,6 @@
 'use client';
 
-import type { ScoutPartner, ScoutPartnerStatus } from '@charmverse/core/prisma';
+import type { ScoutPartnerStatus } from '@charmverse/core/prisma';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Stack,
@@ -23,6 +23,8 @@ import {
 import { getChainById } from '@packages/blockchain/chains';
 import Image from 'next/image';
 import React, { useState, useMemo } from 'react';
+
+import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
 import { chainOptions } from './ChainSelector';
 import { EditScoutPartnerForm } from './EditScoutPartnerForm';
@@ -56,9 +58,9 @@ const statusLabels: Record<ScoutPartnerStatus, string> = {
 };
 
 type Props = {
-  partners?: ScoutPartner[];
+  partners?: ScoutPartnerWithRepos[];
   isLoading: boolean;
-  onPartnerUpdate: (partner: ScoutPartner) => void;
+  onPartnerUpdate: (partner: ScoutPartnerWithRepos) => void;
 };
 
 // Add this component for centered image display
@@ -83,7 +85,7 @@ function CenteredImage({ src, alt, width, height }: { src: string; alt: string; 
 export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Props) {
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-  const [editingPartner, setEditingPartner] = useState<ScoutPartner | null>(null);
+  const [editingPartner, setEditingPartner] = useState<ScoutPartnerWithRepos | null>(null);
 
   const sortedPartners = useMemo(() => {
     if (!partners) return [];
@@ -221,15 +223,19 @@ export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Pro
                       '-'
                     )}
                   </TableCell>
-                  <TableCell>
-                    <Link href={partner.infoPageImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
-                      <CenteredImage
-                        src={partner.infoPageImage}
-                        alt={`${partner.name} info page`}
-                        width={60}
-                        height={30}
-                      />
-                    </Link>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    {partner.infoPageImage ? (
+                      <Link href={partner.infoPageImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
+                        <CenteredImage
+                          src={partner.infoPageImage}
+                          alt={`${partner.name} info page`}
+                          width={60}
+                          height={30}
+                        />
+                      </Link>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>{partner.tokenAmountPerPullRequest || '-'}</TableCell>
                   <TableCell>
@@ -254,7 +260,7 @@ export function ScoutPartnersTable({ partners, isLoading, onPartnerUpdate }: Pro
                     )}
                   </TableCell>
                   <TableCell>{partner.tokenSymbol || '-'}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
                     {partner.tokenImage ? (
                       <Link href={partner.tokenImage} target='_blank' sx={{ display: 'block', textAlign: 'center' }}>
                         <CenteredImage src={partner.tokenImage} alt={`${partner.name} token`} width={20} height={20} />

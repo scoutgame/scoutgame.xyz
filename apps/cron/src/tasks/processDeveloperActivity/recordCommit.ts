@@ -127,7 +127,7 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
               id: commit.repository.id
             },
             select: {
-              bonusPartner: true
+              scoutPartnerId: true
             }
           });
 
@@ -161,7 +161,7 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
               week,
               type: 'daily_commit',
               githubEventId: event.id,
-              bonusPartner: repo.bonusPartner,
+              scoutPartnerId: repo.scoutPartnerId,
               gemsReceipt: {
                 create: {
                   type: gemReceiptType,

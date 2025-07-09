@@ -1,4 +1,6 @@
+import type { ScoutPartnerStatus } from '@charmverse/core/prisma';
 import { Stack, Typography } from '@mui/material';
+import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 import { InfoCard } from '@packages/scoutgame-ui/components/common/DocumentPageContainer/components/InfoCard';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -23,7 +25,7 @@ function PartnerReward({
   href,
   status
 }: {
-  status?: 'paused' | 'completed';
+  status: ScoutPartnerStatus;
   name: string;
   image: string;
   href?: string;
@@ -32,10 +34,10 @@ function PartnerReward({
     <Stack flexDirection='row' gap={2} alignItems='center'>
       <Image src={image} alt={name} width={32} height={32} style={{ borderRadius: '50%' }} />
       <Stack>
-        <Typography color={href ? 'primary' : 'text.primary'} variant='h6' fontWeight={400}>
+        <Typography color={status === 'active' ? 'primary' : 'text.primary'} variant='h6' fontWeight={400}>
           {name}
         </Typography>
-        {status && (
+        {status !== 'active' && (
           <Typography textTransform='uppercase' variant='caption'>
             {status}
           </Typography>
@@ -51,7 +53,9 @@ function PartnerReward({
   return content;
 }
 
-function Document() {
+async function Document() {
+  const scoutPartnersInfo = await getScoutPartnersInfo();
+
   return (
     <InfoCard title='Scout Game Partners'>
       <Typography>
@@ -65,22 +69,15 @@ function Document() {
             Developer Rewards
           </Typography>
           <Stack gap={{ xs: 2, md: 3 }}>
-            <PartnerReward name='Base' image='/images/crypto/base.svg' href='/info/partner-rewards/octant' />
-            <PartnerReward name='Arbitrum' image='/images/crypto/arbitrum.png' href='/info/partner-rewards/arbitrum' />
-            <PartnerReward name='Divvi' image='/images/crypto/divvi.png' href='/info/partner-rewards/divvi' />
-            <PartnerReward name='Taiko' image='/images/crypto/taiko.png' href='/info/partner-rewards/taiko' />
-            <PartnerReward name='Celo' image='/images/crypto/celo.png' href='/info/partner-rewards/celo' />
-            <PartnerReward
-              name='GoodDollar'
-              image='/images/logos/good-dollar.png'
-              href='/info/partner-rewards/good-dollar'
-            />
-            <PartnerReward name='Octant' image='/images/crypto/octant.svg' status='completed' />
-            <PartnerReward name='Game7' image='/images/crypto/game7.png' status='completed' />
-            <PartnerReward name='Optimism Supersim' image='/images/crypto/op.png' status='completed' />
-            <PartnerReward name='Lit Protocol' image='/images/crypto/lit.png' status='completed' />
-            <PartnerReward name='Talent Protocol' image='/images/crypto/talent.jpg' status='completed' />
-            <PartnerReward name='BountyCaster' image='/images/logos/bountycaster.png' status='completed' />
+            {scoutPartnersInfo.map((partner) => (
+              <PartnerReward
+                key={partner.href}
+                name={partner.text}
+                image={partner.image}
+                href={partner.href}
+                status={partner.status}
+              />
+            ))}
           </Stack>
         </Stack>
         <Stack flex={1} gap={2}>

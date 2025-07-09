@@ -4,6 +4,7 @@ import useSWR from 'swr';
 
 import type { CreateScoutPartnerPayload } from 'lib/scout-partners/createScoutPartnerSchema';
 import type { EditScoutPartnerPayload } from 'lib/scout-partners/editScoutPartnerSchema';
+import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
 type UploadTokenResponse = {
   token: {
@@ -18,11 +19,11 @@ type UploadTokenResponse = {
 };
 
 export function useCreateScoutPartner() {
-  return usePOST<CreateScoutPartnerPayload, ScoutPartner>('/api/scout-partners');
+  return usePOST<CreateScoutPartnerPayload, ScoutPartnerWithRepos>('/api/scout-partners');
 }
 
 export function useEditScoutPartner(id: string) {
-  return usePUT<EditScoutPartnerPayload, ScoutPartner>(`/api/scout-partners/${id}`);
+  return usePUT<EditScoutPartnerPayload, ScoutPartnerWithRepos>(`/api/scout-partners?id=${id}`);
 }
 
 export function useGetScoutPartnerUploadToken() {

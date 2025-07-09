@@ -11,7 +11,8 @@ import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
-import { getGooddollarPartnerRewardAmount } from '@packages/scoutgame/partnerRewards/getGooddollarPartnerRewardAmount';
+import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
+import { getPartnerRewardAmount } from '@packages/scoutgame/scoutPartners/getPartnerRewardAmount';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
@@ -21,7 +22,7 @@ import { getLinkedIssue } from './github/getLinkedIssue';
 import { getRecentMergedPullRequestsByUser } from './github/getRecentMergedPullRequestsByUser';
 import { log } from './logger';
 
-type RepoInput = Pick<GithubRepo, 'defaultBranch' | 'bonusPartner'>;
+type RepoInput = Pick<GithubRepo, 'defaultBranch' | 'scoutPartnerId'>;
 
 export type MergedPullRequestMeta = Pick<
   PullRequest,
@@ -86,6 +87,14 @@ export async function recordMergedPullRequest({
       createdAt: 'asc'
     }
   });
+
+  const scoutPartner = repo.scoutPartnerId
+    ? await prisma.scoutPartner.findUniqueOrThrow({
+        where: {
+          id: repo.scoutPartnerId
+        }
+      })
+    : null;
 
   const existingGithubEvent = previousGitEvents.some(
     (event) => event.pullRequestNumber === pullRequest.number && event.repoId === pullRequest.repository.id
@@ -152,7 +161,7 @@ export async function recordMergedPullRequest({
 
     let issueTags: string[] | null = null;
 
-    if (repo.bonusPartner === 'gooddollar') {
+    if (repo.scoutPartnerId) {
       try {
         const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
         const linkedIssue = await getLinkedIssue({
@@ -277,7 +286,7 @@ export async function recordMergedPullRequest({
               week,
               type: 'merged_pull_request',
               githubEventId: event.id,
-              bonusPartner: repo.bonusPartner,
+              scoutPartnerId: repo.scoutPartnerId,
               gemsReceipt: {
                 create: {
                   type: gemReceiptType,
@@ -309,12 +318,15 @@ export async function recordMergedPullRequest({
           let rewardAmount = '';
           let rewardToken = '';
 
-          if (repo.bonusPartner === 'gooddollar') {
-            rewardAmount = formatUnits(getGooddollarPartnerRewardAmount(issueTags), 18);
-            rewardToken = 'G$';
-          } else if (repo.bonusPartner === 'octant') {
-            rewardAmount = '75';
-            rewardToken = 'USDC';
+          if (scoutPartner && scoutPartner.tokenSymbol && scoutPartner.tokenDecimals) {
+            rewardAmount = formatUnits(
+              getPartnerRewardAmount({
+                scoutPartner,
+                tags: issueTags
+              }),
+              scoutPartner.tokenDecimals
+            );
+            rewardToken = scoutPartner.tokenSymbol!;
           }
 
           try {
@@ -327,24 +339,21 @@ export async function recordMergedPullRequest({
                   pr_title: pullRequest.title,
                   pr_link: pullRequest.url,
                   gems_value: gemValue,
-                  partner_rewards:
-                    repo.bonusPartner === 'octant'
-                      ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">${rewardAmount}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/crypto/usdc.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/octant">Octant</a></p>`
-                      : repo.bonusPartner === 'gooddollar'
-                        ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">${rewardAmount}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz/images/logos/good-dollar.png"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/good-dollar">GoodDollar</a></p>`
-                        : ''
+                  partner_rewards: scoutPartner
+                    ? `<p>You also earned <strong style="font-family: 'Arial', sans-serif;">${rewardAmount}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="${scoutPartner.tokenImage}"/> from our partner <a style="text-decoration: underline; color: #3a3a3a;" href="https://scoutgame.xyz/info/partner-rewards/${scoutPartner.id}">${scoutPartner.name}</a></p>`
+                    : ''
                 }
               },
               farcaster: {
                 templateVariables: {
                   gems: gemValue,
-                  partnerRewards: repo.bonusPartner === 'octant' ? `${rewardAmount} ${rewardToken}` : undefined
+                  partnerRewards: rewardAmount && rewardToken ? `${rewardAmount} ${rewardToken}` : undefined
                 }
               },
               app: {
                 templateVariables: {
                   gems: gemValue,
-                  partnerRewards: repo.bonusPartner === 'octant' ? `${rewardAmount} ${rewardToken}` : undefined
+                  partnerRewards: rewardAmount && rewardToken ? `${rewardAmount} ${rewardToken}` : undefined
                 }
               }
             });

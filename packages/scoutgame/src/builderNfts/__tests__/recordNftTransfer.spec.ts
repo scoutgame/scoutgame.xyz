@@ -114,6 +114,7 @@ describe('recordNftTransfer', () => {
     });
 
     expect(builderEvent).toMatchObject<BuilderEvent & { nftPurchaseEvent: NFTPurchaseEvent }>({
+      scoutPartnerId: null,
       bonusPartner: null,
       createdAt: expect.any(Date),
       builderId: builder.id,

@@ -37,7 +37,7 @@ export async function getClaimableTokens({
       value: true,
       event: {
         select: {
-          bonusPartner: true
+          scoutPartnerId: true
         }
       }
     }

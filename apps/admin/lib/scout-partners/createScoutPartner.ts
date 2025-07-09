@@ -18,30 +18,41 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
     data: {
       id,
       ...params,
-      bannerImage: params.bannerImage || '' // Provide default empty string
+      infoPageImage: params.infoPageImage || '',
+      bannerImage: params.bannerImage || ''
     }
   });
+
+  // Associate repos with the partner
+  if (params.repoIds && params.repoIds.length > 0) {
+    await prisma.githubRepo.updateMany({
+      where: { id: { in: params.repoIds } },
+      data: { scoutPartnerId: partner.id }
+    });
+  }
 
   // Upload images with proper paths
   const [iconUrl, bannerUrl, infoPageUrl, tokenImageUrl] = await Promise.all([
     uploadUrlToS3({
       url: params.icon,
-      pathInS3: `user-content/${partner.id}/icon.png`
+      pathInS3: `user-content/scout-partners/${partner.id}/icon.png`
     }),
     params.bannerImage
       ? uploadUrlToS3({
           url: params.bannerImage,
-          pathInS3: `user-content/${partner.id}/developerPageBanner.png`
+          pathInS3: `user-content/scout-partners/${partner.id}/developerPageBanner.png`
         })
       : Promise.resolve(null),
-    uploadUrlToS3({
-      url: params.infoPageImage,
-      pathInS3: `user-content/${partner.id}/infoPageBanner.png`
-    }),
+    params.infoPageImage
+      ? uploadUrlToS3({
+          url: params.infoPageImage,
+          pathInS3: `user-content/scout-partners/${partner.id}/infoPageBanner.png`
+        })
+      : Promise.resolve(null),
     params.tokenImage
       ? uploadUrlToS3({
           url: params.tokenImage,
-          pathInS3: `user-content/${partner.id}/tokenIcon.png`
+          pathInS3: `user-content/scout-partners/${partner.id}/tokenIcon.png`
         })
       : Promise.resolve(null)
   ]);
@@ -51,7 +62,7 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
     where: { id: partner.id },
     data: {
       icon: iconUrl.url,
-      infoPageImage: infoPageUrl.url,
+      infoPageImage: infoPageUrl?.url || '',
       ...(bannerUrl && { bannerImage: bannerUrl.url }),
       ...(tokenImageUrl && { tokenImage: tokenImageUrl.url })
     }

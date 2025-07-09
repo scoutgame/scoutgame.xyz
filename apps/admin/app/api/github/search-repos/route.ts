@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
         url: repo.html_url,
         exists: !!existingRepo,
         // TODO: consider specific partner when we can allow multiple partners
-        hasPartner: partner ? !!existingRepo?.bonusPartner : false
+        hasPartner: partner ? !!existingRepo?.scoutPartnerId : false
       };
     });
     return NextResponse.json(result);

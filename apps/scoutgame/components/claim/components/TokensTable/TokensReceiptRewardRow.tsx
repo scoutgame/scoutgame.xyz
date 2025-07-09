@@ -163,7 +163,7 @@ function GooddollarContributionPartnerRewardRow({
       <TableCell align='right'>
         <Stack direction='row' alignItems='center' justifyContent='flex-end' gap={0.5}>
           <Typography>{partnerReward.tokens}</Typography>
-          <Image alt='' src='/images/logos/good-dollar.png' width={20} height={20} />
+          <Image alt='' src='/images/logos/gooddollar.png' width={20} height={20} />
         </Stack>
       </TableCell>
     </TableRow>
@@ -240,13 +240,13 @@ export function TokensReceiptRewardRow({
     return <MatchupWinnerRewardRow reward={tokensReceiptReward} />;
   } else if (tokensReceiptReward.type === 'optimism_referral_champion') {
     return <ReferralChampionPartnerRewardRow partnerReward={tokensReceiptReward} />;
-  } else if (tokensReceiptReward.type === 'octant_base_contribution') {
+  } else if (tokensReceiptReward.type === 'octant') {
     return (
       <OctantBaseContributionPartnerRewardRow
         partnerReward={tokensReceiptReward as OctantBaseContributionPartnerReward}
       />
     );
-  } else if (tokensReceiptReward.type === 'gooddollar_contribution') {
+  } else if (tokensReceiptReward.type === 'gooddollar') {
     return (
       <GooddollarContributionPartnerRewardRow
         partnerReward={tokensReceiptReward as GooddollarContributionPartnerReward}

@@ -16,11 +16,11 @@ import {
   Tooltip
 } from '@mui/material';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
-import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber, getLastWeek } from '@packages/dates/utils';
+import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
-import { getGooddollarPartnerRewardAmount } from '@packages/scoutgame/partnerRewards/getGooddollarPartnerRewardAmount';
 import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
+import { getPartnerRewardAmount } from '@packages/scoutgame/scoutPartners/getPartnerRewardAmount';
 import { formatUnits, parseUnits } from 'viem';
 
 import { WalletAddress } from 'components/common/WalletAddress';
@@ -96,6 +96,12 @@ export async function AirdropMetrics({
       total: claimed + unclaimed
     };
   });
+  const scoutPartner = await prisma.scoutPartner.findUniqueOrThrow({
+    where: {
+      id: partner
+    }
+  });
+
   // add the upcoming payout for referral rewards
   if (partner === 'optimism_referral_champion') {
     const referrals = await getReferralsToReward({ week: currentWeek });
@@ -111,16 +117,16 @@ export async function AirdropMetrics({
         total: upcomingPayout
       });
     }
-  } else if (partner === 'octant_base_contribution' || partner === 'gooddollar_contribution') {
+  } else if (scoutPartner) {
     const builderEvents = await getBuilderEventsForPartnerRewards({
       week: getCurrentWeek(),
-      bonusPartner: partner as any
+      scoutPartnerId: partner
     });
+
     if (builderEvents.length > 0) {
       const upcomingPayout = builderEvents.reduce(
         (sum, event) =>
-          sum +
-          (partner === 'gooddollar_contribution' ? getGooddollarPartnerRewardAmount(event.issues[0]?.tags) : toWei(75)),
+          sum + getPartnerRewardAmount({ scoutPartner, tags: event.issues.map((issue) => issue.tags).flat() }),
         BigInt(0)
       );
       const uniqueWallets = new Set(builderEvents.map((event) => event.githubUser.builder!.wallets[0]?.address));

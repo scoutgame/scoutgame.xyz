@@ -12,9 +12,16 @@ export const frame = {
   ogTitle: 'Scout Game',
   ogDescription: 'Fantasy sports with onchain developers',
   ogImage: 'https://scoutgame.xyz/images/farcaster/fc_splash.png',
-  buttonTitle: 'Scout',
-  splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
-  splashBackgroundColor: '#000'
+  button: {
+    title: 'Scout',
+    action: {
+      type: 'launch_frame',
+      name: 'Scout Game',
+      url: `https://scoutgame.xyz`,
+      splashImageUrl: `https://scoutgame.xyz/images/farcaster/fc_splash.png`,
+      splashBackgroundColor: '#000'
+    }
+  }
 };
 
 export const metadata: Metadata = {
