@@ -14,11 +14,11 @@ import { InfoCard } from '@packages/scoutgame-ui/components/common/DocumentPageC
 
 import { InfoPageContainer } from '../components/InfoPageContainer';
 
-export function ArbitrumPage() {
+export function ArbitrumPage({ infoPageImage }: { infoPageImage: string }) {
   return (
     <InfoPageContainer
       data-test='partner-rewards-arbitrum-page'
-      image='/images/info/info_banner.png'
+      image={infoPageImage}
       title='Scout Game × Arbitrum Developer Rewards Program'
     >
       <Document />
