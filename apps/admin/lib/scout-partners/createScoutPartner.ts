@@ -5,6 +5,7 @@ import { uploadUrlToS3 } from '@packages/aws/uploadToS3Server';
 import type { CreateScoutPartnerPayload } from './createScoutPartnerSchema';
 
 export async function createScoutPartner(params: CreateScoutPartnerPayload): Promise<ScoutPartner> {
+  const { repoIds, ...rest } = params;
   const id = params.name
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '') // Remove all non-alphanumeric characters except spaces
@@ -17,16 +18,16 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
   const partner = await prisma.scoutPartner.create({
     data: {
       id,
-      ...params,
-      infoPageImage: params.infoPageImage || '',
-      bannerImage: params.bannerImage || ''
+      ...rest,
+      infoPageImage: rest.infoPageImage || '',
+      bannerImage: rest.bannerImage || ''
     }
   });
 
   // Associate repos with the partner
-  if (params.repoIds && params.repoIds.length > 0) {
+  if (repoIds && repoIds.length > 0) {
     await prisma.githubRepo.updateMany({
-      where: { id: { in: params.repoIds } },
+      where: { id: { in: repoIds } },
       data: { scoutPartnerId: partner.id }
     });
   }

@@ -4,9 +4,9 @@ import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
 
 import { InfoPageContainer } from '../components/InfoPageContainer';
 
-export function CeloPage() {
+export function CeloPage({ infoPageImage }: { infoPageImage: string }) {
   return (
-    <InfoPageContainer data-test='partner-celo-page' image='/images/info/rewards-partner-celo.jpg' title='Celo'>
+    <InfoPageContainer data-test='partner-celo-page' image={infoPageImage} title='Celo'>
       <Document />
     </InfoPageContainer>
   );

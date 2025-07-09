@@ -4,13 +4,9 @@ import { List, ListItem } from '@packages/scoutgame-ui/components/common/List';
 
 import { InfoPageContainer } from '../components/InfoPageContainer';
 
-export function GoodDollarPage() {
+export function GoodDollarPage({ infoPageImage }: { infoPageImage: string }) {
   return (
-    <InfoPageContainer
-      data-test='partner-page-gooddollar'
-      image='/images/info/rewards-partner-gooddollar.png'
-      title='GoodDollar'
-    >
+    <InfoPageContainer data-test='partner-page-gooddollar' image={infoPageImage} title='GoodDollar'>
       <Document />
     </InfoPageContainer>
   );

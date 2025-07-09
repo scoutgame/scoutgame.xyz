@@ -1,3 +1,4 @@
+import { prisma } from '@charmverse/core/prisma-client';
 import type { Metadata } from 'next';
 
 import { ArbitrumPage } from 'components/info/partner-rewards/ArbitrumPage';
@@ -7,5 +8,13 @@ export const metadata: Metadata = {
 };
 
 export default async function ArbitrumPartnerRewards() {
-  return <ArbitrumPage />;
+  const scoutPartner = await prisma.scoutPartner.findUniqueOrThrow({
+    where: {
+      id: 'arbitrum'
+    },
+    select: {
+      infoPageImage: true
+    }
+  });
+  return <ArbitrumPage infoPageImage={scoutPartner?.infoPageImage} />;
 }
