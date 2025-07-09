@@ -212,6 +212,14 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
     tokenImageUpload: { ...tokenImageUploadProps, isUploading: isTokenImageUploading }
   };
 
+  const handleUseDevToken = () => {
+    setIsTokenEnabled(true);
+    setValue('tokenChain', 8453, { shouldValidate: true, shouldDirty: true }); // Base chain
+    setValue('tokenAddress', '0x047157cffb8841a64db93fd4e29fa3796b78466c', { shouldValidate: true, shouldDirty: true });
+    setValue('tokenDecimals', 18, { shouldValidate: true, shouldDirty: true });
+    setValue('tokenSymbol', 'DEV', { shouldValidate: true, shouldDirty: true });
+  };
+
   const onSubmit = async (data: CreateScoutPartnerPayload) => {
     try {
       const payload = isTokenEnabled
@@ -342,10 +350,25 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
           )}
         />
 
-        <FormControlLabel
-          control={<Switch checked={isTokenEnabled} onChange={(e) => setIsTokenEnabled(e.target.checked)} />}
-          label='Enable Token Fields'
-        />
+        <Stack direction='row' spacing={2} alignItems='center' justifyContent='space-between'>
+          <FormControlLabel
+            control={<Switch checked={isTokenEnabled} onChange={(e) => setIsTokenEnabled(e.target.checked)} />}
+            label='Enable Token Fields'
+          />
+          <Button
+            variant='outlined'
+            size='small'
+            startIcon={
+              <Box sx={{ width: 16, height: 16, position: 'relative' }}>
+                <Image src='/images/crypto/dev.png' alt='DEV Token' fill style={{ objectFit: 'contain' }} />
+              </Box>
+            }
+            onClick={handleUseDevToken}
+            sx={{ minWidth: 'auto' }}
+          >
+            Use DEV Token
+          </Button>
+        </Stack>
 
         {isTokenEnabled && (
           <>
