@@ -1,25 +1,23 @@
 'use client';
 
-import { Clear as ClearIcon } from '@mui/icons-material';
+import { Clear as ClearIcon, Add as AddAllIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import {
   Box,
-  Typography,
-  Stack,
   TextField,
   CircularProgress,
   InputAdornment,
   IconButton,
-  Chip,
-  Button,
-  Link,
   FormControl,
-  FormHelperText
+  FormHelperText,
+  Typography
 } from '@mui/material';
 import { useDebouncedValue } from '@packages/scoutgame-ui/hooks/useDebouncedValue';
 import type { GetReposResult } from 'app/api/github/get-repos/route';
 import { useState, useEffect } from 'react';
 
 import { useGetGithubReposFromDatabase } from 'hooks/api/github';
+
+import { RepoOrgSection } from './RepoOrgSection';
 
 type Props = {
   value: number[];
@@ -61,6 +59,19 @@ export function RepoSelector({ value, onChange, error, label = 'Repositories', r
 
   const availableRepos = searchResults?.filter((repo) => !value.includes(repo.id)) || [];
 
+  // Group available repos by organization
+  const groupedRepos = availableRepos.reduce(
+    (acc, repo) => {
+      const org = repo.fullName.split('/')[0];
+      if (!acc[org]) {
+        acc[org] = [];
+      }
+      acc[org].push(repo);
+      return acc;
+    },
+    {} as Record<string, GetReposResult[]>
+  );
+
   const handleAddRepo = (repo: GetReposResult) => {
     // Add to lookup for display purposes
     setRepoLookup((prev) => ({
@@ -73,6 +84,29 @@ export function RepoSelector({ value, onChange, error, label = 'Repositories', r
 
     // Update form value
     onChange([...value, repo.id]);
+  };
+
+  const handleSelectAllInOrg = (orgRepos: GetReposResult[]) => {
+    const newRepoIds = orgRepos.map((repo) => repo.id);
+    const newLookup = orgRepos.reduce(
+      (acc, repo) => {
+        acc[repo.id] = {
+          fullName: repo.fullName,
+          url: repo.url
+        };
+        return acc;
+      },
+      {} as Record<number, { fullName: string; url: string }>
+    );
+
+    // Add to lookup for display purposes
+    setRepoLookup((prev) => ({
+      ...prev,
+      ...newLookup
+    }));
+
+    // Update form value
+    onChange([...value, ...newRepoIds]);
   };
 
   const handleRemoveRepo = (repoId: number) => {
@@ -93,6 +127,20 @@ export function RepoSelector({ value, onChange, error, label = 'Repositories', r
     );
   };
 
+  const handleRemoveAllFromOrg = (orgName: string) => {
+    const selectedRepos = value.map((id) => getRepoDetails(id));
+    const reposToRemove = selectedRepos.filter((repo) => repo.fullName.startsWith(`${orgName}/`));
+    const repoIdsToRemove = reposToRemove
+      .map((repo) => {
+        // Find the repo ID from the lookup
+        return Object.entries(repoLookup).find(([_, details]) => details.fullName === repo.fullName)?.[0];
+      })
+      .filter(Boolean)
+      .map(Number);
+
+    onChange(value.filter((id) => !repoIdsToRemove.includes(id)));
+  };
+
   return (
     <FormControl error={!!error} sx={{ width: '100%' }}>
       <Typography variant='subtitle2' gutterBottom>
@@ -105,52 +153,18 @@ export function RepoSelector({ value, onChange, error, label = 'Repositories', r
       </Typography>
 
       {/* Selected Repos List */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant='body2' color='textSecondary' gutterBottom>
-          Selected Repositories ({value.length})
-        </Typography>
-        <Stack direction='row' spacing={1} flexWrap='wrap' sx={{ gap: 1 }}>
-          {value.length === 0 ? (
-            <Typography variant='body2' color='textSecondary' sx={{ fontStyle: 'italic' }}>
-              No repositories selected
-            </Typography>
-          ) : (
-            value.map((repoId) => {
-              const repo = getRepoDetails(repoId);
-              return (
-                <Chip
-                  key={repoId}
-                  label={repo.fullName}
-                  onDelete={(e) => {
-                    e.stopPropagation();
-                    handleRemoveRepo(repoId);
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(repo.url, '_blank');
-                  }}
-                  sx={{
-                    maxWidth: 250,
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                      '& .MuiChip-deleteIcon': {
-                        color: 'error.main'
-                      }
-                    },
-                    '& .MuiChip-deleteIcon': {
-                      transition: 'color 0.2s ease-in-out',
-                      '&:hover': {
-                        color: 'error.dark'
-                      }
-                    }
-                  }}
-                />
-              );
-            })
-          )}
-        </Stack>
-      </Box>
+      <RepoOrgSection
+        title={`Selected Repositories (${value.length})`}
+        repos={value.map((id) => ({ id, ...getRepoDetails(id) }))}
+        emptyMessage='No repositories selected'
+        orgActionIcon={<DeleteIcon fontSize='small' />}
+        orgActionColor='error'
+        orgActionLabel='Remove'
+        repoActionLabel='Remove'
+        onOrgAction={(org, orgRepos) => handleRemoveAllFromOrg(org)}
+        onRepoAction={(repo) => handleRemoveRepo(repo.id)}
+        maxHeight={200}
+      />
 
       {/* Search Bar */}
       <TextField
@@ -159,7 +173,7 @@ export function RepoSelector({ value, onChange, error, label = 'Repositories', r
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
         size='small'
-        sx={{ mb: 2 }}
+        sx={{ mb: 3, mt: 2 }}
         slotProps={{
           input: {
             endAdornment: (
@@ -178,45 +192,30 @@ export function RepoSelector({ value, onChange, error, label = 'Repositories', r
 
       {/* Search Results */}
       {searchError && (
-        <Typography variant='caption' color='error' sx={{ mb: 2 }}>
-          {searchError.message || 'Error searching repositories'}
-        </Typography>
+        <Box sx={{ mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+          <Box component='span' sx={{ color: 'error.main', fontSize: '0.75rem' }}>
+            {searchError.message || 'Error searching repositories'}
+          </Box>
+        </Box>
       )}
 
       {debouncedSearchInput && !isValidating && !isLoading && searchResults && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant='body2' color='textSecondary' gutterBottom>
-            {availableRepos.length === 0
-              ? 'No new repositories found'
-              : `Found ${availableRepos.length} new repositor${availableRepos.length === 1 ? 'y' : 'ies'}`}
-          </Typography>
-          <Stack spacing={1} sx={{ maxHeight: 200, overflow: 'auto' }}>
-            {availableRepos.map((repo) => (
-              <Box
-                key={repo.id}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  p: 1,
-                  border: 1,
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  bgcolor: 'background.paper'
-                }}
-              >
-                <Box sx={{ flex: 1 }}>
-                  <Link href={repo.url} target='_blank' variant='body2' sx={{ fontWeight: 'medium' }}>
-                    {repo.fullName}
-                  </Link>
-                </Box>
-                <Button size='small' variant='outlined' onClick={() => handleAddRepo(repo)}>
-                  Add
-                </Button>
-              </Box>
-            ))}
-          </Stack>
-        </Box>
+        <RepoOrgSection
+          title={
+            availableRepos.length === 0
+              ? ''
+              : `Found ${availableRepos.length} new repositor${availableRepos.length === 1 ? 'y' : 'ies'} across ${Object.keys(groupedRepos).length} organization${Object.keys(groupedRepos).length === 1 ? '' : 's'}`
+          }
+          repos={availableRepos.map((repo) => ({ id: repo.id, fullName: repo.fullName, url: repo.url }))}
+          emptyMessage='No new repositories found'
+          orgActionIcon={<AddAllIcon fontSize='small' />}
+          orgActionColor='primary'
+          orgActionLabel='Select all'
+          repoActionLabel='Add'
+          onOrgAction={(org, orgRepos) => handleSelectAllInOrg(orgRepos as any)}
+          onRepoAction={(repo) => handleAddRepo(repo as any)}
+          maxHeight={200}
+        />
       )}
 
       {error && <FormHelperText error>{error}</FormHelperText>}
