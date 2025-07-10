@@ -258,6 +258,14 @@ function Document() {
                 </TableCell>
                 <TableCell sx={{ border: 'none', p: 1 }}>Community development toolkit</TableCell>
               </TableRow>
+              <TableRow>
+                <TableCell sx={{ border: 'none', p: 1 }}>
+                  <Link href='https://github.com/picsoritdidnthappen/poidh-app' target='_blank'>
+                    POIDH
+                  </Link>
+                </TableCell>
+                <TableCell sx={{ border: 'none', p: 1 }}>Crypto Bounties</TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </Stack>
