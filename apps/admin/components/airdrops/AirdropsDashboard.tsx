@@ -9,6 +9,17 @@ export function AirdropsDashboard() {
   return (
     <Container maxWidth='md'>
       <Stack spacing={3} justifyContent='center' mb={3}>
+        <PartnerCardContainer
+          partner='arbitrum'
+          partnerName='Arbitrum'
+          hasGithubRepos
+          airdropPartner='arbitrum'
+          airdropWalletAddress={process.env.REACT_APP_REWARDS_WALLET_ADDRESS}
+          chainId={base.id}
+          tokenAddress={devTokenContractAddress}
+          tokenSymbol='DEV'
+          tokenDecimals={18}
+        />
         <PartnerCardContainer partner='celo' partnerName='Celo' hasGithubRepos />
         <PartnerCardContainer
           partner='gooddollar'
