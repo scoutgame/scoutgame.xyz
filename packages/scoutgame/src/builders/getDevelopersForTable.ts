@@ -137,9 +137,9 @@ export async function getDevelopersForTable({
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
-      price: user.builderNfts[0].currentListingPrice
+      price: user.builderNfts[0]?.currentListingPrice
         ? parseUnits(user.builderNfts[0].currentListingPrice.toString(), devTokenDecimals)
-        : BigInt(user.builderNfts[0].currentPriceDevToken ?? 0),
+        : BigInt(user.builderNfts[0]?.currentPriceDevToken ?? 0),
       level,
       congratsImageUrl: user.builderNfts[0]?.congratsImageUrl,
       nftImageUrl: user.builderNfts[0]?.imageUrl,
@@ -496,9 +496,9 @@ export async function getDevelopersForTable({
         (acc: number, nft: { balance: number }) => acc + nft.balance,
         0
       ),
-      price: user.builderNfts[0].currentListingPrice
+      price: user.builderNfts[0]?.currentListingPrice
         ? parseUnits(user.builderNfts[0].currentListingPrice.toString(), devTokenDecimals)
-        : BigInt(user.builderNfts[0].currentPriceDevToken ?? 0)
+        : BigInt(user.builderNfts[0]?.currentPriceDevToken ?? 0)
     }));
 
     const lastItem = userWeeklyStats[userWeeklyStats.length - 1];

@@ -46,14 +46,17 @@ export async function getRepos({
             contains: ownerAndName[0],
             mode: 'insensitive'
           },
+          deletedAt: null,
           name: ownerAndName[1] ? { contains: ownerAndName[1], mode: 'insensitive' } : undefined
         }
       : includeInactive
         ? {
-            scoutPartnerId: partner
+            scoutPartnerId: partner,
+            deletedAt: null
           }
         : {
             scoutPartnerId: partner,
+            deletedAt: null,
             // filter for repos that have activity by default
             OR: [
               {
@@ -78,6 +81,7 @@ export async function getRepos({
       events: true
     }
   });
+
   return repos.map((repo) => ({
     name: repo.name,
     owner: repo.owner,

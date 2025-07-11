@@ -40,7 +40,8 @@ export async function getRepos({
         ]
       : { createdAt: 'desc' },
     where: {
-      name: { contains: searchString, mode: 'insensitive' }
+      name: { contains: searchString, mode: 'insensitive' },
+      deletedAt: null
     },
     include: {
       events: true
