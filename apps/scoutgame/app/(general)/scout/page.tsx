@@ -1,5 +1,5 @@
 import { getSession } from '@packages/nextjs/session/getSession';
-import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
+import type { DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 
 import { ScoutPage } from 'components/scout/ScoutPage';
 
@@ -10,7 +10,7 @@ export default async function Scout({
 }) {
   const searchParamsResolved = await searchParams;
   const scoutSort = (searchParamsResolved.scoutSort as string) || 'points';
-  const builderSort = (searchParamsResolved.builderSort as BuildersSortBy) || 'week_gems';
+  const builderSort = (searchParamsResolved.builderSort as DevelopersSortBy) || 'week_gems';
   const builderOrder = (searchParamsResolved.builderOrder as string) || 'desc';
   const scoutOrder = (searchParamsResolved.scoutOrder as string) || 'desc';
   const scoutTab = (searchParamsResolved.scoutTab as string) || 'scouts';

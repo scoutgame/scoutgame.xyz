@@ -7,6 +7,9 @@ import {
   getPreviousNonDraftSeason
 } from '@packages/dates/utils';
 import type { BuilderInfo } from '@packages/scoutgame/builders/interfaces';
+import { parseUnits } from 'ethers';
+
+import { devTokenDecimals } from '../protocol/constants';
 
 import { normalizeLast14DaysRank } from './utils/normalizeLast14DaysRank';
 
@@ -92,6 +95,7 @@ export async function getDevelopersForTable({
               select: {
                 estimatedPayout: true,
                 currentPriceDevToken: true,
+                currentListingPrice: true,
                 imageUrl: true,
                 congratsImageUrl: true,
                 nftOwners: loggedInScoutId
@@ -133,7 +137,9 @@ export async function getDevelopersForTable({
       path: user.path,
       avatar: user.avatar as string,
       displayName: user.displayName,
-      price: BigInt(user.builderNfts[0]?.currentPriceDevToken ?? 0),
+      price: user.builderNfts[0].currentListingPrice
+        ? parseUnits(user.builderNfts[0].currentListingPrice.toString(), devTokenDecimals)
+        : BigInt(user.builderNfts[0].currentPriceDevToken ?? 0),
       level,
       congratsImageUrl: user.builderNfts[0]?.congratsImageUrl,
       nftImageUrl: user.builderNfts[0]?.imageUrl,
@@ -186,6 +192,7 @@ export async function getDevelopersForTable({
         congratsImageUrl: true,
         builderId: true,
         currentPriceDevToken: true,
+        currentListingPrice: true,
         estimatedPayout: true,
         nftOwners: loggedInScoutId
           ? {
@@ -233,12 +240,22 @@ export async function getDevelopersForTable({
     });
 
     const developers: DeveloperMetadata[] = builderNfts.map(
-      ({ builder, nftOwners, currentPriceDevToken, estimatedPayout, imageUrl, congratsImageUrl }) => ({
+      ({
+        builder,
+        nftOwners,
+        currentPriceDevToken,
+        estimatedPayout,
+        imageUrl,
+        congratsImageUrl,
+        currentListingPrice
+      }) => ({
         id: builder.id,
         path: builder.path,
         avatar: builder.avatar as string,
         displayName: builder.displayName,
-        price: BigInt(currentPriceDevToken ?? 0),
+        price: currentListingPrice
+          ? parseUnits(currentListingPrice.toString(), devTokenDecimals)
+          : BigInt(currentPriceDevToken ?? 0),
         estimatedPayout: estimatedPayout || 0,
         gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
         last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
@@ -292,6 +309,7 @@ export async function getDevelopersForTable({
         imageUrl: true,
         congratsImageUrl: true,
         estimatedPayout: true,
+        currentListingPrice: true,
         nftOwners: loggedInScoutId
           ? {
               where: {
@@ -340,12 +358,22 @@ export async function getDevelopersForTable({
     });
 
     const developers = builderNfts.map(
-      ({ builder, nftOwners, currentPriceDevToken, estimatedPayout, imageUrl, congratsImageUrl }) => ({
+      ({
+        builder,
+        nftOwners,
+        currentPriceDevToken,
+        estimatedPayout,
+        imageUrl,
+        congratsImageUrl,
+        currentListingPrice
+      }) => ({
         id: builder.id,
         path: builder.path,
         avatar: builder.avatar as string,
         displayName: builder.displayName,
-        price: BigInt(currentPriceDevToken ?? 0),
+        price: currentListingPrice
+          ? parseUnits(currentListingPrice.toString(), devTokenDecimals)
+          : BigInt(currentPriceDevToken ?? 0),
         gemsCollected: builder.userWeeklyStats[0]?.gemsCollected || 0,
         last14DaysRank: normalizeLast14DaysRank(builder.builderCardActivities[0]) || [],
         level: builder.userSeasonStats[0]?.level || 0,
@@ -416,6 +444,7 @@ export async function getDevelopersForTable({
               },
               select: {
                 currentPriceDevToken: true,
+                currentListingPrice: true,
                 estimatedPayout: true,
                 imageUrl: true,
                 congratsImageUrl: true,
@@ -467,7 +496,9 @@ export async function getDevelopersForTable({
         (acc: number, nft: { balance: number }) => acc + nft.balance,
         0
       ),
-      price: BigInt(user.builderNfts[0]?.currentPriceDevToken ?? 0)
+      price: user.builderNfts[0].currentListingPrice
+        ? parseUnits(user.builderNfts[0].currentListingPrice.toString(), devTokenDecimals)
+        : BigInt(user.builderNfts[0].currentPriceDevToken ?? 0)
     }));
 
     const lastItem = userWeeklyStats[userWeeklyStats.length - 1];
