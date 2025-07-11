@@ -29,17 +29,20 @@ export async function updateCurrentNftListingPrice({ builderNftId }: { builderNf
   const listingPrices = builderNft.listings
     .map((listing) => listing.priceDevToken)
     .filter((price): price is string => price !== null)
-    .map((price) => BigInt(formatUnits(BigInt(price), devTokenDecimals)));
+    .map((price) => BigInt(price));
 
   // Find the minimum price, or null if no prices exist
   const lowestListingPrice = listingPrices.reduce((min, price) => (price < min ? price : min));
+
+  const currentPriceRaw = builderNft.currentPrice * 10n ** BigInt(devTokenDecimals);
 
   await prisma.builderNft.update({
     where: {
       id: builderNftId
     },
     data: {
-      currentListingPrice: lowestListingPrice <= builderNft.currentPrice ? lowestListingPrice : null
+      currentListingPrice:
+        lowestListingPrice <= currentPriceRaw ? BigInt(formatUnits(lowestListingPrice, devTokenDecimals)) : null
     }
   });
 }
