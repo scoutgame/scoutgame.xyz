@@ -1,8 +1,8 @@
 import 'server-only';
 
 import { safeAwaitSSRData } from '@packages/nextjs/utils/async';
-import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
 import { getDeveloperActivities } from '@packages/scoutgame/builders/getDeveloperActivities';
+import type { DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { getLeaderboard } from '@packages/scoutgame/builders/getLeaderboard';
 import { getScoutPartnersInfo } from '@packages/scoutgame/scoutPartners/getScoutPartnersInfo';
 
@@ -20,7 +20,7 @@ export async function BuilderPageTable({
 }: {
   tab: string;
   week: string;
-  builderSort?: BuildersSortBy;
+  builderSort?: DevelopersSortBy;
   builderOrder?: string;
   userId?: string;
 }) {

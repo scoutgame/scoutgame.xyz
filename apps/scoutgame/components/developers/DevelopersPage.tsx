@@ -4,7 +4,7 @@ import type { ScoutPartner } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { Grid, Stack, Typography } from '@mui/material';
 import type { SessionUser } from '@packages/nextjs/session/interfaces';
-import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
+import type { DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { TabsMenu, type TabItem } from '@packages/scoutgame-ui/components/common/Tabs/TabsMenu';
@@ -59,7 +59,7 @@ export async function DevelopersPage({ week, tab, builderSort, builderOrder, use
           <MainContent
             week={week}
             tab={tab}
-            builderSort={builderSort as BuildersSortBy}
+            builderSort={builderSort as DevelopersSortBy}
             builderOrder={builderOrder}
             user={user}
           />
@@ -95,7 +95,7 @@ export async function BuildersMainContent({ week, tab, builderSort, builderOrder
           <BuilderPageTable
             tab='leaderboard'
             week={week}
-            builderSort={builderSort as BuildersSortBy}
+            builderSort={builderSort as DevelopersSortBy}
             builderOrder={builderOrder}
             userId={user?.id}
           />
@@ -108,7 +108,7 @@ export async function BuildersMainContent({ week, tab, builderSort, builderOrder
           <BuilderPageTable
             tab={tab}
             week={week}
-            builderSort={builderSort as BuildersSortBy}
+            builderSort={builderSort as DevelopersSortBy}
             builderOrder={builderOrder}
             userId={user?.id}
           />

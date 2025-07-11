@@ -67,6 +67,11 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
         }
       }
 
+      // Ensure price is always an integer
+      if (!Number.isInteger(price) || price <= 0) {
+        throw new Error('Listing price must be a positive integer');
+      }
+
       const order = await recordSeaportListing({
         sellerWallet,
         price: parseUnits(price.toString(), 18),
@@ -141,15 +146,18 @@ export function NFTListingForm({ builder, onSuccess }: NFTListingFormProps) {
           placeholder='1'
           InputProps={{
             inputProps: {
-              step: 0.1
+              step: 5,
+              min: 10,
+              pattern: '[0-9]*',
+              inputMode: 'numeric'
             }
           }}
           value={price}
           onChange={(e) => {
-            const value = parseFloat(e.target.value);
-            if (!Number.isNaN(value) && value > 0) {
-              setPrice(value);
-            }
+            // Only allow integer values
+            const value = e.target.value.replace(/[^0-9]/g, '');
+            const intValue = value ? parseInt(value, 10) : 0;
+            setPrice(intValue);
           }}
           disabled={isDisabled}
           disableArrows

@@ -3,7 +3,7 @@ import 'server-only';
 import AppsIcon from '@mui/icons-material/Apps';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Box, Grid, Stack, Typography } from '@mui/material';
-import type { BuildersSortBy } from '@packages/scoutgame/builders/getBuilders';
+import type { DevelopersSortBy } from '@packages/scoutgame/builders/getDevelopersForTable';
 import { HeaderMessage } from '@packages/scoutgame-ui/components/common/Header/HeaderMessage';
 import { LoadingCards } from '@packages/scoutgame-ui/components/common/Loading/LoadingCards';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
@@ -39,7 +39,7 @@ export async function ScoutPage({
   userId
 }: {
   scoutSort: string;
-  builderSort: BuildersSortBy;
+  builderSort: DevelopersSortBy;
   scoutOrder: string;
   builderOrder: string;
   scoutTab: string;

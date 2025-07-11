@@ -47,7 +47,7 @@ export async function recordNftListing({
     }
   });
 
-  const priceDevToken = BigInt(price * 10 ** devTokenDecimals);
+  const priceDevToken = BigInt(parseInt(price.toString()) * 10 ** devTokenDecimals);
   const listing = await prisma.developerNftListing.create({
     data: {
       builderNftId,
