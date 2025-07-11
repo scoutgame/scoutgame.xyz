@@ -96,7 +96,8 @@ export async function AirdropMetrics({
       total: claimed + unclaimed
     };
   });
-  const scoutPartner = await prisma.scoutPartner.findUniqueOrThrow({
+
+  const scoutPartner = await prisma.scoutPartner.findUnique({
     where: {
       id: partner
     }
@@ -117,7 +118,7 @@ export async function AirdropMetrics({
         total: upcomingPayout
       });
     }
-  } else if (scoutPartner) {
+  } else if (scoutPartner && scoutPartner.tokenDecimals) {
     const builderEvents = await getBuilderEventsForPartnerRewards({
       week: getCurrentWeek(),
       scoutPartnerId: partner
