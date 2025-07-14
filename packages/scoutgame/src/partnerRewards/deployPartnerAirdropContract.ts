@@ -5,6 +5,7 @@ import { getCurrentSeason } from '@packages/dates/utils';
 
 export async function deployPartnerAirdropContract({
   scoutPartnerId,
+  partner,
   week,
   recipients,
   tokenAddress,
@@ -13,7 +14,8 @@ export async function deployPartnerAirdropContract({
   chainId,
   adminPrivateKey
 }: {
-  scoutPartnerId: string;
+  scoutPartnerId?: string;
+  partner?: string;
   week: string;
   recipients: { address: `0x${string}`; amount: bigint; meta: any }[];
   tokenAddress: `0x${string}`;
@@ -22,6 +24,10 @@ export async function deployPartnerAirdropContract({
   chainId: number;
   adminPrivateKey: `0x${string}`;
 }) {
+  if (!scoutPartnerId && !partner) {
+    throw new Error('Either scoutPartnerId or partner must be provided');
+  }
+
   const existingContract = await prisma.partnerRewardPayoutContract.findFirst({
     where: {
       scoutPartnerId,
@@ -65,7 +71,7 @@ export async function deployPartnerAirdropContract({
       tokenDecimals,
       tokenSymbol,
       scoutPartnerId,
-      partner: '',
+      partner: partner || '',
       deployTxHash,
       blockNumber,
       rewardPayouts: {
