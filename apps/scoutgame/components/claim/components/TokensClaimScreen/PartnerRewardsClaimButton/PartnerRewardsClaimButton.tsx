@@ -13,20 +13,13 @@ import { useClaimThirdwebAirdrop } from './useClaimPartnerReward';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
-export function PartnerRewardsClaimButton({
-  partnerReward,
-  chain
-}: {
-  partnerReward: UnclaimedPartnerReward;
-  chain: string;
-}) {
+export function PartnerRewardsClaimButton({ partnerReward }: { partnerReward: UnclaimedPartnerReward }) {
   const [showPartnerRewardModal, setShowPartnerRewardModal] = useState(false);
 
   return (
     <RainbowKitProvider>
       <PartnerRewardsClaimButtonContent
         partnerReward={partnerReward}
-        chain={chain}
         showPartnerRewardModal={showPartnerRewardModal}
         setShowPartnerRewardModal={setShowPartnerRewardModal}
       />
@@ -127,13 +120,11 @@ function ThirdwebPartnerRewardsClaimButton({
 function PartnerRewardsClaimButtonContent({
   partnerReward,
   showPartnerRewardModal,
-  setShowPartnerRewardModal,
-  chain
+  setShowPartnerRewardModal
 }: {
   partnerReward: UnclaimedPartnerReward;
   showPartnerRewardModal: boolean;
   setShowPartnerRewardModal: (show: boolean) => void;
-  chain: string;
 }) {
   return (
     <ThirdwebPartnerRewardsClaimButton

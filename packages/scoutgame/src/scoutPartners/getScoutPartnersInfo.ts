@@ -7,6 +7,8 @@ export type ScoutPartnerInfo = {
   text: string;
   image: string;
   status: ScoutPartnerStatus;
+  chain: number | null;
+  tokenImage: string | null;
 };
 
 export async function getScoutPartnersInfo({
@@ -22,7 +24,9 @@ export async function getScoutPartnersInfo({
       id: true,
       name: true,
       icon: true,
-      status: true
+      status: true,
+      tokenChain: true,
+      tokenImage: true
     },
     orderBy: [
       {
@@ -39,6 +43,8 @@ export async function getScoutPartnersInfo({
     text: partner.name,
     image: partner.icon,
     status: partner.status,
-    id: partner.id
+    id: partner.id,
+    chain: partner.tokenChain,
+    tokenImage: partner.tokenImage
   }));
 }

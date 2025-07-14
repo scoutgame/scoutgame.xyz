@@ -4,6 +4,7 @@ import { createThirdwebAirdropContract } from '@packages/blockchain/airdrop/crea
 import { getCurrentSeason } from '@packages/dates/utils';
 
 export async function deployPartnerAirdropContract({
+  scoutPartnerId,
   partner,
   week,
   recipients,
@@ -13,7 +14,8 @@ export async function deployPartnerAirdropContract({
   chainId,
   adminPrivateKey
 }: {
-  partner: string;
+  scoutPartnerId?: string;
+  partner?: string;
   week: string;
   recipients: { address: `0x${string}`; amount: bigint; meta: any }[];
   tokenAddress: `0x${string}`;
@@ -22,9 +24,13 @@ export async function deployPartnerAirdropContract({
   chainId: number;
   adminPrivateKey: `0x${string}`;
 }) {
+  if (!scoutPartnerId && !partner) {
+    throw new Error('Either scoutPartnerId or partner must be provided');
+  }
+
   const existingContract = await prisma.partnerRewardPayoutContract.findFirst({
     where: {
-      partner,
+      scoutPartnerId,
       week
     }
   });
@@ -32,7 +38,7 @@ export async function deployPartnerAirdropContract({
   if (existingContract) {
     log.warn('Rewards airdrop already exists, skipping deployment', {
       contractAddress: existingContract.contractAddress,
-      partner,
+      scoutPartnerId,
       week,
       txHash: existingContract.deployTxHash
     });
@@ -64,7 +70,8 @@ export async function deployPartnerAirdropContract({
       tokenAddress,
       tokenDecimals,
       tokenSymbol,
-      partner,
+      scoutPartnerId,
+      partner: partner || '',
       deployTxHash,
       blockNumber,
       rewardPayouts: {

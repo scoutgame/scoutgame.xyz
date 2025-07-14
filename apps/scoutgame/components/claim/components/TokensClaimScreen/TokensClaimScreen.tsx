@@ -271,26 +271,36 @@ function TokensClaimScreenComponent({
                 Partner Rewards
               </Typography>
               <Stack gap={2} width='100%'>
-                {partnerRewards.map((reward) => (
-                  <Stack key={reward.id} flexDirection='row' alignItems='center' justifyContent='space-between'>
-                    <Typography
-                      width={{
-                        xs: 150,
-                        md: 200
-                      }}
-                    >
-                      {partnerRewardRecord[reward.partner].label} (Week {reward.week})
-                    </Typography>
-                    <Stack flexDirection='row' alignItems='center' gap={1}>
-                      <Typography>{reward.amount.toLocaleString()}</Typography>
-                      <Image width={25} height={25} src={partnerRewardRecord[reward.partner].icon} alt='Scouts' />
+                {partnerRewards.map((reward) => {
+                  const scoutPartner = scoutPartners.find((partner) => partner.id === reward.partner);
+
+                  if (!scoutPartner) {
+                    return null;
+                  }
+
+                  return (
+                    <Stack key={reward.id} flexDirection='row' alignItems='center' justifyContent='space-between'>
+                      <Typography
+                        width={{
+                          xs: 150,
+                          md: 200
+                        }}
+                      >
+                        {partnerRewardRecord[reward.partner]?.label || scoutPartner.text} (Week {reward.week})
+                      </Typography>
+                      <Stack flexDirection='row' alignItems='center' gap={1}>
+                        <Typography>{reward.amount.toLocaleString()}</Typography>
+                        <Image
+                          width={25}
+                          height={25}
+                          src={partnerRewardRecord[reward.partner]?.icon || scoutPartner.tokenImage || ''}
+                          alt='Scouts'
+                        />
+                      </Stack>
+                      <PartnerRewardsClaimButton partnerReward={reward} />
                     </Stack>
-                    <PartnerRewardsClaimButton
-                      partnerReward={reward}
-                      chain={partnerRewardRecord[reward.partner].chain}
-                    />
-                  </Stack>
-                ))}
+                  );
+                })}
               </Stack>
             </>
           ) : null}
