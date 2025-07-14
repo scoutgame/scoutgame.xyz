@@ -47,7 +47,7 @@ async function deployScoutPartnerReward({ week, scoutPartner }: { week: string; 
   }
 
   const result = await deployPartnerAirdropContract({
-    partner: scoutPartnerId,
+    scoutPartnerId,
     week,
     recipients: recipients.map((recipient) => ({
       address: recipient.address,

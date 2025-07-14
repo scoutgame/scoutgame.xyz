@@ -13,8 +13,12 @@ const fontFamily = 'Arial, sans-serif';
 const fontColor = '#000';
 const linkColor = '#3a3a3a';
 
-function formatPartnerRewardPayout(
-  openingStatement: string,
+function formatPartnerRewardPayout({
+  openingStatement,
+  wallets,
+  scoutPartners
+}: {
+  openingStatement: string;
   wallets: {
     partnerRewardPayouts: Pick<PartnerRewardPayout, 'amount'>[] &
       {
@@ -23,8 +27,13 @@ function formatPartnerRewardPayout(
           tokenDecimals: number;
         };
       }[];
-  }[]
-) {
+  }[];
+  scoutPartners: {
+    id: string;
+    name: string;
+    icon: string;
+  }[];
+}) {
   if (wallets.length === 0) {
     return '';
   }
@@ -32,9 +41,14 @@ function formatPartnerRewardPayout(
   let html = `<p style="padding-top: 5px; font-family: ${fontFamily}; color: ${fontColor};">${openingStatement}:</p><ul>`;
   for (const wallet of wallets) {
     for (const payout of wallet.partnerRewardPayouts) {
-      const partner = partnerRewardRecord[payout.payoutContract.partner as keyof typeof partnerRewardRecord];
-      if (partner) {
-        html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz${partner.icon}"/> from ${partner.partnerLink ? `<a style="text-decoration: underline; color: ${linkColor};" href="${partner.partnerLink}">${partner.label}</a>` : partner.label}</li>`;
+      const scoutPartner = scoutPartners.find((partner) => partner.id === payout.payoutContract.partner);
+      if (scoutPartner) {
+        html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz${scoutPartner.icon}"/> from <a style="text-decoration: underline; color: ${linkColor};" href="https://scoutgame.xyz/info/partner-rewards/${scoutPartner.id}">${scoutPartner.name}</a></li>`;
+      }
+
+      const partnerRecord = partnerRewardRecord[payout.payoutContract.partner as keyof typeof partnerRewardRecord];
+      if (partnerRecord) {
+        html += `<li style="font-family: ${fontFamily}; color: ${fontColor};"><strong>${formatUnits(BigInt(payout.amount), payout.payoutContract.tokenDecimals)}</strong> <img style="width: 16px; height: 16px; vertical-align: -2px;" src="https://scoutgame.xyz${partnerRecord.icon}"/> from <a style="text-decoration: underline; color: ${linkColor};" href="${partnerRecord.partnerLink}">${partnerRecord.label}</a></li>`;
       }
     }
   }
@@ -59,6 +73,14 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
   const weekNumber = getCurrentSeasonWeekNumber(week);
   const lastWeekStart = DateTime.now().minus({ weeks: 1 }).startOf('week');
   const lastWeekEnd = DateTime.now().minus({ weeks: 1 }).endOf('week');
+
+  const scoutPartners = await prisma.scoutPartner.findMany({
+    select: {
+      id: true,
+      name: true,
+      icon: true
+    }
+  });
 
   const scouts = await prisma.scout.findMany({
     where: {
@@ -132,10 +154,11 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
             templateVariables: {
               name: scout.displayName,
               points: claimableTokens,
-              partner_rewards: formatPartnerRewardPayout(
-                'You have also earned these partner rewards this week',
-                scout.wallets
-              )
+              partner_rewards: formatPartnerRewardPayout({
+                openingStatement: 'You have also earned these partner rewards this week',
+                wallets: scout.wallets,
+                scoutPartners
+              })
             }
           },
           farcaster: {
@@ -157,10 +180,11 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
           email: {
             templateVariables: {
               name: scout.displayName,
-              partner_rewards: formatPartnerRewardPayout(
-                'You have earned these partner rewards this week',
-                scout.wallets
-              ),
+              partner_rewards: formatPartnerRewardPayout({
+                openingStatement: 'You have earned these partner rewards this week',
+                wallets: scout.wallets,
+                scoutPartners
+              }),
               season: getCurrentSeasonStart(),
               week_num: weekNumber,
               new_developers: formatNewDevelopers(newDevelopers)
