@@ -21,9 +21,9 @@ export function PublicBuilderStats({
       <Typography fontWeight={500} color='secondary' variant={isDesktop ? 'subtitle1' : 'caption'}>
         THIS SEASON
       </Typography>
-      {/* <Stack flexDirection='row' gap={1} alignItems='center'>
+      <Stack flexDirection='row' gap={1} alignItems='center'>
         <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
-          {seasonPoints || 0}
+          {seasonTokens || 0}
         </Typography>
         <Image
           src='/images/dev-token-logo.png'
@@ -32,9 +32,9 @@ export function PublicBuilderStats({
           alt='DEV token'
         />
         <Typography fontWeight={500} variant={isDesktop ? 'h6' : 'body2'} color='orange.main'>
-          ({allTimePoints || 0})
+          ({allTimeTokens || 0})
         </Typography>
-      </Stack> */}
+      </Stack>
       <Typography fontWeight={500} variant={isDesktop ? 'h5' : 'body2'} color='orange.main'>
         {totalScouts || 0} Scouts
       </Typography>
