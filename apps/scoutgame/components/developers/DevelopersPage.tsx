@@ -165,7 +165,7 @@ export function PartnerRewards({ scoutPartners }: { scoutPartners: ScoutPartner[
       <Typography variant='h5' color='secondary' textAlign='center' my={{ xs: 0.5, md: 1 }}>
         Partner Rewards
       </Typography>
-      <PartnerRewardsCarousel scoutPartners={scoutPartners} />
+      <PartnerRewardsCarousel scoutPartners={scoutPartners.sort((a, b) => a.id.localeCompare(b.id))} />
     </Stack>
   );
 }
