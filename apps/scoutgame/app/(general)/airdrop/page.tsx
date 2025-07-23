@@ -82,7 +82,7 @@ export default function AirdropPage() {
               <Typography>Hold!</Typography>
             </Stack>
           </Stack>
-          <Typography>Stack up bonuses in future airdrops!</Typography>
+          <Typography>Stack up bonuses in future airdrops by holding ALL previous season airdrops!</Typography>
           <Stack flexDirection='row' gap={4} alignItems='center' justifyContent='center'>
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
               <Image src='/images/diamond.png' alt='Diamond Icon' width={125} height={125} />
@@ -91,12 +91,6 @@ export default function AirdropPage() {
               <Image src='/images/diamond.png' alt='Diamond Icon' width={90} height={90} />
             </Box>
             <Stack flexDirection='column' gap={1}>
-              <Typography>
-                Season 2:{' '}
-                <Typography component='span' color='green'>
-                  +15% Bonus
-                </Typography>
-              </Typography>
               <Typography>
                 Season 3:{' '}
                 <Typography component='span' color='green'>
@@ -125,8 +119,8 @@ export default function AirdropPage() {
               </Typography>
             </Stack>
             <Typography>
-              Selling any portion of your airdrop will disqualify you from Diamond Hands Rewards. You will receive a
-              soulbound Paper Hands token that will affect your future airdrops.
+              Selling any portion of your current OR previous season airdrops will disqualify you from Diamond Hands
+              Rewards.
             </Typography>
           </Stack>
         </Paper>
@@ -179,7 +173,7 @@ export default function AirdropPage() {
                 Donate your DEV tokens to the Scout Game Open Source Grants Program.
               </Typography>{' '}
               The Grants will be distributed to open source developers playing Scout Game. <br /> <br />
-              Donate 100% of your airdrop to open source and instantly earn Season 2's bonus while funding critical
+              Donate 100% of your airdrop to open source and instantly earn Season 3's bonus while funding critical
               projects.
             </Typography>
           </Paper>
@@ -202,7 +196,7 @@ export default function AirdropPage() {
               <Typography component='span' color='green'>
                 Holding pays off.
               </Typography>{' '}
-              Keep 100% of your airdrop and you'll stack bonus rewards in future seasons.
+              Keep 100% of your current and previous season airdrops and you'll stack bonus rewards in future seasons.
             </Typography>
           </Paper>
         </Stack>

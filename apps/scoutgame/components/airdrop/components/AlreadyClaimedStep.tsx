@@ -17,12 +17,12 @@ export function AlreadyClaimedStep() {
         </Typography>
         {isDesktop ? (
           <Typography variant='h6' textAlign='center' fontWeight={400}>
-            Play this season to earn your spot in the next <br /> airdrop. Get started by drafting Developers <br />{' '}
+            Play this season to earn your spot in the next <br /> airdrop. Get started by scouting Developers <br />{' '}
             before the season officially begins!
           </Typography>
         ) : (
           <Typography>
-            Play this season to earn your spot in the next airdrop. Get started by drafting Developers before the season
+            Play this season to earn your spot in the next airdrop. Get started by scouting Developers before the season
             officially begins!
           </Typography>
         )}

@@ -30,19 +30,18 @@ export function StartClaimStep({ isLoading }: { isLoading: boolean }) {
           }}
         >
           Claim period for <br />
-          Season 1 Rewards is OPEN!
+          Season 2 Rewards is OPEN!
         </Typography>
         {isDesktop ? (
           <Typography variant='h6'>
-            Top Players from the Scout Game Preaseason, you've <br />
-            secured your place in the airdrop! Claim your DEV <br />
-            tokens at the start of each season for the next 10 <br />
-            seasons.
+            Top Players from Season 1, you've secured your <br />
+            place in the airdrop! Claim your DEV tokens at the <br />
+            start of each season for the next 9 seasons.
           </Typography>
         ) : (
           <Typography>
-            Top Players from the Scout Game Preaseason, you've secured your place in the airdrop! Claim your DEV tokens
-            at the start of each season for the next 10 seasons.
+            Top Players from Season 1, you've secured your place in the airdrop! Claim your DEV tokens at the start of
+            each season for the next 9 seasons.
           </Typography>
         )}
         {isLoading ? (

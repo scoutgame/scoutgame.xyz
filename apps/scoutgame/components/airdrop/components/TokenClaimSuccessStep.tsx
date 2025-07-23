@@ -68,11 +68,11 @@ export function TokenClaimSuccessStep({ donationPercentage }: { donationPercenta
           ) : null}
           {isDesktop ? (
             <Typography variant='h6' textAlign='center'>
-              Now, let's go Bid on some developers and <br /> build your team before the season begins!
+              Now, let's go Scout some developers and <br /> build your team before the season begins!
             </Typography>
           ) : (
             <Typography variant='h6' textAlign='center'>
-              Now, let's go Bid on some developers and build your team before the season begins!
+              Now, let's go Scout some developers and build your team before the season begins!
             </Typography>
           )}
           <PlayButton />
