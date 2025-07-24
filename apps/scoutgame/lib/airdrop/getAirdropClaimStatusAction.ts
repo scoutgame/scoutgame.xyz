@@ -3,6 +3,7 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { checkThirdwebAirdropEligibility } from '@packages/blockchain/airdrop/checkThirdwebAirdropEligibility';
 import type { ThirdwebFullMerkleTree } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
+import { getCurrentSeasonStart, getPreviousNonDraftSeason } from '@packages/dates/utils';
 import { actionClient } from '@packages/nextjs/actions/actionClient';
 import type { Address } from 'viem';
 import * as yup from 'yup';
@@ -23,11 +24,17 @@ export const getAirdropClaimStatusAction = actionClient
     })
   )
   .action(async ({ parsedInput }) => {
+    const previousSeason = getPreviousNonDraftSeason(getCurrentSeasonStart());
+
+    if (!previousSeason) {
+      return null;
+    }
+
     const address = parsedInput.address;
 
     const airdropClaim = await prisma.airdropClaim.findFirst({
       where: {
-        season: '2025-W02'
+        season: previousSeason
       },
       select: {
         id: true,

@@ -4,6 +4,7 @@ import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils'
 import { parseEther } from 'viem';
 import { base } from 'viem/chains';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
+import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 
 const recipients: Recipient[] = [
   {
@@ -15,7 +16,7 @@ const recipients: Recipient[] = [
     amount: parseEther('20').toString()
   },
   {
-    address: '0x5781cb3b80822eeac045b153ba96d6e5cf38dafb',
+    address: '0x6866C5669592D79c1010Ee9d0936F6A3a800133d',
     amount: parseEther('10').toString()
   }
 ];
@@ -30,9 +31,9 @@ export async function createAndStoreThirdWebAirdropContract() {
   const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.PRIVATE_KEY as `0x${string}`,
     chainId: base.id,
-    // 1 year in seconds from now
-    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365),
-    tokenAddress: '0xfcdc6813a75df7eff31382cb956c1bee4788dd34',
+    // 3 months from now
+    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 90),
+    tokenAddress: devTokenContractAddress,
     recipients
   });
 

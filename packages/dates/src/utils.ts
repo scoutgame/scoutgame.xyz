@@ -92,9 +92,11 @@ export function getPreviousSeason(season: Season | null): Season | null {
   const seasonIndex = seasons.findIndex((s) => s.start === season);
   return seasons[seasonIndex - 1]?.start || null;
 }
+
 export function getPreviousNonDraftSeason(season: Season): Season | null {
-  const seasonIndex = seasons.filter((s) => !s.draft).findIndex((s) => s.start === season);
-  return seasons[seasonIndex - 1]?.start || null;
+  const nonDraftSeasons = seasons.filter((s) => !s.draft && !s.preseason);
+  const seasonIndex = nonDraftSeasons.findIndex((s) => s.start === season);
+  return nonDraftSeasons[seasonIndex - 1]?.start || null;
 }
 
 export function getNextSeason(season: Season): Season | null {
