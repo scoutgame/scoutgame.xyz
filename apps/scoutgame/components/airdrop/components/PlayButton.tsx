@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export function PlayButton() {
   return (
-    <Link href='/scout'>
+    <Link href='/'>
       <Button
         variant='blue'
         sx={{
