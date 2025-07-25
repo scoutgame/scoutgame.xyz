@@ -17,7 +17,7 @@ export default async function Developers({
   const searchParamsResolved = await searchParams;
   const tab = (searchParamsResolved.tab as string) || 'leaderboard';
   const week = searchParamsResolved.week as string | undefined;
-  const builderSort = (searchParamsResolved.builderSort as string | undefined) || 'rank';
+  const builderSort = (searchParamsResolved.builderSort as string | undefined) || 'week_gems';
   const builderOrder = (searchParamsResolved.builderOrder as string | undefined) || 'asc';
   const [, user] = await safeAwaitSSRData(getUserFromSession());
 

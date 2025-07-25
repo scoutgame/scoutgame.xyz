@@ -21,7 +21,6 @@ import { mutate } from 'swr';
 
 import { useGetGithubUserStats, useDeleteGithubUserStrike } from 'hooks/api/github';
 import { useCreateBuilder } from 'hooks/api/users';
-import { useDebouncedValue } from 'hooks/useDebouncedValue';
 import type { ScoutGameUser } from 'lib/users/getUsers';
 import { setBuilderStatusAction } from 'lib/users/updateUserAction';
 
@@ -37,7 +36,6 @@ type Props = {
 export function BuilderReviewModal({ user, open, onClose, onSave }: Props) {
   const [githubLogin, setTextInput] = useState('');
   const { trigger: createUser, error: createBuilderError, isMutating: isCreating } = useCreateBuilder();
-  const githubLoginDebounced = useDebouncedValue(githubLogin);
 
   const { execute: setBuilderStatus, isExecuting: isExecutingUpdate } = useAction(setBuilderStatusAction, {
     onSuccess: async () => {

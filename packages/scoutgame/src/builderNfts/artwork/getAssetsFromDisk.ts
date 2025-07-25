@@ -1,9 +1,13 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import { getCurrentSeasonStart, getSeasonConfig } from '@packages/dates/utils';
 import { isTruthy } from '@packages/utils/types';
 import type { Font } from 'satori';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export function getAssetsFromDisk() {
   const seasonConfig = getSeasonConfig(getCurrentSeasonStart());
