@@ -2,7 +2,6 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import type { BuilderNft } from '@charmverse/core/prisma';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
-import { format } from 'sharp';
 import { formatUnits } from 'viem';
 
 import { scoutgameMintsLogger } from '../loggers/mintsLogger';

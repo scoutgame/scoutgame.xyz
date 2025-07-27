@@ -23,14 +23,12 @@ export async function recordClosedPullRequest({
   pullRequest,
   season,
   repo,
-  prClosedBy,
-  skipSendingComment
+  prClosedBy
 }: {
   pullRequest: ClosedPullRequestMeta;
   repo: RepoInput;
   season: string;
   prClosedBy?: string;
-  skipSendingComment?: boolean;
 }) {
   const builder = await prisma.scout.findFirst({
     where: {

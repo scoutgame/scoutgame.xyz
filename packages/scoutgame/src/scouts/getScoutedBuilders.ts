@@ -4,8 +4,7 @@ import {
   getCurrentSeasonStart,
   getCurrentSeasonWeekNumber,
   getCurrentWeek,
-  getLastWeek,
-  getPreviousSeason
+  getPreviousNonDraftSeason
 } from '@packages/dates/utils';
 import { BasicUserInfoSelect } from '@packages/users/queries';
 import { isTruthy } from '@packages/utils/types';
@@ -57,7 +56,7 @@ export async function getScoutedBuilders({
   const uniqueBuilderIds = Array.from(new Set(scoutedNfts.map((nft) => nft.builderNft.builderId)));
 
   const weekNumber = getCurrentSeasonWeekNumber();
-  const season = weekNumber === 1 ? getPreviousSeason(getLastWeek())! : getCurrentSeasonStart();
+  const season = weekNumber === 1 ? getPreviousNonDraftSeason(getCurrentSeasonStart())! : getCurrentSeasonStart();
 
   const builders = await prisma.scout.findMany({
     where: {

@@ -2,7 +2,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
 import { getWeekFromDate } from '@packages/dates/utils';
 import { getUserContributions } from '@packages/github/getUserContributions';
-import { attestGemReceipts } from '@packages/scoutgameattestations/attestGemReceipts';
 import { DateTime } from 'luxon';
 
 import { log } from './logger';

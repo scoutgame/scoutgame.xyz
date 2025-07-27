@@ -6,7 +6,6 @@ import { getBuilderStats } from '../../builders/getBuilderStats';
 import { getDeveloperActivities } from '../../builders/getDeveloperActivities';
 import { devTokenDecimals } from '../../protocol/constants';
 import { getArtworkFolderPath } from '../constants';
-import { convertCostToPoints } from '../utils';
 
 import { generateShareImage } from './generateShareImage';
 import { getShareImagePath, imageDomain } from './utils';

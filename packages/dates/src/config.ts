@@ -86,9 +86,9 @@ export const seasons: SeasonConfig[] = [
   {
     start: '2025-W31', // July 28th 2025
     title: 'Season 2',
-    starterNftAddress: '0x77ef845f8b2b7b40b68af10d1031313983ccf5a2' as Address,
-    standardNftAddress: '0x1aa94658c5586284bb7815e590a3456f76901500' as Address,
-    nftBlockNumber: 29_504_000,
+    starterNftAddress: '0x99fb4b0b28c6b7449b4679c4b05589e0ac7ea36e' as Address,
+    standardNftAddress: '0x511a1ff2fc052c515167dbb072a975d6ffd92b75' as Address,
+    nftBlockNumber: 33_425_007,
     weeksPerSeason: 13,
     allocatedTokens: BigInt(1_280_000 * 10 ** devTokenDecimals)
   }

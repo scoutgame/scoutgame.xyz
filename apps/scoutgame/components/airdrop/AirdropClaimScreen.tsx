@@ -142,7 +142,7 @@ export function AirdropClaimScreen() {
         receiver: address as `0x${string}`,
         quantity: airdropInfo.claimableAmount,
         proofs: airdropInfo.proofs,
-        chainId: 8453,
+        chainId: base.id,
         walletClient
       });
 
