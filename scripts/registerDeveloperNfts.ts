@@ -38,11 +38,9 @@ async function registerDeveloperNfts() {
   }).map(developer => ({
     id: developer.id,
     tokenId: developer.builderNfts[0].tokenId
-  })).slice(97);
+  })).slice(268);
 
   let currentDeveloper = 0
-
-  let currentTokenId = 98;
 
   console.log(`Total developers to register NFTs for: ${sortedDevelopers.length}`);
 
@@ -51,23 +49,20 @@ async function registerDeveloperNfts() {
 
   for (const developer of sortedDevelopers) {
     try {
-      await Promise.all([
-        registerDeveloperNFT({
-          builderId: developer.id,
-          season,
-          contractAddress: standardContractAddress
-        }).then(() => {
-          console.log(`Registered standard NFT for developer with ID: ${developer.tokenId}`);
-        }),
-        registerDeveloperStarterNFT({
-          builderId: developer.id,
-          season,
-          tokenId: BigInt(currentTokenId),
-        }).then(() => {
-          console.log(`Registered starter NFT for developer with ID: ${developer.tokenId}`);
-        })
-      ])
-      currentTokenId+= 1
+      await registerDeveloperNFT({
+        builderId: developer.id,
+        season,
+        contractAddress: standardContractAddress
+      }).then(() => {
+        console.log(`Registered standard NFT for developer with ID: ${developer.tokenId}`);
+      })
+        
+      await registerDeveloperStarterNFT({
+        builderId: developer.id,
+        season,
+      }).then(() => {
+        console.log(`Registered starter NFT for developer with ID: ${developer.tokenId}`);
+      })
     } catch (error) {
       console.error(`Failed to register NFT for developer with ID: ${developer.tokenId}`, error);
       continue; // Skip to the next developer if there's an error

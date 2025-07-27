@@ -13,10 +13,8 @@ import { createBuilderNftStarterPack } from './createBuilderNftStarterPack';
 export async function registerDeveloperStarterNFT({
   builderId,
   season,
-  tokenId,
   chainId = nftChain.id
 }: {
-  tokenId: bigint;
   builderId: string;
   season: string;
   chainId?: number;
@@ -74,6 +72,15 @@ export async function registerDeveloperStarterNFT({
     throw new Error(`Dev NFT contract client not found: ${season}`);
   }
 
+  // Read the tokenId from the existing builder NFT Contract so that they match
+  const tokenId = await client.getTokenIdForBuilder({
+    args: { builderId }
+  });
+
+  if (!tokenId) {
+    throw new InvalidInputError('Developer NFT not found');
+  }
+
   const starterPackClient = getStarterNFTReadonlyClient(season);
   if (!starterPackClient) {
     throw new Error(`Dev NFT contract client not found: ${season}`);
@@ -85,7 +92,9 @@ export async function registerDeveloperStarterNFT({
     })
     .catch(() => null);
 
-  if (!existingStarterPackTokenId) {
+  if (existingStarterPackTokenId && existingStarterPackTokenId !== tokenId) {
+    throw new InvalidInputError('Developer NFT already registered on starter contract but with a different tokenId');
+  } else if (!existingStarterPackTokenId) {
     // Register the builder token on the starter pack contract so that it can be minted
     await getStarterNFTMinterClient(season).registerBuilderToken({
       args: { builderId, builderTokenId: tokenId, builderWallet: primaryWallet.address as Address }
