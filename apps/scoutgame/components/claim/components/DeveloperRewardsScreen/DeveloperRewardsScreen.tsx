@@ -18,7 +18,15 @@ import { Suspense } from 'react';
 
 import { DeveloperRewardsTableContainer } from './DeveloperRewardsTableContainer';
 
-export function DeveloperRewardsScreen({ period, season }: { period: string; season: string }) {
+export function DeveloperRewardsScreen({
+  period,
+  season,
+  claimedSeason
+}: {
+  period: string;
+  season: string;
+  claimedSeason?: string;
+}) {
   const currentSeason = getSeasonConfig(season);
   const isSeason = period === 'season';
   const lastSeason = getPreviousSeason(season);
@@ -28,14 +36,42 @@ export function DeveloperRewardsScreen({ period, season }: { period: string; sea
   const previousWeek = week ? (week === season ? null : getPreviousWeek(week)) : null;
   const nextWeek = week ? (week === lastWeek ? null : getNextWeek(week)) : null;
   const weekSeason = week ? getCurrentSeason(week) : null;
-  const previousLink =
-    (isSeason && lastSeason && `/claim?tab=season&season=${lastSeason}`) ||
-    (previousWeek && lastWeek && `/claim?tab=${previousWeek}`) ||
-    '';
-  const nextLink =
-    (isSeason && nextSeason && `/claim?tab=season&season=${nextSeason}`) ||
-    (nextWeek && `/claim?tab=${nextWeek}`) ||
-    '';
+  const urlSearchParams = new URLSearchParams();
+
+  if (isSeason) {
+    if (lastSeason) {
+      urlSearchParams.set('season', lastSeason);
+      urlSearchParams.set('tab', 'season');
+      if (claimedSeason) {
+        urlSearchParams.set('claimedSeason', claimedSeason);
+      }
+    } else if (nextSeason) {
+      urlSearchParams.set('season', nextSeason);
+      urlSearchParams.set('tab', 'season');
+      if (claimedSeason) {
+        urlSearchParams.set('claimedSeason', claimedSeason);
+      }
+    }
+  }
+
+  if (previousWeek) {
+    if (lastWeek) {
+      urlSearchParams.set('tab', previousWeek);
+      if (claimedSeason) {
+        urlSearchParams.set('claimedSeason', claimedSeason);
+      }
+    }
+  }
+
+  if (nextWeek) {
+    urlSearchParams.set('tab', nextWeek);
+    if (claimedSeason) {
+      urlSearchParams.set('claimedSeason', claimedSeason);
+    }
+  }
+
+  const previousLink = previousWeek ? `/claim?${urlSearchParams.toString()}` : '';
+  const nextLink = nextWeek ? `/claim?${urlSearchParams.toString()}` : '';
 
   return (
     <Stack gap={1} pt={1} alignItems='center'>
