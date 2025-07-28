@@ -78,6 +78,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
       payoutContract: {
         select: {
           id: true,
+          scoutPartnerId: true,
           partner: true,
           tokenDecimals: true,
           contractAddress: true,
@@ -95,7 +96,8 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
   const unclaimedPartnerRewards = partnerRewards.map(({ payoutContract, id, amount, walletAddress }) => ({
     id,
     amount: Number(formatUnits(BigInt(amount), payoutContract.tokenDecimals)),
-    partner: payoutContract.partner,
+    scoutPartnerId: payoutContract.scoutPartnerId,
+    partner: payoutContract.scoutPartnerId,
     tokenDecimals: payoutContract.tokenDecimals,
     tokenSymbol: payoutContract.tokenSymbol,
     contractAddress: payoutContract.contractAddress,
@@ -114,6 +116,7 @@ export async function getUnclaimedPartnerRewards({ userId }: { userId: string })
   unclaimedPartnerRewards.forEach((reward) => {
     unclaimedPartnerRewardsByContractAddress[reward.contractAddress] = {
       ...reward,
+      partner: (reward.scoutPartnerId || reward.partner) as string,
       amount: reward.amount + (unclaimedPartnerRewardsByContractAddress[reward.contractAddress]?.amount ?? 0),
       week: getCurrentSeasonWeekNumber(reward.week)
     };
