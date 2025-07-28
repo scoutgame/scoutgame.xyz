@@ -11,9 +11,10 @@ import { ClaimedTokensTable } from './components/TokensTable/ClaimedTokensTable'
 export type ClaimPageProps = {
   period: string;
   season: string;
+  claimedSeason?: string;
 };
 
-export function ClaimPage({ period, season }: ClaimPageProps) {
+export function ClaimPage({ period, season, claimedSeason }: ClaimPageProps) {
   return (
     <Stack
       gap={8}
@@ -38,10 +39,10 @@ export function ClaimPage({ period, season }: ClaimPageProps) {
             }
           }}
         >
-          <DeveloperRewardsScreen period={period} season={season} />
+          <DeveloperRewardsScreen period={period} season={season} claimedSeason={claimedSeason} />
         </Stack>
         <Suspense fallback={<LoadingTable />}>
-          <ClaimedTokensTable />
+          <ClaimedTokensTable claimedSeason={claimedSeason} />
         </Suspense>
       </Stack>
       <Stack
@@ -55,7 +56,7 @@ export function ClaimPage({ period, season }: ClaimPageProps) {
           }
         }}
       >
-        <DeveloperRewardsScreen period={period} season={season} />
+        <DeveloperRewardsScreen period={period} season={season} claimedSeason={claimedSeason} />
       </Stack>
     </Stack>
   );

@@ -13,7 +13,11 @@ export const metadata: Metadata = {
   title: 'Claim Points'
 };
 
-export default async function Claim({ searchParams }: { searchParams: Promise<{ tab: string; season?: string }> }) {
+export default async function Claim({
+  searchParams
+}: {
+  searchParams: Promise<{ claimedSeason?: string; tab: string; season?: string }>;
+}) {
   const searchParamsResolved = await searchParams;
   // if period is not 'season', ensure that season is the current season
   if (searchParamsResolved.tab !== 'season' || !searchParamsResolved.season) {
@@ -21,7 +25,11 @@ export default async function Claim({ searchParams }: { searchParams: Promise<{ 
   }
   return (
     <PageContainer>
-      <ClaimPage period={searchParamsResolved.tab} season={searchParamsResolved.season} />
+      <ClaimPage
+        period={searchParamsResolved.tab}
+        season={searchParamsResolved.season}
+        claimedSeason={searchParamsResolved.claimedSeason}
+      />
     </PageContainer>
   );
 }
