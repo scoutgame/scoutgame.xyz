@@ -5,7 +5,6 @@ import { getCurrentSeason } from '@packages/dates/utils';
 
 export async function deployPartnerAirdropContract({
   scoutPartnerId,
-  partner,
   week,
   recipients,
   tokenAddress,
@@ -24,7 +23,7 @@ export async function deployPartnerAirdropContract({
   chainId: number;
   adminPrivateKey: `0x${string}`;
 }) {
-  if (!scoutPartnerId && !partner) {
+  if (!scoutPartnerId) {
     throw new Error('Either scoutPartnerId or partner must be provided');
   }
 
@@ -71,7 +70,7 @@ export async function deployPartnerAirdropContract({
       tokenDecimals,
       tokenSymbol,
       scoutPartnerId,
-      partner: partner || '',
+      partner: '',
       deployTxHash,
       blockNumber,
       rewardPayouts: {
