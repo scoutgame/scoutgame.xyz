@@ -1,7 +1,6 @@
 'use server';
 
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { authActionClient } from '@packages/nextjs/actions/actionClient';
 import { devTokenDecimals } from '@packages/scoutgame/protocol/constants';
 import { revalidatePath } from 'next/cache';
@@ -64,52 +63,82 @@ export const handleOnchainClaimAction = authActionClient
         event: {
           select: {
             builderId: true,
-            type: true
+            type: true,
+            season: true
           }
         }
       }
     });
 
-    let pointsEarnedAsDeveloper = BigInt(0);
-    let pointsEarnedAsScout = BigInt(0);
+    // Group points by season
+    const pointsBySeason = new Map<string, { pointsEarnedAsDeveloper: bigint; pointsEarnedAsScout: bigint }>();
 
     for (const receipt of tokenReceipts) {
       if (receipt.event.type === 'gems_payout') {
+        const season = receipt.event.season;
+
+        if (!pointsBySeason.has(season)) {
+          pointsBySeason.set(season, { pointsEarnedAsDeveloper: BigInt(0), pointsEarnedAsScout: BigInt(0) });
+        }
+
+        const seasonPoints = pointsBySeason.get(season)!;
+
         if (receipt.event.builderId === receipt.recipientWallet?.scoutId) {
-          pointsEarnedAsDeveloper += BigInt(receipt.value);
+          seasonPoints.pointsEarnedAsDeveloper += BigInt(receipt.value);
         } else {
-          pointsEarnedAsScout += BigInt(receipt.value);
+          seasonPoints.pointsEarnedAsScout += BigInt(receipt.value);
         }
       }
     }
 
-    const pointsEarnedAsDeveloperNumber = Number(formatUnits(pointsEarnedAsDeveloper, devTokenDecimals));
-    const pointsEarnedAsScoutNumber = Number(formatUnits(pointsEarnedAsScout, devTokenDecimals));
+    // Update user season stats for each season
+    for (const [season, points] of pointsBySeason) {
+      const pointsEarnedAsDeveloperNumber = Number(formatUnits(points.pointsEarnedAsDeveloper, devTokenDecimals));
+      const pointsEarnedAsScoutNumber = Number(formatUnits(points.pointsEarnedAsScout, devTokenDecimals));
 
-    await prisma.userSeasonStats.update({
-      where: {
-        userId_season: {
-          userId,
-          season: getCurrentSeasonStart()
-        }
-      },
-      data: {
-        pointsEarnedAsBuilder: {
-          increment: pointsEarnedAsDeveloperNumber
+      await prisma.userSeasonStats.upsert({
+        where: {
+          userId_season: {
+            userId,
+            season
+          }
         },
-        pointsEarnedAsScout: {
-          increment: pointsEarnedAsScoutNumber
+        create: {
+          userId,
+          season,
+          pointsEarnedAsBuilder: pointsEarnedAsDeveloperNumber,
+          pointsEarnedAsScout: pointsEarnedAsScoutNumber
+        },
+        update: {
+          pointsEarnedAsBuilder: {
+            increment: pointsEarnedAsDeveloperNumber
+          },
+          pointsEarnedAsScout: {
+            increment: pointsEarnedAsScoutNumber
+          }
         }
-      }
-    });
+      });
+    }
+
+    // Calculate total points for all-time stats
+    let totalPointsEarnedAsDeveloper = BigInt(0);
+    let totalPointsEarnedAsScout = BigInt(0);
+
+    for (const points of pointsBySeason.values()) {
+      totalPointsEarnedAsDeveloper += points.pointsEarnedAsDeveloper;
+      totalPointsEarnedAsScout += points.pointsEarnedAsScout;
+    }
+
+    const totalPointsEarnedAsDeveloperNumber = Number(formatUnits(totalPointsEarnedAsDeveloper, devTokenDecimals));
+    const totalPointsEarnedAsScoutNumber = Number(formatUnits(totalPointsEarnedAsScout, devTokenDecimals));
 
     await prisma.userAllTimeStats.upsert({
       where: {
         userId
       },
       create: {
-        pointsEarnedAsBuilder: pointsEarnedAsDeveloperNumber,
-        pointsEarnedAsScout: pointsEarnedAsScoutNumber,
+        pointsEarnedAsBuilder: totalPointsEarnedAsDeveloperNumber,
+        pointsEarnedAsScout: totalPointsEarnedAsScoutNumber,
         user: {
           connect: {
             id: userId
@@ -118,10 +147,10 @@ export const handleOnchainClaimAction = authActionClient
       },
       update: {
         pointsEarnedAsBuilder: {
-          increment: pointsEarnedAsDeveloperNumber
+          increment: totalPointsEarnedAsDeveloperNumber
         },
         pointsEarnedAsScout: {
-          increment: pointsEarnedAsScoutNumber
+          increment: totalPointsEarnedAsScoutNumber
         }
       }
     });
