@@ -37,6 +37,8 @@ export async function GET(request: Request) {
     where.farcasterName = farcasterName;
   }
 
+  const currentSeason = getCurrentSeasonStart();
+
   const developer = await prisma.scout.findFirst({
     where,
     select: {
@@ -44,9 +46,17 @@ export async function GET(request: Request) {
       avatar: true,
       displayName: true,
       path: true,
+      builderNfts: {
+        where: {
+          season: currentSeason
+        },
+        select: {
+          tokenId: true
+        }
+      },
       userSeasonStats: {
         where: {
-          season: getCurrentSeasonStart()
+          season: currentSeason
         },
         select: {
           level: true
@@ -54,7 +64,7 @@ export async function GET(request: Request) {
       },
       userWeeklyStats: {
         where: {
-          season: getCurrentSeasonStart()
+          season: currentSeason
         },
         orderBy: {
           week: 'asc'
@@ -79,8 +89,9 @@ export async function GET(request: Request) {
       displayName: developer.displayName,
       path: developer.path,
       profileUrl: `https://scoutgame.xyz/u/${developer.path}`,
-      level: developer.userSeasonStats[0].level,
-      weeklyStats: developer.userWeeklyStats.map((weeklyStat) => ({
+      level: developer.userSeasonStats[0]?.level,
+      tokenId: developer.builderNfts[0]?.tokenId,
+      weeklyStats: (developer.userWeeklyStats ?? []).map((weeklyStat) => ({
         week: weeklyStat.week,
         count: weeklyStat.gemsCollected,
         rank: weeklyStat.rank
