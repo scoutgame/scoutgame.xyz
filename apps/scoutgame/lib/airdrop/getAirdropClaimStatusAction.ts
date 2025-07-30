@@ -11,6 +11,8 @@ import * as yup from 'yup';
 export type AirdropClaimStatus = {
   airdropId: string;
   isClaimed: boolean;
+  claimedAt: Date | null;
+  claimTxHash: `0x${string}` | null;
   claimableAmount: bigint;
   proofs: `0x${string}`[];
   contractAddress: `0x${string}`;
@@ -60,6 +62,17 @@ export const getAirdropClaimStatusAction = actionClient
       blockNumber: airdropClaim.blockNumber
     });
 
+    const airdropClaimPayout = await prisma.airdropClaimPayout.findFirst({
+      where: {
+        airdropClaimId: airdropClaim.id,
+        walletAddress: address
+      },
+      select: {
+        claimedAt: true,
+        claimTxHash: true
+      }
+    });
+
     return {
       airdropId: airdropClaim.id,
       isClaimed,
@@ -67,6 +80,8 @@ export const getAirdropClaimStatusAction = actionClient
       proofs: proof as `0x${string}`[],
       contractAddress: airdropClaim.contractAddress as `0x${string}`,
       hasExpired,
-      isValid
+      isValid,
+      claimedAt: airdropClaimPayout?.claimedAt || null,
+      claimTxHash: airdropClaimPayout?.claimTxHash || null
     };
   });
