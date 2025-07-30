@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
   const path = searchParams.get('path');
   const wallet = searchParams.get('wallet');
   const farcasterId = searchParams.get('farcasterId');
@@ -15,10 +16,14 @@ export async function GET(request: Request) {
   }
 
   const where: Prisma.ScoutWhereInput = {
-    builderStatus: 'approved'
+    builderStatus: {
+      in: ['banned', 'approved']
+    }
   };
 
-  if (path) {
+  if (id) {
+    where.id = id;
+  } else if (path) {
     where.path = path;
   } else if (wallet) {
     where.wallets = {
@@ -32,15 +37,26 @@ export async function GET(request: Request) {
     where.farcasterName = farcasterName;
   }
 
+  const currentSeason = getCurrentSeasonStart();
+
   const developer = await prisma.scout.findFirst({
     where,
     select: {
+      id: true,
       avatar: true,
       displayName: true,
       path: true,
+      builderNfts: {
+        where: {
+          season: currentSeason
+        },
+        select: {
+          tokenId: true
+        }
+      },
       userSeasonStats: {
         where: {
-          season: getCurrentSeasonStart()
+          season: currentSeason
         },
         select: {
           level: true
@@ -48,12 +64,13 @@ export async function GET(request: Request) {
       },
       userWeeklyStats: {
         where: {
-          season: getCurrentSeasonStart()
+          season: currentSeason
         },
         orderBy: {
           week: 'asc'
         },
         select: {
+          rank: true,
           week: true,
           gemsCollected: true
         }
@@ -67,13 +84,17 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     developer: {
+      id: developer.id,
       avatar: developer.avatar,
       displayName: developer.displayName,
+      path: developer.path,
       profileUrl: `https://scoutgame.xyz/u/${developer.path}`,
-      level: developer.userSeasonStats[0].level,
-      gemsEarned: developer.userWeeklyStats.map((weeklyStat) => ({
+      level: developer.userSeasonStats[0]?.level,
+      tokenId: developer.builderNfts[0]?.tokenId,
+      weeklyStats: (developer.userWeeklyStats ?? []).map((weeklyStat) => ({
         week: weeklyStat.week,
-        count: weeklyStat.gemsCollected
+        count: weeklyStat.gemsCollected,
+        rank: weeklyStat.rank
       }))
     }
   });
