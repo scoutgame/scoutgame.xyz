@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
   const path = searchParams.get('path');
   const wallet = searchParams.get('wallet');
   const farcasterId = searchParams.get('farcasterId');
@@ -15,10 +16,14 @@ export async function GET(request: Request) {
   }
 
   const where: Prisma.ScoutWhereInput = {
-    builderStatus: 'approved'
+    builderStatus: {
+      in: ['banned', 'approved']
+    }
   };
 
-  if (path) {
+  if (id) {
+    where.id = id;
+  } else if (path) {
     where.path = path;
   } else if (wallet) {
     where.wallets = {
@@ -54,6 +59,7 @@ export async function GET(request: Request) {
           week: 'asc'
         },
         select: {
+          rank: true,
           week: true,
           gemsCollected: true
         }
@@ -69,11 +75,13 @@ export async function GET(request: Request) {
     developer: {
       avatar: developer.avatar,
       displayName: developer.displayName,
+      path: developer.path,
       profileUrl: `https://scoutgame.xyz/u/${developer.path}`,
       level: developer.userSeasonStats[0].level,
-      gemsEarned: developer.userWeeklyStats.map((weeklyStat) => ({
+      weeklyStats: developer.userWeeklyStats.map((weeklyStat) => ({
         week: weeklyStat.week,
-        count: weeklyStat.gemsCollected
+        count: weeklyStat.gemsCollected,
+        rank: weeklyStat.rank
       }))
     }
   });
