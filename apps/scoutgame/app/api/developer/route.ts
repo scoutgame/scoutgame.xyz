@@ -40,6 +40,7 @@ export async function GET(request: Request) {
   const developer = await prisma.scout.findFirst({
     where,
     select: {
+      id: true,
       avatar: true,
       displayName: true,
       path: true,
@@ -73,6 +74,7 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     developer: {
+      id: developer.id,
       avatar: developer.avatar,
       displayName: developer.displayName,
       path: developer.path,
