@@ -15,9 +15,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'No path, wallet, farcasterId, farcasterName, or id provided' }, { status: 400 });
   }
 
+  const currentSeason = getCurrentSeasonStart();
+
   const where: Prisma.ScoutWhereInput = {
-    builderStatus: {
-      in: ['banned', 'approved']
+    builderNfts: {
+      some: {
+        season: currentSeason
+      }
     }
   };
 
@@ -37,8 +41,6 @@ export async function GET(request: Request) {
     where.farcasterName = farcasterName;
   }
 
-  const currentSeason = getCurrentSeasonStart();
-
   const developer = await prisma.scout.findFirst({
     where,
     select: {
@@ -52,6 +54,11 @@ export async function GET(request: Request) {
         },
         select: {
           tokenId: true
+        }
+      },
+      githubUsers: {
+        select: {
+          login: true
         }
       },
       userSeasonStats: {
@@ -88,6 +95,7 @@ export async function GET(request: Request) {
       avatar: developer.avatar,
       displayName: developer.displayName,
       path: developer.path,
+      githubLogin: developer.githubUsers[0]?.login,
       profileUrl: `https://scoutgame.xyz/u/${developer.path}`,
       level: developer.userSeasonStats[0]?.level,
       tokenId: developer.builderNfts[0]?.tokenId,
