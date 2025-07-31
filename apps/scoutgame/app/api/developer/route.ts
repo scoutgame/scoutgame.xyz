@@ -11,8 +11,8 @@ export async function GET(request: Request) {
   const farcasterId = searchParams.get('farcasterId');
   const farcasterName = searchParams.get('farcasterName');
 
-  if (!path && !wallet && !farcasterId && !farcasterName) {
-    return NextResponse.json({ error: 'No path, wallet, farcasterId, or farcasterName provided' }, { status: 400 });
+  if (!path && !wallet && !farcasterId && !farcasterName && !id) {
+    return NextResponse.json({ error: 'No path, wallet, farcasterId, farcasterName, or id provided' }, { status: 400 });
   }
 
   const where: Prisma.ScoutWhereInput = {
