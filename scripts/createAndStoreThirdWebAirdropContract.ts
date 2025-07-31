@@ -5,21 +5,22 @@ import { parseEther } from 'viem';
 import { base } from 'viem/chains';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
 import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const recipients: Recipient[] = [
-  {
-    address: '0x84a94307CD0eE34C8037DfeC056b53D7004f04a0',
-    amount: parseEther('10').toString()
-  },
-  {
-    address: '0xb1b9FFF08F3827875F91ddE929036a65f2A5d27d',
-    amount: parseEther('20').toString()
-  },
-  {
-    address: '0x6866C5669592D79c1010Ee9d0936F6A3a800133d',
-    amount: parseEther('10').toString()
-  }
-];
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const airdropList = JSON.parse(fs.readFileSync(path.join(__dirname, 'airdrop.json'), 'utf8')) as {
+  address: `0x${string}`;
+  totalSeason2Airdrop: number;
+}[];
+
+const recipients: Recipient[] = airdropList.filter(item => item.totalSeason2Airdrop > 0).map(item => ({
+  address: item.address,
+  amount: parseEther(item.totalSeason2Airdrop.toString()).toString()
+}));
 
 export async function createAndStoreThirdWebAirdropContract() {
   const previousSeason = getPreviousSeason(getCurrentSeasonStart());
@@ -51,9 +52,9 @@ export async function createAndStoreThirdWebAirdropContract() {
       deployTxHash,
       merkleTreeUrl: fileUrl,
       blockNumber,
-      season: previousSeason
+      season: '2025-W18'
     }
   });
 }
 
-createAndStoreThirdWebAirdropContract();
+// createAndStoreThirdWebAirdropContract();
