@@ -1,9 +1,8 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart } from '@packages/dates/utils';
+import { getNFTContractAddress, getStarterNFTContractAddress } from '@packages/scoutgame/builderNfts/constants';
 import { registerDeveloperNFT } from '@packages/scoutgame/builderNfts/registration/registerDeveloperNFT';
 
 async function registerDeveloperNfts() {
-  const currentSeasonStart = getCurrentSeasonStart();
   const developers = await prisma.scout.findMany({
     where: {
       builderStatus: {
@@ -14,7 +13,7 @@ async function registerDeveloperNfts() {
       id: true,
       builderNfts: {
         where: {
-          season: currentSeasonStart,
+          season: '2025-W18',
           nftType: 'default'
         },
         select: {
@@ -36,12 +35,29 @@ async function registerDeveloperNfts() {
 
   console.log(`Total developers to register NFTs for: ${totalDevelopers}`);
 
+  const season = '2025-W31'; // The season for which we are registering NFTs
+  const standardContractAddress = getNFTContractAddress(season);
+  const starterContractAddress = getStarterNFTContractAddress(season)
+
   for (const developer of sortedDevelopers) {
     try {
-      await registerDeveloperNFT({
-        builderId: developer.id,
-        season: currentSeasonStart,
-      });
+      await Promise.all([
+        registerDeveloperNFT({
+          builderId: developer.id,
+          season,
+          contractAddress: standardContractAddress
+        }).then(() => {
+          console.log(`Registered standard NFT for developer with ID: ${developer.id}`);
+        }),
+        // Register starter NFT if the developer does not have one
+        registerDeveloperNFT({
+          builderId: developer.id,
+          season,
+          contractAddress: starterContractAddress,
+        }).then(() => {
+          console.log(`Registered starter NFT for developer with ID: ${developer.id}`);
+        })
+      ])
     } catch (error) {
       console.error(`Failed to register NFT for developer with ID: ${developer.id}`, error);
       continue; // Skip to the next developer if there's an error
