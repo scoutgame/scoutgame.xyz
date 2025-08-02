@@ -47,12 +47,24 @@ export async function getUserContributions({
       id: {
         in: [...prRepoIds, ...commitRepoIds]
       }
+    },
+    select: {
+      id: true,
+      defaultBranch: true
     }
   });
 
   return {
     // Filter out PRs we do not follow
-    pullRequests: pullRequests.filter((node) => reposToTrack.some((r) => r.id === node.repository.id)),
+    pullRequests: pullRequests.filter((node) => {
+      const repo = reposToTrack.find((r) => r.id === node.repository.id);
+
+      if (!repo) {
+        return false;
+      }
+
+      return node.baseRefName === repo.defaultBranch;
+    }),
     commits: commits.filter((node) => reposToTrack.some((r) => r.id === node.repository.id)),
     newOwnerRepos: []
   };
