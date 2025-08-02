@@ -95,9 +95,14 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
+  const currentSeason = getCurrentSeasonStart();
+  const previousSeason = getPreviousSeason(currentSeason);
+
   const weeklyClaims = (await prisma.weeklyClaims.findMany({
     where: {
-      season: getCurrentSeasonStart()
+      season: {
+        in: previousSeason ? [currentSeason, previousSeason] : [currentSeason]
+      }
     }
   })) as WeeklyClaimsTyped[];
 
