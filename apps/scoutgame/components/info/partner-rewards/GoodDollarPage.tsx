@@ -176,7 +176,7 @@ function Document() {
           </Link>
         </ListItem>
       </List>
-      
+
       <Typography mt={1}>
         For getting updates on new scoutgame tickets available, or keep up-to-date around our other open-source
         contribution opportunities, please join the gooddollar scoutgame channel:{' '}
