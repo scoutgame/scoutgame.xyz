@@ -177,6 +177,14 @@ function Document() {
         </ListItem>
       </List>
 
+      <Typography mt={1}>
+        For getting updates on new scoutgame tickets available, or keep up-to-date around our other open-source
+        contribution opportunities, please join the gooddollar scoutgame channel:{' '}
+        <Link href='https://t.me/gooddollarbounties/4115' target='_blank' rel='noreferrer'>
+          https://t.me/gooddollarbounties/4115
+        </Link>
+      </Typography>
+
       <Typography mt={1}>Join us and contribute to building the future of financial freedom!</Typography>
 
       <Typography>
