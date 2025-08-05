@@ -3,6 +3,7 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { getMerkleProofs } from '@charmverse/core/protocol';
 import { getSeasonConfig, getNextSeason, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
+import { DateTime } from 'luxon';
 import { type Address } from 'viem';
 
 import type { WeeklyClaimsCalculated } from './calculateWeeklyClaims';
@@ -60,10 +61,7 @@ export async function generateWeeklyClaims({
     leaves: claims
   };
 
-  // get end of the next season, or this one if there are no more
-  const nextSeason = getNextSeason(getCurrentSeasonStart()) || getCurrentSeasonStart();
-  const weeksPerSeason = getSeasonConfig(nextSeason).weeksPerSeason;
-  const validUntilDate = getDateFromISOWeek(nextSeason).plus({ weeks: weeksPerSeason });
+  const validUntilDate = DateTime.now().toUTC().plus({ weeks: 13 });
   const validUntil = Math.floor(validUntilDate.toSeconds());
 
   await getProtocolWriteClient({ walletClient: getProtocolClaimsManagerWallet() }).setWeeklyMerkleRoot({
