@@ -14,6 +14,10 @@ export function GoodDollarPage({ infoPageImage }: { infoPageImage: string }) {
 
 const tiers = [
   {
+    name: 'Basic',
+    reward: '$25 | 250,000 G$'
+  },
+  {
     name: 'Common',
     reward: '$50 | 500,000 G$'
   },
