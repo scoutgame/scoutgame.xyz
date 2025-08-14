@@ -1,4 +1,7 @@
+import { prisma } from '@charmverse/core/prisma-client';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
+
+import type { IssueTagAmount } from 'components/partners/IssueTagAmountFields';
 
 export async function getBuildersForPartner({
   week,
@@ -9,6 +12,19 @@ export async function getBuildersForPartner({
   week: string;
   scoutPartnerId: string;
 }) {
+  const partner = await prisma.scoutPartner.findUnique({
+    where: {
+      id: scoutPartnerId
+    },
+    select: {
+      issueTagTokenAmounts: true
+    }
+  });
+
+  const issueTags = ((partner?.issueTagTokenAmounts as unknown as IssueTagAmount[]) || []).map(
+    (issueTag) => issueTag.tag
+  );
+
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId });
 
   return builderEvents.map((event) => ({
@@ -18,10 +34,12 @@ export async function getBuildersForPartner({
     Repo: `${event.repo.owner}/${event.repo.name}`,
     Date: event.completedAt?.toDateString(),
     Link: event.url,
-    ...(event.issues.length
+    Issue: event.issues.length
+      ? `https://github.com/${event.repo.owner}/${event.repo.name}/issues/${event.issues[0].issueNumber}`
+      : '',
+    ...(includeIssueTier
       ? {
-          Issue: `https://github.com/${event.repo.owner}/${event.repo.name}/issues/${event.issues[0].issueNumber}`,
-          ...(includeIssueTier ? { Tier: event.issues[0].tags.join(', ') } : {})
+          Tier: event.issues.length ? event.issues[0].tags.filter((tag) => issueTags.includes(tag)).join(', ') : ''
         }
       : {})
   }));
