@@ -206,7 +206,7 @@ function TokensClaimScreenComponent({
                   </Typography>
                   <Stack flexDirection='row' alignItems='center' gap={1}>
                     <Typography variant='h4' fontWeight={500}>
-                      {ceilToPrecision(totalUnclaimedTokens, 4)}
+                      {ceilToPrecision(totalUnclaimedTokens, 4).toLocaleString()}
                     </Typography>
                     <Image
                       width={35}
@@ -247,7 +247,7 @@ function TokensClaimScreenComponent({
                                 )
                               ),
                               4
-                            )}
+                            ).toLocaleString()}
                           </Typography>
                         </Stack>
                         <Typography>{shortenHex(address, 6)}</Typography>
