@@ -1,15 +1,7 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import {
-  getCurrentSeasonStart,
-  getCurrentWeek,
-  getLastWeek,
-  getWeekStartEndFormatted,
-  getDateFromISOWeek,
-  getPreviousSeason,
-  getAllISOWeeksFromSeasonStartUntilSeasonEnd
-} from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek, getLastWeek, getPreviousSeason } from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 import { formatUnits, type Address } from 'viem';
@@ -95,6 +87,8 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
+  const unclaimedTokenReceiptsWeeks = tokenReceipts.map((receipt) => receipt.event.week);
+
   const currentSeason = getCurrentSeasonStart();
   const previousSeason = getPreviousSeason(currentSeason);
 
@@ -123,7 +117,12 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     )
   ).reduce(
     (acc, { wallet, week, hasClaimed }) => {
-      acc[wallet] = hasClaimed ? [...(acc[wallet] || []), week] : acc[wallet] || [];
+      // There might be unclaimed token receipts on contract side but it was manually transferred to their wallets (thus claimed in db)
+      if (!hasClaimed && unclaimedTokenReceiptsWeeks.includes(week)) {
+        acc[wallet] = acc[wallet] || [];
+      } else {
+        acc[wallet] = [...(acc[wallet] || []), week];
+      }
       return acc;
     },
     {} as Record<string, string[]>
