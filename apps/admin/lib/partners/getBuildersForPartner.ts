@@ -1,6 +1,14 @@
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
 
-export async function getBuildersForPartner({ week, scoutPartnerId }: { week: string; scoutPartnerId: string }) {
+export async function getBuildersForPartner({
+  week,
+  scoutPartnerId,
+  includeIssueTier = false
+}: {
+  includeIssueTier?: boolean;
+  week: string;
+  scoutPartnerId: string;
+}) {
   const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId });
 
   return builderEvents.map((event) => ({
@@ -12,7 +20,8 @@ export async function getBuildersForPartner({ week, scoutPartnerId }: { week: st
     Link: event.url,
     ...(event.issues.length
       ? {
-          Issue: `https://github.com/${event.repo.owner}/${event.repo.name}/issues/${event.issues[0].issueNumber}`
+          Issue: `https://github.com/${event.repo.owner}/${event.repo.name}/issues/${event.issues[0].issueNumber}`,
+          ...(includeIssueTier ? { Tier: event.issues[0].tags.join(', ') } : {})
         }
       : {})
   }));
