@@ -43,7 +43,7 @@ export async function AirdropMetrics({
   const currentWeek = getCurrentWeek();
   const airdropsData = await prisma.partnerRewardPayoutContract.findMany({
     where: {
-      partner
+      scoutPartnerId: partner
     },
     orderBy: {
       createdAt: 'desc'
