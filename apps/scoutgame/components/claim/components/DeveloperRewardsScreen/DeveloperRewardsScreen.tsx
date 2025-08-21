@@ -54,24 +54,26 @@ export function DeveloperRewardsScreen({
     }
   }
 
+  const previousWeekSearchParams = new URLSearchParams();
+
   if (previousWeek) {
-    if (lastWeek) {
-      urlSearchParams.set('tab', previousWeek);
-      if (claimedSeason) {
-        urlSearchParams.set('claimedSeason', claimedSeason);
-      }
+    previousWeekSearchParams.set('tab', previousWeek);
+    if (claimedSeason) {
+      previousWeekSearchParams.set('claimedSeason', claimedSeason);
     }
   }
+
+  const nextWeekSearchParams = new URLSearchParams();
 
   if (nextWeek) {
-    urlSearchParams.set('tab', nextWeek);
+    nextWeekSearchParams.set('tab', nextWeek);
     if (claimedSeason) {
-      urlSearchParams.set('claimedSeason', claimedSeason);
+      nextWeekSearchParams.set('claimedSeason', claimedSeason);
     }
   }
 
-  const previousLink = previousWeek ? `/claim?${urlSearchParams.toString()}` : '';
-  const nextLink = nextWeek ? `/claim?${urlSearchParams.toString()}` : '';
+  const previousLink = previousWeek ? `/claim?${previousWeekSearchParams.toString()}` : '';
+  const nextLink = nextWeek ? `/claim?${nextWeekSearchParams.toString()}` : '';
 
   return (
     <Stack gap={1} pt={1} alignItems='center'>
