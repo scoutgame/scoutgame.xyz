@@ -7,6 +7,14 @@ export async function middleware(request: NextRequest) {
   const isLoggedIn = !!session.adminId;
   const path = request.nextUrl.pathname;
 
+  // Handle API routes
+  if (path.startsWith('/api/')) {
+    if (!isLoggedIn) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    return NextResponse.next();
+  }
+
   if (!isLoggedIn && !path.startsWith('/login')) {
     // eslint-disable-next-line no-console
     console.log(`Redirect user to login from ${path}`);
@@ -29,12 +37,11 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - images (image files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|images|favicon.ico|robots.txt|__ENV.js|manifest.webmanifest|nft-assets).*)'
+    '/((?!_next/static|_next/image|images|favicon.ico|robots.txt|__ENV.js|manifest.webmanifest|nft-assets).*)'
   ]
 };
