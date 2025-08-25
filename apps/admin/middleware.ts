@@ -9,10 +9,10 @@ export async function middleware(request: NextRequest) {
 
   // Handle API routes
   if (path.startsWith('/api/')) {
-    if (!isLoggedIn) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (path.includes('health') || isLoggedIn) {
+      return NextResponse.next();
     }
-    return NextResponse.next();
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   if (!isLoggedIn && !path.startsWith('/login')) {
