@@ -9,7 +9,8 @@ import {
   getCurrentSeasonWeekNumber,
   getPreviousSeason,
   getNextSeason,
-  getCurrentSeason
+  getCurrentSeason,
+  getPreviousNonDraftSeason
 } from '@packages/dates/utils';
 import { LoadingTable } from '@packages/scoutgame-ui/components/common/Loading/LoadingTable';
 import { TabsMenu } from '@packages/scoutgame-ui/components/common/Tabs/TabsMenu';
@@ -29,27 +30,28 @@ export function DeveloperRewardsScreen({
 }) {
   const currentSeason = getSeasonConfig(season);
   const isSeason = period === 'season';
-  const lastSeason = getPreviousSeason(season);
+  const lastSeason = getPreviousNonDraftSeason(season);
   const nextSeason = getNextSeason(season);
   const lastWeek = getLastWeek();
   const week = isSeason ? null : period || lastWeek;
   const previousWeek = week ? (week === season ? null : getPreviousWeek(week)) : null;
   const nextWeek = week ? (week === lastWeek ? null : getNextWeek(week)) : null;
   const weekSeason = week ? getCurrentSeason(week) : null;
-  const urlSearchParams = new URLSearchParams();
+  const previousSeasonSearchParams = new URLSearchParams();
+  const nextSeasonSearchParams = new URLSearchParams();
 
   if (isSeason) {
     if (lastSeason) {
-      urlSearchParams.set('season', lastSeason);
-      urlSearchParams.set('tab', 'season');
+      previousSeasonSearchParams.set('season', lastSeason);
+      previousSeasonSearchParams.set('tab', 'season');
       if (claimedSeason) {
-        urlSearchParams.set('claimedSeason', claimedSeason);
+        previousSeasonSearchParams.set('claimedSeason', claimedSeason);
       }
     } else if (nextSeason) {
-      urlSearchParams.set('season', nextSeason);
-      urlSearchParams.set('tab', 'season');
+      nextSeasonSearchParams.set('season', nextSeason);
+      nextSeasonSearchParams.set('tab', 'season');
       if (claimedSeason) {
-        urlSearchParams.set('claimedSeason', claimedSeason);
+        nextSeasonSearchParams.set('claimedSeason', claimedSeason);
       }
     }
   }
@@ -72,8 +74,18 @@ export function DeveloperRewardsScreen({
     }
   }
 
-  const previousLink = previousWeek ? `/claim?${previousWeekSearchParams.toString()}` : '';
-  const nextLink = nextWeek ? `/claim?${nextWeekSearchParams.toString()}` : '';
+  const previousLink =
+    isSeason && previousSeasonSearchParams.size
+      ? `/claim?${previousSeasonSearchParams.toString()}`
+      : previousWeek && previousWeekSearchParams.size
+        ? `/claim?${previousWeekSearchParams.toString()}`
+        : '';
+  const nextLink =
+    isSeason && nextSeasonSearchParams.size
+      ? `/claim?${nextSeasonSearchParams.toString()}`
+      : nextWeek && nextWeekSearchParams.size
+        ? `/claim?${nextWeekSearchParams.toString()}`
+        : '';
 
   return (
     <Stack gap={1} pt={1} alignItems='center'>
