@@ -11,7 +11,6 @@ import { getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { PullRequest } from '@packages/github/getPullRequestsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
-import { getPartnerRewards } from '@packages/scoutgame/partnerRewards/getPartnerRewardsForScout';
 import { getPartnerRewardAmount } from '@packages/scoutgame/scoutPartners/getPartnerRewardAmount';
 import { isTruthy } from '@packages/utils/types';
 import { DateTime } from 'luxon';
@@ -160,7 +159,7 @@ export async function recordMergedPullRequest({
               status: 'active',
               id: repo.scoutPartnerId,
               blacklistedDevelopers: {
-                some: {
+                none: {
                   developerId: githubUser.builderId
                 }
               }
