@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-import { useSearchForUser } from 'hooks/api/users';
+import { useGetUser, useSearchForUser } from 'hooks/api/users';
 import { useDebouncedValue } from 'hooks/useDebouncedValue';
 
 // A lightweight selector to add/remove developers (scouts) by path or fid search
@@ -67,16 +67,7 @@ export function DeveloperSelector({
           </ListItem>
         )}
         {value.map((id) => (
-          <ListItem
-            key={id}
-            secondaryAction={
-              <IconButton edge='end' aria-label='remove' onClick={() => removeDeveloper(id)}>
-                <DeleteIcon fontSize='small' />
-              </IconButton>
-            }
-          >
-            <ListItemText primary={id} />
-          </ListItem>
+          <SelectedDeveloperItem key={id} id={id} onRemove={removeDeveloper} />
         ))}
       </List>
 
@@ -126,5 +117,27 @@ export function DeveloperSelector({
         <FormHelperText error>{error || (searchError as any)?.message || 'Error searching for user'}</FormHelperText>
       )}
     </FormControl>
+  );
+}
+
+function SelectedDeveloperItem({ id, onRemove }: { id: string; onRemove: (id: string) => void }) {
+  const { data, isLoading } = useGetUser(id);
+  const primary = data?.displayName || data?.path || id;
+  const secondary = data?.path && data?.path !== data?.displayName ? `@${data.path}` : undefined;
+
+  return (
+    <ListItem
+      secondaryAction={
+        <IconButton edge='end' aria-label='remove' color='error' onClick={() => onRemove(id)}>
+          <DeleteIcon fontSize='small' />
+        </IconButton>
+      }
+    >
+      <ListItemText
+        primaryTypographyProps={{ sx: { wordBreak: 'break-word' } }}
+        primary={isLoading ? 'Loading…' : primary}
+        secondary={isLoading ? undefined : secondary}
+      />
+    </ListItem>
   );
 }
