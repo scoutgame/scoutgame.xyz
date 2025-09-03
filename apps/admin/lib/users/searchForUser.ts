@@ -8,39 +8,38 @@ import { getNumberFromString } from './getUsers';
 
 export type SearchUserResult = {
   scout?: Scout & { githubLogin?: string };
-  waitlistUser?: ConnectWaitlistSlot;
   farcasterUser?: FarcasterUser;
 };
 
 // find a single user, from scouts or waitlist record. Eventually this doesnt need to search waitlist
-export async function searchForUser({ searchString }: { searchString: string }): Promise<SearchUserResult | null> {
+export async function searchForUser({
+  searchString,
+  skipFarcaster
+}: {
+  searchString: string;
+  skipFarcaster: boolean;
+}): Promise<SearchUserResult | null> {
   if (searchString.length < 2) {
     return null;
   }
   // assume farcaster id if search string is a number
   // look for scout, then waitlist, then farcaster for a profile
-  const userFid = getNumberFromString(searchString);
-  if (userFid) {
-    const scout = await prisma.scout.findUnique({
-      where: {
-        farcasterId: userFid,
-        deletedAt: null
+  if (!skipFarcaster) {
+    const userFid = getNumberFromString(searchString);
+    if (userFid) {
+      const scout = await prisma.scout.findUnique({
+        where: {
+          farcasterId: userFid,
+          deletedAt: null
+        }
+      });
+      if (scout) {
+        return { scout };
       }
-    });
-    if (scout) {
-      return { scout };
-    }
-    const waitlistUser = await prisma.connectWaitlistSlot.findUnique({
-      where: {
-        fid: userFid
+      const farcasterUser = await getFarcasterUserById(userFid);
+      if (farcasterUser) {
+        return { farcasterUser };
       }
-    });
-    if (waitlistUser) {
-      return { waitlistUser };
-    }
-    const farcasterUser = await getFarcasterUserById(userFid);
-    if (farcasterUser) {
-      return { farcasterUser };
     }
   }
   // check for scout by path
@@ -70,18 +69,12 @@ export async function searchForUser({ searchString }: { searchString: string }):
   if (userByName) {
     return { scout: { ...userByName, githubLogin: userByName.githubUsers[0]?.login } };
   }
-  // check for waitlist by github login or farcaster username
-  const waitlistUser = await prisma.connectWaitlistSlot.findFirst({
-    where: {
-      OR: [{ githubLogin: searchString }, { username: searchString }]
+  if (!skipFarcaster) {
+    // check for waitlist by github login or farcaster username
+    const farcasterUser = await getFarcasterUserByUsername(searchString);
+    if (farcasterUser) {
+      return { farcasterUser };
     }
-  });
-  if (waitlistUser) {
-    return { waitlistUser };
-  }
-  const farcasterUser = await getFarcasterUserByUsername(searchString);
-  if (farcasterUser) {
-    return { farcasterUser };
   }
 
   return null;

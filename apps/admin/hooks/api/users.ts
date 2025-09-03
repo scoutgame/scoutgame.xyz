@@ -25,8 +25,11 @@ export function useSearchUsers({
   });
 }
 
-export function useSearchForUser(searchString?: string) {
-  return useGET<SearchUserResult | null>(searchString ? '/api/users/search-for-user' : null, { searchString });
+export function useSearchForUser(searchString?: string, skipFarcaster: boolean = false) {
+  return useGET<SearchUserResult | null>(searchString ? '/api/users/search-for-user' : null, {
+    searchString,
+    skipFarcaster
+  });
 }
 
 export function useGetUser(userId?: string) {

@@ -90,14 +90,14 @@ export async function DeveloperProfile({ builder }: { builder: BuilderUserInfo }
 
   if (builder.builderStatus === 'rejected') {
     return (
-      <Stack gap={2} alignItems='center'>
-        <Suspense>
+      <Suspense>
+        <Stack gap={2} alignItems='center'>
           <Typography>
             Your Developer account was not approved. Connect your GitHub account again if you think this was a mistake.
-            <JoinGithubButton />
           </Typography>
-        </Suspense>
-      </Stack>
+          <JoinGithubButton />
+        </Stack>
+      </Suspense>
     );
   }
 

@@ -123,6 +123,7 @@ describe('recordMergedPullRequest', () => {
     await prisma.scoutPartner.create({
       data: {
         id: scoutPartnerId,
+        status: 'active',
         name: 'Test Partner',
         icon: 'test-icon.png',
         bannerImage: 'test-banner.png',

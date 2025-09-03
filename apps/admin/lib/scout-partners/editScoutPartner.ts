@@ -5,8 +5,8 @@ import { prisma } from '@charmverse/core/prisma-client';
 import type { EditScoutPartnerPayload } from './editScoutPartnerSchema';
 
 export async function editScoutPartner(id: string, params: EditScoutPartnerPayload): Promise<ScoutPartner> {
-  // Separate repoIds from the other ScoutPartner fields
-  const { repoIds, ...scoutPartnerData } = params;
+  // Separate repoIds and blacklist from the other ScoutPartner fields
+  const { repoIds, blacklistedDeveloperIds, ...scoutPartnerData } = params;
 
   // Handle repo associations
   if (repoIds !== undefined) {
@@ -26,6 +26,28 @@ export async function editScoutPartner(id: string, params: EditScoutPartnerPaylo
       });
 
       log.info('Added repos to scout partner', { addedRepos });
+    }
+  }
+
+  // Handle blacklisted developers
+  if (blacklistedDeveloperIds !== undefined) {
+    // Remove all current blacklisted developers for this partner
+    const removedDevelopers = await prisma.blacklistedScoutPartnerDeveloper.deleteMany({
+      where: { scoutPartnerId: id }
+    });
+    log.info('Removed blacklisted developers from scout partner', { removedDevelopers });
+
+    if (blacklistedDeveloperIds.length > 0) {
+      const items = blacklistedDeveloperIds
+        .filter((devId): devId is string => Boolean(devId))
+        .map((developerId) => ({ scoutPartnerId: id, developerId }));
+      if (items.length) {
+        const addedDevelopers = await prisma.blacklistedScoutPartnerDeveloper.createMany({
+          data: items,
+          skipDuplicates: true
+        });
+        log.info('Added blacklisted developers to scout partner', { addedDevelopers });
+      }
     }
   }
 

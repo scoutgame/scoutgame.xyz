@@ -122,15 +122,6 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
         if (!existingBuilderEvent) {
           const activityType: ScoutGameActivityType = 'daily_commit';
 
-          const repo = await prisma.githubRepo.findUniqueOrThrow({
-            where: {
-              id: commit.repository.id
-            },
-            select: {
-              scoutPartnerId: true
-            }
-          });
-
           // It's a new event, we can record notification
           const nftPurchaseEvents = await prisma.nFTPurchaseEvent.findMany({
             where: {
@@ -161,7 +152,6 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
               week,
               type: 'daily_commit',
               githubEventId: event.id,
-              scoutPartnerId: repo.scoutPartnerId,
               gemsReceipt: {
                 create: {
                   type: gemReceiptType,

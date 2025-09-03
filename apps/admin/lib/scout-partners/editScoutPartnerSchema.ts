@@ -14,7 +14,9 @@ export const editScoutPartnerSchema = yup.object().shape({
     )
     .required()
     .default([]),
-  repoIds: yup.array().of(yup.number().required()).default([])
+  repoIds: yup.array().of(yup.number().required()).default([]),
+  // Allow setting a list of blacklisted developers (Scout ids)
+  blacklistedDeveloperIds: yup.array().of(yup.string().uuid('Invalid developer id')).default([])
 });
 
 export type EditScoutPartnerPayload = yup.InferType<typeof editScoutPartnerSchema>;

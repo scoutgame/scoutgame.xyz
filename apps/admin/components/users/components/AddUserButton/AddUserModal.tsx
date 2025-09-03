@@ -135,44 +135,6 @@ export function AddUserModal({ open, onClose, onAdd }: Props) {
               </Stack>
             </>
           )}
-          {!isValidating && user?.waitlistUser && (
-            <>
-              <Box p={1}>
-                <Typography variant='h6'>Waitlist entry found</Typography>
-                <Typography>
-                  <span style={{ fontWeight: 'bold' }}>Farcaster:</span>{' '}
-                  <Link href={`https://farcaster.xyz/${user.waitlistUser.username}`} target='_blank'>
-                    {user.waitlistUser.username}
-                  </Link>
-                </Typography>
-                <Typography>
-                  <span style={{ fontWeight: 'bold' }}>Github:</span>{' '}
-                  {user.waitlistUser.githubLogin ? (
-                    <Link href={`https://github.com/${user.waitlistUser.githubLogin}`} target='_blank'>
-                      {user.waitlistUser.githubLogin}
-                    </Link>
-                  ) : (
-                    'N/A'
-                  )}
-                </Typography>
-                <Typography>
-                  <span style={{ fontWeight: 'bold' }}>Percentile:</span> {user.waitlistUser.percentile}
-                </Typography>
-                <Typography>
-                  <span style={{ fontWeight: 'bold' }}>Joined:</span>{' '}
-                  {new Date(user.waitlistUser.createdAt).toDateString()}
-                </Typography>
-              </Box>
-              <Stack direction='row' spacing={2} justifyContent='flex-end'>
-                <Button variant='outlined' color='secondary' onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button loading={isCreating} type='submit' color='primary' variant='contained'>
-                  Add {user.waitlistUser.githubLogin ? 'builder' : 'scout'}
-                </Button>
-              </Stack>
-            </>
-          )}
           {!isValidating && user?.farcasterUser && (
             <>
               <Box p={1}>

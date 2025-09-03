@@ -95,45 +95,6 @@ describe('recordCommit', () => {
     expect(scoutActivities).toBe(1);
   });
 
-  it('should register a partner bonus', async () => {
-    const builder = await mockBuilder();
-    const scoutPartnerId = v4();
-
-    // Create the scout partner first
-    await prisma.scoutPartner.create({
-      data: {
-        id: scoutPartnerId,
-        name: 'Test Partner',
-        icon: 'test-icon.png',
-        bannerImage: 'test-banner.png',
-        infoPageImage: 'test-info.png'
-      }
-    });
-
-    const repo = await mockRepo({
-      scoutPartnerId,
-      name: 'Test-Repo',
-      defaultBranch: 'main'
-    });
-
-    const commit = mockCommit({
-      completedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      author: builder.githubUser,
-      repo
-    });
-
-    await recordCommit({ commit, season: currentSeason });
-
-    const builderEvent = await prisma.builderEvent.findFirst({
-      where: {
-        builderId: builder.id,
-        type: 'daily_commit'
-      }
-    });
-    expect(builderEvent).toEqual(expect.objectContaining({ scoutPartnerId }));
-  });
-
   it('should create builder events and gems receipts for a regular merged pull request', async () => {
     const builder = await mockBuilder();
 
