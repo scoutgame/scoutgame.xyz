@@ -34,6 +34,12 @@ export async function POST(request: Request) {
             owner: true,
             name: true
           }
+        },
+        blacklistedDevelopers: {
+          select: {
+            developerId: true,
+            developer: { select: { id: true, path: true, displayName: true } }
+          }
         }
       }
     });
@@ -66,6 +72,12 @@ export async function PUT(request: Request) {
             id: true,
             owner: true,
             name: true
+          }
+        },
+        blacklistedDevelopers: {
+          select: {
+            developerId: true,
+            developer: { select: { id: true, path: true, displayName: true } }
           }
         }
       }

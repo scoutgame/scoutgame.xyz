@@ -22,6 +22,7 @@ import type { EditScoutPartnerPayload } from 'lib/scout-partners/editScoutPartne
 import { editScoutPartnerSchema } from 'lib/scout-partners/editScoutPartnerSchema';
 import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
+import { DeveloperSelector } from './DeveloperSelector';
 import { IssueTagAmountFields } from './IssueTagAmountFields';
 import { RepoSelector } from './RepoSelector';
 
@@ -51,7 +52,9 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
       status: partner.status,
       tokenAmountPerPullRequest: partner.tokenAmountPerPullRequest ?? undefined,
       issueTagTokenAmounts: (partner.issueTagTokenAmounts as { tag: string; amount: number }[]) ?? [],
-      repoIds: partner.repos?.map((repo) => repo.id) ?? []
+      repoIds: partner.repos?.map((repo) => repo.id) ?? [],
+      blacklistedDeveloperIds:
+        (partner as unknown as ScoutPartnerWithRepos).blacklistedDevelopers?.map((b) => b.developerId) ?? []
     },
     resolver: yupResolver(editScoutPartnerSchema),
     mode: 'onChange'
@@ -105,6 +108,19 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
               error={errors.repoIds?.message}
               label='Repositories'
               initialRepos={partner.repos}
+            />
+          )}
+        />
+
+        <Controller
+          name='blacklistedDeveloperIds'
+          control={control}
+          render={({ field }) => (
+            <DeveloperSelector
+              value={(field.value as string[]) || []}
+              onChange={field.onChange}
+              error={errors.blacklistedDeveloperIds?.message}
+              label='Blacklisted Developers'
             />
           )}
         />

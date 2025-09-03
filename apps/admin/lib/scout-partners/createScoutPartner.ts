@@ -5,7 +5,7 @@ import { uploadUrlToS3 } from '@packages/aws/uploadToS3Server';
 import type { CreateScoutPartnerPayload } from './createScoutPartnerSchema';
 
 export async function createScoutPartner(params: CreateScoutPartnerPayload): Promise<ScoutPartner> {
-  const { repoIds, ...rest } = params;
+  const { repoIds, blacklistedDeveloperIds = [], ...rest } = params;
   const id = params.name
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '') // Remove all non-alphanumeric characters except spaces
@@ -30,6 +30,16 @@ export async function createScoutPartner(params: CreateScoutPartnerPayload): Pro
       where: { id: { in: repoIds } },
       data: { scoutPartnerId: partner.id }
     });
+  }
+
+  // Persist blacklisted developers
+  if (blacklistedDeveloperIds && blacklistedDeveloperIds.length > 0) {
+    const items = blacklistedDeveloperIds
+      .filter((devId): devId is string => Boolean(devId))
+      .map((developerId) => ({ scoutPartnerId: partner.id, developerId }));
+    if (items.length) {
+      await prisma.blacklistedScoutPartnerDeveloper.createMany({ data: items, skipDuplicates: true });
+    }
   }
 
   // Upload images with proper paths

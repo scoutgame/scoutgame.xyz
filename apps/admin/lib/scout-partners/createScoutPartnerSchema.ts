@@ -50,7 +50,9 @@ export const createScoutPartnerSchema = yup.object({
       then: (schema) => schema.default([]),
       otherwise: (schema) => schema.optional()
     }),
-  repoIds: yup.array().of(yup.number().required()).default([])
+  repoIds: yup.array().of(yup.number().required()).default([]),
+  // Developers (Scout ids) who should be excluded from partner rewards
+  blacklistedDeveloperIds: yup.array().of(yup.string().uuid('Invalid developer id')).default([])
 });
 
 export type CreateScoutPartnerPayload = yup.InferType<typeof createScoutPartnerSchema>;

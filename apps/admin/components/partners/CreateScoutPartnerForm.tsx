@@ -33,6 +33,7 @@ import { createScoutPartnerSchema } from 'lib/scout-partners/createScoutPartnerS
 import type { ScoutPartnerWithRepos } from 'lib/scout-partners/getScoutPartners';
 
 import { ChainSelector } from './ChainSelector';
+import { DeveloperSelector } from './DeveloperSelector';
 import { IssueTagAmountFields } from './IssueTagAmountFields';
 import { RepoSelector } from './RepoSelector';
 
@@ -163,7 +164,8 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
       tokenImage: '',
       tokenSymbol: '',
       issueTagTokenAmounts: [],
-      repoIds: []
+      repoIds: [],
+      blacklistedDeveloperIds: []
     },
     resolver: yupResolver(createScoutPartnerSchema),
     mode: 'onChange',
@@ -346,6 +348,19 @@ export function CreateScoutPartnerForm({ onClose, onSuccess }: Props) {
               onChange={field.onChange}
               error={errors.repoIds?.message}
               label='Repositories'
+            />
+          )}
+        />
+
+        <Controller
+          name='blacklistedDeveloperIds'
+          control={control}
+          render={({ field }) => (
+            <DeveloperSelector
+              value={(field.value as string[]) || []}
+              onChange={field.onChange}
+              error={errors.blacklistedDeveloperIds?.message}
+              label='Blacklisted Developers'
             />
           )}
         />
