@@ -72,7 +72,7 @@
   "dependencies": {
     "@apollo/client": "^3.13.8",
     "@beam-australia/react-env": "^3.1.1",
-    "@charmverse/core": "^0.126.6-rc-feat-github-rep.1",
+    "@charmverse/core": "^0.126.6",
     "@datadog/browser-rum": "^5.33.0",
     "@emotion/styled": "^11.13.5",
     "@farcaster/auth-kit": "^0.8.1",
