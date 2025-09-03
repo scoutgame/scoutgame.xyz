@@ -10,6 +10,7 @@ export type DeveloperReward = {
   tokens: number;
   rank: number | null;
   cardsHeld: number;
+  developerId: string;
 };
 
 export async function getSeasonDeveloperRewards({
@@ -90,7 +91,8 @@ export async function getSeasonDeveloperRewards({
             avatar: developer.avatar,
             cardsHeld,
             tokens: 0,
-            rank: null
+            rank: null,
+            developerId
           };
         }
         developerRewardsRecord[developerId].tokens += Number(formatUnits(BigInt(receipt.value), 18));
@@ -191,6 +193,7 @@ export async function getWeeklyDeveloperRewards({
       }
       return {
         rank,
+        developerId: developer.id,
         path: developer.path,
         avatar: developer.avatar,
         tokens: Number(formatUnits(BigInt(receipt.value), 18)),
