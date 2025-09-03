@@ -3,7 +3,7 @@ import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRe
 
 import type { IssueTagAmount } from 'components/partners/IssueTagAmountFields';
 
-export async function getBuildersForPartner({
+export async function getDevelopersForPartner({
   week,
   scoutPartnerId,
   includeIssueTier = false

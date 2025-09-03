@@ -1,5 +1,5 @@
 import { respondWithTSV } from 'lib/nextjs/respondWithTSV';
-import { getBuildersForPartner } from 'lib/partners/getBuildersForPartner';
+import { getDevelopersForPartner } from 'lib/partners/getDevelopersForPartner';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     return new Response('Week parameter is required', { status: 400 });
   }
 
-  const rows = await getBuildersForPartner({
+  const rows = await getDevelopersForPartner({
     week,
     scoutPartnerId: 'gooddollar',
     includeIssueTier: true
