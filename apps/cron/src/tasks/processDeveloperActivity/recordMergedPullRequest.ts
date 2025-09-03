@@ -88,14 +88,6 @@ export async function recordMergedPullRequest({
     }
   });
 
-  const scoutPartner = repo.scoutPartnerId
-    ? await prisma.scoutPartner.findUniqueOrThrow({
-        where: {
-          id: repo.scoutPartnerId
-        }
-      })
-    : null;
-
   const existingGithubEvent = previousGitEvents.some(
     (event) => event.pullRequestNumber === pullRequest.number && event.repoId === pullRequest.repository.id
   );
@@ -159,39 +151,53 @@ export async function recordMergedPullRequest({
 
     // Add linked issues processing
 
-    let issueTags: string[] | null = null;
-
-    if (repo.scoutPartnerId) {
-      try {
-        const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
-        const linkedIssue = await getLinkedIssue({
-          owner,
-          repo: repoName,
-          pullNumber: pullRequest.number
-        });
-
-        if (linkedIssue) {
-          await tx.githubIssue.create({
-            data: {
-              pullRequestNumber: pullRequest.number,
-              githubEventId: event.id,
-              repoId: pullRequest.repository.id,
-              issueNumber: linkedIssue.number,
-              tags: linkedIssue.tags
-            }
-          });
-          issueTags = linkedIssue.tags;
-        }
-      } catch (error) {
-        log.error('Error processing linked issues', {
-          error,
-          pullRequestNumber: pullRequest.number,
-          repository: pullRequest.repository.nameWithOwner
-        });
-      }
-    }
-
     if (githubUser.builderId) {
+      let issueTags: string[] | null = null;
+
+      const scoutPartner = repo.scoutPartnerId
+        ? await prisma.scoutPartner.findUniqueOrThrow({
+            where: {
+              status: 'active',
+              id: repo.scoutPartnerId,
+              blacklistedDevelopers: {
+                some: {
+                  developerId: githubUser.builderId
+                }
+              }
+            }
+          })
+        : null;
+
+      if (scoutPartner) {
+        try {
+          const [owner, repoName] = pullRequest.repository.nameWithOwner.split('/');
+          const linkedIssue = await getLinkedIssue({
+            owner,
+            repo: repoName,
+            pullNumber: pullRequest.number
+          });
+
+          if (linkedIssue) {
+            await tx.githubIssue.create({
+              data: {
+                pullRequestNumber: pullRequest.number,
+                githubEventId: event.id,
+                repoId: pullRequest.repository.id,
+                issueNumber: linkedIssue.number,
+                tags: linkedIssue.tags
+              }
+            });
+            issueTags = linkedIssue.tags;
+          }
+        } catch (error) {
+          log.error('Error processing linked issues', {
+            error,
+            pullRequestNumber: pullRequest.number,
+            repository: pullRequest.repository.nameWithOwner
+          });
+        }
+      }
+
       const builder = await tx.scout.findUniqueOrThrow({
         where: {
           id: githubUser.builderId
@@ -286,7 +292,7 @@ export async function recordMergedPullRequest({
               week,
               type: 'merged_pull_request',
               githubEventId: event.id,
-              scoutPartnerId: repo.scoutPartnerId,
+              scoutPartnerId: scoutPartner?.id,
               gemsReceipt: {
                 create: {
                   type: gemReceiptType,
