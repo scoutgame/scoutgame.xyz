@@ -7,7 +7,6 @@ import {
   getSeasonConfig,
   getNextWeek,
   getCurrentSeasonWeekNumber,
-  getPreviousSeason,
   getNextSeason,
   getCurrentSeason,
   getPreviousNonDraftSeason
