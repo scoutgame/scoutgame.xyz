@@ -8,7 +8,6 @@ import { getNumberFromString } from './getUsers';
 
 export type SearchUserResult = {
   scout?: Scout & { githubLogin?: string };
-  waitlistUser?: ConnectWaitlistSlot;
   farcasterUser?: FarcasterUser;
 };
 
@@ -29,14 +28,6 @@ export async function searchForUser({ searchString }: { searchString: string }):
     });
     if (scout) {
       return { scout };
-    }
-    const waitlistUser = await prisma.connectWaitlistSlot.findUnique({
-      where: {
-        fid: userFid
-      }
-    });
-    if (waitlistUser) {
-      return { waitlistUser };
     }
     const farcasterUser = await getFarcasterUserById(userFid);
     if (farcasterUser) {
@@ -71,14 +62,6 @@ export async function searchForUser({ searchString }: { searchString: string }):
     return { scout: { ...userByName, githubLogin: userByName.githubUsers[0]?.login } };
   }
   // check for waitlist by github login or farcaster username
-  const waitlistUser = await prisma.connectWaitlistSlot.findFirst({
-    where: {
-      OR: [{ githubLogin: searchString }, { username: searchString }]
-    }
-  });
-  if (waitlistUser) {
-    return { waitlistUser };
-  }
   const farcasterUser = await getFarcasterUserByUsername(searchString);
   if (farcasterUser) {
     return { farcasterUser };
