@@ -13,7 +13,6 @@ import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/const
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { getPartnerRewardAmount } from '@packages/scoutgame/scoutPartners/getPartnerRewardAmount';
 import { isTruthy } from '@packages/utils/types';
-import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
 import { gemsValues } from './config';
@@ -35,15 +34,11 @@ export type MergedPullRequestMeta = Pick<
 export async function recordMergedPullRequest({
   pullRequest,
   repo,
-  season,
-  skipFirstMergedPullRequestCheck,
-  now = DateTime.utc()
+  season
 }: {
   pullRequest: MergedPullRequestMeta;
   repo: RepoInput;
-  skipFirstMergedPullRequestCheck?: boolean;
   season: Season;
-  now?: DateTime;
 }) {
   if (!pullRequest.mergedAt) {
     throw new Error('Pull request was not merged');
@@ -74,9 +69,8 @@ export async function recordMergedPullRequest({
           createdAt: true,
           week: true,
           gemsReceipt: {
-            select: {
-              value: true,
-              type: true
+            where: {
+              type: 'third_pr_in_streak'
             }
           }
         }
@@ -106,7 +100,7 @@ export async function recordMergedPullRequest({
   });
 
   let isFirstMergedPullRequest = totalMergedPullRequests === 0;
-  if (isFirstMergedPullRequest && !skipFirstMergedPullRequestCheck) {
+  if (isFirstMergedPullRequest) {
     // double-check using Github API in case the previous PR was not recorded by us
     const prs = await getRecentMergedPullRequestsByUser({
       defaultBranch: repo.defaultBranch,
@@ -210,8 +204,12 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
-      const streakEvent = previousGitEvents.find((e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak');
-      const streakEventDate = streakEvent?.completedAt?.toISOString().split('T')[0];
+
+      const streakEvent = previousGitEvents
+        .filter((e) => e.builderEvent?.gemsReceipt)
+        .map((e) => e.completedAt)
+        .sort((a, b) => (b?.getTime() || 0) - (a?.getTime() || 0));
+      const streakEventDate = streakEvent?.[0]?.toISOString().split('T')[0];
       const daysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
