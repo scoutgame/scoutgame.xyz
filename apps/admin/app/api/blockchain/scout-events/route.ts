@@ -10,7 +10,7 @@ export type RequestParams = {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const searchParamsResolved = await searchParams;
+  const searchParamsResolved = searchParams;
   const scoutId = searchParamsResolved.get('scoutId');
   if (!scoutId) {
     return NextResponse.json({ message: 'Missing scoutId' }, { status: 400 });

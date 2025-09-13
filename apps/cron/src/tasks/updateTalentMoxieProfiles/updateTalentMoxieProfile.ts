@@ -1,5 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { getMoxieFanToken } from '@packages/moxie/getMoxieFanToken';
 import { getTalentProfile } from '@packages/scoutgame/talent/getTalentProfile';
 
 export async function updateTalentProfile({

@@ -28,13 +28,13 @@ cron:
 
   - name: 'alert-low-wallet-gas-balance'
     url: '/alert-low-wallet-gas-balance'
-    # Every 5 minutes
-    schedule: '*/5 * * * *'
+    # Every 30 minutes
+    schedule: '*/30 * * * *'
 
   - name: 'resync-nft-purchases'
     url: '/resync-nft-purchases'
-    # Every 5 minutes
-    schedule: '*/5 * * * *'
+    # Every 30 minutes
+    schedule: '*/30 * * * *'
 
   - name: 'update-builder-card-activity'
     url: '/update-builder-card-activity'

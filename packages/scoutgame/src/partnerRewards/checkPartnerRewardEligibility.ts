@@ -1,6 +1,4 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import type { SablierMerkleTree } from '@packages/blockchain/airdrop/checkSablierAirdropEligibility';
-import { checkSablierAirdropEligibility } from '@packages/blockchain/airdrop/checkSablierAirdropEligibility';
 import { checkThirdwebAirdropEligibility } from '@packages/blockchain/airdrop/checkThirdwebAirdropEligibility';
 import type { ThirdwebFullMerkleTree } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 
@@ -11,16 +9,6 @@ export async function checkPartnerRewardEligibility({
   payoutContractId: string;
   scoutId: string;
 }) {
-  const contract = await prisma.partnerRewardPayoutContract.findUniqueOrThrow({
-    where: {
-      id: payoutContractId
-    },
-    select: {
-      provider: true,
-      blockNumber: true
-    }
-  });
-
   const payout = await prisma.partnerRewardPayout.findFirstOrThrow({
     where: {
       deletedAt: null,
@@ -50,28 +38,13 @@ export async function checkPartnerRewardEligibility({
     throw new Error('Partner reward already claimed');
   }
 
-  if (contract.provider === 'thirdweb') {
-    const { amount, index, proof } = await checkThirdwebAirdropEligibility({
-      recipientAddress: payout.walletAddress as `0x${string}`,
-      merkleTreeJson: payout.payoutContract.merkleTreeJson as ThirdwebFullMerkleTree,
-      contractAddress: payout.payoutContract.contractAddress as `0x${string}`,
-      chainId: payout.payoutContract.chainId,
-      blockNumber: payout.payoutContract.blockNumber
-    });
-    return {
-      amount,
-      index,
-      proof
-    };
-  }
-
-  const { amount, index, proof } = await checkSablierAirdropEligibility({
+  const { amount, index, proof } = await checkThirdwebAirdropEligibility({
     recipientAddress: payout.walletAddress as `0x${string}`,
-    merkleTreeJson: payout.payoutContract.merkleTreeJson as SablierMerkleTree,
+    merkleTreeJson: payout.payoutContract.merkleTreeJson as ThirdwebFullMerkleTree,
     contractAddress: payout.payoutContract.contractAddress as `0x${string}`,
-    chainId: payout.payoutContract.chainId
+    chainId: payout.payoutContract.chainId,
+    blockNumber: payout.payoutContract.blockNumber
   });
-
   return {
     amount,
     index,

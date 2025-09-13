@@ -2,7 +2,7 @@ import type { WeeklyClaims } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ProvableClaim } from '@charmverse/core/protocol';
 import { getMerkleProofs } from '@charmverse/core/protocol';
-import { getSeasonConfig, getNextSeason, getCurrentSeasonStart, getDateFromISOWeek } from '@packages/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { DateTime } from 'luxon';
 import { type Address } from 'viem';
 
