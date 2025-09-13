@@ -379,8 +379,7 @@ describe('recordMergedPullRequest', () => {
     await recordMergedPullRequest({
       pullRequest: lastWeekPr,
       repo,
-      season: currentSeason,
-      now: DateTime.fromISO(lastWeekPr.mergedAt!, { zone: 'utc' })
+      season: currentSeason
     });
 
     const pullRequest2 = mockPullRequest({
@@ -390,7 +389,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: currentSeason, now });
+    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: currentSeason });
 
     const pullRequest3 = mockPullRequest({
       mergedAt: now.toISO(),
@@ -399,7 +398,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest3, repo, season: currentSeason, now });
+    await recordMergedPullRequest({ pullRequest: pullRequest3, repo, season: currentSeason });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
@@ -460,7 +459,7 @@ describe('recordMergedPullRequest', () => {
       mockPullRequest()
     ]);
     for (const pullRequest of prs) {
-      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason, now });
+      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
     }
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
@@ -498,7 +497,7 @@ describe('recordMergedPullRequest', () => {
       mockPullRequest()
     ]);
     for (const pullRequest of prs) {
-      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason, now });
+      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
     }
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
@@ -536,7 +535,7 @@ describe('recordMergedPullRequest', () => {
       mockPullRequest()
     ]);
     for (const pullRequest of prs) {
-      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason, now });
+      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
     }
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
@@ -574,7 +573,7 @@ describe('recordMergedPullRequest', () => {
       mockPullRequest()
     ]);
     for (const pullRequest of prs) {
-      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason, now });
+      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
     }
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
@@ -613,7 +612,7 @@ describe('recordMergedPullRequest', () => {
       mockPullRequest()
     ]);
     for (const pullRequest of prs) {
-      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason, now });
+      await recordMergedPullRequest({ pullRequest, repo, season: currentSeason });
     }
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
@@ -651,8 +650,7 @@ describe('recordMergedPullRequest', () => {
     await recordMergedPullRequest({
       pullRequest: lastWeekPr,
       repo,
-      season: currentSeason,
-      now: DateTime.fromISO(lastWeekPr.createdAt, { zone: 'utc' })
+      season: currentSeason
     });
 
     const pullRequest2 = mockPullRequest({
@@ -662,7 +660,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: currentSeason, now });
+    await recordMergedPullRequest({ pullRequest: pullRequest2, repo, season: currentSeason });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
@@ -696,8 +694,7 @@ describe('recordMergedPullRequest', () => {
     await recordMergedPullRequest({
       pullRequest: lastWeekPr,
       repo,
-      season: currentSeason,
-      now: DateTime.fromISO(lastWeekPr.createdAt, { zone: 'utc' })
+      season: currentSeason
     });
 
     const pullRequest2 = mockPullRequest({
@@ -707,7 +704,7 @@ describe('recordMergedPullRequest', () => {
       author: builder.githubUser
     });
 
-    await recordMergedPullRequest({ pullRequest: pullRequest2, repo: repo2, season: currentSeason, now });
+    await recordMergedPullRequest({ pullRequest: pullRequest2, repo: repo2, season: currentSeason });
 
     const gemsReceipts = await prisma.gemsReceipt.findMany({
       where: {
