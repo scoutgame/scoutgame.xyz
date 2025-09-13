@@ -1,11 +1,7 @@
 import { getContractLogs } from '@packages/blockchain/getContractLogs';
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import type { Address } from 'viem';
-import { parseEventLogs } from 'viem';
 
 import { nftChain } from '../constants';
-
-import { convertBlockRange, type BlockRange } from './convertBlockRange';
 
 export const builderScoutedAbi = {
   anonymous: false,

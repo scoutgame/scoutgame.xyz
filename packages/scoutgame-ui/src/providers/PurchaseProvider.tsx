@@ -1,6 +1,5 @@
 'use client';
 
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { checkDecentTransactionAction } from '@packages/scoutgame/builderNfts/checkDecentTransactionAction';
 import { nftChain } from '@packages/scoutgame/builderNfts/constants';
 import { recordNftMintAction } from '@packages/scoutgame/builderNfts/recordNftMintAction';
@@ -12,7 +11,7 @@ import type { ReactNode } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
-import { useSendTransaction, useWalletClient, usePublicClient } from 'wagmi';
+import { usePublicClient, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { useRefreshShareImage } from '../hooks/api/builders';
 

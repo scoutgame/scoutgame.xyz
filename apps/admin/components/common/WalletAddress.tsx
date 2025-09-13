@@ -1,26 +1,9 @@
 'use client';
 
-import { log } from '@charmverse/core/log';
-import { prisma } from '@charmverse/core/prisma-client';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import LaunchIcon from '@mui/icons-material/Launch';
-import {
-  Box,
-  Card,
-  Stack,
-  Typography,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  Tooltip,
-  TableBody,
-  IconButton
-} from '@mui/material';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import { getChainById } from '@packages/blockchain/chains';
-import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { shortenHex } from '@packages/utils/strings';
-import { formatUnits } from 'viem';
 import { base } from 'viem/chains';
 // a function that takes a wallet address and returns a shortened version of it with an icon button to copy the full address
 export function WalletAddress({ address, chainId = base.id }: { address: string; chainId?: number }) {
