@@ -13,7 +13,6 @@ import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/const
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { getPartnerRewardAmount } from '@packages/scoutgame/scoutPartners/getPartnerRewardAmount';
 import { isTruthy } from '@packages/utils/types';
-import { DateTime } from 'luxon';
 import { formatUnits } from 'viem';
 
 import { gemsValues } from './config';
@@ -79,14 +78,17 @@ export async function recordMergedPullRequest({
 
   const prStreakGemsReceipt = await prisma.gemsReceipt.findFirst({
     where: {
-      type: 'third_pr_in_streak'
+      type: 'third_pr_in_streak',
+      event: {
+        githubEvent: {
+          createdBy: pullRequest.author.id
+        }
+      }
     },
     orderBy: {
       createdAt: 'desc'
     },
     select: {
-      value: true,
-      type: true,
       event: {
         select: {
           githubEvent: {
