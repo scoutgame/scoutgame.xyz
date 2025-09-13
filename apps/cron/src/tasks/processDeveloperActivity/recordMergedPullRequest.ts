@@ -67,37 +67,17 @@ export async function recordMergedPullRequest({
       builderEvent: {
         select: {
           createdAt: true,
-          week: true
+          week: true,
+          gemsReceipt: {
+            where: {
+              type: 'third_pr_in_streak'
+            }
+          }
         }
       }
     },
     orderBy: {
       createdAt: 'asc'
-    }
-  });
-
-  const prStreakGemsReceipt = await prisma.gemsReceipt.findFirst({
-    where: {
-      type: 'third_pr_in_streak',
-      event: {
-        githubEvent: {
-          createdBy: pullRequest.author.id
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    },
-    select: {
-      event: {
-        select: {
-          githubEvent: {
-            select: {
-              completedAt: true
-            }
-          }
-        }
-      }
     }
   });
 
@@ -224,7 +204,12 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
-      const lastStreakEventDate = prStreakGemsReceipt?.event?.githubEvent?.completedAt?.toISOString().split('T')[0];
+
+      const streakEvent = previousGitEvents
+        .filter((e) => e.builderEvent?.gemsReceipt)
+        .map((e) => e.completedAt)
+        .sort((a, b) => (b?.getTime() || 0) - (a?.getTime() || 0));
+      const streakEventDate = streakEvent?.[0]?.toISOString().split('T')[0];
       const daysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
@@ -232,7 +217,7 @@ export async function recordMergedPullRequest({
           .filter(isTruthy)
           // We only grab events from the last 7 days, so what looked like a streak may change over time
           // To address this, we filter out events that happened before a previous streak event
-          .filter((dateStr) => !lastStreakEventDate || dateStr > lastStreakEventDate)
+          .filter((dateStr) => !streakEventDate || dateStr > streakEventDate)
       );
 
       const thisPrDate = builderEventDate.toISOString().split('T')[0];

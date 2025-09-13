@@ -39,6 +39,7 @@ export async function GET(request: Request) {
         select: {
           gemsReceipt: {
             select: {
+              type: true,
               value: true
             }
           }
@@ -50,44 +51,17 @@ export async function GET(request: Request) {
     }
   });
 
-  const prStreakGemsReceipt = await prisma.gemsReceipt.findFirst({
-    where: {
-      type: 'third_pr_in_streak',
-      event: {
-        builder: id
-          ? {
-              id
-            }
-          : {
-              path: path!
-            }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    },
-    select: {
-      event: {
-        select: {
-          githubEvent: {
-            select: {
-              completedAt: true
-            }
-          }
-        }
-      }
-    }
-  });
-
-  const lastStreakEventDate = prStreakGemsReceipt?.event?.githubEvent?.completedAt?.toISOString().split('T')[0];
+  const streakEvent = previousGitEvents
+    .filter((e) => e.builderEvent?.gemsReceipt && e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak')
+    .map((e) => e.completedAt)
+    .sort((a, b) => (b?.getTime() || 0) - (a?.getTime() || 0));
+  const lastStreakEventDate = streakEvent?.[0]?.toISOString().split('T')[0];
   const currentStreakDays = Array.from(
     new Set(
       previousGitEvents
         .filter((e) => e.builderEvent)
         .map((e) => e.completedAt && e.completedAt.toISOString().split('T')[0])
         .filter(isTruthy)
-        // We only grab events from the last 7 days, so what looked like a streak may change over time
-        // To address this, we filter out events that happened before a previous streak event
         .filter((dateStr) => !lastStreakEventDate || dateStr > lastStreakEventDate)
     )
   );
