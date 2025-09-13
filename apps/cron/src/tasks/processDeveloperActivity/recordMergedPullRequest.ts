@@ -35,15 +35,11 @@ export type MergedPullRequestMeta = Pick<
 export async function recordMergedPullRequest({
   pullRequest,
   repo,
-  season,
-  skipFirstMergedPullRequestCheck,
-  now = DateTime.utc()
+  season
 }: {
   pullRequest: MergedPullRequestMeta;
   repo: RepoInput;
-  skipFirstMergedPullRequestCheck?: boolean;
   season: Season;
-  now?: DateTime;
 }) {
   if (!pullRequest.mergedAt) {
     throw new Error('Pull request was not merged');
@@ -72,18 +68,34 @@ export async function recordMergedPullRequest({
       builderEvent: {
         select: {
           createdAt: true,
-          week: true,
-          gemsReceipt: {
-            select: {
-              value: true,
-              type: true
-            }
-          }
+          week: true
         }
       }
     },
     orderBy: {
       createdAt: 'asc'
+    }
+  });
+
+  const prStreakGemsReceipt = await prisma.gemsReceipt.findFirst({
+    where: {
+      type: 'third_pr_in_streak'
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    select: {
+      value: true,
+      type: true,
+      event: {
+        select: {
+          githubEvent: {
+            select: {
+              completedAt: true
+            }
+          }
+        }
+      }
     }
   });
 
@@ -106,7 +118,7 @@ export async function recordMergedPullRequest({
   });
 
   let isFirstMergedPullRequest = totalMergedPullRequests === 0;
-  if (isFirstMergedPullRequest && !skipFirstMergedPullRequestCheck) {
+  if (isFirstMergedPullRequest) {
     // double-check using Github API in case the previous PR was not recorded by us
     const prs = await getRecentMergedPullRequestsByUser({
       defaultBranch: repo.defaultBranch,
@@ -210,8 +222,7 @@ export async function recordMergedPullRequest({
         log.warn('Ignore PR: builder not approved', { eventId: event.id, userId: githubUser.builderId });
         return;
       }
-      const streakEvent = previousGitEvents.find((e) => e.builderEvent?.gemsReceipt?.type === 'third_pr_in_streak');
-      const streakEventDate = streakEvent?.completedAt?.toISOString().split('T')[0];
+      const lastStreakEventDate = prStreakGemsReceipt?.event?.githubEvent?.completedAt?.toISOString().split('T')[0];
       const daysWithPr = new Set(
         previousGitEvents
           .filter((e) => e.builderEvent)
@@ -219,7 +230,7 @@ export async function recordMergedPullRequest({
           .filter(isTruthy)
           // We only grab events from the last 7 days, so what looked like a streak may change over time
           // To address this, we filter out events that happened before a previous streak event
-          .filter((dateStr) => !streakEventDate || dateStr > streakEventDate)
+          .filter((dateStr) => !lastStreakEventDate || dateStr > lastStreakEventDate)
       );
 
       const thisPrDate = builderEventDate.toISOString().split('T')[0];
