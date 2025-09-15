@@ -171,22 +171,13 @@ async function calculateUpcomingPayout({
   tokenDecimals: number;
 }): Promise<bigint> {
   try {
-    const toWei = (v: number) => {
-      return parseUnits(v.toString(), tokenDecimals);
-    };
-
-    const scoutPartner = await prisma.scoutPartner.findUniqueOrThrow({
+    const scoutPartner = await prisma.scoutPartner.findUnique({
       where: {
         id: partner
       }
     });
 
-    if (partner === 'optimism_referral_champion') {
-      const referrals = await getReferralsToReward({ week });
-      const referralPayout = referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
-      const matchupPayout = toWei(MATCHUP_OP_PRIZE);
-      return referralPayout + matchupPayout;
-    } else if (scoutPartner) {
+    if (scoutPartner) {
       const builderEvents = await getBuilderEventsForPartnerRewards({ week, scoutPartnerId: partner });
       const scoutPartnerPayout = builderEvents.reduce(
         (sum, event) =>
