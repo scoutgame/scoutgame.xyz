@@ -8,7 +8,6 @@ import { DateTime } from 'luxon';
 
 import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
 
-import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { deployScoutPartnerRewards } from './deployScoutPartnerRewards';
 import { log } from './logger';
 
@@ -47,10 +46,5 @@ export async function processOnchainGemsPayout(
     log.info(`Sent notifications for ${notificationsSent} developers`, { notificationsSent });
   }
 
-  await Promise.all([
-    deployReferralChampionRewardsContract({ week }).catch((error) => {
-      log.error('Error deploying referral champion rewards contract', { error, week, season });
-    }),
-    deployScoutPartnerRewards({ week })
-  ]);
+  await deployScoutPartnerRewards({ week });
 }
