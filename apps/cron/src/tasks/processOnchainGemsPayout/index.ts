@@ -21,7 +21,7 @@ export async function processOnchainGemsPayout(
   const seasonConfig = getSeasonConfig(season);
 
   // run for the first few hours every Monday at midnight UTC
-  if (now.weekday !== 1 || now.hour > 3) {
+  if (now.weekday !== 1 || now.hour > 4) {
     log.info('Gems Payout: It is not yet Sunday at 12:00 AM UTC, skipping');
     return;
   }
