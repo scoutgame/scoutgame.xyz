@@ -8,7 +8,6 @@ import { DateTime } from 'luxon';
 
 import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
 
-import { deployReferralChampionRewardsContract } from './deployReferralRewardsContract';
 import { deployScoutPartnerRewards } from './deployScoutPartnerRewards';
 import { log } from './logger';
 
@@ -22,7 +21,7 @@ export async function processOnchainGemsPayout(
   const seasonConfig = getSeasonConfig(season);
 
   // run for the first few hours every Monday at midnight UTC
-  if (now.weekday !== 1 || now.hour > 3) {
+  if (now.weekday !== 1 || now.hour > 4) {
     log.info('Gems Payout: It is not yet Sunday at 12:00 AM UTC, skipping');
     return;
   }
@@ -47,10 +46,5 @@ export async function processOnchainGemsPayout(
     log.info(`Sent notifications for ${notificationsSent} developers`, { notificationsSent });
   }
 
-  await Promise.all([
-    deployReferralChampionRewardsContract({ week }).catch((error) => {
-      log.error('Error deploying referral champion rewards contract', { error, week, season });
-    }),
-    deployScoutPartnerRewards({ week })
-  ]);
+  await deployScoutPartnerRewards({ week });
 }

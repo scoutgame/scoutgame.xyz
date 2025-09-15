@@ -50,8 +50,3 @@ cron:
     url: '/update-talent-moxie-profiles'
     # Every 12 hours
     schedule: '0 */12 * * *'
-
-  - name: 'send-matchup-reminders'
-    url: '/send-matchup-reminders'
-    # every 30 minutes
-    schedule: '0 */30 * * *'

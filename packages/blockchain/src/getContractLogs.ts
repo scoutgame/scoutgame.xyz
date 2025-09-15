@@ -6,7 +6,7 @@ import { parseEventLogs } from 'viem';
 import { getPublicClient } from './getPublicClient';
 
 // Paginate requests with a maximum range of 100,000 blocks
-const MAX_BLOCK_RANGE = 20_000;
+const MAX_BLOCK_RANGE = 1_000;
 
 type LogEvent = {
   eventName: string;
