@@ -5,56 +5,63 @@ import { paginateRest } from '@octokit/plugin-paginate-rest';
 import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import { throttling } from '@octokit/plugin-throttling';
 
-const OctokitWithThrottling = Octokit.plugin(throttling, paginateRest, paginateGraphQL, restEndpointMethods);
+const MyOctokit = Octokit.plugin(throttling, paginateRest, paginateGraphQL, restEndpointMethods);
 
-// GitHub access tokens for round-robin rotation
-const GITHUB_TOKENS =
-  process.env.GITHUB_ACCESS_TOKENS?.split(',')
-    .map((token) => token.trim())
-    .filter(Boolean) || [];
+const TOKENS = (process.env.GITHUB_ACCESS_TOKENS ?? '')
+  .split(',')
+  .map((t) => t.trim())
+  .filter(Boolean);
 
-let currentTokenIndex = 0;
-
-// Function to get the next token in rotation
-function getNextToken(): string {
-  if (GITHUB_TOKENS.length === 0) {
-    throw new Error('No GitHub access tokens configured');
-  }
-
-  const token = GITHUB_TOKENS[currentTokenIndex];
-  currentTokenIndex = (currentTokenIndex + 1) % GITHUB_TOKENS.length;
-
-  log.info(`[Octokit] Using token ${currentTokenIndex}/${GITHUB_TOKENS.length}`);
+let idx = 0;
+const nextToken = () => {
+  const token = TOKENS[idx];
+  idx = (idx + 1) % TOKENS.length;
   return token;
-}
+};
 
-// Custom auth function that rotates tokens on every request
-function createRotatingAuth() {
-  return () => {
-    const token = getNextToken();
-    return { type: 'token', token };
-  };
-}
-
-// Create the octokit instance with rotating auth
-export const octokit = new OctokitWithThrottling({
-  auth: createRotatingAuth(),
+export const octokit = new MyOctokit({
+  auth: TOKENS[0], // Set initial auth so throttling plugin works properly
   throttle: {
-    // @ts-ignore
     onRateLimit: (retryAfter, options, _octokit, retryCount) => {
-      log.warn(
-        `[Octokit] Rate limit hit despite rotation. Retrying after ${retryAfter} seconds! Retry count: ${retryCount}`
-      );
-      // Optionally wait retryAfter seconds (handled by Octokit or caller)
-      return retryCount < 3; // Retry up to 3 times
+      log.warn(`[Octokit] Rate limit hit. Retrying after ${retryAfter} seconds! Retry count: ${retryCount}`);
+      // Retry a few times according to headers/X-RateLimit-Reset
+      return retryCount < 3;
     },
-    // @ts-ignore
     onSecondaryRateLimit: (retryAfter, options, _octokit) => {
-      log.warn(
-        `[Octokit] SecondaryRateLimit detected for request ${options.method} ${options.url}. Retrying after ${retryAfter} seconds!`
-      );
-      // Optionally wait retryAfter seconds (handled by Octokit or caller)
+      log.warn(`[Octokit] Secondary rate limit hit. Retrying after ${retryAfter} seconds!`);
+      // Back off when secondary rate limit triggers
       return true;
     }
+  }
+});
+
+// Inject a token and rotate on auth/rate-limit failures
+octokit.hook.wrap('request', async (request, options) => {
+  const token = nextToken();
+  try {
+    return await request({
+      ...options,
+      headers: {
+        ...options.headers,
+        authorization: `token ${token}`
+      }
+    });
+  } catch (err: any) {
+    const status = err?.status;
+    const remaining = Number(err?.response?.headers?.['x-ratelimit-remaining']);
+    const retryAfterHdr = Number(err?.response?.headers?.['retry-after']);
+    const resetTime = err?.response?.headers?.['x-ratelimit-reset'];
+    const primaryExhausted = Number.isFinite(remaining) && remaining === 0;
+    const secondaryBackoff = Number.isFinite(retryAfterHdr);
+
+    log.warn(
+      `[Octokit] Request failed - Status: ${status}, Remaining: ${remaining}, Retry-After: ${retryAfterHdr}, Reset: ${resetTime}, Token: ...${token.slice(-4)}`
+    );
+
+    // Rotate to the next token only on auth errors or clear rate-limit signals
+    if (status === 401 || status === 403 || primaryExhausted || secondaryBackoff) {
+      log.warn(`[Octokit] Will try next token on retry...`);
+    }
+    throw err;
   }
 });

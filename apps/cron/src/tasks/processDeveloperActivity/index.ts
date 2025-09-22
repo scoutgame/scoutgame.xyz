@@ -78,6 +78,8 @@ export async function processAllDeveloperActivity(
       )
     );
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     processedCount += batch.length;
 
     // Log progress every 30 developers (6 batches)
@@ -127,3 +129,5 @@ async function updateStats({ week, season }: { week: string; season: Season }) {
       log.error('Error refreshing estimated payouts', { error, week });
     });
 }
+
+processAllDeveloperActivity();
