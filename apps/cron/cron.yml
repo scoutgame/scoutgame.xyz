@@ -2,8 +2,8 @@ version: 1
 cron:
   - name: 'process-developer-activity'
     url: '/process-developer-activity'
-    # Every 30 minutes
-    schedule: '0 */30 * * *'
+    # Every 20 minutes
+    schedule: '0 */20 * * *'
 
   - name: 'approve-developers'
     url: '/approve-developers'

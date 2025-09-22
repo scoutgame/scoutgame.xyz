@@ -32,8 +32,7 @@ export async function processAllDeveloperActivity(
     },
     // Add a sort so that we can start mid-way if we need to (when running from a script)
     orderBy: {
-      // createdAt: 'asc'
-      currentBalance: 'desc'
+      createdAt: 'asc'
     },
     select: {
       createdAt: true,
@@ -53,11 +52,11 @@ export async function processAllDeveloperActivity(
       }
     }
   });
-  const timer = DateTime.now();
-  log.info(`Processing activity for ${developers.length} developers in batches of 5`);
-
   const batchSize = 10;
   let processedCount = 0;
+
+  const timer = DateTime.now();
+  log.info(`Processing activity for ${developers.length} developers in batches of ${batchSize}`);
 
   // Process developers in batches of 5
   for (let i = 0; i < developers.length; i += batchSize) {
