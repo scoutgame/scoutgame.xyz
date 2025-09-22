@@ -1,5 +1,5 @@
 import { log } from '@charmverse/core/log';
-import { octokit } from '@packages/github/client';
+import { getOctokit } from '@packages/github/client';
 
 type LinkedIssue = {
   number: number;
@@ -66,6 +66,7 @@ async function verifyPRReferencesIssue({
   pullNumber: number;
 }): Promise<boolean> {
   try {
+    const octokit = getOctokit();
     // Search for PRs that reference this issue
     const { data: searchResults } = await octokit.request('GET /search/issues', {
       q: `repo:${owner}/${repo} is:pr ${issueNumber}`,
@@ -93,6 +94,7 @@ export async function getLinkedIssue({
   pullNumber: number;
 }): Promise<LinkedIssue | null> {
   const linkedIssues = new Map<string, LinkedIssue>();
+  const octokit = getOctokit();
 
   // 1. Fetch inline review comments (comments on specific lines of code)
   const [{ data: reviews }, { data: discussionComments }, { data: pullRequest }] = await Promise.all([

@@ -129,5 +129,3 @@ async function updateStats({ week, season }: { week: string; season: Season }) {
       log.error('Error refreshing estimated payouts', { error, week });
     });
 }
-
-processAllDeveloperActivity();
