@@ -27,8 +27,20 @@ import {
   baseSepolia
 } from 'wagmi/chains';
 
+// Create a single shared config instance to avoid config mismatch issues
+let sharedConfig: ReturnType<typeof createConfig> | null = null;
+
 export function getConfig(options?: { projectId?: string }) {
+  // Return the same config instance to avoid "different config" issues
+  if (sharedConfig) {
+    return sharedConfig;
+  }
+
   const projectId = options?.projectId || env('WALLETCONNECT_PROJECTID') || '';
+
+  if (!projectId) {
+    // WalletConnect projectId is missing - this may cause Rainbow wallet connection issues
+  }
 
   const wagmiChains = [
     mainnet,
@@ -94,7 +106,8 @@ export function getConfig(options?: { projectId?: string }) {
       }
     }
   );
-  const config = createConfig({
+
+  sharedConfig = createConfig({
     connectors,
     chains: wagmiChains,
     transports,
@@ -102,5 +115,5 @@ export function getConfig(options?: { projectId?: string }) {
     storage: createStorage({ storage: cookieStorage })
   });
 
-  return config;
+  return sharedConfig;
 }

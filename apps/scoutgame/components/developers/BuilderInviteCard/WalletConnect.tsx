@@ -62,28 +62,33 @@ function WalletConnectButton({ onSuccess, connected }: { onSuccess: () => void; 
     }
   });
 
-  const handleWalletConnect = async (_address: string) => {
-    const preparedMessage: Partial<SiweMessage> = {
-      domain: window.location.host,
-      address: getAddress(_address),
-      uri: window.location.origin,
-      version: '1',
-      chainId: chainId ?? 1
-    };
+  const handleWalletConnect = useCallback(
+    async (_address: string) => {
+      // Wait a bit for connector to be fully ready
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const siweMessage = new SiweMessage(preparedMessage);
-    const message = siweMessage.prepareMessage();
-    const signature = await signMessageAsync({ message });
-    await connectWalletAccount({ message, signature });
-  };
+      const preparedMessage: Partial<SiweMessage> = {
+        domain: window.location.host,
+        address: getAddress(_address),
+        uri: window.location.origin,
+        version: '1',
+        chainId: chainId ?? 1
+      };
 
+      const siweMessage = new SiweMessage(preparedMessage);
+      const message = siweMessage.prepareMessage();
+      const signature = await signMessageAsync({ message });
+      await connectWalletAccount({ message, signature });
+    },
+    [chainId, signMessageAsync, connectWalletAccount]
+  );
   useEffect(() => {
     if (address && isConnected && isConnectingWallet) {
       handleWalletConnect(address).finally(() => {
         setIsConnectingWallet(false);
       });
     }
-  }, [address, isConnected, isConnectingWallet]);
+  }, [address, isConnected, isConnectingWallet, handleWalletConnect]);
 
   // If rainbowkit modal was closed by user
   useEffect(() => {

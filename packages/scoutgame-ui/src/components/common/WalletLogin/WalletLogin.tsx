@@ -10,7 +10,7 @@ import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useConnectModal, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { SiweMessage } from 'siwe';
 import { toast } from 'sonner';
 import { getAddress } from 'viem';
@@ -93,26 +93,32 @@ function WalletLoginButton({
 
   const errorWalletMessage = result.validationErrors?.fieldErrors.message || result.serverError?.message;
 
-  const handleWalletConnect = async (_address: string) => {
-    const preparedMessage: Partial<SiweMessage> = {
-      domain: window.location.host,
-      address: getAddress(_address),
-      uri: window.location.origin,
-      version: '1',
-      chainId: chainId ?? 1
-    };
+  const handleWalletConnect = useCallback(
+    async (_address: string) => {
+      // Wait a bit for connector to be fully ready
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const siweMessage = new SiweMessage(preparedMessage);
-    const message = siweMessage.prepareMessage();
-    try {
-      const signature = await signMessageAsync({ message });
-      await loginUser({ message, signature, inviteCode, referralCode, utmCampaign: utmCampaign as string });
-    } catch (error) {
-      // examples: user cancels signature, user rejects signature
-      log.warn('Error signing message', { error });
-      toast.warning((error as Error).message);
-    }
-  };
+      const preparedMessage: Partial<SiweMessage> = {
+        domain: window.location.host,
+        address: getAddress(_address),
+        uri: window.location.origin,
+        version: '1',
+        chainId: chainId ?? 1
+      };
+
+      const siweMessage = new SiweMessage(preparedMessage);
+      const message = siweMessage.prepareMessage();
+      try {
+        const signature = await signMessageAsync({ message });
+        await loginUser({ message, signature, inviteCode, referralCode, utmCampaign: utmCampaign as string });
+      } catch (error) {
+        // examples: user cancels signature, user rejects signature
+        log.warn('Error signing message', { error });
+        toast.warning((error as Error).message);
+      }
+    },
+    [chainId, signMessageAsync, loginUser, inviteCode, referralCode, utmCampaign]
+  );
 
   function onClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
