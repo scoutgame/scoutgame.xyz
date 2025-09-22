@@ -43,23 +43,17 @@ export const octokit = new OctokitWithThrottling({
     // @ts-ignore
     onRateLimit: (retryAfter, options, _octokit, retryCount) => {
       log.warn(
-        `[Octokit] Rate limit hit despite rotation. Rotating to next token and retrying after ${retryAfter} seconds! Retry count: ${retryCount}`
+        `[Octokit] Rate limit hit despite rotation. Retrying after ${retryAfter} seconds! Retry count: ${retryCount}`
       );
-
-      // Rotate to the next token when rate limited
-      getNextToken();
-
+      // Optionally wait retryAfter seconds (handled by Octokit or caller)
       return retryCount < 3; // Retry up to 3 times
     },
     // @ts-ignore
     onSecondaryRateLimit: (retryAfter, options, _octokit) => {
       log.warn(
-        `[Octokit] SecondaryRateLimit detected for request ${options.method} ${options.url}. Rotating to next token and retrying after ${retryAfter} seconds!`
+        `[Octokit] SecondaryRateLimit detected for request ${options.method} ${options.url}. Retrying after ${retryAfter} seconds!`
       );
-
-      // Rotate to the next token on secondary rate limit as well
-      getNextToken();
-
+      // Optionally wait retryAfter seconds (handled by Octokit or caller)
       return true;
     }
   }
