@@ -2,13 +2,13 @@ version: 1
 cron:
   - name: 'process-developer-activity'
     url: '/process-developer-activity'
-    # every two hours
-    schedule: '0 */2 * * *'
+    # Every 15 minutes
+    schedule: '0 */15 * * *'
 
   - name: 'approve-developers'
     url: '/approve-developers'
-    # once a day at 1am UTC
-    schedule: '0 1 * * *'
+    # Every 1 hour
+    schedule: '0 */1 * * *'
 
   - name: 'process-gems-payout'
     url: '/process-gems-payout'
