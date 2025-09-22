@@ -30,8 +30,7 @@ export async function getUserContributions({
 }): Promise<UserContributions> {
   const commits = await getCommitsByUser({
     login,
-    after,
-    paginated: true
+    after
   });
 
   const pullRequests = await getPullRequestsByUser({

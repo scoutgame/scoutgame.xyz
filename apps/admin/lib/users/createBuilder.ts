@@ -1,5 +1,5 @@
 import { prisma } from '@charmverse/core/prisma-client';
-import { octokit } from '@packages/github/client';
+import { getOctokit } from '@packages/github/client';
 import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 
 export type CreateBuilderParams = {
@@ -8,6 +8,8 @@ export type CreateBuilderParams = {
 };
 
 export async function createBuilder(params: CreateBuilderParams) {
+  const octokit = getOctokit();
+
   const scout = await prisma.scout.findUniqueOrThrow({
     where: {
       id: params.userId

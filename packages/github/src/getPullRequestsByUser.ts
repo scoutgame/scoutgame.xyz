@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
-
-import { octokit } from './client';
+import { getOctokit } from '@packages/github/client';
 
 type GraphQLPullRequest = {
   author: {
@@ -122,6 +121,7 @@ export async function getPullRequestsByUser({
   let allItems: GraphQLPullRequest[] = [];
   let hasNextPage = true;
   let cursor: string | null = null;
+  const octokit = getOctokit();
 
   while (hasNextPage) {
     try {

@@ -1,5 +1,5 @@
 // Function to fetch repos for a given owner
-import { octokit } from './client';
+import { getOctokit } from './client';
 
 export type GitHubAPIRepo = {
   id: number;
@@ -15,6 +15,8 @@ export async function getReposByOwner(ownerInput: string): Promise<GitHubAPIRepo
   const ownerAndName = ownerInput.split('/');
   const owner = ownerAndName[0];
   const name = ownerAndName[1]; // name is optional
+
+  const octokit = getOctokit();
 
   if (name) {
     // Fetch a specific repository
