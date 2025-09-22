@@ -56,7 +56,7 @@ export async function processAllDeveloperActivity(
   const timer = DateTime.now();
   log.info(`Processing activity for ${developers.length} developers in batches of 5`);
 
-  const batchSize = 5;
+  const batchSize = 10;
   let processedCount = 0;
 
   // Process developers in batches of 5
@@ -78,7 +78,7 @@ export async function processAllDeveloperActivity(
       )
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     processedCount += batch.length;
 
