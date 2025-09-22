@@ -54,27 +54,45 @@ export async function processAllDeveloperActivity(
     }
   });
   const timer = DateTime.now();
-  log.info(`Processing activity for ${developers.length} developers`);
+  log.info(`Processing activity for ${developers.length} developers in batches of 5`);
 
-  for (const developer of developers) {
-    await processDeveloperActivity({
-      builderId: developer.id,
-      githubUser: developer.githubUsers[0]!,
-      createdAfter,
-      season
-    }).catch((error) => {
-      log.error('Error processing developer activity', { error, userId: developer.id });
-    });
+  const batchSize = 5;
+  let processedCount = 0;
 
-    if (developers.indexOf(developer) % 30 === 0) {
-      log.debug(`Processed ${developers.indexOf(developer)}/${developers.length} developers`, {
-        lastCreatedAt: developer.currentBalance // log last createdAt in case we want to start in the middle of the process
+  // Process developers in batches of 5
+  for (let i = 0; i < developers.length; i += batchSize) {
+    const batch = developers.slice(i, i + batchSize);
+    const batchNumber = Math.floor(i / batchSize) + 1;
+
+    // Process current batch concurrently using .then/.catch
+    await Promise.all(
+      batch.map((developer) =>
+        processDeveloperActivity({
+          builderId: developer.id,
+          githubUser: developer.githubUsers[0]!,
+          createdAfter,
+          season
+        }).catch((error) => {
+          log.error('Error processing developer activity', { error, userId: developer.id });
+        })
+      )
+    );
+
+    processedCount += batch.length;
+
+    // Log progress every 30 developers (6 batches)
+    if (processedCount % 30 === 0 || processedCount === developers.length) {
+      log.debug(`Processed ${processedCount}/${developers.length} developers`, {
+        developerIds: batch.map((d) => d.id).join(', '),
+        batchNumber,
+        durationMinutes: Math.abs(timer.diff(DateTime.now(), 'minutes').minutes)
       });
-      await updateStats({ week: getCurrentWeek(), season });
     }
   }
+
   log.info('Finished processing Github activity for developers', {
-    durationMinutes: timer.diff(DateTime.now(), 'minutes').minutes
+    durationMinutes: Math.abs(timer.diff(DateTime.now(), 'minutes').minutes),
+    totalDevelopers: developers.length
   });
 
   await updateStats({ week: getCurrentWeek(), season });

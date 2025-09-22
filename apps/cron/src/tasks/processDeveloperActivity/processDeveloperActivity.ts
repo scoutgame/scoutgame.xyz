@@ -53,7 +53,7 @@ export async function processDeveloperActivity({
     (pr) => !githubEvents.some((e) => e.pullRequestNumber === pr.number && e.repoId === pr.repository.id)
   );
 
-  log.debug(`Retrieved developer activity in ${timer.diff(DateTime.now(), 'minutes').minutes} minutes`, {
+  log.debug(`Retrieved developer activity in ${DateTime.now().diff(timer, 'minutes').minutes} minutes`, {
     commits: commits.length,
     newCommits: newCommits.length,
     prs: pullRequests.length,

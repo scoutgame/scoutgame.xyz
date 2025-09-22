@@ -1,4 +1,5 @@
 // Function to fetch repos for a given owner
+import { octokit } from './client';
 
 export type GitHubAPIRepo = {
   id: number;
@@ -10,54 +11,26 @@ export type GitHubAPIRepo = {
   owner: { login: string; type: string };
 };
 
-export async function getReposByOwner(ownerInput: string) {
-  let allRepos: GitHubAPIRepo[] = [];
-  let page = 1;
-  const perPage = 100; // GitHub's max per page
-  let hasNextPage = true;
+export async function getReposByOwner(ownerInput: string): Promise<GitHubAPIRepo[]> {
   const ownerAndName = ownerInput.split('/');
   const owner = ownerAndName[0];
   const name = ownerAndName[1]; // name is optional
 
   if (name) {
-    const response = await fetch(`https://api.github.com/repos/${owner}/${name}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
-      }
+    // Fetch a specific repository
+    const response = await octokit.rest.repos.get({
+      owner,
+      repo: name
+    });
+    return [response.data as GitHubAPIRepo];
+  } else {
+    // Fetch all repositories for a user/organization using pagination
+    const repos = await octokit.paginate(octokit.rest.repos.listForUser, {
+      username: owner,
+      per_page: 100,
+      type: 'all' // Include all repos (public, private if authenticated)
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const repo = await response.json();
-    return [repo];
-  } else {
-    while (hasNextPage) {
-      const response = await fetch(`https://api.github.com/users/${owner}/repos?page=${page}&per_page=${perPage}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const repos = await response.json();
-      allRepos = allRepos.concat(repos);
-
-      // Check if there's a next page
-      const linkHeader = response.headers.get('Link');
-      hasNextPage = !!linkHeader && linkHeader.includes('rel="next"');
-      page += 1;
-
-      // Add a small delay to avoid hitting rate limits
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1000);
-      });
-    }
+    return repos as GitHubAPIRepo[];
   }
-
-  return allRepos;
 }

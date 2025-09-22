@@ -7,25 +7,59 @@ import { throttling } from '@octokit/plugin-throttling';
 
 const OctokitWithThrottling = Octokit.plugin(throttling, paginateRest, paginateGraphQL, restEndpointMethods);
 
+// GitHub access tokens for round-robin rotation
+const GITHUB_TOKENS =
+  process.env.GITHUB_ACCESS_TOKENS?.split(',')
+    .map((token) => token.trim())
+    .filter(Boolean) || [];
+
+let currentTokenIndex = 0;
+
+// Function to get the next token in rotation
+function getNextToken(): string {
+  if (GITHUB_TOKENS.length === 0) {
+    throw new Error('No GitHub access tokens configured');
+  }
+
+  const token = GITHUB_TOKENS[currentTokenIndex];
+  currentTokenIndex = (currentTokenIndex + 1) % GITHUB_TOKENS.length;
+
+  log.info(`[Octokit] Using token ${currentTokenIndex}/${GITHUB_TOKENS.length}`);
+  return token;
+}
+
+// Custom auth function that rotates tokens on every request
+function createRotatingAuth() {
+  return () => {
+    const token = getNextToken();
+    return { type: 'token', token };
+  };
+}
+
+// Create the octokit instance with rotating auth
 export const octokit = new OctokitWithThrottling({
-  auth: process.env.GITHUB_ACCESS_TOKEN,
+  auth: createRotatingAuth(),
   throttle: {
     // @ts-ignore
     onRateLimit: (retryAfter, options, _octokit, retryCount) => {
-      log.info(`[Octokit] Retrying after ${retryAfter} seconds! Retry count: ${retryCount}`);
-      return true;
-      // if (retryCount < 2) {
-      //   // only retries twice
-      //   return true;
-      // }
+      log.warn(
+        `[Octokit] Rate limit hit despite rotation. Rotating to next token and retrying after ${retryAfter} seconds! Retry count: ${retryCount}`
+      );
+
+      // Rotate to the next token when rate limited
+      getNextToken();
+
+      return retryCount < 3; // Retry up to 3 times
     },
     // @ts-ignore
     onSecondaryRateLimit: (retryAfter, options, _octokit) => {
-      // does not retry, only logs a warning
       log.warn(
-        `[Octokit] SecondaryRateLimit detected for request ${options.method} ${options.url}. Retrying after ${retryAfter} seconds!`
+        `[Octokit] SecondaryRateLimit detected for request ${options.method} ${options.url}. Rotating to next token and retrying after ${retryAfter} seconds!`
       );
-      // try again
+
+      // Rotate to the next token on secondary rate limit as well
+      getNextToken();
+
       return true;
     }
   }
