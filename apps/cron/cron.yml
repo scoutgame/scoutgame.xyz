@@ -7,8 +7,8 @@ cron:
 
   - name: 'approve-developers'
     url: '/approve-developers'
-    # Every 1 hour
-    schedule: '0 */1 * * *'
+    # Every 4 hour
+    schedule: '0 */4 * * *'
 
   - name: 'process-gems-payout'
     url: '/process-gems-payout'
