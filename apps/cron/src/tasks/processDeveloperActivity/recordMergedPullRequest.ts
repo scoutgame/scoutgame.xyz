@@ -148,7 +148,7 @@ export async function recordMergedPullRequest({
       let issueTags: string[] | null = null;
 
       const scoutPartner = repo.scoutPartnerId
-        ? await prisma.scoutPartner.findUniqueOrThrow({
+        ? await prisma.scoutPartner.findUnique({
             where: {
               status: 'active',
               id: repo.scoutPartnerId,
