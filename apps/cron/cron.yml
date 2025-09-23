@@ -2,11 +2,11 @@ version: 1
 cron:
   - name: 'process-developer-activity'
     url: '/process-developer-activity'
-    schedule: '0 */1 * * *'
+    schedule: '*/30 * * * *'
 
   - name: 'approve-developers'
     url: '/approve-developers'
-    schedule: '0 */4 * * *'
+    schedule: '0 */1 * * *'
 
   - name: 'process-gems-payout'
     url: '/process-gems-payout'

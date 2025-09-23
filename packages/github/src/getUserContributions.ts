@@ -22,21 +22,25 @@ type UserContributions = {
 export async function getUserContributions({
   login,
   githubUserId,
-  after
+  after,
+  token
 }: {
   login: string;
   githubUserId?: number;
   after: Date;
+  token?: string;
 }): Promise<UserContributions> {
   const commits = await getCommitsByUser({
     login,
-    after
+    after,
+    token
   });
 
   const pullRequests = await getPullRequestsByUser({
     login,
     githubUserId,
-    after
+    after,
+    token
   });
   const prRepoIds = pullRequests.map((node) => node.repository.id);
   const commitRepoIds = commits.map((node) => node.repository.id);

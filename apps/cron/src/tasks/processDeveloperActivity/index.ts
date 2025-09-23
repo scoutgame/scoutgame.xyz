@@ -52,7 +52,8 @@ export async function processAllDeveloperActivity(
       }
     }
   });
-  const batchSize = 10;
+
+  const batchSize = 7;
   let processedCount = 0;
 
   const timer = DateTime.now();
@@ -77,7 +78,7 @@ export async function processAllDeveloperActivity(
       )
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     processedCount += batch.length;
 

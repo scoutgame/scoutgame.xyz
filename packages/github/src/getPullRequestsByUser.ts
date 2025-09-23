@@ -111,17 +111,19 @@ const prSearchQuery = `
 export async function getPullRequestsByUser({
   login,
   githubUserId,
-  after
+  after,
+  token
 }: {
   login: string;
   githubUserId?: number;
   after: Date;
+  token?: string;
 }): Promise<PullRequest[]> {
   const queryString = `is:pr author:${login} closed:>=${after.toISOString()}`;
   let allItems: GraphQLPullRequest[] = [];
   let hasNextPage = true;
   let cursor: string | null = null;
-  const octokit = getOctokit();
+  const octokit = getOctokit(token);
 
   while (hasNextPage) {
     try {

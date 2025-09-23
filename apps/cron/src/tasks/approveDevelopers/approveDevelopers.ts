@@ -1,5 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendDiscordEvent } from '@packages/discord/sendDiscordEvent';
+import { GITHUB_ACCESS_TOKENS } from '@packages/github/client';
 import { getUserContributions } from '@packages/github/getUserContributions';
 import { approveBuilder } from '@packages/scoutgame/builders/approveBuilder';
 import { DateTime } from 'luxon';
@@ -29,7 +30,8 @@ export async function approveDevelopers() {
         const { commits, pullRequests } = await getUserContributions({
           login: githubUser.login,
           githubUserId: githubUser.id,
-          after: last28Days
+          after: last28Days,
+          token: GITHUB_ACCESS_TOKENS[0]
         });
 
         const mergedPullRequests = pullRequests.filter((pr) => pr.mergedAt);

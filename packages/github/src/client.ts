@@ -7,16 +7,20 @@ import { throttling } from '@octokit/plugin-throttling';
 
 const MyOctokit = Octokit.plugin(throttling, paginateRest, paginateGraphQL, restEndpointMethods);
 
-const TOKENS = (process.env.GITHUB_ACCESS_TOKENS ?? '')
+export const GITHUB_ACCESS_TOKENS = (process.env.GITHUB_ACCESS_TOKENS ?? '')
   .split(',')
   .map((t) => t.trim())
   .filter(Boolean);
 
+const BATCH_AVAILABLE_GITHUB_ACCESS_TOKENS = GITHUB_ACCESS_TOKENS.slice(1);
+
 let tokenIndex = 0;
 
-export function getOctokit() {
-  const token = TOKENS[tokenIndex];
-  tokenIndex = (tokenIndex + 1) % TOKENS.length;
+export function getOctokit(_token?: string) {
+  const token = _token || BATCH_AVAILABLE_GITHUB_ACCESS_TOKENS[tokenIndex];
+  if (!_token) {
+    tokenIndex = (tokenIndex + 1) % BATCH_AVAILABLE_GITHUB_ACCESS_TOKENS.length;
+  }
 
   return new MyOctokit({
     auth: token,
