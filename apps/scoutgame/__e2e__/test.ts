@@ -7,7 +7,6 @@ import { InfoPage } from './po/InfoPage.po';
 import { LoginPage } from './po/LoginPage.po';
 import { ProfilePage } from './po/ProfilePage.po';
 import { ProjectPage } from './po/ProjectPage.po';
-import { QuestsPage } from './po/QuestsPage.po';
 import { ScoutPage } from './po/ScoutPage.po';
 import { TaikoDevelopersPage } from './po/TaikoDevelopersPage.po';
 import { UserPage } from './po/UserPage.po';
@@ -27,7 +26,6 @@ type Fixtures = {
   scoutPage: ScoutPage;
   developersPage: DevelopersPage;
   claimPage: ClaimPage;
-  questsPage: QuestsPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -61,7 +59,6 @@ export const test = base.extend<Fixtures>({
   userPage: ({ page }, use) => use(new UserPage(page)),
   scoutPage: ({ page }, use) => use(new ScoutPage(page)),
   claimPage: ({ page }, use) => use(new ClaimPage(page)),
-  questsPage: ({ page }, use) => use(new QuestsPage(page)),
   developersPage: ({ page }, use) => use(new DevelopersPage(page)),
   taikoDevelopersPage: ({ page }, use) => use(new TaikoDevelopersPage(page)),
   projectPage: ({ page }, use) => use(new ProjectPage(page))

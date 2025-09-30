@@ -1,6 +1,5 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
-import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { uuidFromNumber } from '@packages/utils/uuid';
 import type { WebAppInitData } from '@twa-dev/types';
 
@@ -42,10 +41,6 @@ export async function findOrCreateTelegramUser(
       data: { telegramName: displayName }
     });
   }
-
-  await completeQuests(user.id, ['link-telegram-account']).catch((error) => {
-    log.error('Error completing quest: link-telegram-account', { error, userId: user.id });
-  });
 
   return user;
 }
