@@ -3,8 +3,6 @@ import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 import { getUserProfile } from '@packages/users/getUserProfile';
 
-import { completeQuests } from '../quests/completeQuests';
-
 export async function connectFarcasterAccount({ fid, userId }: { fid: number; userId: string }) {
   const connectedUser = await getUserProfile({ farcasterId: fid });
 
@@ -29,8 +27,6 @@ export async function connectFarcasterAccount({ fid, userId }: { fid: number; us
     where: { id: userId },
     data: { farcasterId: fid, farcasterName: profile.username }
   });
-
-  await completeQuests(userId, ['link-farcaster-account']);
 
   return {};
 }

@@ -9,21 +9,6 @@ type Banner = {
 };
 
 const banners: Record<string, Banner> = {
-  updated_referral_bonus: {
-    title: 'Updated Friendly Quest',
-    expiration: '2025-03-09',
-    description: (
-      <>
-        New friendly quest: +5 OP for you and every player who signs up with{' '}
-        <Link
-          sx={{ textDecoration: 'underline', fontWeight: 'bold', color: 'inherit', '&:hover': { color: 'inherit' } }}
-          href='/quests'
-        >
-          your link
-        </Link>
-      </>
-    )
-  },
   dev_token_announcement: {
     title: 'Updated Friendly Quest',
     expiration: '2025-04-21',

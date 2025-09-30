@@ -1,13 +1,11 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
-import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import type { ConnectWaitlistTier } from '@packages/waitlist/scoring/constants';
 
 import { findOrCreateUser } from './findOrCreateUser';
 import type { FindOrCreateUserResult } from './findOrCreateUser';
 import { generateRandomName } from './generateRandomName';
-import { createReferralEvent } from './referrals/createReferralEvent';
 
 export async function findOrCreateFarcasterUser({
   fid,
@@ -66,18 +64,6 @@ export async function findOrCreateFarcasterUser({
     farcasterName: profile?.username,
     utmCampaign: utmCampaign || undefined
   });
-
-  if (user?.isNew) {
-    await completeQuests(user.id, ['link-farcaster-account']).catch((error) => {
-      log.error('Error completing quest: link-farcaster-account', { error, userId: user.id });
-    });
-    if (referralCode) {
-      await createReferralEvent(referralCode, user.id).catch((error) => {
-        // There can be a case where the referrer is not found. Maybe someone will try to guess referral codes to get rewards.
-        log.warn('Error creating referral event.', { error, startParam: referralCode, referrerId: user.id });
-      });
-    }
-  }
 
   return user;
 }

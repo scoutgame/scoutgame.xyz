@@ -4,7 +4,6 @@ import type { Season } from '@packages/dates/config';
 import { getStartOfDay, getStartOfWeek, getWeekFromDate } from '@packages/dates/utils';
 import type { Commit } from '@packages/github/getCommitsByUser';
 import { validMintNftPurchaseEvent } from '@packages/scoutgame/builderNfts/constants';
-import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { isTruthy } from '@packages/utils/types';
 
 import { gemsValues } from './config';
@@ -178,15 +177,6 @@ export async function recordCommit({ commit, season }: { commit: RequiredCommitF
                 }
               }
             }
-          });
-        }
-
-        try {
-          await completeQuests(githubUser.builderId, ['first-repo-contribution', 'score-first-commit']);
-        } catch (error) {
-          log.error('Error completing quest for commit', {
-            error,
-            userId: githubUser.builderId
           });
         }
 

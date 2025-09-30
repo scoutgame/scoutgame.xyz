@@ -2,7 +2,6 @@ import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import { sendEmailNotification } from '@packages/mailer/sendEmailNotification';
 import { trackUserAction } from '@packages/mixpanel/trackUserAction';
-import { completeQuests } from '@packages/scoutgame/quests/completeQuests';
 import { baseUrl } from '@packages/utils/constants';
 
 import { updateReferralUsers } from './referrals/updateReferralUsers';
@@ -83,8 +82,6 @@ export async function verifyEmail(code: string): Promise<{ result: 'already_veri
       completedAt: new Date()
     }
   });
-
-  await completeQuests(verification.scoutId, ['verify-email']);
 
   trackUserAction('verify_email', {
     userId: verification.scoutId
