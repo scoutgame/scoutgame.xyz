@@ -19,7 +19,6 @@ import { getPublicClient } from '@packages/blockchain/getPublicClient';
 import { getDateFromISOWeek, getCurrentWeek, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { getMatchupRewards } from '@packages/matchup/getMatchupRewards';
 import { getBuilderEventsForPartnerRewards } from '@packages/scoutgame/partnerRewards/getBuilderEventsForPartnerReward';
-import { getReferralsToReward } from '@packages/scoutgame/quests/getReferralsToReward';
 import { getPartnerRewardAmount } from '@packages/scoutgame/scoutPartners/getPartnerRewardAmount';
 import { formatUnits, parseUnits } from 'viem';
 
@@ -103,22 +102,7 @@ export async function AirdropMetrics({
     }
   });
 
-  // add the upcoming payout for referral rewards
-  if (partner === 'optimism_referral_champion') {
-    const referrals = await getReferralsToReward({ week: currentWeek });
-    if (referrals.length > 0) {
-      const upcomingPayout = referrals.reduce((sum, referral) => sum + toWei(referral.opAmount), BigInt(0));
-      airdrops.unshift({
-        isCurrentWeek: true,
-        week: currentWeek,
-        wallets: referrals.length,
-        walletAddresses: referrals.map((r) => r.address),
-        claimed: zero,
-        unclaimed: upcomingPayout,
-        total: upcomingPayout
-      });
-    }
-  } else if (scoutPartner && scoutPartner.tokenDecimals) {
+  if (scoutPartner && scoutPartner.tokenDecimals) {
     const builderEvents = await getBuilderEventsForPartnerRewards({
       week: getCurrentWeek(),
       scoutPartnerId: partner
