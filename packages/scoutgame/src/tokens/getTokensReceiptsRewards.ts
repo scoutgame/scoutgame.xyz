@@ -1,8 +1,7 @@
 import type { BuilderEvent, NFTPurchaseEvent } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { Season } from '@packages/dates/config';
-import { getCurrentSeasonStart, getPreviousSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
-import { isTruthy } from '@packages/utils/types';
+import { getCurrentSeasonStart, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { formatUnits } from 'viem';
 
 import { devTokenDecimals } from '../protocol/constants';
@@ -54,40 +53,15 @@ export async function getTokensReceiptsRewards({
   isClaimed: boolean;
   season?: string;
 }): Promise<TokensReceiptReward[]> {
-  const previousSeason = getPreviousSeason(season);
-  const claimableSeasons = [previousSeason, season].filter(isTruthy);
-  if (claimableSeasons.length === 0) {
-    throw new Error(`No seasons found to claim points: ${season}`);
-  }
-
-  const matchupRewards = await prisma.partnerRewardPayout.findMany({
-    where: {
-      deletedAt: null,
-      payoutContract: {
-        partner: 'matchup_rewards',
-        season
-      },
-      wallet: {
-        scoutId: userId
-      }
-    },
-    select: {
-      amount: true,
-      payoutContract: {
-        select: {
-          week: true,
-          tokenDecimals: true
-        }
-      }
-    }
-  });
-
   const tokensReceipts = await prisma.tokensReceipt.findMany({
     where: {
       recipientWallet: {
         scoutId: userId
       },
-      claimedAt: isClaimed ? { not: null } : { equals: null }
+      claimedAt: isClaimed ? { not: null } : { equals: null },
+      event: {
+        season
+      }
     },
     select: {
       value: true,
@@ -217,17 +191,6 @@ export async function getTokensReceiptsRewards({
         }
         leaderboardRankRewards[week].tokens += tokens;
       }
-    } else if (receipt.event.type === 'matchup_winner') {
-      // points received as a matchup winner
-      const opPayout = matchupRewards.find((r) => r.payoutContract.week === week);
-      matchupWinnerRewards[week] = {
-        // TODO: tokens receipt from payout
-        tokens: 0,
-        opAmount: opPayout ? Number(formatUnits(BigInt(opPayout.amount), opPayout.payoutContract.tokenDecimals)) : 0,
-        week: weekNumber,
-        season: receipt.event.season as Season,
-        type: 'matchup_winner'
-      };
     }
   }
 

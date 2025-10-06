@@ -1,7 +1,13 @@
 import { log } from '@charmverse/core/log';
 import { prisma } from '@charmverse/core/prisma-client';
 import type { ISOWeek } from '@packages/dates/config';
-import { getCurrentSeasonStart, getCurrentWeek, getLastWeek, getPreviousSeason } from '@packages/dates/utils';
+import {
+  getClaimableWeeks,
+  getCurrentSeasonStart,
+  getCurrentWeek,
+  getLastWeek,
+  getPreviousSeason
+} from '@packages/dates/utils';
 import { getFarcasterUserByIds } from '@packages/farcaster/getFarcasterUserById';
 import { isTruthy } from '@packages/utils/types';
 import { formatUnits, type Address } from 'viem';
@@ -47,6 +53,11 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
     }
   });
 
+  const currentWeek = getCurrentWeek();
+
+  // Get all claimable weeks (up to 13 weeks from previous season + completed weeks from current season)
+  const claimableWeeks = getClaimableWeeks(currentWeek);
+
   const walletAddresses = scoutWallets.map((wallet) => wallet.address.toLowerCase() as Address);
 
   if (!scoutWallets.length) {
@@ -59,7 +70,12 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
       recipientWalletAddress: {
         in: scoutWallets.map((wallet) => wallet.address)
       },
-      claimedAt: null
+      claimedAt: null,
+      event: {
+        week: {
+          in: claimableWeeks
+        }
+      }
     },
     select: {
       value: true,
@@ -177,7 +193,7 @@ export async function getClaimableTokensWithSources(userId: string): Promise<Unc
   const repos = await prisma.githubEvent.findMany({
     where: {
       builderEvent: {
-        week: getCurrentWeek(),
+        week: currentWeek,
         builderId: userId
       }
     },
