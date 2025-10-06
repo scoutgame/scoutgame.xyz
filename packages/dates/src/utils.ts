@@ -264,3 +264,50 @@ export function getFromBlockForContract(contractAddress: `0x${string}`) {
   }
   return BigInt(seasonConfig.nftBlockNumber);
 }
+
+/**
+ * Get all claimable weeks based on current week.
+ * Returns up to 13 weeks from previous seasons + all completed weeks from current season.
+ *
+ * Example: If current week is Week 3 of Season 2:
+ * - Returns Week 1 and Week 2 of Season 2 (completed weeks)
+ * - Returns Week 13, 12, 11, ..., 3 of Season 1 (11 weeks to make total of 13)
+ */
+export function getClaimableWeeks(currentWeek: ISOWeek = getCurrentWeek()): ISOWeek[] {
+  const currentSeason = getCurrentSeason(currentWeek);
+  const currentSeasonStart = currentSeason.start;
+  const weeksPerSeason = currentSeason.weeksPerSeason;
+
+  // Get all weeks from current season start until current week
+  const currentSeasonWeeks: ISOWeek[] = [];
+  let weekCursor = getStartOfWeek(currentSeasonStart);
+  const currentWeekDate = getDateFromISOWeek(currentWeek);
+
+  while (weekCursor < currentWeekDate) {
+    currentSeasonWeeks.push(_formatWeek(weekCursor));
+    weekCursor = weekCursor.plus({ weeks: 1 });
+  }
+
+  // Calculate how many weeks we can claim from previous season
+  const remainingClaimableSlots = weeksPerSeason - currentSeasonWeeks.length;
+
+  if (remainingClaimableSlots <= 0) {
+    // Current season has 13+ weeks, return only current season weeks (up to 13)
+    return currentSeasonWeeks.slice(0, weeksPerSeason);
+  }
+
+  // Get previous season weeks
+  const previousSeason = getPreviousSeason(currentSeasonStart);
+  if (!previousSeason) {
+    // No previous season, return only current season weeks
+    return currentSeasonWeeks;
+  }
+
+  const previousSeasonWeeks = getAllISOWeeksFromSeasonStartUntilSeasonEnd({ season: previousSeason });
+
+  // Get the last N weeks from previous season
+  const previousSeasonClaimableWeeks = previousSeasonWeeks.slice(-remainingClaimableSlots);
+
+  // Combine: previous season weeks (oldest first) + current season weeks (newest last)
+  return [...previousSeasonClaimableWeeks, ...currentSeasonWeeks];
+}
