@@ -53,8 +53,7 @@ export function EditScoutPartnerForm({ partner, onClose, onSuccess }: Props) {
       tokenAmountPerPullRequest: partner.tokenAmountPerPullRequest ?? undefined,
       issueTagTokenAmounts: (partner.issueTagTokenAmounts as { tag: string; amount: number }[]) ?? [],
       repoIds: partner.repos?.map((repo) => repo.id) ?? [],
-      blacklistedDeveloperIds:
-        (partner as unknown as ScoutPartnerWithRepos).blacklistedDevelopers?.map((b) => b.developerId) ?? []
+      blacklistedDeveloperIds: partner.blacklistedDevelopers?.map((b) => b.developerId) ?? []
     },
     resolver: yupResolver(editScoutPartnerSchema),
     mode: 'onChange'

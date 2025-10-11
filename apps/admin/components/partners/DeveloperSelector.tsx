@@ -14,8 +14,11 @@ import {
   ListItem,
   ListItemText,
   Button,
-  Stack
+  Stack,
+  ListItemAvatar,
+  Avatar
 } from '@mui/material';
+import Image from 'next/image';
 import { useState } from 'react';
 
 import { useGetUser, useSearchForUser } from 'hooks/api/users';
@@ -37,7 +40,7 @@ export function DeveloperSelector({
 }) {
   const [input, setInput] = useState('');
   const debounced = useDebouncedValue(input);
-  const { data: result, isLoading, isValidating, error: searchError } = useSearchForUser(debounced);
+  const { data: result, isLoading, isValidating, error: searchError } = useSearchForUser(debounced, true);
 
   const addDeveloper = (id: string) => {
     if (!value.includes(id)) {
@@ -73,7 +76,7 @@ export function DeveloperSelector({
 
       {/* Search bar */}
       <TextField
-        label='Search by scoutgame path'
+        label='Search by scoutgame path or github login'
         placeholder='e.g., alice'
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -100,9 +103,16 @@ export function DeveloperSelector({
         <Box sx={{ p: 1, border: '1px dashed', borderColor: 'divider', borderRadius: 1 }}>
           {result.scout ? (
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <Typography>
-                {result.scout.displayName || result.scout.path} — {result.scout.path}
-              </Typography>
+              <Stack direction='row' alignItems='center' spacing={1}>
+                {result.scout.avatar ? (
+                  <Avatar src={result.scout.avatar} alt={result.scout.path} sx={{ width: 32, height: 32 }} />
+                ) : (
+                  <Avatar sx={{ width: 20, height: 20, padding: 2 }}>{result.scout.displayName[0]}</Avatar>
+                )}
+                <Typography>
+                  {result.scout.displayName || result.scout.path} — {result.scout.path}
+                </Typography>
+              </Stack>
               <Button size='small' startIcon={<AddIcon />} onClick={() => addDeveloper(result.scout!.id)}>
                 Add
               </Button>
@@ -133,6 +143,13 @@ function SelectedDeveloperItem({ id, onRemove }: { id: string; onRemove: (id: st
         </IconButton>
       }
     >
+      <ListItemAvatar>
+        {data?.avatar ? (
+          <Avatar src={data.avatar} alt={data.path} sx={{ width: 42, height: 42 }} />
+        ) : (
+          <Avatar sx={{ width: 42, height: 42, padding: 2 }}>{data?.displayName[0]}</Avatar>
+        )}
+      </ListItemAvatar>
       <ListItemText
         primaryTypographyProps={{ sx: { wordBreak: 'break-word' } }}
         primary={isLoading ? 'Loading…' : primary}

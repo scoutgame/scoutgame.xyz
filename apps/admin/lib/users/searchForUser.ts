@@ -1,4 +1,4 @@
-import type { ConnectWaitlistSlot, Scout } from '@charmverse/core/prisma-client';
+import type { Scout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
 import { getFarcasterUserById } from '@packages/farcaster/getFarcasterUserById';
 import { getFarcasterUserByUsername } from '@packages/farcaster/getFarcasterUserByUsername';
@@ -43,7 +43,7 @@ export async function searchForUser({
     }
   }
   // check for scout by path
-  const user = await prisma.scout.findUnique({
+  const user = await prisma.scout.findFirst({
     where: {
       path: searchString
     },
@@ -75,6 +75,26 @@ export async function searchForUser({
     if (farcasterUser) {
       return { farcasterUser };
     }
+  }
+
+  const usernameByGithubLogin = await prisma.scout.findFirst({
+    where: {
+      githubUsers: {
+        some: {
+          login: {
+            mode: 'insensitive',
+            contains: searchString
+          }
+        }
+      }
+    },
+    include: {
+      githubUsers: true
+    }
+  });
+
+  if (usernameByGithubLogin) {
+    return { scout: { ...usernameByGithubLogin, githubLogin: usernameByGithubLogin.githubUsers[0]?.login } };
   }
 
   return null;
