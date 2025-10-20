@@ -110,7 +110,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@next/eslint-plugin-next": "^15.3.1",
-    "@playwright/test": "^1.47.1",
+    "@playwright/test": "^1.56.1",
     "@stylistic/eslint-plugin-ts": "^2.9.0",
     "@swc/core": "^1.11.21",
     "@swc/jest": "^0.2.37",
@@ -145,7 +145,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^12.3.2",
     "node-mocks-http": "^1.14.1",
-    "playwright": "^1.47.1",
+    "playwright": "^1.56.1",
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
