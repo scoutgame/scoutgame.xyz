@@ -92,12 +92,6 @@ export default function AirdropPage() {
             </Box>
             <Stack flexDirection='column' gap={1}>
               <Typography>
-                Season 3:{' '}
-                <Typography component='span' color='green'>
-                  +20% Bonus
-                </Typography>
-              </Typography>
-              <Typography>
                 Season 4:{' '}
                 <Typography component='span' color='green'>
                   +25% Bonus
