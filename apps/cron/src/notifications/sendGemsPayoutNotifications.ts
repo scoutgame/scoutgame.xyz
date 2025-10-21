@@ -1,7 +1,7 @@
 import { log } from '@charmverse/core/log';
 import type { PartnerRewardPayout } from '@charmverse/core/prisma-client';
 import { prisma } from '@charmverse/core/prisma-client';
-import { getCurrentSeasonStart, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
+import { getCurrentSeason, getCurrentSeasonWeekNumber } from '@packages/dates/utils';
 import { sendNotifications } from '@packages/scoutgame/notifications/sendNotifications';
 import { partnerRewardRecord } from '@packages/scoutgame/partnerRewards/constants';
 import { getClaimableTokens } from '@packages/scoutgame/tokens/getClaimableTokens';
@@ -185,7 +185,7 @@ export async function sendGemsPayoutNotifications({ week }: { week: string }) {
                 wallets: scout.wallets,
                 scoutPartners
               }),
-              season: getCurrentSeasonStart(),
+              season: getCurrentSeason().title,
               week_num: weekNumber,
               new_developers: formatNewDevelopers(newDevelopers)
             }

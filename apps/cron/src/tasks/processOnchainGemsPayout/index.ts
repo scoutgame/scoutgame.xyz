@@ -1,4 +1,4 @@
-import { getCurrentSeasonStart, getLastWeek, getSeasonConfig } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getCurrentWeek, getLastWeek, getSeasonConfig } from '@packages/dates/utils';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeeklyClaims';
@@ -42,7 +42,7 @@ export async function processOnchainGemsPayout(
       totalDevelopers: generatedClaims.totalDevelopers
     });
 
-    const notificationsSent = await sendGemsPayoutNotifications({ week });
+    const notificationsSent = await sendGemsPayoutNotifications({ week: getCurrentWeek() });
     log.info(`Sent notifications for ${notificationsSent} developers`, { notificationsSent });
   }
 
