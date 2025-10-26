@@ -1,6 +1,6 @@
 import { prisma } from '@charmverse/core/prisma-client';
 import { createThirdwebAirdropContract, Recipient } from '@packages/blockchain/airdrop/createThirdwebAirdropContract';
-import { getCurrentSeasonStart, getPreviousSeason } from '@packages/dates/utils';
+import { getCurrentSeasonStart } from '@packages/dates/utils';
 import { parseEther } from 'viem';
 import { base } from 'viem/chains';
 import { uploadFileToS3 } from '@packages/aws/uploadToS3Server';
@@ -17,23 +17,21 @@ const airdropList = JSON.parse(fs.readFileSync(path.join(__dirname, 'airdrop.jso
   totalSeason2Airdrop: number;
 }[];
 
-const recipients: Recipient[] = airdropList.filter(item => item.totalSeason2Airdrop > 0).map(item => ({
-  address: item.address,
-  amount: parseEther(item.totalSeason2Airdrop.toString()).toString()
-}));
+const recipients: Recipient[] = airdropList
+  .filter((item) => item.totalSeason2Airdrop > 0)
+  .map((item) => ({
+    address: item.address.toLocaleLowerCase() as `0x${string}`,
+    amount: parseEther(item.totalSeason2Airdrop.toString()).toString()
+  }));
 
 export async function createAndStoreThirdWebAirdropContract() {
-  const previousSeason = getPreviousSeason(getCurrentSeasonStart());
-
-  if (!previousSeason) {
-    throw new Error('No previous season found');
-  }
+  const currentSeason = getCurrentSeasonStart();
 
   const { airdropContractAddress, deployTxHash, merkleTree, blockNumber } = await createThirdwebAirdropContract({
     adminPrivateKey: process.env.PRIVATE_KEY as `0x${string}`,
     chainId: base.id,
-    // 3 months from now
-    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 90),
+    // 13 weeks from now
+    expirationTimestamp: BigInt(Math.floor(Date.now() / 1000) + 13 * 7 * 24 * 60 * 60),
     tokenAddress: devTokenContractAddress,
     recipients
   });
@@ -52,9 +50,9 @@ export async function createAndStoreThirdWebAirdropContract() {
       deployTxHash,
       merkleTreeUrl: fileUrl,
       blockNumber,
-      season: '2025-W18'
+      season: currentSeason
     }
   });
 }
 
-// createAndStoreThirdWebAirdropContract();
+createAndStoreThirdWebAirdropContract();

@@ -91,6 +91,15 @@ export const seasons: SeasonConfig[] = [
     nftBlockNumber: 33_425_007,
     weeksPerSeason: 13,
     allocatedTokens: BigInt(1_280_000 * 10 ** devTokenDecimals)
+  },
+  {
+    start: '2025-W44', // October 27th 2025
+    title: 'Season 3',
+    starterNftAddress: '0xe8dd5ddcd7a32f25055658fe95b964ee1abeed59' as Address,
+    standardNftAddress: '0xe5af0baaee6f429014cee0f78032f5bb08c4766c' as Address,
+    nftBlockNumber: 37_358_782,
+    weeksPerSeason: 13,
+    allocatedTokens: BigInt(1_312_597 * 10 ** devTokenDecimals)
   }
 ] satisfies SeasonConfig[];
 

@@ -1,4 +1,5 @@
 // Must be there otherwise React is not defined error is thrown
+import type { ISOWeek } from '@packages/dates/config';
 import React from 'react';
 import sharp from 'sharp';
 
@@ -22,13 +23,15 @@ function calculateFontSize(text: string, maxWidth: number, initialFontSize: numb
 export async function generateArtwork({
   avatar,
   displayName,
-  tokenId
+  tokenId,
+  season
 }: {
+  season: ISOWeek;
   avatar: string;
   tokenId: bigint | number;
   displayName: string;
 }): Promise<Buffer> {
-  const { overlaysBase64, noPfpAvatarBase64, font } = getAssetsFromDisk();
+  const { overlaysBase64, noPfpAvatarBase64, font } = getAssetsFromDisk({ season });
   const overlay = overlaysBase64[Number(tokenId) % overlaysBase64.length];
   const response = await fetch(avatar);
   const avatarBuffer = await sharp(Buffer.from(await response.arrayBuffer()))

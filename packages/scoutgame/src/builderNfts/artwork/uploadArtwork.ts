@@ -19,7 +19,8 @@ export async function uploadArtwork({
   const imageBuffer = await generateArtwork({
     avatar,
     displayName,
-    tokenId
+    tokenId,
+    season
   });
 
   const imagePath = getNftTokenUrlPath({
