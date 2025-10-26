@@ -1,4 +1,5 @@
 // Must be there otherwise React is not defined error is thrown
+import type { ISOWeek } from '@packages/dates/config';
 import React from 'react';
 import sharp from 'sharp';
 
@@ -76,12 +77,14 @@ export async function updateNftStarterPackImage({
 
 export async function generateNftStarterPackImage({
   avatar,
-  displayName
+  displayName,
+  season
 }: {
+  season: ISOWeek;
   avatar: string;
   displayName: string;
 }): Promise<Buffer> {
-  const { starterOverlayBase64, font } = getAssetsFromDisk();
+  const { starterOverlayBase64, font } = getAssetsFromDisk({ season });
   const response = await fetch(avatar);
   const avatarBuffer = await sharp(Buffer.from(await response.arrayBuffer()))
     .resize(300, 300)

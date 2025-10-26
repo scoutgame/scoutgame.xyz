@@ -24,6 +24,7 @@ export async function uploadStarterPackArtwork({
 }) {
   const contractName = getStarterNFTContractAddress(season) || 'default';
   const imageBuffer = await generateNftStarterPackImage({
+    season,
     avatar,
     displayName
   });

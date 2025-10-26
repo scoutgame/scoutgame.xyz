@@ -2,6 +2,7 @@ import { InvalidInputError } from '@charmverse/core/errors';
 import { log } from '@charmverse/core/log';
 import { BuilderNftType, prisma } from '@charmverse/core/prisma-client';
 import { stringUtils } from '@charmverse/core/utilities';
+import { sleep } from '@packages/utils/sleep';
 import type { Address, Chain } from 'viem';
 
 import { getNFTMinterClient } from '../../protocol/clients/getNFTClient';
@@ -92,6 +93,8 @@ export async function registerDeveloperNFT({
   if (!tokenId) {
     log.info(`Registering token for developer`, { userId: builderId });
     await minterClient.registerBuilderToken({ args: { builderId, account: primaryWallet.address as Address } });
+
+    await sleep(2500);
 
     tokenId = await minterClient.getTokenIdForBuilder({ args: { builderId } });
   }
