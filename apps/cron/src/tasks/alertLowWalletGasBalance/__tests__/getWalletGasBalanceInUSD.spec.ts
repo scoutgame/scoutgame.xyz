@@ -3,8 +3,11 @@ import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { baseSepolia } from 'viem/chains';
 
 jest.unstable_mockModule('@packages/utils/http', () => ({
-  POST: jest.fn(),
-  GET: jest.fn()
+  POST: jest.fn()
+}));
+
+jest.unstable_mockModule('@packages/blockchain/getEthPrice', () => ({
+  getEthPrice: jest.fn()
 }));
 
 const privateKey = generatePrivateKey();
@@ -15,7 +18,8 @@ jest.unstable_mockModule('@packages/scoutgame/builderNfts/constants', () => ({
   minterPrivateKey: privateKey
 }));
 
-const { POST, GET } = await import('@packages/utils/http');
+const { POST } = await import('@packages/utils/http');
+const { getEthPrice } = await import('@packages/blockchain/getEthPrice');
 const { getWalletGasBalanceInUSD } = await import('../getWalletGasBalanceInUSD');
 
 describe('getWalletGasBalanceInUSD', () => {
@@ -25,10 +29,8 @@ describe('getWalletGasBalanceInUSD', () => {
       result: '0x3635c9adc5dea00000' // 1000000000000000000000 wei (1000 ETH)
     });
 
-    // Mock the GET request to CoinGecko API
-    (GET as jest.Mock<typeof GET>).mockResolvedValue({
-      ethereum: { usd: 0.025 } // $0.025 per ETH
-    });
+    // Mock the getEthPrice function
+    (getEthPrice as jest.Mock<typeof getEthPrice>).mockResolvedValue(0.025); // $0.025 per ETH
 
     const balance = await getWalletGasBalanceInUSD(walletAddress, 'test-api-key');
 
@@ -37,6 +39,6 @@ describe('getWalletGasBalanceInUSD', () => {
       expect.stringContaining('https://base-mainnet.g.alchemy.com/v2/test-api-key'),
       expect.any(Object)
     );
-    expect(GET).toHaveBeenCalledWith('https://api.coingecko.com/api/v3/simple/price', expect.any(Object));
+    expect(getEthPrice).toHaveBeenCalled();
   });
 });
