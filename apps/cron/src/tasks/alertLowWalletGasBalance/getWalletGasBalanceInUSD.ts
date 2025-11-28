@@ -1,4 +1,5 @@
-import { GET, POST } from '@packages/utils/http';
+import { getEthPrice } from '@packages/blockchain/getEthPrice';
+import { POST } from '@packages/utils/http';
 
 export async function getWalletGasBalanceInUSD(
   walletAddress: string,
@@ -23,11 +24,8 @@ export async function getWalletGasBalanceInUSD(
   const balanceWei = response.result;
   const balanceEth = parseInt(balanceWei, 16) / 10 ** 18;
 
-  const priceResponse = await GET<{ ethereum: { usd: number } }>('https://api.coingecko.com/api/v3/simple/price', {
-    ids: 'ethereum',
-    vs_currencies: 'usd'
-  });
-  const ethPriceInUSD = priceResponse.ethereum.usd;
+  // Get ETH price from Uniswap V3 pool instead of CoinGecko
+  const ethPriceInUSD = await getEthPrice();
 
   const balanceInUSD = balanceEth * ethPriceInUSD;
 
