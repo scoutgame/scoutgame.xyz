@@ -41,7 +41,7 @@ describe('alertLowWalletGasBalance', () => {
   });
 
   it('should call the webhook when balance is below threshold', async () => {
-    (getWalletGasBalanceInUSD as jest.Mock<typeof getWalletGasBalanceInUSD>).mockResolvedValue(10); // Below threshold of 25
+    (getWalletGasBalanceInUSD as jest.Mock<typeof getWalletGasBalanceInUSD>).mockResolvedValue(4); // Below threshold of 25
 
     await alertLowWalletGasBalance(createContext(), discordWebhook);
 
