@@ -1,10 +1,18 @@
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import { Box, Container, Paper, Stack, Typography } from '@mui/material';
+import type { ISOWeek } from '@packages/dates/config';
+import { getCurrentSeasonStart, getPreviousNonDraftSeason } from '@packages/dates/utils';
 import Image from 'next/image';
 
 import { AirdropClaimScreen } from '../../../components/airdrop/AirdropClaimScreen';
 
-export default function AirdropPage() {
+export default async function AirdropPage({ searchParams }: { searchParams: Promise<{ season?: ISOWeek }> }) {
+  const season = (await searchParams).season || getPreviousNonDraftSeason(getCurrentSeasonStart());
+
+  if (!season) {
+    return null;
+  }
+
   return (
     <Container
       maxWidth='lg'
@@ -26,7 +34,7 @@ export default function AirdropPage() {
           }
         }}
       >
-        <AirdropClaimScreen />
+        <AirdropClaimScreen season={season} />
       </Stack>
       <Stack
         sx={{

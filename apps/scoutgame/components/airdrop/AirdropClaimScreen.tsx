@@ -4,6 +4,7 @@ import { log } from '@charmverse/core/log';
 import { claimThirdwebERC20AirdropToken } from '@packages/blockchain/airdrop/thirdwebERC20AirdropContract';
 import { AIRDROP_SAFE_WALLET } from '@packages/blockchain/constants';
 import { getPublicClient } from '@packages/blockchain/getPublicClient';
+import type { ISOWeek } from '@packages/dates/config';
 import { devTokenContractAddress } from '@packages/scoutgame/protocol/constants';
 import { useUser } from '@packages/scoutgame-ui/providers/UserProvider';
 import { useAction } from 'next-safe-action/hooks';
@@ -35,7 +36,7 @@ export type AirdropClaimStep =
   | 'not_qualified'
   | 'already_claimed';
 
-export function AirdropClaimScreen() {
+export function AirdropClaimScreen({ season }: { season: ISOWeek }) {
   const [step, setStep] = useState<AirdropClaimStep>('start_claim');
   const { user } = useUser();
   const { data: walletClient } = useWalletClient();
@@ -69,7 +70,7 @@ export function AirdropClaimScreen() {
   const checkAirdropStatus = async (walletAddress: string) => {
     setIsGettingAirdropTokenStatus(true);
     try {
-      const result = await executeAsync({ address: walletAddress });
+      const result = await executeAsync({ address: walletAddress, season });
       const data = result?.data;
 
       if (!data) {

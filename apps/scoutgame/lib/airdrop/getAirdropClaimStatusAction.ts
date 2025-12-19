@@ -22,21 +22,16 @@ export const getAirdropClaimStatusAction = actionClient
   .metadata({ actionName: 'get_airdrop_claim_status' })
   .schema(
     yup.object({
+      season: yup.string(),
       address: yup.string().required()
     })
   )
   .action(async ({ parsedInput }) => {
-    const previousSeason = getPreviousNonDraftSeason(getCurrentSeasonStart());
-
-    if (!previousSeason) {
-      return null;
-    }
-
     const address = parsedInput.address;
 
     const airdropClaim = await prisma.airdropClaim.findFirst({
       where: {
-        season: previousSeason
+        season: parsedInput.season
       },
       select: {
         id: true,
