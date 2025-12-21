@@ -1,4 +1,4 @@
-import { getCurrentSeasonStart, getCurrentWeek, getLastWeek, getSeasonConfig } from '@packages/dates/utils';
+import { getCurrentSeasonStart, getLastWeek } from '@packages/dates/utils';
 import { calculateWeeklyClaims } from '@packages/scoutgame/protocol/calculateWeeklyClaims';
 import { scoutProtocolChainId } from '@packages/scoutgame/protocol/constants';
 import { generateWeeklyClaims } from '@packages/scoutgame/protocol/generateWeeklyClaims';
@@ -6,9 +6,6 @@ import { resolveTokenOwnership } from '@packages/scoutgame/protocol/resolveToken
 import type { Context } from 'koa';
 import { DateTime } from 'luxon';
 
-import { sendGemsPayoutNotifications } from '../../notifications/sendGemsPayoutNotifications';
-
-import { deployScoutPartnerRewards } from './deployScoutPartnerRewards';
 import { log } from './logger';
 
 export { log };
@@ -18,33 +15,26 @@ export async function processOnchainGemsPayout(
   { season = getCurrentSeasonStart(), now = DateTime.utc() }: { season?: string; now?: DateTime } = {}
 ) {
   const week = getLastWeek(now);
-  const seasonConfig = getSeasonConfig(season);
 
   // run for the first few hours every Monday at midnight UTC
   if (now.weekday !== 1 || now.hour > 4) {
     log.info('Gems Payout: It is not yet Sunday at 12:00 AM UTC, skipping');
     return;
   }
-  if (!seasonConfig.draft) {
-    const tokenBalances = await resolveTokenOwnership({
-      chainId: scoutProtocolChainId,
-      week
-    });
 
-    const weeklyClaimsCalculated = await calculateWeeklyClaims({
-      week,
-      tokenBalances
-    });
+  const tokenBalances = await resolveTokenOwnership({
+    chainId: scoutProtocolChainId,
+    week
+  });
 
-    const generatedClaims = await generateWeeklyClaims({ week, weeklyClaimsCalculated });
+  const weeklyClaimsCalculated = await calculateWeeklyClaims({
+    week,
+    tokenBalances
+  });
 
-    log.info(`Processed ${generatedClaims.totalDevelopers} developers points payout`, {
-      totalDevelopers: generatedClaims.totalDevelopers
-    });
+  const generatedClaims = await generateWeeklyClaims({ week, weeklyClaimsCalculated });
 
-    const notificationsSent = await sendGemsPayoutNotifications({ week: getCurrentWeek() });
-    log.info(`Sent notifications for ${notificationsSent} developers`, { notificationsSent });
-  }
-
-  await deployScoutPartnerRewards({ week });
+  log.info(`Processed ${generatedClaims.totalDevelopers} developers points payout`, {
+    totalDevelopers: generatedClaims.totalDevelopers
+  });
 }

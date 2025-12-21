@@ -1,6 +1,7 @@
 import { isDraftSeason } from '@packages/dates/utils';
 import { getSession } from '@packages/nextjs/session/getSession';
 import { getPlatform } from '@packages/utils/platform';
+import { DateTime } from 'luxon';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -10,11 +11,12 @@ import { isAirdropLive } from './lib/airdrop/checkAirdropDates';
 const privateLinks = ['/profile', '/notifications', '/welcome', '/claim', '/builders-you-know', '/quests', '/accounts'];
 const disabledDraftLinks = ['/scout', '/developers', '/profile/projects'];
 
-export async function middleware(request: NextRequest) {
+// Previous middleware logic (before December 22, 2025)
+async function previousMiddlewareLogic(request: NextRequest) {
   const session = await getSession();
   const isLoggedIn = !!session.scoutId;
   const path = request.nextUrl.pathname;
-  const response = NextResponse.next(); // Create a response object to set cookies
+  const response = NextResponse.next();
   const platform = getPlatform();
   const draftSeason = isDraftSeason();
   const airdropLive = isAirdropLive();
@@ -68,6 +70,53 @@ export async function middleware(request: NextRequest) {
   }
 
   return response;
+}
+
+// New middleware logic (from December 22, 2025 onwards)
+async function newMiddlewareLogic(request: NextRequest) {
+  const session = await getSession();
+  const isLoggedIn = !!session.scoutId;
+  const path = request.nextUrl.pathname;
+
+  // List of pages that should be accessible without authentication
+  const publicPages = ['/login', '/info'];
+  const isPublicPage = publicPages.some((page) => path.startsWith(page));
+
+  // Redirect unauthenticated users to /login (except for public pages)
+  if (!isLoggedIn && !isPublicPage) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Redirect authenticated users to /claim (except for /airdrop and /claim itself)
+  if (
+    isLoggedIn &&
+    path !== '/claim' &&
+    path !== '/airdrop' &&
+    !path.startsWith('/claim/') &&
+    !path.startsWith('/airdrop/')
+  ) {
+    return NextResponse.redirect(new URL('/claim', request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export async function middleware(request: NextRequest) {
+  // Switch to new logic from Monday December 22, 2025 00:00 UTC onwards
+  const enableDate = DateTime.fromObject(
+    { year: 2025, month: 12, day: 22, hour: 0, minute: 0, second: 0 },
+    { zone: 'utc' }
+  );
+
+  const currentTime = DateTime.utc();
+
+  // Use new logic if current time is on or after the enable date
+  if (currentTime >= enableDate) {
+    return newMiddlewareLogic(request);
+  }
+
+  // Otherwise use previous logic
+  return previousMiddlewareLogic(request);
 }
 
 export const config = {
